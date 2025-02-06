@@ -5,174 +5,176 @@
 @source "../../../../packages/ui/**/*.{ts,tsx}";
 
 @layer base {
-	* {
-		@apply border-border;
-	}
-	body,
-	.sbdocs .docs-story {
-		@apply bg-site-background text-foreground;
-	}
+  * {
+    @apply border-border;
+  }
+  body,
+  .sbdocs .docs-story {
+    @apply bg-site-background text-foreground;
+  }
 }
 
 @theme {
-	--font-sans: "DM Sans", "sans-serif";
-	--radius: 0.5rem;
+  --font-sans: "DM Sans", "sans-serif";
+  --radius: 0.5rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
 
-	--color-background: hsl(0, 0%, 100%);
-	--color-foreground: hsl(240, 10%, 8%);
-	--color-site-background: hsl(0, 0%, 97%);
+  --color-background: hsl(0, 0%, 100%);
+  --color-foreground: hsl(240, 10%, 8%);
+  --color-site-background: hsl(0, 0%, 97%);
 
-	--color-border: hsl(0 0% 89.8%);
-	--color-input: hsl(0 0% 89.8%);
-	--color-ring: hsl(217 97% 45%);
+  --color-border: hsl(0 0% 89.8%);
+  --color-input: hsl(0 0% 89.8%);
+  --color-ring: hsl(217 97% 45%);
 
-	/* primary */
-	--color-primary: hsl(0 0% 9%);
-	--color-primary-hover: hsl(0 0% 19%);
-	--color-primary-active: hsl(0 0% 39%);
-	--color-primary-foreground: hsl(0 0% 98%);
+  /* primary */
+  --color-primary: hsl(0 0% 9%);
+  --color-primary-hover: hsl(0 0% 19%);
+  --color-primary-active: hsl(0 0% 39%);
+  --color-primary-foreground: hsl(0 0% 98%);
 
-	/* secondary */
-	--color-secondary: hsl(0 0% 96.1%);
+  /* secondary */
+  --color-secondary: hsl(0 0% 96.1%);
 
-	/* muted */
-	--color-muted: hsl(0 0% 96.1%);
-	--color-muted-foreground: hsl(0 0% 45.1%);
+  /* muted */
+  --color-muted: hsl(0 0% 96.1%);
+  --color-muted-foreground: hsl(0 0% 45.1%);
 
-	/* accent */
-	--color-accent: var(--color-neutral-200);
-	--color-accent-foreground: var(--color-neutral-700);
-	--color-accent-active: var(--color-neutral-300);
+  /* accent */
+  --color-accent: var(--color-neutral-200);
+  --color-accent-foreground: var(--color-neutral-700);
+  --color-accent-active: var(--color-neutral-300);
 
-	/* destructive */
-	--color-destructive: hsl(343, 70%, 45%);
-	--color-destructive-hover: hsl(343, 71%, 31%);
-	--color-destructive-active: hsl(342, 71%, 15%);
-	--color-destructive-foreground: hsl(0 0% 98%);
+  /* destructive */
+  --color-destructive: hsl(343, 70%, 45%);
+  --color-destructive-hover: hsl(343, 71%, 31%);
+  --color-destructive-active: hsl(342, 71%, 15%);
+  --color-destructive-foreground: hsl(0 0% 98%);
 
-	/* radius */
-	--radius-lg: var(--radius);
-	--radius-md: calc(var(--radius) - 2px);
-	--radius-sm: calc(var(--radius) - 4px);
+  /* radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 
-	/* card */
-	--color-card: hsl(0 0% 100%);
-	--color-card-foreground: hsl(0 0% 3.9%);
+  /* card */
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(0 0% 3.9%);
 
-	/* popover */
-	--color-popover: hsl(0 0% 100%);
-	--color-popover-foreground: hsl(0 0% 3.9%);
+  /* popover */
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(0 0% 3.9%);
 
-	/* header */
-	--color-header: hsl(0, 0%, 100%);
-	--color-header-foreground: blue;
+  /* header */
+  --color-header: hsl(0, 0%, 100%);
+  --color-header-foreground: blue;
 
-	/* sidebar */
-	--color-sidebar: var(--color-background);
-	--color-sidebar-foreground: var(--color-foreground);
-	--color-sidebar-accent: var(--color-secondary);
-	--color-sidebar-accent-foreground: var(--sidebar-primary);
-	--color-sidebar-border: var(--color-border);
-	--color-sidebar-ring: var(--color-ring);
+  /* sidebar */
+  --color-sidebar: var(--color-background);
+  --color-sidebar-foreground: var(--color-foreground);
+  --color-sidebar-accent: var(--color-secondary);
+  --color-sidebar-accent-foreground: var(--sidebar-primary);
+  --color-sidebar-border: var(--color-border);
+  --color-sidebar-ring: var(--color-ring);
 
-	/* green */
-	--color-green-100: hsl(140, 48%, 94%);
-	--color-green-200: hsl(143, 49%, 75%);
-	--color-green-300: hsl(143, 79%, 38%);
-	--color-green-400: hsl(142, 78%, 31%);
-	--color-green-500: hsl(143, 78%, 19%);
-	--color-green-600: hsl(143, 79%, 11%);
+  /* green */
+  --color-green-100: hsl(140, 48%, 94%);
+  --color-green-200: hsl(143, 49%, 75%);
+  --color-green-300: hsl(143, 79%, 38%);
+  --color-green-400: hsl(142, 78%, 31%);
+  --color-green-500: hsl(143, 78%, 19%);
+  --color-green-600: hsl(143, 79%, 11%);
 
-	/* yellow */
-	--color-yellow-100: hsl(43, 100%, 95%);
-	--color-yellow-200: hsl(41, 100%, 91%);
-	--color-yellow-300: hsl(41, 100%, 77%);
-	--color-yellow-400: hsl(41, 100%, 53%);
-	--color-yellow-500: hsl(41, 86%, 32%);
-	--color-yellow-600: hsl(41, 88%, 16%);
+  /* yellow */
+  --color-yellow-100: hsl(43, 100%, 95%);
+  --color-yellow-200: hsl(41, 100%, 91%);
+  --color-yellow-300: hsl(41, 100%, 77%);
+  --color-yellow-400: hsl(41, 100%, 53%);
+  --color-yellow-500: hsl(41, 86%, 32%);
+  --color-yellow-600: hsl(41, 88%, 16%);
 
-	/* red */
-	--color-red-100: hsl(0, 100%, 97%);
-	--color-red-200: hsl(343, 71%, 85%);
-	--color-red-300: hsl(343, 71%, 65%);
-	--color-red-400: hsl(343, 70%, 45%);
-	--color-red-500: hsl(343, 71%, 31%);
-	--color-red-600: hsl(342, 71%, 15%);
+  /* red */
+  --color-red-100: hsl(0, 100%, 97%);
+  --color-red-200: hsl(343, 71%, 85%);
+  --color-red-300: hsl(343, 71%, 65%);
+  --color-red-400: hsl(343, 70%, 45%);
+  --color-red-500: hsl(343, 71%, 31%);
+  --color-red-600: hsl(342, 71%, 15%);
 
-	/* blue */
-	--color-blue-100: hsl(218, 79%, 95%);
-	--color-blue-200: hsl(217, 81%, 84%);
-	--color-blue-300: hsl(218, 80%, 62%);
-	--color-blue-400: hsl(217, 97%, 45%);
-	--color-blue-500: hsl(217, 98%, 32%);
-	--color-blue-600: hsl(218, 97%, 14%);
+  /* blue */
+  --color-blue-100: hsl(218, 79%, 95%);
+  --color-blue-200: hsl(217, 81%, 84%);
+  --color-blue-300: hsl(218, 80%, 62%);
+  --color-blue-400: hsl(217, 97%, 45%);
+  --color-blue-500: hsl(217, 98%, 32%);
+  --color-blue-600: hsl(218, 97%, 14%);
 
-	/* neutral */
-	--color-neutral-100: hsl(0, 0%, 100%);
-	--color-neutral-200: hsl(0, 0%, 97%);
-	--color-neutral-300: hsl(231, 10%, 86%);
-	--color-neutral-400: hsl(227, 8%, 77%);
-	--color-neutral-500: hsl(229, 7%, 56%);
-	--color-neutral-600: hsl(229, 7%, 44%);
-	--color-neutral-700: hsl(228, 10%, 30%);
-	--color-neutral-800: hsl(229, 10%, 21%);
-	--color-neutral-900: hsl(233, 11%, 14%);
-	--color-neutral-1000: hsl(240, 10%, 8%);
+  /* neutral */
+  --color-neutral-100: hsl(0, 0%, 100%);
+  --color-neutral-200: hsl(0, 0%, 97%);
+  --color-neutral-300: hsl(231, 10%, 86%);
+  --color-neutral-400: hsl(227, 8%, 77%);
+  --color-neutral-500: hsl(229, 7%, 56%);
+  --color-neutral-600: hsl(229, 7%, 44%);
+  --color-neutral-700: hsl(228, 10%, 30%);
+  --color-neutral-800: hsl(229, 10%, 21%);
+  --color-neutral-900: hsl(233, 11%, 14%);
+  --color-neutral-1000: hsl(240, 10%, 8%);
 
-	/* accordion */
-	--animate-accordion-down: accordion-down 0.2s ease-out;
-	--animate-accordion-up: accordion-up 0.2s ease-out;
+  /* accordion */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 
-	@keyframes accordion-down {
-		from {
-			height: 0;
-		}
-		to {
-			height: var(--radix-accordion-content-height);
-		}
-	}
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
 
-	@keyframes accordion-up {
-		from {
-			height: var(--radix-accordion-content-height);
-		}
-		to {
-			height: 0;
-		}
-	}
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
 @layer base {
-	.tvet {
-		--color-primary: hsla(119, 19%, 42%, 1);
-		--color-primary-hover: hsla(131, 22%, 29%, 1);
-		--color-primary-active: hsla(150, 20%, 16%, 1);
+  .tvet {
+    --color-primary: hsla(119, 19%, 42%, 1);
+    --color-primary-hover: hsla(131, 22%, 29%, 1);
+    --color-primary-active: hsla(150, 20%, 16%, 1);
 
-		--color-secondary: hsla(119, 19%, 42%, 1);
-	}
+    --color-secondary: hsla(119, 19%, 42%, 1);
+  }
 
-	.uwezo {
-		--color-primary: hsl(310, 63%, 44%);
-		--color-primary-hover: hsl(310, 63%, 31%);
-		--color-primary-active: hsl(309, 64%, 17%);
+  .uwezo {
+    --color-primary: hsl(310, 63%, 44%);
+    --color-primary-hover: hsl(310, 63%, 31%);
+    --color-primary-active: hsl(309, 64%, 17%);
 
-		--color-secondary: hsl(309, 50%, 77%);
-	}
+    --color-secondary: hsl(309, 50%, 77%);
+  }
 
-	.civil-registry {
-		--color-primary: hsl(142, 78%, 31%);
-		--color-primary-hover: hsl(143, 78%, 19%);
-		--color-primary-active: hsl(143, 79%, 11%);
+  .civil-registry {
+    --color-primary: hsl(142, 78%, 31%);
+    --color-primary-hover: hsl(143, 78%, 19%);
+    --color-primary-active: hsl(143, 79%, 11%);
 
-		--color-secondary: hsl(143, 49%, 75%);
-	}
+    --color-secondary: hsl(143, 49%, 75%);
+  }
 }
 
 @layer utilities {
-	.animate-accordion-down {
-		animation: accordion-down 0.2s ease-out;
-	}
-	.animate-accordion-up {
-		animation: accordion-up 0.2s ease-out;
-	}
+  .animate-accordion-down {
+    animation: accordion-down 0.2s ease-out;
+  }
+  .animate-accordion-up {
+    animation: accordion-up 0.2s ease-out;
+  }
 }

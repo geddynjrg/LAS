@@ -1,54 +1,39 @@
 import type { FC, ReactNode } from "react";
 
+import { cn } from "@workspace/ui/lib/utils";
+
 export interface HeaderProps {
-	startDecorator?: ReactNode;
-	endDecorator?: ReactNode;
-	children?: ReactNode;
+  startDecorator?: ReactNode;
+  endDecorator?: ReactNode;
+  isFloating?: boolean;
+  children?: ReactNode;
 }
 
 export const Header: FC<HeaderProps> = ({
-	startDecorator,
-	endDecorator,
-	children,
+  startDecorator,
+  endDecorator,
+  isFloating,
+  children,
 }) => {
-	return (
-		<>
-			<header className="bg-header text-header-foreground h-(--header-height) sticky top-0 z-10 flex w-full items-center px-4 shadow-md">
-				<div className="h-[80%] [&>*]:h-full">{startDecorator}</div>
+  return (
+    <header
+      className={cn(
+        "text-header-foreground h-(--header-height) top-0 z-10 flex w-full items-center px-4 shadow-md",
+        isFloating
+          ? "bg-foreground/50 fixed backdrop-blur-sm"
+          : "bg-header sticky",
+      )}
+    >
+      <div className="h-[80%] [&>*]:h-full">{startDecorator}</div>
 
-				<div className="flex flex-1 flex-row items-center justify-center">
-					{children}
-					{/* <Button
-					className="justify-self-end"
-					variant="ghost"
-					onClick={toggleSidebar}
-				>
-					<SidebarIcon />
-				</Button> */}
-				</div>
+      <div className="flex flex-1 flex-row items-center justify-center">
+        {children}
+        {/* <SearchForm className="w-full sm:ml-auto sm:w-auto" /> */}
+      </div>
 
-				<div className="flex flex-row items-center justify-center">
-					{endDecorator}
-					{/* <SearchForm className="w-full sm:ml-auto sm:w-auto" /> */}
-				</div>
-
-				{/* <Separator orientation="vertical" className="mr-2 h-4" /> */}
-				{/* <Breadcrumb className="hidden sm:block">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="#">
-                Building Your Application
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb> */}
-
-				{/* <SearchForm className="w-full sm:ml-auto sm:w-auto" /> */}
-			</header>
-		</>
-	);
+      <div className="flex flex-row items-center justify-center">
+        {endDecorator}
+      </div>
+    </header>
+  );
 };
