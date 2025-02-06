@@ -9,82 +9,82 @@ import { cn } from "@workspace/ui/lib/utils";
 export const buttonGroupVariants = buttonVariants;
 
 const ButtonGroupContext = createContext<
-	VariantProps<typeof buttonGroupVariants>
+  VariantProps<typeof buttonGroupVariants>
 >({
-	size: "default",
-	variant: "secondary",
+  size: "default",
+  variant: "secondary",
 });
 
 export type ButtonGroupProps = VariantProps<typeof buttonGroupVariants> & {
-	disabled?: boolean;
-	className?: string;
-	children: ReactNode;
+  disabled?: boolean;
+  className?: string;
+  children: ReactNode;
 } & (
-		| {
-				type: "single";
-				value?: string;
-				defaultValue?: string;
-				onValueChange?(value: string): void;
-		  }
-		| {
-				type: "multiple";
-				value?: string[];
-				defaultValue?: string[];
-				onValueChange?(value: string[]): void;
-		  }
-	);
+    | {
+        type: "single";
+        value?: string;
+        defaultValue?: string;
+        onValueChange?(value: string): void;
+      }
+    | {
+        type: "multiple";
+        value?: string[];
+        defaultValue?: string[];
+        onValueChange?(value: string[]): void;
+      }
+  );
 
 export const ButtonGroup: FC<ButtonGroupProps> = ({
-	className,
-	variant,
-	size,
-	children,
-	...props
+  className,
+  variant,
+  size,
+  children,
+  ...props
 }) => {
-	return (
-		<ToggleGroupPrimitive.Root
-			className={cn("flex items-center justify-center", className)}
-			{...props}
-		>
-			<ButtonGroupContext.Provider value={{ variant, size }}>
-				{children}
-			</ButtonGroupContext.Provider>
-		</ToggleGroupPrimitive.Root>
-	);
+  return (
+    <ToggleGroupPrimitive.Root
+      className={cn("flex items-center justify-center", className)}
+      {...props}
+    >
+      <ButtonGroupContext.Provider value={{ variant, size }}>
+        {children}
+      </ButtonGroupContext.Provider>
+    </ToggleGroupPrimitive.Root>
+  );
 };
 
 export interface ToggleGroupItemProps
-	extends VariantProps<typeof buttonGroupVariants> {
-	value: string;
-	asChild?: boolean;
-	className?: string;
-	children: ReactNode;
+  extends VariantProps<typeof buttonGroupVariants> {
+  value: string;
+  asChild?: boolean;
+  className?: string;
+  children: ReactNode;
 }
 
 export const ButtonGroupItem: FC<ToggleGroupItemProps> = ({
-	className,
-	children,
-	variant,
-	size,
-	...props
+  className,
+  children,
+  variant,
+  size,
+  ...props
 }) => {
-	const context = useContext(ButtonGroupContext);
+  const context = useContext(ButtonGroupContext);
 
-	return (
-		<ToggleGroupPrimitive.Item
-			className={cn(
-				buttonVariants({
-					variant: context.variant || variant,
-					size: context.size || size,
-					className,
-				}),
-				"not-last:border-r-0 group rounded-none first:rounded-l-full last:rounded-r-full",
-				className,
-			)}
-			{...props}
-		>
-			<Check className="hidden group-data-[state=on]:inline" />
-			{children}
-		</ToggleGroupPrimitive.Item>
-	);
+  return (
+    <ToggleGroupPrimitive.Item
+      className={cn(
+        buttonVariants({
+          variant: context.variant || variant,
+          size: context.size || size,
+          className,
+        }),
+        "not-last:border-r-0 group rounded-none first:rounded-l-full last:rounded-r-full",
+        className,
+      )}
+      {...props}
+    >
+      <Check className="hidden group-data-[state=on]:inline" />
+      {children}
+    </ToggleGroupPrimitive.Item>
+  );
 };

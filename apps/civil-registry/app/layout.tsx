@@ -15,43 +15,43 @@ import { locales, type Locale } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
 
 export interface RootLayoutProps {
-	children?: ReactNode;
+  children?: ReactNode;
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-	const locale = (await getLocale()) as Locale;
-	const messages = await getMessages();
+  const locale = (await getLocale()) as Locale;
+  const messages = await getMessages();
 
-	return (
-		<html lang={locale} suppressHydrationWarning>
-			<body className="min-h-svh antialiased [--header-height:4.5rem] [--sidebar-width:15.5rem] md:[--header-height:5.5rem]">
-				<NextIntlClientProvider messages={messages}>
-					<Providers>
-						<Header
-							startDecorator={<Logo />}
-							endDecorator={
-								<>
-									<SidebarTrigger />
-									<LocaleSwitcher
-										defaultValue={locale}
-										items={locales}
-										onChange={setUserLocale}
-									/>
-								</>
-							}
-						>
-							hello
-						</Header>
+  return (
+    <html lang={locale} suppressHydrationWarning>
+      <body className="min-h-svh antialiased [--header-height:4.5rem] [--sidebar-width:15.5rem] md:[--header-height:5.5rem]">
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            <Header
+              startDecorator={<Logo />}
+              endDecorator={
+                <>
+                  <SidebarTrigger />
+                  <LocaleSwitcher
+                    defaultValue={locale}
+                    items={locales}
+                    onChange={setUserLocale}
+                  />
+                </>
+              }
+            >
+              hello
+            </Header>
 
-						<AppSidebar />
+            <AppSidebar />
 
-						<SidebarInset>
-							<SidebarTrigger className="md:hidden" />
-							{children}
-						</SidebarInset>
-					</Providers>
-				</NextIntlClientProvider>
-			</body>
-		</html>
-	);
+            <SidebarInset>
+              <SidebarTrigger className="md:hidden" />
+              {children}
+            </SidebarInset>
+          </Providers>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
 }
