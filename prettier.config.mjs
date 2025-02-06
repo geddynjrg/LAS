@@ -3,8 +3,6 @@
  *       import("@ianvs/prettier-plugin-sort-imports").PluginConfig}
  */
 const config = {
-	tabWidth: 4,
-	useTabs: true,
 	plugins: [
 		"@ianvs/prettier-plugin-sort-imports",
 		"prettier-plugin-tailwindcss",

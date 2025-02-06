@@ -19,6 +19,7 @@ export const decorators = [
 	withThemeByClassName({
 		themes: {
 			default: "default",
+			TVET: "tvet",
 			Uwezo: "uwezo",
 			"Civil registry": "civil-registry",
 		},

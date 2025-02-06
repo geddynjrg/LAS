@@ -16,50 +16,58 @@
 
 @theme {
 	--font-sans: "DM Sans", "sans-serif";
-
-	--color-site-background: hsl(0, 0%, 97%);
+	--radius: 0.5rem;
 
 	--color-background: hsl(0, 0%, 100%);
 	--color-foreground: hsl(240, 10%, 8%);
+	--color-site-background: hsl(0, 0%, 97%);
 
+	--color-border: hsl(0 0% 89.8%);
+	--color-input: hsl(0 0% 89.8%);
+	--color-ring: hsl(217 97% 45%);
+
+	/* primary */
 	--color-primary: hsl(0 0% 9%);
 	--color-primary-hover: hsl(0 0% 19%);
-	--color-primary-focus: hsl(0 0% 29%);
 	--color-primary-active: hsl(0 0% 39%);
 	--color-primary-foreground: hsl(0 0% 98%);
 
+	/* secondary */
 	--color-secondary: hsl(0 0% 96.1%);
-	--color-secondary-foreground: hsl(0 0% 9%);
 
+	/* muted */
 	--color-muted: hsl(0 0% 96.1%);
 	--color-muted-foreground: hsl(0 0% 45.1%);
 
-	--color-accent: var(--accent);
-	--color-accent-foreground: var(--accent-foreground);
-	--color-accent-active: var(--accent-active);
+	/* accent */
+	--color-accent: var(--color-neutral-200);
+	--color-accent-foreground: var(--color-neutral-700);
+	--color-accent-active: var(--color-neutral-300);
 
-	--color-destructive: var(--destructive);
-	--color-destructive-foreground: var(--destructive-foreground);
-	--color-destructive-hover: var(--destructive-hover);
-	--color-destructive-active: var(--destructive-active);
+	/* destructive */
+	--color-destructive: hsl(343, 70%, 45%);
+	--color-destructive-hover: hsl(343, 71%, 31%);
+	--color-destructive-active: hsl(342, 71%, 15%);
+	--color-destructive-foreground: hsl(0 0% 98%);
 
-	--color-border: var(--border);
-	--color-input: var(--input);
-	--color-ring: var(--ring);
-
+	/* radius */
 	--radius-lg: var(--radius);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-sm: calc(var(--radius) - 4px);
 
-	--color-card: var(--card);
-	--color-card-foreground: var(--card-foreground);
+	/* card */
+	--color-card: hsl(0 0% 100%);
+	--color-card-foreground: hsl(0 0% 3.9%);
 
-	--color-popover: var(--popover);
-	--color-popover-foreground: var(--popover-foreground);
+	/* popover */
+	--color-popover: hsl(0 0% 100%);
+	--color-popover-foreground: hsl(0 0% 3.9%);
 
+	/* header */
 	--color-header: hsl(0, 0%, 100%);
 	--color-header-foreground: blue;
 
+	/* sidebar */
 	--color-sidebar: var(--color-background);
 	--color-sidebar-foreground: var(--color-foreground);
 	--color-sidebar-accent: var(--color-secondary);
@@ -67,6 +75,7 @@
 	--color-sidebar-border: var(--color-border);
 	--color-sidebar-ring: var(--color-ring);
 
+	/* green */
 	--color-green-100: hsl(140, 48%, 94%);
 	--color-green-200: hsl(143, 49%, 75%);
 	--color-green-300: hsl(143, 79%, 38%);
@@ -74,6 +83,7 @@
 	--color-green-500: hsl(143, 78%, 19%);
 	--color-green-600: hsl(143, 79%, 11%);
 
+	/* yellow */
 	--color-yellow-100: hsl(43, 100%, 95%);
 	--color-yellow-200: hsl(41, 100%, 91%);
 	--color-yellow-300: hsl(41, 100%, 77%);
@@ -81,6 +91,7 @@
 	--color-yellow-500: hsl(41, 86%, 32%);
 	--color-yellow-600: hsl(41, 88%, 16%);
 
+	/* red */
 	--color-red-100: hsl(0, 100%, 97%);
 	--color-red-200: hsl(343, 71%, 85%);
 	--color-red-300: hsl(343, 71%, 65%);
@@ -88,6 +99,7 @@
 	--color-red-500: hsl(343, 71%, 31%);
 	--color-red-600: hsl(342, 71%, 15%);
 
+	/* blue */
 	--color-blue-100: hsl(218, 79%, 95%);
 	--color-blue-200: hsl(217, 81%, 84%);
 	--color-blue-300: hsl(218, 80%, 62%);
@@ -95,6 +107,7 @@
 	--color-blue-500: hsl(217, 98%, 32%);
 	--color-blue-600: hsl(218, 97%, 14%);
 
+	/* neutral */
 	--color-neutral-100: hsl(0, 0%, 100%);
 	--color-neutral-200: hsl(0, 0%, 97%);
 	--color-neutral-300: hsl(231, 10%, 86%);
@@ -106,6 +119,7 @@
 	--color-neutral-900: hsl(233, 11%, 14%);
 	--color-neutral-1000: hsl(240, 10%, 8%);
 
+	/* accordion */
 	--animate-accordion-down: accordion-down 0.2s ease-out;
 	--animate-accordion-up: accordion-up 0.2s ease-out;
 
@@ -129,35 +143,15 @@
 }
 
 @layer base {
-	:root {
-		--background: hsl(0, 0%, 97%);
-		--foreground: var(--color-neutral-1000);
-		--card: hsl(0 0% 100%);
-		--card-foreground: hsl(0 0% 3.9%);
-		--popover: hsl(0 0% 100%);
-		--popover-foreground: hsl(0 0% 3.9%);
+	.tvet {
+		--color-primary: hsla(119, 19%, 42%, 1);
+		--color-primary-hover: hsla(131, 22%, 29%, 1);
+		--color-primary-active: hsla(150, 20%, 16%, 1);
 
-		--accent: var(--color-neutral-200);
-		--accent-foreground: var(--color-neutral-700);
-		--accent-active: var(--color-neutral-300);
-		--destructive: hsl(343, 70%, 45%);
-		--destructive-hover: hsl(343, 71%, 31%);
-		--destructive-active: hsl(342, 71%, 15%);
-		--destructive-foreground: hsl(0 0% 98%);
-		--border: hsl(0 0% 89.8%);
-		--input: hsl(0 0% 89.8%);
-		--ring: hsl(217 97% 45%);
-		--radius: 0.5rem;
+		--color-secondary: hsla(119, 19%, 42%, 1);
 	}
 
 	.uwezo {
-		--color-theme-100: hsl(310, 51%, 89%);
-		--color-theme-200: hsl(309, 50%, 77%);
-		--color-theme-300: hsl(310, 50%, 61%);
-		--color-theme-400: hsl(310, 63%, 44%);
-		--color-theme-500: hsl(310, 63%, 31%);
-		--color-theme-600: hsl(309, 64%, 17%);
-
 		--color-primary: hsl(310, 63%, 44%);
 		--color-primary-hover: hsl(310, 63%, 31%);
 		--color-primary-active: hsl(309, 64%, 17%);
@@ -166,13 +160,6 @@
 	}
 
 	.civil-registry {
-		--color-theme-100: hsl(180, 16%, 92%);
-		--color-theme-200: hsl(183, 17%, 75%);
-		--color-theme-300: hsl(183, 17%, 49%);
-		--color-theme-400: hsl(183, 95%, 15%);
-		--color-theme-500: hsl(184, 96%, 10%);
-		--color-theme-600: hsl(150, 20%, 16%);
-
 		--color-primary: hsl(142, 78%, 31%);
 		--color-primary-hover: hsl(143, 78%, 19%);
 		--color-primary-active: hsl(143, 79%, 11%);
