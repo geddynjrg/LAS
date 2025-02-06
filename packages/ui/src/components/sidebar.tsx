@@ -2,7 +2,7 @@
 
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "cva-extended";
-import { Menu, PanelLeft } from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   createContext,
   useCallback,

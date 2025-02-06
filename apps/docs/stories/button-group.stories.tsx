@@ -54,7 +54,6 @@ export const Primary = {} satisfies Story;
 
 export const Controlled = {
   render: ({ defaultValue: _defaultValue, ...props }) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [{ value }, setArgs] = useArgs<typeof props>();
 
     return (
