@@ -1,6 +1,8 @@
 import Image from "next/image";
 import type { FC, ReactNode } from "react";
 
+import { Heading } from "@/components/heading";
+
 export interface HeroSectionProps {
   title: ReactNode;
   backgroundUrl: string;
@@ -20,12 +22,8 @@ export const HeroSection: FC<HeroSectionProps> = ({
         <Image fill src={backgroundUrl} alt={backgroundAlt} objectFit="cover" />
       </div>
 
-      <div className="bg-primary text-primary-foreground relative rounded-tr-xl px-4 pb-4 text-lg [&_strong]:font-bold">
-        <h1 className="leading-13 -my-13 -translate-y-12 overflow-hidden text-[2.75rem]">
-          <span className="after:ml-4 after:mr-[-100%] after:inline-block after:h-[0.5em] after:w-full after:border-t-2 after:border-inherit after:align-bottom after:content-['']">
-            {title}
-          </span>
-        </h1>
+      <div className="bg-primary text-primary-foreground relative -mt-4 rounded-tr-xl px-4 pb-4 text-lg">
+        <Heading className="-mb-11 -translate-y-11">{title}</Heading>
         <div className="mt-4">{children}</div>
       </div>
     </div>
