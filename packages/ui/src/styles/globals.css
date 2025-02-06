@@ -158,11 +158,11 @@
 		--color-theme-500: hsl(310, 63%, 31%);
 		--color-theme-600: hsl(309, 64%, 17%);
 
-		--primary: hsl(310, 63%, 44%);
-		--primary-hover: hsl(310, 63%, 31%);
-		--primary-active: hsl(309, 64%, 17%);
+		--color-primary: hsl(310, 63%, 44%);
+		--color-primary-hover: hsl(310, 63%, 31%);
+		--color-primary-active: hsl(309, 64%, 17%);
 
-		--secondary: hsl(309, 50%, 77%);
+		--color-secondary: hsl(309, 50%, 77%);
 	}
 
 	.civil-registry {
@@ -173,11 +173,11 @@
 		--color-theme-500: hsl(184, 96%, 10%);
 		--color-theme-600: hsl(150, 20%, 16%);
 
-		--primary: hsl(142, 78%, 31%);
-		--primary-hover: hsl(143, 78%, 19%);
-		--primary-active: hsl(143, 79%, 11%);
+		--color-primary: hsl(142, 78%, 31%);
+		--color-primary-hover: hsl(143, 78%, 19%);
+		--color-primary-active: hsl(143, 79%, 11%);
 
-		--secondary: hsl(143, 49%, 75%);
+		--color-secondary: hsl(143, 49%, 75%);
 	}
 }
 
