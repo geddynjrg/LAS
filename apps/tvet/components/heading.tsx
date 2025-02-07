@@ -11,7 +11,7 @@ export const Heading: FC<HeadingProps> = ({ className, children }) => {
   return (
     <h1
       className={cn(
-        "overflow-hidden text-[2.75rem] font-bold leading-none",
+        "overflow-hidden text-[2.75rem] font-bold leading-tight",
         className,
       )}
     >

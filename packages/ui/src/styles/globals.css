@@ -121,6 +121,9 @@
   --color-neutral-900: hsl(233, 11%, 14%);
   --color-neutral-1000: hsl(240, 10%, 8%);
 
+  /* theme */
+  --color-theme-100: hsl(0, 0%, 80%);
+
   /* accordion */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -146,11 +149,13 @@
 
 @layer base {
   .tvet {
-    --color-primary: hsla(119, 19%, 42%, 1);
-    --color-primary-hover: hsla(131, 22%, 29%, 1);
-    --color-primary-active: hsla(150, 20%, 16%, 1);
+    --color-primary: hsl(119, 19%, 42%);
+    --color-primary-hover: hsl(131, 22%, 29%);
+    --color-primary-active: hsl(150, 20%, 16%);
 
-    --color-secondary: hsla(119, 19%, 42%, 1);
+    --color-secondary: hsl(119, 19%, 42%);
+
+    --color-theme-100: hsl(46, 15%, 83%);
   }
 
   .uwezo {
