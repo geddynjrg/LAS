@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC } from "react";
 
@@ -15,14 +16,16 @@ export interface AppHeaderProps {
 }
 
 export const AppHeader: FC<AppHeaderProps> = ({ locale }) => {
+  const t = useTranslations("Common");
+
   return (
     <Header
-      isFloating
+      isFloating="mobile-only"
       startDecorator={<Logo />}
       endDecorator={
         <>
           <FlagSelect
-            className="invisible md:visible"
+            className="max-md:hidden"
             defaultValue={locale}
             options={locales.map((locale) => ({
               value: locale.value,
@@ -31,13 +34,11 @@ export const AppHeader: FC<AppHeaderProps> = ({ locale }) => {
             onChange={setUserLocale}
           />
           <Button asChild>
-            <Link href="/apply">Apply</Link>
+            <Link href="/apply">{t("apply")}</Link>
           </Button>
-          <SidebarTrigger>Menu</SidebarTrigger>
+          <SidebarTrigger className="md:hidden">{t("menu")}</SidebarTrigger>
         </>
       }
-    >
-      hello
-    </Header>
+    />
   );
 };

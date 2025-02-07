@@ -20,8 +20,14 @@ export const HeroSection: FC<HeroSectionProps> = ({
 }) => {
   return (
     <section>
-      <div className="relative aspect-[2/3] sm:aspect-[16/9] md:max-h-96 md:w-full">
-        <Image fill src={backgroundUrl} alt={backgroundAlt} objectFit="cover" />
+      <div className="mx relative aspect-[4/5] sm:aspect-[16/9] md:max-h-96 md:w-full">
+        <Image
+          fill
+          priority
+          className="object-cover"
+          src={backgroundUrl}
+          alt={backgroundAlt}
+        />
       </div>
 
       <div className="bg-primary text-primary-foreground relative -mt-4 rounded-tr-xl px-4 pb-4 text-lg">

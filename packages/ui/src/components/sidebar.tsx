@@ -15,7 +15,11 @@ import {
 } from "react";
 
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
-import { Sheet, SheetContent } from "@workspace/ui/components/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from "@workspace/ui/components/sheet";
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -59,18 +63,27 @@ const SidebarProvider: FC<SidebarProviderProps> = ({ children }) => {
 };
 
 interface SidebarProps {
+  title: string;
   ref?: RefObject<HTMLDivElement>;
   className?: string;
   children?: ReactNode;
 }
 
-const Sidebar: FC<SidebarProps> = ({ ref, className, children, ...props }) => {
+const Sidebar: FC<SidebarProps> = ({
+  title,
+  ref,
+  className,
+  children,
+  ...props
+}) => {
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
 
   if (isMobile) {
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <SheetTitle className="sr-only">{title}</SheetTitle>
         <SheetContent
+          aria-describedby={undefined}
           data-sidebar="sidebar"
           data-mobile="true"
           className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) top-0 p-0 [&>button]:hidden"
@@ -97,13 +110,12 @@ const Sidebar: FC<SidebarProps> = ({ ref, className, children, ...props }) => {
   );
 };
 
-interface SidebarTriggerProps extends ButtonProps {
-  className?: string;
-}
+type SidebarTriggerProps = ButtonProps;
 
 const SidebarTrigger: FC<SidebarTriggerProps> = ({
   className,
   onClick,
+  children,
   ...props
 }) => {
   const { toggleSidebar } = useSidebar();
@@ -111,8 +123,11 @@ const SidebarTrigger: FC<SidebarTriggerProps> = ({
   return (
     <Button
       data-sidebar="trigger"
-      variant="ghost"
-      className={cn("h-7 w-7 p-0", className)}
+      variant="neutral"
+      className={cn(
+        "h-13 hover:bg-header focus-visible:bg-header w-13 flex flex-col gap-0 rounded-none p-0 [&_svg]:h-5 [&_svg]:w-5",
+        className,
+      )}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -120,7 +135,7 @@ const SidebarTrigger: FC<SidebarTriggerProps> = ({
       {...props}
     >
       <Menu />
-      <span className="sr-only">Toggle Menu</span>
+      {children && <span className="text-xs font-normal">{children}</span>}
     </Button>
   );
 };

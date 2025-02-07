@@ -25,9 +25,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <AppHeader locale={locale} />
-
             <AppSidebar />
-
             <SidebarInset>{children}</SidebarInset>
           </Providers>
         </NextIntlClientProvider>

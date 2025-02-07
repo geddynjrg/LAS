@@ -27,9 +27,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary = {} satisfies Story;
 
-export const Floating = {
+export const FloatingInMobile = {
   args: {
-    isFloating: true,
+    isFloating: "mobile-only",
   },
   render: (args) => (
     <>
@@ -41,24 +41,30 @@ export const Floating = {
         height={400}
         className="mx-auto"
       />
-      <p className="mt-4 p-4">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
-        odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla
-        quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent
-        mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Lorem
-        ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
-        Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem
-        at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce
-        nec tellus sed augue semper porta. Mauris massa. Mauris massa. Lorem
-        ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
-        Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem
-        at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce
-        nec tellus sed augue semper porta. Mauris massa. Mauris massa. Lorem
-        ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
-        Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem
-        at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce
-        nec tellus sed augue semper porta. Mauris massa.
-      </p>
+      <div className="p-4">
+        <p className="mt-4">
+          Resize the screen to see Header component change.
+        </p>
+        <p className="mt-4">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
+          odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla
+          quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent
+          mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Lorem
+          ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
+          Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis
+          sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris.
+          Fusce nec tellus sed augue semper porta. Mauris massa. Mauris massa.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec
+          odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla
+          quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent
+          mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Mauris
+          massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed
+          nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum.
+          Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris
+          massa.
+        </p>
+      </div>
     </>
   ),
 } satisfies Story;

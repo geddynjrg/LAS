@@ -1,7 +1,9 @@
 "use client";
 
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
+import type { FC } from "react";
 
 import {
   Sidebar,
@@ -59,9 +61,11 @@ const items = [
   },
 ];
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+export const AppSidebar: FC = () => {
+  const t = useTranslations("Common");
+
   return (
-    <Sidebar {...props}>
+    <Sidebar title={t("menu")}>
       <SidebarHeader>Team switch</SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
@@ -92,4 +96,4 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>nav user</SidebarFooter>
     </Sidebar>
   );
-}
+};

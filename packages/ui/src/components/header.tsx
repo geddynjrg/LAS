@@ -5,7 +5,7 @@ import { cn } from "@workspace/ui/lib/utils";
 export interface HeaderProps {
   startDecorator?: ReactNode;
   endDecorator?: ReactNode;
-  isFloating?: boolean;
+  isFloating?: boolean | "mobile-only";
   children?: ReactNode;
 }
 
@@ -19,9 +19,12 @@ export const Header: FC<HeaderProps> = ({
     <header
       className={cn(
         "h-(--header-height) top-0 z-10 flex w-full items-center px-4 shadow-md",
-        isFloating
+        isFloating === true
           ? "bg-header-foreground/50 text-header fixed backdrop-blur-sm"
           : "bg-header text-header-foreground sticky",
+
+        isFloating === "mobile-only" &&
+          "max-md:bg-header-foreground/50 max-md:text-header max-md:fixed max-md:backdrop-blur-sm",
       )}
     >
       <div className="h-[80%] [&>*]:h-full">{startDecorator}</div>
@@ -30,7 +33,7 @@ export const Header: FC<HeaderProps> = ({
         {children}
       </div>
 
-      <div className="flex flex-row items-center justify-center">
+      <div className="flex flex-row items-center justify-center gap-4">
         {endDecorator}
       </div>
     </header>

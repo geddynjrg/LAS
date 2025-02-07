@@ -1,4 +1,9 @@
 {
+  "Common": {
+    "menu": "Menu",
+    "apply": "Apply"
+  },
+
   "FrontPage": {
     "title": "<light>Where did i get</light> so skilled?",
     "description": " At TVETs we put focus on practical skills - up to 90% of training is through practice. Programs are designed around occupational standards, curriculas are developed with strong integration with businesses."
