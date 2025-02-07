@@ -1,5 +1,3 @@
-"use client";
-
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -66,7 +64,7 @@ export const AppSidebar: FC = () => {
 
   return (
     <Sidebar title={t("menu")}>
-      <SidebarHeader>Team switch</SidebarHeader>
+      <SidebarHeader>Language select</SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           {items.map((item) => (

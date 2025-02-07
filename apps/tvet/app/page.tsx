@@ -16,14 +16,14 @@ export default function Page() {
           light: (chunks) => <span className="block font-light">{chunks}</span>,
         })}
         backgroundUrl="/hero-banners/banner-1.jpg"
-        backgroundAlt="A person working on a computer"
+        backgroundAlt={t("imageDescription")}
         actions={
           <>
             <Button variant="secondary">
               Learn more <ChevronDown />
             </Button>
             <Button>
-              Apply now <FileCheck2 />
+              Apply now <FileCheck2 className="size-5" />
             </Button>
           </>
         }

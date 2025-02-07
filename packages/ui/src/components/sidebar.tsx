@@ -2,7 +2,7 @@
 
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "cva-extended";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {
   createContext,
   useCallback,
@@ -17,6 +17,7 @@ import {
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetTitle,
 } from "@workspace/ui/components/sheet";
@@ -89,7 +90,21 @@ const Sidebar: FC<SidebarProps> = ({
           className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) top-0 p-0 [&>button]:hidden"
           side="right"
         >
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex h-full w-full flex-col">
+            <div className="border-sidebar-foreground flex justify-end border-b px-1 py-2">
+              <SheetClose asChild>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="rounded-none px-1 py-2 font-normal [&_svg]:size-6"
+                >
+                  Close menu <X />
+                </Button>
+              </SheetClose>
+            </div>
+
+            {children}
+          </div>
         </SheetContent>
       </Sheet>
     );
@@ -125,7 +140,7 @@ const SidebarTrigger: FC<SidebarTriggerProps> = ({
       data-sidebar="trigger"
       variant="neutral"
       className={cn(
-        "h-13 hover:bg-header focus-visible:bg-header w-13 flex flex-col gap-0 rounded-none p-0 [&_svg]:h-5 [&_svg]:w-5",
+        "h-13 hover:bg-header focus-visible:bg-header w-13 flex flex-col gap-0 rounded-none p-0",
         className,
       )}
       onClick={(event) => {

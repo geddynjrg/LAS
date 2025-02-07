@@ -64,6 +64,9 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
+  args: {
+    title: "Sidebar title for screen readers",
+  },
   decorators: [
     (Story) => (
       <div className="min-h-80 [--sidebar-width:15.5rem]">
@@ -81,7 +84,7 @@ export const Primary = {
   render: (props) => (
     <>
       <Sidebar {...props}>
-        <SidebarHeader>Team switch</SidebarHeader>
+        <SidebarHeader>Sidebar header</SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
             {items.map((item) => (
@@ -108,7 +111,7 @@ export const Primary = {
             ))}
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>nav user</SidebarFooter>
+        <SidebarFooter>Sidebar footer</SidebarFooter>
       </Sidebar>
       <SidebarTrigger className="visible md:hidden" />
     </>

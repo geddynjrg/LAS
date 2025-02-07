@@ -3,12 +3,12 @@ import { cva, type VariantProps } from "cva-extended";
 import { X } from "lucide-react";
 import type { CSSProperties, FC, ReactNode } from "react";
 
+import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const Sheet = SheetPrimitive.Root;
 export const SheetTrigger = SheetPrimitive.Trigger;
 export const SheetClose = SheetPrimitive.Close;
-export const SheetPortal = SheetPrimitive.Portal;
 
 export interface SheetOverlayProps {
   className?: string;
@@ -57,19 +57,28 @@ export const SheetContent: FC<SheetContentProps> = ({
   children,
   ...props
 }) => (
-  <SheetPortal>
+  <SheetPrimitive.Portal>
     <SheetOverlay />
     <SheetPrimitive.Content
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
+      {/* <SheetPrimitive.Close
+        className={cn(
+          "ring-offset-background focus:ring-ring hover:bg-accent flex cursor-pointer items-center gap-2 p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none",
+          className,
+        )}
+      >
+        <X className="h-5 w-5" />
+      </SheetPrimitive.Close> */}
+      <SheetPrimitive.Close asChild>
+        <Button variant="ghost" className="absolute right-2 top-2">
+          <X className="size-6" />
+        </Button>
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>
-  </SheetPortal>
+  </SheetPrimitive.Portal>
 );
 
 export interface SheetHeaderProps {
