@@ -18,17 +18,16 @@ export const Header: FC<HeaderProps> = ({
   return (
     <header
       className={cn(
-        "text-header-foreground h-(--header-height) top-0 z-10 flex w-full items-center px-4 shadow-md",
+        "h-(--header-height) top-0 z-10 flex w-full items-center px-4 shadow-md",
         isFloating
-          ? "bg-foreground/50 fixed backdrop-blur-sm"
-          : "bg-header sticky",
+          ? "bg-header-foreground/50 text-header fixed backdrop-blur-sm"
+          : "bg-header text-header-foreground sticky",
       )}
     >
       <div className="h-[80%] [&>*]:h-full">{startDecorator}</div>
 
       <div className="flex flex-1 flex-row items-center justify-center">
         {children}
-        {/* <SearchForm className="w-full sm:ml-auto sm:w-auto" /> */}
       </div>
 
       <div className="flex flex-row items-center justify-center">

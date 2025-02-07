@@ -4,8 +4,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
 
+import { FlagSelect } from "@workspace/ui/components/flag-select";
 import { Header } from "@workspace/ui/components/header";
-import { LocaleSwitcher } from "@workspace/ui/components/locale-switcher";
 import { SidebarInset, SidebarTrigger } from "@workspace/ui/components/sidebar";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -32,9 +32,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               endDecorator={
                 <>
                   <SidebarTrigger />
-                  <LocaleSwitcher
+                  <FlagSelect
                     defaultValue={locale}
-                    items={locales}
+                    options={locales}
                     onChange={setUserLocale}
                   />
                 </>

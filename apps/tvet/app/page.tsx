@@ -2,6 +2,7 @@ import { ChevronDown, FileCheck2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@workspace/ui/components/button";
+import { Flag } from "@workspace/ui/components/flag";
 
 import { HeroSection } from "@/components/hero-section";
 
@@ -35,6 +36,8 @@ export default function Page() {
       <Button size="sm" variant="danger">
         Button 2
       </Button>
+
+      <Flag code="NL" />
     </div>
   );
 }

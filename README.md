@@ -39,7 +39,7 @@ pnpm run dev
 ## Adding libraries to specific packages
 
 ```bash
-pnpm --filter uwezo add axios
+pnpm --filter ui add @radix-ui/react-popover
 ```
 
 ## Adding ChadCN UI components
@@ -47,7 +47,7 @@ pnpm --filter uwezo add axios
 To add components to your app, run the following command at the root of the project:
 
 ```bash
-pnpm dlx shadcn@canary add button -c apps/uwezo
+pnpm dlx shadcn@canary add button -c packages/ui
 ```
 
 This will place the ui components in the `packages/ui/src/components` directory.

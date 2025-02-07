@@ -22,7 +22,7 @@ export const selectVariants = cva({
 });
 
 export interface SelectOption<T extends string> {
-  label: string;
+  label: ReactNode;
   value: T;
 }
 
@@ -32,22 +32,19 @@ export interface SelectProps<T extends string>
   className?: string;
   options?: SelectOption<T>[] | readonly SelectOption<T>[];
   defaultValue?: T;
+  disabled?: boolean;
   onValueChange?: (value: T) => void;
 }
 
 export const Select = <T extends string>({
   options,
-  defaultValue,
-  onValueChange,
   placeholder,
   className,
   size,
+  ...props
 }: SelectProps<T>) => {
   return (
-    <SelectPrimitive.Root
-      defaultValue={defaultValue}
-      onValueChange={onValueChange}
-    >
+    <SelectPrimitive.Root {...props}>
       <SelectTrigger size={size} className={className}>
         <SelectPrimitive.Value placeholder={placeholder} />
       </SelectTrigger>

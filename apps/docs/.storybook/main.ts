@@ -13,6 +13,8 @@ export default {
     options: {},
   },
 
+  staticDirs: ["../public"],
+
   core: {
     disableTelemetry: true,
   },

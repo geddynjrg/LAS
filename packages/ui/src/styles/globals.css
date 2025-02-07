@@ -58,16 +58,16 @@
   --radius-sm: calc(var(--radius) - 4px);
 
   /* card */
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(0 0% 3.9%);
+  --color-card: var(--color-background);
+  --color-card-foreground: var(--color-foreground);
 
   /* popover */
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(0 0% 3.9%);
+  --color-popover: var(--color-background);
+  --color-popover-foreground: var(--color-foreground);
 
   /* header */
-  --color-header: hsl(0, 0%, 100%);
-  --color-header-foreground: blue;
+  --color-header: var(--color-background);
+  --color-header-foreground: var(--color-foreground);
 
   /* sidebar */
   --color-sidebar: var(--color-background);
