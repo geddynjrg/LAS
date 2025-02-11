@@ -167,6 +167,8 @@
 
     --color-theme-100: hsl(46, 15%, 83%);
 
+    --color-neutral-500: hsl(229, 7%, 56%);
+
     /* stepper */
     --color-stepper: hsl(46, 15%, 83%);
     --color-stepper-foreground: hsl(150, 20%, 16%);
@@ -188,6 +190,8 @@
 
     --color-secondary: hsl(309, 50%, 77%);
 
+    --color-neutral-500: hsl(229, 7%, 56%);
+
     /* stepper */
     --color-stepper: hsl(310 51% 89%);
     --color-stepper-foreground: hsl(309 64% 17%);
@@ -208,6 +212,8 @@
     --color-primary-active: hsl(143, 79%, 11%);
 
     --color-secondary: hsl(143, 49%, 75%);
+
+    --color-neutral-500: hsl(229, 7%, 56%);
 
     /* stepper */
     --color-stepper: hsl(180, 16%, 92%);
