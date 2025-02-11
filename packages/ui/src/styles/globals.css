@@ -65,6 +65,16 @@
   --color-popover: var(--color-background);
   --color-popover-foreground: var(--color-foreground);
 
+  /* stepper */
+  --color-stepper: hsl(0 0% 0%);
+  --color-stepper-foreground: hsl(0 0% 3.9%);
+  --color-stepper-hover: hsl(0 0% 100%);
+  --color-stepper-hover-foreground: hsl(0 0% 3.9%);
+  --color-stepper-active: hsl(0 0% 100%);
+  --color-stepper-active-foreground: hsl(0 0% 3.9%);
+  --color-stepper-focus: hsl(0 0% 100%);
+  --color-stepper-focus-foreground: hsl(0 0% 3.9%);
+
   /* header */
   --color-header: var(--color-background);
   --color-header-foreground: var(--color-foreground);
@@ -156,6 +166,19 @@
     --color-secondary: hsl(119, 19%, 42%);
 
     --color-theme-100: hsl(46, 15%, 83%);
+
+    /* stepper */
+    --color-stepper: hsl(46, 15%, 83%);
+    --color-stepper-foreground: hsl(150, 20%, 16%);
+
+    --color-stepper-hover: hsl(82, 20%, 62%);
+    --color-stepper-hover-foreground: hsl(150, 20%, 16%);
+
+    --color-stepper-active: hsl(120, 14%, 54%);
+    --color-stepper-active-foreground: hsl(0, 0%, 100%);
+
+    --color-stepper-focus: hsl(46, 15%, 83%);
+    --color-stepper-focus-foreground: hsl(150, 20%, 16%);
   }
 
   .uwezo {
@@ -164,6 +187,19 @@
     --color-primary-active: hsl(309, 64%, 17%);
 
     --color-secondary: hsl(309, 50%, 77%);
+
+    /* stepper */
+    --color-stepper: hsl(310 51% 89%);
+    --color-stepper-foreground: hsl(309 64% 17%);
+
+    --color-stepper-hover: hsl(309 50% 77%);
+    --color-stepper-hover-foreground: hsl(309 64% 17%);
+
+    --color-stepper-active: hsl(310, 50%, 61%);
+    --color-stepper-active-foreground: hsl(0, 0%, 100%);
+
+    --color-stepper-focus: hsl(310, 51%, 89%);
+    --color-stepper-focus-foreground: hsl(309, 64%, 17%);
   }
 
   .civil-registry {
@@ -172,6 +208,19 @@
     --color-primary-active: hsl(143, 79%, 11%);
 
     --color-secondary: hsl(143, 49%, 75%);
+
+    /* stepper */
+    --color-stepper: hsl(180, 16%, 92%);
+    --color-stepper-foreground: hsl(184, 94%, 6%);
+
+    --color-stepper-hover: hsl(183, 17%, 75%);
+    --color-stepper-hover-foreground: hsl(184, 94%, 6%);
+
+    --color-stepper-active: hsl(183, 17%, 49%);
+    --color-stepper-active-foreground: hsl(0, 0%, 100%);
+
+    --color-stepper-focus: hsl(180, 16%, 93%);
+    --color-stepper-focus-foreground: hsl(184, 94%, 6%);
   }
 }
 
@@ -181,5 +230,19 @@
   }
   .animate-accordion-up {
     animation: accordion-up 0.2s ease-out;
+  }
+
+  .clip-arrow-right {
+    clip-path: polygon(
+      0% 0,
+      calc(100% - 1rem) 0,
+      100% 50%,
+      calc(100% - 1rem) 100%,
+      0 100%
+    );
+  }
+
+  .scrollbar-width-none {
+    scrollbar-width: none;
   }
 }
