@@ -1,7 +1,4 @@
-"use client";
-
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
-import Link from "next/link";
+import { Home } from "lucide-react";
 
 import {
   Sidebar,
@@ -9,84 +6,49 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  SidebarSubmenu,
 } from "@workspace/ui/components/sidebar";
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    children: [
-      {
-        title: "Profile",
-        url: "#",
-      },
-      {
-        title: "Account",
-        url: "#",
-      },
-      {
-        title: "Notifications",
-        url: "#",
-      },
-    ],
-  },
-];
+import { NavLink } from "./nav-link";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
-      <SidebarHeader>Team switch</SidebarHeader>
+      <SidebarHeader>Language select</SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild variant="outline">
-                <Link href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+          <SidebarMenuItem asChild>
+            <NavLink href="/">
+              <Home />
+              Front page
+            </NavLink>
+          </SidebarMenuItem>
 
-              {item.children && (
-                <SidebarMenuSub>
-                  {item.children.map((child) => (
-                    <SidebarMenuSubItem key={child.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={child.url}>{child.title}</a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              )}
+          <SidebarSubmenu title="Institutions">
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/1">institution 1</NavLink>
             </SidebarMenuItem>
-          ))}
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/2">institution 2</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/3">institution 3</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/4">institution 4</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/5">institution 5</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/6">institution 6</NavLink>
+            </SidebarMenuItem>
+          </SidebarSubmenu>
+
+          <SidebarMenuItem asChild>
+            <NavLink href="/courses">Courses</NavLink>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>nav user</SidebarFooter>

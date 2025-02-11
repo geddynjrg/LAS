@@ -11,13 +11,13 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 
 export const buttonVariants = cva({
-  base: "ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-bold transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:text-neutral-400 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  base: "ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-transparent text-sm font-bold transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:text-neutral-400 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   variants: {
     variant: {
       default:
         "text-primary-foreground bg-primary hover:bg-primary-hover active:bg-primary-active focus-visible:bg-primary-hover data-[state=on]:bg-primary-active disabled:bg-neutral-200",
       secondary:
-        "border-secondary text-foreground hover:bg-secondary/20 active:bg-secondary focus-visible:bg-secondary/20 focus-visible:border-secondary/20 data-[state=on]:bg-secondary border disabled:border-neutral-400",
+        "border-secondary text-foreground hover:bg-secondary/20 active:bg-secondary focus-visible:bg-secondary/20 focus-visible:border-secondary/20 data-[state=on]:bg-secondary disabled:border-neutral-400",
       danger:
         "bg-destructive text-destructive-foreground hover:bg-destructive-hover active:bg-destructive-active data-[state=on]:bg-destructive-active focus-visible:bg-destructive-hover disabled:bg-neutral-200",
       neutral:

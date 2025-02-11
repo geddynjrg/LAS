@@ -7,57 +7,11 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarProvider,
+  SidebarSubmenu,
   SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
-
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    children: [
-      {
-        title: "Profile",
-        url: "#",
-      },
-      {
-        title: "Account",
-        url: "#",
-      },
-      {
-        title: "Notifications",
-        url: "#",
-      },
-    ],
-  },
-];
 
 const meta = {
   component: Sidebar,
@@ -87,28 +41,28 @@ export const Primary = {
         <SidebarHeader>Sidebar header</SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            {items.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
+            <SidebarMenuItem>
+              <Home />
+              Home
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Inbox />
+              Inbox
+            </SidebarMenuItem>
 
-                {item.children && (
-                  <SidebarMenuSub>
-                    {item.children.map((child) => (
-                      <SidebarMenuSubItem key={child.title}>
-                        <SidebarMenuSubButton asChild>
-                          <a href={child.url}>{child.title}</a>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                )}
-              </SidebarMenuItem>
-            ))}
+            <SidebarMenuItem>
+              <Calendar />
+              Calendar
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Search />
+              Search
+            </SidebarMenuItem>
+            <SidebarSubmenu title="Settings" icon={<Settings />}>
+              <SidebarMenuItem>Profile</SidebarMenuItem>
+              <SidebarMenuItem>Account</SidebarMenuItem>
+              <SidebarMenuItem>Notifications</SidebarMenuItem>
+            </SidebarSubmenu>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>Sidebar footer</SidebarFooter>

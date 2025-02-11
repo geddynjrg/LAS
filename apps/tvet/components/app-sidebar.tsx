@@ -1,6 +1,12 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Building,
+  ClipboardList,
+  FileCheck2,
+  Home,
+  LibraryBig,
+  Phone,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import type { FC } from "react";
 
 import {
@@ -9,86 +15,75 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  SidebarSubmenu,
 } from "@workspace/ui/components/sidebar";
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    children: [
-      {
-        title: "Profile",
-        url: "#",
-      },
-      {
-        title: "Account",
-        url: "#",
-      },
-      {
-        title: "Notifications",
-        url: "#",
-      },
-    ],
-  },
-];
+import { NavLink } from "@/components/nav-link";
 
 export const AppSidebar: FC = () => {
   const t = useTranslations("Common");
 
   return (
-    <Sidebar title={t("menu")}>
-      <SidebarHeader>Language select</SidebarHeader>
+    <Sidebar title={t("menu")} closeTitle={t("closeMenu")}>
+      <SidebarHeader className="md:hidden">Language select</SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild variant="outline">
-                <Link href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+          <SidebarMenuItem asChild>
+            <NavLink href="/">
+              <Home />
+              Front page
+            </NavLink>
+          </SidebarMenuItem>
 
-              {item.children && (
-                <SidebarMenuSub>
-                  {item.children.map((child) => (
-                    <SidebarMenuSubItem key={child.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={child.url}>{child.title}</a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              )}
+          <SidebarSubmenu title="Institutions" icon={<Building />}>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/1">institution 1</NavLink>
             </SidebarMenuItem>
-          ))}
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/2">institution 2</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/3">institution 3</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/4">institution 4</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/5">institution 5</NavLink>
+            </SidebarMenuItem>
+            <SidebarMenuItem asChild>
+              <NavLink href="/institution/6">institution 6</NavLink>
+            </SidebarMenuItem>
+          </SidebarSubmenu>
+
+          <SidebarMenuItem asChild>
+            <NavLink href="/courses">
+              <LibraryBig />
+              Courses
+            </NavLink>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem asChild>
+            <NavLink href="/sponsorships">
+              <ClipboardList />
+              Sopnsorships
+            </NavLink>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem asChild>
+            <NavLink href="/apply">
+              <FileCheck2 />
+              Apply now
+            </NavLink>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem asChild>
+            <NavLink href="/sponsorships">
+              <Phone />
+              Contact
+            </NavLink>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>nav user</SidebarFooter>

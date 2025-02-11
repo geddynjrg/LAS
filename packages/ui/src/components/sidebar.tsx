@@ -1,13 +1,19 @@
 "use client";
 
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@radix-ui/react-collapsible";
 import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "cva-extended";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import {
   createContext,
   useCallback,
   useContext,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   type FC,
   type ReactNode,
@@ -37,7 +43,7 @@ interface SidebarProviderProps {
   children: ReactNode;
 }
 
-const SidebarProvider: FC<SidebarProviderProps> = ({ children }) => {
+export const SidebarProvider: FC<SidebarProviderProps> = ({ children }) => {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = useState(false);
 
@@ -63,15 +69,17 @@ const SidebarProvider: FC<SidebarProviderProps> = ({ children }) => {
   );
 };
 
-interface SidebarProps {
+export interface SidebarProps {
   title: string;
+  closeTitle?: string;
   ref?: RefObject<HTMLDivElement>;
   className?: string;
   children?: ReactNode;
 }
 
-const Sidebar: FC<SidebarProps> = ({
+export const Sidebar: FC<SidebarProps> = ({
   title,
+  closeTitle,
   ref,
   className,
   children,
@@ -91,14 +99,14 @@ const Sidebar: FC<SidebarProps> = ({
           side="right"
         >
           <div className="flex h-full w-full flex-col">
-            <div className="border-sidebar-foreground flex justify-end border-b px-1 py-2">
+            <div className="border-sidebar-foreground flex min-h-12 justify-end border-b px-1 py-2">
               <SheetClose asChild>
                 <Button
                   size="sm"
                   variant="ghost"
                   className="rounded-none px-1 py-2 font-normal [&_svg]:size-6"
                 >
-                  Close menu <X />
+                  {closeTitle} <X />
                 </Button>
               </SheetClose>
             </div>
@@ -125,9 +133,7 @@ const Sidebar: FC<SidebarProps> = ({
   );
 };
 
-type SidebarTriggerProps = ButtonProps;
-
-const SidebarTrigger: FC<SidebarTriggerProps> = ({
+export const SidebarTrigger: FC<ButtonProps> = ({
   className,
   onClick,
   children,
@@ -155,13 +161,16 @@ const SidebarTrigger: FC<SidebarTriggerProps> = ({
   );
 };
 
-interface SidebarInsetProps {
+export interface SidebarInsetProps {
   ref?: RefObject<HTMLElement>;
   className?: string;
   children?: ReactNode;
 }
 
-const SidebarInset: FC<SidebarInsetProps> = ({ className, ...props }) => {
+export const SidebarInset: FC<SidebarInsetProps> = ({
+  className,
+  ...props
+}) => {
   return (
     <main
       className={cn(
@@ -173,13 +182,16 @@ const SidebarInset: FC<SidebarInsetProps> = ({ className, ...props }) => {
   );
 };
 
-interface SidebarHeaderProps {
+export interface SidebarHeaderProps {
   ref?: RefObject<HTMLDivElement>;
   className?: string;
   children?: ReactNode;
 }
 
-const SidebarHeader: FC<SidebarHeaderProps> = ({ className, ...props }) => {
+export const SidebarHeader: FC<SidebarHeaderProps> = ({
+  className,
+  ...props
+}) => {
   return (
     <div
       data-sidebar="header"
@@ -189,13 +201,16 @@ const SidebarHeader: FC<SidebarHeaderProps> = ({ className, ...props }) => {
   );
 };
 
-interface SidebarFooterProps {
+export interface SidebarFooterProps {
   ref?: RefObject<HTMLDivElement>;
   className?: string;
   children?: ReactNode;
 }
 
-const SidebarFooter: FC<SidebarFooterProps> = ({ className, ...props }) => {
+export const SidebarFooter: FC<SidebarFooterProps> = ({
+  className,
+  ...props
+}) => {
   return (
     <div
       data-sidebar="footer"
@@ -205,13 +220,16 @@ const SidebarFooter: FC<SidebarFooterProps> = ({ className, ...props }) => {
   );
 };
 
-interface SidebarContentProps {
+export interface SidebarContentProps {
   ref?: RefObject<HTMLDivElement>;
   className?: string;
   children?: ReactNode;
 }
 
-const SidebarContent: FC<SidebarContentProps> = ({ className, ...props }) => {
+export const SidebarContent: FC<SidebarContentProps> = ({
+  className,
+  ...props
+}) => {
   return (
     <div
       data-sidebar="content"
@@ -224,141 +242,110 @@ const SidebarContent: FC<SidebarContentProps> = ({ className, ...props }) => {
   );
 };
 
-interface SidebarMenuProps {
+export interface SidebarMenuProps {
   ref?: RefObject<HTMLUListElement>;
   className?: string;
   children?: ReactNode;
 }
 
-const SidebarMenu: FC<SidebarMenuProps> = ({ className, ...props }) => (
+export const SidebarMenu: FC<SidebarMenuProps> = ({ className, ...props }) => (
   <ul
     data-sidebar="menu"
-    className={cn("flex w-full min-w-0 flex-col gap-1", className)}
+    className={cn("flex w-full min-w-0 flex-col", className)}
     {...props}
   />
 );
 
-interface SidebarMenuItemProps {
-  ref?: RefObject<HTMLLIElement>;
-  className?: string;
+export const SidebarSubmenu: FC<{
+  title: string;
+  icon?: ReactNode;
   children?: ReactNode;
-}
+}> = ({ title, icon, children }) => {
+  const collapsableTriggerRef = useRef<HTMLButtonElement>(null);
+  const submenuRef = useRef<HTMLUListElement>(null);
 
-const SidebarMenuItem: FC<SidebarMenuItemProps> = ({ className, ...props }) => (
-  <li
-    data-sidebar="menu-item"
-    className={cn("group/menu-item relative", className)}
-    {...props}
-  />
-);
+  function scrollSubmenuIntoView() {
+    // scroll submenu into view on next frame
+    window.setTimeout(() => {
+      submenuRef.current?.scrollIntoView({
+        behavior: "instant",
+        block: "start",
+      });
+    }, 0);
+  }
 
-const sidebarMenuButtonVariants = cva({
-  base: "peer/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none transition-[width,height,padding] focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
-  variants: {
-    variant: {
-      default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-      outline:
-        "bg-background hover:bg-sidebar-accent hover:text-sidebar-accent-foreground shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
-    },
-    size: {
-      default: "h-8 text-sm",
-      sm: "h-7 text-xs",
-      lg: "h-12 text-sm",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-    size: "default",
-  },
-});
+  // set submenu open if it has an active child
+  useLayoutEffect(() => {
+    const hasActiveChild = !!submenuRef.current?.querySelector(
+      '[data-active="true"]',
+    );
 
-interface SidebarMenuButtonProps
-  extends VariantProps<typeof sidebarMenuButtonVariants> {
+    if (hasActiveChild) {
+      collapsableTriggerRef.current?.click();
+    }
+  }, []);
+
+  return (
+    <Collapsible asChild>
+      <li data-sidebar="menu-item">
+        <CollapsibleTrigger asChild ref={collapsableTriggerRef}>
+          <SidebarMenuButton className="group" onClick={scrollSubmenuIntoView}>
+            {icon}
+            {title}
+            <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]:rotate-180" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent asChild forceMount>
+          <ul
+            ref={submenuRef}
+            data-sidebar="menu-sub"
+            className="bg-sidebar-accent hidden min-w-0 flex-col data-[state=open]:flex"
+          >
+            {children}
+          </ul>
+        </CollapsibleContent>
+      </li>
+    </Collapsible>
+  );
+};
+
+export const SidebarMenuItem: FC<{
   asChild?: boolean;
-  isActive?: boolean;
+  children?: ReactNode;
+}> = ({ asChild, children }) => {
+  return (
+    <li data-sidebar="menu-item">
+      <SidebarMenuButton asChild={asChild}>{children}</SidebarMenuButton>
+    </li>
+  );
+};
+
+interface SidebarMenuButtonProps {
+  asChild?: boolean;
+  onClick?: () => unknown;
   className?: string;
   children?: ReactNode;
 }
 
 const SidebarMenuButton: FC<SidebarMenuButtonProps> = ({
   asChild = false,
-  isActive = false,
-  variant = "default",
-  size = "default",
   className,
+  onClick,
   ...props
 }) => {
+  const { setOpenMobile } = useSidebar();
+
   const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
       data-sidebar="menu-button"
-      data-size={size}
-      data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-      {...props}
-    />
-  );
-};
-
-interface SidebarMenuActionProps {
-  ref?: RefObject<HTMLUListElement>;
-  className?: string;
-  children?: ReactNode;
-}
-
-const SidebarMenuSub: FC<SidebarMenuActionProps> = ({
-  className,
-  ...props
-}) => (
-  <ul
-    data-sidebar="menu-sub"
-    className={cn(
-      "border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5",
-      className,
-    )}
-    {...props}
-  />
-);
-
-interface SidebarMenuSubItemProps {
-  ref?: RefObject<HTMLLIElement>;
-  className?: string;
-  children?: ReactNode;
-}
-
-const SidebarMenuSubItem: FC<SidebarMenuSubItemProps> = (props) => (
-  <li {...props} />
-);
-
-interface SidebarMenuSubButtonProps {
-  asChild?: boolean;
-  size?: "sm" | "md";
-  isActive?: boolean;
-  ref?: RefObject<HTMLAnchorElement>;
-  className?: string;
-  children?: ReactNode;
-}
-
-const SidebarMenuSubButton: FC<SidebarMenuSubButtonProps> = ({
-  asChild = false,
-  size = "md",
-  isActive,
-  className,
-  ...props
-}) => {
-  const Comp = asChild ? Slot : "a";
-
-  return (
-    <Comp
-      data-sidebar="menu-sub-button"
-      data-size={size}
-      data-active={isActive}
+      onClick={onClick ? onClick : () => setOpenMobile(false)}
       className={cn(
-        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
-        "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground",
-        size === "sm" && "text-xs",
-        size === "md" && "text-sm",
+        "ring-ring border-sidebar-foreground flex min-h-12 w-full cursor-pointer flex-row items-center gap-2 border-b px-4 py-2 text-sm [&>svg]:size-5 [&>svg]:shrink-0",
+        "hover:bg-sidebar-active hover:text-sidebar-active-foreground",
+        "data-[active=true]:bg-sidebar-active data-[active=true]:text-sidebar-active-foreground",
         className,
       )}
       {...props}
@@ -374,20 +361,3 @@ function useSidebar() {
 
   return context;
 }
-
-export {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-};
