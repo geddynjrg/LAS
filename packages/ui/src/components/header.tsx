@@ -6,6 +6,7 @@ export interface HeaderProps {
   startDecorator?: ReactNode;
   endDecorator?: ReactNode;
   isFloating?: boolean | "mobile-only";
+  className?: string;
   children?: ReactNode;
 }
 
@@ -13,6 +14,7 @@ export const Header: FC<HeaderProps> = ({
   startDecorator,
   endDecorator,
   isFloating,
+  className,
   children,
 }) => {
   return (
@@ -25,6 +27,7 @@ export const Header: FC<HeaderProps> = ({
 
         isFloating === "mobile-only" &&
           "max-md:bg-header-foreground/50 max-md:text-header max-md:fixed max-md:backdrop-blur-sm",
+        className,
       )}
     >
       <div className="h-[80%] [&>*]:h-full">{startDecorator}</div>

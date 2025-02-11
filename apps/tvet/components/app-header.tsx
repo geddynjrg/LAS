@@ -22,6 +22,7 @@ export const AppHeader: FC<AppHeaderProps> = ({ locale }) => {
     <Header
       isFloating="mobile-only"
       startDecorator={<Logo />}
+      className="md:bg-radial-[at_25%_25%] from-[#4f734e] to-[#365036] to-75%"
       endDecorator={
         <>
           <FlagSelect
