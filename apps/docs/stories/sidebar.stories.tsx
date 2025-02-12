@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  IconCalendar,
+  IconHome,
+  IconInbox,
+  IconSearch,
+  IconSettings,
+} from "@tabler/icons-react";
 
 import {
   Sidebar,
@@ -42,23 +48,23 @@ export const Primary = {
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <Home />
+              <IconHome />
               Home
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <Inbox />
+              <IconInbox />
               Inbox
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <Calendar />
+              <IconCalendar />
               Calendar
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <Search />
+              <IconSearch />
               Search
             </SidebarMenuItem>
-            <SidebarSubmenu title="Settings" icon={<Settings />}>
+            <SidebarSubmenu title="Settings" icon={<IconSettings />}>
               <SidebarMenuItem>Profile</SidebarMenuItem>
               <SidebarMenuItem>Account</SidebarMenuItem>
               <SidebarMenuItem>Notifications</SidebarMenuItem>

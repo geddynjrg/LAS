@@ -168,20 +168,13 @@
 
     --color-sidebar-accent: var(--color-theme-100);
 
-    --color-neutral-500: hsl(229, 7%, 56%);
-    --color-neutral-600: hsl(229, 7%, 44%);
-    --color-neutral-1000: hsl(240, 10%, 8%);
-
     /* stepper */
     --color-stepper: hsl(46, 15%, 83%);
     --color-stepper-foreground: hsl(150, 20%, 16%);
-
     --color-stepper-hover: hsl(82, 20%, 62%);
     --color-stepper-hover-foreground: hsl(150, 20%, 16%);
-
     --color-stepper-active: hsl(120, 14%, 54%);
     --color-stepper-active-foreground: hsl(0, 0%, 100%);
-
     --color-stepper-focus: hsl(46, 15%, 83%);
     --color-stepper-focus-foreground: hsl(150, 20%, 16%);
   }
@@ -193,20 +186,13 @@
 
     --color-secondary: hsl(309, 50%, 77%);
 
-    --color-neutral-500: hsl(229, 7%, 56%);
-    --color-neutral-600: hsl(229, 7%, 44%);
-    --color-neutral-1000: hsl(240, 10%, 8%);
-
     /* stepper */
     --color-stepper: hsl(310 51% 89%);
     --color-stepper-foreground: hsl(309 64% 17%);
-
     --color-stepper-hover: hsl(309 50% 77%);
     --color-stepper-hover-foreground: hsl(309 64% 17%);
-
     --color-stepper-active: hsl(310, 50%, 61%);
     --color-stepper-active-foreground: hsl(0, 0%, 100%);
-
     --color-stepper-focus: hsl(310, 51%, 89%);
     --color-stepper-focus-foreground: hsl(309, 64%, 17%);
   }
@@ -218,20 +204,13 @@
 
     --color-secondary: hsl(143, 49%, 75%);
 
-    --color-neutral-500: hsl(229, 7%, 56%);
-    --color-neutral-600: hsl(229, 7%, 44%);
-    --color-neutral-1000: hsl(240, 10%, 8%);
-
     /* stepper */
     --color-stepper: hsl(180, 16%, 92%);
     --color-stepper-foreground: hsl(184, 94%, 6%);
-
     --color-stepper-hover: hsl(183, 17%, 75%);
     --color-stepper-hover-foreground: hsl(184, 94%, 6%);
-
     --color-stepper-active: hsl(183, 17%, 49%);
     --color-stepper-active-foreground: hsl(0, 0%, 100%);
-
     --color-stepper-focus: hsl(180, 16%, 93%);
     --color-stepper-focus-foreground: hsl(184, 94%, 6%);
   }
@@ -263,42 +242,51 @@
 @utility typo-h1 {
   font-size: 2.375rem;
   font-weight: 700;
+  line-height: 2.85rem;
 
   @media (width >= 48rem) {
     font-size: 3rem;
+    line-height: 3.6rem;
   }
 }
 
 @utility typo-h2 {
   font-size: 2.0625rem;
   font-weight: 700;
+  line-height: 2.475rem;
 
   @media (width >= 48rem) {
     font-size: 2.5rem;
+    line-height: 3rem;
   }
 }
 
 @utility typo-h3 {
   font-size: 1.75rem;
   font-weight: 700;
+  line-height: 2.275rem;
 
   @media (width >= 48rem) {
     font-size: 2.0625rem;
+    line-height: 2.68125rem;
   }
 }
 
 @utility typo-h4 {
   font-size: 1.5625rem;
   font-weight: 700;
+  line-height: 2.03125rem;
 
   @media (width >= 48rem) {
     font-size: 1.75rem;
+    line-height: 2.275rem;
   }
 }
 
 @utility typo-h5 {
   font-size: 1.4375rem;
   font-weight: 700;
+  line-height: 1.875rem;
 
   @media (width >= 48rem) {
     font-size: 1.4375rem;
@@ -308,69 +296,84 @@
 @utility typo-h6 {
   font-size: 1.125rem;
   font-weight: 700;
+  line-height: 1.4625rem;
 
   @media (width >= 48rem) {
     font-size: 1.1875rem;
+    line-height: 1.54375rem;
   }
 }
 
 @utility typo-display {
   font-size: 2.75rem;
   font-weight: 900;
+  line-height: 3.3rem;
 
   @media (width >= 48rem) {
     font-size: 3.5625rem;
+    line-height: 4.275rem;
   }
 }
 
 @utility typo-body-responsive {
   font-weight: 400;
   font-size: 0.75rem;
+  line-height: 0.9975rem;
 
   @media (width >= 20rem) {
     font-size: 0.875rem;
+    line-height: 1.225rem;
   }
 
   @media (width >= 40rem) {
     font-size: 1rem;
+    line-height: 1.4rem;
   }
 
   @media (width >= 48rem) {
     font-size: 1.125rem;
+    line-height: 1.4625rem;
   }
 }
 
 @utility typo-body-extra-small {
   font-weight: 400;
   font-size: 0.75rem;
+  line-height: 0.9975rem;
 }
 
 @utility typo-body-small {
   font-weight: 400;
   font-size: 0.875rem;
+  line-height: 1.225rem;
 }
 
 @utility typo-body-medium {
   font-weight: 400;
   font-size: 1rem;
+  line-height: 1.4rem;
 }
 
 @utility typo-body-large {
   font-weight: 400;
   font-size: 1.125rem;
+  line-height: 1.4625rem;
 }
 
 @utility typo-link {
   font-weight: 500;
   font-size: 0.75rem;
+  line-height: 0.9975rem;
   color: #0357e3;
 
   @media (width >= 20rem) {
     font-size: 0.875rem;
+    line-height: 1.225rem;
   }
 
   @media (width >= 40rem) {
     font-size: 1rem;
+    line-height: 1.4rem;
   }
 }
 

@@ -1,6 +1,6 @@
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
+import { IconCheck } from "@tabler/icons-react";
 import type { VariantProps } from "cva-extended";
-import { Check } from "lucide-react";
 import { createContext, useContext, type FC, type ReactNode } from "react";
 
 import { buttonVariants } from "@workspace/ui/components/button";
@@ -83,7 +83,7 @@ export const ButtonGroupItem: FC<ToggleGroupItemProps> = ({
       )}
       {...props}
     >
-      <Check className="hidden group-data-[state=on]:inline" />
+      <IconCheck className="hidden group-data-[state=on]:inline" />
       {children}
     </ToggleGroupPrimitive.Item>
   );

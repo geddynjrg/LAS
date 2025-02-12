@@ -6,7 +6,7 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import { Slot } from "@radix-ui/react-slot";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { IconChevronDown, IconMenu2, IconX } from "@tabler/icons-react";
 import {
   createContext,
   useCallback,
@@ -106,7 +106,7 @@ export const Sidebar: FC<SidebarProps> = ({
                   variant="ghost"
                   className="rounded-none px-1 py-2 font-normal [&_svg]:size-6"
                 >
-                  {closeTitle} <X />
+                  {closeTitle} <IconX />
                 </Button>
               </SheetClose>
             </div>
@@ -155,7 +155,7 @@ export const SidebarTrigger: FC<ButtonProps> = ({
       }}
       {...props}
     >
-      <Menu />
+      <IconMenu2 />
       {children && <span className="text-xs font-normal">{children}</span>}
     </Button>
   );
@@ -292,7 +292,7 @@ export const SidebarSubmenu: FC<{
           <SidebarMenuButton className="group" onClick={scrollSubmenuIntoView}>
             {icon}
             {title}
-            <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <IconChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]:rotate-180" />
           </SidebarMenuButton>
         </CollapsibleTrigger>
 

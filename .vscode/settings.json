@@ -1,41 +1,44 @@
 {
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 
-	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": "explicit"
-	},
-	"editor.quickSuggestions": {
-		"strings": "on"
-	},
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
 
-	"search.exclude": {
-		"**/pnpm-lock.yaml": true,
-		"**/.vscode": true,
-		"**/package.json": true
-	},
+  "search.exclude": {
+    "**/pnpm-lock.yaml": true,
+    "**/.vscode": true,
+    "**/package.json": true
+  },
 
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"typescript.preferences.importModuleSpecifier": "non-relative",
-	"typescript.preferences.preferTypeOnlyAutoImports": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
 
-	"eslint.workingDirectories": [
-		{
-			"mode": "auto"
-		}
-	],
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
 
-	"files.associations": {
-		"*.css": "tailwindcss"
-	},
-	"tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css",
-	"tailwindCSS.includeLanguages": {
-		"plaintext": "html"
-	},
-	"tailwindCSS.experimental.classRegex": [
-		["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-		["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
-	],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css",
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
 
-	"cSpell.words": ["Uwezo"]
+  "cSpell.words": ["tabler", "Uwezo"]
+  "workbench.colorCustomizations": {
+    "gitlens.trailingLineForegroundColor": "#555555"
+  }
 }

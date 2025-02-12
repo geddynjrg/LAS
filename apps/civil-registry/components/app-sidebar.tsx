@@ -1,4 +1,4 @@
-import { Home } from "lucide-react";
+import { IconHome } from "@tabler/icons-react";
 
 import {
   Sidebar,
@@ -20,7 +20,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem asChild>
             <NavLink href="/">
-              <Home />
+              <IconHome />
               Front page
             </NavLink>
           </SidebarMenuItem>
