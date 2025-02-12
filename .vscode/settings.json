@@ -38,4 +38,7 @@
   ],
 
   "cSpell.words": ["tabler", "Uwezo"]
+  "workbench.colorCustomizations": {
+    "gitlens.trailingLineForegroundColor": "#555555"
+  }
 }
