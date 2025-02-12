@@ -19,7 +19,11 @@ export const Primary = {
         <div className="typo-h5">h5 title</div>
         <div className="typo-h6">h6 title</div>
         <div className="typo-display">Display title</div>
-        <div className="typo-body">Body text</div>
+        <div className="typo-body-responsive">Body text RESPONSIVE</div>
+        <div className="typo-body-extra-small">Body text EXTRA SMALL</div>
+        <div className="typo-body-small">Body text SMALL</div>
+        <div className="typo-body-medium">Body text MEDIUM</div>
+        <div className="typo-body-large">Body text LARGE</div>
         <div className="typo-link">Link text</div>
 
         <ul className="typo-list-bullet">
