@@ -1,6 +1,6 @@
 import { useArgs } from "@storybook/preview-api";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Bus, Car, Ship } from "lucide-react";
+import { IconBus, IconCar, IconShip } from "@tabler/icons-react";
 
 import {
   ButtonGroup,
@@ -82,13 +82,13 @@ export const Icons = {
     children: (
       <>
         <ButtonGroupItem value="a">
-          <Car />
+          <IconCar />
         </ButtonGroupItem>
         <ButtonGroupItem value="b">
-          <Bus />
+          <IconBus />
         </ButtonGroupItem>
         <ButtonGroupItem value="c">
-          <Ship />
+          <IconShip />
         </ButtonGroupItem>
       </>
     ),

@@ -1,6 +1,6 @@
 import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { IconX } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
-import { X } from "lucide-react";
 import type { CSSProperties, FC, ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -74,7 +74,7 @@ export const SheetContent: FC<SheetContentProps> = ({
       </SheetPrimitive.Close> */}
       <SheetPrimitive.Close asChild>
         <Button variant="ghost" className="absolute right-2 top-2">
-          <X className="size-6" />
+          <IconX className="size-6" />
         </Button>
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>

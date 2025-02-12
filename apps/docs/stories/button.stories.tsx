@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ArrowRight } from "lucide-react";
+import { IconArrowRight } from "@tabler/icons-react";
 
 import { Button, buttonVariants } from "@workspace/ui/components/button";
 
@@ -67,12 +67,12 @@ export const Icons = {
     <div className="flex flex-wrap items-center gap-4">
       {buttonVariants.variants.size.map((size) => (
         <Button key={size} {...props} size={size}>
-          <ArrowRight />
+          <IconArrowRight />
         </Button>
       ))}
       {buttonVariants.variants.size.map((size) => (
         <Button key={size} {...props} size={size}>
-          {children} <ArrowRight />
+          {children} <IconArrowRight />
         </Button>
       ))}
     </div>

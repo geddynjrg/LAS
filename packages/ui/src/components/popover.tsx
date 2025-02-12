@@ -1,9 +1,9 @@
 "use client";
 
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { X } from "lucide-react";
-import * as React from "react";
+import { IconX } from "@tabler/icons-react";
 
+import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const Popover = PopoverPrimitive.Root;
@@ -47,14 +47,13 @@ export const PopoverContent: React.FC<PopoverProps> = ({
       )}
 
       {/* Close button to handle in popover closing */}
-      <PopoverPrimitive.Close
-        asChild
-        className="absolute right-1 top-1 cursor-pointer"
-      >
-        <X className="text-neutral-500" />
+      <PopoverPrimitive.Close asChild className="absolute right-0 top-0">
+        <Button variant="ghost">
+          <IconX className="text-neutral-500" />
+        </Button>
       </PopoverPrimitive.Close>
 
-      <h1 className="mb-4 text-[19px] font-bold leading-6">{title}</h1>
+      <h1 className="mb-4 mr-5 text-lg font-bold">{title}</h1>
 
       {/* Content */}
       <div className="flex flex-col gap-4">{children}</div>

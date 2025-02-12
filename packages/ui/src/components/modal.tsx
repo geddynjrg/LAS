@@ -1,10 +1,10 @@
 "use client";
 
 import * as ModalPrimitive from "@radix-ui/react-dialog";
+import { IconX } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
-import { X } from "lucide-react";
-import * as React from "react";
 
+import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const Modal = ModalPrimitive.Root;
@@ -62,11 +62,10 @@ export const ModalContent: React.FC<ModalContentProps> = ({
       {...props}
     >
       {children}
-      <ModalPrimitive.Close
-        asChild
-        className="absolute right-3 top-3 rounded-sm"
-      >
-        <X className="text-neutral-600" />
+      <ModalPrimitive.Close asChild className="absolute right-2 top-2">
+        <Button variant="ghost">
+          <IconX className="text-neutral-600" />
+        </Button>
       </ModalPrimitive.Close>
     </ModalPrimitive.Content>
   </ModalPortal>
