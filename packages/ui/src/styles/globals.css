@@ -323,7 +323,7 @@
   }
 }
 
-@utility typo-body {
+@utility typo-body-responsive {
   font-weight: 400;
   font-size: 0.75rem;
 
@@ -338,6 +338,26 @@
   @media (width >= 48rem) {
     font-size: 1.125rem;
   }
+}
+
+@utility typo-body-extra-small {
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+@utility typo-body-small {
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+@utility typo-body-medium {
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+@utility typo-body-large {
+  font-weight: 400;
+  font-size: 1.125rem;
 }
 
 @utility typo-link {
