@@ -1,11 +1,11 @@
 import {
-  Building,
-  ClipboardList,
-  FileCheck2,
-  Home,
-  LibraryBig,
-  Phone,
-} from "lucide-react";
+  IconBooks,
+  IconBuilding,
+  IconChecklist,
+  IconClipboardText,
+  IconHome,
+  IconPhone,
+} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
@@ -31,12 +31,12 @@ export const AppSidebar: FC = () => {
         <SidebarMenu>
           <SidebarMenuItem asChild>
             <NavLink href="/">
-              <Home />
+              <IconHome />
               Front page
             </NavLink>
           </SidebarMenuItem>
 
-          <SidebarSubmenu title="Institutions" icon={<Building />}>
+          <SidebarSubmenu title="Institutions" icon={<IconBuilding />}>
             <SidebarMenuItem asChild>
               <NavLink href="/institution/1">institution 1</NavLink>
             </SidebarMenuItem>
@@ -59,28 +59,28 @@ export const AppSidebar: FC = () => {
 
           <SidebarMenuItem asChild>
             <NavLink href="/courses">
-              <LibraryBig />
+              <IconBooks />
               Courses
             </NavLink>
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
             <NavLink href="/sponsorships">
-              <ClipboardList />
+              <IconClipboardText />
               Sopnsorships
             </NavLink>
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
             <NavLink href="/apply">
-              <FileCheck2 />
+              <IconChecklist />
               Apply now
             </NavLink>
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
             <NavLink href="/sponsorships">
-              <Phone />
+              <IconPhone />
               Contact
             </NavLink>
           </SidebarMenuItem>
