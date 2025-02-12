@@ -242,42 +242,51 @@
 @utility typo-h1 {
   font-size: 2.375rem;
   font-weight: 700;
+  line-height: 2.85rem;
 
   @media (width >= 48rem) {
     font-size: 3rem;
+    line-height: 3.6rem;
   }
 }
 
 @utility typo-h2 {
   font-size: 2.0625rem;
   font-weight: 700;
+  line-height: 2.475rem;
 
   @media (width >= 48rem) {
     font-size: 2.5rem;
+    line-height: 3rem;
   }
 }
 
 @utility typo-h3 {
   font-size: 1.75rem;
   font-weight: 700;
+  line-height: 2.275rem;
 
   @media (width >= 48rem) {
     font-size: 2.0625rem;
+    line-height: 2.68125rem;
   }
 }
 
 @utility typo-h4 {
   font-size: 1.5625rem;
   font-weight: 700;
+  line-height: 2.03125rem;
 
   @media (width >= 48rem) {
     font-size: 1.75rem;
+    line-height: 2.275rem;
   }
 }
 
 @utility typo-h5 {
   font-size: 1.4375rem;
   font-weight: 700;
+  line-height: 1.875rem;
 
   @media (width >= 48rem) {
     font-size: 1.4375rem;
@@ -287,69 +296,84 @@
 @utility typo-h6 {
   font-size: 1.125rem;
   font-weight: 700;
+  line-height: 1.4625rem;
 
   @media (width >= 48rem) {
     font-size: 1.1875rem;
+    line-height: 1.54375rem;
   }
 }
 
 @utility typo-display {
   font-size: 2.75rem;
   font-weight: 900;
+  line-height: 3.3rem;
 
   @media (width >= 48rem) {
     font-size: 3.5625rem;
+    line-height: 4.275rem;
   }
 }
 
 @utility typo-body-responsive {
   font-weight: 400;
   font-size: 0.75rem;
+  line-height: 0.9975rem;
 
   @media (width >= 20rem) {
     font-size: 0.875rem;
+    line-height: 1.225rem;
   }
 
   @media (width >= 40rem) {
     font-size: 1rem;
+    line-height: 1.4rem;
   }
 
   @media (width >= 48rem) {
     font-size: 1.125rem;
+    line-height: 1.4625rem;
   }
 }
 
 @utility typo-body-extra-small {
   font-weight: 400;
   font-size: 0.75rem;
+  line-height: 0.9975rem;
 }
 
 @utility typo-body-small {
   font-weight: 400;
   font-size: 0.875rem;
+  line-height: 1.225rem;
 }
 
 @utility typo-body-medium {
   font-weight: 400;
   font-size: 1rem;
+  line-height: 1.4rem;
 }
 
 @utility typo-body-large {
   font-weight: 400;
   font-size: 1.125rem;
+  line-height: 1.4625rem;
 }
 
 @utility typo-link {
   font-weight: 500;
   font-size: 0.75rem;
+  line-height: 0.9975rem;
   color: #0357e3;
 
   @media (width >= 20rem) {
     font-size: 0.875rem;
+    line-height: 1.225rem;
   }
 
   @media (width >= 40rem) {
     font-size: 1rem;
+    line-height: 1.4rem;
   }
 }
 
