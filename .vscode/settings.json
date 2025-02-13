@@ -37,7 +37,7 @@
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
   ],
 
-  "cSpell.words": ["tabler", "Uwezo"]
+  "cSpell.words": ["Embla", "tabler", "Uwezo"],
   "workbench.colorCustomizations": {
     "gitlens.trailingLineForegroundColor": "#555555"
   }
