@@ -75,6 +75,9 @@
   --color-stepper-focus: hsl(0 0% 100%);
   --color-stepper-focus-foreground: hsl(0 0% 3.9%);
 
+  /* accordion */
+  --color-accordion: hsl(0, 0%, 0%);
+
   /* header */
   --color-header: var(--color-background);
   --color-header-foreground: var(--color-foreground);
@@ -168,6 +171,8 @@
 
     --color-sidebar-accent: var(--color-theme-100);
 
+    --color-accordion: hsl(119, 15%, 84%);
+
     /* stepper */
     --color-stepper: hsl(46, 15%, 83%);
     --color-stepper-foreground: hsl(150, 20%, 16%);
@@ -186,6 +191,8 @@
 
     --color-secondary: hsl(309, 50%, 77%);
 
+    --color-accordion: hsl(310, 51%, 89%);
+
     /* stepper */
     --color-stepper: hsl(310 51% 89%);
     --color-stepper-foreground: hsl(309 64% 17%);
@@ -203,6 +210,8 @@
     --color-primary-active: hsl(143, 79%, 11%);
 
     --color-secondary: hsl(143, 49%, 75%);
+
+    --color-accordion: hsl(142, 63%, 62%);
 
     /* stepper */
     --color-stepper: hsl(180, 16%, 92%);
