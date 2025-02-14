@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, type FC, type ReactNode } from "react";
 
 import { useMount } from "@workspace/ui/hooks/use-mount";
@@ -6,9 +8,10 @@ import { cn } from "@workspace/ui/lib/utils";
 export interface StepperProps {
   steps: string[];
   activeStep: number;
+  className?: string;
 }
 
-export const Stepper: FC<StepperProps> = ({ steps, activeStep }) => {
+export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
   const wrapRef = useRef<HTMLOListElement>(null);
 
   useMount(() => {
@@ -28,7 +31,10 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep }) => {
 
   return (
     <ol
-      className="bg-background scrollbar-width-none flex flex-row overflow-x-auto"
+      className={cn(
+        "bg-background scrollbar-width-none flex flex-row overflow-x-auto",
+        className,
+      )}
       ref={wrapRef}
     >
       {steps.map((step, i) => (

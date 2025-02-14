@@ -35,8 +35,7 @@
   --color-site-background: hsl(0, 0%, 97%);
   --color-link: hsl(217, 97%, 45%);
 
-  --color-border: hsl(0 0% 89.8%);
-  --color-input: hsl(0 0% 89.8%);
+  --color-border: hsl(229, 7%, 56%);
   --color-ring: hsl(217 97% 45%);
 
   /* primary */
@@ -450,4 +449,8 @@
   * + * {
     margin-top: 0.5rem;
   }
+}
+
+@utility focus-visible-ring {
+  @apply focus-visible:ring-ring ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1;
 }
