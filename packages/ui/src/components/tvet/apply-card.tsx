@@ -1,0 +1,95 @@
+import { IconArrowRight } from "@tabler/icons-react";
+import { cva, type VariantProps } from "cva-extended";
+import type { FC } from "react";
+
+import { Button } from "@workspace/ui/components/button";
+import { Tag } from "@workspace/ui/components/tag";
+import { cn } from "@workspace/ui/lib/utils";
+
+export const applyCardVariants = cva({
+  base: "typo-body-small flex grow flex-col gap-2 rounded-e-md p-4",
+  variants: {
+    variant: {
+      primary: "border-l-16",
+      secondary: "border-0",
+    },
+  },
+  defaultVariants: {
+    variant: "primary",
+  },
+});
+
+export interface ApplyCardProps extends VariantProps<typeof applyCardVariants> {
+  tags: string[];
+  className?: string;
+  title: string;
+  fee: string;
+  school?: string;
+  applyByDate: string;
+  startsOnDate?: string;
+  onclick?: () => void;
+  borderColor: string;
+}
+
+export const ApplyCard: FC<ApplyCardProps> = ({
+  variant,
+  className,
+  title,
+  fee,
+  tags,
+  school,
+  applyByDate,
+  startsOnDate,
+  borderColor,
+  onclick,
+}) => {
+  return (
+    <div className="border-theme-200 flex flex-row overflow-clip rounded-md border-2 shadow-md">
+      <div
+        className={cn(applyCardVariants({ variant, className }))}
+        style={{ borderColor: borderColor }}
+      >
+        <div className="flex gap-2">
+          {tags.map((tag, index) => (
+            <Tag key={index}>{tag}</Tag>
+          ))}
+        </div>
+        <h2 className="typo-h4">{title}</h2>
+        <div className="flex justify-between">
+          <p className="typo-h6 font-normal">
+            Fee: <span className="font-bold">{fee}</span>
+          </p>
+          {variant == "secondary" ? (
+            <p>
+              Apply by <strong>{applyByDate}</strong>
+            </p>
+          ) : null}
+        </div>
+
+        {variant != "secondary" ? (
+          <div>
+            <hr className="bg-theme-200 mt-0" />
+            <p>{school}</p>
+            <div className="flex justify-between">
+              <p>
+                Apply by <strong>{applyByDate}</strong>
+              </p>
+              <p>
+                Starts on <strong>{startsOnDate}</strong>
+              </p>
+            </div>
+          </div>
+        ) : null}
+      </div>
+      <div className="mr-4 flex flex-col justify-center">
+        <Button
+          size="default"
+          className="bg-white shadow-[0px_1px_5px_0px_rgba(0,0,0,0.2)]"
+          onClick={onclick}
+        >
+          <IconArrowRight className="text-primary" />
+        </Button>
+      </div>
+    </div>
+  );
+};
