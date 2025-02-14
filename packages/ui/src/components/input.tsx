@@ -4,7 +4,7 @@ import type { FC, ReactNode } from "react";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const inputVariants = cva({
-  base: "bg-background border-border file:text-foreground placeholder:text-muted-foreground focus-visible-ring w-full border px-2 file:border-0 file:bg-transparent file:text-sm file:font-medium active:border-green-300 disabled:cursor-not-allowed disabled:opacity-50",
+  base: "bg-background border-border [&:user-invalid]:border-destructive file:text-foreground placeholder:text-muted-foreground focus-visible-ring w-full border px-2 file:border-0 file:bg-transparent file:text-sm file:font-medium active:border-green-300 disabled:cursor-not-allowed disabled:opacity-50",
   variants: {
     size: {
       sm: "h-7 rounded-md py-1 text-sm",

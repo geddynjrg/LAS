@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { IconMail, IconSearch } from "@tabler/icons-react";
 
+import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input, inputVariants } from "@workspace/ui/components/input";
 
 const meta = {
@@ -51,4 +52,26 @@ export const Icons = {
     startDecorator: <IconMail />,
     endDecorator: <IconSearch />,
   },
+} satisfies Story;
+
+export const WithFormField = {
+  render: (args) => (
+    <Form
+      className="space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        alert("Submitted");
+      }}
+    >
+      <Field
+        name="input"
+        label="Input label"
+        required
+        control={(props) => <Input {...props} {...args} />}
+        description="This is a description for the input field"
+      />
+
+      <SubmitButton>Submit</SubmitButton>
+    </Form>
+  ),
 } satisfies Story;

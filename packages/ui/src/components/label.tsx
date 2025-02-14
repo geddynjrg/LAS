@@ -7,7 +7,7 @@ import type { FC, ReactNode, Ref } from "react";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const labelVariants = cva({
-  base: "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+  base: "text-base leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
 });
 
 export interface LabelProps extends VariantProps<typeof labelVariants> {
