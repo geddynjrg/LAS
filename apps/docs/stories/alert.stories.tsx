@@ -1,9 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Alert } from "@workspace/ui/components/alert";
+import { Alert, alertVariants } from "@workspace/ui/components/alert";
 
 const meta = {
   component: Alert,
+  argTypes: {
+    variant: {
+      control: { type: "select" },
+      options: alertVariants.variants.variant,
+    },
+    position: {
+      control: { type: "select" },
+      options: alertVariants.variants.position,
+    },
+  },
   args: {
     children: "Alert child as simple text",
     title: "Title for alert box",
