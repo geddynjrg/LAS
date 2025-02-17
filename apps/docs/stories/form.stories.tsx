@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import { Label } from "@workspace/ui/components/label";
 import { Select } from "@workspace/ui/components/select";
 
 const meta = {
@@ -15,7 +14,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
-  render: (args) => {
+  render: (_props) => {
     return (
       <Form
         className="space-y-6"
@@ -55,10 +54,7 @@ export const Primary: Story = {
           description="This is a description for the checkbox field"
           required
           control={(props) => (
-            <div className="flex items-center space-x-2">
-              <Checkbox id={props.id} />
-              <Label htmlFor={props.id}>I agree to the terms</Label>
-            </div>
+            <Checkbox id={props.id}>I agree to the terms</Checkbox>
           )}
         />
 

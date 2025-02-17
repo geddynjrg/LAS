@@ -2,8 +2,9 @@
 
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { IconCheck } from "@tabler/icons-react";
-import type { FC } from "react";
+import { useId, type FC, type ReactNode } from "react";
 
+import { Label } from "@workspace/ui/components/label";
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
 
 export const checkboxVariants = cva({
@@ -24,18 +25,32 @@ export interface CheckboxProps extends VariantProps<typeof checkboxVariants> {
   id?: string;
   name?: string;
   disabled?: boolean;
+  children?: ReactNode;
   className?: string;
 }
 
-export const Checkbox: FC<CheckboxProps> = ({ size, className, ...props }) => (
-  <CheckboxPrimitive.Root
-    className={cn(checkboxVariants({ size }), className)}
-    {...props}
-  >
-    <CheckboxPrimitive.Indicator
-      className={cn("flex items-center justify-center text-current")}
-    >
-      <IconCheck className="size-full" />
-    </CheckboxPrimitive.Indicator>
-  </CheckboxPrimitive.Root>
-);
+export const Checkbox: FC<CheckboxProps> = ({
+  id,
+  size,
+  children,
+  className,
+  ...props
+}) => {
+  const componentId = useId();
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <CheckboxPrimitive.Root
+        className={checkboxVariants({ size })}
+        id={id || componentId}
+        {...props}
+      >
+        <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
+          <IconCheck className="size-full" />
+        </CheckboxPrimitive.Indicator>
+      </CheckboxPrimitive.Root>
+
+      {children && <Label htmlFor={id || componentId}>{children}</Label>}
+    </div>
+  );
+};
