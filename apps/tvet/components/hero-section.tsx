@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { FC, ReactNode } from "react";
 
 import { Heading } from "@/components/heading";
+import { RoundedCard } from "@/components/rounded-card";
 
 export interface HeroSectionProps {
   title: ReactNode;
@@ -20,7 +21,7 @@ export const HeroSection: FC<HeroSectionProps> = ({
 }) => {
   return (
     <section>
-      <div className="mx relative aspect-[4/5] sm:aspect-[16/9] md:max-h-96 md:w-full">
+      <div className="relative aspect-[4/5] sm:aspect-[16/9] md:max-h-96 md:w-full">
         <Image
           fill
           priority
@@ -30,10 +31,10 @@ export const HeroSection: FC<HeroSectionProps> = ({
         />
       </div>
 
-      <div className="bg-primary text-primary-foreground relative -mt-4 rounded-tr-xl px-4 pb-4 text-lg">
+      <RoundedCard variant="primary" className="relative -mt-4 px-4 pb-4 pt-0">
         <Heading className="-mb-13 -translate-y-13">{title}</Heading>
         <div className="mt-4">{children}</div>
-      </div>
+      </RoundedCard>
 
       {actions && (
         <div className="bg-theme-100 flex justify-center gap-4 p-4 [&>*]:max-w-80 [&>*]:flex-1">

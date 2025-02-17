@@ -15,7 +15,7 @@ export const Heading: FC<HeadingProps> = ({ className, children }) => {
         className,
       )}
     >
-      <span className="after:ml-4 after:mr-[-100%] after:inline-block after:h-[0.5em] after:w-full after:border-t-2 after:border-inherit after:align-bottom after:content-['']">
+      <span className="after:ml-4 after:mr-[-100%] after:inline-block after:h-[0.5em] after:w-full after:border-t-2 after:align-bottom after:content-['']">
         {children}
       </span>
     </h1>

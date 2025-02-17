@@ -11,7 +11,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 
 export const buttonVariants = cva({
-  base: "ring-offset-background focus-visible:outline-hidden focus-visible:ring-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-transparent text-sm font-bold transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:text-neutral-400 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  base: "focus-visible-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-transparent text-sm font-bold transition-colors disabled:pointer-events-none disabled:text-neutral-400 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   variants: {
     variant: {
       default:
@@ -27,6 +27,7 @@ export const buttonVariants = cva({
       link: "text-primary underline-offset-4 hover:underline",
     },
     size: {
+      xs: "h-6 p-1 text-xs [&_svg]:size-4",
       sm: "h-7 px-4 text-sm [&_svg]:size-4",
       default: "h-10 px-7 py-2 text-base",
       lg: "h-12 px-8 text-lg",

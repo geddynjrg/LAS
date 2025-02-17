@@ -1,54 +1,83 @@
 {
-	// Place your successfactory-office workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
-	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
-	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
-	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
-	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
-	// Placeholders with the same ids are connected.
-	// Example:
-	// "Print to console": {
-	// 	"scope": "javascript,typescript",
-	// 	"prefix": "log",
-	// 	"body": [
-	// 		"console.log('$1');",
-	// 		"$2"
-	// 	],
-	// 	"description": "Log output to console"
-	// }
+  // Place your successfactory-office workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+  // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+  // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+  // used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+  // Placeholders with the same ids are connected.
+  // Example:
+  // "Print to console": {
+  // 	"scope": "javascript,typescript",
+  // 	"prefix": "log",
+  // 	"body": [
+  // 		"console.log('$1');",
+  // 		"$2"
+  // 	],
+  // 	"description": "Log output to console"
+  // }
 
-	"React Component": {
-		"prefix": ["react-component"],
-		"description": "Create React component",
-		"body": [
-			"import type { FC, ReactNode } from \"react\";",
-			"",
-			"export interface ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}Props {",
-			"\tchildren?: ReactNode;",
-			"}",
-			"",
-			"export const ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}: FC<${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}Props> = ({ children }) => {",
-			"\treturn <div>$0</div>;",
-			"};",
-		],
-	},
-	"Stoy Component": {
-		"prefix": ["story-component"],
-		"description": "Create Story component",
-		"body": [
-			"import type { Meta, StoryObj } from '@storybook/react';",
-			"",
-			"import { ${TM_FILENAME_BASE/(.*?)(stories)?$/${1:/pascalcase}/i} } from '@workspace/ui/components/${TM_FILENAME_BASE/(.stories)//}';",
-			"",
-			"const meta = {",
-			"  component: ${TM_FILENAME_BASE/(.*?)(stories)?$/${1:/pascalcase}/i},",
-			"} satisfies Meta<typeof ${TM_FILENAME_BASE/(.*?)(stories)?$/${1:/pascalcase}/i}>;",
-			"",
-			"export default meta;",
-			"",
-			"type Story = StoryObj<typeof meta>;",
-			"",
-			"export const Primary = {} satisfies Story;",
-			"",
-		],
-	},
+  "React Component": {
+    "prefix": ["react-component"],
+    "description": "Create React component",
+    "body": [
+      "import type { FC, ReactNode } from \"react\";",
+      "",
+      "export interface ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}Props {",
+      "\tchildren?: ReactNode;",
+      "}",
+      "",
+      "export const ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}: FC<${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}Props> = ({ children }) => {",
+      "\treturn <div>$0</div>;",
+      "};",
+    ],
+  },
+  "Page Component": {
+    "prefix": ["page-component"],
+    "description": "Create React component",
+    "body": [
+      "",
+      "export interface ${TM_DIRECTORY/^.+[\\/\\\\]+(.*)/${1:/pascalcase}/}PageProps {",
+      "\tparams: Promise<{ }>;",
+      "}",
+      "",
+      "export default async function ${TM_DIRECTORY/^.+[\\/\\\\]+(.*)/${1:/pascalcase}/}Page({}: ${TM_DIRECTORY/^.+[\\/\\\\]+(.*)/${1:/pascalcase}/}PageProps) {",
+      "\treturn <div>$0</div>;",
+      "};",
+    ],
+  },
+  "Layout Component": {
+    "prefix": ["layout-component"],
+    "description": "Create React component",
+    "body": [
+      "import { ReactNode } from 'react';",
+      "",
+      "export interface ${TM_DIRECTORY/^.+[\\/\\\\]+(.*)/${1:/pascalcase}/}LayoutProps {",
+      "\tchildren?: ReactNode;",
+      "}",
+      "",
+      "export default function ${TM_DIRECTORY/^.+[\\/\\\\]+(.*)/${1:/pascalcase}/}Layout({ children }: ${TM_DIRECTORY/^.+[\\/\\\\]+(.*)/${1:/pascalcase}/}LayoutProps) {",
+      "\treturn <div>{children}$0</div>;",
+      "};",
+    ],
+  },
+  "Story Component": {
+    "prefix": ["story-component"],
+    "description": "Create Story component",
+    "body": [
+      "import type { Meta, StoryObj } from '@storybook/react';",
+      "",
+      "import { ${TM_FILENAME_BASE/(.*?)(stories)?$/${1:/pascalcase}/i} } from '@workspace/ui/components/${TM_FILENAME_BASE/(.stories)//}';",
+      "",
+      "const meta = {",
+      "  component: ${TM_FILENAME_BASE/(.*?)(stories)?$/${1:/pascalcase}/i},",
+      "} satisfies Meta<typeof ${TM_FILENAME_BASE/(.*?)(stories)?$/${1:/pascalcase}/i}>;",
+      "",
+      "export default meta;",
+      "",
+      "type Story = StoryObj<typeof meta>;",
+      "",
+      "export const Primary = {} satisfies Story;",
+      "",
+    ],
+  },
 }

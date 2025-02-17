@@ -343,7 +343,7 @@ const SidebarMenuButton: FC<SidebarMenuButtonProps> = ({
       data-sidebar="menu-button"
       onClick={onClick ? onClick : () => setOpenMobile(false)}
       className={cn(
-        "ring-ring border-sidebar-foreground flex min-h-12 w-full cursor-pointer flex-row items-center gap-2 border-b px-4 py-2 text-sm [&>svg]:size-5 [&>svg]:shrink-0",
+        "ring-ring text-foreground border-sidebar-foreground flex min-h-12 w-full cursor-pointer flex-row items-center gap-2 border-b px-4 py-2 text-sm [&>svg]:size-5 [&>svg]:shrink-0",
         "hover:bg-sidebar-active hover:text-sidebar-active-foreground",
         "data-[active=true]:bg-sidebar-active data-[active=true]:text-sidebar-active-foreground",
         className,
