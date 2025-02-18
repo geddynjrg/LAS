@@ -1,19 +1,18 @@
-"use client";
-
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { IconCheck, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import { IconCaretDown, IconCheck } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
 import type { ComponentProps, FC, ReactNode } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
 export const selectVariants = cva({
-  base: "border-input bg-background placeholder:text-muted-foreground focus:ring-ring ring-offset-background flex w-full max-w-[260px] items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+  base: "bg-background border-border [&:user-invalid]:border-destructive placeholder:text-muted-foreground focus-visible-ring flex w-full items-center justify-between border px-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+
   variants: {
     size: {
-      sm: "h-7 text-sm",
-      default: "h-10",
-      lg: "h-12 text-lg",
+      sm: "h-7 rounded-md text-sm",
+      default: "h-10 rounded-md text-base",
+      lg: "h-12 rounded-md text-lg",
     },
   },
   defaultVariants: {
@@ -32,6 +31,7 @@ export interface SelectProps<T extends string>
   className?: string;
   options?: SelectOption<T>[] | readonly SelectOption<T>[];
   defaultValue?: T;
+  invalid?: boolean;
   disabled?: boolean;
   onValueChange?: (value: T) => void;
 }
@@ -39,13 +39,17 @@ export interface SelectProps<T extends string>
 export const Select = <T extends string>({
   options,
   placeholder,
-  className,
   size,
+  invalid,
+  className,
   ...props
 }: SelectProps<T>) => {
   return (
-    <SelectPrimitive.Root {...props}>
-      <SelectTrigger size={size} className={className}>
+    <SelectPrimitive.Root data-invalid={invalid} {...props}>
+      <SelectTrigger
+        size={size}
+        className={cn(invalid && "border-destructive", className)}
+      >
         <SelectPrimitive.Value placeholder={placeholder} />
       </SelectTrigger>
 
@@ -67,21 +71,22 @@ const SelectTrigger: FC<
 > = ({ size, className, children }) => (
   <SelectPrimitive.Trigger className={cn(selectVariants({ size }), className)}>
     {children}
+
     <SelectPrimitive.Icon asChild>
-      <IconChevronDown className="h-4 w-4 opacity-50" />
+      <Caret dir="down" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 );
 
 const SelectScrollUpButton: FC = () => (
   <SelectPrimitive.ScrollUpButton className="flex cursor-default items-center justify-center py-1">
-    <IconChevronUp className="h-4 w-4" />
+    <Caret dir="up" />
   </SelectPrimitive.ScrollUpButton>
 );
 
 const SelectScrollDownButton: FC = () => (
   <SelectPrimitive.ScrollDownButton className="flex cursor-default items-center justify-center py-1">
-    <IconChevronDown className="h-4 w-4" />
+    <Caret dir="down" />
   </SelectPrimitive.ScrollDownButton>
 );
 
@@ -138,4 +143,13 @@ const SelectItem: FC<ComponentProps<typeof SelectPrimitive.Item>> = ({
       </SelectPrimitive.ItemIndicator>
     </span>
   </SelectPrimitive.Item>
+);
+
+const Caret: FC<{ dir: "up" | "down" }> = ({ dir }) => (
+  <IconCaretDown
+    className={cn(
+      "size-5 fill-neutral-600 text-neutral-600",
+      dir === "up" && "rotate-180",
+    )}
+  />
 );

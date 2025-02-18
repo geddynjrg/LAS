@@ -1,31 +1,36 @@
 "use client";
 
-import { useActionState, type FC } from "react";
+import { type FC } from "react";
 
+import { Alert } from "@workspace/ui/components/alert";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { Select } from "@workspace/ui/components/select";
+import { useForm } from "@workspace/ui/hooks/use-form";
 
-import { applyStep1, type ApplyStep1Response } from "@/actions/apply-step-1";
-
-const initialState: ApplyStep1Response = {
-  values: {
-    firstName: "Test first name",
-    middleName: "",
-    surname: "",
-  },
-};
+import { applyStep1 } from "@/actions/apply-step-1";
+import { applyStep1Schema } from "@/actions/apply-step-1-schema";
 
 export const Step1Form: FC = () => {
-  const [state, formAction, isPending] = useActionState(
-    applyStep1,
-    initialState,
-  );
+  const [state, formAction, isPending] = useForm(applyStep1, applyStep1Schema, {
+    firstName: "Test first name",
+  });
+
+  console.log("state", state);
 
   return (
     <div>
-      {state.success && <p className="text-green-400">Form submitted!!</p>}
-      {state.errors && <p className="text-red-400">Please fix errors</p>}
+      {state.success && (
+        <Alert variant="success" className="mb-4">
+          Form submitted!!
+        </Alert>
+      )}
+      {state?.errors && (
+        <Alert variant="error" className="mb-4">
+          Please fix errors
+          <pre>{JSON.stringify(state.errors, null, 2)}</pre>
+        </Alert>
+      )}
 
       <Form action={formAction} className="space-y-6" autoComplete="on">
         <Field

@@ -1,5 +1,3 @@
-"use client";
-
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { IconCheck } from "@tabler/icons-react";
 import { useId, type FC, type ReactNode } from "react";
@@ -24,7 +22,9 @@ export const checkboxVariants = cva({
 export interface CheckboxProps extends VariantProps<typeof checkboxVariants> {
   id?: string;
   name?: string;
+  defaultValue?: "on" | null | boolean;
   disabled?: boolean;
+  invalid?: boolean;
   children?: ReactNode;
   className?: string;
 }
@@ -32,8 +32,9 @@ export interface CheckboxProps extends VariantProps<typeof checkboxVariants> {
 export const Checkbox: FC<CheckboxProps> = ({
   id,
   size,
-  children,
   className,
+  defaultValue,
+  children,
   ...props
 }) => {
   const componentId = useId();
@@ -43,6 +44,11 @@ export const Checkbox: FC<CheckboxProps> = ({
       <CheckboxPrimitive.Root
         className={checkboxVariants({ size })}
         id={id || componentId}
+        defaultChecked={
+          typeof defaultValue === "string"
+            ? defaultValue === "on"
+            : !!defaultValue
+        }
         {...props}
       >
         <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">

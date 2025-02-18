@@ -5,6 +5,12 @@
     "apply": "Apply"
   },
 
+  "InputErrors": {
+    "required": "This field is required",
+    "tooSmall": "The value must contain more than {{minimum}} character(s)",
+    "tooBig": "The must contain nuder {{minimum}} character(s)"
+  },
+
   "FrontPage": {
     "title": "<light>Where did i get</light> so skilled?",
     "description": " At TVETs we put focus on practical skills - up to 90% of training is through practice. Programs are designed around occupational standards, curriculas are developed with strong integration with businesses.",

@@ -7,23 +7,22 @@ import { cn } from "@workspace/ui/lib/utils";
 
 export const Form = FormPrimitive.Root;
 
-interface FormFieldState<T extends Record<string, string>> {
-  values?: T;
-  errors?: { [K in keyof T]?: string[] | undefined };
+interface FormFieldState<T extends Record<string, unknown>> {
+  values?: Partial<T>;
+  errors?: { [K in keyof T]?: string[] };
 }
 
-export interface FieldControlProps<K extends string> {
+export interface FieldControlProps<TName extends string, TValue> {
   id: string;
-  name: K;
-  required?: boolean;
-  defaultValue?: string;
+  name: TName;
+  defaultValue?: TValue;
 }
 
 export interface FieldProps<
-  TInputs extends Record<string, string>,
+  TInputs extends Record<string, unknown>,
   TName extends Extract<keyof TInputs, string>,
 > {
-  control: (props: FieldControlProps<TName>) => ReactNode;
+  control: (props: FieldControlProps<TName, TInputs[TName]>) => ReactNode;
   name: TName;
   state?: FormFieldState<TInputs>;
   label?: ReactNode;
@@ -67,12 +66,8 @@ export const Field = <
       )}
 
       <FormPrimitive.Control asChild>
-        {control({ id, name, defaultValue, required })}
+        {control({ id, name, defaultValue })}
       </FormPrimitive.Control>
-
-      {required && !errorMessage && (
-        <FieldMessage match="valueMissing">This field is required</FieldMessage>
-      )}
 
       {errorMessage && <FieldMessage>{errorMessage}</FieldMessage>}
 
