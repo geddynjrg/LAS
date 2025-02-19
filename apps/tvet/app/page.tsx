@@ -52,7 +52,7 @@ export default function Page() {
         {t("description")}
       </HeroSection>
 
-      <section className="mt-4 px-4">
+      <section className="app-container mt-4 px-4">
         <h2 className="typo-h2">Application process and admission details</h2>
         <hr />
 

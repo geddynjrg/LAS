@@ -21,7 +21,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className="min-h-svh antialiased [--header-height:4.5rem] [--sidebar-width:15.5rem] md:[--header-height:5.5rem]">
+      <body className="min-h-svh antialiased [--header-height:4.5rem]">
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <AppHeader locale={locale} />

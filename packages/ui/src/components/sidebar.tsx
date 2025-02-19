@@ -80,56 +80,41 @@ export interface SidebarProps {
 export const Sidebar: FC<SidebarProps> = ({
   title,
   closeTitle,
-  ref,
   className,
   children,
   ...props
 }) => {
-  const { isMobile, openMobile, setOpenMobile } = useSidebar();
-
-  if (isMobile) {
-    return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-        <SheetTitle className="sr-only">{title}</SheetTitle>
-        <SheetContent
-          aria-describedby={undefined}
-          data-sidebar="sidebar"
-          data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) top-0 p-0 [&>button]:hidden"
-          side="right"
-        >
-          <div className="flex h-full w-full flex-col">
-            <div className="border-sidebar-foreground flex min-h-12 justify-end border-b px-1 py-2">
-              <SheetClose asChild>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="rounded-none px-1 py-2 font-normal [&_svg]:size-6"
-                >
-                  {closeTitle} <IconX />
-                </Button>
-              </SheetClose>
-            </div>
-
-            {children}
-          </div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
+  const { openMobile, setOpenMobile } = useSidebar();
 
   return (
-    <div
-      ref={ref}
-      data-sidebar="sidebar"
-      className={cn(
-        "top-(--header-height) w-(--sidebar-width) text-sidebar-foreground bg-sidebar group peer fixed bottom-0 left-0 z-10 flex h-full flex-col",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </div>
+    <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <SheetTitle className="sr-only">{title}</SheetTitle>
+      <SheetContent
+        aria-describedby={undefined}
+        data-sidebar="sidebar"
+        className={cn(
+          "bg-sidebar text-sidebar-foreground w-(--sidebar-width,15.5rem) top-0 p-0 [&>button]:hidden",
+          className,
+        )}
+        side="right"
+      >
+        <div className="flex h-full w-full flex-col">
+          <div className="border-sidebar-foreground flex min-h-12 justify-end border-b px-1 py-2">
+            <SheetClose asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="rounded-none px-1 py-2 font-normal [&_svg]:size-6"
+              >
+                {closeTitle} <IconX />
+              </Button>
+            </SheetClose>
+          </div>
+
+          {children}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
@@ -174,7 +159,7 @@ export const SidebarInset: FC<SidebarInsetProps> = ({
   return (
     <main
       className={cn(
-        "md:ml-(--sidebar-width) flex min-h-[calc(100svh-var(--header-height))] flex-1 flex-col",
+        "bg-site-background max-w-(--sidebar-inset-max-width,2000px) mx-auto flex min-h-[calc(100svh-var(--header-height))] flex-1 flex-col shadow-2xl",
         className,
       )}
       {...props}

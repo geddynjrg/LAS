@@ -21,7 +21,7 @@ export const HeroSection: FC<HeroSectionProps> = ({
 }) => {
   return (
     <section>
-      <div className="relative aspect-[4/5] sm:aspect-[16/9] md:max-h-96 md:w-full">
+      <div className="relative aspect-[4/5] sm:aspect-[16/9] md:max-h-96 md:w-full xl:max-h-[600px]">
         <Image
           fill
           priority
@@ -31,9 +31,11 @@ export const HeroSection: FC<HeroSectionProps> = ({
         />
       </div>
 
-      <RoundedCard variant="primary" className="relative -mt-4 px-4 pb-4 pt-0">
-        <Heading className="-mb-13 -translate-y-13">{title}</Heading>
-        <div className="mt-4">{children}</div>
+      <RoundedCard variant="primary" className="relative -mt-4 px-0 pb-4 pt-0">
+        <div className="app-container">
+          <Heading className="-mb-13 -translate-y-13">{title}</Heading>
+          <div className="app- mt-4">{children}</div>
+        </div>
       </RoundedCard>
 
       {actions && (

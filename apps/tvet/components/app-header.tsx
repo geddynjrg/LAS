@@ -22,7 +22,6 @@ export const AppHeader: FC<AppHeaderProps> = ({ locale }) => {
     <Header
       isFloating="mobile-only"
       startDecorator={<Logo />}
-      className="md:bg-radial-[at_25%_25%] from-[#4f734e] to-[#365036] to-75%"
       endDecorator={
         <>
           <FlagSelect
@@ -37,7 +36,7 @@ export const AppHeader: FC<AppHeaderProps> = ({ locale }) => {
           <Button asChild>
             <Link href="/apply">{t("apply")}</Link>
           </Button>
-          <SidebarTrigger className="md:hidden">{t("menu")}</SidebarTrigger>
+          <SidebarTrigger>{t("menu")}</SidebarTrigger>
         </>
       }
     />
