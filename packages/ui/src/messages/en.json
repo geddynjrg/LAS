@@ -1,0 +1,21 @@
+{
+  "ApplyCard": {
+    "applyBy": "Apply by",
+    "fee": "Fee",
+    "startsOn": "Starts on"
+  },
+
+  "Form": {
+    "errors": {
+      "invalid": "Invalid",
+      "required": "This field is required",
+      "string_too_small": "Value must be at least {minimum} characters",
+      "string_too_large": "Value must be at most {maximum} characters",
+      "date_too_small": "Date must be at least {minimum}",
+      "date_too_large": "Date must be at most {maximum}",
+      "number_too_small": "Value must be at least {minimum}",
+      "number_too_large": "Value must be at most {maximum}",
+      "invalid_union": "Please choose a valid option"
+    }
+  }
+}

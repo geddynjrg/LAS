@@ -4,6 +4,7 @@ import { useActionState, useCallback } from "react";
 import type { z } from "zod";
 
 import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { zodErrorMap } from "@workspace/ui/lib/zod";
 
 export type FormAction<T extends Record<string, unknown>> = (
   prevState: FormActionResponse<T> | null,
@@ -22,7 +23,7 @@ export type FormActionResponse<T extends Record<string, unknown>> =
       success: false;
       message?: string;
       errors: {
-        [K in keyof T]?: string[];
+        [K in keyof T]?: (string | z.ZodIssue)[];
       };
       values: Partial<T>;
     }
@@ -47,12 +48,17 @@ export function useForm<
   const formAction = useCallback<FormAction<TValues>>(
     (_prev, formData) => {
       const values = getFormDataValues(formData, schema);
-      const { success, error } = schema.safeParse(values);
+      const { success, error } = schema.safeParse(values, {
+        errorMap: zodErrorMap,
+      });
 
       if (!success) {
+        const errors = error.flatten((issue) => issue);
+
         return {
           success,
-          errors: error.flatten().fieldErrors,
+          errors: errors?.fieldErrors,
+          message: errors?.formErrors.map((e) => e.message).join(", "),
           values,
         };
       }

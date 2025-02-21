@@ -1,5 +1,6 @@
 import { IconArrowRight } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
+import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -43,6 +44,8 @@ export const ApplyCard: FC<ApplyCardProps> = ({
   borderColor,
   onclick,
 }) => {
+  const t = useTranslations("ApplyCard");
+
   return (
     <div className="border-theme-200 flex flex-row overflow-clip rounded-md border-2 shadow-md">
       <div
@@ -57,11 +60,11 @@ export const ApplyCard: FC<ApplyCardProps> = ({
         <h2 className="typo-h4">{title}</h2>
         <div className="flex justify-between">
           <p className="typo-h6 font-normal">
-            Fee: <span className="font-bold">{fee}</span>
+            {t("fee")}: <span className="font-bold">{fee}</span>
           </p>
           {variant == "secondary" ? (
             <p>
-              Apply by <strong>{applyByDate}</strong>
+              {t("applyBy")} <strong>{applyByDate}</strong>
             </p>
           ) : null}
         </div>
@@ -72,10 +75,11 @@ export const ApplyCard: FC<ApplyCardProps> = ({
             <p>{school}</p>
             <div className="flex justify-between">
               <p>
-                Apply by <strong>{applyByDate}</strong>
+                {t("applyBy")}
+                <strong>{applyByDate}</strong>
               </p>
               <p>
-                Starts on <strong>{startsOnDate}</strong>
+                {t("startsOn")} <strong>{startsOnDate}</strong>
               </p>
             </div>
           </div>

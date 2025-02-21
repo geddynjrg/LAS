@@ -13,3 +13,16 @@ export async function getUserLocale() {
 export async function setUserLocale(locale: Locale) {
   (await cookies()).set(COOKIE_NAME, locale);
 }
+
+export async function getMessages(locale: string) {
+  const [messages, commonMessages] = await Promise.all([
+    import(`@/messages/${locale}`),
+    import(`@workspace/ui/messages/${locale}`),
+  ]).catch((err) => {
+    console.error("Failed to load messages", err);
+
+    return [{}, {}];
+  });
+
+  return Object.assign({}, commonMessages.default, messages.default);
+}

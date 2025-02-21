@@ -67,11 +67,11 @@ export const Primary: Story = {
 };
 
 const schema = z.object({
-  input: z.string().nonempty().min(3),
+  input: z.string().min(3).max(10),
   select: z.union([z.literal("1"), z.literal("2"), z.literal("3")]),
   checkbox: z
     .union([z.literal("on"), z.null()])
-    .refine((v) => !!v, "This field is required"),
+    .refine((v) => !!v, "Please agree to the terms"),
 });
 
 const formAction: FormAction<z.infer<typeof schema>> = async (
@@ -80,14 +80,12 @@ const formAction: FormAction<z.infer<typeof schema>> = async (
 ) => {
   const values = getFormDataValues(formData, schema);
 
-  console.log("values", values);
-
   const { error, data, success } = schema.safeParse(values);
 
   if (!success) {
     return {
       success,
-      errors: error?.flatten().fieldErrors,
+      errors: error.flatten().fieldErrors,
       values,
     };
   }

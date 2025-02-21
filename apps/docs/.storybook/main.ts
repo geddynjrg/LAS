@@ -18,4 +18,8 @@ export default {
   core: {
     disableTelemetry: true,
   },
+
+  features: {
+    experimentalRSC: true,
+  },
 } satisfies StorybookConfig;

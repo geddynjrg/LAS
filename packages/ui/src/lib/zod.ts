@@ -1,44 +1,72 @@
 import { z } from "zod";
 
 /**
- * Custom error map for Zod schemas
+ * Map zod errors to translation keys
  */
 export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
-  // required error message
-  if (issue.code === z.ZodIssueCode.invalid_type) {
-    return { message: "InputErrors.required" };
-  }
+  console.log("issue", issue);
 
-  // too small error message
-  if (issue.code === z.ZodIssueCode.too_small) {
-    // show required error message if z.string().trim().min(1)
-    if (issue.type === "string" && issue.minimum === 1) {
-      return { message: "InputErrors.required" };
+  switch (issue.code) {
+    case "custom": {
+      return issue.message
+        ? { message: issue.message, params: issue }
+        : getIntlKey("invalid");
     }
 
-    return {
-      message: "InputErrors.tooSmall",
-      params: { min: issue.minimum },
-    };
-  }
+    case "too_small": {
+      if (!issue.minimum || issue.minimum <= 1) {
+        return getIntlKey("required");
+      }
 
-  // too big error message
-  if (issue.code === z.ZodIssueCode.too_big) {
-    return { message: "InputErrors.tooBig" };
-  }
+      if (issue.type === "string") {
+        return getIntlKey("string_too_small", issue);
+      }
 
-  return { message: ctx.defaultError };
+      if (issue.type === "date") {
+        return getIntlKey("date_too_small", issue);
+      }
+
+      return getIntlKey("number_too_small", issue);
+    }
+
+    case "too_big": {
+      if (issue.type === "string") {
+        return getIntlKey("string_too_large", issue);
+      }
+
+      if (issue.type === "date") {
+        return getIntlKey("date_too_large", issue);
+      }
+
+      return getIntlKey("number_too_large", issue);
+    }
+
+    case "invalid_union": {
+      return getIntlKey("invalid_union", issue);
+    }
+
+    default:
+      return { message: ctx.defaultError };
+  }
 };
 
 /** get zod object keys recursively  */
 export const zodKeys = <T extends z.ZodTypeAny>(schema: T): string[] => {
   // make sure schema is not null or undefined
-  if (schema === null || schema === undefined) return [];
+  if (schema === null || schema === undefined) {
+    return [];
+  }
+
   // check if schema is nullable or optional
-  if (schema instanceof z.ZodNullable || schema instanceof z.ZodOptional)
+  if (schema instanceof z.ZodNullable || schema instanceof z.ZodOptional) {
     return zodKeys(schema.unwrap());
+  }
+
   // check if schema is an array
-  if (schema instanceof z.ZodArray) return zodKeys(schema.element);
+  if (schema instanceof z.ZodArray) {
+    return zodKeys(schema.element);
+  }
+
   // check if schema is an object
   if (schema instanceof z.ZodObject) {
     // get key/value pairs from schema
@@ -54,6 +82,14 @@ export const zodKeys = <T extends z.ZodTypeAny>(schema: T): string[] => {
       return nested.length ? nested : key;
     });
   }
+
   // return empty array
   return [];
 };
+
+function getIntlKey<T extends z.ZodIssueBase>(
+  key: keyof IntlMessages["Form"]["errors"],
+  params?: T,
+): { message: string; params?: T } {
+  return { message: `Form.errors.${key}`, params };
+}

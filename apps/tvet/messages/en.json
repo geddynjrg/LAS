@@ -7,7 +7,7 @@
 
   "InputErrors": {
     "required": "This field is required",
-    "tooSmall": "The value must contain more than {{minimum}} character(s)",
+    "too_small": "The value must contain more than {{minimum}} character(s)",
     "tooBig": "The must contain nuder {{minimum}} character(s)"
   },
 

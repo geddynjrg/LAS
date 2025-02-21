@@ -1,0 +1,21 @@
+{
+  "ApplyCard": {
+    "applyBy": "Omba kabla ya",
+    "fee": "Ada",
+    "startsOn": "Kuanza tarehe"
+  },
+
+  "Form": {
+    "errors": {
+      "invalid": "Batili",
+      "required": "Sehemu hii inahitajika",
+      "string_too_small": "Thamani lazima iwe angalau herufi {minimum}",
+      "string_too_large": "Thamani lazima iwe zaidi ya herufi {maximum}",
+      "date_too_small": "Tarehe lazima iwe angalau {minimum}",
+      "date_too_large": "Tarehe lazima iwe zaidi ya {maximum}",
+      "number_too_small": "Thamani lazima iwe angalau {minimum}",
+      "number_too_large": "Thamani lazima iwe zaidi ya {maximum}",
+      "invalid_union": "Tafadhali chagua chaguo sahihi"
+    }
+  }
+}
