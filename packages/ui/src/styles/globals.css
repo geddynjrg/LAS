@@ -150,6 +150,11 @@
   --color-theme-300: hsl(0, 0%, 60%);
   --color-theme-400: hsl(0, 0%, 50%);
 
+  /* box shadows */
+  --box-shadow-elevation-01: 0px 1px 5px 0px hsla(0, 0%, 0%, 0.2);
+  --box-shadow-elevation-02: 0px 4px 10px 0px hsla(0, 0%, 0%, 0.1);
+  --box-shadow-elevation-03: 0px -1px 5px 0px rgba(0, 0, 0, 0.2);
+
   /* accordion */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -220,6 +225,9 @@
   }
 
   .civil-registry {
+    --sidebar-inset-max-width: 100%;
+    --app-container-max-width: 960px;
+
     --color-primary: hsl(142, 78%, 31%);
     --color-primary-hover: hsl(143, 78%, 19%);
     --color-primary-active: hsl(143, 79%, 11%);
@@ -388,7 +396,7 @@
   font-weight: 500;
   font-size: 0.75rem;
   line-height: 0.9975rem;
-  color: #0357e3;
+  color: var(--color-blue-400);
 
   @media (width >= 20rem) {
     font-size: 0.875rem;
@@ -461,6 +469,6 @@
   max-width: var(--app-container-max-width);
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: var(--app-container-side-padding);
+  padding-right: var(--app-container-side-padding);
 }

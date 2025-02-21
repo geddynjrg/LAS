@@ -4,15 +4,13 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import type { ReactNode } from "react";
 
-import { FlagSelect } from "@workspace/ui/components/flag-select";
-import { Header } from "@workspace/ui/components/header";
-import { SidebarInset, SidebarTrigger } from "@workspace/ui/components/sidebar";
+import { SidebarInset } from "@workspace/ui/components/sidebar";
 
+import { AppFooter } from "@/components/app-footer";
+import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Logo } from "@/components/logo";
 import { Providers } from "@/components/providers";
-import { locales, type Locale } from "@/i18n/config";
-import { setUserLocale } from "@/lib/locale";
+import { type Locale } from "@/i18n/config";
 
 export interface RootLayoutProps {
   children?: ReactNode;
@@ -27,27 +25,12 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <body className="min-h-svh antialiased [--header-height:4.5rem] [--sidebar-width:15.5rem] md:[--header-height:5.5rem]">
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <Header
-              startDecorator={<Logo />}
-              endDecorator={
-                <>
-                  <SidebarTrigger />
-                  <FlagSelect
-                    defaultValue={locale}
-                    options={locales}
-                    onChange={setUserLocale}
-                  />
-                </>
-              }
-            >
-              hello
-            </Header>
-
+            <AppHeader locale={locale} />
             <AppSidebar />
 
             <SidebarInset>
-              <SidebarTrigger className="md:hidden" />
               {children}
+              <AppFooter />
             </SidebarInset>
           </Providers>
         </NextIntlClientProvider>

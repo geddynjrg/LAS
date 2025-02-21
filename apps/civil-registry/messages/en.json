@@ -1,5 +1,57 @@
 {
-	"FrontPage": {
-		"title": "Hello world!"
-	}
+  "Common": {
+    "menu": "Menu"
+  },
+  "Dashboard": {
+    "title": "My relations",
+    "description": "You can view the details of your minor children and your wards entered in the civil registry. You will not be shown the data of your minor child if your rights of custody have been suspended or withdrawn.",
+    "children": {
+      "title": "My children"
+    }
+  },
+  "Components": {
+    "person-card": {
+      "validate-data": "Validate data",
+      "view-certificate": "View digital birth certificate",
+      "issuance": "Physical birth certificate issuance",
+      "certificate-available": "Birth certificate available",
+      "certificate-unavailable": "Birth certificate unavailable",
+      "amendments-processed": "Amendments being processed",
+      "amendments-alert-text": "Amendments need to be processed before a birth certificate can be issued",
+      "view-registration": "View registration"
+    },
+    "app-footer": {
+      "title-message": "Giving Kenyans easy access to online government services.",
+      "home": "Home",
+      "national": "National",
+      "countries": "Counties",
+      "help-and-support": "Help & Support",
+      "terms-and-conditions": "Terms & Conditions",
+      "privacy-policy": "Privacy Policy",
+      "rights": "All rights reserved"
+    }
+  },
+  "Details": {
+    "to-dashboard": "Back to dashboard",
+    "title-child": "Child info",
+    "title-mother": "Mother info",
+    "title-father": "Father info",
+    "amend": "Amend",
+    "description": "As registered at birth in the birth notification",
+    "name": "Name",
+    "dob": "Date of birth",
+    "age": "Age",
+    "sex": "Sex",
+    "birth-weight": "Weight on birth",
+    "place-of-birth": "Place of birth",
+    "national-id": "National ID",
+    "citizenship": "Citizenship",
+    "nationality": "Nationality",
+    "marital-status": "Marital status",
+    "education": "Level of education",
+    "fathers-name": "Father's name",
+    "phone": "Phone number",
+    "confirm-registration?": "Confirm registration?",
+    "back": "Back"
+  }
 }

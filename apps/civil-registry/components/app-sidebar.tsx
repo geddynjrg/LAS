@@ -1,4 +1,6 @@
 import { IconHome } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
+import type { FC } from "react";
 
 import {
   Sidebar,
@@ -12,16 +14,18 @@ import {
 
 import { NavLink } from "./nav-link";
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+export const AppSidebar: FC = () => {
+  const t = useTranslations("Common");
+
   return (
-    <Sidebar {...props}>
+    <Sidebar title={t("menu")}>
       <SidebarHeader>Language select</SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem asChild>
             <NavLink href="/">
               <IconHome />
-              Front page
+              Dashboard
             </NavLink>
           </SidebarMenuItem>
 
@@ -54,4 +58,4 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>nav user</SidebarFooter>
     </Sidebar>
   );
-}
+};

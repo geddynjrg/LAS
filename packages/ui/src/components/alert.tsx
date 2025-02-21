@@ -69,7 +69,7 @@ export const Alert: FC<AlertProps> = ({
         </div>
       )}
 
-      <div className="typo-body-small">{children}</div>
+      <div className="typo-body-small text-left">{children}</div>
     </div>
   );
 };

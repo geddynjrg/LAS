@@ -1,5 +1,9 @@
 {
-	"FrontPage": {
-		"title": "Habari dunia!"
-	}
+  "Common": {
+    "menu": "Menyu"
+  },
+
+  "FrontPage": {
+    "title": "Habari dunia!"
+  }
 }

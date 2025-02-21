@@ -159,7 +159,7 @@ export const SidebarInset: FC<SidebarInsetProps> = ({
   return (
     <main
       className={cn(
-        "bg-site-background max-w-(--sidebar-inset-max-width,2000px) mx-auto flex min-h-[calc(100svh-var(--header-height))] flex-1 flex-col shadow-2xl",
+        "bg-site-background max-w-(--sidebar-inset-max-width,2000px) mx-auto flex min-h-[calc(100svh-var(--header-height))] flex-1 flex-col",
         className,
       )}
       {...props}
