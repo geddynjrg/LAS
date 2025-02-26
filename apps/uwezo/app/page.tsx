@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -293,13 +294,14 @@ const ApplyButton: FC<{ className?: String }> = ({ className }) => {
 
   return (
     <Button
+      asChild
       variant="secondary"
       className={cn(
         "bg-background text-primary hover:text-background px-6",
         className,
       )}
     >
-      {t("startApplying")}
+      <Link href="/apply">{t("startApplying")}</Link>
     </Button>
   );
 };

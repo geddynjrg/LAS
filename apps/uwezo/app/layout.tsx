@@ -25,9 +25,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <AppHeader locale={locale} />
+            <AppHeader />
             <AppSidebar />
-            <SidebarInset className="pb-8">{children}</SidebarInset>
+            <SidebarInset>{children}</SidebarInset>
             <AppFooter />
           </Providers>
         </NextIntlClientProvider>

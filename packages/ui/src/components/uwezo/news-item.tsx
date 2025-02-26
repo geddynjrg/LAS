@@ -1,5 +1,5 @@
-//import Link from "next/link";
 import { useFormatter } from "next-intl";
+import Link from "next/link";
 import type { FC } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
@@ -32,12 +32,12 @@ export const NewsItem: FC<NewsItemProps> = ({
       />
       <div className={cn("flex flex-col items-center gap-2.5")}>
         <div className="typo-body-small-bold flex flex-row gap-1">
-          <a
+          <Link
             href={href}
             className="text-primary hover:text-link visited:text-primary uppercase hover:underline"
           >
             {linkTitle}
-          </a>
+          </Link>
           {/* separator line */}
           <p>-</p>
           <p>
