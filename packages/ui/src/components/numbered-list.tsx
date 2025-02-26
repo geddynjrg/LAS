@@ -4,7 +4,6 @@ import { BulletBox } from "@workspace/ui/components/bullet-box";
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
 
 export const numberedListVariants = cva({
-  base: "flex list-none flex-col gap-2",
   variants: {
     variant: {
       numbers: "",
@@ -13,6 +12,8 @@ export const numberedListVariants = cva({
   },
   defaultVariants: {
     variant: "numbers",
+    typography: "body",
+    gap: "sm",
   },
 });
 
@@ -29,11 +30,18 @@ export const NumberedList: FC<NumberedListProps> = ({
 }) => {
   const arrayChildren = Children.toArray(children);
   return (
-    <ol className={cn(numberedListVariants({ variant, className }))}>
+    <ol
+      className={cn(
+        numberedListVariants({ variant, className }),
+        "flex list-none flex-col",
+      )}
+    >
       {arrayChildren.map((child, index) => {
         return (
-          <li key={index} className="flex w-full items-center gap-1">
-            {variant === "numbers" && <Number>{index + 1}</Number>}
+          <li key={index} className={cn("flex w-full items-center gap-x-1")}>
+            {(!variant || variant === "numbers") && (
+              <Number>{index + 1}</Number>
+            )}
             {variant === "bulletNumbers" && <Bullet>{index + 1}</Bullet>}
             {child}
           </li>
@@ -44,6 +52,7 @@ export const NumberedList: FC<NumberedListProps> = ({
 };
 
 export interface NumberedListItemProps {
+  className?: string;
   children?: ReactNode;
   icon?: ReactNode;
   key?: string;
@@ -52,10 +61,14 @@ export interface NumberedListItemProps {
 export const NumberedListItem: FC<NumberedListItemProps> = ({
   key,
   children,
+  className,
   icon,
 }) => {
   return (
-    <div key={key} className="flex w-full items-center justify-between">
+    <div
+      key={key}
+      className={cn("flex w-full items-center justify-between", className)}
+    >
       {children}
       {icon && (
         <span className="text-primary ml-2 flex-none [&>svg]:size-10">
@@ -67,7 +80,7 @@ export const NumberedListItem: FC<NumberedListItemProps> = ({
 };
 
 const Number: FC<{ children?: ReactNode }> = ({ children }) => (
-  <span className="typo-display text-primary w-[2ch] text-center">
+  <span className="typo-display text-primary -ml-2 w-[2ch] text-center">
     {children}
   </span>
 );

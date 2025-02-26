@@ -67,7 +67,7 @@ export const AppSidebar: FC = () => {
           <SidebarMenuItem asChild>
             <NavLink href="/sponsorships">
               <IconClipboardText />
-              Sopnsorships
+              Sponsorships
             </NavLink>
           </SidebarMenuItem>
 

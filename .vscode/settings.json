@@ -37,8 +37,29 @@
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
   ],
 
-  "cSpell.words": ["Embla", "tabler", "Uwezo"],
+  "cSpell.words": [
+    "Bahari",
+    "Dagoretti",
+    "Dandora",
+    "Embla",
+    "Greenlight",
+    "Harambee",
+    "Kahawa",
+    "Kangemi",
+    "Kiwanja",
+    "Mabatini",
+    "Makadara",
+    "Maringo",
+    "Mathare",
+    "Mathari",
+    "Ofafa",
+    "Roysambu",
+    "sbdocs",
+    "tabler",
+    "Uwezo"
+  ],
   "workbench.colorCustomizations": {
     "gitlens.trailingLineForegroundColor": "#555555"
-  }
+  },
+  "search.useGlobalIgnoreFiles": false
 }

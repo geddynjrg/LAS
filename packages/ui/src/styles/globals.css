@@ -150,6 +150,12 @@
   --color-theme-200: hsl(0, 0%, 70%);
   --color-theme-300: hsl(0, 0%, 60%);
   --color-theme-400: hsl(0, 0%, 50%);
+  --color-theme-500: hsl(0, 0%, 30%);
+  --color-theme-600: hsl(0, 0%, 20%);
+
+  /* box shadows */
+  --box-shadow-elevation-01: 0px 1px 5px 0px hsla(0, 0%, 0%, 0.2);
+  --box-shadow-elevation-02: 0px 4px 10px 0px hsla(0, 0%, 0%, 0.1);
 
   /* box shadows */
   --box-shadow-elevation-01: 0px 1px 5px 0px hsla(0, 0%, 0%, 0.2);
@@ -181,8 +187,12 @@
 
 @layer base {
   .tvet {
+    --app-container-max-width: var(--container-6xl);
+
     --color-theme-100: hsl(46, 15%, 83%);
     --color-theme-200: hsl(82, 20%, 62%);
+    --color-theme-500: hsl(131, 22%, 29%);
+    --color-theme-600: hsl(150, 20%, 16%);
 
     --color-primary: hsl(119, 19%, 42%);
     --color-primary-hover: hsl(131, 22%, 29%);
@@ -275,11 +285,13 @@
   }
 }
 
-@utility typo-h1 {
+@utility typo-h1-sm {
   font-size: 2.375rem;
   font-weight: 700;
   line-height: 2.85rem;
-
+}
+@utility typo-h1 {
+  @apply typo-h1-sm;
   @media (width >= 48rem) {
     font-size: 3rem;
     line-height: 3.6rem;

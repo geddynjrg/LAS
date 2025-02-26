@@ -25,10 +25,13 @@ export const buttonVariants = cva({
       ghost:
         "hover:bg-accent hover:text-accent-foreground active:bg-accent-active",
       link: "text-primary underline-offset-4 hover:underline",
+      shadow:
+        "text-primary hover:bg-accent hover:text-accent-foreground active:bg-accent-active shadow-[var(--box-shadow-elevation-02)]",
     },
     size: {
       xs: "h-6 p-1 text-xs [&_svg]:size-4",
       sm: "h-7 px-4 text-sm [&_svg]:size-4",
+      md: "h-8 px-4 text-sm [&_svg]:size-6",
       default: "h-10 px-7 py-2 text-base",
       lg: "h-12 px-8 text-lg",
     },
@@ -55,7 +58,6 @@ export const Button: FC<ButtonProps> = ({
   variant,
   size,
   asChild = false,
-  ref,
   children,
   active,
   ...props
@@ -70,7 +72,6 @@ export const Button: FC<ButtonProps> = ({
         buttonVariants({ variant, size, className }),
         hasOneChildOnly && "has-[>svg]:aspect-square has-[>svg]:p-0",
       )}
-      ref={ref}
       {...props}
     >
       {children}

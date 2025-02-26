@@ -35,8 +35,13 @@ export const ModalOverlay: React.FC<ModalOverlayProps> = ({
 );
 
 export const modalVariants = cva({
-  base: "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95 bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 relative z-50 grid gap-4 rounded p-6 shadow-[0px_1px_5px_0px_rgba(0,0,0,0.2)] duration-200",
+  base: "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 relative z-50 duration-200",
   variants: {
+    variant: {
+      primary:
+        "bg-background grid gap-4 rounded p-6 shadow-[0px_1px_5px_0px_rgba(0,0,0,0.2)]",
+      transparent: "",
+    },
     size: {
       sm: "w-[312px] max-w-full",
       md: "w-[552px] max-w-full",
@@ -45,6 +50,7 @@ export const modalVariants = cva({
     },
   },
   defaultVariants: {
+    variant: "primary",
     size: "md",
   },
 });
@@ -53,11 +59,13 @@ export interface ModalContentProps extends VariantProps<typeof modalVariants> {
   className?: string;
   children: React.ReactNode;
   showClose?: boolean;
+  asChild?: boolean;
 }
 
 export const ModalContent: React.FC<ModalContentProps> = ({
   className,
   size,
+  variant,
   children,
   showClose = true,
   ...props
@@ -65,13 +73,16 @@ export const ModalContent: React.FC<ModalContentProps> = ({
   <ModalPortal>
     <ModalOverlay>
       <ModalPrimitive.Content
-        className={cn(modalVariants({ size, className }))}
+        className={cn(modalVariants({ size, variant, className }))}
         {...props}
       >
         {children}
         {showClose && (
-          <ModalPrimitive.Close asChild className="absolute right-2 top-2">
-            <Button variant="ghost">
+          <ModalPrimitive.Close className="absolute right-2 top-2" asChild>
+            <Button
+              variant="ghost"
+              className={cn(variant === "transparent" && "bg-neutral-100/70")}
+            >
               <IconX className="text-neutral-600" />
             </Button>
           </ModalPrimitive.Close>

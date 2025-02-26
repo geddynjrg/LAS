@@ -20,21 +20,27 @@ export const HeroSection: FC<HeroSectionProps> = ({
   children,
 }) => {
   return (
-    <section>
+    <section className="bg-theme-100">
       <div className="relative aspect-[4/5] sm:aspect-[16/9] md:max-h-96 md:w-full xl:max-h-[600px]">
         <Image
           fill
           priority
-          className="object-cover"
+          style={{
+            objectFit: "cover",
+          }}
           src={backgroundUrl}
           alt={backgroundAlt}
         />
       </div>
-
-      <RoundedCard variant="primary" className="relative -mt-4 px-0 pb-4 pt-0">
-        <div className="app-container">
-          <Heading className="-mb-13 -translate-y-13">{title}</Heading>
-          <div className="app- mt-4">{children}</div>
+      <RoundedCard
+        variant="primary"
+        className="relative -mt-4 p-0 px-4 pb-4 pt-0 md:pb-7"
+      >
+        <div className="app-container max-w-6xl">
+          <Heading className="-mb-13 -translate-y-13 md:-mb-16 md:-translate-y-16">
+            {title}
+          </Heading>
+          <div className="mt-4">{children}</div>
         </div>
       </RoundedCard>
 

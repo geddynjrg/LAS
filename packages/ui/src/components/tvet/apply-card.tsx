@@ -2,6 +2,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
+import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Tag } from "@workspace/ui/components/tag";
@@ -28,8 +29,8 @@ export interface ApplyCardProps extends VariantProps<typeof applyCardVariants> {
   school?: string;
   applyByDate: string;
   startsOnDate?: string;
-  onclick?: () => void;
-  borderColor: string;
+  borderColor?: string;
+  href: string;
 }
 
 export const ApplyCard: FC<ApplyCardProps> = ({
@@ -42,12 +43,12 @@ export const ApplyCard: FC<ApplyCardProps> = ({
   applyByDate,
   startsOnDate,
   borderColor,
-  onclick,
+  href,
 }) => {
   const t = useTranslations("ApplyCard");
 
   return (
-    <div className="border-theme-200 flex flex-row overflow-clip rounded-md border-2 shadow-md">
+    <div className="border-theme-200 flex w-full flex-row overflow-clip rounded-md border-2 bg-neutral-200 shadow-md">
       <div
         className={cn(applyCardVariants({ variant, className }))}
         style={{ borderColor: borderColor }}
@@ -57,7 +58,7 @@ export const ApplyCard: FC<ApplyCardProps> = ({
             <Tag key={index}>{tag}</Tag>
           ))}
         </div>
-        <h2 className="typo-h4">{title}</h2>
+        <h2 className="typo-h4 h-full">{title}</h2>
         <div className="flex justify-between">
           <p className="typo-h6 font-normal">
             {t("fee")}: <span className="font-bold">{fee}</span>
@@ -85,13 +86,11 @@ export const ApplyCard: FC<ApplyCardProps> = ({
           </div>
         ) : null}
       </div>
-      <div className="mr-4 flex flex-col justify-center">
-        <Button
-          size="default"
-          className="bg-white shadow-[0px_1px_5px_0px_rgba(0,0,0,0.2)]"
-          onClick={onclick}
-        >
-          <IconArrowRight className="text-primary" />
+      <div className="flex flex-col items-center justify-center p-4">
+        <Button asChild variant="shadow">
+          <Link href={href}>
+            <IconArrowRight />
+          </Link>
         </Button>
       </div>
     </div>

@@ -19,16 +19,16 @@ export const Testimonial: FC<TestimonialProps> = ({
       <img
         src={imageUrl}
         alt={imageAlt}
-        className="bg-theme-100 absolute -top-9 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full"
+        className="bg-theme-100 absolute -top-9 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full object-cover"
       />
-      <div className="gap-2.5 text-center">
+      <div className="z-2 gap-2.5 text-center">
         <h2 className="typo-h6">{title}</h2>
         {children}
       </div>
-      <IconQuote className="text-primary absolute left-2 top-2" size={36} />
+      <IconQuote className="text-primary absolute left-0 top-0" size={58} />
       <IconQuote
-        className="text-primary absolute bottom-2 right-2 rotate-180"
-        size={36}
+        className="text-primary absolute bottom-0 right-0 rotate-180"
+        size={58}
       />
     </article>
   );

@@ -58,6 +58,17 @@ export const MaxDots = {
   ),
 } satisfies Story;
 
+export const WhiteControlsDots = {
+  render: ({ children }) => (
+    <div className="bg-neutral-500 p-4">
+      <Carousel>
+        {children}
+        <CarouselControls visibleDots={3} variant="white" />
+      </Carousel>
+    </div>
+  ),
+} satisfies Story;
+
 export const NextItemVisible = {
   render: () => (
     <Carousel>

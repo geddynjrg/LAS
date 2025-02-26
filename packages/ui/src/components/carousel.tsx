@@ -155,18 +155,19 @@ export const Carousel: FC<CarouselProps> = ({
 
 interface CarouselContentProps {
   className?: string;
-  children: ReactNode;
+  onClick?: () => void;
+  children?: ReactNode;
 }
 
 export const CarouselContent: FC<CarouselContentProps> = ({
   className,
-  children,
+  ...props
 }) => {
   const { carouselRef } = useCarousel();
 
   return (
-    <div ref={carouselRef} className={cn("overflow-hidden")}>
-      <div className={cn("flex", className)}>{children}</div>
+    <div ref={carouselRef} className={cn("h-full w-full overflow-hidden")}>
+      <div className={cn("flex", className)} {...props} />
     </div>
   );
 };
@@ -196,8 +197,13 @@ export const carouselControlVariants = cva({
       onContent: "absolute bottom-4 w-full",
       bottom: "mt-2",
     },
+    variant: {
+      default: "border-foreground",
+      white: "border-background",
+    },
   },
   defaultVariants: {
+    variant: "default",
     position: "bottom",
   },
 });
@@ -212,17 +218,38 @@ export const CarouselControls: FC<CarouselControlsProps> = ({
   className,
   visibleDots,
   position,
+  variant,
 }) => {
   return (
     <div className={cn(carouselControlVariants({ position }), className)}>
-      <CarouselPrevious />
-      <CarouselDots visibleDots={visibleDots} />
-      <CarouselNext />
+      <CarouselPrevious variant={variant} />
+      <CarouselDots visibleDots={visibleDots} variant={variant} />
+      <CarouselNext variant={variant} />
     </div>
   );
 };
 
-export const CarouselPrevious: FC<{ className?: string }> = (props) => {
+export const carouselArrowsVariants = cva({
+  variants: {
+    variant: {
+      default: "text-foreground",
+      white: "text-primary-foreground",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export interface CarouselControlsProps
+  extends VariantProps<typeof carouselArrowsVariants> {
+  className?: string;
+}
+
+export const CarouselPrevious: FC<CarouselControlsProps> = ({
+  variant,
+  ...props
+}) => {
   const { scrollPrev, canScrollPrev } = useCarousel();
 
   return (
@@ -233,12 +260,18 @@ export const CarouselPrevious: FC<{ className?: string }> = (props) => {
       onClick={scrollPrev}
       {...props}
     >
-      <IconChevronLeft stroke={2} />
+      <IconChevronLeft
+        stroke={2}
+        className={carouselArrowsVariants({ variant })}
+      />
     </Button>
   );
 };
 
-export const CarouselNext: FC<{ className?: string }> = (props) => {
+export const CarouselNext: FC<CarouselControlsProps> = ({
+  variant,
+  ...props
+}) => {
   const { scrollNext, canScrollNext } = useCarousel();
 
   return (
@@ -249,13 +282,36 @@ export const CarouselNext: FC<{ className?: string }> = (props) => {
       onClick={scrollNext}
       {...props}
     >
-      <IconChevronRight stroke={2} />
+      <IconChevronRight
+        stroke={2}
+        className={carouselArrowsVariants({ variant })}
+      />
     </Button>
   );
 };
 
-export const CarouselDots: FC<{ visibleDots?: number }> = ({
+export const carouselDotsVariants = cva({
+  base: "h-2 w-2 rounded-full border-2",
+  variants: {
+    variant: {
+      default:
+        "border-foreground data-[active=true]:bg-primary data-[active=true]:border-primary",
+      white:
+        "border-background data-[active=true]:bg-background data-[active=true]:border-background",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+interface CarouselDotsProps extends VariantProps<typeof carouselDotsVariants> {
+  visibleDots?: number;
+}
+
+export const CarouselDots: FC<CarouselDotsProps> = ({
   visibleDots = Infinity,
+  variant,
 }) => {
   const { api, selectedItem } = useCarousel();
 
@@ -290,10 +346,8 @@ export const CarouselDots: FC<{ visibleDots?: number }> = ({
             className="h-auto p-0"
           >
             <div
-              className={cn(
-                "border-foreground h-2 w-2 rounded-full border-2",
-                isActive && "bg-primary border-primary",
-              )}
+              data-active={isActive}
+              className={cn(carouselDotsVariants({ variant }))}
             ></div>
           </Button>
         );

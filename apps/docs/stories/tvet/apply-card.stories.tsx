@@ -20,6 +20,7 @@ const meta = {
     applyByDate: "12.02.24",
     startsOnDate: "12.02.24",
     borderColor: "green",
+    href: "#",
   },
   argTypes: {
     borderColor: {
@@ -38,6 +39,12 @@ const meta = {
       },
     },
     startsOnDate: {
+      type: "string",
+      control: {
+        type: "text",
+      },
+    },
+    href: {
       type: "string",
       control: {
         type: "text",
@@ -62,5 +69,6 @@ export const Secondary = {
     startsOnDate: "12.02.24",
     borderColor: "blue",
     variant: "secondary",
+    href: "#",
   },
 } satisfies Story;

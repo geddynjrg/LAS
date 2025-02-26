@@ -15,12 +15,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
-import { IconBlock } from "@workspace/ui/components/icon-block";
 import {
   NumberedList,
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { FeatureSection } from "@workspace/ui/components/tvet/feature-section";
+import { SectionHeader } from "@workspace/ui/components/tvet/section-header";
+import { TrainingAreaCard } from "@workspace/ui/components/tvet/training-area-card";
 import { Underline } from "@workspace/ui/components/underline";
 
 import { Heading } from "@/components/heading";
@@ -52,19 +54,19 @@ export default function Page() {
         {t("description")}
       </HeroSection>
 
-      <section className="app-container mt-4 px-4">
+      <section className="mx-auto mt-4 max-w-3xl px-4 py-8">
         <h2 className="typo-h2">Application process and admission details</h2>
         <hr />
 
         <section className="mt-4">
           <h2 className="typo-h3">To apply, you need to prepare:</h2>
-          <NumberedList className="my-4">
+          <NumberedList className="my-4" variant="numbers">
             <NumberedListItem icon={<IconId />}>
               National ID or birth certificate
             </NumberedListItem>
             <NumberedListItem icon={<IconCertificate2 />}>
               Some courses may require educational certificates (KCSE, KCPE, or
-              quivalent)
+              equivalent)
             </NumberedListItem>
             <NumberedListItem icon={<IconCoins />}>
               250 KSh to pay the application fee
@@ -92,59 +94,48 @@ export default function Page() {
         </section>
       </section>
 
-      <section className="mt-4">
-        <div className="relative aspect-[4/5] overflow-clip rounded-tr-xl sm:aspect-[16/9] md:max-h-96 md:w-full">
-          <Image
-            fill
-            priority
-            className="object-cover"
-            src="/hero-banners/banner-1.jpg"
-            alt="Students in a classroom"
-          />
-          <div className="bg-primary-hover absolute inset-0 opacity-40" />
+      <SectionHeader
+        title=" Unlock Your Future with TVET Training"
+        image={{
+          url: "/hero-banners/banner-1.jpg",
+          alt: "Students in a classroom",
+        }}
+        subtitle="Looking for a path to success?"
+      >
+        TVET (Technical and Vocational Education and Training) gives you the
+        skills you need to build a career and take control of your future.
+        Whether you want to become an electrician, chef, hairdresser, or
+        entrepreneur, TVET equips you with hands-on training that prepares you
+        for real jobs.
+      </SectionHeader>
 
-          <Heading className="text-primary-foreground absolute bottom-8 z-10 m-4">
-            Unlock Your Future with TVET Training
-          </Heading>
-        </div>
+      <FeatureSection
+        className="bg-background"
+        features={[
+          {
+            title: "Hands-on Training",
+            text: "TVET gives you practical skills that you can apply in the workplace.",
+            icon: <IconTools />,
+          },
+          {
+            title: "In-demand Careers",
+            text: "TVET connects you directly with industries looking for trained professionals.",
+            icon: <IconTimeline />,
+          },
+          {
+            title: "Affordable & Accessible",
+            text: "With TVET, you get high-quality training that’s affordable and available near you.",
+            icon: <IconZoomMoney />,
+          },
+        ]}
+      >
+        No matter your background, TVET will give you the{" "}
+        <strong>tools to succeed and grow.</strong> Start your journey today and{" "}
+        <strong>be part of Kenya’s future!</strong>
+      </FeatureSection>
 
-        <RoundedCard className="relative -mt-4">
-          <h3 className="font-bold">Looking for a path to success?</h3>
-          <p>
-            TVET (Technical and Vocational Education and Training) gives you the
-            skills you need to build a career and take control of your future.
-            Whether you want to become an electrician, chef, hairdresser, or
-            entrepreneur, TVET equips you with hands-on training that prepares
-            you for real jobs.
-          </p>
-        </RoundedCard>
-      </section>
-
-      <section className="mt-8 bg-neutral-100 px-4 pb-20">
-        <div className="flex flex-col gap-6">
-          <IconBlock title="Practical Skills" icon={<IconTools />}>
-            90% of your time will be spent learning by doing, giving you the
-            confidence to apply your skills in the workplace
-          </IconBlock>
-          <IconBlock title="In-demand Careers" icon={<IconTimeline />}>
-            TVET connects you directly with industries looking for trained
-            professionals.
-          </IconBlock>
-          <IconBlock title="Affordable & Accessible" icon={<IconZoomMoney />}>
-            With TVET, you get high-quality training that’s affordable and
-            available near you.
-          </IconBlock>
-        </div>
-
-        <p className="mt-8">
-          No matter your background, TVET will give you the{" "}
-          <strong>tools to succeed and grow.</strong> Start your journey today
-          and <strong>be part of Kenya’s future!</strong>
-        </p>
-      </section>
-
-      <section className="mt-4 flex flex-col gap-2 bg-neutral-200 px-4 py-10">
-        <Heading>Get sponsored to train</Heading>
+      <section className="app-container mt-4 flex flex-col gap-2 px-4 py-10 lg:gap-4">
+        <Heading type="h2">Get sponsored to train</Heading>
         <p>
           Nairobi TVETs offer sponsorships from the government, NGOs, and
           private organizations to help students, especially those from
@@ -159,48 +150,234 @@ export default function Page() {
         </Underline>
       </section>
 
-      <section className="mt-4 bg-neutral-100 px-4 py-8">
-        <Heading>Apply now</Heading>
-        <div className="mt-4 flex flex-col items-center gap-4 rounded-md bg-[#ccc9c0] px-4 py-8">
-          <h2 className="typo-h4">Search for courses</h2>
-          <div className="flex w-full justify-between gap-4 rounded-md bg-neutral-100 p-2">
-            Search for courses
-            <IconSearch />
+      <section className="bg-background mt-4 pb-12 pt-8">
+        <div className="app-container flex flex-col items-center gap-4">
+          <Heading type="h2" className="w-full">
+            Apply now
+          </Heading>
+          <div className="flex w-full flex-col items-center gap-4 rounded-md bg-[#ccc9c0] px-4 py-8">
+            <h2 className="typo-h4 self-start">Search for courses</h2>
+            <div className="bg-background flex w-full justify-between gap-4 rounded-md p-2 text-[#686B78]">
+              Search for courses
+              <IconSearch />
+            </div>
           </div>
+          <section className="grid w-full gap-4 xl:grid xl:grid-cols-3">
+            <ApplyCard
+              tags={["Electrical", "Tag 2"]}
+              title="Electrical installation"
+              fee="1500 KSh"
+              school="Waithaka Vocational Training Centre"
+              applyByDate="12.02.24"
+              startsOnDate="12.02.24"
+              borderColor="#588157"
+              href="#"
+            />
+            <ApplyCard
+              tags={["Beauty", "Hairdressing"]}
+              title="Cosmetology (Hairdressing and Beauty) Training"
+              fee="1500 KSh"
+              school="Waithaka Vocational Training Centre"
+              applyByDate="12.02.24"
+              startsOnDate="12.02.24"
+              borderColor="#AD6A6C"
+              href="#"
+            />
+            <ApplyCard
+              tags={["Electrical", "Tag 2"]}
+              title="Other course 3"
+              fee="1500 KSh"
+              school="Waithaka Vocational Training Centre"
+              applyByDate="12.02.24"
+              startsOnDate="12.02.24"
+              borderColor="#283044"
+              href="#"
+            />
+          </section>
+
+          <Button className="max-w-3xs mx-auto mt-4 w-full" variant="secondary">
+            View all <IconArrowRight />
+          </Button>
         </div>
-        <section className="mt-4 flex flex-col gap-4">
-          <ApplyCard
-            tags={["Electrical", "Tag 2"]}
-            title="Electrical installation"
-            fee="1500 KSh"
-            school="Waithaka Vocational Training Centre"
-            applyByDate="12.02.24"
-            startsOnDate="12.02.24"
-            borderColor="#588157"
-          />
-          <ApplyCard
-            tags={["Beauty", "Hairdressing"]}
-            title="Cosmetology (Hairdressing and Beauty) Training"
-            fee="1500 KSh"
-            school="Waithaka Vocational Training Centre"
-            applyByDate="12.02.24"
-            startsOnDate="12.02.24"
-            borderColor="#AD6A6C"
-          />
-          <ApplyCard
-            tags={["Electrical", "Tag 2"]}
-            title="Other course 3"
-            fee="1500 KSh"
-            school="Waithaka Vocational Training Centre"
-            applyByDate="12.02.24"
-            startsOnDate="12.02.24"
-            borderColor="#283044"
-          />
+      </section>
+
+      <section className="app-container flex flex-col gap-4 px-0 lg:flex-row-reverse">
+        <section className="mt-4 px-4 py-12 lg:shrink">
+          <Heading type="h2" className="typo-h2">
+            Nairobi Vocational Centres
+          </Heading>
+
+          <div className="mt-8 grid auto-cols-max gap-4">
+            <div className="grid gap-1">
+              <p className="typo-h5">Westlands</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Kangemi VTC (Mountain View)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+            <div className="grid gap-1">
+              <p className="typo-h5">Dagoretti South</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Waithaka VTC (Waithaka)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+            <div className="grid gap-1">
+              <p className="typo-h5">Embakasi North</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Dandora Greenlight VTC (Dandora 1)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+            <div className="grid gap-1">
+              <p className="typo-h5">Embakasi East</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Embakasi VTC (Embakasi)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+            <div className="grid gap-1">
+              <p className="typo-h5">Makadara</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Jericho VTC (Harambee)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+              <Underline asChild>
+                <Link href="/#">
+                  Bahari VTC (Maringo / Hamza)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+              <Underline asChild>
+                <Link href="/#">
+                  Ofafa VTC (Maringo / Hamza)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+            <div className="grid gap-1">
+              <p className="typo-h5">Roysambu</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Kiwanja VTC (Kahawa West)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+            <div className="grid gap-1">
+              <p className="typo-h5">Mathare</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Mathare VTC (Mabatini)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+              <Underline asChild>
+                <Link href="/#">
+                  Old Mathari VTC (Hospital)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+            <div className="grid gap-1">
+              <p className="typo-h5">Kahawa</p>
+              <Underline asChild>
+                <Link href="/#">
+                  Kahawa Garrison VTC (Kahawa)
+                  <IconArrowRight />
+                </Link>
+              </Underline>
+            </div>
+          </div>
         </section>
 
-        <Button className="mt-8 w-full" variant="secondary">
-          View all <IconArrowRight />
-        </Button>
+        <section className="map relative box-border min-h-[550px] w-full md:my-8">
+          <Image
+            src="/map.jpg"
+            alt="Students in a classroom"
+            fill
+            style={{
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+            quality={100}
+          />
+        </section>
+      </section>
+
+      <div className="bg-background">
+        <section className="app-container mt-4 py-12">
+          <Heading type="h2">Training areas</Heading>
+          <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 xl:grid-cols-3">
+            <Link href="#">
+              <TrainingAreaCard title="Beauty and hair">
+                20 courses available
+              </TrainingAreaCard>
+            </Link>
+            <Link href="#">
+              <TrainingAreaCard title="Electricity">
+                20 courses available
+              </TrainingAreaCard>
+            </Link>
+            <Link href="#">
+              <TrainingAreaCard title="Plumbing">
+                20 courses available
+              </TrainingAreaCard>
+            </Link>
+            <Link href="#">
+              <TrainingAreaCard title="Computer packages">
+                20 courses available
+              </TrainingAreaCard>
+            </Link>
+            <Link href="#">
+              <TrainingAreaCard title="Food and beverages">
+                20 courses available
+              </TrainingAreaCard>
+            </Link>
+            <Link href="#">
+              <TrainingAreaCard title="Construction">
+                20 courses available
+              </TrainingAreaCard>
+            </Link>
+          </div>
+        </section>
+      </div>
+
+      <section className="app-container max-lg:px-0 lg:pt-8">
+        <div className="rounded-tr-xl bg-[#283044] bg-[url(/blend2.jpg)] bg-cover p-4 bg-blend-multiply">
+          <Heading
+            type="h2"
+            className="text-primary-foreground typo-h1-sm bottom-8 z-10 m-4"
+          >
+            A Bright Future with TVET
+          </Heading>
+        </div>
+        <RoundedCard className="relative -mt-4">
+          <h3 className="font-bold">Looking for a path to success?</h3>
+          <p>
+            TVET (Technical and Vocational Education and Training) gives you the
+            skills you need to build a career and take control of your future.
+            Whether you want to become an electrician, chef, hairdresser, or
+            entrepreneur, TVET equips you with hands-on training that prepares
+            you for real jobs.
+          </p>
+
+          <div className="mt-6 flex justify-center">
+            <Button className="max-w-3xs w-full">
+              Apply now <IconChecklist />
+            </Button>
+          </div>
+        </RoundedCard>
       </section>
     </div>
   );

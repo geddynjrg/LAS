@@ -30,7 +30,7 @@ export const AppFooter: FC = () => {
       <Anchor href="#">{t("Components.app-footer.privacy-policy")}</Anchor>
 
       <div className="typo-body-extra-small border-t border-solid border-neutral-700 px-12 pt-[1.625rem]">
-        © 2024 eCitizen. {t("Components.app-footer.rights")}
+        &copy; 2025 eCitizen. {t("Components.app-footer.rights")}
       </div>
     </div>
   );

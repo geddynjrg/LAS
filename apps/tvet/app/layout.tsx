@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import { SidebarInset } from "@workspace/ui/components/sidebar";
 
+import { AppFooter } from "@/components/app-footer";
 import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Providers } from "@/components/providers";
@@ -24,9 +25,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <AppHeader locale={locale} />
+            <AppHeader />
             <AppSidebar />
             <SidebarInset>{children}</SidebarInset>
+            <AppFooter />
           </Providers>
         </NextIntlClientProvider>
       </body>
