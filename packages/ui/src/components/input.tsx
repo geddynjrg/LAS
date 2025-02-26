@@ -61,7 +61,6 @@ export const Input: FC<InputProps> = ({
         className={cn(
           inputVariants({ size }),
           invalid && "border-destructive",
-          // "h-full w-full border-none bg-transparent px-2 file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none",
           startDecorator && "ps-8",
           endDecorator && "pe-8",
         )}

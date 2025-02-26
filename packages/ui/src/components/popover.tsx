@@ -2,6 +2,7 @@
 
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { IconX } from "@tabler/icons-react";
+import type { ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
@@ -17,6 +18,9 @@ export interface PopoverProps {
   withArrow?: boolean;
   sideOffset?: number;
   side?: "top" | "right" | "bottom" | "left";
+  asChild?: boolean;
+  onOpenAutoFocus: PopoverPrimitive.PopoverContentProps["onOpenAutoFocus"];
+  onInteractOutside: PopoverPrimitive.PopoverContentProps["onInteractOutside"];
   children: React.ReactNode;
 }
 
@@ -24,18 +28,16 @@ export const PopoverContent: React.FC<PopoverProps> = ({
   title,
   className,
   withArrow = true,
-  sideOffset = 4,
-  side,
   children,
+  ...props
 }) => (
   <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
-      side={side} // default side is bottom
-      sideOffset={sideOffset}
       className={cn(
         "bg-background text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 rounded-md p-4 shadow-[0px_1px_5px_0px_rgba(0,0,0,0.2)] outline-none",
         className,
       )}
+      {...props}
     >
       {/* Arrow component */}
       {withArrow && (
@@ -61,6 +63,6 @@ export const PopoverContent: React.FC<PopoverProps> = ({
   </PopoverPrimitive.Portal>
 );
 
-export const PopoverFooter: React.FC<{ children?: React.ReactNode }> = ({
+export const PopoverFooter: React.FC<{ children?: ReactNode }> = ({
   children,
 }) => <div className="flex flex-row justify-end gap-4">{children}</div>;

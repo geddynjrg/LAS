@@ -20,6 +20,7 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@tabler/icons-react": "^3.30.0",
     "clsx": "^2.1.1",
+    "cmdk": "^1.0.4",
     "cva-extended": "^2.0.0",
     "embla-carousel-react": "^8.5.2",
     "next-intl": "^3.26.3",
