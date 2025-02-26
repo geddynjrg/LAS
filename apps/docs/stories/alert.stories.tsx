@@ -29,3 +29,29 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Primary = {} satisfies Story;
+
+export const Variants = {
+  render: (props) => (
+    <div className="space-y-4">
+      {alertVariants.variants.variant.map((variant) => (
+        <Alert {...props} key={variant} variant={variant} />
+      ))}
+    </div>
+  ),
+} satisfies Story;
+
+export const Positions = {
+  render: (props) => (
+    <div className="space-y-4">
+      {alertVariants.variants.position.map((position) => (
+        <Alert {...props} key={position} position={position} />
+      ))}
+    </div>
+  ),
+} satisfies Story;
+
+export const ContentOnly = {
+  render: (props) => (
+    <Alert {...props} title={undefined} onClose={undefined} hasIcon={false} />
+  ),
+} satisfies Story;

@@ -4,7 +4,7 @@ import type { FC, ReactNode } from "react";
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
 
 export const containerVariant = cva({
-  base: "max-w-(--app-container-max-width) mx-auto w-full",
+  base: "max-w-(--app-container-max-width) px-(--app-container-side-padding) mx-auto w-full",
 });
 
 export interface ContainerProps extends VariantProps<typeof containerVariant> {

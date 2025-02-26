@@ -3,6 +3,8 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import * as React from "react";
 
+import { SidebarProvider } from "@workspace/ui/components/sidebar";
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider
@@ -11,7 +13,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
+      <SidebarProvider>{children}</SidebarProvider>
     </NextThemesProvider>
   );
 }

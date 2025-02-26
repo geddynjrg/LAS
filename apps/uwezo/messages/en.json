@@ -1,0 +1,54 @@
+{
+  "Common": {
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "apply": "Apply"
+  },
+
+  "Footer": {
+    "relatedAgencies": "Related Agencies",
+    "usefulLinks": "Useful Links",
+    "quickContacts": "Quick Contacts"
+  },
+
+  "FrontPage": {
+    "title": "<title>Uwezo Fund’s</title> <lineBreak></lineBreak> <subTitle><light>aim is to enable</light> women, youth <light>and</light> persons with disabilities <light>to access finances to</light> promote businesses <light>and</light> enterprises <light>at the constituency level.</light></subTitle>",
+    "description": "Self-help groups that meet <underline>eligibility criteria</underline> can apply for a loan to advance their projects and enterprises.",
+    "imageDescription": "Image mesh",
+    "startApplying": "Start applying",
+    "criteria": {
+      "title": "Eligibility Criteria",
+      "one": "Group must be registered with the Department of Social Services, Cooperatives or the Registrar of Societies body with a valid group registration certificate",
+      "two": "Group membership must be as guided by the registering entity, membership should be between 10-15 members.",
+      "three": "<bold>Group Membership must be at least:</bold><ul> <li>For youth groups: membership at least 70% youth (18-35 years), and leadership 100% youth </li><li>For women’s groups: membership at least 70% women (18+ years), and leadership 100% women </li><li>For people with disabilities groups: membership at least 70% PWDs, and leadership 100% PWDs.</li></ul>",
+      "four": "Group operates a table banking structure or any other group fund structure where members make monthly contribution according to the group’s internal guidelines",
+      "five": "Group holds a bank account in the name of the group",
+      "six": "Institutions are eligible if they have listed youth, women, and PWDs groups within them"
+    },
+    "fundDescription": {
+      "welcome": "Welcome to",
+      "title": "Uwezo Fund",
+      "description": "Uwezo Fund is a flagship programme for vision 2030 aimed at enabling women, youth and persons with disabilities access finances to promote businesses and enterprises at the constituency level, thereby enhancing economic growth towards the realization of the same and the Sustainable Development Goals No.1 (eradicate extreme poverty and hunger) and 3 (promote gender equality and empower women). The Fund is highly devolved and adopted the concept of bottom-up approach with decision making done at the grass-root level.",
+      "objectives": "The Fund is revolving in nature and its operations are based in the constituencies. The Objectives of the Fund are;",
+      "objectivesList": {
+        "one": "To expand access to finances for the youth, women and persons with disabilities at the constituency level for businesses and enterprises development;",
+        "two": "To generate gainful self- employment for the youth and women; and",
+        "three": "To model an alternative framework in funding community driven development initiatives."
+      }
+    },
+    "achievements": {
+      "successfulFunding": "Successful Funding",
+      "title": "Discover our incredible Achievements",
+      "womenGroup": "WOMEN GROUPS",
+      "youthGroup": "YOUTH GROUPS",
+      "pwdGroup": "PWD GROUPS",
+      "female": "FEMALE",
+      "male": "MALE",
+      "cumulativeDisbursement": "CUMULATIVE DISBURSEMENT (KSHS)"
+    },
+    "news": {
+      "title": "News & Activities Update",
+      "uwezoNewsAndEvents": "Uwezo News & Events"
+    }
+  }
+}

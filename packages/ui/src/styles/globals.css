@@ -30,6 +30,7 @@
   --radius-2xl: 1.25rem;
   --leading-normal: 1.4rem;
   --app-container-max-width: 1416px;
+  --app-container-side-padding: 1rem;
 
   --color-background: hsl(0, 0%, 100%);
   --color-foreground: hsl(240, 10%, 8%);
@@ -205,6 +206,9 @@
   }
 
   .uwezo {
+    --sidebar-inset-max-width: 100%;
+    --app-container-max-width: 1024px;
+
     --color-primary: hsl(310, 63%, 44%);
     --color-primary-hover: hsl(310, 63%, 31%);
     --color-primary-active: hsl(309, 64%, 17%);
@@ -282,6 +286,12 @@
   }
 }
 
+@utility typo-h1-lg {
+  font-size: 3rem;
+  line-height: 3.6rem;
+  font-weight: 700;
+}
+
 @utility typo-h2 {
   font-size: 2.0625rem;
   font-weight: 700;
@@ -336,6 +346,12 @@
   }
 }
 
+@utility typo-h6-sm {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.4625rem;
+}
+
 @utility typo-display {
   font-size: 2.75rem;
   font-weight: 900;
@@ -376,6 +392,12 @@
 
 @utility typo-body-small {
   font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.225rem;
+}
+
+@utility typo-body-small-bold {
+  font-weight: 700;
   font-size: 0.875rem;
   line-height: 1.225rem;
 }

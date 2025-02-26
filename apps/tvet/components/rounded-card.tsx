@@ -2,7 +2,7 @@ import type { FC, ReactNode } from "react";
 
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
 
-export const roudedCardVariants = cva({
+export const roundedCardVariants = cva({
   base: "rounded-tr-2xl px-6 py-7",
   variants: {
     variant: {
@@ -16,7 +16,7 @@ export const roudedCardVariants = cva({
 });
 
 export interface RoundedCardProps
-  extends VariantProps<typeof roudedCardVariants> {
+  extends VariantProps<typeof roundedCardVariants> {
   className?: string;
   children?: ReactNode;
 }
@@ -27,7 +27,7 @@ export const RoundedCard: FC<RoundedCardProps> = ({
   children,
 }) => {
   return (
-    <div className={cn(roudedCardVariants({ variant }), className)}>
+    <div className={cn(roundedCardVariants({ variant }), className)}>
       {children}
     </div>
   );
