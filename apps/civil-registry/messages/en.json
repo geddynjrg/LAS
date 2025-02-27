@@ -2,7 +2,7 @@
   "Common": {
     "menu": "Menu"
   },
-  "Dashboard": {
+  "DashboardPage": {
     "title": "My relations",
     "description": "You can view the details of your minor children and your wards entered in the civil registry. You will not be shown the data of your minor child if your rights of custody have been suspended or withdrawn.",
     "children": {
@@ -53,5 +53,22 @@
     "phone": "Phone number",
     "confirm-registration?": "Confirm registration?",
     "back": "Back"
+  },
+  "SuccessPage": {
+    "title": "Thank you for validating your child’s birth registration data!",
+    "success-confirmation-title": "{name} now has a valid birth certificate!",
+    "success-confirmation-text": "The birth certificate is available digitally. If there is a need for a physical birth certificate you can get it following the next steps:",
+    "instructions-title": "How do I get a physical birth certificate?",
+    "find-registry-office": "Find your nearest Civil Registry Office",
+    "benefits-title": "Benefits of having a valid birth certificate",
+    "school-enrollment": "<strong>Easy School Enrollment:</strong> A birth certificate is important when signing up for school in Kenya. It helps prove your child's age and nationality, making the process smoother for starting primary or secondary education.",
+    "service-access": "<strong>Access to Services:</strong> It helps you access important government services, like healthcare or social programs. Plus, you'll need it to apply for things like a Kenyan ID card or a passport.",
+    "legal-security": "<strong>Legal Security:</strong> Having a birth certificate protects your rights. It proves who you are, making it easier to handle things like claiming inheritance, getting a job, or dealing with legal matters later in life.",
+    "go-to-office-title": "Go to your nearest Civil Registry office",
+    "go-to-office-text": "You can receive the birth certificate at any Civil Registry Office. The office does not need to be in the area where your child was born.",
+    "show-id-title": "Show parent’s ID and confirm your request",
+    "show-id-text": "Ask the accountant to issue the physical birth certificate for your child. Parent’s valid ID is necessary for this.",
+    "wait-certificate-title": "Wait for the certificate to be issued",
+    "wait-certificate-text": "Wait for the certificate to be issued"
   }
 }

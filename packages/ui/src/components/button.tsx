@@ -63,7 +63,8 @@ export const Button: FC<ButtonProps> = ({
   ...props
 }) => {
   const Comp = asChild ? Slot : "button";
-  const hasOneChildOnly = children && Children.count(children) === 1;
+  const hasOneChildOnly =
+    children && Children.count(children) === 1 && !asChild;
 
   return (
     <Comp

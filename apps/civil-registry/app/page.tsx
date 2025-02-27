@@ -59,12 +59,12 @@ export default function Page() {
   return (
     <SectionWrap hasTopPadding hasBottomPadding className="space-y-8">
       <div className="space-y-4">
-        <h2 className="typo-h2">{t("Dashboard.title")}</h2>
-        <p>{t("Dashboard.description")}</p>
+        <h2 className="typo-h2">{t("DashboardPage.title")}</h2>
+        <p>{t("DashboardPage.description")}</p>
       </div>
 
       <h3 className={cn("typo-h3", "flex items-center gap-4")}>
-        {t("Dashboard.children.title")}
+        {t("DashboardPage.children.title")}
         <div
           className={cn(
             "typo-h5",
