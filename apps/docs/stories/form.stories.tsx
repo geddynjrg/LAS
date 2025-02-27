@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { z } from "zod";
 
 import { Checkbox } from "@workspace/ui/components/checkbox";
+import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
@@ -61,6 +62,15 @@ export const Primary: Story = {
           description="This is a description for the search input field"
         />
 
+        <Field
+          state={state}
+          name="date"
+          label="Date label"
+          required
+          control={(props) => <DatePicker {...props} />}
+          description="This is a description for the date picker field"
+        />
+
         <SubmitButton disabled={isPending}>Submit</SubmitButton>
       </Form>
     );
@@ -74,6 +84,7 @@ const schema = z.object({
     .union([z.literal("on"), z.null()])
     .refine((v) => !!v, "Please agree to the terms"),
   searchInput: z.string().nonempty(),
+  date: z.coerce.date(),
 });
 
 const formAction: FormAction<z.infer<typeof schema>> = async (

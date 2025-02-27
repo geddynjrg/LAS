@@ -15,7 +15,7 @@ export interface FormFieldState<T extends Record<string, unknown>> {
   errors?: { [K in keyof T]?: (string | z.ZodIssue)[] };
 }
 
-export interface FieldControlProps<TName extends string, TValue> {
+export interface FieldControlProps<TName, TValue> {
   id: string;
   name: TName;
   defaultValue?: TValue;
@@ -23,7 +23,7 @@ export interface FieldControlProps<TName extends string, TValue> {
 
 export interface FieldProps<
   TInputs extends Record<string, unknown>,
-  TName extends Extract<keyof TInputs, string>,
+  TName extends Extract<keyof TInputs, unknown>,
 > {
   control: (props: FieldControlProps<TName, TInputs[TName]>) => ReactNode;
   name: TName;
@@ -35,7 +35,8 @@ export interface FieldProps<
 }
 
 export const Field = <
-  TInputs extends Record<string, string>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- this allows using <Field /> without the 'state' prop
+  TInputs extends Record<string, any>,
   TName extends Extract<keyof TInputs, string>,
 >({
   state,

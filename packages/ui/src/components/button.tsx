@@ -49,6 +49,7 @@ export interface ButtonProps extends VariantProps<typeof buttonVariants> {
   type?: "button" | "submit" | "reset";
   active?: boolean;
   disabled?: boolean;
+  tabIndex?: number;
   className?: string;
   children?: ReactNode;
 }

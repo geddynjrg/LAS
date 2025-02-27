@@ -13,6 +13,7 @@
       "string_too_large": "Thamani lazima iwe zaidi ya herufi {maximum}",
       "date_too_small": "Tarehe lazima iwe angalau {minimum}",
       "date_too_large": "Tarehe lazima iwe zaidi ya {maximum}",
+      "invalid_date": "Tarehe batili",
       "number_too_small": "Thamani lazima iwe angalau {minimum}",
       "number_too_large": "Thamani lazima iwe zaidi ya {maximum}",
       "invalid_union": "Tafadhali chagua chaguo sahihi"

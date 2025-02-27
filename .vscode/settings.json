@@ -32,6 +32,13 @@
   "tailwindCSS.includeLanguages": {
     "plaintext": "html"
   },
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "classNames",
+    "ngClass",
+    "class:list"
+  ],
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]

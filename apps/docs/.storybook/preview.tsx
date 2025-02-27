@@ -49,6 +49,7 @@ export const decorators = [
   }),
   (Story, { globals }) => (
     <NextIntlClientProvider
+      timeZone={Intl.DateTimeFormat().resolvedOptions().timeZone}
       locale={globals.locale ?? "en"}
       messages={globals.locale === "sw" ? swTranslations : enTranslations}
     >

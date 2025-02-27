@@ -13,14 +13,15 @@ export const PopoverAnchor = PopoverPrimitive.Anchor;
 export const PopoverClose = PopoverPrimitive.Close;
 
 export interface PopoverProps {
-  title: string;
+  title?: string;
   className?: string;
   withArrow?: boolean;
+  withCloseButton?: boolean;
   sideOffset?: number;
   side?: "top" | "right" | "bottom" | "left";
   asChild?: boolean;
-  onOpenAutoFocus: PopoverPrimitive.PopoverContentProps["onOpenAutoFocus"];
-  onInteractOutside: PopoverPrimitive.PopoverContentProps["onInteractOutside"];
+  onOpenAutoFocus?: PopoverPrimitive.PopoverContentProps["onOpenAutoFocus"];
+  onInteractOutside?: PopoverPrimitive.PopoverContentProps["onInteractOutside"];
   children: React.ReactNode;
 }
 
@@ -28,6 +29,7 @@ export const PopoverContent: React.FC<PopoverProps> = ({
   title,
   className,
   withArrow = true,
+  withCloseButton = true,
   children,
   ...props
 }) => (
@@ -49,13 +51,15 @@ export const PopoverContent: React.FC<PopoverProps> = ({
       )}
 
       {/* Close button to handle in popover closing */}
-      <PopoverPrimitive.Close asChild className="absolute right-0 top-0">
-        <Button variant="ghost">
-          <IconX className="text-neutral-500" />
-        </Button>
-      </PopoverPrimitive.Close>
+      {withCloseButton && (
+        <PopoverPrimitive.Close asChild className="absolute right-0 top-0">
+          <Button variant="ghost">
+            <IconX className="text-neutral-500" />
+          </Button>
+        </PopoverPrimitive.Close>
+      )}
 
-      <h1 className="mb-4 mr-5 text-lg font-bold">{title}</h1>
+      {title && <h1 className="mb-4 mr-5 text-lg font-bold">{title}</h1>}
 
       {/* Content */}
       <div className="flex flex-col gap-4">{children}</div>
