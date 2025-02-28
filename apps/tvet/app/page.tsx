@@ -15,19 +15,25 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
+import { Container } from "@workspace/ui/components/container";
 import {
   NumberedList,
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 import { FeatureSection } from "@workspace/ui/components/tvet/feature-section";
+import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
+import {
+  RoundedCornerSection,
+  RoundedCornerSectionHeader,
+} from "@workspace/ui/components/tvet/rounded-corner-section";
 import { SectionHeader } from "@workspace/ui/components/tvet/section-header";
 import { TrainingAreaCard } from "@workspace/ui/components/tvet/training-area-card";
 import { Underline } from "@workspace/ui/components/underline";
 
+import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
-import { RoundedCard } from "@/components/rounded-card";
 
 export default function Page() {
   const t = useTranslations("FrontPage");
@@ -94,23 +100,26 @@ export default function Page() {
         </section>
       </section>
 
-      <SectionHeader
-        title=" Unlock Your Future with TVET Training"
-        image={{
-          url: "/hero-banners/banner-1.jpg",
-          alt: "Students in a classroom",
-        }}
-        subtitle="Looking for a path to success?"
-      >
-        TVET (Technical and Vocational Education and Training) gives you the
-        skills you need to build a career and take control of your future.
-        Whether you want to become an electrician, chef, hairdresser, or
-        entrepreneur, TVET equips you with hands-on training that prepares you
-        for real jobs.
-      </SectionHeader>
+      <Container className="px-0">
+        <SectionHeader
+          title=" Unlock Your Future with TVET Training"
+          image={{
+            url: "/hero-banners/banner-1.jpg",
+            alt: "Students in a classroom",
+          }}
+          subtitle="Looking for a path to success?"
+        >
+          <p className="font-bold">Looking for a path to success?</p>
+          TVET (Technical and Vocational Education and Training) gives you the
+          skills you need to build a career and take control of your future.
+          Whether you want to become an electrician, chef, hairdresser, or
+          entrepreneur, TVET equips you with hands-on training that prepares you
+          for real jobs.
+        </SectionHeader>
+      </Container>
 
       <FeatureSection
-        className="bg-background"
+        className="bg-background lg:mt-8"
         features={[
           {
             title: "Hands-on Training",
@@ -134,7 +143,7 @@ export default function Page() {
         <strong>be part of Kenya’s future!</strong>
       </FeatureSection>
 
-      <section className="app-container mt-4 flex flex-col gap-2 px-4 py-10 lg:gap-4">
+      <Container className="mt-4 flex flex-col gap-2 px-4 py-10 lg:gap-4">
         <Heading type="h2">Get sponsored to train</Heading>
         <p>
           Nairobi TVETs offer sponsorships from the government, NGOs, and
@@ -148,10 +157,10 @@ export default function Page() {
             Learn more about sponsorships <IconArrowRight />
           </Link>
         </Underline>
-      </section>
+      </Container>
 
       <section className="bg-background mt-4 pb-12 pt-8">
-        <div className="app-container flex flex-col items-center gap-4">
+        <Container className="flex flex-col items-center gap-4">
           <Heading type="h2" className="w-full">
             Apply now
           </Heading>
@@ -198,10 +207,10 @@ export default function Page() {
           <Button className="max-w-3xs mx-auto mt-4 w-full" variant="secondary">
             View all <IconArrowRight />
           </Button>
-        </div>
+        </Container>
       </section>
 
-      <section className="app-container flex flex-col gap-4 px-0 lg:flex-row-reverse">
+      <Container className="flex flex-col gap-4 px-0 lg:flex-row-reverse">
         <section className="mt-4 px-4 py-12 lg:shrink">
           <Heading type="h2" className="typo-h2">
             Nairobi Vocational Centres
@@ -313,10 +322,10 @@ export default function Page() {
             quality={100}
           />
         </section>
-      </section>
+      </Container>
 
       <div className="bg-background">
-        <section className="app-container mt-4 py-12">
+        <Container className="mt-4 py-12">
           <Heading type="h2">Training areas</Heading>
           <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 xl:grid-cols-3">
             <Link href="#">
@@ -350,35 +359,38 @@ export default function Page() {
               </TrainingAreaCard>
             </Link>
           </div>
-        </section>
+        </Container>
+        <Container className="bg-neutral-100 max-lg:px-0 lg:py-8">
+          <RoundedCornerSection>
+            <RoundedCornerSectionHeader asChild variant="rounded">
+              <GradientCornerCard color="blue" gradient="blend1">
+                <Heading
+                  type="h2"
+                  className="text-primary-foreground typo-h1-sm bottom-8 m-4 self-end"
+                >
+                  A Bright Future with TVET
+                </Heading>
+              </GradientCornerCard>
+            </RoundedCornerSectionHeader>
+            <RoundedCornerCard>
+              <h3 className="font-bold">Looking for a path to success?</h3>
+              <p>
+                TVET (Technical and Vocational Education and Training) gives you
+                the skills you need to build a career and take control of your
+                future. Whether you want to become an electrician, chef,
+                hairdresser, or entrepreneur, TVET equips you with hands-on
+                training that prepares you for real jobs.
+              </p>
+
+              <div className="mt-6 flex justify-center">
+                <Button className="max-w-3xs w-full">
+                  Apply now <IconChecklist />
+                </Button>
+              </div>
+            </RoundedCornerCard>
+          </RoundedCornerSection>
+        </Container>
       </div>
-
-      <section className="app-container max-lg:px-0 lg:pt-8">
-        <div className="rounded-tr-xl bg-[#283044] bg-[url(/blend2.jpg)] bg-cover p-4 bg-blend-multiply">
-          <Heading
-            type="h2"
-            className="text-primary-foreground typo-h1-sm bottom-8 z-10 m-4"
-          >
-            A Bright Future with TVET
-          </Heading>
-        </div>
-        <RoundedCard className="relative -mt-4">
-          <h3 className="font-bold">Looking for a path to success?</h3>
-          <p>
-            TVET (Technical and Vocational Education and Training) gives you the
-            skills you need to build a career and take control of your future.
-            Whether you want to become an electrician, chef, hairdresser, or
-            entrepreneur, TVET equips you with hands-on training that prepares
-            you for real jobs.
-          </p>
-
-          <div className="mt-6 flex justify-center">
-            <Button className="max-w-3xs w-full">
-              Apply now <IconChecklist />
-            </Button>
-          </div>
-        </RoundedCard>
-      </section>
     </div>
   );
 }

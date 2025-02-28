@@ -5,6 +5,7 @@ import {
   IconPhone,
   IconVideo,
 } from "@tabler/icons-react";
+import Autoplay from "embla-carousel-autoplay";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -17,12 +18,49 @@ import {
 } from "@workspace/ui/components/carousel";
 import { Container } from "@workspace/ui/components/container";
 import { GalleryCarousel } from "@workspace/ui/components/gallery-carousel";
+import { IconFacebook } from "@workspace/ui/components/icon/icon-facebook";
+import { IconInstagram } from "@workspace/ui/components/icon/icon-instagram";
+import { IconTikTok } from "@workspace/ui/components/icon/icon-tiktok";
+import { IconX } from "@workspace/ui/components/icon/icon-x";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
+import {
+  RoundedCornerSection,
+  RoundedCornerSectionHeader,
+} from "@workspace/ui/components/tvet/rounded-corner-section";
 import { Underline } from "@workspace/ui/components/underline";
 
+import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
-import { RoundedCard } from "@/components/rounded-card";
+import { SocialMediaCard } from "@/components/social-media-card";
+import { SocialMediaCarousel } from "@/components/social-media-carousel";
+
+const socialPosts: Array<{
+  imageUrl: string;
+  source: "tiktok" | "facebook" | "instagram" | "x";
+}> = [
+  {
+    imageUrl: "/socialmedia/social1.jpg",
+    source: "tiktok",
+  },
+  {
+    imageUrl: "/socialmedia/social2.jpg",
+    source: "facebook",
+  },
+  {
+    imageUrl: "/socialmedia/social3.jpg",
+    source: "instagram",
+  },
+  {
+    imageUrl: "/socialmedia/social4.jpg",
+    source: "x",
+  },
+  {
+    imageUrl: "/socialmedia/social5.jpg",
+    source: "facebook",
+  },
+];
 
 export default function Page() {
   const t = useTranslations("FrontPage");
@@ -55,7 +93,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="mt-4 bg-neutral-100 px-4 pb-12 pt-8">
+      <section className="bg-background mt-4 px-4 pb-12 pt-8">
         <div className="app-container">
           <Heading type="h2">Our courses</Heading>
           <p className="mt-4">
@@ -118,92 +156,83 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="mt-4 bg-neutral-200 pt-8">
-        <div className="app-container">
-          <div className="px-4">
-            <Heading type="h2">Our facilities</Heading>
-          </div>
-          <section className="mt-4 flex flex-col lg:flex-row">
-            <GalleryCarousel
-              className="lg:flex-2"
-              images={[
-                {
-                  url: "/classroom.jpg",
-                  alt: "Facilities",
-                },
-                {
-                  url: "/classroom2.jpg",
-                  alt: "Facilities2",
-                },
-                {
-                  url: "/classroom.jpg",
-                  alt: "Facilities3",
-                },
-                {
-                  url: "/classroom2.jpg",
-                  alt: "Facilities4",
-                },
-              ]}
-            />
+      <section className="bg-background pt-8">
+        <Container className="max-lg:px-0">
+          <Heading type="h2" className="mx-4">
+            Our facilities
+          </Heading>
 
-            <RoundedCard className="relative -mt-4 lg:mt-0 lg:flex-1">
-              <p>
-                <strong>Recently refurbished with modern facilities</strong>{" "}
-                through a KES 28 million investment by the Safaricom Foundation,
-                the institution now boasts{" "}
-                <strong>state-of-the-art ICT-enabled skills labs</strong> and
-                <strong>cutting-edge equipment</strong> in its various
-                departments.
-                <br />
-                <br />
-                These improvements enhance the quality of training, ensuring
-                that students gain{" "}
-                <strong>
-                  both practical skills and theoretical knowledge
-                </strong>{" "}
-                to excel in their chosen careers.
-              </p>
-            </RoundedCard>
-          </section>
-        </div>
+          <RoundedCornerSection className="mt-4">
+            <RoundedCornerSectionHeader className="!pb-0">
+              <GalleryCarousel
+                images={[
+                  {
+                    url: "/images/classroom.jpg",
+                    alt: "Facilities",
+                  },
+                  {
+                    url: "/images/classroom2.jpg",
+                    alt: "Facilities2",
+                  },
+                  {
+                    url: "/images/classroom.jpg",
+                    alt: "Facilities3",
+                  },
+                  {
+                    url: "/images/classroom2.jpg",
+                    alt: "Facilities4",
+                  },
+                ]}
+              />
+            </RoundedCornerSectionHeader>
+            <RoundedCornerCard>
+              <strong>Recently refurbished with modern facilities</strong>{" "}
+              through a KES 28 million investment by the Safaricom Foundation,
+              the institution now boasts{" "}
+              <strong>state-of-the-art ICT-enabled skills labs</strong> and
+              <strong>cutting-edge equipment</strong> in its various
+              departments.
+              <br />
+              <br />
+              These improvements enhance the quality of training, ensuring that
+              students gain{" "}
+              <strong>
+                both practical skills and theoretical knowledge
+              </strong>{" "}
+              to excel in their chosen careers.
+            </RoundedCornerCard>
+          </RoundedCornerSection>
+        </Container>
       </section>
 
-      <section className="grid grid-cols-1 gap-4 bg-neutral-100 px-4 pb-12 pt-8">
+      <section className="bg-background grid grid-cols-1 gap-4 px-4 pb-12 pt-8">
         <div className="app-container grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <RoundedCard className="text-primary-foreground rounded-tr-xl bg-[var(--color-primary)] bg-[url(/blend1.jpg)] bg-cover bg-bottom px-6 py-8 bg-blend-multiply">
-            <p>
-              <strong>
-                At Waithaka, students benefit from a hands-on approach to
-                learning
-              </strong>
-              , with 90% of training focused on{" "}
-              <strong>practical skills</strong>. Industrial attachments and job
-              placements are also a key feature of the programmes, helping
-              students{" "}
-              <strong>
-                transition smoothly into employment or entrepreneurship
-              </strong>{" "}
-              upon completion.
-            </p>
-          </RoundedCard>
-          <RoundedCard className="text-primary-foreground rounded-tr-xl bg-[#AD6A6C] bg-[url(/blend1.jpg)] bg-cover px-6 py-8 bg-blend-multiply">
-            <p>
-              <strong>The centre has seen high employability rates</strong>,
-              with TVET graduates having a<strong>96% success rate</strong>in
-              securing jobs compared to the lower rates seen among traditional
-              university graduates.
-            </p>
-          </RoundedCard>
-          <RoundedCard className="text-primary-foreground rounded-tr-xl bg-[#283044] bg-[url(/blend2.jpg)] bg-cover px-6 py-8 bg-blend-multiply">
-            <p>
-              <strong>
-                With fully equipped facilities and highly qualified trainers
-              </strong>
-              , Waithaka Vocational Training Centre offers an{" "}
-              <strong>ideal learning environment</strong> for those eager to
-              pursue a skilled trade and secure a prosperous future
-            </p>
-          </RoundedCard>
+          <GradientCornerCard color="green" gradient="blend1">
+            <strong>
+              At Waithaka, students benefit from a hands-on approach to learning
+            </strong>
+            , with 90% of training focused on <strong>practical skills</strong>.
+            Industrial attachments and job placements are also a key feature of
+            the programmes, helping students{" "}
+            <strong>
+              transition smoothly into employment or entrepreneurship
+            </strong>{" "}
+            upon completion.
+          </GradientCornerCard>
+          <GradientCornerCard color="red" gradient="blend2">
+            <strong>The centre has seen high employability rates</strong>, with
+            TVET graduates having a<strong>96% success rate</strong>in securing
+            jobs compared to the lower rates seen among traditional university
+            graduates.
+          </GradientCornerCard>
+          <GradientCornerCard color="blue" gradient="blend3">
+            <strong>
+              With fully equipped facilities and highly qualified trainers
+            </strong>
+            , Waithaka Vocational Training Centre offers an{" "}
+            <strong>ideal learning environment</strong> for those eager to
+            pursue a skilled trade and secure a prosperous future
+          </GradientCornerCard>
         </div>
       </section>
 
@@ -226,7 +255,7 @@ export default function Page() {
               <p className="typo-body-large mt-4 px-4 font-bold">Our gates</p>
               <div className="relative mt-4 aspect-[16/9]">
                 <Image
-                  src="/our-gate.jpg"
+                  src="/images/our-gate.jpg"
                   alt="our gate"
                   style={{
                     objectFit: "cover",
@@ -254,100 +283,45 @@ export default function Page() {
       </Container>
 
       <section className="bg-neutral-100 py-12">
-        <div className="app-container max-w-3xl">
+        <Container>
           <Heading type="h2">Our social media</Heading>
           <div className="mt-4 flex flex-row items-center justify-between gap-4">
             <div className="flex w-full gap-4 border-r border-[#D6DAE4]">
-              <Image
+              <img
                 src="/waithaka-logo.png"
                 alt="Waithaka logo"
                 width={50}
                 height={50}
-                quality={100}
               />
               <div className="flex flex-col justify-center gap-1">
                 <div className="typo-body-large font-bold">Waithaka VTC</div>
                 <div className="text-[#9CA0AC]">1345 Posts</div>
               </div>
             </div>
-            <Button className="pl-4">Follow us</Button>
+            <Button className="ml-4">Follow us</Button>
           </div>
-          <Carousel className="mt-4">
-            <CarouselContent className="w-4/5 gap-4 px-4">
-              <CarouselItem className="relative aspect-square w-full overflow-clip rounded-xl">
-                <Image
-                  src="/classroom.jpg"
-                  alt="Students in a classroom"
-                  fill
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
-                  quality={100}
+          <SocialMediaCarousel className="mt-4">
+            {socialPosts.map((post, i) => (
+              <CarouselItem
+                key={i}
+                className="lg:basis-2/7 aspect-square basis-2/3 px-1 sm:basis-2/5"
+              >
+                <SocialMediaCard
+                  imageUrl={post.imageUrl}
+                  source={post.source}
                 />
-                <div className="absolute bottom-4 left-4">
-                  <Image
-                    src="/icons/tiktok.svg"
-                    alt="facebook"
-                    width={32}
-                    height={32}
-                  />
-                </div>
-                <div className="absolute right-4 top-4">
-                  <IconVideo className="text-primary-foreground size-8" />
-                </div>
               </CarouselItem>
-              <CarouselItem className="relative aspect-square w-full overflow-clip rounded-xl">
-                <Image
-                  src="/classroom.jpg"
-                  alt="Students in a classroom"
-                  fill
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
-                  quality={100}
-                />
-
-                <div className="absolute bottom-4 left-4">
-                  <Image
-                    src="/icons/facebook.svg"
-                    alt="facebook"
-                    width={32}
-                    height={32}
-                  />
-                </div>
-                <div className="absolute right-4 top-4">
-                  <IconVideo className="text-primary-foreground size-8" />
-                </div>
-              </CarouselItem>
-            </CarouselContent>
-            <CarouselControls />
-          </Carousel>
-        </div>
+            ))}
+          </SocialMediaCarousel>
+        </Container>
       </section>
       <section className="flex flex-col items-center bg-neutral-200 pb-8 pt-6">
         <div className="typo-h5">Follow us!</div>
         <div className="mt-5 flex gap-4">
-          <Image
-            src="/icons/facebook.svg"
-            alt="facebook"
-            width={32}
-            height={32}
-          />
-          <Image
-            src="/icons/tiktok.svg"
-            alt="facebook"
-            width={32}
-            height={32}
-          />
-          <Image
-            src="/icons/instagram.svg"
-            alt="facebook"
-            width={32}
-            height={32}
-          />
-          <Image src="/icons/x.svg" alt="facebook" width={32} height={32} />
+          <IconFacebook />
+          <IconTikTok />
+          <IconInstagram />
+          <IconX />
         </div>
       </section>
 

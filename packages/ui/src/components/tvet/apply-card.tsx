@@ -1,8 +1,8 @@
 import { IconArrowRight } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
 import { useTranslations } from "next-intl";
-import type { FC } from "react";
 import Link from "next/link";
+import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Tag } from "@workspace/ui/components/tag";
@@ -87,7 +87,12 @@ export const ApplyCard: FC<ApplyCardProps> = ({
         ) : null}
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <Button asChild variant="shadow">
+        <Button
+          asChild
+          variant="shadow"
+          size="md"
+          className="size-8 bg-neutral-100 px-0"
+        >
           <Link href={href}>
             <IconArrowRight />
           </Link>

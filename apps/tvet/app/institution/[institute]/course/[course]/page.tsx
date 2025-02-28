@@ -15,6 +15,7 @@ import {
   CarouselControls,
   CarouselItem,
 } from "@workspace/ui/components/carousel";
+import { Container } from "@workspace/ui/components/container";
 import {
   NumberedList,
   NumberedListItem,
@@ -22,17 +23,14 @@ import {
 import { Tag } from "@workspace/ui/components/tag";
 import { Testimonial } from "@workspace/ui/components/testimonial";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
+import { RoundedCornerSection } from "@workspace/ui/components/tvet/rounded-corner-section";
 import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card";
 import { Underline } from "@workspace/ui/components/underline";
 
-import {
-  AppFooter,
-  FooterNavGroup,
-  FooterNavItem,
-} from "@/components/app-footer";
+import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
-import { RoundedCard } from "@/components/rounded-card";
 
 function generateStaticParams() {}
 
@@ -187,65 +185,56 @@ export default function Page() {
       </section>
 
       <section className="bg-neutral-100 pb-12 pt-8">
-        <div className="app-container grid grid-cols-1 gap-6">
-          <div className="max-lg:px-0 lg:pt-8">
-            <div className="rounded-tr-xl bg-[#588157] bg-[url(/blend2.jpg)] bg-cover p-4 bg-blend-multiply">
-              <Heading
-                type="h2"
-                className="text-primary-foreground typo-h1-sm bottom-8 z-10 m-4"
-              >
+        <Container className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <RoundedCornerSection layout="stacked">
+            <GradientCornerCard color="green" gradient="blend1">
+              <Heading type="h2" className="text-primary-foreground typo-h1-sm">
                 Industrial training
               </Heading>
-            </div>
-            <RoundedCard className="relative -mt-4">
+            </GradientCornerCard>
+            <RoundedCornerCard>
               <h3 className="font-bold">Looking for a path to success?</h3>
               <p>
                 Students gain real-world experience through domestic electrical
                 installations and industrial machine drives.
               </p>
-            </RoundedCard>
-          </div>
+            </RoundedCornerCard>
+          </RoundedCornerSection>
 
-          <div className="max-lg:px-0 lg:pt-8">
-            <div className="rounded-tr-xl bg-[#AD6A6C] bg-[url(/blend2.jpg)] bg-cover p-4 bg-blend-multiply">
-              <Heading
-                type="h2"
-                className="text-primary-foreground typo-h1-sm bottom-8 z-10 m-4"
-              >
+          <RoundedCornerSection layout="stacked">
+            <GradientCornerCard color="red" gradient="blend2">
+              <Heading type="h2" className="text-primary-foreground typo-h1-sm">
                 Certification
               </Heading>
-            </div>
-            <RoundedCard className="relative -mt-4">
+            </GradientCornerCard>
+            <RoundedCornerCard>
               <h3 className="font-bold">Looking for a path to success?</h3>
               <p>
                 Earn your NITA Certificate by passing the NITA Grade III, II,
                 and I exams. This qualification is recognized across the
                 industry and opens doors to better job opportunities.
               </p>
-            </RoundedCard>
-          </div>
+            </RoundedCornerCard>
+          </RoundedCornerSection>
 
-          <div className="max-lg:px-0 lg:pt-8">
-            <div className="rounded-tr-xl bg-[#283044] bg-[url(/blend2.jpg)] bg-cover p-4 bg-blend-multiply">
-              <Heading
-                type="h2"
-                className="text-primary-foreground typo-h1-sm bottom-8 z-10 m-4"
-              >
+          <RoundedCornerSection layout="stacked">
+            <GradientCornerCard color="blue" gradient="blend3">
+              <Heading type="h2" className="text-primary-foreground typo-h1-sm">
                 Career Path
               </Heading>
-            </div>
-            <RoundedCard className="relative -mt-4">
+            </GradientCornerCard>
+            <RoundedCornerCard>
               <h3 className="font-bold">Looking for a path to success?</h3>
               <div>
                 After completing the course, you’ll be ready to work as:
-                <ul>
+                <ul className="ml-2 list-inside list-disc">
                   <li>Technician or Craftsman</li>
                   <li>Opportunities for further study with Master Craft III</li>
                 </ul>
               </div>
-            </RoundedCard>
-          </div>
-        </div>
+            </RoundedCornerCard>
+          </RoundedCornerSection>
+        </Container>
       </section>
 
       <section className="py-10">

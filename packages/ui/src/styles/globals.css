@@ -189,6 +189,8 @@
   .tvet {
     --app-container-max-width: var(--container-6xl);
 
+    --color-background: var(--color-neutral-100);
+
     --color-theme-100: hsl(46, 15%, 83%);
     --color-theme-200: hsl(82, 20%, 62%);
     --color-theme-500: hsl(131, 22%, 29%);
