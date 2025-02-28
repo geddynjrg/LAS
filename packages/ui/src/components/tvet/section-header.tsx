@@ -1,12 +1,10 @@
 import type { FC, ReactNode } from "react";
 
-import { Container } from "@workspace/ui/components/container";
 import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
 import {
   RoundedCornerSection,
   RoundedCornerSectionHeader,
 } from "@workspace/ui/components/tvet/rounded-corner-section";
-import { cn } from "@workspace/ui/lib/utils";
 
 export interface SectionHeaderProps {
   title: string;

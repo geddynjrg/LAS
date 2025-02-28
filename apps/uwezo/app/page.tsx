@@ -7,7 +7,6 @@ import {
   IconStars,
   IconWoman,
 } from "@tabler/icons-react";
-import Autoplay from "embla-carousel-autoplay";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC } from "react";
@@ -264,7 +263,7 @@ function NewsSection() {
         <LeadingSlash className="mb-1">Uwezo</LeadingSlash>
         <h2 className="typo-h5 mb-9">{t("news.title")}</h2>
 
-        <Carousel plugins={[Autoplay({ delay: 5000 })]} className="max-w-full">
+        <Carousel autoPlay={5000} className="max-w-full">
           <CarouselContent>
             {NEWS_ITEMS.map((newsItem, i) => (
               <CarouselItem

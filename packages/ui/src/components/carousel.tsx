@@ -2,6 +2,7 @@
 
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
+import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
@@ -26,6 +27,7 @@ type CarouselPlugin = UseCarouselParameters[1];
 
 type CarouselProps = {
   opts?: CarouselOptions;
+  autoPlay?: number;
   plugins?: CarouselPlugin;
   setApi?: (api: CarouselApi) => void;
   className?: string;
@@ -58,16 +60,21 @@ export const Carousel: FC<CarouselProps> = ({
   opts,
   setApi,
   plugins,
+  autoPlay,
   className,
   children,
   ...props
 }) => {
+  const emblaPlugins = plugins || [];
+  if (autoPlay) {
+    emblaPlugins.push(Autoplay({ delay: autoPlay }));
+  }
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
       axis: "x",
     },
-    plugins,
+    emblaPlugins,
   );
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);

@@ -34,7 +34,6 @@ import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
 import { SocialMediaCard } from "@/components/social-media-card";
-import { SocialMediaCarousel } from "@/components/social-media-carousel";
 
 const socialPosts: Array<{
   imageUrl: string;
@@ -101,6 +100,7 @@ export default function Page() {
             Plumbing, Welding, Electrical Engineering, and Food and Beverage
             Production.
           </p>
+
           <section className="mt-4 grid gap-4 xl:grid xl:grid-cols-3">
             <ApplyCard
               tags={["Electrical", "Tag 2"]}
@@ -148,6 +148,7 @@ export default function Page() {
               href="/institution/1/course/2"
             />
           </section>
+
           <div className="flex justify-center lg:mt-8">
             <Button variant="secondary" className="max-w-3xs mt-4 w-full">
               Show all <IconChevronDown />
@@ -185,6 +186,7 @@ export default function Page() {
                 ]}
               />
             </RoundedCornerSectionHeader>
+
             <RoundedCornerCard>
               <strong>Recently refurbished with modern facilities</strong>{" "}
               through a KES 28 million investment by the Safaricom Foundation,
@@ -219,12 +221,14 @@ export default function Page() {
             </strong>{" "}
             upon completion.
           </GradientCornerCard>
+
           <GradientCornerCard color="red" gradient="blend2">
             <strong>The centre has seen high employability rates</strong>, with
             TVET graduates having a<strong>96% success rate</strong>in securing
             jobs compared to the lower rates seen among traditional university
             graduates.
           </GradientCornerCard>
+
           <GradientCornerCard color="blue" gradient="blend3">
             <strong>
               With fully equipped facilities and highly qualified trainers
@@ -251,6 +255,7 @@ export default function Page() {
                 </Button>
               </div>
             </div>
+
             <div>
               <p className="typo-body-large mt-4 px-4 font-bold">Our gates</p>
               <div className="relative mt-4 aspect-[16/9]">
@@ -300,23 +305,29 @@ export default function Page() {
             </div>
             <Button className="ml-4">Follow us</Button>
           </div>
-          <SocialMediaCarousel className="mt-4">
-            {socialPosts.map((post, i) => (
-              <CarouselItem
-                key={i}
-                className="lg:basis-2/7 aspect-square basis-2/3 px-1 sm:basis-2/5"
-              >
-                <SocialMediaCard
-                  imageUrl={post.imageUrl}
-                  source={post.source}
-                />
-              </CarouselItem>
-            ))}
-          </SocialMediaCarousel>
+
+          <Carousel autoPlay={5000} className="mt-4">
+            <CarouselContent>
+              {socialPosts.map((post, i) => (
+                <CarouselItem
+                  key={i}
+                  className="lg:basis-2/7 aspect-square basis-2/3 px-1 sm:basis-2/5"
+                >
+                  <SocialMediaCard
+                    imageUrl={post.imageUrl}
+                    source={post.source}
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselControls />
+          </Carousel>
         </Container>
       </section>
+
       <section className="flex flex-col items-center bg-neutral-200 pb-8 pt-6">
         <div className="typo-h5">Follow us!</div>
+
         <div className="mt-5 flex gap-4">
           <IconFacebook />
           <IconTikTok />
@@ -328,6 +339,7 @@ export default function Page() {
       <section className="bg-theme-100 pb-12 pt-8">
         <div className="app-container flex flex-col items-center px-4">
           <Heading type="h3">Do you have questions?</Heading>
+
           <div className="mt-4 flex flex-col items-center gap-4">
             Get in contact with us and we’ll help you get the answers you need.
             <br />
