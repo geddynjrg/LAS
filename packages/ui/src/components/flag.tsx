@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "cva-extended";
 import type { FC } from "react";
-import FlagPrimitive from "react-flagpack";
+
+import "../lib/flags/flags.css";
 
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -23,23 +24,35 @@ export interface FlagProps extends VariantProps<typeof flagVariants> {
 }
 
 export const Flag: FC<FlagProps> = ({ code, size, className }) => {
-  const updatedCode = getCountryCode(code);
+  const updatedCode = getCountryCode(code.toUpperCase());
 
   return (
-    <FlagPrimitive
-      code={updatedCode}
+    <div
+      title={updatedCode}
+      // src={`/flags/${size ?? "s"}/${updatedCode}.svg`}
+      className={cn(
+        flagVariants({ size }),
+        `fflag fflag-${updatedCode.toUpperCase()}`,
+        className,
+      )}
+    />
+  );
+  return (
+    <img
+      loading="lazy"
+      src={`/flags/${size ?? "s"}/${updatedCode}.svg`}
       className={cn(flagVariants({ size }), className)}
-      hasBorder={false}
-      size={size}
     />
   );
 };
 
 function getCountryCode(code: string) {
   switch (code) {
-    case "en":
+    case "GB":
       return "GB-UKM";
-    case "sw":
+    case "EN":
+      return "GB-UKM";
+    case "SW":
       return "KE";
     default:
       return code;

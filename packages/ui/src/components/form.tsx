@@ -4,6 +4,7 @@ import { useId, type FC, type ReactNode } from "react";
 import type { z } from "zod";
 
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
+import { InputGroup } from "@workspace/ui/components/input-group";
 import { labelVariants } from "@workspace/ui/components/label";
 import { cn } from "@workspace/ui/lib/utils";
 import type { FlattenObjectKeys } from "@workspace/ui/types";
@@ -89,31 +90,57 @@ export const Field = <
       )}
 
       {description && (
-        <p id={descId} className="typo-body-small text-border">
-          {description}
-        </p>
+        <FieldDescription id={descId}>{description}</FieldDescription>
       )}
     </FormPrimitive.Field>
   );
 };
 
+export interface FieldGroupProps {
+  label?: ReactNode;
+  description?: ReactNode;
+  required?: boolean;
+  className?: string;
+  children?: ReactNode;
+}
+
+export const FieldGroup: FC<FieldGroupProps> = ({
+  label,
+  description,
+  required,
+  className,
+  children,
+}) => (
+  <div className={cn("space-y-1", className)}>
+    {label && (
+      <div className={cn(labelVariants(), "mb-2 font-bold")}>
+        {label}
+        {required && <span className="text-destructive">*</span>}
+      </div>
+    )}
+    <InputGroup>{children}</InputGroup>
+
+    {description && <FieldDescription>{description}</FieldDescription>}
+  </div>
+);
+
+export const SubmitButton: FC<ButtonProps> = (props) => (
+  <FormPrimitive.Submit asChild>
+    <Button {...props} />
+  </FormPrimitive.Submit>
+);
+
+const FieldDescription: FC<{ id?: string; children?: ReactNode }> = (props) => (
+  <p className="typo-body-small text-border" {...props} />
+);
+
 const FieldMessage: FC<{
   match?: FormPrimitive.FormMessageProps["match"];
   className?: string;
   children?: ReactNode;
-}> = ({ className, ...props }) => {
-  return (
-    <FormPrimitive.Message
-      className={cn("text-destructive typo-body-small", className)}
-      {...props}
-    />
-  );
-};
-
-export const SubmitButton: FC<ButtonProps> = (props) => {
-  return (
-    <FormPrimitive.Submit asChild>
-      <Button {...props} />
-    </FormPrimitive.Submit>
-  );
-};
+}> = ({ className, ...props }) => (
+  <FormPrimitive.Message
+    className={cn("text-destructive typo-body-small", className)}
+    {...props}
+  />
+);

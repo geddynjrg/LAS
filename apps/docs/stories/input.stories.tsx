@@ -54,6 +54,13 @@ export const Icons = {
   },
 } satisfies Story;
 
+export const Addons = {
+  args: {
+    startDecorator: "$",
+    endDecorator: ".00",
+  },
+} satisfies Story;
+
 export const WithFormField = {
   render: (args) => (
     <Form

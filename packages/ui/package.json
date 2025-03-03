@@ -4,8 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
-    "postinstall": "react-flagpack"
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
@@ -30,7 +29,6 @@
     "react-countup": "^6.5.3",
     "react-day-picker": "^9.5.1",
     "react-dom": "^19.0.0",
-    "react-flagpack": "^2.0.6",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1"

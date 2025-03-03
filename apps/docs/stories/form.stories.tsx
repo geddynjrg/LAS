@@ -1,9 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { z } from "zod";
 
+import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DatePicker } from "@workspace/ui/components/date-picker";
-import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
+import {
+  Field,
+  FieldGroup,
+  Form,
+  SubmitButton,
+} from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from "@workspace/ui/components/select";
@@ -62,6 +68,26 @@ export const Primary: Story = {
           description="This is a description for the search input field"
         />
 
+        <FieldGroup
+          label="Phone Number"
+          description="Enter your phone number"
+          required
+        >
+          <Field
+            state={state}
+            name="callingCode"
+            className="max-w-40"
+            required
+            control={(props) => <CallingCodeSelect {...props} />}
+          />
+          <Field
+            state={state}
+            name="phone"
+            required
+            control={(props) => <Input type="tel" {...props} />}
+          />
+        </FieldGroup>
+
         <Field
           state={state}
           name="date"
@@ -84,6 +110,8 @@ const schema = z.object({
     .union([z.literal("on"), z.null()])
     .refine((v) => !!v, "Please agree to the terms"),
   searchInput: z.string().nonempty(),
+  callingCode: z.string().nonempty(),
+  phone: z.string().nonempty(),
   date: z.coerce.date(),
 });
 

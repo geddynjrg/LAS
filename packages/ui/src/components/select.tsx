@@ -1,12 +1,12 @@
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { IconCaretDown, IconCheck } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
-import type { ComponentProps, FC, ReactNode } from "react";
+import { useMemo, type ComponentProps, type FC, type ReactNode } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
 export const selectVariants = cva({
-  base: "bg-background border-border [&:user-invalid]:border-destructive placeholder:text-muted-foreground focus-visible-ring flex w-full items-center justify-between border px-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+  base: "bg-background border-border [&:user-invalid]:border-destructive placeholder:text-muted-foreground focus-visible-ring flex w-full items-center justify-between border px-2 leading-snug focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
 
   variants: {
     size: {
@@ -31,6 +31,7 @@ export interface SelectProps<T extends string>
   className?: string;
   options?: SelectOption<T>[] | readonly SelectOption<T>[];
   defaultValue?: T;
+  selectedLabel?: ReactNode;
   invalid?: boolean;
   disabled?: boolean;
   onValueChange?: (value: T) => void;
@@ -41,25 +42,39 @@ export const Select = <T extends string>({
   placeholder,
   size,
   invalid,
+  selectedLabel,
   className,
   ...props
 }: SelectProps<T>) => {
+  const cachedOptions = useMemo(
+    () =>
+      options?.map((option) => (
+        <SelectItem key={option.value} value={option.value}>
+          {option.label}
+        </SelectItem>
+      )),
+    [options],
+  );
+
   return (
     <SelectPrimitive.Root data-invalid={invalid} {...props}>
       <SelectTrigger
         size={size}
         className={cn(invalid && "border-destructive", className)}
       >
-        <SelectPrimitive.Value placeholder={placeholder} />
+        {selectedLabel ? (
+          <SelectPrimitive.Value
+            placeholder={placeholder}
+            aria-label={selectedLabel.toString()}
+          >
+            {selectedLabel}
+          </SelectPrimitive.Value>
+        ) : (
+          <SelectPrimitive.Value placeholder={placeholder} />
+        )}
       </SelectTrigger>
 
-      <SelectContent>
-        {options?.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
+      <SelectContent>{cachedOptions}</SelectContent>
     </SelectPrimitive.Root>
   );
 };

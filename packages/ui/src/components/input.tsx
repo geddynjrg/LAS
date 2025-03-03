@@ -1,10 +1,11 @@
+import { on } from "events";
 import { cva, type VariantProps } from "cva-extended";
 import type { FC, ReactNode } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
 export const inputVariants = cva({
-  base: "bg-background border-border [&:user-invalid]:border-destructive file:text-foreground placeholder:text-muted-foreground focus-visible-ring w-full border px-2 file:border-0 file:bg-transparent file:text-sm file:font-medium active:border-green-300 disabled:cursor-not-allowed disabled:opacity-50",
+  base: "bg-background border-border [&:user-invalid]:border-destructive file:text-foreground placeholder:text-muted-foreground focus-visible-ring relative w-full border px-2 file:border-0 file:bg-transparent file:text-sm file:font-medium active:border-green-300 disabled:cursor-not-allowed disabled:opacity-50",
   variants: {
     size: {
       sm: "h-7 rounded-md py-1 text-sm",
@@ -32,6 +33,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   startDecorator?: ReactNode;
   endDecorator?: ReactNode;
   className?: string;
+  onValueChange?: (value: string) => void;
 }
 
 export const Input: FC<InputProps> = ({
@@ -41,37 +43,44 @@ export const Input: FC<InputProps> = ({
   size,
   startDecorator,
   endDecorator,
+  onValueChange,
   ...props
 }) => {
   return (
-    <div
-      className={cn(
-        "relative [&_svg]:size-5 [&_svg]:text-neutral-800",
+    <div className={cn("relative", className)}>
+      {startDecorator && <Decorator>{startDecorator}</Decorator>}
 
-        className,
-      )}
-    >
-      {startDecorator && (
-        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
-          {startDecorator}
-        </div>
-      )}
       <input
         type={type}
         className={cn(
           inputVariants({ size }),
           invalid && "border-destructive",
-          startDecorator && "ps-8",
-          endDecorator && "pe-8",
+          startDecorator &&
+            (typeof startDecorator === "string" ? "ps-11" : "ps-8"),
+          endDecorator && (typeof endDecorator === "string" ? "pe-11" : "pe-8"),
         )}
+        onChange={(e) => {
+          onValueChange?.(e.target.value);
+        }}
         aria-invalid={invalid}
         {...props}
       />
-      {endDecorator && (
-        <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-2">
-          {endDecorator}
-        </div>
+
+      {endDecorator && <Decorator>{endDecorator}</Decorator>}
+    </div>
+  );
+};
+
+const Decorator: FC<{ children?: ReactNode }> = ({ children }) => {
+  const isText = typeof children === "string";
+  return (
+    <div
+      className={cn(
+        "pointer-events-none absolute inset-y-0 z-10 flex w-8 items-center justify-center overflow-hidden text-ellipsis text-sm text-neutral-600 first:start-0 last:end-0 [&_svg]:size-5",
+        isText && "w-10 first:border-r last:border-l",
       )}
+    >
+      {children}
     </div>
   );
 };

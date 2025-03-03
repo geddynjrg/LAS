@@ -8,8 +8,7 @@
     "build": "storybook build --docs",
     "preview-storybook": "serve storybook-static",
     "clean": "rm -rf .turbo node_modules",
-    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0",
-    "postinstall": "react-flagpack"
+    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.30.0",
@@ -18,7 +17,6 @@
     "next-intl": "^3.26.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-flagpack": "^2.0.6",
     "tailwindcss": "^4.0.1",
     "zod": "^3.24.1"
   },
