@@ -17,7 +17,7 @@ export const buttonVariants = cva({
       default:
         "text-primary-foreground bg-primary hover:bg-primary-hover active:bg-primary-active focus-visible:bg-primary-hover data-[state=on]:bg-primary-active disabled:bg-neutral-200",
       secondary:
-        "border-secondary text-foreground hover:bg-secondary/20 active:bg-secondary focus-visible:bg-secondary/20 focus-visible:border-secondary/20 data-[state=on]:bg-secondary disabled:border-neutral-400",
+        "border-secondary text-foreground hover:bg-secondary/20 active:bg-secondary focus-visible:bg-secondary/20 focus-visible:border-secondary/20 data-[state=on]:bg-secondary data-[state=on]:text-primary-foreground disabled:border-neutral-400",
       danger:
         "bg-destructive text-destructive-foreground hover:bg-destructive-hover active:bg-destructive-active data-[state=on]:bg-destructive-active focus-visible:bg-destructive-hover disabled:bg-neutral-200",
       neutral:

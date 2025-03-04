@@ -1,7 +1,13 @@
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
 import { IconCheck } from "@tabler/icons-react";
 import type { VariantProps } from "cva-extended";
-import { createContext, useContext, type FC, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  type FC,
+  type ReactNode,
+} from "react";
 
 import { buttonVariants } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
@@ -10,12 +16,10 @@ export const buttonGroupVariants = buttonVariants;
 
 const ButtonGroupContext = createContext<
   VariantProps<typeof buttonGroupVariants>
->({
-  size: "default",
-  variant: "secondary",
-});
+>({});
 
 export type ButtonGroupProps = VariantProps<typeof buttonGroupVariants> & {
+  name?: string;
   disabled?: boolean;
   className?: string;
   children: ReactNode;
@@ -35,21 +39,29 @@ export type ButtonGroupProps = VariantProps<typeof buttonGroupVariants> & {
   );
 
 export const ButtonGroup: FC<ButtonGroupProps> = ({
-  className,
-  variant,
+  name,
+  defaultValue,
+  variant = "secondary",
   size,
+  className,
   children,
   ...props
 }) => {
+  const [value, setValue] = useState(defaultValue);
+
   return (
-    <ToggleGroupPrimitive.Root
-      className={cn("flex items-center justify-center", className)}
-      {...props}
-    >
-      <ButtonGroupContext.Provider value={{ variant, size }}>
-        {children}
-      </ButtonGroupContext.Provider>
-    </ToggleGroupPrimitive.Root>
+    <>
+      <input type="hidden" name={name} value={value} />
+      <ToggleGroupPrimitive.Root
+        className={cn("flex items-center justify-center", className)}
+        onValueChange={setValue}
+        {...props}
+      >
+        <ButtonGroupContext.Provider value={{ variant, size }}>
+          {children}
+        </ButtonGroupContext.Provider>
+      </ToggleGroupPrimitive.Root>
+    </>
   );
 };
 
@@ -78,7 +90,7 @@ export const ButtonGroupItem: FC<ToggleGroupItemProps> = ({
           size: context.size || size,
           className,
         }),
-        "not-last:border-r-0 group rounded-none first:rounded-l-full last:rounded-r-full",
+        "not-last:border-r-0 group flex-1 rounded-none first:rounded-l-full last:rounded-r-full",
         className,
       )}
       {...props}

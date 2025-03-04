@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { z } from "zod";
 
+import {
+  ButtonGroup,
+  ButtonGroupItem,
+} from "@workspace/ui/components/button-group";
 import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DatePicker } from "@workspace/ui/components/date-picker";
@@ -61,7 +65,7 @@ export const Primary: Story = {
 
         <Field
           state={state}
-          name="searchInput"
+          name="search"
           label="Search Input label"
           required
           control={(props) => <SearchInput {...props} options={mockOptions} />}
@@ -97,6 +101,21 @@ export const Primary: Story = {
           description="This is a description for the date picker field"
         />
 
+        <Field
+          state={state}
+          name="buttonGroup"
+          label="Button group label"
+          required
+          control={(props) => (
+            <ButtonGroup {...props} type="single">
+              <ButtonGroupItem value="a">A</ButtonGroupItem>
+              <ButtonGroupItem value="b">B</ButtonGroupItem>
+              <ButtonGroupItem value="c">C</ButtonGroupItem>
+            </ButtonGroup>
+          )}
+          description="This is a description for the date picker field"
+        />
+
         <SubmitButton disabled={isPending}>Submit</SubmitButton>
       </Form>
     );
@@ -109,10 +128,11 @@ const schema = z.object({
   checkbox: z
     .union([z.literal("on"), z.null()])
     .refine((v) => !!v, "Please agree to the terms"),
-  searchInput: z.string().nonempty(),
+  search: z.string().nonempty(),
   callingCode: z.string().nonempty(),
   phone: z.string().nonempty(),
   date: z.coerce.date(),
+  buttonGroup: z.string().nonempty(),
 });
 
 const formAction: FormAction<z.infer<typeof schema>> = async (
