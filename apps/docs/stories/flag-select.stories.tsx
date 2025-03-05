@@ -1,9 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { FlagSelect } from "@workspace/ui/components/flag-select";
+import {
+  FlagSelect,
+  flagSelectVariants,
+} from "@workspace/ui/components/flag-select";
 
 const meta = {
   component: FlagSelect,
+  argTypes: {
+    variant: {
+      control: { type: "select" },
+      options: flagSelectVariants.variants.variant,
+    },
+  },
   args: {
     defaultValue: "en",
     options: [

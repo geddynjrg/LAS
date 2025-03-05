@@ -9,6 +9,8 @@ import {
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
+import { Flag } from "@workspace/ui/components/flag";
+import { FlagSelect } from "@workspace/ui/components/flag-select";
 import {
   Sidebar,
   SidebarContent,
@@ -20,13 +22,26 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 import { NavLink } from "@/components/nav-link";
+import { locales, type Locale } from "@/i18n/config";
+import { setUserLocale } from "@/lib/locale";
 
-export const AppSidebar: FC = () => {
+export interface AppSidebarProps {
+  locale: Locale;
+}
+
+export const AppSidebar: FC<AppSidebarProps> = ({ locale }) => {
   const t = useTranslations("Common");
 
   return (
     <Sidebar title={t("menu")} closeTitle={t("closeMenu")}>
-      <SidebarHeader className="md:hidden">Language select</SidebarHeader>
+      <SidebarHeader>
+        <FlagSelect
+          defaultValue={locale}
+          onChange={setUserLocale}
+          options={locales}
+          variant="list"
+        />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem asChild>

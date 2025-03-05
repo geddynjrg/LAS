@@ -7,6 +7,7 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 
+import { FlagSelect } from "@workspace/ui/components/flag-select";
 import {
   Sidebar,
   SidebarContent,
@@ -44,7 +45,17 @@ export const Primary = {
   render: (props) => (
     <>
       <Sidebar {...props}>
-        <SidebarHeader>Sidebar header</SidebarHeader>
+        <SidebarHeader>
+          <FlagSelect
+            defaultValue={"en"}
+            onChange={(value: string) => alert(value)}
+            options={[
+              { value: "en", label: "English" },
+              { value: "sw", label: "Swahili" },
+            ]}
+            variant="list"
+          />
+        </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -73,7 +84,7 @@ export const Primary = {
         </SidebarContent>
         <SidebarFooter>Sidebar footer</SidebarFooter>
       </Sidebar>
-      <SidebarTrigger className="visible md:hidden" />
+      <SidebarTrigger />
     </>
   ),
 } satisfies Story;

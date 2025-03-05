@@ -180,7 +180,10 @@ export const SidebarHeader: FC<SidebarHeaderProps> = ({
   return (
     <div
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn(
+        "border-foreground flex flex-col gap-2 border-b p-4",
+        className,
+      )}
       {...props}
     />
   );
