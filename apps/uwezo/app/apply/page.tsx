@@ -130,7 +130,9 @@ export default function Page() {
         </ApplyContentContainer>
       </Container>
       <ActionBar>
-        <Button className="px-22 mx-auto">{t("beginFillingForm")}</Button>
+        <Button className="px-22 mx-auto" asChild>
+          <Link href="/login">{t("beginFillingForm")}</Link>
+        </Button>
       </ActionBar>
     </div>
   );

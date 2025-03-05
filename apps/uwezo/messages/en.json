@@ -73,5 +73,43 @@
     "exampleId": "Example of national ID",
     "membersMustBeInformed": "Members must be informed of the application and will be asked to <bold>give their consent through SMS service</bold>",
     "beginFillingForm": "Begin filling form"
+  },
+  "LoginPage": {
+    "title": "Get started",
+    "description": "Log in or create and account to apply for the Uwezo Fund loan.",
+    "flowDescription": "The application will be <bold>saved at each step</bold> and you can return to filling it by <bold>logging in.</bold>",
+    "submittedDescription": "Once submitted, the progress of the application processing is <bold>available through your account.</bold>",
+    "doNotHaveAccount": "Don't have an account?",
+    "email": "E-mail",
+    "password": "Password",
+    "login": "Log in",
+    "signUp": "Sign up",
+    "or": "Or",
+    "LogInThroughECitizen": "Log in through eCitizen",
+    "ForgotPassword": "Forgot your password?",
+    "reset": "Reset"
+  },
+  "SignUpPage": {
+    "title": "Create an Account",
+    "description": "Fill in the details below to create your account.",
+    "email": "E-mail",
+    "password": "Password",
+    "passwordConfirm": "Confirm password",
+    "signUp": "Sign up",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "or": "Or",
+    "registerThroughECitizen": "Register through eCitizen"
+  },
+  "ResetPage": {
+    "title": "Reset Password",
+    "description": "Enter your e-mail address to reset your password.",
+    "email": "E-mail",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "reset": "Reset",
+    "backTo": "Back to",
+    "success": "Reset email sent",
+    "successDescription": "An email has been sent to your e-mail address with instructions on how to reset your password."
   }
 }
