@@ -60,7 +60,7 @@ export default function Page() {
         {t("description")}
       </HeroSection>
 
-      <section className="mx-auto mt-4 max-w-3xl px-4 py-8">
+      <Container className="mt-4 py-8">
         <h2 className="typo-h2">Application process and admission details</h2>
         <hr />
 
@@ -98,7 +98,7 @@ export default function Page() {
             availability.
           </p>
         </section>
-      </section>
+      </Container>
 
       <Container className="px-0">
         <SectionHeader

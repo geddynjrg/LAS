@@ -22,32 +22,33 @@ export const HeroSection: FC<HeroSectionProps> = ({
   children,
 }) => {
   return (
-    <section className="bg-theme-100">
-      <div className="relative aspect-[4/5] sm:aspect-[16/9] md:max-h-96 md:w-full xl:max-h-[600px]">
+    <section>
+      <div className="relative aspect-[4/5] max-h-[500px] w-full sm:aspect-[16/9]">
         <Image
           fill
           priority
-          style={{
-            objectFit: "cover",
-          }}
+          className="object-cover"
           src={backgroundUrl}
           alt={backgroundAlt}
         />
+        <div className="h-29 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-black/0" />
       </div>
-      <RoundedCornerCard className="bg-primary text-primary-foreground relative -mt-4 p-0 px-4 pb-4 pt-0 md:pb-7">
-        <Container className="max-w-6xl">
-          <Heading className="-mb-13 -translate-y-13 md:-mb-16 md:-translate-y-16">
-            {title}
-          </Heading>
-          <div className="mt-4">{children}</div>
-        </Container>
-      </RoundedCornerCard>
 
-      {actions && (
-        <div className="bg-theme-100 flex justify-center gap-4 p-4 [&>*]:max-w-80 [&>*]:flex-1">
-          {actions}
-        </div>
-      )}
+      <Container className="px-0">
+        <RoundedCornerCard className="bg-primary text-primary-foreground xl:-mt-30 relative -mt-4 px-4 pb-4 max-xl:pt-0 md:pb-7">
+          <Container>
+            <Heading className="-mb-13 -translate-y-13 md:-mb-16 md:-translate-y-16 xl:mb-0 xl:translate-y-0">
+              {title}
+            </Heading>
+            <div className="mt-4">{children}</div>
+          </Container>
+        </RoundedCornerCard>
+        {actions && (
+          <div className="bg-theme-100 flex justify-center gap-4 p-4 [&>*]:max-w-80 [&>*]:flex-1">
+            {actions}
+          </div>
+        )}
+      </Container>
     </section>
   );
 };

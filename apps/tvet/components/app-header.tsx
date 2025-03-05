@@ -15,7 +15,7 @@ export const AppHeader: FC<AppHeaderProps> = () => {
 
   return (
     <Header
-      isFloating="mobile-only"
+      isFloating
       startDecorator={
         <Link href="/">
           <Logo className="h-full" />

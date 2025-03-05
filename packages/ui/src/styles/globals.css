@@ -187,6 +187,7 @@
 
 @layer base {
   .tvet {
+    --sidebar-inset-max-width: 100%;
     --app-container-max-width: var(--container-6xl);
 
     --color-background: var(--color-neutral-100);
