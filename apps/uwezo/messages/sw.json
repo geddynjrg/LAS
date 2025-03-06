@@ -1,0 +1,211 @@
+{
+  "Common": {
+    "menu": "Menyu",
+    "closeMenu": "Funga menyu",
+    "apply": "Omba"
+  },
+
+  "Footer": {
+    "relatedAgencies": "Mashirika Yanayohusiana",
+    "usefulLinks": "Viungo vya Manufaa",
+    "quickContacts": "Mawasiliano ya Haraka"
+  },
+
+  "FrontPage": {
+    "title": "<title>Uwezo Fund’s</title> <lineBreak></lineBreak> <subTitle><light>lengo ni kuwawezesha</light> wanawake, vijana <light>na</light> watu wenye ulemavu <light>kupata fedha za</light> kukuza biashara <light>na</light> miradi <light>katika ngazi ya eneo bunge.</light></subTitle>",
+    "description": "Vikundi vya kujisaidia vinavyokidhi <underline>vigezo vya kustahiki</underline> vinaweza kuomba mkopo ili kuendeleza miradi na biashara zao.",
+    "imageDescription": "Picha ya mesh",
+    "startApplying": "Anza kuomba",
+    "criteria": {
+      "title": "Vigezo vya Kustahiki",
+      "one": "Kikundi lazima kiwe kimesajiliwa na Idara ya Huduma za Jamii, Vyama vya Ushirika au Msajili wa Mashirika na kiwe na cheti halali cha usajili wa kikundi",
+      "two": "Uanachama wa kikundi lazima uwe kama ulivyoelekezwa na chombo kinachosajili, uanachama unapaswa kuwa kati ya wanachama 10-15.",
+      "three": "<bold>Uanachama wa Kikundi lazima uwe angalau:</bold><ul> <li>Kwa vikundi vya vijana: uanachama angalau 70% vijana (miaka 18-35), na uongozi 100% vijana </li><li>Kwa vikundi vya wanawake: uanachama angalau 70% wanawake (miaka 18+), na uongozi 100% wanawake </li><li>Kwa vikundi vya watu wenye ulemavu: uanachama angalau 70% PWDs, na uongozi 100% PWDs.</li></ul>",
+      "four": "Kikundi kinaendesha muundo wa benki ya meza au muundo mwingine wowote wa mfuko wa kikundi ambapo wanachama huchangia kila mwezi kulingana na miongozo ya ndani ya kikundi",
+      "five": "Kikundi kina akaunti ya benki kwa jina la kikundi",
+      "six": "Taasis zinaweza kustahiki ikiwa zina vikundi vya vijana, wanawake, na PWDs ndani yao"
+    },
+    "fundDescription": {
+      "welcome": "Karibu kwa",
+      "title": "Mfuko wa Uwezo",
+      "description": "Mfuko wa Uwezo ni mpango mkuu wa dira ya 2030 unaolenga kuwawezesha wanawake, vijana na watu wenye ulemavu kupata fedha za kukuza biashara na miradi katika ngazi ya eneo bunge, hivyo kuongeza ukuaji wa kiuchumi kuelekea kutimiza malengo ya Maendeleo Endelevu Na.1 (kutokomeza umaskini uliokithiri na njaa) na 3 (kukuza usawa wa kijinsia na kuwawezesha wanawake). Mfuko huu umejikita zaidi katika maeneo ya mashinani na unafuata dhana ya mbinu ya chini kwenda juu ambapo maamuzi hufanywa katika ngazi ya chini.",
+      "objectives": "Mfuko huu ni wa mzunguko na shughuli zake zinafanyika katika maeneo ya mashinani. Malengo ya Mfuko ni;",
+      "objectivesList": {
+        "one": "Kuongeza upatikanaji wa fedha kwa vijana, wanawake na watu wenye ulemavu katika ngazi ya eneo bunge kwa ajili ya maendeleo ya biashara na miradi;",
+        "two": "Kuzalisha ajira za kujitegemea kwa vijana na wanawake; na",
+        "three": "Kutoa mfano wa mfumo mbadala wa kufadhili miradi ya maendeleo inayosukumwa na jamii."
+      }
+    },
+    "mafanikio": {
+      "ufadhiliUliotimia": "Ufadhili Uliotimia",
+      "kichwa": "Gundua Mafanikio Yetu ya Ajabu",
+      "vikundiWanawake": "VIKUNDI VYA WANAWAKE",
+      "vikundiVijana": "VIKUNDI VYA VIJANA",
+      "vikundiWalemavu": "VIKUNDI VYA WATU WENYE ULEMAVU",
+      "wanawake": "WANAWAKE",
+      "wanaume": "WANAUME",
+      "mgawanyoJumla": "MGANYO WA JUMLA (KSHS)"
+    },
+    "habari": {
+      "kichwa": "Habari na Matukio",
+      "habariNaMatukioUwezo": "Habari na Matukio ya Uwezo"
+    }
+  },
+  "ApplyPage": {
+    "backToFrontPage": "Rudi kwenye ukurasa wa mbele",
+    "needToKnowBefore": "Unachohitaji kujua kabla ya kuomba",
+    "description": "Katika mchakato wa maombi utaombwa kutoa nyaraka na kuthibitisha kwamba wanachama wote wa kikundi wanakubaliana na ombi la mkopo.",
+    "validGroupSectionTitle": "Cheti halali cha usajili wa kikundi",
+    "documentsRequired": "Nyaraka zinazohitajika katika maombi:",
+    "example": "Mfano",
+    "moreInfoAboutTheCertificate": "Maelezo zaidi kuhusu cheti",
+    "groupCreditHistorySectionTitle": "Historia ya mkopo wa kikundi",
+    "groupCreditHistory": "Historia ya mkopo wa kikundi inaweza kuthibitishwa na nyaraka kadhaa:",
+    "creditHistoryList": {
+      "tableBankingLedger": "Daftari la benki ya meza",
+      "dischargeCertificate": "Cheti cha kuachiliwa",
+      "letterOfClearance": "Barua ya kibali kutoka kwa mkopeshaji mwingine",
+      "others": "Nyinginezo"
+    },
+    "kindlyProvideAllRelatedToYourGroup": "Tafadhali toa zote zinazohusiana na kikundi chako",
+    "moreInfoAboutCredit": "Maelezo zaidi kuhusu nyaraka za historia ya mkopo",
+    "nationalIdSectionTitle": "Vitambulisho vya kitaifa vya wanachama wa kikundi",
+    "exampleId": "Mfano wa kitambulisho cha kitaifa",
+    "membersMustBeInformed": "Wanachama lazima wafahamishwe kuhusu maombi na wataombwa <bold>kutoa idhini yao kupitia huduma ya SMS</bold>",
+    "beginFillingForm": "Anza kujaza fomu"
+  },
+  "LoginPage": {
+    "title": "Anza",
+    "description": "Ingia au unda akaunti ili kuomba mkopo wa Mfuko wa Uwezo.",
+    "flowDescription": "Maombi yata<bold>hifadhiwa katika kila hatua</bold> na unaweza kurudi kujaza kwa <bold>kuingia.</bold>",
+    "submittedDescription": "Baada ya kuwasilishwa, maendeleo ya usindikaji wa maombi <bold>yanapatikana kupitia akaunti yako.</bold>",
+    "doNotHaveAccount": "Huna akaunti?",
+    "email": "Barua pepe",
+    "password": "Nenosiri",
+    "login": "Ingia",
+    "signUp": "Jisajili",
+    "or": "Au",
+    "LogInThroughECitizen": "Ingia kupitia eCitizen",
+    "ForgotPassword": "Umesahau nenosiri lako?",
+    "reset": "Weka upya"
+  },
+  "SignUpPage": {
+    "title": "Unda Akaunti",
+    "description": "Jaza maelezo hapa chini ili kuunda akaunti yako.",
+    "email": "Barua pepe",
+    "password": "Nenosiri",
+    "passwordConfirm": "Thibitisha nenosiri",
+    "signUp": "Jisajili",
+    "alreadyHaveAccount": "Tayari una akaunti?",
+    "login": "Ingia",
+    "or": "Au",
+    "registerThroughECitizen": "Jisajili kupitia eCitizen"
+  },
+  "ResetPage": {
+    "title": "Weka Upya Nenosiri",
+    "description": "Ingiza anwani yako ya barua pepe ili kuweka upya nenosiri lako.",
+    "email": "Barua pepe",
+    "alreadyHaveAccount": "Tayari una akaunti?",
+    "login": "Ingia",
+    "reset": "Weka upya",
+    "backTo": "Rudi kwa",
+    "success": "Barua pepe ya kuweka upya imetumwa",
+    "successDescription": "Barua pepe imetumwa kwa anwani yako ya barua pepe na maelekezo ya jinsi ya kuweka upya nenosiri lako."
+  },
+  "DashboardPage": {
+    "myApplications": "Maombi Yangu",
+    "group": "Kikundi",
+    "viewApplication": "Tazama ombi",
+    "continueFillingApplication": "Endelea kujaza ombi",
+    "status": {
+      "title": "Hali",
+      "inReview": "<bold>Hatua ya 1:</bold> Inakaguliwa",
+      "pending": "<bold>Hatua ya 3:</bold> Uamuzi wa kamati unasubiriwa",
+      "unsubmitted": "<bold>Haijawasilishwa</bold>"
+    },
+    "stepDescription": {
+      "title": "Nini kinafanyika katika hatua hii?",
+      "inReview": "<li>Ombi litakaguliwa katika ngazi ya eneo bunge kwa makosa yoyote.</li> <li>Uthibitishaji na ofisi husika (chifu wa eneo, mashirika ya mikopo, ofisi ya huduma za jamii, nk).</li> <li>Ikihitajika, wanachama wa kikundi chako watawasiliana kwa ajili ya mahojiano ya ziada.</li>",
+      "readMoreInReview": "Soma zaidi kuhusu hatua ya ukaguzi",
+      "pending": "Mara tu maombi 15 yatakapopita hatua ya ukaguzi, Kamati ya Usimamizi wa Mfuko wa Uwezo wa Eneo Bunge itakusanyika kujadili maombi na kutoa mapendekezo kuhusu ombi la mkopo. Mapendekezo ya kamati yatapitishwa na Bodi ya Uwezo.",
+      "readMorePending": "Soma zaidi kuhusu mchakato wa <lineBreak></lineBreak> uamuzi wa kamati"
+    },
+    "processTimeline": {
+      "title": "Itachukua muda gani?",
+      "inReview": "Maombi kawaida huchukua siku chache kufikia hatua inayofuata ambapo yatakaguliwa na Kamati ya Usimamizi wa Mfuko wa Uwezo wa Eneo Bunge. Mchakato mzima unapaswa kuchukua takriban wiki moja.",
+      "pending": "Maombi kawaida huchukua siku chache kufikia hatua inayofuata. Mchakato mzima unapaswa kuchukua takriban wiki moja."
+    },
+    "questions": {
+      "title": "Una maswali?"
+    }
+  },
+  "ApplicationDetailsPage": {
+    "backToDashboard": "Rudi kwenye dashibodi",
+    "applicationNotFound": "Ombi halijapatikana",
+    "status": "Hali",
+    "numberMonths": "{month, plural, =1 {# mwezi} other {# miezi}}",
+    "numberYears": "{year, plural, =1 {# mwaka} other {# miaka}}",
+    "loan": {
+      "loanConditions": "Masharti ya mkopo",
+      "loanDetails": "Maelezo ya mkopo",
+      "purposeOfTheLoan": "Madhumuni ya mkopo",
+      "loanType": "Aina ya mkopo",
+      "loanAmount": "Kiasi cha mkopo",
+      "repaymentPeriod": "Kipindi cha marejesho kilichopendekezwa kwa miezi",
+      "bankAccountDetails": "Maelezo ya akaunti ya benki",
+      "groupsBankName": "Jina la Benki ya Kikundi",
+      "groupsBankBranch": "Tawi la Benki ya Kikundi",
+      "bankAccountNumber": "Nambari ya akaunti ya benki"
+    },
+    "members": {
+      "members": "Wanachama",
+      "natureOfTheGroup": "Asili ya kikundi",
+      "chairman": "Mwenyekiti",
+      "secretary": "Katibu",
+      "member": "Mwanachama"
+    },
+    "groupData": {
+      "groupData": "Taarifa za Kikundi",
+      "basicInfo": {
+        "groupBasics": "Msingi wa Kikundi",
+        "groupName": "Jina la Kikundi",
+        "registrationNumber": "Nambari ya Usajili",
+        "dateFormed": "Tarehe ya Kuundwa",
+        "groupRegistrationCert": "Cheti cha Usajili wa Kikundi",
+        "listOfMembersOnCert": "Orodha ya Wanachama kwenye Cheti"
+      },
+      "locationInfo": {
+        "locationOfTheGroup": "Mahali pa Kikundi",
+        "countryOfOperation": "Nchi ya Uendeshaji",
+        "constituency": "Eneo Bunge",
+        "ward": "Wadi",
+        "meetingPoint": "Mahali pa Mkutano/Mahali Halisi/Kijiji",
+        "nearestLandmark": "Alama ya Karibu"
+      },
+      "groupBackground": {
+        "groupBackground": "Historia ya Kikundi",
+        "purposeOfTheGroup": "Madhumuni ya Kikundi",
+        "keyActivitiesOfGroup": "Shughuli Muhimu za Kikundi",
+        "creditHistory": "Historia ya Mkopo wa Kikundi"
+      }
+    },
+    "proposedBusiness": {
+      "proposedBusiness": "Biashara inayopendekezwa",
+      "businessInfo": {
+        "businessInformation": "Taarifa za biashara",
+        "natureOfBusiness": "Aina ya biashara",
+        "businessType": "Aina ya biashara",
+        "operationPeriod": "Imekuwa ikifanya kazi kwa miaka mingapi?"
+      },
+      "businessPerformance": {
+        "businessPerformance": "Utendaji wa biashara",
+        "averageIncomePerMonth": "Mapato ya wastani kwa mwezi",
+        "costOfGoods": "Gharama ya bidhaa/huduma kwa mwezi",
+        "rent": "Kodi ya biashara yako",
+        "salaries": "Mishahara/malipo kwa wafanyakazi",
+        "transportCosts": "Gharama za usafiri wa bidhaa za biashara",
+        "netSurplus": "Ziada/hasara halisi"
+      }
+    }
+  }
+}

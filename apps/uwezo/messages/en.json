@@ -111,5 +111,101 @@
     "backTo": "Back to",
     "success": "Reset email sent",
     "successDescription": "An email has been sent to your e-mail address with instructions on how to reset your password."
+  },
+  "DashboardPage": {
+    "myApplications": "My Applications",
+    "group": "Group",
+    "viewApplication": "View application",
+    "continueFillingApplication": "Continue filling application",
+    "status": {
+      "title": "Status",
+      "inReview": "<bold>Step 1:</bold> Being reviewed",
+      "pending": "<bold>Step 3:</bold> Committee decision pending",
+      "unsubmitted": "<bold>Unsubmitted</bold>"
+    },
+    "stepDescription": {
+      "title": "What is being done in this step?",
+      "inReview": "<li>The application will be checked on the local constituency level for any discrepancies.</li> <li>Verification with relevant offices (local chief, credit organisations, social service office, etc).</li> <li>If required, your group members will be contacted for an additional interview.</li>",
+      "readMoreInReview": "Read more about the reviewing step",
+      "pending": "Once 15 applications have passed the reviewing step, the Constituency Uwezo Fund Management Committee will gather to discuss the applications and make a recommendation about the loan application. The committee recommendations will be approved by the Uwezo Board.",
+      "readMorePending": "Read more about the committee <lineBreak></lineBreak> decision making process"
+    },
+    "processTimeline": {
+      "title": "How long will it take?",
+      "inReview": "Applications usually take a few days to get to the next step where these will be reviewed by the Constituency Uwezo Fund Management Committee. The whole process should take about a week.",
+      "pending": "Applications usually take a few days to get to the next step. The whole process should take about a week."
+    },
+    "questions": {
+      "title": "Do you have questions?"
+    }
+  },
+  "ApplicationDetailsPage": {
+    "backToDashboard": "Back to dashboard",
+    "applicationNotFound": "Application not found",
+    "status": "Status",
+    "numberMonths": "{month, plural, =1 {# month} other {# months}}",
+    "numberYears": "{year, plural, =1 {# year} other {# years}}",
+    "loan": {
+      "loanConditions": "Loan conditions",
+      "loanDetails": "Loan details",
+      "purposeOfTheLoan": "Purpose of the loan",
+      "loanType": "Loan type",
+      "loanAmount": "Loan amount",
+      "repaymentPeriod": "Proposed repayment period in months",
+      "bankAccountDetails": "Bank account details",
+      "groupsBankName": "Group Bank name",
+      "groupsBankBranch": "Group's Bank branch",
+      "bankAccountNumber": "Bank account number"
+    },
+    "members": {
+      "members": "Members",
+      "natureOfTheGroup": "Nature of the group",
+      "chairman": "Chairman",
+      "secretary": "Secretary",
+      "member": "Member"
+    },
+    "groupData": {
+      "groupData": "Group data",
+      "basicInfo": {
+        "groupBasics": "Group basics",
+        "groupName": "Group name",
+        "registrationNumber": "registration number",
+        "dateFormed": "Date formed",
+        "groupRegistrationCert": "Group registration certificate",
+        "listOfMembersOnCert": "List of members on certificate"
+      },
+      "locationInfo": {
+        "locationOfTheGroup": "Location of the group",
+        "countryOfOperation": "Country of operation",
+        "constituency": "Constituency",
+        "ward": "Ward",
+        "meetingPoint": "Meeting point/Physical location/Village",
+        "nearestLandmark": "Nearest landmark"
+      },
+      "groupBackground": {
+        "groupBackground": "Group background",
+        "purposeOfTheGroup": "Purpose of the group",
+        "keyActivitiesOfGroup": "Key activities of the group",
+        "creditHistory": "Group credit history"
+      }
+    },
+    "proposedBusiness": {
+      "proposedBusiness": "Proposed business",
+      "businessInfo": {
+        "businessInformation": "Business information",
+        "natureOfBusiness": "Nature of business",
+        "businessType": "Business type",
+        "operationPeriod": "How many years has been in operation?"
+      },
+      "businessPerformance": {
+        "businessPerformance": "Business performance",
+        "averageIncomePerMonth": "Average income per month",
+        "costOfGoods": "Cost of goods/service per month",
+        "rent": "Rent for your business",
+        "salaries": "Salaries/wages for workers",
+        "transportCosts": "Transport for business stock",
+        "netSurplus": "Net surplus/deficit"
+      }
+    }
   }
 }
