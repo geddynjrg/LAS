@@ -1,14 +1,25 @@
 "use client";
 
-import { IconArrowLeft, IconCheck, IconEdit } from "@tabler/icons-react";
+import {
+  IconArrowLeft,
+  IconCheck,
+  IconChevronDown,
+  IconChevronUp,
+  IconInfoSquareRounded,
+} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { type FC, type ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
+import { BackButton } from "@workspace/ui/components/civil-registry/back-button";
+import {
+  DataBlock,
+  DataBlockProps,
+} from "@workspace/ui/components/civil-registry/data-block";
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
 import { DataNode } from "@workspace/ui/components/data-node";
+import { DataPair } from "@workspace/ui/components/data-pair";
 import { ModalButton } from "@workspace/ui/components/modal-button";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -53,126 +64,257 @@ export default function DetailsPage({ params }: DetailsPageProps) {
   const person = MOCK_PERSON;
   const t = useTranslations();
 
+  // mock confirmation bar visibility;
+  const showConfirmationBar = false;
+  // mock payement bar visibility;
+  const showPaymentBar = true;
+
   return (
     <>
       <SectionWrap className={cn("space-y-6")} hasTopPadding hasBottomPadding>
-        <Button asChild variant="secondary">
-          <Link href="/" className={cn("!px-7")}>
-            <IconArrowLeft /> {t("Details.to-dashboard")}
-          </Link>
-        </Button>
+        <BackButton />
 
         <h2 className={cn("typo-h2")}>{person.name}</h2>
 
         <div className={cn("space-y-12")}>
-          <Child />
-          <Mother />
-          <Father />
+          <Child disabled={false} active={false} />
+          <Mother disabled={false} active={false} />
+          <Father disabled={false} active={false} />
         </div>
       </SectionWrap>
-      <ActionBar>
-        <Button asChild variant="secondary">
-          <a href="/" className={cn("!px-5")}>
-            <IconArrowLeft /> {t("Details.back")}
-          </a>
-        </Button>
-        <ModalButton
-          modalTitle="Confirm registration?"
-          modalText="Are you sure all the details of the birth registration are correct? You have the option to amend."
-        >
-          {t("Details.confirm-registration?")} <IconCheck />
-        </ModalButton>
-      </ActionBar>
+
+      {showPaymentBar && (
+        <PaymentBar price={250} onSubmit={() => console.log("Submit")} />
+      )}
+
+      {showConfirmationBar && (
+        <ActionBar>
+          <Button asChild variant="secondary">
+            <a href="/" className={cn("!px-5")}>
+              <IconArrowLeft /> {t("DetailsPage.back")}
+            </a>
+          </Button>
+          <ModalButton
+            modalTitle="Confirm registration?"
+            modalText="Are you sure all the details of the birth registration are correct? You have the option to amend."
+            onConfirm={() => alert("Not implemented!")}
+          >
+            {t("DetailsPage.confirm-registration?")} <IconCheck />
+          </ModalButton>
+        </ActionBar>
+      )}
     </>
   );
 }
 
-const Child: FC = () => {
+const Child: FC<
+  Pick<DataBlockProps, "active" | "disabled" | "onSubmit" | "onCancel">
+> = ({ disabled, active }) => {
   const child = MOCK_PERSON.child;
   const t = useTranslations();
+
+  type DataVariant = "default" | "disabled";
+  const variant: DataVariant = disabled ? "disabled" : "default";
 
   return (
     <DataBlock
       key={child.id}
-      title={t("Details.title-child")}
-      description={t("Details.description")}
+      title={t("DetailsPage.title-child")}
+      description={t("DetailsPage.description")}
+      disabled={disabled}
+      active={active}
+      onCancel={() => console.log("Cancel called")}
+      onSubmit={() => console.log("Submit called")}
     >
-      <DataNode label={t("Details.name")}>{child.name}</DataNode>
-      <DataNode label={t("Details.dob")}>{child.dob}</DataNode>
-      <DataNode label={t("Details.age")}>{child.age}</DataNode>
-      <DataNode label={t("Details.sex")}>{child.sex}</DataNode>
-      <DataNode label={t("Details.birth-weight")}>
+      <DataNode label={t("DetailsPage.name")} variant={variant}>
+        {child.name}
+      </DataNode>
+      <DataNode label={t("DetailsPage.dob")} variant={variant}>
+        {child.dob}
+        {active && (
+          <EditMessage>{t("DetailsPage.change-dob-message")}</EditMessage>
+        )}
+      </DataNode>
+      <DataNode label={t("DetailsPage.age")} variant={variant}>
+        {child.age}
+      </DataNode>
+      <DataNode label={t("DetailsPage.sex")} variant={variant}>
+        {child.sex}
+        {active && (
+          <EditMessage>{t("DetailsPage.change-sex-message")}</EditMessage>
+        )}
+      </DataNode>
+      <DataNode label={t("DetailsPage.birth-weight")} variant={variant}>
         {child.weightOnBirth}
       </DataNode>
-      <DataNode label={t("Details.place-of-birth")}>
+      <DataNode label={t("DetailsPage.place-of-birth")} variant={variant}>
         {child.placeOfBirth}
       </DataNode>
     </DataBlock>
   );
 };
 
-const Mother: FC = () => {
+const Mother: FC<
+  Pick<DataBlockProps, "active" | "disabled" | "onSubmit" | "onCancel">
+> = ({ disabled, active }) => {
   const mother = MOCK_PERSON.mother;
   const t = useTranslations();
 
+  type DataVariant = "default" | "disabled";
+  const variant: DataVariant = disabled ? "disabled" : "default";
+
   return (
-    <DataBlock title={t("Details.title-mother")}>
-      <DataNode label={t("Details.name")}>{mother.name}</DataNode>
-      <DataNode label={t("Details.national-id")}>{mother.nationalId}</DataNode>
-      <DataNode label={t("Details.dob")}>{mother.dob}</DataNode>
-      <DataNode label={t("Details.citizenship")}>{mother.citizenship}</DataNode>
-      <DataNode label={t("Details.nationality")}>{mother.nationality}</DataNode>
-      <DataNode label={t("Details.marital-status")}>
+    <DataBlock
+      title={t("DetailsPage.title-mother")}
+      disabled={disabled}
+      active={active}
+      onCancel={() => console.log("Cancel called")}
+      onSubmit={() => console.log("Submit called")}
+    >
+      <DataNode label={t("DetailsPage.name")} variant={variant}>
+        {mother.name}
+      </DataNode>
+      <DataNode label={t("DetailsPage.national-id")} variant={variant}>
+        {mother.nationalId}
+      </DataNode>
+      <DataNode label={t("DetailsPage.dob")} variant={variant}>
+        {mother.dob}
+      </DataNode>
+      <DataNode label={t("DetailsPage.citizenship")} variant={variant}>
+        {mother.citizenship}
+      </DataNode>
+      <DataNode label={t("DetailsPage.nationality")} variant={variant}>
+        {mother.nationality}
+      </DataNode>
+      <DataNode label={t("DetailsPage.marital-status")} variant={variant}>
         {mother.maritalStatus}
       </DataNode>
-      <DataNode label={t("Details.education")}>{mother.education}</DataNode>
-      <DataNode label={t("Details.fathers-name")}>{mother.father}</DataNode>
-      <DataNode label={t("Details.phone")}>{mother.phone}</DataNode>
+      <DataNode label={t("DetailsPage.education")} variant={variant}>
+        {mother.education}
+      </DataNode>
+      <DataNode label={t("DetailsPage.fathers-name")} variant={variant}>
+        {mother.father}
+      </DataNode>
+      <DataNode label={t("DetailsPage.phone")} variant={variant}>
+        {mother.phone}
+      </DataNode>
     </DataBlock>
   );
 };
 
-const Father: FC = () => {
+const Father: FC<
+  Pick<DataBlockProps, "active" | "disabled" | "onSubmit" | "onCancel">
+> = ({ disabled, active }) => {
   const father = MOCK_PERSON.father;
   const t = useTranslations();
 
+  type DataVariant = "default" | "disabled";
+  const variant: DataVariant = disabled ? "disabled" : "default";
+
   return (
-    <DataBlock title={t("Details.title-father")}>
-      <DataNode label={t("Details.name")}>{father.name}</DataNode>
-      <DataNode label={t("Details.national-id")}>{father.nationalId}</DataNode>
-      <DataNode label={t("Details.dob")}>{father.dob}</DataNode>
-      <DataNode label={t("Details.citizenship")}>{father.citizenship}</DataNode>
-      <DataNode label={t("Details.nationality")}>{father.nationality}</DataNode>
-      <DataNode label={t("Details.education")}>{father.education}</DataNode>
-      <DataNode label={t("Details.phone")}>{father.phone}</DataNode>
+    <DataBlock
+      title={t("DetailsPage.title-father")}
+      disabled={disabled}
+      active={active}
+      onCancel={() => console.log("Cancel called")}
+      onSubmit={() => console.log("Submit called")}
+    >
+      <DataNode label={t("DetailsPage.name")} variant={variant}>
+        {father.name}
+      </DataNode>
+      <DataNode label={t("DetailsPage.national-id")} variant={variant}>
+        {father.nationalId}
+      </DataNode>
+      <DataNode label={t("DetailsPage.dob")} variant={variant}>
+        {father.dob}
+      </DataNode>
+      <DataNode label={t("DetailsPage.citizenship")} variant={variant}>
+        {father.citizenship}
+      </DataNode>
+      <DataNode label={t("DetailsPage.nationality")} variant={variant}>
+        {father.nationality}
+      </DataNode>
+      <DataNode label={t("DetailsPage.education")} variant={variant}>
+        {father.education}
+      </DataNode>
+      <DataNode label={t("DetailsPage.phone")} variant={variant}>
+        {father.phone}
+      </DataNode>
     </DataBlock>
   );
 };
 
-const DataBlock: FC<{
-  children: ReactNode;
-  title: string;
-  description?: string;
-}> = ({ children, title, description }) => {
+const EditMessage: FC<{ children: ReactNode }> = ({ children }) => (
+  <div className={cn("text-blue-400", "flex items-center gap-1")}>
+    <IconInfoSquareRounded size={20} className={cn("shrink-0")} />
+    {children}
+  </div>
+);
+
+const PaymentBar: FC<{ onSubmit: () => void; price: number }> = ({
+  price,
+  onSubmit,
+}) => {
   const t = useTranslations();
+  const [viewDetails, setViewDetails] = useState(false);
+
   return (
-    <div>
-      <div className={cn("flex items-center gap-4")}>
-        <h3 className={cn("typo-h3")}>{title}</h3>
-        <Button asChild variant="secondary">
-          <Link href="#amend" className={cn("!px-5")}>
-            {t("Details.amend")} <IconEdit />
-          </Link>
-        </Button>
-      </div>
-      {description && <p className={cn("mt-1")}>{description}</p>}
-      <div
+    <ActionBar>
+      <Button
+        variant="ghost"
         className={cn(
-          "mt-3 space-y-4 border-t border-solid border-neutral-400 pt-3",
+          "absolute bottom-full left-1/2 -translate-x-1/2",
+          "rounded-bl-none rounded-br-none rounded-tl-xl rounded-tr-xl",
+          "shadow-[var(--box-shadow-elevation-04)]",
+          "bg-neutral-100 text-blue-400",
+          "hover:bg-neutral-100 hover:text-blue-400",
+          "active:bg-neutral-100",
         )}
+        onClick={() => setViewDetails(!viewDetails)}
       >
-        {children}
+        {viewDetails ? <IconChevronDown /> : <IconChevronUp />}
+        {t("DetailsPage.view-const-breakdown")}
+      </Button>
+      <div className={cn("flex flex-grow flex-col gap-3")}>
+        <div>
+          <div className={cn("flex flex-grow items-center justify-between")}>
+            <div>{t("DetailsPage.amendment-cost-label")}</div>
+            <div className={cn("typo-h5")}>{price} KSh</div>
+          </div>
+
+          {viewDetails && (
+            <>
+              <DataPair className={cn("text-sm")}>
+                <div>Child's name change</div>
+                <div className={cn("font-bold")}>250 KSh</div>
+              </DataPair>
+              <DataPair className={cn("text-sm")}>
+                <div>Child's name change</div>
+                <div className={cn("font-bold")}>250 KSh</div>
+              </DataPair>
+              <DataPair className={cn("text-sm")}>
+                <div>Child's name change</div>
+                <div className={cn("font-bold")}>250 KSh</div>
+              </DataPair>
+            </>
+          )}
+        </div>
+
+        <div className={cn("flex flex-grow justify-between")}>
+          <Button asChild variant="secondary">
+            <a href="/" className={cn("!px-5")}>
+              <IconArrowLeft /> {t("DetailsPage.back")}
+            </a>
+          </Button>
+          <ModalButton
+            onConfirm={onSubmit}
+            modalTitle={t("DetailsPage.confirm-amendments-title")}
+            modalText={t("DetailsPage.confirm-amendments-text")}
+          >
+            {t("DetailsPage.confirm-and-pay")} <IconCheck />
+          </ModalButton>
+        </div>
       </div>
-    </div>
+    </ActionBar>
   );
 };

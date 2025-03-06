@@ -156,11 +156,8 @@
   /* box shadows */
   --box-shadow-elevation-01: 0px 1px 5px 0px hsla(0, 0%, 0%, 0.2);
   --box-shadow-elevation-02: 0px 4px 10px 0px hsla(0, 0%, 0%, 0.1);
-
-  /* box shadows */
-  --box-shadow-elevation-01: 0px 1px 5px 0px hsla(0, 0%, 0%, 0.2);
-  --box-shadow-elevation-02: 0px 4px 10px 0px hsla(0, 0%, 0%, 0.1);
-  --box-shadow-elevation-03: 0px -1px 5px 0px rgba(0, 0, 0, 0.2);
+  --box-shadow-elevation-03: 0px -1px 5px 0px hsla(0, 0%, 0%, 0.2);
+  --box-shadow-elevation-04: 0px -2px 3px 0px hsla(0, 0%, 0%, 0.2);
 
   /* accordion */
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -508,4 +505,35 @@
   margin-right: auto;
   padding-left: var(--app-container-side-padding);
   padding-right: var(--app-container-side-padding);
+}
+
+/* IconCheck animation */
+@keyframes drawCheckmark {
+  from {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-draw-checkmark {
+  animation: drawCheckmark 1.3s ease-out forwards;
+}
+
+/* civil registry registration-status view text animation */
+@keyframes confirmationTextOpacity {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.confirmation-text-opacity {
+  opacity: 0;
+  animation: confirmationTextOpacity 1.3s ease-out 0.5s forwards;
 }

@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { Alert } from "@workspace/ui/components/alert";
 import { Card, type CardProps } from "@workspace/ui/components/card";
 import { DataNode } from "@workspace/ui/components/data-node";
+import { DataPair } from "@workspace/ui/components/data-pair";
 import { cn } from "@workspace/ui/lib/utils";
 
 export type SexType = "M" | "F";
@@ -37,9 +38,8 @@ export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
         </Alert>
       )}
 
-      <div
+      <DataPair
         className={cn(
-          "flex justify-between",
           "px-4",
           "sm:gap-8 sm:self-center",
           "md:gap-0 md:self-auto",
@@ -48,7 +48,7 @@ export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
         <DataNode label="Sex">{sex}</DataNode>
         <DataNode label="Age">{age}</DataNode>
         <DataNode label="Date of birth">{dob}</DataNode>
-      </div>
+      </DataPair>
     </Card>
   );
 };

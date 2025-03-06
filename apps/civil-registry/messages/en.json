@@ -1,6 +1,9 @@
 {
   "Common": {
-    "menu": "Menu"
+    "menu": "Menu",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "total": "Total"
   },
   "DashboardPage": {
     "title": "My relations",
@@ -31,7 +34,7 @@
       "rights": "All rights reserved"
     }
   },
-  "Details": {
+  "DetailsPage": {
     "to-dashboard": "Back to dashboard",
     "title-child": "Child info",
     "title-mother": "Mother info",
@@ -52,7 +55,15 @@
     "fathers-name": "Father's name",
     "phone": "Phone number",
     "confirm-registration?": "Confirm registration?",
-    "back": "Back"
+    "back": "Back",
+    "change-dob-message": "Changing the child’s date of birth on the birth notification",
+    "change-sex-message": "Changing the child’s sex on the birth notification",
+    "confirm-and-pay": "Confirm and pay",
+    "confirm-amendments-title": "Confirm amendments?",
+    "confirm-amendments-text": "Are you sure all the amended details are correct?",
+    "amendment-cost-label": "Total cost of amendments",
+    "view-const-breakdown": "View cost breakdown",
+    "changing-child-name": "Changing child’s name"
   },
   "SuccessPage": {
     "title": "Thank you for validating your child’s birth registration data!",
@@ -70,5 +81,32 @@
     "show-id-text": "Ask the accountant to issue the physical birth certificate for your child. Parent’s valid ID is necessary for this.",
     "wait-certificate-title": "Wait for the certificate to be issued",
     "wait-certificate-text": "Wait for the certificate to be issued"
+  },
+  "RegistrationStatusPage": {
+    "close-form": "Close form",
+    "birth-notification": "Birth notification",
+    "waiting-confirmation": "Waiting for confirmation from",
+    "success-message": "Birth notification successfully confirmed and submitted"
+  },
+  "PaymentPage": {
+    "payment-title": "Payment for amendments",
+    "payment-explanation": "The amendments submitted require a fee to be processed by the Civil Registry.",
+    "cost-breakdown": "Cost breakdown",
+    "payment-method": "Paymend method"
+  },
+  "Amendment": {
+    "title": "Your amendments have been received and are being processed",
+    "process-title": "What is the process for confirming amendments?",
+    "review-application-title": "Review of application",
+    "review-application-text": "After submitting your application to change the child’s name, the Civil Registration Services (CRS) will carefully review all the application.",
+    "check-records-title": "Cross-check of records",
+    "check-records-text": "The CRS will cross-check your documents with their records to ensure there are no conflicts or errors.",
+    "approval-title": "Notification of approval",
+    "approval-text": "Once the application is approved, you will be notified that the amendment has been successful. Depending on your preferences, the notification could be through SMS, email, or phone call.",
+    "what-to-know-title": "What else should I know?",
+    "permanent-records": "<strong>Permanent Records:</strong> Once the name is changed, it is permanently updated in the government’s registration system. The amended birth certificate will reflect the new name but may include a note indicating that a name change was made.",
+    "legal-considerations": "<strong>Legal Considerations:</strong> If there are any legal or custody issues involved, the application may undergo further scrutiny. In some cases, if there are disputes, you may be required to get a court order approving the name change.",
+    "more-questions": "Do you have more questions?",
+    "contact-us": "Contact us at:"
   }
 }

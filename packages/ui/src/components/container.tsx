@@ -1,5 +1,5 @@
 import { Slot } from "@radix-ui/react-slot";
-import type { FC, ReactNode } from "react";
+import type { CSSProperties, FC, ReactNode } from "react";
 
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
 
@@ -9,16 +9,24 @@ export const containerVariant = cva({
 
 export interface ContainerProps extends VariantProps<typeof containerVariant> {
   asChild?: boolean;
+  style?: CSSProperties;
   className?: string;
   children?: ReactNode;
 }
 
 export const Container: FC<ContainerProps> = ({
   asChild,
+  style,
   className,
   ...props
 }) => {
   const Comp = asChild ? Slot : "div";
 
-  return <Comp className={cn(containerVariant(), className)} {...props} />;
+  return (
+    <Comp
+      style={style}
+      className={cn(containerVariant(), className)}
+      {...props}
+    />
+  );
 };

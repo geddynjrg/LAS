@@ -1,9 +1,7 @@
-import { IconArrowLeft } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
+import { BackButton } from "@workspace/ui/components/civil-registry/back-button";
 import {
   OrderedListItem,
   OrderedListItemWrap,
@@ -20,11 +18,9 @@ export default function SuccessPage({}: SuccessPageProps) {
 
   return (
     <SectionWrap hasTopPadding hasBottomPadding className={cn("space-y-6")}>
-      <Button asChild variant="secondary">
-        <Link href="/">
-          <IconArrowLeft /> {t("Details.to-dashboard")}
-        </Link>
-      </Button>
+      <div className={cn("flex justify-center")}>
+        <BackButton />
+      </div>
 
       <h2
         className={cn(
@@ -62,7 +58,7 @@ export default function SuccessPage({}: SuccessPageProps) {
       </OrderedListItemWrap>
 
       <div className={cn("flex justify-center")}>
-        <Button className={cn("max-w-full")}>
+        <Button className={cn("w-full max-w-[23rem]", "px-3")}>
           {t("SuccessPage.find-registry-office")}
         </Button>
       </div>

@@ -11,7 +11,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 
 export const buttonVariants = cva({
-  base: "focus-visible-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 border-transparent text-sm font-bold transition-colors disabled:pointer-events-none disabled:text-neutral-400 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  base: "focus-visible-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-transparent text-center text-sm font-bold transition-colors disabled:pointer-events-none disabled:text-neutral-400 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   variants: {
     variant: {
       default:
@@ -29,11 +29,11 @@ export const buttonVariants = cva({
         "text-primary hover:bg-accent hover:text-accent-foreground active:bg-accent-active shadow-[var(--box-shadow-elevation-02)]",
     },
     size: {
-      xs: "h-6 p-1 text-xs [&_svg]:size-4",
-      sm: "h-7 px-4 text-sm [&_svg]:size-4",
-      md: "h-8 px-4 text-sm [&_svg]:size-6",
-      default: "h-10 px-7 py-2 text-base",
-      lg: "h-12 px-8 text-lg",
+      xs: "min-h-6 px-1 py-0 text-xs [&_svg]:size-4",
+      sm: "min-h-7 px-4 text-sm [&_svg]:size-4",
+      md: "min-h-8 px-4 text-sm [&_svg]:size-6",
+      default: "min-h-10 px-7 py-1 text-base",
+      lg: "min-h-12 px-8 py-2 text-lg",
     },
   },
   defaultVariants: {

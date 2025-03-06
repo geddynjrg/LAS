@@ -10,12 +10,14 @@ export interface SectionWrapProps extends Omit<ContainerProps, "className"> {
   className?: string;
   hasTopPadding?: boolean;
   hasBottomPadding?: boolean;
+  grow?: boolean;
 }
 
 export const SectionWrap: FC<SectionWrapProps> = ({
   className,
   hasTopPadding,
   hasBottomPadding,
+  grow = true,
   ...props
 }) => (
   <Container
@@ -23,6 +25,7 @@ export const SectionWrap: FC<SectionWrapProps> = ({
       "px-4",
       hasTopPadding && "pt-7",
       hasBottomPadding && "pb-13",
+      grow && "flex-grow",
       className,
     )}
     {...props}
