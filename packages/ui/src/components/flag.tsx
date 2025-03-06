@@ -29,7 +29,6 @@ export const Flag: FC<FlagProps> = ({ code, size, className }) => {
   return (
     <div
       title={updatedCode}
-      // src={`/flags/${size ?? "s"}/${updatedCode}.svg`}
       className={cn(
         flagVariants({ size }),
         `fflag fflag-${updatedCode.toUpperCase()}`,
@@ -37,21 +36,16 @@ export const Flag: FC<FlagProps> = ({ code, size, className }) => {
       )}
     />
   );
-  return (
-    <img
-      loading="lazy"
-      src={`/flags/${size ?? "s"}/${updatedCode}.svg`}
-      className={cn(flagVariants({ size }), className)}
-    />
-  );
 };
 
 function getCountryCode(code: string) {
   switch (code) {
-    case "GB":
-      return "GB-UKM";
     case "EN":
-      return "GB-UKM";
+      return "GB";
+    case "MF":
+      return "FR";
+    case "SJ":
+      return "NO";
     case "SW":
       return "KE";
     default:

@@ -164,6 +164,12 @@ export const countries = [
     iso3: "BOL",
   },
   {
+    name: "Bonaire",
+    callingCode: "599",
+    iso2: "BQ",
+    iso3: "BES",
+  },
+  {
     name: "Bosnia and Herzegovina",
     callingCode: "387",
     iso2: "BA",
@@ -320,7 +326,7 @@ export const countries = [
     iso3: "CUB",
   },
   {
-    name: "Curacao",
+    name: "Curaçao",
     callingCode: "599",
     iso2: "CW",
     iso3: "CUW",
@@ -1070,6 +1076,12 @@ export const countries = [
     iso3: "RWA",
   },
   {
+    name: "Saba",
+    callingCode: "599-4",
+    iso2: "BQ-SA",
+    iso3: "BES",
+  },
+  {
     name: "Saint Barthelemy",
     callingCode: "590",
     iso2: "BL",
@@ -1164,6 +1176,12 @@ export const countries = [
     callingCode: "65",
     iso2: "SG",
     iso3: "SGP",
+  },
+  {
+    name: "Sint Eustatius",
+    callingCode: "599",
+    iso2: "BQ-SE",
+    iso3: "BES",
   },
   {
     name: "Sint Maarten",

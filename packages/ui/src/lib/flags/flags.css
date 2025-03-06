@@ -9,7 +9,7 @@ For complete information visit: www.freakflagsprite.com
 .fflag {
   background-image: url(flagSprite42.png);
   background-repeat: no-repeat;
-  background-size: 100% 49494%;
+  background-size: 100% 48000%;
   display: inline-block;
   overflow: hidden;
   position: relative;
@@ -215,7 +215,7 @@ For complete information visit: www.freakflagsprite.com
 .fflag-BB {
   background-position: center 14.4175%;
 }
-.fflag-BQ {
+.fflag-BQ-SE {
   background-position: center 14.6415%;
 }
 .fflag-BZ {
@@ -754,6 +754,21 @@ For complete information visit: www.freakflagsprite.com
 }
 .fflag-OLY {
   background-position: center 54.32%;
+}
+.fflag-IO {
+  background-position: center 54.54%;
+}
+.fflag-BQ-SA {
+  background-position: center 54.76%;
+}
+.fflag-BQ {
+  background-position: center 54.98%;
+}
+.fflag-AN {
+  background-position: center 55.2037%;
+}
+.fflag-PN {
+  background-position: center 55.4274%;
 }
 
 .fflag.ff-sm {
