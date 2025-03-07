@@ -2,7 +2,7 @@ import { IconArrowLeft, IconPinInvoke } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-import type { FC, PropsWithChildren, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";

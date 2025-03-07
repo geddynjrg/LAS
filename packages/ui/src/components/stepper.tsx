@@ -57,7 +57,7 @@ const Step: FC<StepProps> = ({ stepNumber, activeStep, children }) => {
     <li
       data-active={activeStep === stepNumber}
       className={cn(
-        "group flex flex-row gap-2 px-4 py-2 focus-visible:outline-none",
+        "group flex flex-row gap-2 whitespace-nowrap px-4 py-2 focus-visible:outline-none",
         activeStep > stepNumber &&
           "text-stepper-foreground bg-stepper hover:bg-stepper-hover active:bg-stepper-active focus-visible:ring-ring focus-visible:scale-y-85 focus:outline-none focus-visible:scale-x-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         activeStep === stepNumber &&

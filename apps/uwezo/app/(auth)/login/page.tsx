@@ -1,21 +1,25 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Divider } from "@workspace/ui/components/divider";
-import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
-import { useForm } from "@workspace/ui/hooks/use-form";
 
-import { login } from "@/actions/login";
-import { loginSchema } from "@/actions/login-schema";
+import { LoginForm } from "@/app/(auth)/login/login-form";
+import { signIn } from "@/lib/auth";
 
-export default function Page() {
-  const t = useTranslations("LoginPage");
-  const [state, formAction, isPending] = useForm(login, loginSchema);
+async function signInAction(_prev: unknown, formData: FormData) {
+  "use server";
+  return signIn("credentials", formData);
+}
+
+export interface LoginPageProps {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}
+
+export default async function Page({ searchParams }: LoginPageProps) {
+  const { callbackUrl } = await searchParams;
+  const t = await getTranslations("LoginPage");
 
   return (
     <Container className="max-w-[500px] pt-8">
@@ -35,35 +39,8 @@ export default function Page() {
       </div>
 
       <div>
-        <Form action={formAction} className="space-y-6" autoComplete="on">
-          <Field
-            state={state}
-            name="email"
-            label={t("email")}
-            required
-            control={(props) => (
-              <Input placeholder="email@email.com" {...props} />
-            )}
-          />
+        <LoginForm action={signInAction} redirectTo={callbackUrl} />
 
-          <Field
-            state={state}
-            name="password"
-            label={t("password")}
-            required
-            control={(props) => (
-              <Input
-                type="password"
-                placeholder="••••••••••••••••••••"
-                {...props}
-              />
-            )}
-          />
-
-          <SubmitButton className="w-full" disabled={isPending}>
-            {t("login")}
-          </SubmitButton>
-        </Form>
         <div className="flex justify-center gap-2 pt-4">
           <p className="typo-body-medium">{t("doNotHaveAccount")}</p>
           <Link href="signup" className="text-primary underline">

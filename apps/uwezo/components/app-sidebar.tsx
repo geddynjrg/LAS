@@ -9,6 +9,7 @@ import {
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
+import { Button } from "@workspace/ui/components/button";
 import { Flag } from "@workspace/ui/components/flag";
 import { FlagSelect } from "@workspace/ui/components/flag-select";
 import {
@@ -22,6 +23,7 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 import { NavLink } from "@/components/nav-link";
+import { SignoutButton } from "@/components/signout-button";
 import { locales, type Locale } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
 
@@ -101,7 +103,12 @@ export const AppSidebar: FC<AppSidebarProps> = ({ locale }) => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>nav user</SidebarFooter>
+      <SidebarFooter>
+        nav user
+        <SignoutButton asChild>
+          <Button>Sign out</Button>
+        </SignoutButton>
+      </SidebarFooter>
     </Sidebar>
   );
 };
