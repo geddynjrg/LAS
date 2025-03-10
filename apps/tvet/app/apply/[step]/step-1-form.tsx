@@ -1,10 +1,11 @@
 "use client";
 
-import { use, useEffect, useRef, type FC } from "react";
+import { type FC } from "react";
 
 import { Alert } from "@workspace/ui/components/alert";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
+import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { Select } from "@workspace/ui/components/select";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
@@ -63,6 +64,24 @@ export const Step1Form: FC = () => {
               {...props}
             />
           )}
+        />
+
+        <Field
+          state={state}
+          name="radioGroup"
+          label="Radio group label"
+          required
+          control={(props) => (
+            <RadioGroup
+              {...props}
+              options={[
+                { label: "Option 1", value: "1" },
+                { label: "Option 2", value: "2" },
+                { label: "Option 3", value: "3" },
+              ]}
+            />
+          )}
+          description="This is a description for the radio group field"
         />
 
         <SubmitButton disabled={isPending}>Submit</SubmitButton>

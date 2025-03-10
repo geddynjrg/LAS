@@ -16,6 +16,7 @@ import {
   SubmitButton,
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
+import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from "@workspace/ui/components/select";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
@@ -121,6 +122,24 @@ export const Primary: Story = {
 
         <Field
           state={state}
+          name="radioGroup"
+          label="Radio group label"
+          required
+          control={(props) => (
+            <RadioGroup
+              {...props}
+              options={[
+                { label: "Option 1", value: "1" },
+                { label: "Option 2", value: "2" },
+                { label: "Option 3", value: "3" },
+              ]}
+            />
+          )}
+          description="This is a description for the radio group field"
+        />
+
+        <Field
+          state={state}
           name="upload"
           label="Upload File"
           required
@@ -154,6 +173,7 @@ const schema = z.object({
   phone: z.string().nonempty(),
   date: z.coerce.date(),
   buttonGroup: z.string().nonempty(),
+  radioGroup: z.string().nonempty(),
   upload: z
     .instanceof(File)
     .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
