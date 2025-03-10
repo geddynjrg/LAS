@@ -18,5 +18,17 @@
       "number_too_large": "Value must be at most {maximum}",
       "invalid_union": "Please choose a valid option"
     }
+  },
+
+  "FileUploadInput": {
+    "takePicture": "Take picture",
+    "or": "or",
+    "chooseFile": "Choose file",
+    "errors": {
+      "file-invalid-type": "Invalid file type",
+      "file-too-large": "File is too large",
+      "file-too-small": "File is too small",
+      "too-many-files": "Too many files"
+    }
   }
 }

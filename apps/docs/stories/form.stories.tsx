@@ -8,6 +8,7 @@ import {
 import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DatePicker } from "@workspace/ui/components/date-picker";
+import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import {
   Field,
   FieldGroup,
@@ -18,7 +19,9 @@ import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from "@workspace/ui/components/select";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { formatBytes, getFormDataValues } from "@workspace/ui/lib/utils";
+
+const MAX_FILE_SIZE = 1e6; // 1 MB
 
 const meta = {
   component: Form,
@@ -113,7 +116,25 @@ export const Primary: Story = {
               <ButtonGroupItem value="c">C</ButtonGroupItem>
             </ButtonGroup>
           )}
-          description="This is a description for the date picker field"
+          description="This is a description for the button group field"
+        />
+
+        <Field
+          state={state}
+          name="upload"
+          label="Upload File"
+          required
+          control={(props) => (
+            <FileUploadInput
+              accept={{
+                "image/*": [".jpg", ".png"],
+                "application/pdf": [".pdf"],
+              }}
+              maxSize={MAX_FILE_SIZE}
+              {...props}
+            />
+          )}
+          description={`Max file size ${formatBytes(MAX_FILE_SIZE)}`}
         />
 
         <SubmitButton disabled={isPending}>Submit</SubmitButton>
@@ -133,6 +154,9 @@ const schema = z.object({
   phone: z.string().nonempty(),
   date: z.coerce.date(),
   buttonGroup: z.string().nonempty(),
+  upload: z
+    .instanceof(File)
+    .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
 });
 
 const formAction: FormAction<z.infer<typeof schema>> = async (

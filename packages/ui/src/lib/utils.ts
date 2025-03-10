@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import prettyBytes from "pretty-bytes";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
@@ -32,4 +33,8 @@ export function getFormDataValues<T extends z.Schema>(
   return Object.fromEntries(
     keys.map((key) => [key, formData.get(key)]),
   ) as Partial<z.infer<T>>;
+}
+
+export function formatBytes(bytes: number, decimals = 2) {
+  return prettyBytes(bytes, { maximumFractionDigits: decimals });
 }

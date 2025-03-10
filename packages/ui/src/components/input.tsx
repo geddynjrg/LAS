@@ -1,4 +1,3 @@
-import { on } from "events";
 import { cva, type VariantProps } from "cva-extended";
 import type { FC, ReactNode } from "react";
 

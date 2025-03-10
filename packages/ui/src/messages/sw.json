@@ -18,5 +18,17 @@
       "number_too_large": "Thamani lazima iwe zaidi ya {maximum}",
       "invalid_union": "Tafadhali chagua chaguo sahihi"
     }
+  },
+
+  "FileUploadInput": {
+    "takePicture": "Piga picha",
+    "or": "au",
+    "chooseFile": "Chagua faili",
+    "errors": {
+      "file-invalid-type": "Aina ya faili batili",
+      "file-too-large": "Faili ni kubwa mno",
+      "file-too-small": "Faili ni ndogo mno",
+      "too-many-files": "Faili nyingi mno"
+    }
   }
 }
