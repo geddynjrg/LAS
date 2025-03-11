@@ -55,6 +55,8 @@ export function useForm<
       if (!success) {
         const errors = error.flatten((issue) => issue);
 
+        console.log("values", values, errors);
+
         return {
           success,
           errors: errors?.fieldErrors,

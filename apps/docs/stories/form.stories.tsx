@@ -19,6 +19,7 @@ import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from "@workspace/ui/components/select";
+import { Slider } from "@workspace/ui/components/slider";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { formatBytes, getFormDataValues } from "@workspace/ui/lib/utils";
 
@@ -122,6 +123,15 @@ export const Primary: Story = {
 
         <Field
           state={state}
+          name="slider"
+          label="Slider label"
+          required
+          control={(props) => <Slider {...props} min={1} max={12} />}
+          description="This is a description for the slider field"
+        />
+
+        <Field
+          state={state}
           name="radioGroup"
           label="Radio group label"
           required
@@ -174,6 +184,7 @@ const schema = z.object({
   date: z.coerce.date(),
   buttonGroup: z.string().nonempty(),
   radioGroup: z.string().nonempty(),
+  slider: z.coerce.number().min(1).max(12),
   upload: z
     .instanceof(File)
     .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
