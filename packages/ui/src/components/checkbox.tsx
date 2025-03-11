@@ -1,6 +1,6 @@
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { IconCheck } from "@tabler/icons-react";
-import { useId, type FC, type ReactNode } from "react";
+import { memo, useId, useState, type FC, type ReactNode } from "react";
 
 import { Label } from "@workspace/ui/components/label";
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
@@ -23,6 +23,7 @@ export interface CheckboxProps extends VariantProps<typeof checkboxVariants> {
   id?: string;
   name?: string;
   defaultValue?: "on" | null | boolean;
+  onValueChange?: (checked: boolean) => void;
   disabled?: boolean;
   invalid?: boolean;
   children?: ReactNode;
@@ -35,28 +36,51 @@ export const Checkbox: FC<CheckboxProps> = ({
   className,
   defaultValue,
   children,
+  onValueChange,
   ...props
 }) => {
   const componentId = useId();
+  const [value, setValue] = useState(isChecked(defaultValue));
+
+  function handleChange(checked: boolean | string) {
+    const newValue = isChecked(checked);
+
+    onValueChange?.(newValue);
+    setValue(newValue);
+  }
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <CheckboxPrimitive.Root
+      <CheckboxRootWrapper
         className={checkboxVariants({ size })}
         id={id || componentId}
-        defaultChecked={
-          typeof defaultValue === "string"
-            ? defaultValue === "on"
-            : !!defaultValue
-        }
+        checked={value}
+        onCheckedChange={handleChange}
         {...props}
       >
         <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
           <IconCheck className="size-full" />
         </CheckboxPrimitive.Indicator>
-      </CheckboxPrimitive.Root>
+      </CheckboxRootWrapper>
 
       {children && <Label htmlFor={id || componentId}>{children}</Label>}
     </div>
   );
 };
+
+// fixes loosing default value after form submit
+const CheckboxRootWrapper: FC<
+  React.ComponentProps<typeof CheckboxPrimitive.Root>
+> = (props) => {
+  const MemoizedRoot = memo(CheckboxPrimitive.Root);
+
+  return <MemoizedRoot {...props} />;
+};
+
+function isChecked(checked?: boolean | string | null) {
+  if (typeof checked === "boolean") {
+    return checked;
+  }
+
+  return checked === "on";
+}

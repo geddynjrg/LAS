@@ -1,15 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Checkbox, checkboxVariants } from "@workspace/ui/components/checkbox";
+import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 
 const meta = {
   component: Checkbox,
   argTypes: {
     size: {
-      control: {
-        type: "select",
-        options: checkboxVariants.variants.size,
-      },
+      control: { type: "select" },
+      options: checkboxVariants.variants.size,
     },
   },
   args: {
@@ -32,5 +31,26 @@ export const Sizes = {
         </Checkbox>
       ))}
     </div>
+  ),
+} satisfies Story;
+
+export const WithFormField = {
+  render: (args) => (
+    <Form
+      className="space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        alert("Submitted");
+      }}
+    >
+      <Field
+        name="checkbox"
+        label="Accept terms and conditions"
+        required
+        control={(props) => <Checkbox {...props} {...args} />}
+      />
+
+      <SubmitButton>Submit</SubmitButton>
+    </Form>
   ),
 } satisfies Story;

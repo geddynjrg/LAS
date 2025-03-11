@@ -7,6 +7,7 @@ import {
 } from "@workspace/ui/components/button-group";
 import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
+import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { DatePicker } from "@workspace/ui/components/date-picker";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import {
@@ -150,6 +151,24 @@ export const Primary: Story = {
 
         <Field
           state={state}
+          name="checkboxGroup"
+          label="Checkbox group label"
+          required
+          control={(props) => (
+            <CheckboxGroup
+              {...props}
+              options={[
+                { label: "Option 1", value: "1" },
+                { label: "Option 2", value: "2" },
+                { label: "Option 3", value: "3" },
+              ]}
+            />
+          )}
+          description="This is a description for the checkbox group field"
+        />
+
+        <Field
+          state={state}
           name="upload"
           label="Upload File"
           required
@@ -184,6 +203,15 @@ const schema = z.object({
   date: z.coerce.date(),
   buttonGroup: z.string().nonempty(),
   radioGroup: z.string().nonempty(),
+  checkboxGroup: z.preprocess(
+    (v) =>
+      Array.isArray(v)
+        ? v
+        : typeof v === "string"
+          ? v.split(",").filter(Boolean)
+          : [],
+    z.array(z.string()).min(1),
+  ),
   slider: z.coerce.number().min(1).max(12),
   upload: z
     .instanceof(File)
