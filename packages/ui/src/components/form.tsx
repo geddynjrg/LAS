@@ -32,6 +32,7 @@ export interface FieldProps<
   label?: ReactNode;
   description?: ReactNode;
   required?: boolean;
+  editable?: boolean;
   className?: string;
 }
 
@@ -46,6 +47,7 @@ export const Field = <
   description,
   control,
   required,
+  editable = true,
   className,
 }: FieldProps<TInputs, TName>) => {
   const id = useId();
@@ -72,9 +74,13 @@ export const Field = <
         </FormPrimitive.Label>
       )}
 
-      <FormPrimitive.Control asChild>
-        {control({ id, name, defaultValue })}
-      </FormPrimitive.Control>
+      {editable ? (
+        <FormPrimitive.Control asChild>
+          {control({ id, name, defaultValue })}
+        </FormPrimitive.Control>
+      ) : (
+        <p>{defaultValue ?? "-"}</p>
+      )}
 
       {errorMessage && (
         <FieldMessage>
