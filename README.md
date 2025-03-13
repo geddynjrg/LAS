@@ -60,6 +60,42 @@ To use the components in your app, import them from the `ui` package.
 import { Button } from "@workspace/ui/components/ui/button";
 ```
 
-## Deployment
+## Production build
 
-TODO: Add docker support and instructions
+to build all apps run the following command at the root of the repository:
+
+```bash
+pnpm run build
+```
+
+to build a specific app run the following command at the root of the repository:
+
+```bash
+pnpm --filter civil-registry run build
+```
+
+to run a specific app run the following command at the root of the repository:
+
+```bash
+pnpm --filter civil-registry run start
+```
+
+### Common issues
+
+#### `Error: EPERM: operation not permitted ... ` in windows
+
+you need to enable `Developer mode` in windows settings
+https://github.com/vercel/next.js/discussions/52244
+
+## Docker
+Start all apps in detached mode
+
+```bash
+docker-compose -f docker-compose.yml up -d
+```
+
+Start single app in detached mode
+
+```bash
+docker-compose -f docker-compose.yml up -d civil-registry
+```

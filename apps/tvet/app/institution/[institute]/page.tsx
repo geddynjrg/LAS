@@ -5,7 +5,6 @@ import {
   IconPhone,
   IconVideo,
 } from "@tabler/icons-react";
-import Autoplay from "embla-carousel-autoplay";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 

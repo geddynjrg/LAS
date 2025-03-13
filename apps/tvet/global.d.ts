@@ -1,4 +1,4 @@
-import commonEn from "@workspace/ui/messages/en.json";
+import commonEn from "@workspace/ui/messages/en";
 
 import en from "@/messages/en.json";
 

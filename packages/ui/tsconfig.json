@@ -4,9 +4,7 @@
     //"outDir": "dist"
     "baseUrl": ".",
     "paths": {
-      "@workspace/ui/*": ["./src/*"],
-      "next/link": ["../../apps/docs/mocks/link.tsx"],
-      "next/image": ["../../apps/docs/mocks/image.tsx"]
+      "@workspace/ui/*": ["./src/*"]
     }
   },
   "include": [".", "../../apps/docs/mocks/*.tsx"],

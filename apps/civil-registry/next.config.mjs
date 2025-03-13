@@ -4,7 +4,8 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	transpilePackages: ["@workspace/ui"],
+  transpilePackages: ["@workspace/ui"],
+  output: "standalone",
 };
 
 export default withNextIntl(nextConfig);

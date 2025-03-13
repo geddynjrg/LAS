@@ -37,7 +37,7 @@ export interface FlagSelectProps<T extends string>
   extends Omit<SelectProps<T>, "disabled" | "options">,
     VariantProps<typeof flagSelectVariants> {
   onChange?: (value: T) => Promise<void> | void;
-  options: FlagOption<T>[];
+  options: readonly FlagOption<T>[];
 }
 
 export const FlagSelect = <T extends string>({

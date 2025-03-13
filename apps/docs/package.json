@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "storybook dev --no-open -p 6006",
+    "start": "npx http-server ./storybook-static",
     "build": "storybook build --docs",
     "preview-storybook": "serve storybook-static",
     "clean": "rm -rf .turbo node_modules",

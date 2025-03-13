@@ -34,6 +34,8 @@ export default async function Page() {
   const t = await getTranslations("FrontPage");
   const frontPage = await getDashboardData();
 
+  console.log("data", frontPage)
+
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection

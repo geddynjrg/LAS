@@ -50,6 +50,9 @@
     "tailwindcss": "^4.0.1",
     "typescript": "^5.7.3"
   },
+  "peerDependencies": {
+    "next": "^15.x"
+  },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
     "./postcss.config": "./postcss.config.mjs",
