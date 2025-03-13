@@ -1,25 +1,18 @@
 import {
   IconArrowRight,
-  IconCertificate2,
   IconChecklist,
   IconChevronDown,
-  IconCoins,
-  IconId,
   IconSearch,
   IconTimeline,
   IconTools,
   IconZoomMoney,
 } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
-import {
-  NumberedList,
-  NumberedListItem,
-} from "@workspace/ui/components/numbered-list";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 import { FeatureSection } from "@workspace/ui/components/tvet/feature-section";
 import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
@@ -34,9 +27,12 @@ import { Underline } from "@workspace/ui/components/underline";
 import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
+import { PageComponents } from "@/components/page-components";
+import { getDashboardData } from "@/lib/api/dashboard";
 
-export default function Page() {
-  const t = useTranslations("FrontPage");
+export default async function Page() {
+  const t = await getTranslations("FrontPage");
+  const frontPage = await getDashboardData();
 
   return (
     <div className="flex flex-1 flex-col">
@@ -60,27 +56,9 @@ export default function Page() {
         {t("description")}
       </HeroSection>
 
-      <Container className="mt-4 py-8">
-        <h2 className="typo-h2">Application process and admission details</h2>
-        <hr />
+      <PageComponents components={frontPage.content.page_components} />
 
-        <section className="mt-4">
-          <h2 className="typo-h3">To apply, you need to prepare:</h2>
-          <NumberedList className="my-4" variant="numbers">
-            <NumberedListItem icon={<IconId />}>
-              National ID or birth certificate
-            </NumberedListItem>
-            <NumberedListItem icon={<IconCertificate2 />}>
-              Some courses may require educational certificates (KCSE, KCPE, or
-              equivalent)
-            </NumberedListItem>
-            <NumberedListItem icon={<IconCoins />}>
-              250 KSh to pay the application fee
-            </NumberedListItem>
-          </NumberedList>
-        </section>
-        <hr />
-
+      <Container>
         <section className="mt-4">
           <h2 className="typo-h5">Intake periods</h2>
           <p className="mt-2">

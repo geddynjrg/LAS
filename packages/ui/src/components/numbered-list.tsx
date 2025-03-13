@@ -55,20 +55,15 @@ export interface NumberedListItemProps {
   className?: string;
   children?: ReactNode;
   icon?: ReactNode;
-  key?: string;
 }
 
 export const NumberedListItem: FC<NumberedListItemProps> = ({
-  key,
   children,
   className,
   icon,
 }) => {
   return (
-    <div
-      key={key}
-      className={cn("flex w-full items-center justify-between", className)}
-    >
+    <div className={cn("flex w-full items-center justify-between", className)}>
       {children}
       {icon && (
         <span className="text-primary ml-2 flex-none [&>svg]:size-10">
