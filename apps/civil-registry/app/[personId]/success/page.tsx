@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 import { Button } from "@workspace/ui/components/button";
 import { BackButton } from "@workspace/ui/components/civil-registry/back-button";
@@ -9,12 +9,27 @@ import {
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
 import { cn } from "@workspace/ui/lib/utils";
 
+import { getPersonById } from "@/actions/get-person-by-id";
+import { getFullName } from "@/lib/util/full-name";
+
 export interface SuccessPageProps {
-  params: Promise<{}>;
+  params: Promise<{ personId: string }>;
 }
 
-export default function SuccessPage({}: SuccessPageProps) {
-  const t = useTranslations();
+export default async function SuccessPage({ params }: SuccessPageProps) {
+  const t = await getTranslations();
+
+  const { personId } = await params;
+
+  if (!personId) {
+    return <p>Error: person Id is missing</p>;
+  }
+
+  const person = await getPersonById(personId);
+
+  if (!person) {
+    return <p>Error: person not found</p>;
+  }
 
   return (
     <SectionWrap hasTopPadding hasBottomPadding className={cn("space-y-6")}>
@@ -34,7 +49,7 @@ export default function SuccessPage({}: SuccessPageProps) {
       <div className={cn("space-y-4")}>
         <h3 className={cn("typo-h3")}>
           {t("SuccessPage.success-confirmation-title", {
-            name: "David Otieno",
+            name: getFullName(person),
           })}
         </h3>
 

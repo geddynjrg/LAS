@@ -1,7 +1,5 @@
-"use client";
-
 import { IconId, IconPrinter } from "@tabler/icons-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { getFormatter, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
 
@@ -10,51 +8,19 @@ import {
   PersonCardFooterWrap,
   PersonCardLink,
 } from "@workspace/ui/components/card";
-import {
-  PersonCard,
-  type PersonType,
-} from "@workspace/ui/components/civil-registry/person-card";
+import { PersonCard } from "@workspace/ui/components/civil-registry/person-card";
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
 import { cn } from "@workspace/ui/lib/utils";
 
-const MOCK_CHILDREN: PersonType[] = [
-  {
-    id: "1",
-    name: "David Otieno",
-    sex: "M",
-    age: "2 years",
-    dob: new Date(2022, 3, 23).toISOString(),
-    validationStatus: "alert",
-  },
-  {
-    id: "2",
-    name: "Grace Otieno",
-    sex: "F",
-    age: "1 month",
-    dob: new Date(2024, 6, 12).toISOString(),
-    validationStatus: "alert",
-  },
-  {
-    id: "3",
-    name: "Paul Otieno",
-    sex: "M",
-    age: "7 years",
-    dob: new Date(2018, 0, 1).toISOString(),
-    validationStatus: "success",
-  },
-  {
-    id: "4",
-    name: "John Rambo",
-    sex: "M",
-    age: "77 years",
-    dob: new Date(1954, 4, 12).toISOString(),
-    validationStatus: "pending",
-  },
-];
+import { getPersonById } from "@/actions/get-person-by-id";
+import type { Person, ValidationStatus } from "@/lib/data/person";
+import { getAgeByDoB } from "@/lib/util/age";
+import { getFullName } from "@/lib/util/full-name";
 
-export default function Page() {
-  const t = useTranslations();
-  const format = useFormatter();
+export default async function Page() {
+  const t = await getTranslations();
+  const format = await getFormatter();
+  const person = await getPersonById("1");
 
   return (
     <SectionWrap hasTopPadding hasBottomPadding className="space-y-8">
@@ -73,87 +39,100 @@ export default function Page() {
             "rounded-full bg-neutral-400 text-neutral-100",
           )}
         >
-          {MOCK_CHILDREN.length}
+          {person?.children?.length ?? 0}
         </div>
       </h3>
 
       <div className={cn("space-y-8")}>
-        {hasValidCertificate(MOCK_CHILDREN, "alert") && (
+        {hasValidCertificate(person?.children as Person[], "alert") && (
           <CardWrap>
-            {filterByCertificateValidation(MOCK_CHILDREN, "alert").map(
-              (child) => (
-                <PersonCard
-                  key={child.id}
-                  variant="danger"
-                  person={{
-                    ...child,
-                    dob: format.dateTime(new Date(child.dob)),
-                  }}
-                  statusLabel={t(
-                    "Components.person-card.certificate-unavailable",
-                  )}
-                  footer={
-                    <Button asChild>
-                      <Link href={child.id}>
-                        {t("Components.person-card.validate-data")}
-                      </Link>
-                    </Button>
-                  }
-                />
-              ),
-            )}
+            {filterByCertificateValidation(
+              person?.children as Person[],
+              "alert",
+            ).map((child) => (
+              <PersonCard
+                key={child.id}
+                variant="danger"
+                person={{
+                  ...child,
+                  name: getFullName(child),
+                  dob: format.dateTime(new Date(child.dob)),
+                  age: getAgeByDoB(child.dob, true) ?? "N/A",
+                }}
+                statusLabel={t(
+                  "Components.person-card.certificate-unavailable",
+                )}
+                footer={
+                  <Button asChild>
+                    <Link href={child.id}>
+                      {t("Components.person-card.validate-data")}
+                    </Link>
+                  </Button>
+                }
+              />
+            ))}
           </CardWrap>
         )}
 
-        {hasValidCertificate(MOCK_CHILDREN, "pending") && (
+        {hasValidCertificate(person?.children as Person[], "pending") && (
           <CardWrap>
-            {filterByCertificateValidation(MOCK_CHILDREN, "pending").map(
-              (child) => (
-                <PersonCard
-                  key={child.id}
-                  person={child}
-                  variant="warning"
-                  statusLabel={t("Components.person-card.amendments-processed")}
-                  footer={
-                    <PersonCardFooterWrap>
-                      <PersonCardLink>
-                        <IconId />
-                        {t("Components.person-card.view-registration")}
-                      </PersonCardLink>
-                    </PersonCardFooterWrap>
-                  }
-                />
-              ),
-            )}
+            {filterByCertificateValidation(
+              person?.children as Person[],
+              "pending",
+            ).map((child) => (
+              <PersonCard
+                key={child.id}
+                person={{
+                  ...child,
+                  name: getFullName(child),
+                  dob: format.dateTime(new Date(child.dob)),
+                  age: getAgeByDoB(child.dob, true) ?? "N/A",
+                }}
+                variant="warning"
+                statusLabel={t("Components.person-card.amendments-processed")}
+                footer={
+                  <PersonCardFooterWrap>
+                    <PersonCardLink>
+                      <IconId />
+                      {t("Components.person-card.view-registration")}
+                    </PersonCardLink>
+                  </PersonCardFooterWrap>
+                }
+              />
+            ))}
           </CardWrap>
         )}
 
-        {hasValidCertificate(MOCK_CHILDREN, "success") && (
+        {hasValidCertificate(person?.children as Person[], "success") && (
           <CardWrap>
-            {filterByCertificateValidation(MOCK_CHILDREN, "success").map(
-              (child) => (
-                <PersonCard
-                  key={child.id}
-                  person={child}
-                  variant="success"
-                  statusLabel={t(
-                    "Components.person-card.certificate-available",
-                  )}
-                  footer={
-                    <PersonCardFooterWrap>
-                      <PersonCardLink>
-                        <IconPrinter />
-                        {t("Components.person-card.view-certificate")}
-                      </PersonCardLink>
-                      <PersonCardLink>
-                        <IconId />
-                        {t("Components.person-card.issuance")}
-                      </PersonCardLink>
-                    </PersonCardFooterWrap>
-                  }
-                />
-              ),
-            )}
+            {filterByCertificateValidation(
+              person?.children as Person[],
+              "success",
+            ).map((child) => (
+              <PersonCard
+                key={child.id}
+                person={{
+                  ...child,
+                  name: getFullName(child),
+                  dob: format.dateTime(new Date(child.dob)),
+                  age: getAgeByDoB(child.dob, true) ?? "N/A",
+                }}
+                variant="success"
+                statusLabel={t("Components.person-card.certificate-available")}
+                footer={
+                  <PersonCardFooterWrap>
+                    <PersonCardLink>
+                      <IconPrinter />
+                      {t("Components.person-card.view-certificate")}
+                    </PersonCardLink>
+                    <PersonCardLink>
+                      <IconId />
+                      {t("Components.person-card.issuance")}
+                    </PersonCardLink>
+                  </PersonCardFooterWrap>
+                }
+              />
+            ))}
           </CardWrap>
         )}
       </div>
@@ -176,17 +155,14 @@ const CardWrap: FC<{ children: ReactNode }> = ({ children }) => (
 );
 
 // check if there are any children to be rendered
-function hasValidCertificate(
-  persons: PersonType[],
-  status: PersonType["validationStatus"],
-) {
+function hasValidCertificate(persons: Person[], status: ValidationStatus) {
   return persons.some((person) => person.validationStatus === status);
 }
 
 // check for certificate validation
 function filterByCertificateValidation(
-  persons: PersonType[],
-  status: PersonType["validationStatus"],
+  persons: Person[],
+  status: ValidationStatus,
 ) {
   const validatedPersons = persons.filter(
     (person) => person.validationStatus === status,

@@ -42,9 +42,18 @@
     "amend": "Amend",
     "description": "As registered at birth in the birth notification",
     "name": "Name",
+    "first-name": "First name",
+    "middle-name": "Middle name",
+    "female": "Female",
+    "male": "Male",
+    "lastname": "Surename",
     "dob": "Date of birth",
     "age": "Age",
     "sex": "Sex",
+    "married": "Married",
+    "divorced": "Divorced",
+    "single": "Single",
+    "widowed": "Widowed",
     "birth-weight": "Weight on birth",
     "place-of-birth": "Place of birth",
     "national-id": "National ID",
@@ -52,6 +61,7 @@
     "nationality": "Nationality",
     "marital-status": "Marital status",
     "education": "Level of education",
+    "mothers-name": "Mother's name",
     "fathers-name": "Father's name",
     "phone": "Phone number",
     "confirm-registration?": "Confirm registration?",
@@ -63,7 +73,9 @@
     "confirm-amendments-text": "Are you sure all the amended details are correct?",
     "amendment-cost-label": "Total cost of amendments",
     "view-const-breakdown": "View cost breakdown",
-    "changing-child-name": "Changing child’s name"
+    "changing-child-name": "Changing child’s name",
+    "affidavit-required": "Affidavit required",
+    "affidavit-required-text": "To change the father’s information you need to provide an affidavit. Please attach the document at the end of the following form."
   },
   "SuccessPage": {
     "title": "Thank you for validating your child’s birth registration data!",
@@ -92,6 +104,7 @@
     "payment-title": "Payment for amendments",
     "payment-explanation": "The amendments submitted require a fee to be processed by the Civil Registry.",
     "cost-breakdown": "Cost breakdown",
+    "child-name-change": "Changing child’s name",
     "payment-method": "Paymend method"
   },
   "Amendment": {

@@ -1,4 +1,5 @@
 import { IconCheck, IconEdit, IconX } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
 
@@ -11,8 +12,7 @@ export interface DataBlockProps {
   description?: string;
   disabled?: boolean;
   active?: boolean;
-  onCancel?: () => void;
-  onSubmit?: () => void;
+  toggleEdit: () => void;
 }
 
 export const DataBlock: FC<DataBlockProps> = ({
@@ -21,27 +21,31 @@ export const DataBlock: FC<DataBlockProps> = ({
   description,
   disabled,
   active,
-  onCancel,
-  onSubmit,
+  toggleEdit,
 }) => {
+  const t = useTranslations();
   return (
     <div className={cn(disabled && "text-neutral-600")}>
       <div className={cn("flex items-center justify-between gap-4")}>
         <h3 className={cn("typo-h3")}>{title}</h3>
-        <Button
-          asChild
-          variant="secondary"
-          className={cn(
-            disabled && "border-neutral-400 bg-neutral-100 text-neutral-400",
-          )}
-        >
-          <Link
-            href="#amend"
-            className={cn("!px-5", disabled && "pointer-events-none")}
+        {!active && (
+          <Button
+            asChild
+            onClick={toggleEdit}
+            variant="secondary"
+            className={cn(
+              disabled && "border-neutral-400 bg-neutral-100 text-neutral-400",
+            )}
           >
-            Amend <IconEdit />
-          </Link>
-        </Button>
+            <Link
+              href="#amend"
+              className={cn("!px-5")}
+              onClick={(e) => e.preventDefault()}
+            >
+              {t("Buttons.amend")} <IconEdit />
+            </Link>
+          </Button>
+        )}
       </div>
 
       {description && <p className={cn("mt-1")}>{description}</p>}
@@ -61,10 +65,10 @@ export const DataBlock: FC<DataBlockProps> = ({
             "flex justify-between gap-3",
           )}
         >
-          <Button variant="secondary" onClick={onCancel}>
+          <Button variant="secondary" onClick={toggleEdit}>
             Cancel <IconX />
           </Button>
-          <Button onClick={onSubmit}>
+          <Button type="submit">
             Confirm <IconCheck />
           </Button>
         </div>

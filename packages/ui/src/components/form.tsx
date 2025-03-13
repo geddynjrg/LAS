@@ -33,6 +33,7 @@ export interface FieldProps<
   description?: ReactNode;
   required?: boolean;
   editable?: boolean;
+  isVisible?: boolean;
   className?: string;
 }
 
@@ -48,6 +49,7 @@ export const Field = <
   control,
   required,
   editable = true,
+  isVisible = true,
   className,
 }: FieldProps<TInputs, TName>) => {
   const id = useId();
@@ -73,13 +75,19 @@ export const Field = <
           {required && <span className="text-destructive">*</span>}
         </FormPrimitive.Label>
       )}
-
-      {editable ? (
-        <FormPrimitive.Control asChild>
-          {control({ id, name, defaultValue })}
-        </FormPrimitive.Control>
+      {isVisible ? (
+        editable ? (
+          <FormPrimitive.Control asChild>
+            {control({ id, name, defaultValue })}
+          </FormPrimitive.Control>
+        ) : (
+          <p>
+            <input type="hidden" name={name} value={defaultValue} />
+            {defaultValue ?? "-"}
+          </p>
+        )
       ) : (
-        <p>{defaultValue ?? "-"}</p>
+        <input type="hidden" name={name} value={defaultValue} />
       )}
 
       {errorMessage && (
