@@ -2,7 +2,7 @@ import "@workspace/ui/globals.css";
 
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 import { SidebarInset } from "@workspace/ui/components/sidebar";
 
@@ -27,7 +27,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           <Providers>
             <AppHeader />
             <AppSidebar locale={locale} />
-            <SidebarInset>{children}</SidebarInset>
+            <SidebarInset>
+              <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+            </SidebarInset>
             <AppFooter />
           </Providers>
         </NextIntlClientProvider>
