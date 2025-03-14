@@ -32,6 +32,12 @@
     }
   },
 
+  "ErrorBoundary": {
+    "title": "Oops, there is an error!",
+    "description": "Please try to reload the page.",
+    "button": "Reload"
+  },
+
   "Buttons": {
     "amend": "Amend"
   }

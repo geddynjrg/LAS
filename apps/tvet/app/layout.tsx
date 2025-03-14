@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Suspense, type ReactNode } from "react";
 
+import { ErrorBoundary } from "@workspace/ui/components/error-boundary";
 import { SidebarInset } from "@workspace/ui/components/sidebar";
 
 import { AppFooter } from "@/components/app-footer";
@@ -28,7 +29,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <AppHeader />
             <AppSidebar locale={locale} />
             <SidebarInset>
-              <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+              </ErrorBoundary>
             </SidebarInset>
             <AppFooter />
           </Providers>
