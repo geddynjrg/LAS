@@ -25,7 +25,7 @@ export interface ApplyCardProps extends VariantProps<typeof applyCardVariants> {
   tags: string[];
   className?: string;
   title: string;
-  fee: string;
+  fee: string | number | null;
   school?: string;
   applyByDate: string;
   startsOnDate?: string;

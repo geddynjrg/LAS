@@ -23,7 +23,6 @@ export const ApplicationBlock: FC<ApplicationBlockProps> = ({
       <hr />
 
       <section className="mt-4">
-        <DescriptionBlock {...description} className="typo-h3" />
         <NumberedList className="my-4" variant="numbers">
           {checkpoints?.map((checkpoint, index) => (
             <NumberedListItem
@@ -34,6 +33,10 @@ export const ApplicationBlock: FC<ApplicationBlockProps> = ({
             </NumberedListItem>
           ))}
         </NumberedList>
+        <DescriptionBlock
+          {...description}
+          className="[&>ul]:list-inside [&>ul]:list-disc"
+        />
       </section>
       <hr />
     </Container>

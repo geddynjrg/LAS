@@ -7,6 +7,7 @@ import {
   IconTools,
   IconZoomMoney,
 } from "@tabler/icons-react";
+import { AdvancedMarker } from "@vis.gl/react-google-maps";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,8 +36,6 @@ export default async function Page() {
   const t = await getTranslations("FrontPage");
   const frontPage = await getDashboardData();
 
-  console.log("data", frontPage);
-
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection
@@ -59,9 +58,9 @@ export default async function Page() {
         {t("description")}
       </HeroSection>
 
-      <PageComponents components={frontPage.content.page_components} />
+      <PageComponents components={frontPage?.content?.page_components ?? []} />
 
-      <Container>
+      {/* <Container>
         <section className="mt-4">
           <h2 className="typo-h5">Intake periods</h2>
           <p className="mt-2">
@@ -97,9 +96,9 @@ export default async function Page() {
           entrepreneur, TVET equips you with hands-on training that prepares you
           for real jobs.
         </SectionHeader>
-      </Container>
+      </Container> */}
 
-      <FeatureSection
+      {/* <FeatureSection
         className="bg-background lg:mt-8"
         features={[
           {
@@ -122,9 +121,9 @@ export default async function Page() {
         No matter your background, TVET will give you the{" "}
         <strong>tools to succeed and grow.</strong> Start your journey today and{" "}
         <strong>be part of Kenya’s future!</strong>
-      </FeatureSection>
+      </FeatureSection> */}
 
-      <Container className="mt-4 flex flex-col gap-2 px-4 py-10 lg:gap-4">
+      {/* <Container className="mt-4 flex flex-col gap-2 px-4 py-10 lg:gap-4">
         <Heading type="h2">Get sponsored to train</Heading>
         <p>
           Nairobi TVETs offer sponsorships from the government, NGOs, and
@@ -138,9 +137,9 @@ export default async function Page() {
             Learn more about sponsorships <IconArrowRight />
           </Link>
         </Underline>
-      </Container>
+      </Container> */}
 
-      <section className="bg-background mt-4 pb-12 pt-8">
+      {/* <section className="bg-background mt-4 pb-12 pt-8">
         <Container className="flex flex-col items-center gap-4">
           <Heading type="h2" className="w-full">
             Apply now
@@ -189,9 +188,9 @@ export default async function Page() {
             View all <IconArrowRight />
           </Button>
         </Container>
-      </section>
+      </section> */}
 
-      <Container className="flex flex-col gap-4 px-0 lg:flex-row-reverse">
+      {/* <Container className="flex flex-col gap-4 px-0 lg:flex-row-reverse">
         <section className="mt-4 px-4 py-12 lg:shrink">
           <Heading type="h2" className="typo-h2">
             Nairobi Vocational Centres
@@ -302,11 +301,11 @@ export default async function Page() {
             }}
             quality={100}
           />
-          {/* <LocationMap positions={[{ lat: -33.866, lng: 151.196 }]} /> */}
+          // <LocationMap positions={[{ lat: -33.866, lng: 151.196 }]} /> 
         </section>
-      </Container>
+      </Container> */}
 
-      <div className="bg-background">
+      {/* <div className="bg-background">
         <Container className="mt-4 py-12">
           <Heading type="h2">Training areas</Heading>
           <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 xl:grid-cols-3">
@@ -372,7 +371,7 @@ export default async function Page() {
             </RoundedCornerCard>
           </RoundedCornerSection>
         </Container>
-      </div>
+      </div> */}
     </div>
   );
 }

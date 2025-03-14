@@ -25,6 +25,16 @@ export function validate<T extends z.Schema>(
   schema: T,
 ) {
   const response = (res as any)?.data?.data ?? (res as any)?.data ?? res;
+
+  if (res.error) {
+    console.log({ error: response.error.message });
+    return {
+      type: "error",
+      error: response.error.message,
+      content: null,
+    };
+  }
+
   const result = schema.safeParse(response);
 
   // return response even if validation fails, but log out the errors

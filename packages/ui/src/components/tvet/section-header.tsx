@@ -33,7 +33,7 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
             className="min-h-full min-w-full object-cover max-lg:aspect-video"
           />
         )}
-        <div id="overlay" className="bg-theme-500/40 z-1 absolute inset-0" />
+        <div id="overlay" className="z-1 absolute inset-0 bg-[#253628]/40" />
         <div className="z-2 absolute bottom-4 m-4 overflow-hidden">
           <h2 className="typo-h1 text-primary-foreground leading-tight after:ml-4 after:mr-[-100%] after:inline-block after:h-[0.5em] after:w-full after:border-t-2 after:align-bottom after:content-['']">
             {title}
