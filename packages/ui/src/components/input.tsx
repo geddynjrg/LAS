@@ -47,7 +47,6 @@ export const Input: FC<InputProps> = ({
   onChange,
   ...props
 }) => {
-  console.log(props);
   return (
     <div className={cn("relative", className)}>
       {startDecorator && <Decorator>{startDecorator}</Decorator>}

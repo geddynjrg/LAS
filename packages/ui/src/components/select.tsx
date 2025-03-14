@@ -30,6 +30,8 @@ export interface SelectProps<T extends string>
   placeholder?: ReactNode;
   className?: string;
   options?: SelectOption<T>[] | readonly SelectOption<T>[];
+  name?: string;
+  value?: T;
   defaultValue?: T;
   selectedLabel?: ReactNode;
   invalid?: boolean;

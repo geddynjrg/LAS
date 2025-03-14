@@ -29,7 +29,6 @@ export const flagSelectVariants = cva({
 interface FlagOption<T = string> {
   label: ReactNode;
   value: T;
-  code?: string;
   labelShort?: ReactNode;
 }
 
@@ -59,9 +58,7 @@ export const FlagSelect = <T extends string>({
     () =>
       options?.map((item) => ({
         ...item,
-        label: (
-          <LabelWithFlag label={item.label} code={item.code ?? item.value} />
-        ),
+        label: <LabelWithFlag label={item.label} code={item.value} />,
       })),
     [options],
   );
@@ -69,7 +66,6 @@ export const FlagSelect = <T extends string>({
   const handleChange = useCallback(
     (value: T) => {
       setValue(value);
-
       startTransition(() => {
         onChange?.(value);
       });
@@ -97,7 +93,7 @@ export const FlagSelect = <T extends string>({
         value ? (
           <LabelWithFlag
             label={selectedOption?.labelShort ?? selectedOption?.label}
-            code={selectedOption?.code ?? value}
+            code={selectedOption?.value ?? value}
           />
         ) : undefined
       }

@@ -1,21 +1,82 @@
-import type { FC } from "react";
+import { useEffect, useMemo, useState, type FC, type ReactNode } from "react";
 
-import { FlagSelect } from "@workspace/ui/components/flag-select";
+import { Flag } from "@workspace/ui/components/flag";
+import { Select } from "@workspace/ui/components/select";
 import { countries } from "@workspace/ui/lib/countries";
 
 export interface CallingCodeSelectProps {
+  id?: string;
   name?: string;
   defaultValue?: string;
+  onValueChange?: (value?: string) => void;
   className?: string;
 }
 
-export const CallingCodeSelect: FC<CallingCodeSelectProps> = (props) => {
-  return <FlagSelect options={options} {...props} />;
+export const CallingCodeSelect: FC<CallingCodeSelectProps> = ({
+  name,
+  defaultValue,
+  onValueChange,
+  ...props
+}) => {
+  const options = useMemo(
+    () =>
+      countries.map((country) => ({
+        value: country.iso2,
+        label: (
+          <LabelWithFlag
+            code={country.iso2}
+          >{`(+${country.callingCode}) ${country.name}`}</LabelWithFlag>
+        ),
+        callingCode: country.callingCode,
+      })),
+    [],
+  );
+
+  const [value, setValue] = useState(
+    options.find((item) => item.callingCode === defaultValue)?.value,
+  );
+
+  const selectedOption = useMemo(
+    () => options.find((item) => item.value === value),
+    [options, value],
+  );
+
+  // call onValueChange when the selected option changes
+  useEffect(() => {
+    onValueChange?.(selectedOption?.callingCode);
+  }, [onValueChange, selectedOption?.callingCode]);
+
+  return (
+    <>
+      <input
+        type="hidden"
+        name={name}
+        value={selectedOption?.callingCode ?? ""}
+      />
+      <Select
+        value={value}
+        onValueChange={setValue}
+        options={options}
+        selectedLabel={
+          selectedOption && (
+            <LabelWithFlag
+              code={value}
+            >{`+${selectedOption.callingCode}`}</LabelWithFlag>
+          )
+        }
+        {...props}
+      />
+    </>
+  );
 };
 
-const options = countries.map((country) => ({
-  value: country.callingCode,
-  code: country.iso2,
-  label: `(+${country.callingCode}) ${country.name}`,
-  labelShort: `+${country.callingCode}`,
-}));
+const LabelWithFlag: FC<{ code?: string; children: ReactNode }> = ({
+  code,
+  children,
+}) => (
+  <span className="flex items-center gap-2">
+    {code && <Flag code={code} />}
+
+    {children}
+  </span>
+);

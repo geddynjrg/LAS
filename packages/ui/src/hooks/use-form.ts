@@ -32,6 +32,7 @@ export type FormActionResponse<T extends Record<string, unknown>> =
       success: true;
       message?: string;
       errors?: never;
+      values?: Partial<T>;
     } & Record<string, unknown>);
 
 /**
@@ -54,8 +55,6 @@ export function useForm<
 
       if (!success) {
         const errors = error.flatten((issue) => issue);
-
-        console.log("values", values, errors);
 
         return {
           success,
