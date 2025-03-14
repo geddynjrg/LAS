@@ -93,5 +93,5 @@ function getIntlKey<T extends z.ZodIssueBase>(
   key: keyof IntlMessages["Form"]["errors"],
   params?: T,
 ): { message: string; params?: T } {
-  return { message: `Form.errors.${key}`, params };
+  return { message: `Form.errors.${String(key)}`, params };
 }

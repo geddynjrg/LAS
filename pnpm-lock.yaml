@@ -169,6 +169,9 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.30.0
         version: 3.30.0(react@19.0.0)
+      '@vis.gl/react-google-maps':
+        specifier: ^1.5.1
+        version: 1.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -209,9 +212,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.3
         version: 19.0.3(@types/react@19.0.8)
-      '@vis.gl/react-google-maps':
-        specifier: ^1.5.1
-        version: 1.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@workspace/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config

@@ -179,10 +179,7 @@ export default async function SponsorshipsPage(_props: SponsorshipsPageProps) {
               </div>
             </Suspense>
           </div>
-          <Pagination
-            activePage={data.page}
-            pages={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
-          />
+          <Pagination pageCount={10} />
         </section>
       </div>
     </div>

@@ -36,6 +36,26 @@ pnpm i
 pnpm run dev
 ```
 
+### Code quality
+
+To check eslint issues run the following command at the root of the project:
+
+```bash
+pnpm run lint
+```
+
+To check typescript issues run the following command at the root of the project:
+
+```bash
+pnpm run typecheck
+```
+
+To fix code formatting issues run the following command at the root of the project:
+
+```bash
+pnpm run format
+```
+
 ## Adding libraries to specific packages
 
 ```bash
@@ -88,6 +108,7 @@ you need to enable `Developer mode` in windows settings
 https://github.com/vercel/next.js/discussions/52244
 
 ## Docker
+
 Start all apps in detached mode
 
 ```bash

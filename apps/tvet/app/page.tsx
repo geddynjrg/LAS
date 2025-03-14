@@ -8,7 +8,6 @@ import {
   IconZoomMoney,
 } from "@tabler/icons-react";
 import { getTranslations } from "next-intl/server";
-import { AdvancedMarker } from "@vis.gl/react-google-maps";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,15 +27,15 @@ import { Underline } from "@workspace/ui/components/underline";
 import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
+import { LocationMap } from "@/components/location-map";
 import { PageComponents } from "@/components/page-components";
 import { getDashboardData } from "@/lib/api/dashboard";
-import { LocationMap } from "@/components/location-map";
 
 export default async function Page() {
   const t = await getTranslations("FrontPage");
   const frontPage = await getDashboardData();
 
-  console.log("data", frontPage)
+  console.log("data", frontPage);
 
   return (
     <div className="flex flex-1 flex-col">

@@ -16,8 +16,7 @@ const meta = {
     ),
     description: "Description for a DataBlock component looks like this.",
     disabled: false,
-    onCancel: () => console.log("Cancel called"),
-    onSubmit: () => console.log("Cancel called"),
+    toggleEdit: () => console.log("toggleEdit called"),
     title: "Title for DataBlock",
   },
 } satisfies Meta<typeof DataBlock>;

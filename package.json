@@ -6,6 +6,7 @@
     "reinstall": "pnpm -r exec rimraf node_modules && rimraf node_modules && pnpm install",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "check-types": "turbo run check-types",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {

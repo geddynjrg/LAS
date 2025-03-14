@@ -14,6 +14,5 @@ export const Primary = {
   args: {
     title: "Hello World",
     children: "This is a label card",
-    onClick: () => alert("Clicked"),
   },
 } satisfies Story;

@@ -8,7 +8,6 @@
     "start": "npx http-server ./storybook-static",
     "build": "storybook build --docs",
     "preview-storybook": "serve storybook-static",
-    "clean": "rm -rf .turbo node_modules",
     "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
   },
   "dependencies": {
