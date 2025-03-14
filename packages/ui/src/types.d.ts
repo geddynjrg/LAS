@@ -8,3 +8,6 @@ export type FlattenObjectKeys<
     ? `${Key}.${FlattenObjectKeys<T[Key]>}`
     : `${Key}`
   : never;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type GenericFunction = (...args: any[]) => any;

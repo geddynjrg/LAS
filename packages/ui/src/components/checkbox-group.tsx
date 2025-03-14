@@ -10,7 +10,7 @@ export const checkboxGroupVariants = cva({
   base: "my-2 flex flex-wrap gap-4",
   variants: {
     orientation: {
-      horizontal: "flex-row",
+      horizontal: "my-0 mb-2 flex-row",
       vertical: "flex-col",
     },
   },
@@ -41,11 +41,14 @@ export const CheckboxGroup = <T extends string>({
   options,
   defaultValue,
   orientation = "vertical",
+  onValueChange,
   size,
   className,
 }: CheckboxGroupProps<T>) => {
-  const [value, setValue] = useState(
-    Array.isArray(defaultValue) ? defaultValue : defaultValue?.split(","),
+  const [value, setValue] = useState<T[]>(
+    Array.isArray(defaultValue)
+      ? defaultValue
+      : (defaultValue?.split(",") as T[]),
   );
 
   function handleChange(checked: boolean, option: CheckboxGroupOption<T>) {
@@ -54,6 +57,7 @@ export const CheckboxGroup = <T extends string>({
         ? [...(prev ?? []), option.value]
         : (prev ?? []).filter((v) => v !== option.value),
     );
+    onValueChange?.((value ?? []) as T[]);
   }
 
   return (

@@ -2,11 +2,11 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { IconCheck } from "@tabler/icons-react";
 import { memo, useId, useState, type FC, type ReactNode } from "react";
 
-import { Label } from "@workspace/ui/components/label";
+import { Label, labelVariants } from "@workspace/ui/components/label";
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
 
 export const checkboxVariants = cva({
-  base: "border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground focus-visible-ring shrink-0 rounded-sm border disabled:cursor-not-allowed disabled:opacity-50",
+  base: "border-primary bg-primary-foreground data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground focus-visible-ring shrink-0 rounded-sm border disabled:cursor-not-allowed disabled:opacity-50",
   variants: {
     size: {
       sm: "peer h-4 w-4",
@@ -63,7 +63,11 @@ export const Checkbox: FC<CheckboxProps> = ({
         </CheckboxPrimitive.Indicator>
       </CheckboxRootWrapper>
 
-      {children && <Label htmlFor={id || componentId}>{children}</Label>}
+      {children && (
+        <Label htmlFor={id || componentId} className={labelVariants({ size })}>
+          {children}
+        </Label>
+      )}
     </div>
   );
 };

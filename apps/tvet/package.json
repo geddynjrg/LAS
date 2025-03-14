@@ -30,6 +30,7 @@
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
     "openapi-typescript": "^7.6.1",
+    "@vis.gl/react-google-maps": "^1.5.1",
     "postcss": "^8.5.1",
     "tailwindcss": "^4.0.1",
     "typescript": "^5.7.3"

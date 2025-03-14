@@ -8,6 +8,16 @@ import { cn } from "@workspace/ui/lib/utils";
 
 export const labelVariants = cva({
   base: "text-base leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+  variants: {
+    size: {
+      sm: "text-sm",
+      default: "text-base",
+      lg: "text-lg",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
 });
 
 export interface LabelProps extends VariantProps<typeof labelVariants> {
@@ -17,6 +27,9 @@ export interface LabelProps extends VariantProps<typeof labelVariants> {
   ref?: Ref<HTMLLabelElement>;
 }
 
-export const Label: FC<LabelProps> = ({ className, ...props }) => (
-  <LabelPrimitive.Root className={cn(labelVariants(), className)} {...props} />
+export const Label: FC<LabelProps> = ({ className, size, ...props }) => (
+  <LabelPrimitive.Root
+    className={cn(labelVariants({ size }), className)}
+    {...props}
+  />
 );

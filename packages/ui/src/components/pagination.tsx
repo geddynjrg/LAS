@@ -1,13 +1,20 @@
+"use client";
+
 import { IconArrowLeft, IconArrowRight, IconDots } from "@tabler/icons-react";
-import { type FC, type ReactNode } from "react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { type FC, type ReactElement, type ReactNode } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
 export interface PaginationProps {
-  pages?: unknown[];
+  children?:
+    | ReactElement<PaginationItemProps>
+    | ReactElement<PaginationItemProps>[];
+  pageCount: number;
   className?: string;
-  activePage?: number;
   disabled?: boolean;
+  createPageURL?: (pageNumber: number) => string;
 }
 
 // placeholder for non-rendered pages
@@ -16,16 +23,28 @@ const ELLIPSIS = "...";
 const MAX_VISIBLE_ELEMENTS = 7;
 
 export const Pagination: FC<PaginationProps> = ({
-  pages,
   className,
-  activePage = 1,
+  pageCount,
   disabled,
+  createPageURL,
 }) => {
-  const totalPages = pages?.length ?? 0;
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentPage = Number(searchParams.get("page") ?? 1);
+
+  // // retain exiting search parameters
+  const pageUrl =
+    createPageURL ??
+    ((pageNumber: number | string) => {
+      const params = new URLSearchParams(searchParams);
+      params.set("page", pageNumber.toString());
+      return `${pathname}?${params.toString()}`;
+    });
 
   const paginatedPages = getPageRange(
-    totalPages,
-    activePage,
+    pageCount,
+    currentPage ?? 1,
     MAX_VISIBLE_ELEMENTS,
   );
 
@@ -35,17 +54,19 @@ export const Pagination: FC<PaginationProps> = ({
       aria-label="pagination"
       className={cn("mx-auto flex w-full justify-center", className)}
     >
-      <ul className="flex flex-row items-center gap-1">
-        <NavArrow href="#" disabled={activePage === 1} />
-
+      <ul className="flex flex-row items-center">
+        <NavArrow
+          href={pageUrl((currentPage ?? 1) - 1)}
+          disabled={currentPage === 1}
+        />
         {paginatedPages.map((page, i) =>
           page === ELLIPSIS ? (
             <Ellipsis key={`dots-${i}`} />
           ) : (
             <PaginationItem
               key={page}
-              href="#"
-              isActive={activePage === page}
+              href={typeof page === "number" ? pageUrl(page) : "#"}
+              isActive={currentPage === page}
               disabled={disabled}
             >
               {page}
@@ -53,7 +74,11 @@ export const Pagination: FC<PaginationProps> = ({
           ),
         )}
 
-        <NavArrow href="#" dir="right" disabled={activePage === totalPages} />
+        <NavArrow
+          href={pageUrl((currentPage ?? 1) + 1)}
+          dir="right"
+          disabled={currentPage === pageCount}
+        />
       </ul>
     </nav>
   );
@@ -66,7 +91,7 @@ interface PaginationItemProps {
   children?: ReactNode;
 }
 
-const PaginationItem: FC<PaginationItemProps> = ({
+export const PaginationItem: FC<PaginationItemProps> = ({
   isActive,
   disabled,
   href,
@@ -90,7 +115,7 @@ const PaginationItem: FC<PaginationItemProps> = ({
 );
 
 interface NavArrowProps {
-  href?: string;
+  href: string;
   disabled?: boolean;
   dir?: "left" | "right";
 }
@@ -102,7 +127,7 @@ const NavArrow: FC<NavArrowProps> = ({ href, disabled, dir = "left" }) => {
 
   return (
     <li className={cn(dir === "left" ? "mr-3" : "ml-3")}>
-      <a
+      <Link
         href={href}
         aria-label={ariaLabel}
         className={cn(disabled && "pointer-events-none cursor-default")}
@@ -112,7 +137,7 @@ const NavArrow: FC<NavArrowProps> = ({ href, disabled, dir = "left" }) => {
         ) : (
           <IconArrowRight className={iconClassNames} />
         )}
-      </a>
+      </Link>
     </li>
   );
 };

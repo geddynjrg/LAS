@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
 import { IconCheck } from "@tabler/icons-react";
 import type { VariantProps } from "cva-extended";
@@ -45,16 +46,25 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({
   size,
   className,
   children,
+  onValueChange,
   ...props
 }) => {
   const [value, setValue] = useState(defaultValue);
 
   return (
     <>
-      <input type="hidden" name={name} value={value} />
+      <input
+        type="hidden"
+        name={name}
+        value={Array.isArray(value) ? value.join(",") : value}
+      />
       <ToggleGroupPrimitive.Root
         className={cn("flex items-center justify-center", className)}
-        onValueChange={setValue}
+        value={value as any}
+        onValueChange={(value: any) => {
+          setValue(value);
+          onValueChange?.(value);
+        }}
         {...props}
       >
         <ButtonGroupContext.Provider value={{ variant, size }}>

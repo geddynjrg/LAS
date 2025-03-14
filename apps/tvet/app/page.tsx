@@ -8,6 +8,7 @@ import {
   IconZoomMoney,
 } from "@tabler/icons-react";
 import { getTranslations } from "next-intl/server";
+import { AdvancedMarker } from "@vis.gl/react-google-maps";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,6 +30,7 @@ import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
 import { PageComponents } from "@/components/page-components";
 import { getDashboardData } from "@/lib/api/dashboard";
+import { LocationMap } from "@/components/location-map";
 
 export default async function Page() {
   const t = await getTranslations("FrontPage");
@@ -301,6 +303,7 @@ export default async function Page() {
             }}
             quality={100}
           />
+          {/* <LocationMap positions={[{ lat: -33.866, lng: 151.196 }]} /> */}
         </section>
       </Container>
 

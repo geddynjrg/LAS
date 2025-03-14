@@ -163,6 +163,9 @@
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
+  /* table */
+  --color-table-border: hsla(227, 8%, 77%, 1);
+
   @keyframes accordion-down {
     from {
       height: 0;

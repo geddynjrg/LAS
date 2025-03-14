@@ -33,6 +33,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   endDecorator?: ReactNode;
   className?: string;
   onValueChange?: (value: string) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const Input: FC<InputProps> = ({
@@ -43,8 +44,10 @@ export const Input: FC<InputProps> = ({
   startDecorator,
   endDecorator,
   onValueChange,
+  onChange,
   ...props
 }) => {
+  console.log(props);
   return (
     <div className={cn("relative", className)}>
       {startDecorator && <Decorator>{startDecorator}</Decorator>}
@@ -59,6 +62,7 @@ export const Input: FC<InputProps> = ({
           endDecorator && (typeof endDecorator === "string" ? "pe-11" : "pe-8"),
         )}
         onChange={(e) => {
+          onChange?.(e);
           onValueChange?.(e.target.value);
         }}
         aria-invalid={invalid}

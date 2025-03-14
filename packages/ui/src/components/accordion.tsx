@@ -7,6 +7,9 @@ import type { FC, ReactNode } from "react";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const Accordion = AccordionPrimitive.Root;
+export const AccordionItemPrimitive = AccordionPrimitive.Item;
+export const AccordionTriggerPrimitive = AccordionPrimitive.Trigger;
+export const AccordionContentPrimitive = AccordionPrimitive.Content;
 
 export interface AccordionProps {
   value: string;

@@ -5,9 +5,22 @@ import { Pagination } from "@workspace/ui/components/pagination";
 const meta = {
   component: Pagination,
   args: {
-    pages: [...new Array(10)].map((_, i) => i),
-    activePage: 1,
+    pageCount: 10,
+    createPageURL: (pageNumber: number) => `?page=${pageNumber}`,
     disabled: false,
+  },
+  argTypes: {
+    pageCount: {
+      control: {
+        type: "number",
+        value: 10,
+      },
+    },
+    disabled: {
+      control: {
+        type: "boolean",
+      },
+    },
   },
 } satisfies Meta<typeof Pagination>;
 

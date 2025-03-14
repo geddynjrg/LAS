@@ -1,3 +1,5 @@
+"use client";
+
 import * as Popover from "@radix-ui/react-popover";
 import { IconSearch } from "@tabler/icons-react";
 import { Command as CommandPrimitive } from "cmdk";

@@ -12,6 +12,11 @@ export default defineConfig({
       "@tabler/icons-react": "@tabler/icons-react/dist/esm/icons/index.mjs",
       "next/link": path.resolve(`${__dirname}`, "mocks", "link.tsx"),
       "next/image": path.resolve(`${__dirname}`, "mocks", "image.tsx"),
+      "next/navigation": path.resolve(
+        `${__dirname}`,
+        "mocks",
+        "navigation.tsx",
+      ),
     },
   },
 });
