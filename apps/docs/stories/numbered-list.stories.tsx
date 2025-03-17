@@ -28,6 +28,12 @@ const meta = {
       },
       options: numberedListVariants.variants.variant,
     },
+    bulletAlignment: {
+      control: {
+        type: "select",
+      },
+      options: numberedListVariants.variants.bulletAlignment,
+    },
   },
 } satisfies Meta<typeof NumberedList>;
 

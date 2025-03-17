@@ -24,7 +24,7 @@ export const AppHeader: FC<AppHeaderProps> = () => {
       endDecorator={
         <>
           <Button asChild>
-            <Link href="/apply">{t("apply")}</Link>
+            <Link href="/login/phone?callbackUrl=/apply">{t("apply")}</Link>
           </Button>
           <SidebarTrigger>{t("menu")}</SidebarTrigger>
         </>
