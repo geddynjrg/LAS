@@ -15,5 +15,43 @@
     "title": "<light>Where did i get</light> so skilled?",
     "description": " At TVETs we put focus on practical skills - up to 90% of training is through practice. Programs are designed around occupational standards, curriculas are developed with strong integration with businesses.",
     "imageDescription": "A student working"
+  },
+
+  "LoginPage": {
+    "title": "Start applying",
+    "description": "Log in or create and account to apply for the Uwezo Fund loan.",
+    "doNotHaveAccount": "Don't have an account?",
+    "email": "E-mail",
+    "password": "Password",
+    "phone": "Phone number",
+    "login": "Log in",
+    "signUp": "Sign up",
+    "useEmailInstead": "Use e-mail instead of phone",
+    "usePhoneInstead": "Use phone instead of e-mail",
+    "ForgotPassword": "Forgot your password?",
+    "reset": "Reset"
+  },
+
+  "SignUpPage": {
+    "title": "Create an Account",
+    "description": "Fill in the details below to create your account.",
+    "email": "E-mail",
+    "password": "Password",
+    "passwordConfirm": "Confirm password",
+    "signUp": "Sign up",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in"
+  },
+
+  "ResetPage": {
+    "title": "Reset Password",
+    "description": "Enter your e-mail address to reset your password.",
+    "email": "E-mail",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "reset": "Reset",
+    "backTo": "Back to",
+    "success": "Reset email sent",
+    "successDescription": "An email has been sent to your e-mail address with instructions on how to reset your password."
   }
 }

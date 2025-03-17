@@ -1,8 +1,18 @@
 "use server";
 
+import { auth } from "@/lib/auth";
+import { dummyApplications } from "@/lib/dummy-data";
+import { createApplicationId } from "@/lib/util";
+
+declare global {
+  var dummyApplicationsTest: ApplicationData[];
+}
+
 export type Status = "PENDING" | "IN_REVIEW" | "UNSUBMITTED";
 
 export type MemberType = "Chairman" | "Secretary" | "Member";
+
+export type GenderType = "Male" | "Female" | "Other";
 
 export interface LoanDetails {
   purpose: string;
@@ -32,7 +42,7 @@ export interface GroupDetails {
     type: MemberType;
   }[];
   location?: {
-    countryOfOperation: string;
+    countyOfOperation: string;
     constituency: string;
     ward: string;
     meetingPoint: string;
@@ -61,190 +71,127 @@ export interface businessDetails {
   };
 }
 
-export interface Application {
+export interface GeneralDetails {
   applicationId: string;
   status: Status;
-  loanDetails?: LoanDetails;
-  bankAccountDetails?: BankAccountDetails;
-  groupDetails: GroupDetails;
-  businessDetails?: businessDetails;
+  user: string; // currently user email
 }
 
-const DUMMY_DATA: Application[] = [
-  {
-    applicationId: "LFR-D5SP6A",
-    status: "IN_REVIEW",
-    loanDetails: {
-      purpose: "To buy more stock",
-      type: "Group Loan",
-      amount: 200000,
-      repaymentPeriod: 6,
-    },
-    bankAccountDetails: {
-      bankName: "Equity Bank",
-      groupsBankBranch: "Kisumu",
-      accountNumber: "1234567890",
-    },
-    groupDetails: {
-      natureOfGroup: "Chama",
-      basicInfo: {
-        name: "Beacon",
-        registrationNumber: "123456",
-        dateFormed: new Date("2021-01-01"),
-        registrationCert: "Cert",
-        listOfMembersOnCert: "Members",
-      },
-      members: [
-        {
-          name: "John",
-          lastName: "Doe",
-          type: "Chairman",
-        },
-        {
-          name: "Jane",
-          lastName: "Doe",
-          type: "Secretary",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-      ],
-      location: {
-        countryOfOperation: "Kenya",
-        constituency: "Kisumu",
-        ward: "Kisumu Central",
-        meetingPoint: "Kisumu CBD",
-        nearestLandmark: "Kisumu Post Office",
-      },
-      background: {
-        purpose: "To buy more stock",
-        keyActivities: "Selling",
-        creditHistory: "Good",
-      },
-    },
-    businessDetails: {
-      information: {
-        natureOfBusiness: "Retail",
-        type: "Grocery",
-        operationPeriod: 12,
-      },
-      performance: {
-        averageMonthIncome: 100000,
-        costOfGoodsPerMonth: 50000,
-        rent: 10000,
-        salaries: 20000,
-        transportCosts: 5000,
-        netSurplus: 15000,
-      },
-    },
-  },
-  {
-    applicationId: "LFR-F66Q6A",
-    status: "PENDING",
-    loanDetails: {
-      purpose: "To buy more stock",
-      type: "Group Loan",
-      amount: 420000,
-      repaymentPeriod: 6,
-    },
-    bankAccountDetails: {
-      bankName: "KCB",
-      groupsBankBranch: "Nairobi",
-      accountNumber: "0987654321",
-    },
-    groupDetails: {
-      natureOfGroup: "Chama",
-      basicInfo: {
-        name: "Candle",
-        registrationNumber: "654321",
-        dateFormed: new Date("2021-01-01"),
-        registrationCert: "Cert",
-        listOfMembersOnCert: "Members",
-      },
-      members: [
-        {
-          name: "John",
-          lastName: "Doe",
-          type: "Chairman",
-        },
-        {
-          name: "Jane",
-          lastName: "Doe",
-          type: "Secretary",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-      ],
-      location: {
-        countryOfOperation: "Kenya",
-        constituency: "Nairobi",
-        ward: "Kasarani",
-        meetingPoint: "Kasarani",
-        nearestLandmark: "Kasarani Police Station",
-      },
-      background: {
-        purpose: "To buy more stock",
-        keyActivities: "Selling",
-        creditHistory: "Good",
-      },
-    },
-    businessDetails: {
-      information: {
-        natureOfBusiness: "Retail",
-        type: "Grocery",
-        operationPeriod: 12,
-      },
-      performance: {
-        averageMonthIncome: 100000,
-        costOfGoodsPerMonth: 50000,
-        rent: 10000,
-        salaries: 20000,
-        transportCosts: 5000,
-        netSurplus: -15000,
-      },
-    },
-  },
-  {
-    applicationId: "RFG-G845SD",
-    status: "UNSUBMITTED",
-    loanDetails: {
-      purpose: "To buy more stock",
-      type: "Group Loan",
-      amount: 200000,
-      repaymentPeriod: 6,
-    },
-    groupDetails: {
-      natureOfGroup: "Chama",
-      basicInfo: {
-        name: "Sunlight",
-        registrationNumber: "123456",
-        dateFormed: new Date("2021-01-01"),
-        registrationCert: "Cert",
-        listOfMembersOnCert: "Members",
-      },
-    },
-  },
-];
+export interface Application {
+  generalDetails: GeneralDetails;
+  loanDetails?: LoanDetails;
+  bankAccountDetails?: BankAccountDetails;
+  groupDetails?: GroupDetails;
+  businessDetails?: businessDetails;
+}
+/* Replace with new data structure when new one is done */
+const DUMMY_DATA: Application[] = [...dummyApplications];
+
+interface ApplicationData {
+  generalDetails: GeneralDetails;
+  groupData?: GroupData;
+  members?: MembersData;
+}
+
+interface GroupData {
+  basics: {
+    groupName: string;
+    groupRegistrationNumber: string;
+    dateFormed: Date;
+    groupRegistrationCertificate: string;
+    listOfMembersOnCertificate: string;
+  };
+  background: {
+    groupBackground: string[];
+    keyActivitiesOfTheGroup: string[];
+    groupCreditHistory: string;
+  };
+  location: {
+    countyOfOperation: string;
+    constituency: string;
+    ward: string;
+    meetingPoint: string;
+    nearestLandmark: string;
+  };
+}
+
+export interface Member {
+  fullname: string;
+  nationalIdCode: string;
+  gender: GenderType;
+  type: MemberType;
+  phoneNumber: string;
+  photoOfId: string;
+  disability?: {
+    certificateOfDisability: string;
+    pwdNumber?: string;
+  };
+}
+
+export interface MembersData {
+  natureOfTheGroup: string;
+  members: Member[];
+}
+
+const test: ApplicationData[] = [];
+globalThis.dummyApplicationsTest = globalThis.dummyApplicationsTest || [];
+const dummyApplicationsTest = globalThis.dummyApplicationsTest;
 
 export async function getApplications() {
   return Promise.resolve(DUMMY_DATA);
 }
 
 export async function getApplicationById(id: string) {
-  return Promise.resolve(DUMMY_DATA.find((app) => app.applicationId === id));
+  return Promise.resolve(
+    DUMMY_DATA.find((app) => app.generalDetails.applicationId === id),
+  );
+}
+
+export async function createApplication() {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    throw new Error("User not found");
+  }
+
+  const generalDetails: GeneralDetails = {
+    applicationId: createApplicationId(),
+    status: "UNSUBMITTED",
+    user: session.user.email,
+  };
+
+  DUMMY_DATA.push({ generalDetails });
+  dummyApplicationsTest.push({ generalDetails });
+
+  console.log(dummyApplicationsTest);
+
+  return Promise.resolve(generalDetails);
+}
+
+export async function updateApplicationGroupData(id: string, data: GroupData) {
+  const session = await auth();
+  const applicationIndex = dummyApplicationsTest.findIndex(
+    (app) =>
+      app.generalDetails.applicationId === id &&
+      app.generalDetails.user === session?.user?.email,
+  );
+
+  const application = dummyApplicationsTest[applicationIndex];
+
+  console.log({ dummyApplicationsTest });
+
+  /* this should not happen */
+  if (applicationIndex === -1 || !application) {
+    throw new Error("Application not found");
+  }
+
+  const newApplicationData: ApplicationData = {
+    ...application,
+    groupData: data,
+  };
+
+  // update application data
+  test[applicationIndex] = newApplicationData;
+
+  return Promise.resolve(newApplicationData);
 }

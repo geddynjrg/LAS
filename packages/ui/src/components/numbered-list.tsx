@@ -9,11 +9,14 @@ export const numberedListVariants = cva({
       numbers: "",
       bulletNumbers: "gap-4",
     },
+    bulletAlignment: {
+      top: "",
+      middle: "",
+    },
   },
   defaultVariants: {
     variant: "numbers",
-    typography: "body",
-    gap: "sm",
+    bulletAlignment: "middle",
   },
 });
 
@@ -27,18 +30,25 @@ export const NumberedList: FC<NumberedListProps> = ({
   className,
   children,
   variant,
+  bulletAlignment,
 }) => {
   const arrayChildren = Children.toArray(children);
   return (
     <ol
       className={cn(
-        numberedListVariants({ variant, className }),
+        numberedListVariants({ variant, bulletAlignment, className }),
         "flex list-none flex-col",
       )}
     >
       {arrayChildren.map((child, index) => {
         return (
-          <li key={index} className={cn("flex w-full items-center gap-x-1")}>
+          <li
+            key={index}
+            className={cn(
+              "flex w-full gap-x-1",
+              bulletAlignment === "top" ? "items-start" : "items-center",
+            )}
+          >
             {(!variant || variant === "numbers") && (
               <Number>{index + 1}</Number>
             )}
@@ -64,7 +74,7 @@ export const NumberedListItem: FC<NumberedListItemProps> = ({
 }) => {
   return (
     <div className={cn("flex w-full items-center justify-between", className)}>
-      {children}
+      <div>{children}</div>
       {icon && (
         <span className="text-primary ml-2 flex-none [&>svg]:size-10">
           {icon}

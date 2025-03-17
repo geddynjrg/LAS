@@ -7,38 +7,50 @@ import type { FC } from "react";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
+import { SubmitButton } from "@workspace/ui/components/form";
 
-import type { ApplyStep } from "@/app/apply/[id]/layout";
+import { steps } from "@/lib/constants";
 
-export interface ApplyFormActionBarProps {
-  steps: ApplyStep[];
+interface ApplyFormActionBarProps {
+  disabled?: boolean;
+  nextUrl: string;
+  prevUrl: string;
 }
 
-export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({ steps }) => {
+export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
+  disabled,
+  nextUrl,
+  prevUrl,
+}) => {
   const pathName = usePathname();
 
   const activeStep =
     steps.find((step) => pathName.includes(step.path))?.index ?? 1;
-  const prevHref =
-    steps.find((step) => step.index === activeStep - 1)?.path ?? "/apply";
-  const nextHref =
-    steps.find((step) => step.index === activeStep + 1)?.path ?? "#"; // else goes to done view
 
   return (
     <ActionBar className="mt-8">
       <div className="mx-auto flex flex-row items-center gap-4">
         <Button variant="secondary" asChild>
-          <Link href={prevHref}>
+          <Link href={prevUrl}>
             <IconArrowLeft />
             Back
           </Link>
         </Button>
-        <Button asChild>
-          <Link href={nextHref}>
-            {activeStep === 6 ? "Submit" : "Next"}
-            <IconArrowRight />
-          </Link>
-        </Button>
+        {activeStep === 6 ? (
+          <Button asChild disabled={disabled}>
+            <Link href={nextUrl}>
+              Next
+              <IconArrowRight />
+            </Link>
+          </Button>
+        ) : (
+          <SubmitButton disabled={disabled}>
+            <div className="flex flex-row gap-1">
+              Submit
+              <IconArrowRight />
+            </div>
+          </SubmitButton>
+        )}
       </div>
     </ActionBar>
   );

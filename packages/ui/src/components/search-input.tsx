@@ -3,7 +3,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import { IconSearch } from "@tabler/icons-react";
 import { Command as CommandPrimitive } from "cmdk";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import {
   Command,
@@ -19,11 +19,13 @@ export type Option = Record<"value" | "label", string>;
 export interface SearchInputProps extends InputProps {
   options?: Option[] | readonly Option[];
   defaultValue?: string;
-  onValueChange?: (value: string) => void;
+  onValueChange?: (value: string | undefined) => void;
+  onValueSelect?: (value: string) => void;
   isLoading?: boolean;
   id?: string;
   disabled?: boolean;
   placeholder?: string;
+  clearOnSelect?: boolean;
 }
 
 export const SearchInput: FC<SearchInputProps> = ({
@@ -34,10 +36,17 @@ export const SearchInput: FC<SearchInputProps> = ({
   disabled,
   isLoading = false,
   onValueChange,
+  clearOnSelect = false,
+  onValueSelect,
   ...props
 }: SearchInputProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState(defaultValue);
+
+  // call onValueChange when search value changes
+  useEffect(() => {
+    onValueChange?.(search);
+  }, [onValueChange, search]);
 
   return (
     <Popover.Root open={isOpen}>
@@ -52,10 +61,7 @@ export const SearchInput: FC<SearchInputProps> = ({
             value={search}
             placeholder={placeholder}
             disabled={disabled}
-            onValueChange={(value) => {
-              setSearch(value);
-              onValueChange?.(value);
-            }}
+            onValueChange={setSearch}
           >
             <Input endDecorator={<IconSearch />} {...props} />
           </CommandPrimitive.Input>
@@ -65,7 +71,7 @@ export const SearchInput: FC<SearchInputProps> = ({
           asChild
           align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
-          className="w-(--radix-popover-trigger-width)"
+          className="w-(--radix-popover-trigger-width) z-10"
         >
           <CommandList>
             {isLoading ? (
@@ -81,8 +87,14 @@ export const SearchInput: FC<SearchInputProps> = ({
                   onMouseDown={(e) => e.preventDefault()}
                   onSelect={(currentValue) => {
                     setSearch(
+                      options.find(
+                        (option) =>
+                          option.label === currentValue && !clearOnSelect,
+                      )?.label ?? "",
+                    );
+                    onValueSelect?.(
                       options.find((option) => option.label === currentValue)
-                        ?.label ?? "",
+                        ?.value ?? "",
                     );
                   }}
                 >

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import {
   Checkbox,
@@ -41,15 +41,21 @@ export const CheckboxGroup = <T extends string>({
   options,
   defaultValue,
   orientation = "vertical",
-  onValueChange,
   size,
   className,
+  onValueChange,
 }: CheckboxGroupProps<T>) => {
   const [value, setValue] = useState<T[]>(
     Array.isArray(defaultValue)
       ? defaultValue
       : (defaultValue?.split(",") as T[]),
   );
+
+  useEffect(() => {
+    if (value) {
+      onValueChange?.(value);
+    }
+  }, [value, onValueChange]);
 
   function handleChange(checked: boolean, option: CheckboxGroupOption<T>) {
     setValue((prev) =>
