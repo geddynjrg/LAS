@@ -1,3 +1,7 @@
+import { redirect } from "next/navigation";
+
 export default function ApplyPage() {
-  return <div>Apply Page Content</div>;
+  redirect("login/phone?callbackUrl=/apply/introduction");
+
+  return null;
 }
