@@ -1,0 +1,11 @@
+definitions:
+  steps:
+    - step: &deploy
+        name: Deploy
+        script:
+          - rsync "$PIPELINE_USER@$PIPELINE_IP:$PIPELINE_SCRIPT" "/tmp/deploy.sh" && /tmp/deploy.sh
+
+pipelines:
+  branches:
+    main:
+      - step: *deploy
