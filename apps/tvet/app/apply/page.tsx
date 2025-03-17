@@ -11,7 +11,7 @@ import {
 export default function ApplyPage() {
   return (
     <div className="flex flex-1 flex-col">
-      <Container className="flex-1">
+      <Container className="max-w-[500px] flex-1">
         <h2 className="typo-h2">Before you start</h2>
         <p className="mt-4">
           Here are some things you should know before starting the application
@@ -20,7 +20,7 @@ export default function ApplyPage() {
         <NumberedList
           variant="bulletNumbers"
           bulletAlignment="top"
-          className="mt-4"
+          className="mx-auto mt-8"
         >
           <NumberedListItem>
             <p className="typo-h6">
@@ -52,7 +52,7 @@ export default function ApplyPage() {
 
       <ActionBar>
         <Button className="px-22 mx-auto" asChild>
-          <Link href="/apply/create">Understood</Link>
+          <Link href="/apply/1/applicant">Understood</Link>
         </Button>
       </ActionBar>
     </div>

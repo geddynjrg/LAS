@@ -19,7 +19,7 @@ export const ApplyFormStepper: FC<ApplyFormStepperProps> = ({ steps }) => {
     steps.find((step) => pathname.includes(step.path))?.index ?? 1;
 
   return (
-    <Container className="mt-7">
+    <Container className="mt-7 pr-0">
       <Stepper
         activeStep={activeStep}
         steps={steps.map((step) => step.title)}

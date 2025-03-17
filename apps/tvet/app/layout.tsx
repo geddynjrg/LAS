@@ -28,12 +28,12 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           <Providers>
             <AppHeader />
             <AppSidebar locale={locale} />
-            <SidebarInset>
+            <SidebarInset className="min-h-svh">
               <ErrorBoundary>
                 <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+                <AppFooter />
               </ErrorBoundary>
             </SidebarInset>
-            <AppFooter />
           </Providers>
         </NextIntlClientProvider>
       </body>

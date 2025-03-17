@@ -9,7 +9,7 @@ export interface AppFooterProps {}
 
 export const AppFooter: FC<AppFooterProps> = () => {
   return (
-    <footer className="bg-theme-500 text-primary-foreground">
+    <footer className="bg-theme-500 text-primary-foreground mt-auto">
       <Container className="grid gap-6 p-4 lg:grid-cols-2 xl:grid-cols-3">
         <FooterNavGroup title="Navigate">
           <FooterNavItem href="#">Home</FooterNavItem>

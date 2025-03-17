@@ -1,57 +1,52 @@
-"use client";
-
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import type { FC } from "react";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
-import { SubmitButton } from "@workspace/ui/components/form";
+import { Container } from "@workspace/ui/components/container";
 
-import { steps } from "@/lib/constants";
-
-interface ApplyFormActionBarProps {
-  disabled?: boolean;
-  nextUrl: string;
-  prevUrl: string;
+export interface ApplyFormActionBarProps {
+  cancelUrl?: string;
+  prevUrl?: string;
+  nextUrl?: string;
 }
 
 export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
-  disabled,
+  cancelUrl,
   nextUrl,
   prevUrl,
 }) => {
-  const pathName = usePathname();
-
-  const activeStep =
-    steps.find((step) => pathName.includes(step.path))?.index ?? 1;
-
   return (
     <ActionBar className="mt-8">
-      <div className="mx-auto flex flex-row items-center gap-4">
-        <Button variant="secondary" asChild>
-          <Link href={prevUrl}>
-            <IconArrowLeft />
-            Back
-          </Link>
-        </Button>
-        {activeStep === 6 ? (
-          <Button asChild disabled={disabled}>
+      <Container className="flex flex-row items-center justify-between gap-4 max-md:[&>*]:flex-1">
+        {cancelUrl && (
+          <Button variant="secondary" asChild>
+            <Link href={cancelUrl}>
+              <IconArrowLeft />
+              Cancel
+            </Link>
+          </Button>
+        )}
+
+        {prevUrl && (
+          <Button variant="secondary" asChild>
+            <Link href={prevUrl}>
+              <IconArrowLeft />
+              Back
+            </Link>
+          </Button>
+        )}
+
+        {nextUrl && (
+          <Button asChild>
             <Link href={nextUrl}>
               Next
               <IconArrowRight />
             </Link>
           </Button>
-        ) : (
-          <SubmitButton disabled={disabled}>
-            <div className="flex flex-row gap-1">
-              Submit
-              <IconArrowRight />
-            </div>
-          </SubmitButton>
         )}
-      </div>
+      </Container>
     </ActionBar>
   );
 };
