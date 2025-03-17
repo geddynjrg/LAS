@@ -1,0 +1,28 @@
+import { z } from "zod";
+
+export const loanConditionsDataSchema = z.object({
+  purposeOfLoan: z.preprocess(
+    (v) =>
+      Array.isArray(v)
+        ? v
+        : typeof v === "string"
+          ? v.split(",").filter(Boolean)
+          : [],
+    z.array(z.string()).min(1),
+  ),
+  loanType: z.string().nonempty(),
+  loanAmount: z
+    .string()
+    .nonempty()
+    .regex(/^\d+$/, "Must be a number") // Ensures only numbers
+    .transform((val) => Number(val)) // Convert string to number
+    .refine((num) => num <= 100000, {
+      message: "Value must not exceed 1000",
+    }),
+  repaymentPeriod: z.coerce.number().min(1).max(12),
+  bankName: z.string().nonempty(),
+  bankBranch: z.string().nonempty(),
+  accountNumber: z.string().nonempty(),
+});
+
+export type LoanConditionsData = z.infer<typeof loanConditionsDataSchema>;

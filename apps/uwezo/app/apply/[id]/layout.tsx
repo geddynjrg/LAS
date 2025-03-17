@@ -32,8 +32,6 @@ export default async function IdLayout({ children }: ApplyLayoutProps) {
       <ApplyFormStepper steps={steps} />
 
       {children}
-
-      <ApplyFormActionBar steps={steps} />
     </Authenticated>
   );
 }

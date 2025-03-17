@@ -131,7 +131,7 @@ export default function Page() {
       </Container>
       <ActionBar>
         <Button className="px-22 mx-auto" asChild>
-          <Link href="/login">{t("beginFillingForm")}</Link>
+          <Link href="/apply/create">{t("beginFillingForm")}</Link>
         </Button>
       </ActionBar>
     </div>

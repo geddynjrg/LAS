@@ -54,9 +54,9 @@ export default async function Page({ params }: Props) {
       </Button>
 
       <div className="mt-6">
-        <h2 className="typo-h2">{data.applicationId}</h2>
+        <h2 className="typo-h2">{data.generalDetails.applicationId}</h2>
         <p className="font-bold">{t("status")}</p>
-        <ApplicationStatus status={data.status} />
+        <ApplicationStatus status={data.generalDetails.status} />
       </div>
 
       <LoanConditions
@@ -230,7 +230,7 @@ const GroupData: FC<{ groupDetails?: GroupDetails }> = async ({
                 <DataNode
                   label={t("groupData.locationInfo.countryOfOperation")}
                 >
-                  {groupDetails.location.countryOfOperation}
+                  {groupDetails.location.countyOfOperation}
                 </DataNode>
                 <DataNode label={t("groupData.locationInfo.constituency")}>
                   {groupDetails.location.constituency}

@@ -2,20 +2,34 @@ import { IconChevronRight, IconMail, IconPhone } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import type { FC, PropsWithChildren, ReactNode } from "react";
+import type { FC, PropsWithChildren } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Currency } from "@workspace/ui/components/currency";
 import { Underline } from "@workspace/ui/components/underline";
-import { cn } from "@workspace/ui/lib/utils";
 
-import { getApplications, type Status } from "@/actions/application";
+import {
+  createApplication,
+  getApplications,
+  type Status,
+} from "@/actions/application";
 import { ApplicationStatus } from "@/components/ApplicationStatus";
+import { auth } from "@/lib/auth";
 
 export default async function Page() {
   const t = await getTranslations("DashboardPage");
   const data = await getApplications();
+  const session = await auth();
+
+  console.log(session);
+
+  const handleCreateApplication = async () => {
+    "use server";
+    const application = await createApplication();
+
+    console.log(application);
+  };
 
   return (
     <Container>
@@ -30,21 +44,22 @@ export default async function Page() {
       <div className="grid justify-center gap-8 pb-6 md:grid-cols-2 md:justify-normal">
         {data.map((data) => (
           <GroupDetails
-            key={data.applicationId}
-            applicationId={data.applicationId}
+            key={data.generalDetails.applicationId}
+            applicationId={data.generalDetails.applicationId}
             groupName={data.groupDetails?.basicInfo.name}
             loanAmount={data.loanDetails?.amount}
-            status={data.status}
+            status={data.generalDetails.status}
           />
         ))}
       </div>
+      <Button onClick={handleCreateApplication}>New</Button>
     </Container>
   );
 }
 
 interface GroupDetailsProps extends PropsWithChildren {
   applicationId: string;
-  groupName: string;
+  groupName?: string;
   loanAmount?: number;
   status: Status;
 }
