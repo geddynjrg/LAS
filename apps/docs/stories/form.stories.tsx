@@ -27,6 +27,7 @@ import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from "@workspace/ui/components/select";
 import { Slider } from "@workspace/ui/components/slider";
+import { Textarea } from "@workspace/ui/components/textarea";
 import { Underline } from "@workspace/ui/components/underline";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { formatBytes, getFormDataValues } from "@workspace/ui/lib/utils";
@@ -54,6 +55,15 @@ export const Primary: Story = {
           required
           control={(props) => <Input {...props} />}
           description="This is a description for the input field"
+        />
+
+        <Field
+          state={state}
+          name="textarea"
+          label="Textarea label"
+          required
+          control={(props) => <Textarea {...props} />}
+          description="This is a description for the textarea field"
         />
 
         <Field
@@ -211,6 +221,7 @@ export const Primary: Story = {
 
 const schema = z.object({
   input: z.string().min(3).max(10),
+  textarea: z.string().nonempty(),
   select: z.union([z.literal("1"), z.literal("2"), z.literal("3")]),
   checkbox: z
     .union([z.literal("on"), z.null()])
