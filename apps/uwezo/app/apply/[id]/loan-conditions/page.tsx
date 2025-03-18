@@ -1,4 +1,5 @@
 import { Container } from "@workspace/ui/components/container";
+import { InfoPopover } from "@workspace/ui/components/info-popover";
 
 import { loanConditions } from "@/actions/apply-form/loan-conditions";
 import { LoanConditionsDataForm } from "@/app/apply/[id]/loan-conditions/loan-conditions-data-form";
@@ -18,10 +19,10 @@ export default async function Page({ params }: LoanConditionsPageProps) {
             <p>{id}</p>
             <h2 className="typo-h2">Loan conditions</h2>
           </div>
-          {/* TODO: Add the help component here */}
-          <div>Help</div>
         </div>
       </Container>
+
+      <InfoPopover />
 
       <LoanConditionsDataForm action={loanConditions} id={id} />
     </>

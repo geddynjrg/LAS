@@ -1,4 +1,5 @@
 import { Container } from "@workspace/ui/components/container";
+import { InfoPopover } from "@workspace/ui/components/info-popover";
 
 import { proposedBusiness } from "@/actions/apply-form/proposed-business";
 import { ProposedBusinessDataForm } from "@/app/apply/[id]/proposed-business/proposed-business-data-form";
@@ -18,10 +19,10 @@ export default async function Page({ params }: ProposedBusinessPageProps) {
             <p>{id}</p>
             <h2 className="typo-h2">Loan conditions</h2>
           </div>
-          {/* TODO: Add the help component here */}
-          <div>Help</div>
         </div>
       </Container>
+
+      <InfoPopover />
 
       <ProposedBusinessDataForm action={proposedBusiness} id={id} />
     </>

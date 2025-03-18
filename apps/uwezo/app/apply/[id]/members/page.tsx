@@ -1,4 +1,5 @@
 import { Container } from "@workspace/ui/components/container";
+import { InfoPopover } from "@workspace/ui/components/info-popover";
 
 import { membersData } from "@/actions/apply-form/members-data";
 import { MembersDataForm } from "@/app/apply/[id]/members/members-data-form";
@@ -21,10 +22,10 @@ export default async function Page({ params }: MembersPageProps) {
               Group is eligible for Uwezo Fund loan, if there are 10-15 members
             </p>
           </div>
-          {/* TODO: Add the help component here */}
-          <div>Help</div>
         </div>
       </Container>
+
+      <InfoPopover />
 
       <MembersDataForm action={membersData} id={id} />
     </>

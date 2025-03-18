@@ -2,6 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "cva-extended";
 import {
   Children,
+  type CSSProperties,
   type FC,
   type MouseEvent,
   type ReactNode,
@@ -52,9 +53,11 @@ export interface ButtonProps extends VariantProps<typeof buttonVariants> {
   tabIndex?: number;
   className?: string;
   children?: ReactNode;
+  style?: CSSProperties;
 }
 
 export const Button: FC<ButtonProps> = ({
+  style,
   className,
   variant,
   size,
@@ -69,6 +72,7 @@ export const Button: FC<ButtonProps> = ({
 
   return (
     <Comp
+      style={style}
       data-state={active ? "on" : undefined}
       className={cn(
         buttonVariants({ variant, size, className }),

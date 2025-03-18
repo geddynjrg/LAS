@@ -1,4 +1,5 @@
 import { Container } from "@workspace/ui/components/container";
+import { InfoPopover } from "@workspace/ui/components/info-popover";
 
 import { groupData } from "@/actions/apply-form/group-data";
 import { GroupDataForm } from "@/app/apply/[id]/group-data/group-data-form";
@@ -18,10 +19,10 @@ export default async function Page({ params }: GroupDataPageProps) {
             <p>{id}</p>
             <h2 className="typo-h2">Group data</h2>
           </div>
-          {/* TODO: Add the help component here */}
-          <div>Help</div>
         </div>
       </Container>
+
+      <InfoPopover />
 
       <GroupDataForm action={groupData} id={id} />
     </>
