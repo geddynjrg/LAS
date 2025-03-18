@@ -28,11 +28,22 @@ export function getFormDataValues<T extends z.Schema>(
   formData: FormData,
   schema: T,
 ) {
-  const keys = zodKeys(schema);
+  const keys = Array.from(new Set(zodKeys(schema)));
 
-  return Object.fromEntries(
-    keys.map((key) => [key, formData.get(key)]),
-  ) as Partial<z.infer<T>>;
+  const values = keys.reduce(
+    (acc, key) => {
+      const value = formData.getAll(key);
+
+      if (value.length > 1 || key.endsWith("[]")) {
+        return { ...acc, [key]: value };
+      }
+
+      return { ...acc, [key]: value[0] };
+    },
+    {} as Partial<z.infer<T>>,
+  );
+
+  return values;
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
