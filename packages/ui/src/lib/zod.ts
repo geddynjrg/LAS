@@ -54,39 +54,41 @@ export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
 
 /** get zod object keys recursively  */
 export const zodKeys = <T extends z.ZodTypeAny>(schema: T): string[] => {
-  // make sure schema is not null or undefined
-  if (schema === null || schema === undefined) {
-    return [];
-  }
+  const paths = new Set<string>();
 
-  // check if schema is nullable or optional
-  if (schema instanceof z.ZodNullable || schema instanceof z.ZodOptional) {
-    return zodKeys(schema.unwrap());
-  }
+  const extractPaths = (schema: Zod.ZodType, prefix: string = "") => {
+    if (schema instanceof z.ZodNullable || schema instanceof z.ZodOptional) {
+      extractPaths(schema.unwrap(), prefix);
+      return;
+    }
+    if (schema instanceof z.ZodArray) {
+      extractPaths(schema.element, prefix);
+      return;
+    }
+    if (schema instanceof z.ZodDiscriminatedUnion) {
+      Array.from(schema.optionsMap.values()).forEach((option) =>
+        extractPaths(option, prefix),
+      );
+      return;
+    }
+    if (schema instanceof z.ZodEffects) {
+      extractPaths(schema._def?.schema ?? schema, prefix);
+      return;
+    }
+    if (schema instanceof z.ZodObject) {
+      Object.entries<z.ZodType>(schema.shape).forEach(([key, value]) => {
+        const newPrefix = prefix ? `${prefix}.${key}` : key;
+        extractPaths(value, newPrefix);
+      });
+      return;
+    }
+    if (prefix) {
+      paths.add(prefix);
+    }
+  };
 
-  // check if schema is an array
-  if (schema instanceof z.ZodArray) {
-    return zodKeys(schema.element);
-  }
-
-  // check if schema is an object
-  if (schema instanceof z.ZodObject) {
-    // get key/value pairs from schema
-    const entries = Object.entries(schema.shape);
-    // loop through key/value pairs
-    return entries.flatMap(([key, value]) => {
-      // get nested keys
-      const nested =
-        value instanceof z.ZodType
-          ? zodKeys(value).map((subKey) => `${key}.${subKey}`)
-          : [];
-      // return nested keys
-      return nested.length ? nested : key;
-    });
-  }
-
-  // return empty array
-  return [];
+  extractPaths(schema);
+  return Array.from(paths);
 };
 
 function getIntlKey<T extends z.ZodIssueBase>(
