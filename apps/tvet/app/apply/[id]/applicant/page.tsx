@@ -1,13 +1,11 @@
-import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
+import { ApplicantForm } from "@/app/apply/[id]/applicant/applicant-form";
 
 export interface ApplicantPageProps {
-  params: Promise<{}>;
+  params: Promise<{ id: string }>;
 }
 
-export default async function ApplicantPage({}: ApplicantPageProps) {
-  return (
-    <ApplyFormWrap cancelUrl="/dashboard" nextUrl="guardian">
-      Applicant form
-    </ApplyFormWrap>
-  );
+export default async function ApplicantPage({ params }: ApplicantPageProps) {
+  const { id } = await params;
+
+  return <ApplicantForm id={id} defaultValues={{ firstName: "test" }} />;
 }

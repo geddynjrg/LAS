@@ -9,13 +9,13 @@ import { Container } from "@workspace/ui/components/container";
 export interface ApplyFormActionBarProps {
   cancelUrl?: string;
   prevUrl?: string;
-  nextUrl?: string;
+  submitType?: "disabled" | "hidden" | "active";
 }
 
 export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   cancelUrl,
-  nextUrl,
   prevUrl,
+  submitType,
 }) => {
   return (
     <ActionBar className="mt-8">
@@ -38,12 +38,10 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
           </Button>
         )}
 
-        {nextUrl && (
-          <Button asChild>
-            <Link href={nextUrl}>
-              Next
-              <IconArrowRight />
-            </Link>
+        {submitType !== "hidden" && (
+          <Button type="submit" disabled={submitType === "disabled"}>
+            Next
+            <IconArrowRight />
           </Button>
         )}
       </Container>
