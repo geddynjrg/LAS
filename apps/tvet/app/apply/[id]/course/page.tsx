@@ -1,13 +1,20 @@
-import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
+import { CourseForm } from "@/app/apply/[id]/course/course-form";
 
 export interface CoursePageProps {
-  params: Promise<{}>;
+  params: Promise<{ id: string }>;
 }
 
-export default async function CoursePage({}: CoursePageProps) {
+export default async function CoursePage({ params }: CoursePageProps) {
+  const { id } = await params;
+
   return (
-    <ApplyFormWrap prevUrl="guardian" nextUrl="confirmations">
-      Course form
-    </ApplyFormWrap>
+    <CourseForm
+      id={id}
+      defaultValues={{
+        institute: "institute-1",
+        course: "course-1",
+        intakePeriod: "intake-1",
+      }}
+    />
   );
 }
