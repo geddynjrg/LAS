@@ -1,0 +1,230 @@
+import { z } from "zod";
+
+const guardianRole = z.enum(["parent", "grandparent", "relative", "other"]);
+const idType = z.enum(["national-id", "birth-certificate", "alien-id"]);
+
+export const guardianSchema = z.object({
+  firstName: z.string().nonempty(),
+  middleName: z.string().optional(),
+  surname: z.string().min(1),
+  guardianRole: guardianRole,
+  idType: idType,
+  callingCode: z.string().nonempty(),
+  phone: z.string().nonempty(),
+  secondaryCallingCode: z.string().optional(),
+  secondaryPhone: z.string().optional(),
+  email: z.union([z.literal(""), z.string().email()]),
+
+  // guardianRole === "parent"
+  parentNationalId: z.string().optional(),
+
+  // guardianRole === "grandparent"
+  grandparentBirthCertificateNumber: z.string().optional(),
+  grandparentBirthCertificateFile: z.instanceof(File).optional(),
+
+  // guardianRole === "relative"
+  relativeAlienId: z.string().optional(),
+  relativeAlienIdIsRefugee: z.union([z.literal("on"), z.undefined()]),
+
+  // idType === "national-id"
+  nationalId: z.string().optional(),
+
+  // idType === "birth-certificate"
+  birthCertificateNumber: z.string().optional(),
+  birthCertificateFile: z.instanceof(File).optional(),
+
+  // idType === "alien-id"
+  alienId: z.string().optional(),
+  alienIdIsRefugee: z.union([z.literal("on"), z.undefined()]),
+
+  // personWithDisabilities === "on"
+  natureOfDisability: z.string().optional(),
+  disabilityCardNumber: z.string().optional(),
+  disabilityCardPicture: z.instanceof(File).optional(),
+  disabilityLevel: z.string().optional(),
+  disabilityDescription: z.string().optional(),
+});
+
+export type GuardianSchema = z.infer<typeof guardianSchema>;
+
+export const guardianRoles = [
+  { label: "Parent", value: "parent" },
+  { label: "Grandparent", value: "grandparent" },
+  { label: "Relative", value: "relative" },
+  { label: "Other", value: "other" },
+];
+
+export const dummyDisabilities = [
+  { label: "Hearing", value: "hearing" },
+  { label: "Visual", value: "visual" },
+  { label: "Physical", value: "physical" },
+  { label: "Mental", value: "mental" },
+  { label: "Speech", value: "speech" },
+  { label: "Other", value: "other" },
+];
+
+export const dummyDisabilityLevels = [
+  { label: "Low", value: "low" },
+  { label: "Medium", value: "medium" },
+  { label: "High", value: "high" },
+];
+
+export const dummyCounties = [
+  {
+    name: "Nairobi",
+    code: 47,
+    constituencies: [
+      "Westlands",
+      "Dagoretti North",
+      "Dagoretti South",
+      "Lang'ata",
+      "Kibra",
+      "Roysambu",
+      "Kasarani",
+      "Ruaraka",
+      "Embakasi South",
+      "Embakasi North",
+      "Embakasi Central",
+      "Embakasi East",
+      "Embakasi West",
+      "Makadara",
+      "Kamukunji",
+      "Starehe",
+      "Mathare",
+    ],
+  },
+  {
+    name: "Mombasa",
+    code: 1,
+    constituencies: [
+      "Changamwe",
+      "Jomvu",
+      "Kisauni",
+      "Nyali",
+      "Likoni",
+      "Mvita",
+    ],
+  },
+  {
+    name: "Kisumu",
+    code: 42,
+    constituencies: [
+      "Kisumu East",
+      "Kisumu West",
+      "Kisumu Central",
+      "Seme",
+      "Nyando",
+      "Muhoroni",
+      "Nyakach",
+    ],
+  },
+  {
+    name: "Kiambu",
+    code: 22,
+    constituencies: [
+      "Gatundu South",
+      "Gatundu North",
+      "Juja",
+      "Thika Town",
+      "Ruiru",
+      "Githunguri",
+      "Kiambu",
+      "Kiambaa",
+      "Kabete",
+      "Kikuyu",
+      "Limuru",
+      "Lari",
+    ],
+  },
+  {
+    name: "Nakuru",
+    code: 32,
+    constituencies: [
+      "Naivasha",
+      "Gilgil",
+      "Bahati",
+      "Subukia",
+      "Rongai",
+      "Nakuru Town West",
+      "Nakuru Town East",
+      "Kuresoi South",
+      "Kuresoi North",
+      "Molo",
+      "Njoro",
+    ],
+  },
+  {
+    name: "Uasin Gishu",
+    code: 27,
+    constituencies: [
+      "Soy",
+      "Turbo",
+      "Moiben",
+      "Ainabkoi",
+      "Kapseret",
+      "Kesses",
+    ],
+  },
+  {
+    name: "Machakos",
+    code: 16,
+    constituencies: [
+      "Masinga",
+      "Yatta",
+      "Kangundo",
+      "Matungulu",
+      "Kathiani",
+      "Mavoko",
+      "Machakos Town",
+      "Mwala",
+    ],
+  },
+  {
+    name: "Meru",
+    code: 12,
+    constituencies: [
+      "Igembe South",
+      "Igembe Central",
+      "Igembe North",
+      "Tigania West",
+      "Tigania East",
+      "North Imenti",
+      "Buuri",
+      "Central Imenti",
+      "South Imenti",
+    ],
+  },
+  {
+    name: "Kakamega",
+    code: 37,
+    constituencies: [
+      "Lugari",
+      "Likuyani",
+      "Malava",
+      "Lurambi",
+      "Navakholo",
+      "Mumias West",
+      "Mumias East",
+      "Matungu",
+      "Butere",
+      "Khwisero",
+      "Shinyalu",
+      "Ikolomani",
+    ],
+  },
+  {
+    name: "Bungoma",
+    code: 39,
+    constituencies: [
+      "Mt. Elgon",
+      "Sirisia",
+      "Kabuchai",
+      "Bumula",
+      "Kanduyi",
+      "Webuye East",
+      "Webuye West",
+      "Kimilili",
+      "Tongaren",
+    ],
+  },
+];

@@ -215,7 +215,6 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         state={state}
         name="middleName"
         label="Middle Name"
-        description="This is the middle name"
         control={(props) => <Input {...props} />}
       />
 

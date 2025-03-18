@@ -1,13 +1,11 @@
-import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
+import { GuardianForm } from "@/app/apply/[id]/guardian/guardian-form";
 
 export interface GuardianPageProps {
-  params: Promise<{}>;
+  params: Promise<{ id: string }>;
 }
 
-export default async function GuardianPage({}: GuardianPageProps) {
-  return (
-    <ApplyFormWrap prevUrl="applicant" nextUrl="course">
-      Guardian form
-    </ApplyFormWrap>
-  );
+export default async function GuardianPage({ params }: GuardianPageProps) {
+  const { id } = await params;
+
+  return <GuardianForm id={id} defaultValues={{}} />;
 }
