@@ -1,31 +1,25 @@
-version: "3"
-
 services:
   civil-registry:
-    container_name: civil-registry
     build:
       context: .
       dockerfile: ./apps/civil-registry/Dockerfile
     restart: unless-stopped
     ports:
-      - 3001:8080
+      - 8080
 
   tvet:
-    container_name: tvet
     env_file: ./apps/tvet/.env
     build:
       context: .
       dockerfile: ./apps/tvet/Dockerfile
     restart: unless-stopped
     ports:
-      - 3000:8080
+      - 8080
 
   uwezo:
-    container_name: uwezo
     build:
       context: .
       dockerfile: ./apps/uwezo/Dockerfile
     restart: unless-stopped
     ports:
-      - 3002:8080
-
+      - 8080
