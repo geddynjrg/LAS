@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import { loginSchema } from "@/actions/login-schema";
 
 export const result = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
