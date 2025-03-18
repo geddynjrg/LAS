@@ -17,6 +17,7 @@ services:
       - 8080
 
   uwezo:
+    env_file: ./apps/uwezo/.env
     build:
       context: .
       dockerfile: ./apps/uwezo/Dockerfile
