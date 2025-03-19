@@ -6,6 +6,9 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   transpilePackages: ["@workspace/ui"],
   output: "standalone",
+  images: {
+    domains: ["tvet-api-qa.fusion.adm.ee"],
+  },
 };
 
 export default withNextIntl(nextConfig);

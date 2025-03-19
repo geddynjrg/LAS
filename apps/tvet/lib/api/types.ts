@@ -1,6 +1,16 @@
 import { z } from "zod";
 
-import { FrontTextBlock } from "@/components/front-text-block";
+const ApiResponseSchema = z.union([
+  z.object({
+    data: z.any(),
+    meta: z.any(),
+  }),
+  z.object({
+    error: z.object({
+      message: z.string(),
+    }),
+  }),
+]);
 
 export const AbstractBlockSchema = z.object({
   block_type: z.string(),
@@ -105,15 +115,16 @@ export type VocationalCentresBlockType = z.infer<
   typeof VocationalCentresBlockSchema
 >;
 
-export const HighlightedCourseSchema = z.object({
+export const CourseSchema = z.object({
   id: z.string(),
   title: z.string(),
   tags: z.array(z.string()),
   application_fee: z.number().nullable(),
   course_fee: z.number().nullable(),
-  apply_till: z.array(z.unknown()),
-  start_on: z.array(z.unknown()),
-  institution: z.union([
+  apply_till: z.array(z.string()),
+  start_on: z.array(z.string()),
+  institution: z.preprocess(
+    (data) => (Array.isArray(data) ? data[0] : data),
     z.object({
       id: z.string(),
       type: z.string(),
@@ -121,9 +132,7 @@ export const HighlightedCourseSchema = z.object({
       title: z.string(),
       path_alias: z.string(),
     }),
-    z.array(z.unknown()),
-  ]),
-
+  ),
   url: z.string(),
   path_alias: z.string(),
 });
@@ -131,7 +140,7 @@ export const HighlightedCourseSchema = z.object({
 export const HighlightedCourseListingBlockSchema = AbstractBlockSchema.extend({
   block_type: z.literal("highlighted_course_listing"),
 
-  courses: z.array(HighlightedCourseSchema),
+  courses: z.array(CourseSchema),
 });
 
 export type HighlightedCourseListingBlockType = z.infer<
@@ -161,6 +170,7 @@ export const LinkSchema = z.object({
 
 export const TextBlockWithBackgroundBlockSchema = AbstractBlockSchema.extend({
   block_type: z.literal("text_block_with_background"),
+
   title: z.string(),
   link: z.array(LinkSchema),
   button_type: z.string(),
@@ -169,6 +179,70 @@ export const TextBlockWithBackgroundBlockSchema = AbstractBlockSchema.extend({
 export type TextBlockWithBackgroundBlockType = z.infer<
   typeof TextBlockWithBackgroundBlockSchema
 >;
+
+export const MediaBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("media"),
+
+  media: z.array(ImageSchema),
+});
+
+export type MediaBlockBlockType = z.infer<typeof MediaBlockSchema>;
+
+export const CoursesBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("courses"),
+
+  title: z.string(),
+  short_description: DescriptionSchema,
+  courses: z.array(CourseSchema),
+});
+
+export type CoursesBlockType = z.infer<typeof CoursesBlockSchema>;
+
+export const GalleryBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("gallery"),
+
+  title: z.string(),
+  description: DescriptionSchema,
+  images: z.array(ImageSchema),
+});
+
+export type GalleryBlockType = z.infer<typeof GalleryBlockSchema>;
+
+export const TextBlockWithGradientBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("text_block_with_gradient"),
+
+  block_text: z.array(DescriptionSchema),
+});
+
+export type TextBlockWithGradientBlockType = z.infer<
+  typeof TextBlockWithGradientBlockSchema
+>;
+
+export const LocationBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("location"),
+
+  hint: z.string(),
+  image: z.array(ImageSchema),
+  show_map: z.boolean(),
+  show_directions: z.boolean(),
+});
+
+export type LocationBlockType = z.infer<typeof LocationBlockSchema>;
+
+export const SocialBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("social_block"),
+
+  social_links: z.array(
+    z.object({
+      platform: z.string(),
+      url: z.string(),
+      account: z.string(),
+      icon: z.string(),
+    }),
+  ),
+});
+
+export type SocialBlockType = z.infer<typeof SocialBlockSchema>;
 
 export const BlockSchema = z.union([
   ApplicationBlockSchema,
@@ -179,6 +253,12 @@ export const BlockSchema = z.union([
   HighlightedCourseListingBlockSchema,
   TrainingAreasBlockSchema,
   TextBlockWithBackgroundBlockSchema,
+  MediaBlockSchema,
+  CoursesBlockSchema,
+  GalleryBlockSchema,
+  TextBlockWithGradientBlockSchema,
+  LocationBlockSchema,
+  SocialBlockSchema,
 ]);
 
 export type BlockType = z.infer<typeof BlockSchema>;

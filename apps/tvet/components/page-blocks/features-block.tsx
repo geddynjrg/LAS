@@ -3,7 +3,7 @@ import type { FC, ReactNode } from "react";
 
 import { FeatureSection } from "@workspace/ui/components/tvet/feature-section";
 
-import { DescriptionBlock } from "@/components/description-block";
+import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import type { FeaturesBlockType } from "@/lib/api/types";
 
 export interface FeaturesBlockProps extends FeaturesBlockType {}
@@ -33,11 +33,11 @@ export const FeaturesBlock: FC<FeaturesBlockProps> = ({
 const FeatureIcon: FC<{ index: number }> = ({ index }) => {
   switch (index) {
     case 0:
-      return <IconTools />;
+      return <IconTools key={index} />;
     case 1:
-      return <IconTimeline />;
+      return <IconTimeline key={index} />;
     case 2:
-      return <IconZoomMoney />;
+      return <IconZoomMoney key={index} />;
 
     default:
       return null;

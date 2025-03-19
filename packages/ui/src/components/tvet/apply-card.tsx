@@ -53,7 +53,7 @@ export const ApplyCard: FC<ApplyCardProps> = ({
         className={cn(applyCardVariants({ variant, className }))}
         style={{ borderColor: borderColor }}
       >
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {tags.map((tag, index) => (
             <Tag key={index}>{tag}</Tag>
           ))}
@@ -74,13 +74,14 @@ export const ApplyCard: FC<ApplyCardProps> = ({
           <div>
             <hr className="bg-theme-200 mt-0" />
             <p>{school}</p>
-            <div className="flex justify-between">
-              <p>
-                {t("applyBy")}
+            <div className="mt-1 flex justify-between">
+              <p className="flex flex-wrap gap-2">
+                <span className="whitespace-nowrap">{t("applyBy")}</span>
                 <strong>{applyByDate}</strong>
               </p>
-              <p>
-                {t("startsOn")} <strong>{startsOnDate}</strong>
+              <p className="flex flex-wrap gap-2">
+                <span className="whitespace-nowrap">{t("startsOn")}</span>
+                <strong>{startsOnDate}</strong>
               </p>
             </div>
           </div>

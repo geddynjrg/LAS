@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { Container } from "@workspace/ui/components/container";
 import { SectionHeader } from "@workspace/ui/components/tvet/section-header";
 
-import { DescriptionBlock } from "@/components/description-block";
+import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import type { SectionHeadingBlockType } from "@/lib/api/types";
 
 export interface SectionHeaderBlockProps extends SectionHeadingBlockType {}
