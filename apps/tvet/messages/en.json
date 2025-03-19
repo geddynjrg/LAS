@@ -15,9 +15,34 @@
   "FrontPage": {
     "title": "<light>Where did i get</light> so skilled?",
     "description": " At TVETs we put focus on practical skills - up to 90% of training is through practice. Programs are designed around occupational standards, curriculas are developed with strong integration with businesses.",
-    "imageDescription": "A student working",
     "applyNow": "Apply now",
     "learnMore": "Learn more"
+  },
+
+  "CoursesPage": {
+    "title": "All Courses",
+    "description": "Here you can find and search all the courses offered by all the Nairobi County TVETs.",
+    "search": "Search for courses",
+    "filterTitle": "Filter courses",
+    "reset": "Reset",
+    "maxFee": "Maximum fee",
+    "duration": "Duration",
+    "months": "{month, plural, =1 {# month} other {# months}}",
+    "educationLevel": "Required previous education",
+    "location": "Location",
+    "locationPlaceholder": "- Select VTC -",
+    "openFilter": "Open filter",
+    "closeFilter": "Close filter",
+    "courseName": "Course name",
+    "fee": "Fee",
+    "courseFee": "Course fee",
+    "show": "Show",
+    "groupSize": "Group size",
+    "applicationFee": "Application fee",
+    "testBookingFee": "Test booking fee",
+    "requiredEducation": "Required education",
+    "goToCourse": "Go to course page",
+    "paginationResults": "Showing {{amount}} of {{total}} results"
   },
 
   "LoginPage": {

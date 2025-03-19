@@ -1,5 +1,6 @@
 import { IconChecklist, IconChevronDown } from "@tabler/icons-react";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 
@@ -18,24 +19,27 @@ export default async function Page() {
       <HeroSection
         title={frontPage.data.title}
         backgroundUrl={frontPage.data.content.image.url}
-        backgroundAlt={t("imageDescription")}
+        backgroundAlt={frontPage.data.title}
         actions={
           <>
             <ScrollTo targetId="content">
               <Button variant="secondary" className="px-6">
-                <span>{t("learnMore")}</span>
+                {t("learnMore")}
                 <IconChevronDown />
               </Button>
             </ScrollTo>
-            <Button className="px-6">
-              <span>{t("applyNow")}</span>
-              <IconChecklist />
+
+            <Button className="px-6" asChild>
+              <Link href="/apply">
+                {t("applyNow")} <IconChecklist />
+              </Link>
             </Button>
           </>
         }
       >
         <DescriptionBlock {...frontPage.data.content.body} />
       </HeroSection>
+
       <section id="content">
         <PageComponents
           page_components={frontPage.data?.content?.page_components ?? []}

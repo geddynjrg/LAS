@@ -63,12 +63,12 @@ export interface CoursesTableDataQueryParams {
   max_fee?: number;
   min_duration?: number;
   max_duration?: number;
-  education_level?: string;
-  institution?: number;
+  education_level?: string[];
+  institution?: string;
   page?: number;
   limit?: number;
   sort?: string;
-  direction?: string;
+  direction?: "ASC" | "DESC";
 }
 
 export async function getCoursesTableData(params: CoursesTableDataQueryParams) {
@@ -76,12 +76,20 @@ export async function getCoursesTableData(params: CoursesTableDataQueryParams) {
     params: {
       query: {
         _format: "json",
-        ...params,
+        search: params.search,
+        min_fee: params.min_fee,
+        max_fee: params.max_fee,
+        min_duration: params.min_duration,
+        max_duration: params.max_duration,
+        education_level: params.education_level,
+        institution: params.institution,
+        page: params.page,
+        limit: params.limit,
+        sort: params.sort,
+        direction: params.direction,
       },
     },
   });
-
-  console.log("COURSES BEFORE", res);
 
   return validate(res, schema);
 }
@@ -106,40 +114,49 @@ const courseSchema = z.object({
 });
 
 const schema = z.object({
-  data: z.object({
-    courses: z.array(courseSchema),
-  }),
-  meta: z.object({
-    pagination: z.object({
-      total: z.number(),
-      page: z.number(),
-      limit: z.number(),
-      pages: z.number(),
-    }),
-    filters: z.object({
-      search: z.string().nullable(),
-      min_fee: z.number().nullable(),
-      max_fee: z.number().nullable(),
-      min_duration: z.number().nullable(),
-      max_duration: z.number().nullable(),
-      education_level: z.string().nullable(),
-      institution: z.number().nullable(),
-    }),
-    sort: z.object({
-      field: z.string(),
-      direction: z.string(),
-    }),
-    filter_options: z.object({
-      education_levels: z.array(z.string()),
-      institutions: z.array(
-        z.object({
-          id: z.string(),
-          name: z.string(),
-          path_alias: z.string(),
-        }),
-      ),
-    }),
-  }),
+  data: z
+    .object({
+      courses: z.array(courseSchema),
+    })
+    .optional(),
+  meta: z
+    .object({
+      pagination: z.object({
+        total: z.number(),
+        page: z.number(),
+        limit: z.number(),
+        pages: z.number(),
+      }),
+      filters: z.object({
+        search: z.string().nullable(),
+        min_fee: z.number().nullable(),
+        max_fee: z.number().nullable(),
+        min_duration: z.number().nullable(),
+        max_duration: z.number().nullable(),
+        education_level: z.string().nullable(),
+        institution: z.number().nullable(),
+      }),
+      sort: z.object({
+        field: z.string(),
+        direction: z.string(),
+      }),
+      filter_options: z.object({
+        education_levels: z.array(
+          z.object({
+            id: z.string(),
+            label: z.string(),
+          }),
+        ),
+        institutions: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            path_alias: z.string(),
+          }),
+        ),
+      }),
+    })
+    .optional(),
 });
 
 export type CourseType = z.infer<typeof courseSchema>;

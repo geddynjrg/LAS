@@ -3,18 +3,15 @@
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import {
-  applyStep1Schema,
-  type ApplyStep1,
-} from "@/actions/apply-step-1-schema";
+import { signupSchema, type Signup } from "@/app/(auth)/signup/signup-schema";
 
-export const applyStep1: FormAction<ApplyStep1> = async (_prev, formData) => {
-  const values = getFormDataValues(formData, applyStep1Schema);
+export const signupAction: FormAction<Signup> = async (_prev, formData) => {
+  const values = getFormDataValues(formData, signupSchema);
 
   // dummy wait
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const { success, data, error } = applyStep1Schema.safeParse(values);
+  const { success, data, error } = signupSchema.safeParse(values);
 
   if (error) {
     return {

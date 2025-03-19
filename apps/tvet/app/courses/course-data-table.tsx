@@ -1,6 +1,7 @@
 "use client";
 
 import { IconArrowRight, IconMinus, IconPlus } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useState, type FC, type ReactNode } from "react";
@@ -10,189 +11,164 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
 import { Tag } from "@workspace/ui/components/tag";
 import { Underline } from "@workspace/ui/components/underline";
-import { useDebounce } from "@workspace/ui/hooks/use-debounce";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { SortIndicator } from "@/components/sort-indicator";
 import type { CourseType } from "@/lib/api/courses";
 
 export interface CoursesTableProps {
-  courseData: {
-    data?: { courses: CourseType[] };
-    meta?: any;
+  courses: CourseType[];
+  pagination?: {
+    total: number;
+    limit: number;
   };
   children?: ReactNode;
 }
 
-type ColumnDef = {
-  key: string;
-  label: string;
-  sortable: boolean;
-  className?: string;
-};
-
-// Course table column definitions
-const columns: ColumnDef[] = [
-  { key: "title", label: "Course name", sortable: true },
-  { key: "location", label: "Location", sortable: true },
-  {
-    key: "courseFee",
-    label: "Fee",
-    sortable: true,
-    className: "hidden sm:table-cell",
-  },
-  {
-    key: "duration",
-    label: "Duration",
-    sortable: true,
-    className: "hidden md:table-cell",
-  },
-];
-
 export const CoursesDataTable: FC<CoursesTableProps> = ({
-  courseData,
+  courses,
+  pagination,
   children,
 }) => {
-  const [openRowIndex, setOpenRowIndex] = useState<number | null>(null);
+  const t = useTranslations("CoursesPage");
+  const [openRowIndex, setOpenRowIndex] = useState<string>();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const orderBy = searchParams.get("orderBy");
-  const sort = String(searchParams.get("sort"));
-  const currentPage = Number(searchParams.get("page") ?? 1);
+  const sort = searchParams.get("sort");
+  const direction = searchParams.get("direction")?.toLowerCase();
 
-  console.log("COURSES AFTER", courseData);
-
-  // split order into column and direction (asc/desc)
-
-  const handleOrderByChange = (column: string, sort: string) => {
+  const handleOrderByChange = (column: string) => {
     const params = new URLSearchParams(searchParams);
-    params.set("orderBy", column);
-    params.set(
-      "sort",
-      column == orderBy && sort.toLowerCase() === "asc" ? "Desc" : "Asc",
-    );
-    console.log("handleOrderByChange", {
-      column,
-      sort,
-      path: `${pathname}?${params.toString()}`,
-    });
+    params.set("sort", column);
+
+    if (!direction || sort !== column) {
+      params.set("direction", "asc");
+    } else if (direction === "asc") {
+      params.set("direction", "desc");
+    } else {
+      params.delete("direction");
+      params.delete("sort");
+    }
+
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const handleItemCountChange = useDebounce((value: string) => {
+  const handleItemCountChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("take", value);
     router.replace(`${pathname}?${params.toString()}`);
-  }, 500);
+  };
+
+  function getDirection(column: string) {
+    if (sort === column) {
+      return direction;
+    }
+
+    return undefined;
+  }
 
   return (
     <>
-      <div>
-        <div className="flex items-center justify-between">
-          <div className="text-border">
-            Showing{" "}
-            {`${courseData.meta.pagination.limit} of ${courseData.meta.pagination.total}`}{" "}
-            results
-          </div>
-          <div className="flex items-center gap-2">
-            <p className="text-border">Show</p>
-            <Select
-              options={[
-                { label: "12", value: "12" },
-                { label: "24", value: "24" },
-                { label: "36", value: "36" },
-              ]}
-              className="w-21"
-              placeholder={courseData.meta.pagination.limit}
-              onValueChange={handleItemCountChange}
-            />
-          </div>
+      <div className="flex items-center justify-between">
+        <PaginationResults {...pagination} />
+
+        <div className="flex items-center gap-2">
+          <p className="text-border">{t("show")}</p>
+          <Select
+            defaultValue={
+              searchParams.get("take") ?? pagination?.limit.toString()
+            }
+            name="itemCount"
+            options={[
+              { label: "12", value: "12" },
+              { label: "24", value: "24" },
+              { label: "36", value: "36" },
+            ]}
+            className="w-21"
+            placeholder={pagination?.limit}
+            onValueChange={handleItemCountChange}
+          />
         </div>
       </div>
+
       <div className="border-table-border mt-4 overflow-clip rounded-xl border">
         <Table className="w-full">
           <TableHeader className="bg-neutral-200">
             <TableRow className="border-table-border">
-              {/* <TableHead className="w-10" /> */}
-              {columns.map((column, index) => (
-                <TableHead
-                  key={index}
-                  scope="col"
-                  className={column.className}
-                  colSpan={index == 0 ? 2 : 1}
+              <TableHead scope="col" colSpan={2}>
+                <SortButton
+                  direction={getDirection("title")}
+                  onClick={() => handleOrderByChange("title")}
                 >
-                  <button
-                    className={cn(
-                      "flex w-full items-center gap-1 px-2 py-4",
-                      column.sortable && "cursor-pointer",
-                    )}
-                    onClick={
-                      column.sortable
-                        ? () => handleOrderByChange(column.key, sort)
-                        : undefined
-                    }
-                  >
-                    {column.label}
-                    <SortIndicator
-                      hasSort={column.sortable}
-                      order={column.key === orderBy ? sort : undefined}
-                    />
-                  </button>
-                </TableHead>
-              ))}
+                  {t("courseName")}
+                </SortButton>
+              </TableHead>
+              <TableHead scope="col">
+                <SortButton
+                  direction={getDirection("institution")}
+                  onClick={() => handleOrderByChange("institution")}
+                >
+                  {t("location")}
+                </SortButton>
+              </TableHead>
+              <TableHead scope="col" className="max-md:hidden">
+                {t("fee")}
+              </TableHead>
+              <TableHead scope="col" className="max-md:hidden">
+                {t("duration")}
+              </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {courseData.data?.courses.map((course, index) => (
-              <CoursesRow
-                isOpen={index == openRowIndex}
-                onClick={() => {
-                  console.log("clicked", {
-                    index: index,
-                    openRowIndex: openRowIndex,
-                  });
 
-                  setOpenRowIndex(index === openRowIndex ? null : index);
+          <TableBody>
+            {courses.map((course) => (
+              <CoursesRow
+                key={course.id}
+                isOpen={course.id === openRowIndex}
+                onClick={() => {
+                  setOpenRowIndex(
+                    course.id === openRowIndex ? undefined : course.id,
+                  );
                 }}
-                key={index}
                 {...course}
               />
             ))}
+          </TableBody>
+
+          <TableFooter>
             <TableRow>
               <TableCell colSpan={5} className="py-2">
                 {children}
               </TableCell>
             </TableRow>
-          </TableBody>
+          </TableFooter>
         </Table>
       </div>
     </>
   );
 };
 
-const DetailsRow: FC<{
-  className?: string;
+const SortButton: FC<{
+  direction?: string;
+  onClick?: () => unknown;
   children?: ReactNode;
-  isOpen: boolean;
-}> = ({ children, isOpen, className }) => {
+}> = ({ direction, onClick, children }) => {
   return (
-    <TableRow
-      className={cn(
-        className,
-        // isOpen ? "border-table-border border-b" : "hidden",
-      )}
+    <button
+      className="flex w-full cursor-pointer items-center gap-1 px-2 py-4"
+      onClick={onClick}
     >
-      <TableCell colSpan={5} className="bg-theme-100 p-0">
-        {children}
-      </TableCell>
-    </TableRow>
+      {children}
+      <SortIndicator direction={direction} />
+    </button>
   );
 };
 
@@ -223,14 +199,18 @@ export const CoursesRow: FC<courseRowProps> = (props) => {
         </TableCell>
         <TableCell className="hidden md:table-cell">{props.duration}</TableCell>
       </TableRow>
-      <DetailsRow isOpen={props.isOpen} className={"border-0"}>
-        <ItemDetails {...props} />
-      </DetailsRow>
+      <TableRow className="border-0">
+        <TableCell colSpan={5} className="bg-theme-100 p-0">
+          <ItemDetails {...props} />
+        </TableCell>
+      </TableRow>
     </Fragment>
   );
 };
 
 const ItemDetails: FC<courseRowProps> = (props) => {
+  const t = useTranslations("CoursesPage");
+
   return (
     <div
       className={cn(
@@ -246,37 +226,74 @@ const ItemDetails: FC<courseRowProps> = (props) => {
             </Tag>
           ))}
         </div>
-        <div>
-          <span className="font-bold">Duration: </span>
-          <span>{props.duration}</span>
-        </div>
-        <div className="mt-4">
-          <span className="font-bold">Group size: </span>
-          <span></span>
-        </div>
 
-        <div className="mt-4">
-          <span className="font-bold">Course fee: </span>
-          <span>{props.course_fee}</span>
-        </div>
-        <div>
-          <span className="font-bold">Application fee: </span>
-          <span>{props.application_fee}</span>
-        </div>
-        <div>
-          <span className="font-bold">Test booking fee: </span>
-          <span></span>
-        </div>
-        <div className="mt-4">
-          <span className="font-bold">Required education: </span>
-          <span>{props.education_level}</span>
-        </div>
-        <Link href={props.url}>
-          <Underline className="mx-auto my-4">
-            Go to course Page <IconArrowRight />
-          </Underline>
-        </Link>
+        {props.duration && (
+          <div>
+            <span className="font-bold">{t("duration")}: </span>
+            <span>{props.duration}</span>
+          </div>
+        )}
+
+        {/* {props.group_size && (
+          <div className="mt-4">
+            <span className="font-bold">{t("groupSize")}: </span>
+            <span>{props.group_size}</span>
+          </div>
+        )} */}
+
+        {props.course_fee && (
+          <div className="mt-4">
+            <span className="font-bold">{t("courseFee")}: </span>
+            <span>{props.course_fee}</span>
+          </div>
+        )}
+
+        {props.application_fee && (
+          <div>
+            <span className="font-bold">{t("applicationFee")}: </span>
+            <span>{props.application_fee}</span>
+          </div>
+        )}
+
+        {/* {props.test_booking_fee && (
+          <div>
+            <span className="font-bold">{t("testBookingFee")}: </span>
+            <span>{props.test_booking_fee}</span>
+          </div>
+        )} */}
+
+        {props.education_level && (
+          <div className="mt-4">
+            <span className="font-bold">{t("requiredEducation")}: </span>
+            <span>{props.education_level}</span>
+          </div>
+        )}
+
+        {props.url && (
+          <Link href={props.url}>
+            <Underline className="mx-auto my-4">
+              {t("goToCourse")} <IconArrowRight />
+            </Underline>
+          </Link>
+        )}
       </div>
+    </div>
+  );
+};
+
+const PaginationResults: FC<{
+  limit?: number;
+  total?: number;
+}> = ({ limit, total }) => {
+  const t = useTranslations("CoursesPage");
+
+  if (!limit || !total || limit >= total) {
+    return <div />;
+  }
+
+  return (
+    <div className="text-border">
+      {t("paginationResults", { amount: limit, total })}
     </div>
   );
 };

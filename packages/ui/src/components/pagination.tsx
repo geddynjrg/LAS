@@ -77,7 +77,7 @@ export const Pagination: FC<PaginationProps> = ({
         <NavArrow
           href={pageUrl((currentPage ?? 1) + 1)}
           dir="right"
-          disabled={currentPage === pageCount}
+          disabled={currentPage === pageCount || pageCount === 0}
         />
       </ul>
     </nav>

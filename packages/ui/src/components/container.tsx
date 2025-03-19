@@ -8,6 +8,7 @@ export const containerVariant = cva({
 });
 
 export interface ContainerProps extends VariantProps<typeof containerVariant> {
+  id?: string;
   asChild?: boolean;
   style?: CSSProperties;
   className?: string;

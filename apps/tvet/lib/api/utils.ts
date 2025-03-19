@@ -28,8 +28,8 @@ export function validate<T extends z.Schema>(
 
   if (res.error) {
     //handle API error
-    console.warn({ error: response.error.message });
-    throw new Error(response.error.message);
+    console.warn("API Error:", response.error);
+    throw new Error(response?.error?.message);
   }
 
   const result = schema.safeParse(response.data);

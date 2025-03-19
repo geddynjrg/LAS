@@ -1,5 +1,5 @@
 import { IconChevronDown } from "@tabler/icons-react";
-import { useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -18,6 +18,8 @@ export const CoursesBlock: FC<CoursesBlockProps> = ({
   courses,
 }) => {
   const format = useFormatter();
+  const t = useTranslations("Common");
+
   return (
     <section className="bg-background mt-4 px-4 pb-12 pt-8">
       <div className="app-container">
@@ -52,7 +54,7 @@ export const CoursesBlock: FC<CoursesBlockProps> = ({
 
         <div className="flex justify-center lg:mt-8">
           <Button variant="secondary" className="max-w-3xs mt-4 w-full">
-            Show all <IconChevronDown />
+            {t("viewAll")} <IconChevronDown />
           </Button>
         </div>
       </div>

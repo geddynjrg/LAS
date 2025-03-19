@@ -22,10 +22,12 @@ import { VocationalCentersBlock } from "@/components/page-blocks/vocational-cent
 import type { BlockType } from "@/lib/api/types";
 
 export interface PageComponentsProps {
+  applicationBlockId?: string;
   page_components: BlockType[];
 }
 
 export const PageComponents: FC<PageComponentsProps> = ({
+  applicationBlockId,
   page_components,
 }) => {
   if (!page_components) {
@@ -37,7 +39,9 @@ export const PageComponents: FC<PageComponentsProps> = ({
 
     switch (component.block_type) {
       case "application":
-        return <ApplicationBlock {...component} key={key} />;
+        return (
+          <ApplicationBlock {...component} key={key} id={applicationBlockId} />
+        );
 
       case "section_heading":
         return <SectionHeaderBlock {...component} key={key} />;

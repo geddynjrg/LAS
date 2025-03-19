@@ -1,18 +1,17 @@
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 export interface SortIndicatorProps {
-  hasSort: boolean;
-  order?: string;
+  direction?: "asc" | "desc" | string;
 }
 
-export const SortIndicator: FC<SortIndicatorProps> = ({ hasSort, order }) => {
+export const SortIndicator: FC<SortIndicatorProps> = ({ direction }) => {
   return (
     <div className="relative grid size-6">
-      {hasSort && (!order || order.toLowerCase() == "asc") ? (
+      {!direction || direction.toLowerCase() == "asc" ? (
         <IconChevronUp className="absolute top-0 mx-auto size-3 translate-x-1/2" />
       ) : null}
-      {hasSort && (!order || order.toLowerCase() == "desc") ? (
+      {!direction || direction.toLowerCase() == "desc" ? (
         <IconChevronDown className="absolute bottom-0 size-3 translate-x-1/2" />
       ) : null}
     </div>

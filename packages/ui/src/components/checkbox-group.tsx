@@ -30,6 +30,7 @@ export interface CheckboxGroupProps<T extends string = string>
   name?: string;
   options?: CheckboxGroupOption<T>[];
   size?: CheckboxProps["size"];
+  value?: T | T[];
   defaultValue?: T | T[];
   onValueChange?: (value: T[]) => void;
   className?: string;
@@ -39,6 +40,7 @@ export const CheckboxGroup = <T extends string>({
   id,
   name,
   options,
+  value: valueProp,
   defaultValue,
   orientation = "vertical",
   size,
@@ -46,16 +48,18 @@ export const CheckboxGroup = <T extends string>({
   onValueChange,
 }: CheckboxGroupProps<T>) => {
   const [value, setValue] = useState<T[]>(
-    Array.isArray(defaultValue)
-      ? defaultValue
-      : (defaultValue?.split(",") as T[]),
+    Array.isArray(valueProp)
+      ? valueProp
+      : Array.isArray(defaultValue)
+        ? defaultValue
+        : (defaultValue?.split(",") as T[]),
   );
 
   useEffect(() => {
-    if (value) {
-      onValueChange?.(value);
+    if (valueProp && value !== valueProp) {
+      setValue(Array.isArray(valueProp) ? valueProp : [valueProp]);
     }
-  }, [value, onValueChange]);
+  }, [value, valueProp]);
 
   function handleChange(checked: boolean, option: CheckboxGroupOption<T>) {
     setValue((prev) =>
@@ -63,7 +67,8 @@ export const CheckboxGroup = <T extends string>({
         ? [...(prev ?? []), option.value]
         : (prev ?? []).filter((v) => v !== option.value),
     );
-    onValueChange?.((value ?? []) as T[]);
+
+    onValueChange?.(value);
   }
 
   return (
