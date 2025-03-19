@@ -23,7 +23,7 @@ import {
   type GroupDetails,
   type LoanDetails,
 } from "@/actions/application";
-import { ApplicationStatus } from "@/components/ApplicationStatus";
+import { ApplicationStatus } from "@/components/application-status";
 
 interface Props {
   params: Promise<{ id: string }>;

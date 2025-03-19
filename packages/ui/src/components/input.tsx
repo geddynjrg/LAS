@@ -1,3 +1,5 @@
+"use client";
+
 import { cva, type VariantProps } from "cva-extended";
 import type { FC, ReactNode } from "react";
 
@@ -75,10 +77,11 @@ export const Input: FC<InputProps> = ({
 
 const Decorator: FC<{ children?: ReactNode }> = ({ children }) => {
   const isText = typeof children === "string";
+
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-y-0 z-10 flex w-8 items-center justify-center overflow-hidden text-ellipsis text-sm text-neutral-600 first:start-0 last:end-0 [&_svg]:size-5",
+        "absolute inset-y-0 z-10 flex w-8 items-center justify-center overflow-hidden text-ellipsis text-sm text-neutral-600 first:start-0 last:end-0 [&_svg]:size-5",
         isText && "w-10 first:border-r last:border-l",
       )}
     >

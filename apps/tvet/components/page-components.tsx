@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import { ApplicationBlock } from "@/components/page-blocks/application-block";
 import { AvailableSponsorships } from "@/components/page-blocks/available-sponsorships";
@@ -23,17 +23,13 @@ import type { BlockType } from "@/lib/api/types";
 
 export interface PageComponentsProps {
   applicationBlockId?: string;
-  page_components: BlockType[];
+  page_components?: BlockType[];
 }
 
 export const PageComponents: FC<PageComponentsProps> = ({
   applicationBlockId,
-  page_components,
+  page_components = [],
 }) => {
-  if (!page_components) {
-    return <p>No content</p>;
-  }
-
   return page_components.map((component, index) => {
     const key = component.block_type + index;
 

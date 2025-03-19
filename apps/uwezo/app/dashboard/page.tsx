@@ -14,7 +14,7 @@ import {
   getApplications,
   type Status,
 } from "@/actions/application";
-import { ApplicationStatus } from "@/components/ApplicationStatus";
+import { ApplicationStatus } from "@/components/application-status";
 import { auth } from "@/lib/auth";
 
 export default async function Page() {

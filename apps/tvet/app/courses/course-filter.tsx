@@ -213,24 +213,46 @@ export const CourseFilter: FC<CourseFilterProps> = ({
               />
             )}
 
-            <Field
-              name="institution"
-              label={t("location")}
-              control={(props) => (
-                <Select
-                  {...props}
-                  defaultValue={defaultValues.institution}
-                  placeholder={t("locationPlaceholder")}
-                  options={institutions.map((institution) => ({
-                    value: institution.id,
-                    label: institution.name,
-                  }))}
-                  onValueChange={(value) =>
-                    handleFilterChange("institution", value)
-                  }
-                />
-              )}
-            />
+            {institutions.length > 0 && (
+              <Field
+                name="institution"
+                label={t("location")}
+                control={(props) => (
+                  <Select
+                    {...props}
+                    defaultValue={defaultValues.institution}
+                    placeholder={t("locationPlaceholder")}
+                    options={institutions.map((institution) => ({
+                      value: institution.id,
+                      label: institution.name,
+                    }))}
+                    onValueChange={(value) =>
+                      handleFilterChange("institution", value)
+                    }
+                  />
+                )}
+              />
+            )}
+            {/* {tags.length > 0 && (
+              <Field
+                name="tags"
+                label={t("trainingAreas")}
+                control={(props) => (
+                  <Select
+                    {...props}
+                    defaultValue={defaultValues.tags}
+                    placeholder={t("trainingAreas")}
+                    options={tags.map((tag) => ({
+                      value: tag.id,
+                      label: tag.name,
+                    }))}
+                    onValueChange={(value) =>
+                      handleFilterChange("tags", value)
+                    }
+                  />
+                )}
+              />
+            )} */}
           </CollapsibleContent>
 
           <CollapsibleTrigger asChild className="flex w-full">

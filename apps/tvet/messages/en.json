@@ -6,12 +6,6 @@
     "availableSponsorships": "Available sponsorships"
   },
 
-  "InputErrors": {
-    "required": "This field is required",
-    "too_small": "The value must contain more than {{minimum}} character(s)",
-    "tooBig": "The must contain nuder {{minimum}} character(s)"
-  },
-
   "FrontPage": {
     "title": "<light>Where did i get</light> so skilled?",
     "description": " At TVETs we put focus on practical skills - up to 90% of training is through practice. Programs are designed around occupational standards, curriculas are developed with strong integration with businesses.",
@@ -82,9 +76,21 @@
     "success": "Reset email sent",
     "successDescription": "An email has been sent to your e-mail address with instructions on how to reset your password."
   },
+
   "InstitutionPage": {
     "learnMore": "Learn more",
     "doYouHaveAnyQuestions": "Do you have any questions?",
     "getInTouch": "Get in contact with us and we’ll help you get the answers you need."
+  },
+
+  "TrainingAreaBlock": {
+    "title": "Training areas",
+    "coursesAvailable": "{count, plural, =1 {# course available}  other {# courses available}}."
+  },
+
+  "HighlightedCourseListingBlock": {
+    "title": "Apply now",
+    "searchTitle": "Search for courses",
+    "linkTitle": "View all"
   }
 }

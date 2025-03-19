@@ -1,7 +1,7 @@
-import { IconArrowRight, IconSearch } from "@tabler/icons-react";
-import { useFormatter } from "next-intl";
+import { IconArrowRight } from "@tabler/icons-react";
+import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
@@ -9,6 +9,7 @@ import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { Heading } from "@/components/heading";
+import { SearchCoursesForm } from "@/components/search-courses-form";
 import type { HighlightedCourseListingBlockType } from "@/lib/api/types";
 
 export interface HighlightedCourseListingBlockProps
@@ -17,21 +18,24 @@ export interface HighlightedCourseListingBlockProps
 export const HighlightedCourseListingBlock: FC<
   HighlightedCourseListingBlockProps
 > = ({ courses }) => {
-  const borders = ["#588157", "#AD6A6C", "#283044"];
+  const t = useTranslations("HighlightedCourseListingBlock");
   const format = useFormatter();
+
+  const borders = ["#588157", "#AD6A6C", "#283044"];
 
   return (
     <section className="bg-background mt-4 pb-12 pt-8">
       <Container className="flex flex-col items-center gap-4">
         <Heading type="h2" className="w-full">
-          Apply now
+          {t("title")}
         </Heading>
+
         <div className="flex w-full flex-col items-center gap-4 rounded-md bg-[#ccc9c0] px-4 py-8">
-          <h2 className="typo-h4 self-start">Search for courses</h2>
-          <div className="bg-background flex w-full justify-between gap-4 rounded-md p-2 text-[#686B78]">
-            Search for courses
-            <IconSearch />
-          </div>
+          <h2 className="typo-h4 self-start">{t("searchTitle")}</h2>
+          <SearchCoursesForm
+            classname="w-full"
+            placeholder={t("searchTitle")}
+          />
         </div>
 
         <div
@@ -64,7 +68,7 @@ export const HighlightedCourseListingBlock: FC<
           asChild
         >
           <Link href="/courses">
-            View all
+            {t("linkTitle")}
             <IconArrowRight />
           </Link>
         </Button>

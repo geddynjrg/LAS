@@ -10,5 +10,86 @@
     "description": "Katika TVETs tunazingatia ujuzi wa vitendo - hadi 90% ya mafunzo ni kupitia mazoezi. Programu zimeundwa kulingana na viwango vya kazi, mitaala imeendelezwa kwa ushirikiano mkubwa na biashara.",
     "applyNow": "Omba sasa",
     "learnMore": "Jifunze zaidi"
+  },
+
+  "CoursesPage": {
+    "title": "Kozi Zote",
+    "description": "Hapa unaweza kupata na kutafuta kozi zote zinazotolewa na TVET zote za Kaunti ya Nairobi.",
+    "search": "Tafuta kozi",
+    "filterTitle": "Chuja kozi",
+    "reset": "Weka upya",
+    "maxFee": "Ada ya juu zaidi",
+    "duration": "Muda",
+    "months": "{month, plural, =1 {# mwezi} other {# miezi}}",
+    "educationLevel": "Elimu inayohitajika awali",
+    "location": "Mahali",
+    "locationPlaceholder": "- Chagua VTC -",
+    "openFilter": "Fungua kichujio",
+    "closeFilter": "Funga kichujio",
+    "courseName": "Jina la kozi",
+    "fee": "Ada",
+    "courseFee": "Ada ya kozi",
+    "show": "Onyesha",
+    "groupSize": "Ukubwa wa kikundi",
+    "applicationFee": "Ada ya maombi",
+    "testBookingFee": "Ada ya uhifadhi wa mtihani",
+    "requiredEducation": "Elimu inayohitajika",
+    "goToCourse": "Nenda kwenye ukurasa wa kozi",
+    "paginationResults": "Inaonyesha {{amount}} ya {{total}} matokeo"
+  },
+
+  "LoginPage": {
+    "title": "Anza kuomba",
+    "description": "Ingia au unda akaunti ili kuomba mkopo wa Uwezo Fund.",
+    "doNotHaveAccount": "Huna akaunti?",
+    "email": "Barua pepe",
+    "password": "Nenosiri",
+    "phone": "Nambari ya simu",
+    "login": "Ingia",
+    "signUp": "Jisajili",
+    "useEmailInstead": "Tumia barua pepe badala ya simu",
+    "usePhoneInstead": "Tumia simu badala ya barua pepe",
+    "ForgotPassword": "Umesahau nenosiri lako?",
+    "reset": "Weka upya"
+  },
+
+  "SignUpPage": {
+    "title": "Unda Akaunti",
+    "description": "Jaza maelezo hapa chini ili kuunda akaunti yako.",
+    "email": "Barua pepe",
+    "password": "Nenosiri",
+    "passwordConfirm": "Thibitisha nenosiri",
+    "signUp": "Jisajili",
+    "alreadyHaveAccount": "Tayari una akaunti?",
+    "login": "Ingia"
+  },
+
+  "ResetPage": {
+    "title": "Weka Upya Nenosiri",
+    "description": "Ingiza anwani yako ya barua pepe ili kuweka upya nenosiri lako.",
+    "email": "Barua pepe",
+    "alreadyHaveAccount": "Tayari una akaunti?",
+    "login": "Ingia",
+    "reset": "Weka upya",
+    "backTo": "Rudi kwa",
+    "success": "Barua pepe ya kuweka upya imetumwa",
+    "successDescription": "Barua pepe imetumwa kwa anwani yako ya barua pepe na maelekezo ya jinsi ya kuweka upya nenosiri lako."
+  },
+
+  "InstitutionPage": {
+    "learnMore": "Jifunze zaidi",
+    "doYouHaveAnyQuestions": "Una maswali yoyote?",
+    "getInTouch": "Wasiliana nasi na tutakusaidia kupata majibu unayohitaji."
+  },
+
+  "TrainingAreaBlock": {
+    "title": "Maeneo ya Mafunzo",
+    "coursesAvailable": "{count, plural, =1 {# kozi inapatikana} other {# kozi zinapatikana}}."
+  },
+
+  "HighlightedCourseListingBlock": {
+    "title": "Omba sasa",
+    "searchTitle": "Tafuta kozi",
+    "linkTitle": "Tazama zote"
   }
 }
