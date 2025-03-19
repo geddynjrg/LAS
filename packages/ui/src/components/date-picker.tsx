@@ -57,11 +57,9 @@ export const DatePicker: FC<DatePickerProps> = ({
           ) : (
             <span className="text-muted-foreground">{placeholder}</span>
           )}
-
           <IconCalendarMonth className="my-1 h-full text-neutral-800" />
         </button>
       </PopoverTrigger>
-
       <PopoverContent withCloseButton={false} withArrow={false}>
         <Calendar
           value={date}

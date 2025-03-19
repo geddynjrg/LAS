@@ -12,7 +12,7 @@ export interface DataBlockProps {
   description?: string;
   disabled?: boolean;
   active?: boolean;
-  toggleEdit: () => void;
+  toggleEdit?: () => void;
 }
 
 export const DataBlock: FC<DataBlockProps> = ({
@@ -28,7 +28,7 @@ export const DataBlock: FC<DataBlockProps> = ({
     <div className={cn(disabled && "text-neutral-600")}>
       <div className={cn("flex items-center justify-between gap-4")}>
         <h3 className={cn("typo-h3")}>{title}</h3>
-        {!active && (
+        {active !== undefined && (
           <Button
             asChild
             onClick={toggleEdit}

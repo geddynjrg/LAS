@@ -24,6 +24,7 @@ export interface DataNodeProps extends VariantProps<typeof dataNodeVariants> {
   label: string;
   children?: ReactNode;
   orientation?: "vertical" | "horizontal";
+  required?: boolean;
 }
 
 export const DataNode: FC<DataNodeProps> = ({
@@ -31,9 +32,13 @@ export const DataNode: FC<DataNodeProps> = ({
   label,
   variant,
   orientation,
+  required,
 }) => (
   <div className={cn(dataNodeVariants({ variant, orientation }))}>
-    <div className="font-bold">{label}</div>
+    <div className="font-bold">
+      {label}
+      {required && <span className="text-destructive">*</span>}
+    </div>
     {children}
   </div>
 );

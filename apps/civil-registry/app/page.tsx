@@ -55,18 +55,21 @@ export default async function Page() {
                 variant="danger"
                 person={{
                   ...child,
+                  id: child?.id ?? "",
                   name: getFullName(child),
-                  dob: format.dateTime(new Date(child.dob)),
-                  age: getAgeByDoB(child.dob, true) ?? "N/A",
+                  dob: child.dob ? format.dateTime(new Date(child.dob)) : "N/A",
+                  age: child.dob ? getAgeByDoB(child.dob, true) : "N/A",
                 }}
                 statusLabel={t(
                   "Components.person-card.certificate-unavailable",
                 )}
                 footer={
                   <Button asChild>
-                    <Link href={child.id}>
-                      {t("Components.person-card.validate-data")}
-                    </Link>
+                    {child.id && (
+                      <Link href={child.id}>
+                        {t("Components.person-card.validate-data")}
+                      </Link>
+                    )}
                   </Button>
                 }
               />
@@ -84,9 +87,10 @@ export default async function Page() {
                 key={child.id}
                 person={{
                   ...child,
+                  id: child?.id ?? "",
                   name: getFullName(child),
-                  dob: format.dateTime(new Date(child.dob)),
-                  age: getAgeByDoB(child.dob, true) ?? "N/A",
+                  dob: child.dob ? format.dateTime(new Date(child.dob)) : "N/A",
+                  age: child.dob ? getAgeByDoB(child.dob, true) : "N/A",
                 }}
                 variant="warning"
                 statusLabel={t("Components.person-card.amendments-processed")}
@@ -113,9 +117,10 @@ export default async function Page() {
                 key={child.id}
                 person={{
                   ...child,
+                  id: child?.id ?? "",
                   name: getFullName(child),
-                  dob: format.dateTime(new Date(child.dob)),
-                  age: getAgeByDoB(child.dob, true) ?? "N/A",
+                  dob: child.dob ? format.dateTime(new Date(child.dob)) : "N/A",
+                  age: child.dob ? getAgeByDoB(child.dob, true) : "N/A",
                 }}
                 variant="success"
                 statusLabel={t("Components.person-card.certificate-available")}

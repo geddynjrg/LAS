@@ -52,7 +52,7 @@ export const PersonBlock: FC<PersonBlockProps> = ({
       title={t("DetailsPage.title-mother")}
       disabled={disabled}
       active={active}
-      toggleEdit={() => toggleEdit(person.id)}
+      toggleEdit={() => toggleEdit(person?.id ?? "")}
     >
       {displayField.name && (
         <DataNode label={t("DetailsPage.name")} variant={variant}>
@@ -67,12 +67,12 @@ export const PersonBlock: FC<PersonBlockProps> = ({
       )}
       {displayField.dob && (
         <DataNode label={t("DetailsPage.dob")} variant={variant}>
-          {format.dateTime(new Date(person.dob))}
+          {person.dob && format.dateTime(new Date(person.dob))}
         </DataNode>
       )}
       {displayField.age && (
         <DataNode label={t("DetailsPage.age")} variant={variant}>
-          {getAgeByDoB(person.dob, true) ?? "N/A"}
+          {person.dob ? getAgeByDoB(person.dob, true) : "N/A"}
         </DataNode>
       )}
       {displayField.sex && (

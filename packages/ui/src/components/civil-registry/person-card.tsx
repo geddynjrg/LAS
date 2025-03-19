@@ -6,16 +6,16 @@ import { DataNode } from "@workspace/ui/components/data-node";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { cn } from "@workspace/ui/lib/utils";
 
-export type SexType = "M" | "F";
+export type SexType = "M" | "F" | "I";
 export type ValidationStatus = "success" | "alert" | "pending";
 
 export type PersonType = {
   id: string;
   name: string;
-  sex: SexType;
   dob: string;
-  age: string;
-  validationStatus: ValidationStatus;
+  age: string | null;
+  sex?: SexType | null | undefined;
+  validationStatus?: ValidationStatus;
 };
 
 export interface PersonCardProps extends CardProps {

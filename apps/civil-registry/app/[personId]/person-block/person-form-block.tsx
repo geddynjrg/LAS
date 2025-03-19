@@ -1,9 +1,17 @@
-import { IconInfoSquareRounded } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconInfoSquareRounded,
+  IconPlus,
+} from "@tabler/icons-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useEffect, useState, type FC, type ReactNode } from "react";
+import React, { useEffect, useState, type FC, type ReactNode } from "react";
 import type { z } from "zod";
 
 import { Alert } from "@workspace/ui/components/alert";
+import {
+  ButtonGroup,
+  ButtonGroupItem,
+} from "@workspace/ui/components/button-group";
 import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import {
   DataBlock,
@@ -15,52 +23,70 @@ import { Field, FieldGroup, Form } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { Select } from "@workspace/ui/components/select";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { cn, getFormDataValues } from "@workspace/ui/lib/utils";
 
 import { updatePersonById } from "@/actions/update-person-data";
+import {
+  educationOptions,
+  healthInstitutionsOptions,
+} from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/data/person";
-import { personFormSchema } from "@/lib/schema/person-schema";
+import { childFormSchema, personFormSchema } from "@/lib/schema/person-schema";
 import { getAgeByDoB } from "@/lib/util/age";
 import { getFullName } from "@/lib/util/full-name";
 import { nationalities } from "@/lib/util/nationalities";
 
-interface DisplayFields {
-  name?: boolean;
-  nationalId?: boolean;
-  dob?: boolean;
-  age?: boolean;
-  sex?: boolean;
-  weightOnBirth?: boolean;
-  placeOfBirth?: boolean;
-  citizenship?: boolean;
-  nationality?: boolean;
-  maritalStatus?: boolean;
-  education?: boolean;
-  mother?: boolean;
-  father?: boolean;
-  phone?: boolean;
+export enum PersonType {
+  CHILD = "child",
+  MOTHER = "mother",
+  FATHER = "father",
+  INFORMANT = "informant",
 }
 
-interface EditableFields extends DisplayFields {
-  firstName?: boolean;
-  middleName?: boolean;
-  lastName?: boolean;
+interface FieldProps {
+  isEditable?: boolean;
+  isVisible?: boolean;
+  isRequired?: boolean;
+}
+
+interface Fields {
+  natureOfBirth?: FieldProps;
+  name?: FieldProps;
+  firstName?: FieldProps;
+  middleName?: FieldProps;
+  lastName?: FieldProps;
+  nationalId?: FieldProps;
+  dob?: FieldProps;
+  age?: FieldProps;
+  sex?: FieldProps;
+  email?: FieldProps;
+  weightOnBirth?: FieldProps;
+  placeOfBirth?: FieldProps;
+  citizenship?: FieldProps;
+  nationality?: FieldProps;
+  maritalStatus?: FieldProps;
+  education?: FieldProps;
+  mother?: FieldProps;
+  father?: FieldProps;
+  phone?: FieldProps;
+  healthInstitution?: FieldProps;
+  birthSublocation?: FieldProps;
+  birthSublocationDistrict?: FieldProps;
+  residenceDistrict?: FieldProps;
+  residenceSublocation?: FieldProps;
+  passportNumber?: FieldProps;
 }
 
 interface PersonFormBlockProps
   extends Pick<DataBlockProps, "active" | "disabled"> {
   data: Person;
-  displayField: DisplayFields;
-  editableField?: EditableFields;
+  fields: Fields;
   active: boolean;
-  toggleEdit: (id: string, reqPayment?: boolean) => void;
+  toggleEdit?: (id: string, reqPayment?: boolean) => void;
   showFieldNotifications?: boolean;
   affidavitRequired?: boolean;
-  isChild?: boolean;
-  isMother?: boolean;
-  isFather?: boolean;
+  type: PersonType;
 }
 
 const formAction: FormAction<z.infer<typeof personFormSchema>> = async (
@@ -79,28 +105,30 @@ const formAction: FormAction<z.infer<typeof personFormSchema>> = async (
     };
   }
 
-  const res = await updatePersonById(data.id, data as Partial<Person>);
+  await updatePersonById(data.id, data as Partial<Person>);
 
   return {
     success: true,
     values: data,
   };
 };
+// export const PersonFormBlock: FC<PersonFormBlockProps> = ({
 
 export const PersonFormBlock: FC<PersonFormBlockProps> = ({
   disabled,
   active,
   data,
-  displayField,
-  editableField,
+  fields,
   toggleEdit,
   affidavitRequired = false,
   showFieldNotifications = false,
-  isChild = false,
-  isMother = false,
-  isFather = false,
+  type = PersonType.CHILD,
 }) => {
   const [person, setPerson] = useState<Person>(data);
+  const [natonalId, setNatonalId] = useState<boolean>(
+    fields?.nationalId?.isVisible ?? false,
+  );
+  const [placeOfBirthLocation, setPlaceOfBirthLocation] = useState<string>("");
 
   const t = useTranslations();
   const format = useFormatter();
@@ -108,14 +136,21 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
   const sexDisplayFormat = {
     M: t("DetailsPage.male"),
     F: t("DetailsPage.female"),
+    I: t("DetailsPage.intersex"),
   };
+  const getPersonName = (person: Person | string): string => {
+    return getFullName(person as Person);
+  };
+
   const defaultValues = {
     id: person.id,
+    natureOfBirth: person.natureOfBirth,
     firstName: person.firstName,
+    middleName: person.middleName,
     lastName: person.lastName,
     sex: person.sex,
     dob: person.dob,
-    middleName: person.middleName,
+    email: person.email,
     weightOnBirth: person?.weightOnBirth,
     placeOfBirth: person?.placeOfBirth,
     nationalId: person?.nationalId,
@@ -123,41 +158,32 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
     nationality: person?.nationality,
     maritalStatus: person?.maritalStatus,
     education: person?.education,
-    father: person?.father ? getFullName(person.father as Person) : undefined,
-    mother: person?.mother ? getFullName(person.father as Person) : undefined,
+    healthInstitution: person?.healthInstitution,
+    birthSublocation: person?.birthSublocation,
+    birthSublocationDistrict: person?.birthSublocationDistrict,
+    father: person?.father ? getPersonName(person.father) : undefined,
+    mother: person?.mother ? getPersonName(person.mother) : undefined,
     phone: person?.phone,
+    residenceDistrict: person?.residenceDistrict,
+    residenceSublocation: person?.residenceSublocation,
+    passportNumber: person?.passportNumber,
     phoneCode: person?.phoneCode?.replace("+", ""),
   };
 
+  let formSchema: z.ZodSchema = personFormSchema;
+
+  if (type === PersonType.CHILD) {
+    formSchema = childFormSchema;
+  }
+
   const [state, action, isPending] = useForm(
     formAction,
-    personFormSchema,
+    formSchema,
     defaultValues,
   );
 
   type DataVariant = "default" | "disabled";
   const variant: DataVariant = disabled ? "disabled" : "default";
-
-  const sexOptions = [
-    { label: t("DetailsPage.male"), value: "M" },
-    { label: t("DetailsPage.female"), value: "F" },
-  ];
-
-  const marriedOptions = [
-    { label: t("DetailsPage.married"), value: "Married" },
-    { label: t("DetailsPage.divorced"), value: "Divorced" },
-    { label: t("DetailsPage.single"), value: "Single" },
-    { label: t("DetailsPage.widowed"), value: "Widowed" },
-  ];
-
-  const educationOptions = [
-    { label: "High school", value: "High School" },
-    { label: "Associate degree", value: "Associate Degree" },
-    { label: "Bachelor's degree", value: "Bachelor's Degree" },
-    { label: "Master's degree", value: "Master's Degree" },
-    { label: "Doctorate", value: "Doctorate/PhD" },
-    { label: "Postdoctoral Studies", value: "Postdoctoral Studies" },
-  ];
 
   const nationalityOptions = nationalities.map((nationality) => ({
     label: nationality,
@@ -191,20 +217,57 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
           requestPayment = true;
         }
       }
-      console.log(isChild, requestPayment, requestPayment && isChild);
-      toggleEdit(person.id, requestPayment && isChild);
+
+      if (typeof toggleEdit === "function") {
+        toggleEdit(
+          person?.id ?? "",
+          requestPayment && type === PersonType.CHILD,
+        );
+      }
     }
   }, [state]);
 
   let titleKey: keyof IntlMessages["DetailsPage"] = "title-child";
 
-  if (isMother) {
-    titleKey = "title-mother";
-  } else if (isFather) {
-    titleKey = "title-father";
-  } else if (isChild) {
-    titleKey = "title-child";
+  switch (type) {
+    case PersonType.MOTHER:
+      titleKey = "title-mother";
+      break;
+    case PersonType.FATHER:
+      titleKey = "title-father";
+      break;
+    case PersonType.CHILD:
+      titleKey = "title-child";
+      break;
+    case PersonType.INFORMANT:
+      titleKey = "title-informant";
+      break;
+    default:
+      titleKey = "title-child";
   }
+
+  const sexOptions = [
+    { label: t("DetailsPage.male"), value: "M" },
+    { label: t("DetailsPage.female"), value: "F" },
+    { label: t("DetailsPage.intersex"), value: "I" },
+  ];
+  const natureOfBirthOptions = [
+    { label: t("DetailsPage.live-birth"), value: "LiveBirth" },
+    { label: t("DetailsPage.stillbirth"), value: "StillBirth" },
+  ];
+
+  const marriedOptions = [
+    { label: t("DetailsPage.married"), value: "Married" },
+    { label: t("DetailsPage.divorced"), value: "Divorced" },
+    { label: t("DetailsPage.single"), value: "Single" },
+    { label: t("DetailsPage.widowed"), value: "Widowed" },
+  ];
+
+  const informantOptions = [
+    { label: t("DetailsPage.mother"), value: t("DetailsPage.mother") },
+    { label: t("DetailsPage.father"), value: t("DetailsPage.father") },
+    { label: t("DetailsPage.other"), value: t("DetailsPage.other") },
+  ];
 
   return (
     <Form className="space-y-6" action={action}>
@@ -219,8 +282,32 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
         title={t(`DetailsPage.${titleKey}`)}
         disabled={disabled}
         active={active}
-        toggleEdit={() => toggleEdit(person.id)}
+        toggleEdit={() => {
+          if (typeof toggleEdit === "function") {
+            return toggleEdit(person?.id ?? "");
+          }
+
+          return null;
+        }}
       >
+        {type === PersonType.INFORMANT && (
+          <>
+            <ButtonGroup
+              name="informantType"
+              onValueChange={() => {}}
+              type="single"
+              defaultValue={"Other"}
+            >
+              <React.Fragment key=".0">
+                {informantOptions.map((option) => (
+                  <ButtonGroupItem key={option.value} value={option.value}>
+                    {option.label}
+                  </ButtonGroupItem>
+                ))}
+              </React.Fragment>
+            </ButtonGroup>
+          </>
+        )}
         {active && affidavitRequired && (
           <Alert
             position="local"
@@ -230,135 +317,241 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
             {t("DetailsPage.affidavit-required-text")}
           </Alert>
         )}
-        {displayField.name && (
+        {!fields?.healthInstitution?.isEditable && (
+          <input
+            type="hidden"
+            name="healthInstitution"
+            value={person?.healthInstitution}
+          />
+        )}
+        {fields?.natureOfBirth?.isEditable && (
+          <Field
+            control={(props) => {
+              return (
+                <RadioGroup
+                  {...props}
+                  options={natureOfBirthOptions}
+                  orientation="horizontal"
+                  size="md"
+                />
+              );
+            }}
+            label="Nature of birth"
+            name="natureOfBirth"
+            required={fields?.natureOfBirth?.isRequired ?? false}
+            state={state}
+          />
+        )}
+        {!fields?.natureOfBirth?.isEditable && (
+          <input
+            type="hidden"
+            name="natureOfBirth"
+            value={person?.natureOfBirth}
+          />
+        )}
+        {natonalId && (
+          <Field
+            state={state}
+            name="nationalId"
+            editable={(active && fields?.nationalId?.isEditable) ?? false}
+            label={t("DetailsPage.national-id")}
+            control={(props) => <Input {...props} />}
+            required={fields?.nationalId?.isRequired ?? false}
+          />
+        )}
+        {active && natonalId && fields?.nationalId?.isEditable && (
+          <div className={cn("flex justify-center underline")}>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setNatonalId(false);
+              }}
+            >
+              {t("DetailsPage.national-id-unknown")}
+            </a>
+          </div>
+        )}
+        {active && !natonalId && fields?.nationalId?.isEditable && (
+          <div className={cn("flex justify-center underline")}>
+            <a
+              href="#"
+              className="flex items-center gap-1"
+              onClick={(e) => {
+                e.preventDefault();
+                setNatonalId(true);
+              }}
+            >
+              <IconChevronLeft /> {t("DetailsPage.back-to-national-id-search")}
+            </a>
+          </div>
+        )}
+        {fields.name && (
           <>
-            {active && editableField?.name ? (
+            {active && !natonalId && fields?.name?.isVisible ? (
               <>
                 <Field
                   state={state}
                   name="firstName"
                   label={t("DetailsPage.first-name")}
-                  editable={editableField?.firstName ?? false}
+                  editable={fields?.firstName?.isEditable ?? false}
                   control={(props) => <Input {...props} />}
+                  required
                 />
 
                 <Field
                   state={state}
                   name="middleName"
                   label={t("DetailsPage.middle-name")}
-                  editable={editableField?.middleName ?? false}
+                  editable={fields?.middleName?.isEditable ?? false}
+                  control={(props) => <Input {...props} />}
+                />
+
+                {fields?.lastName?.isVisible && (
+                  <Field
+                    state={state}
+                    name="lastName"
+                    label={t("DetailsPage.lastname")}
+                    editable={fields?.lastName?.isEditable ?? false}
+                    control={(props) => <Input {...props} />}
+                    required={fields?.lastName?.isRequired ?? false}
+                  />
+                )}
+              </>
+            ) : (
+              <DataNode label={t("DetailsPage.name")} variant={variant}>
+                <Field
+                  state={state}
+                  isVisible={false}
+                  name="firstName"
+                  editable={false}
                   control={(props) => <Input {...props} />}
                 />
 
                 <Field
                   state={state}
-                  name="lastName"
-                  label={t("DetailsPage.lastname")}
-                  editable={editableField?.lastName ?? false}
+                  isVisible={false}
+                  name="middleName"
+                  editable={false}
                   control={(props) => <Input {...props} />}
                 />
-              </>
-            ) : (
-              <DataNode label={t("DetailsPage.name")} variant={variant}>
+
+                <Field
+                  state={state}
+                  isVisible={false}
+                  name="lastName"
+                  editable={false}
+                  control={(props) => <Input {...props} />}
+                  required={false}
+                />
+
                 {getFullName(person)}
               </DataNode>
             )}
           </>
         )}
-
-        {displayField.nationalId && (
+        {!natonalId && fields?.passportNumber?.isVisible && (
           <Field
             state={state}
-            name="nationalId"
-            editable={(active && editableField?.nationalId) ?? false}
-            label={t("DetailsPage.national-id")}
+            name="passportNumber"
+            label={t("DetailsPage.passport-number")}
+            editable={fields?.passportNumber?.isEditable ?? false}
             control={(props) => <Input {...props} />}
+            required={fields?.passportNumber?.isRequired ?? false}
           />
         )}
-
-        {editableField?.dob && displayField.dob ? (
+        {fields?.dob?.isEditable && fields?.dob?.isVisible && (
           <Field
             state={state}
             name="dob"
-            editable={(active && editableField?.dob) ?? false}
+            isDate
+            editable={
+              (active && fields?.dob?.isEditable && !natonalId) ?? false
+            }
             label={t("DetailsPage.dob")}
             control={(props) => <DatePicker {...props} />}
+            required={fields?.dob?.isRequired ?? false}
           />
-        ) : (
-          <p>{format.dateTime(new Date(person.dob))}</p>
         )}
-
-        {showFieldNotifications && active && displayField.dob && (
+        {fields?.dob?.isVisible && !fields?.dob?.isEditable && (
+          <DataNode label={t("DetailsPage.dob")} variant={variant}>
+            <input type="hidden" name="dob" value={person.dob} />
+            {person.dob && format.dateTime(new Date(person.dob))}
+          </DataNode>
+        )}
+        {showFieldNotifications && active && fields?.dob?.isVisible && (
           <EditMessage>{t("DetailsPage.change-dob-message")}</EditMessage>
         )}
-
-        {displayField.age && (
+        {fields?.age?.isVisible && (
           <DataNode label={t("DetailsPage.age")} variant={variant}>
-            {getAgeByDoB(person.dob, true) ?? "N/A"}
+            {person.dob ? getAgeByDoB(person.dob, true) : "N/A"}
           </DataNode>
         )}
-
-        {editableField?.sex && displayField.sex ? (
-          <Field
-            state={state}
-            name="sex"
-            editable={(active && editableField?.sex) ?? false}
-            label={t("DetailsPage.sex")}
-            control={(props) => <Select options={sexOptions} {...props} />}
-          />
-        ) : (
+        {fields?.sex?.isEditable && fields?.sex?.isVisible && (
+          <>
+            <DataNode
+              label={t("DetailsPage.sex")}
+              variant={variant}
+              required={fields?.sex?.isRequired ?? false}
+            />
+            <ButtonGroup
+              name="sex"
+              onValueChange={() => {}}
+              type="single"
+              defaultValue={person.sex}
+            >
+              <React.Fragment key=".0">
+                {sexOptions.map((option) => (
+                  <ButtonGroupItem key={option.value} value={option.value}>
+                    {option.label}
+                  </ButtonGroupItem>
+                ))}
+              </React.Fragment>
+            </ButtonGroup>
+          </>
+        )}
+        {fields?.sex?.isVisible && (
           <DataNode label={t("DetailsPage.sex")} variant={variant}>
-            {sexDisplayFormat[person.sex]}
+            <input type="hidden" name="sex" value={person.sex} />
+            {person.sex && sexDisplayFormat[person.sex]}
           </DataNode>
         )}
-
-        {showFieldNotifications && displayField.sex && active && (
+        {showFieldNotifications && fields?.sex?.isVisible && active && (
           <EditMessage>{t("DetailsPage.change-sex-message")}</EditMessage>
         )}
-
-        {displayField.weightOnBirth && (
+        {fields?.weightOnBirth?.isVisible && (
           <Field
             state={state}
             name="weightOnBirth"
-            editable={(active && editableField?.weightOnBirth) ?? false}
+            editable={(active && fields?.weightOnBirth?.isEditable) ?? false}
             label={t("DetailsPage.birth-weight")}
-            control={(props) => <Input {...props} />}
+            control={(props) => <Input {...props} endDecorator="kg" />}
+            required={fields?.weightOnBirth?.isRequired ?? false}
           />
         )}
-
-        {displayField.placeOfBirth && (
-          <Field
-            state={state}
-            name="placeOfBirth"
-            editable={(active && editableField?.placeOfBirth) ?? false}
-            label={t("DetailsPage.place-of-birth")}
-            control={(props) => <Input {...props} />}
-          />
-        )}
-
-        {displayField.citizenship && (
+        {fields?.citizenship?.isVisible && (
           <Field
             state={state}
             name="citizenship"
             label={t("DetailsPage.citizenship")}
-            editable={(active && editableField?.citizenship) ?? false}
+            editable={(active && fields?.citizenship?.isEditable) ?? false}
             control={(props) => <Input {...props} />}
+            required={fields?.citizenship?.isRequired ?? false}
           />
         )}
-
-        {displayField.nationality && (
+        {fields?.nationality?.isVisible && (
           <Field
             state={state}
             name="nationality"
             label={t("DetailsPage.nationality")}
-            editable={(active && editableField?.nationality) ?? false}
+            editable={(active && fields?.nationality?.isEditable) ?? false}
             control={(props) => (
               <SearchInput {...props} options={nationalityOptions} />
             )}
+            required={fields?.nationality?.isRequired ?? false}
           />
         )}
-
-        {displayField.maritalStatus && (
+        {fields?.maritalStatus?.isVisible && (
           <Field
             state={state}
             control={(props) => (
@@ -369,47 +562,61 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
                 options={marriedOptions}
               />
             )}
-            editable={(active && editableField?.maritalStatus) ?? false}
+            editable={(active && fields?.maritalStatus?.isEditable) ?? false}
             label={t("DetailsPage.marital-status")}
             name="maritalStatus"
+            required={fields?.maritalStatus?.isRequired ?? false}
+          />
+        )}
+        {fields?.placeOfBirth?.isVisible && (
+          <Field
+            state={state}
+            name="placeOfBirth"
+            editable={(active && fields?.placeOfBirth?.isEditable) ?? false}
+            label={t("DetailsPage.place-of-birth")}
+            control={(props) => <Input {...props} />}
+            required={fields?.placeOfBirth?.isRequired ?? false}
           />
         )}
 
-        {displayField.education && (
+        {fields?.education?.isVisible && (
           <Field
             state={state}
             name="education"
-            editable={(active && editableField?.education) ?? false}
+            editable={(active && fields?.education?.isEditable) ?? false}
             label={t("DetailsPage.education")}
             control={(props) => (
               <SearchInput {...props} options={educationOptions} />
             )}
+            required={fields?.education?.isRequired ?? false}
           />
         )}
-
-        {displayField.mother && (
+        {fields?.mother?.isVisible && (
           <Field
             state={state}
             name="mother"
-            editable={(active && editableField?.mother) ?? false}
+            editable={(active && fields?.mother?.isEditable) ?? false}
             label={t("DetailsPage.mothers-name")}
             control={(props) => <Input {...props} />}
+            required={fields?.mother?.isRequired ?? false}
           />
         )}
-
-        {displayField.father && (
+        {fields?.father?.isVisible && (
           <Field
             state={state}
             name="father"
-            editable={(active && editableField?.father) ?? false}
+            editable={(active && fields?.father?.isEditable) ?? false}
             label={t("DetailsPage.fathers-name")}
             control={(props) => <Input {...props} />}
+            required={fields?.father?.isRequired ?? false}
           />
         )}
-
-        {displayField.phone && (
-          <FieldGroup label={t("DetailsPage.phone")}>
-            {active && editableField?.phone ? (
+        {fields?.phone?.isVisible && (
+          <FieldGroup
+            label={t("DetailsPage.phone")}
+            required={fields?.phone?.isRequired ?? false}
+          >
+            {active && fields?.phone?.isEditable ? (
               <>
                 <Field
                   state={state}
@@ -431,6 +638,41 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
               </p>
             )}
           </FieldGroup>
+        )}
+        {fields?.email?.isVisible && (
+          <Field
+            state={state}
+            name="email"
+            editable={(active && fields?.email?.isEditable) ?? false}
+            label={t("DetailsPage.email")}
+            control={(props) => <Input {...props} />}
+            required={fields?.father?.isRequired ?? false}
+          />
+        )}
+
+        {fields?.residenceSublocation?.isVisible && (
+          <Field
+            state={state}
+            name="residenceSublocation"
+            editable={
+              (active && fields?.residenceSublocation?.isEditable) ?? false
+            }
+            label={t("DetailsPage.sublocation")}
+            control={(props) => <Input {...props} />}
+            required={fields?.residenceSublocation?.isRequired ?? false}
+          />
+        )}
+        {fields?.residenceDistrict?.isVisible && (
+          <Field
+            state={state}
+            name="residenceDistrict"
+            editable={
+              (active && fields?.residenceDistrict?.isEditable) ?? false
+            }
+            label={t("DetailsPage.district")}
+            control={(props) => <Input {...props} />}
+            required={fields?.residenceDistrict?.isRequired ?? false}
+          />
         )}
       </DataBlock>
     </Form>

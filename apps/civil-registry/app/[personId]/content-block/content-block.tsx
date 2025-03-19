@@ -14,7 +14,10 @@ import { cn } from "@workspace/ui/lib/utils";
 
 import { updatePersonStatusById } from "@/actions/update-person-status-by-id";
 import { PaymentBar } from "@/app/[personId]/payment-bar/payment-bar";
-import { PersonFormBlock } from "@/app/[personId]/person-block/person-form-block";
+import {
+  PersonFormBlock,
+  PersonType,
+} from "@/app/[personId]/person-block/person-form-block";
 import type { Person } from "@/lib/data/person";
 import { getFullName } from "@/lib/util/full-name";
 
@@ -53,51 +56,45 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
         <div className={cn("space-y-12")}>
           <PersonFormBlock
             disabled={isEditing !== "" && isEditing !== person.id}
-            active={isPersonEditing(person.id)}
+            active={isPersonEditing(person?.id ?? "")}
             toggleEdit={toggleEdit}
-            displayField={{
-              name: true,
-              dob: true,
-              age: isEditing !== "" && isEditing !== person.id,
-              sex: true,
-              weightOnBirth: true,
-              placeOfBirth: true,
+            fields={{
+              name: { isEditable: true, isVisible: true },
+              dob: { isEditable: false, isVisible: true },
+              age: {
+                isEditable: false,
+                isVisible: isEditing !== "" && isEditing !== person.id,
+              },
+              sex: { isEditable: false, isVisible: true },
+              weightOnBirth: { isEditable: false, isVisible: true },
+              placeOfBirth: { isEditable: false, isVisible: true },
+              firstName: { isEditable: true, isVisible: false },
+              middleName: { isEditable: true, isVisible: false },
             }}
-            editableField={{
-              name: true,
-              firstName: true,
-              middleName: true,
-            }}
-            showFieldNotifications={isPersonEditing(person.id)}
+            showFieldNotifications={isPersonEditing(person?.id ?? "")}
             data={person}
-            isChild
+            type={PersonType.CHILD}
           />
           {person.mother && (
             <PersonFormBlock
               disabled={
                 isEditing !== "" && isEditing !== (person.mother as Person).id
               }
-              active={isPersonEditing((person.mother as Person).id)}
+              active={isPersonEditing((person.mother as Person)?.id ?? "")}
               toggleEdit={toggleEdit}
-              displayField={{
-                name: true,
-                nationalId: true,
-                dob: true,
-                citizenship: true,
-                nationality: true,
-                maritalStatus: true,
-                education: true,
-                father: true,
-                phone: true,
-              }}
-              editableField={{
-                nationality: true,
-                maritalStatus: true,
-                education: true,
-                father: true,
+              fields={{
+                name: { isEditable: false, isVisible: true },
+                nationalId: { isEditable: false, isVisible: true },
+                dob: { isEditable: false, isVisible: true },
+                citizenship: { isEditable: false, isVisible: true },
+                nationality: { isEditable: true, isVisible: true },
+                maritalStatus: { isEditable: true, isVisible: true },
+                education: { isEditable: true, isVisible: true },
+                father: { isEditable: true, isVisible: true },
+                phone: { isEditable: false, isVisible: true },
               }}
               data={person.mother as Person}
-              isMother
+              type={PersonType.MOTHER}
             />
           )}
           {person.father && (
@@ -105,26 +102,20 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
               disabled={
                 isEditing !== "" && isEditing !== (person.father as Person).id
               }
-              active={isPersonEditing((person.father as Person).id)}
+              active={isPersonEditing((person.father as Person)?.id ?? "")}
               toggleEdit={toggleEdit}
-              displayField={{
-                name: true,
-                nationalId: true,
-                dob: true,
-                citizenship: true,
-                nationality: true,
-                education: true,
-                phone: true,
-              }}
-              editableField={{
-                nationalId: true,
-                nationality: true,
-                education: true,
-                phone: true,
+              fields={{
+                name: { isEditable: false, isVisible: true },
+                nationalId: { isEditable: true, isVisible: true },
+                dob: { isEditable: false, isVisible: true },
+                citizenship: { isEditable: false, isVisible: true },
+                nationality: { isEditable: true, isVisible: true },
+                education: { isEditable: true, isVisible: true },
+                phone: { isEditable: true, isVisible: true },
               }}
               data={person.father as Person}
               affidavitRequired
-              isFather
+              type={PersonType.FATHER}
             />
           )}
         </div>
@@ -134,7 +125,7 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
         <PaymentBar
           price={250}
           onSubmit={async () => {
-            await updatePersonStatusById(person.id, "pending");
+            await updatePersonStatusById(person?.id ?? "", "pending");
             return router.push(`${person.id}/payment`);
           }}
         />
@@ -151,7 +142,7 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
             modalTitle="Confirm registration?"
             modalText="Are you sure all the details of the birth registration are correct? You have the option to amend."
             onConfirm={async () => {
-              await updatePersonStatusById(person.id, "success");
+              await updatePersonStatusById(person?.id ?? "", "success");
               return router.push(`${person.id}/success`);
             }}
           >

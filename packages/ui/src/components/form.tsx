@@ -1,5 +1,9 @@
 import * as FormPrimitive from "@radix-ui/react-form";
-import { useTranslations, type TranslationValues } from "next-intl";
+import {
+  useFormatter,
+  useTranslations,
+  type TranslationValues,
+} from "next-intl";
 import { useId, type FC, type ReactNode } from "react";
 import type { z } from "zod";
 
@@ -34,6 +38,7 @@ export interface FieldProps<
   required?: boolean;
   editable?: boolean;
   isVisible?: boolean;
+  isDate?: boolean;
   className?: string;
 }
 
@@ -50,10 +55,12 @@ export const Field = <
   required,
   editable = true,
   isVisible = true,
+  isDate = false,
   className,
 }: FieldProps<TInputs, TName>) => {
   const id = useId();
   const t = useTranslations();
+  const format = useFormatter();
 
   const descId = description ? `${id}-message` : undefined;
 
@@ -83,7 +90,9 @@ export const Field = <
         ) : (
           <p>
             <input type="hidden" name={name} value={defaultValue} />
-            {defaultValue ?? "-"}
+            {isDate && defaultValue
+              ? format.dateTime(new Date(defaultValue))
+              : (defaultValue ?? "–")}
           </p>
         )
       ) : (

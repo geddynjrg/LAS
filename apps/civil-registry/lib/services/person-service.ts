@@ -30,6 +30,7 @@ function populatePerson(person: Person | undefined): Person | undefined {
                 dob: spouse.dob,
                 sex: spouse.sex,
                 validationStatus: spouse.validationStatus,
+                natureOfBirth: spouse.natureOfBirth,
               }
             : undefined;
         })()
@@ -47,6 +48,7 @@ function populatePerson(person: Person | undefined): Person | undefined {
               dob,
               sex,
               validationStatus,
+              natureOfBirth,
             }) => ({
               id,
               firstName,
@@ -55,6 +57,7 @@ function populatePerson(person: Person | undefined): Person | undefined {
               dob,
               sex,
               validationStatus,
+              natureOfBirth,
             }),
           )
       : undefined,
@@ -71,6 +74,7 @@ function populatePerson(person: Person | undefined): Person | undefined {
               dob,
               sex,
               validationStatus,
+              natureOfBirth,
             }) => ({
               id,
               firstName,
@@ -79,6 +83,7 @@ function populatePerson(person: Person | undefined): Person | undefined {
               dob,
               sex,
               validationStatus,
+              natureOfBirth,
             }),
           )
       : undefined,

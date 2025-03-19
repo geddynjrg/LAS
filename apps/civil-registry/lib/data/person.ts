@@ -1,30 +1,43 @@
 export type ValidationStatus = "alert" | "success" | "pending";
-export type SexType = "M" | "F";
-export type NautreOfBirth = "LiveBirth" | "StillBirth";
+export type SexType = "M" | "F" | "I";
+export type NatureOfBirth = "LiveBirth" | "StillBirth";
 
 export interface Person {
-  id: string;
-  firstName: string;
-  lastName: string;
-  sex: SexType;
-  dob: string;
-  validationStatus: ValidationStatus;
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+  sex?: SexType;
+  natureOfBirth?: NatureOfBirth;
+  dob?: string;
+  validationStatus?: ValidationStatus;
   middleName?: string;
   age?: string;
+  email?: string;
   weightOnBirth?: string;
   placeOfBirth?: string;
+  healthInstitution?: string;
+  birthSublocation?: string;
+  birthSublocationDistrict?: string;
+  residenceDistrict?: string;
+  residenceSublocation?: string;
   nationalId?: string;
   citizenship?: string;
   nationality?: string;
   maritalStatus?: string;
   education?: string;
+  fatherName?: string;
   father?: string | Person;
   mother?: string | Person;
   siblings?: string[] | Person[];
   children?: string[] | Person[];
+  informant?: string | Person;
   spouse?: string | Person;
   phone?: string;
   phoneCode?: string;
+  passportNumber?: string;
+  natureOfRelation?: string;
+  capacityOfInformant?: string;
+  informantType?: string;
 }
 
 export let persons: Person[] = [
@@ -34,6 +47,7 @@ export let persons: Person[] = [
     lastName: "Otieno",
     middleName: "Maisha",
     dob: "1990-02-02T11:00:00.000Z",
+    natureOfBirth: "LiveBirth",
     sex: "F",
     nationalId: "2934873249",
     citizenship: "Kenyan",
@@ -52,6 +66,7 @@ export let persons: Person[] = [
     firstName: "John",
     lastName: "Otieno",
     dob: "1990-01-01T11:00:00.000Z",
+    natureOfBirth: "LiveBirth",
     sex: "M",
     nationalId: "2934873249",
     citizenship: "Kenyan",
@@ -68,6 +83,7 @@ export let persons: Person[] = [
     firstName: "David",
     lastName: "Otieno",
     dob: "2022-04-23T11:00:00.000Z",
+    natureOfBirth: "LiveBirth",
     sex: "M",
     weightOnBirth: "3.1 kg",
     placeOfBirth: "Kajiado County Referral Hospital",
@@ -81,6 +97,7 @@ export let persons: Person[] = [
     firstName: "Grace",
     lastName: "Otieno",
     dob: "2024-07-12T11:00:00.000Z",
+    natureOfBirth: "LiveBirth",
     sex: "F",
     siblings: ["3", "5"],
     mother: "1",
@@ -92,6 +109,7 @@ export let persons: Person[] = [
     firstName: "Paul",
     lastName: "Otieno",
     dob: "2018-01-01T11:00:00.000Z",
+    natureOfBirth: "LiveBirth",
     sex: "M",
     siblings: ["3", "4"],
     mother: "1",
@@ -103,6 +121,7 @@ export let persons: Person[] = [
     firstName: "Waweru",
     lastName: "",
     dob: "1956-01-01T11:00:00.000Z",
+    natureOfBirth: "LiveBirth",
     phone: "1123 67464",
     phoneCode: "+254",
     sex: "M",
@@ -111,10 +130,35 @@ export let persons: Person[] = [
   },
 ];
 
+export type BirthRegistrationsTypes =
+  | "child"
+  | "mother"
+  | "father"
+  | "informant";
+
+export type BirthRegistrationStore = {
+  child: Person | Person[];
+} & {
+  [K in Exclude<BirthRegistrationsTypes, "child">]: Person;
+};
+
 declare global {
   var personsStore: Person[];
+  var birthRegistrationStore: BirthRegistrationStore;
 }
 
 globalThis.personsStore = globalThis.personsStore || persons;
+globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {};
 
 export const personsStore: Person[] = globalThis.personsStore;
+export const birthRegistrationStore: BirthRegistrationStore =
+  globalThis.birthRegistrationStore;
+
+export function resetBirthRegistrationStore() {
+  globalThis.birthRegistrationStore = {
+    child: {} as Person,
+    mother: {} as Person,
+    father: {} as Person,
+    informant: {} as Person,
+  };
+}
