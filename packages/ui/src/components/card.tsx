@@ -18,8 +18,8 @@ export const cardVariants = cva({
 
 export interface CardProps extends VariantProps<typeof cardVariants> {
   className?: string;
-  title?: string;
-  caption?: string;
+  title?: ReactNode;
+  caption?: ReactNode;
   statusLabel?: string;
   footer?: ReactNode;
   children?: ReactNode;
@@ -39,7 +39,9 @@ export const Card: FC<CardProps> = ({
       <div className={cn("flex flex-col gap-2", "text-center")}>
         {title && <div className="typo-h5">{title}</div>}
         {caption}
-        <ValidationNote variant={variant} label={statusLabel} />
+        {statusLabel && (
+          <ValidationNote variant={variant} label={statusLabel} />
+        )}
       </div>
 
       {children}
