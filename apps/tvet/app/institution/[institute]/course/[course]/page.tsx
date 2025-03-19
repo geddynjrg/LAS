@@ -31,6 +31,8 @@ import { Underline } from "@workspace/ui/components/underline";
 import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
+import { PageComponents } from "@/components/page-components";
+import { ScrollTo } from "@/components/scroll-to";
 import { getCourseData } from "@/lib/api/course";
 
 interface PageProps {
@@ -47,30 +49,39 @@ export default async function Page(props: PageProps) {
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection
-        title={"Electrical installation training"}
-        backgroundUrl="/hero-banners/banner-2.jpg"
-        backgroundAlt={t("imageDescription")}
+        title={pageData?.data?.title}
+        backgroundUrl={pageData?.data?.content?.image?.url}
+        backgroundAlt={pageData?.data?.content?.image?.alt}
         actions={
-          <Button variant="secondary">
-            Learn more <IconChevronDown />
-          </Button>
+          <ScrollTo targetId="content">
+            <Button variant="secondary" className="px-6">
+              <span>{t("learnMore")}</span>
+              <IconChevronDown />
+            </Button>
+          </ScrollTo>
         }
       >
         <div className="mt-4">
           <Underline asChild variant="white">
-            <Link href="#">
+            <Link
+              href={`/institution/${pageData.data?.content?.institution?.id}`}
+            >
               Waithaka Vocational Training Centre <IconArrowRight />
             </Link>
           </Underline>
           <div className="mt-4 flex gap-2">
-            <Tag>Electrical</Tag>
-            <Tag>Electrical</Tag>
-            <Tag>Electrical</Tag>
+            {pageData.data?.content?.tags?.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
           </div>
         </div>
       </HeroSection>
 
-      <section id="#sec" className="bg-neutral-100 pb-12 pt-8">
+      <PageComponents
+        page_components={pageData.data?.content.page_components ?? []}
+      />
+
+      {/* <section id="#sec" className="bg-neutral-100 pb-12 pt-8">
         <div className="app-container px-4">
           <strong>Learn the skills to power your future! </strong>
           <p>
@@ -324,7 +335,7 @@ export default async function Page(props: PageProps) {
             <CarouselControls className="mt-6" />
           </Carousel>
         </div>
-      </section>
+      </section> */}
       <section className="bg-theme-100 px-4 pb-12 pt-8">
         <div className="app-container flex flex-col items-center">
           <Heading type="h3">Do you have questions?</Heading>

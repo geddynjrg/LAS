@@ -567,4 +567,12 @@
   p + p {
     margin-top: 1rem;
   }
+
+  a {
+    @apply typo-link;
+    color: var(--color-primary-active);
+    text-decoration: underline;
+    text-decoration-color: var(--color-blue-400);
+    text-underline-offset: 6px;
+  }
 }

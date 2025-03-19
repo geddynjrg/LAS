@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { BlockSchema, ImageSchema } from "@/lib/api/types";
+import { BlockSchema, DescriptionSchema, ImageSchema } from "@/lib/api/types";
 import { api, validate } from "@/lib/api/utils";
 
 export async function getInstitutionData(institute: string) {
@@ -27,6 +27,7 @@ const schema = z.object({
       }),
       url: z.string(),
       path_alias: z.string(),
+      contact_text: DescriptionSchema,
       content: z.object({
         body: z.object({
           value: z.string(),

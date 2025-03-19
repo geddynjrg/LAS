@@ -1,5 +1,6 @@
 import { IconArrowGuide } from "@tabler/icons-react";
 import Image from "next/image";
+import Link from "next/link";
 import type { FC, ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -29,8 +30,14 @@ export const LocationBlock: FC<LocationBlockProps> = ({
                 <p>{hint}</p>
               </div>
               {show_directions && (
-                <Button variant="secondary" className="w-full">
-                  Get directions <IconArrowGuide />
+                <Button variant="secondary" className="w-full" asChild>
+                  <Link
+                    href={`https://www.google.com/maps/search/?api=1&query=${hint.replace(" ", "+")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Get directions <IconArrowGuide />
+                  </Link>
                 </Button>
               )}
             </div>

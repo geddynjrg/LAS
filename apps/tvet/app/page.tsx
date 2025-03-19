@@ -6,6 +6,7 @@ import { Button } from "@workspace/ui/components/button";
 import { HeroSection } from "@/components/hero-section";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import { PageComponents } from "@/components/page-components";
+import { ScrollTo } from "@/components/scroll-to";
 import { getDashboardData } from "@/lib/api/dashboard";
 
 export default async function Page() {
@@ -20,21 +21,26 @@ export default async function Page() {
         backgroundAlt={t("imageDescription")}
         actions={
           <>
-            <Button variant="secondary" className="px-6">
-              Learn more <IconChevronDown />
-            </Button>
+            <ScrollTo targetId="content">
+              <Button variant="secondary" className="px-6">
+                <span>{t("learnMore")}</span>
+                <IconChevronDown />
+              </Button>
+            </ScrollTo>
             <Button className="px-6">
-              Apply now <IconChecklist />
+              <span>{t("applyNow")}</span>
+              <IconChecklist />
             </Button>
           </>
         }
       >
         <DescriptionBlock {...frontPage.data.content.body} />
       </HeroSection>
-
-      <PageComponents
-        page_components={frontPage.data?.content?.page_components ?? []}
-      />
+      <section id="content">
+        <PageComponents
+          page_components={frontPage.data?.content?.page_components ?? []}
+        />
+      </section>
     </div>
   );
 }

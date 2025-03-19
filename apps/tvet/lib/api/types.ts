@@ -75,13 +75,13 @@ export const FeaturesBlockSchema = AbstractBlockSchema.extend({
 
 export type FeaturesBlockType = z.infer<typeof FeaturesBlockSchema>;
 
-export const FrontTextBlockSchema = AbstractBlockSchema.extend({
+export const TextBlockSchema = AbstractBlockSchema.extend({
   block_type: z.literal("text_block"),
   title: z.string(),
   description: DescriptionSchema,
 });
 
-export type FrontTextBlockType = z.infer<typeof FrontTextBlockSchema>;
+export type TextBlockType = z.infer<typeof TextBlockSchema>;
 
 export const InstitutionSchema = z.object({
   id: z.string(),
@@ -244,11 +244,82 @@ export const SocialBlockSchema = AbstractBlockSchema.extend({
 
 export type SocialBlockType = z.infer<typeof SocialBlockSchema>;
 
+export const CourseDataBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("course_data"),
+
+  description: DescriptionSchema,
+});
+
+export type CourseDataBlockType = z.infer<typeof CourseDataBlockSchema>;
+
+export const TextListBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("text_list"),
+
+  title: z.string(),
+  short_description: DescriptionSchema,
+  type: z.string(),
+  items: z.array(z.string()),
+});
+
+export type TextListBlockType = z.infer<typeof TextListBlockSchema>;
+
+export const TestimonialsBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("testimonials"),
+
+  testimonials: z.array(
+    z.object({
+      block_type: z.literal("testimonial"),
+      name: z.string(),
+      short_description: DescriptionSchema,
+      image: z.array(ImageSchema),
+    }),
+  ),
+});
+
+export type TestimonialsBlockType = z.infer<typeof TestimonialsBlockSchema>;
+
+export const FileSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  bundle: z.string(),
+  name: z.string(),
+  uuid: z.string(),
+  url: z.string(),
+  mime_type: z.string(),
+  size: z.number(),
+});
+
+export const SponsorshipSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: DescriptionSchema,
+  application_form: FileSchema,
+  link: z.array(LinkSchema),
+});
+
+export const AvailableSponsorshipsBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("available_sponsorships"),
+
+  sponsorships: z.array(SponsorshipSchema),
+});
+
+export type AvailableSponsorshipsBlockType = z.infer<
+  typeof AvailableSponsorshipsBlockSchema
+>;
+
+export const SimilarCoursesBlockSchema = AbstractBlockSchema.extend({
+  block_type: z.literal("similar_courses"),
+
+  courses: z.array(CourseSchema),
+});
+
+export type SimilarCoursesBlockType = z.infer<typeof SimilarCoursesBlockSchema>;
+
 export const BlockSchema = z.union([
   ApplicationBlockSchema,
   SectionHeadingBlockSchema,
   FeaturesBlockSchema,
-  FrontTextBlockSchema,
+  TextBlockSchema,
   VocationalCentresBlockSchema,
   HighlightedCourseListingBlockSchema,
   TrainingAreasBlockSchema,
@@ -259,6 +330,11 @@ export const BlockSchema = z.union([
   TextBlockWithGradientBlockSchema,
   LocationBlockSchema,
   SocialBlockSchema,
+  CourseDataBlockSchema,
+  TextListBlockSchema,
+  TestimonialsBlockSchema,
+  AvailableSponsorshipsBlockSchema,
+  SimilarCoursesBlockSchema,
 ]);
 
 export type BlockType = z.infer<typeof BlockSchema>;

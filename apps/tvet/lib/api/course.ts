@@ -34,6 +34,14 @@ const schema = z.object({
           processed: z.string(),
         }),
         image: ImageSchema,
+        tags: z.array(z.string()),
+        institution: z.object({
+          id: z.string(),
+          type: z.literal("institution"),
+          uuid: z.string(),
+          title: z.string(),
+          path_alias: z.string(),
+        }),
         page_components: z.array(BlockSchema),
       }),
     })

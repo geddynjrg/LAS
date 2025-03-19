@@ -4,6 +4,7 @@ import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { cn } from "@workspace/ui/lib/utils";
 
 import { Heading } from "@/components/heading";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
@@ -25,7 +26,13 @@ export const CoursesBlock: FC<CoursesBlockProps> = ({
           <DescriptionBlock {...short_description} />
         </div>
 
-        <section className="mt-4 grid gap-4 xl:grid xl:grid-cols-3">
+        <section
+          className={cn(
+            "mt-4 grid gap-4 xl:grid",
+            courses.length === 2 && "xl:grid-cols-2",
+            courses.length > 3 && "xl:grid-cols-3",
+          )}
+        >
           {courses.map((course, index) => (
             <ApplyCard
               key={index}

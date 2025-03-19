@@ -1,17 +1,11 @@
 "use client";
 
-import {
-  IconMapPin,
-  IconMapPinFilled,
-  IconMinus,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconMapPin, IconMinus, IconPlus } from "@tabler/icons-react";
 import {
   AdvancedMarker,
   APIProvider,
   InfoWindow,
   Map,
-  Marker,
 } from "@vis.gl/react-google-maps";
 import { useState, type FC, type ReactNode } from "react";
 
@@ -70,7 +64,9 @@ export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
             <InfoWindow
               onClose={() => setShowInfoWindow(null)}
               headerContent={
-                <h2 className="font-bold">{showInfoWindow.title}</h2>
+                <h2 className="typo-h5 whitespace-normal font-bold">
+                  {showInfoWindow.title}
+                </h2>
               }
               position={{
                 lat: showInfoWindow.location.latitude,
@@ -78,13 +74,22 @@ export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
               }}
               pixelOffset={[0, -32]}
             >
-              <div className="p-2">
+              <div className="typo-body-medium p-2">
                 <div className="mt-2 flex flex-col gap-2">
-                  <p>locality: {showInfoWindow.address.locality}</p>
-                  <p>address: {showInfoWindow.address.address_line}</p>
-                  {/* <a href={showInfoWindow.url} className="mt-2">
-                    More info
-                  </a> */}
+                  <p>{showInfoWindow.address.address_line}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold">Get Directions</span>
+                    <Button asChild>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${showInfoWindow.location.latitude},${showInfoWindow.location.longitude}`}
+                        className="cl mt-2"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        View more
+                      </a>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </InfoWindow>

@@ -43,7 +43,7 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
               <p className="typo-h5">{locality}</p>
               {institutions.map((institution) => (
                 <Underline asChild key={institution.id}>
-                  <Link href={`/institutions/${institution.id}`}>
+                  <Link href={`/institution/${institution.id}`}>
                     {institution.title}
                     <IconArrowRight />
                   </Link>
