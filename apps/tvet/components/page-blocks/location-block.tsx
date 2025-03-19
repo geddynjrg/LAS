@@ -60,8 +60,8 @@ export const LocationBlock: FC<LocationBlockProps> = ({
           </div>
         </div>
         {show_map && (
-          <div className="map relative box-border aspect-square w-full shrink bg-neutral-100 lg:flex-1">
-            <section className="map relative box-border min-h-[550px] w-full">
+          <div className="map relative box-border w-full shrink bg-neutral-100 lg:flex-1">
+            <section className="map relative box-border w-full">
               <LocationMap institutes={[]} />
             </section>
           </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
+import { Currency } from "@workspace/ui/components/currency";
 import { Tag } from "@workspace/ui/components/tag";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -61,7 +62,12 @@ export const ApplyCard: FC<ApplyCardProps> = ({
         <h2 className="typo-h4 h-full">{title}</h2>
         <div className="flex justify-between">
           <p className="typo-h6 font-normal">
-            {t("fee")}: <span className="font-bold">{fee}</span>
+            {t("fee")}:{" "}
+            <Currency
+              amount={Number(fee)}
+              currency="KES"
+              className="font-bold"
+            />
           </p>
           {variant == "secondary" ? (
             <p>

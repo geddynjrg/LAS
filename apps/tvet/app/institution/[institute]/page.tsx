@@ -9,6 +9,7 @@ import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import { PageComponents } from "@/components/page-components";
+import { ScrollTo } from "@/components/scroll-to";
 import { getInstitutionData } from "@/lib/api/institution";
 
 interface PageProps {
@@ -32,9 +33,11 @@ export default async function Page(props: PageProps) {
         backgroundUrl={pageData.data?.content.image.url}
         backgroundAlt={pageData.data?.content.image.alt}
         actions={
-          <Button variant="secondary">
-            {t("learnMore")} <IconChevronDown />
-          </Button>
+          <ScrollTo targetId="content">
+            <Button variant="secondary">
+              {t("learnMore")} <IconChevronDown />
+            </Button>
+          </ScrollTo>
         }
       >
         {pageData.data?.content.body && (
@@ -42,9 +45,11 @@ export default async function Page(props: PageProps) {
         )}
       </HeroSection>
 
-      <PageComponents
-        page_components={pageData.data?.content.page_components ?? []}
-      />
+      <section id="content">
+        <PageComponents
+          page_components={pageData.data?.content.page_components ?? []}
+        />
+      </section>
 
       <section className="bg-theme-100 pb-12 pt-8">
         <div className="app-container flex flex-col items-center px-4">

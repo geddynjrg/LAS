@@ -26,7 +26,7 @@ export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
-      <div className="relative box-border h-[550px] w-full">
+      <div className="relative box-border w-full">
         <Map
           defaultCenter={
             institutes[0]?.location
@@ -43,6 +43,7 @@ export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
           disableDefaultUI={true}
           zoom={zoom}
           onZoomChanged={(zoom) => setZoom(zoom.detail.zoom)}
+          className="aspect-square w-full"
         >
           {institutes.map((institute, index) => (
             <AdvancedMarker
