@@ -401,9 +401,9 @@ export interface operations {
   };
   "entity:node:GET": {
     parameters: {
-      query: {
+      query?: {
         /** Request format */
-        _format: "json";
+        _format?: "json";
       };
       path: {
         /** The nid,id, of the node. */
@@ -551,9 +551,9 @@ export interface operations {
   };
   "tvet_node_resource:GET": {
     parameters: {
-      query: {
+      query?: {
         /** Request format */
-        _format: "json";
+        _format?: "json";
       };
       path: {
         id: string;
@@ -584,9 +584,10 @@ export interface operations {
   };
   "tvet_path_resource:GET": {
     parameters: {
-      query: {
+      query?: {
         /** Request format */
-        _format: "json";
+        _format?: "json";
+        path?: string;
       };
     };
     responses: {

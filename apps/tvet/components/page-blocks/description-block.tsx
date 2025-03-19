@@ -1,5 +1,7 @@
 import type { FC } from "react";
 
+import { cn } from "@workspace/ui/lib/utils";
+
 import type { DescriptionType } from "@/lib/api/types";
 
 export interface DescriptionBlockProps extends DescriptionType {
@@ -9,11 +11,12 @@ export interface DescriptionBlockProps extends DescriptionType {
 export const DescriptionBlock: FC<DescriptionBlockProps> = ({
   className,
   processed,
+  value,
 }) => {
   return (
     <div
-      className={className}
-      dangerouslySetInnerHTML={{ __html: processed }}
+      className={cn("description-block", className)}
+      dangerouslySetInnerHTML={{ __html: processed ?? value }}
     ></div>
   );
 };

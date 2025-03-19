@@ -7,7 +7,7 @@ import {
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
 
-import { DescriptionBlock } from "@/components/description-block";
+import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import type { ApplicationBlockType } from "@/lib/api/types";
 
 export interface ApplicationBlockProps extends ApplicationBlockType {}
@@ -33,10 +33,7 @@ export const ApplicationBlock: FC<ApplicationBlockProps> = ({
             </NumberedListItem>
           ))}
         </NumberedList>
-        <DescriptionBlock
-          {...description}
-          className="[&>ul]:list-inside [&>ul]:list-disc"
-        />
+        <DescriptionBlock {...description} />
       </section>
       <hr />
     </Container>

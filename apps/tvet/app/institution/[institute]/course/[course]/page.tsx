@@ -1,11 +1,11 @@
 import {
   IconArrowRight,
   IconChevronDown,
-  IconDownload,
   IconMail,
   IconPhone,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
@@ -31,11 +31,18 @@ import { Underline } from "@workspace/ui/components/underline";
 import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
+import { getCourseData } from "@/lib/api/course";
 
-function generateStaticParams() {}
+interface PageProps {
+  params: Promise<Record<string, string>>;
+}
 
-export default function Page() {
-  const t = useTranslations("FrontPage");
+export default async function Page(props: PageProps) {
+  const t = await getTranslations("FrontPage");
+  const params = await props.params;
+  const pageData = await getCourseData(params.course ?? "");
+
+  console.log("COURSE", pageData);
 
   return (
     <div className="flex flex-1 flex-col">

@@ -8,8 +8,8 @@ import { Heading } from "@/components/heading";
 
 export interface HeroSectionProps {
   title: ReactNode;
-  backgroundUrl: string;
-  backgroundAlt: string;
+  backgroundUrl?: string;
+  backgroundAlt?: string;
   actions?: ReactNode;
   children?: ReactNode;
 }
@@ -24,13 +24,15 @@ export const HeroSection: FC<HeroSectionProps> = ({
   return (
     <section>
       <div className="relative aspect-[4/5] max-h-[500px] w-full sm:aspect-[16/9]">
-        <Image
-          fill
-          priority
-          className="object-cover"
-          src={backgroundUrl}
-          alt={backgroundAlt}
-        />
+        {backgroundUrl && backgroundAlt && (
+          <Image
+            fill
+            priority
+            className="object-cover"
+            src={backgroundUrl}
+            alt={backgroundAlt}
+          />
+        )}
         <div className="h-29 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-black/0" />
       </div>
 

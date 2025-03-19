@@ -30,5 +30,12 @@
       "file-too-small": "Faili ni ndogo mno",
       "too-many-files": "Faili nyingi mno"
     }
+  },
+
+  "ErrorBoundary": {
+    "title": "Samahani, kuna hitilafu!",
+    "description": "Tafadhali jaribu kujaribu upya ukurasa.",
+    "reload": "Pakia tena",
+    "home": "Nenda kwenye ukurasa wa nyumbani"
   }
 }

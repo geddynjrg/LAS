@@ -19,11 +19,14 @@ import { Underline } from "@workspace/ui/components/underline";
 import { useDebounce } from "@workspace/ui/hooks/use-debounce";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { type CourseData, type CourseDataResponse } from "@/api/courses";
 import { SortIndicator } from "@/components/sort-indicator";
+import type { CourseType } from "@/lib/api/courses";
 
 export interface CoursesTableProps {
-  data: CourseDataResponse;
+  courseData: {
+    data?: { courses: CourseType[] };
+    meta?: any;
+  };
   children?: ReactNode;
 }
 
@@ -52,7 +55,10 @@ const columns: ColumnDef[] = [
   },
 ];
 
-export const CoursesDataTable: FC<CoursesTableProps> = ({ data, children }) => {
+export const CoursesDataTable: FC<CoursesTableProps> = ({
+  courseData,
+  children,
+}) => {
   const [openRowIndex, setOpenRowIndex] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -60,6 +66,8 @@ export const CoursesDataTable: FC<CoursesTableProps> = ({ data, children }) => {
   const orderBy = searchParams.get("orderBy");
   const sort = String(searchParams.get("sort"));
   const currentPage = Number(searchParams.get("page") ?? 1);
+
+  console.log("COURSES AFTER", courseData);
 
   // split order into column and direction (asc/desc)
 
@@ -89,18 +97,20 @@ export const CoursesDataTable: FC<CoursesTableProps> = ({ data, children }) => {
       <div>
         <div className="flex items-center justify-between">
           <div className="text-border">
-            Showing {`${data.page * data.take} of ${data.total}`} results
+            Showing{" "}
+            {`${courseData.meta.pagination.limit} of ${courseData.meta.pagination.total}`}{" "}
+            results
           </div>
           <div className="flex items-center gap-2">
             <p className="text-border">Show</p>
             <Select
               options={[
-                { label: "10", value: "10" },
-                { label: "20", value: "20" },
-                { label: "30", value: "30" },
+                { label: "12", value: "12" },
+                { label: "24", value: "24" },
+                { label: "36", value: "36" },
               ]}
               className="w-21"
-              placeholder={data.take}
+              placeholder={courseData.meta.pagination.limit}
               onValueChange={handleItemCountChange}
             />
           </div>
@@ -110,12 +120,17 @@ export const CoursesDataTable: FC<CoursesTableProps> = ({ data, children }) => {
         <Table className="w-full">
           <TableHeader className="bg-neutral-200">
             <TableRow className="border-table-border">
-              <TableHead className="w-10" />
+              {/* <TableHead className="w-10" /> */}
               {columns.map((column, index) => (
-                <TableHead key={index} scope="col" className={column.className}>
+                <TableHead
+                  key={index}
+                  scope="col"
+                  className={column.className}
+                  colSpan={index == 0 ? 2 : 1}
+                >
                   <button
                     className={cn(
-                      "flex w-full items-center gap-1 p-4",
+                      "flex w-full items-center gap-1 px-2 py-4",
                       column.sortable && "cursor-pointer",
                     )}
                     onClick={
@@ -135,7 +150,7 @@ export const CoursesDataTable: FC<CoursesTableProps> = ({ data, children }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.items.map((item, index) => (
+            {courseData.data?.courses.map((course, index) => (
               <CoursesRow
                 isOpen={index == openRowIndex}
                 onClick={() => {
@@ -147,7 +162,7 @@ export const CoursesDataTable: FC<CoursesTableProps> = ({ data, children }) => {
                   setOpenRowIndex(index === openRowIndex ? null : index);
                 }}
                 key={index}
-                {...item}
+                {...course}
               />
             ))}
             <TableRow>
@@ -181,7 +196,7 @@ const DetailsRow: FC<{
   );
 };
 
-interface courseRowProps extends CourseData {
+interface courseRowProps extends CourseType {
   isOpen: boolean;
   onClick?: () => void;
 }
@@ -190,23 +205,23 @@ export const CoursesRow: FC<courseRowProps> = (props) => {
   return (
     <Fragment>
       <TableRow onClick={props.onClick} className="border-table-border">
-        <TableCell className="cursor-pointer">
+        <TableCell className="cursor-pointer pr-0">
           {props.isOpen ? (
             <IconMinus className="text-foreground" />
           ) : (
             <IconPlus className="text-foreground" />
           )}
         </TableCell>
-        <TableCell className="text-link whitespace-normal p-4 font-bold">
+        <TableCell className="text-link whitespace-normal font-bold">
           {props.title}
         </TableCell>
-        <TableCell className="p-4">{props.location}</TableCell>
-        <TableCell className="hidden p-4 sm:table-cell">
-          {props.courseFee}
+        <TableCell className="whitespace-normal">
+          {props.institution.title}
         </TableCell>
-        <TableCell className="hidden p-4 md:table-cell">
-          {props.duration}
+        <TableCell className="hidden sm:table-cell">
+          {props.course_fee ? `${props.course_fee} KSh` : "none"}
         </TableCell>
+        <TableCell className="hidden md:table-cell">{props.duration}</TableCell>
       </TableRow>
       <DetailsRow isOpen={props.isOpen} className={"border-0"}>
         <ItemDetails {...props} />
@@ -237,26 +252,26 @@ const ItemDetails: FC<courseRowProps> = (props) => {
         </div>
         <div className="mt-4">
           <span className="font-bold">Group size: </span>
-          <span>{props.groupSize}</span>
+          <span></span>
         </div>
 
         <div className="mt-4">
           <span className="font-bold">Course fee: </span>
-          <span>{props.courseFee}</span>
+          <span>{props.course_fee}</span>
         </div>
         <div>
           <span className="font-bold">Application fee: </span>
-          <span>{props.applicationFee}</span>
+          <span>{props.application_fee}</span>
         </div>
         <div>
           <span className="font-bold">Test booking fee: </span>
-          <span>{props.testBookingFee}</span>
+          <span></span>
         </div>
         <div className="mt-4">
           <span className="font-bold">Required education: </span>
-          <span>{props.requiredEducation}</span>
+          <span>{props.education_level}</span>
         </div>
-        <Link href={props.link}>
+        <Link href={props.url}>
           <Underline className="mx-auto my-4">
             Go to course Page <IconArrowRight />
           </Underline>

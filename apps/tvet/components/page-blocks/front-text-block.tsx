@@ -5,8 +5,8 @@ import type { FC, ReactNode } from "react";
 import { Container } from "@workspace/ui/components/container";
 import { Underline } from "@workspace/ui/components/underline";
 
-import { DescriptionBlock } from "@/components/description-block";
 import { Heading } from "@/components/heading";
+import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import type { FrontTextBlockType } from "@/lib/api/types";
 
 export interface FrontTextBlockProps extends FrontTextBlockType {}

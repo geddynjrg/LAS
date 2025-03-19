@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { BlockSchema } from "@/lib/api/types";
+import { BlockSchema, ImageSchema } from "@/lib/api/types";
 import { api, validate } from "@/lib/api/utils";
 
 export async function getDashboardData() {
@@ -14,24 +14,26 @@ export async function getDashboardData() {
 }
 
 const schema = z.object({
-  id: z.string(),
-  type: z.string(),
-  uuid: z.string(),
-  title: z.string(),
-  language: z.object({
-    code: z.string(),
-    name: z.string(),
-    direction: z.string(),
-  }),
-  url: z.string(),
-  path_alias: z.string(),
-  content: z.object({
-    body: z.object({
-      value: z.string(),
-      format: z.string(),
-      processed: z.string(),
+  data: z.object({
+    id: z.string(),
+    type: z.string(),
+    uuid: z.string(),
+    title: z.string(),
+    language: z.object({
+      code: z.string(),
+      name: z.string(),
+      direction: z.string(),
     }),
-    image: z.array(z.unknown()),
-    page_components: z.array(BlockSchema),
+    url: z.string(),
+    path_alias: z.string(),
+    content: z.object({
+      body: z.object({
+        value: z.string(),
+        format: z.string(),
+        processed: z.string(),
+      }),
+      image: ImageSchema,
+      page_components: z.array(BlockSchema),
+    }),
   }),
 });

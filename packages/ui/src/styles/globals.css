@@ -538,3 +538,33 @@
   opacity: 0;
   animation: confirmationTextOpacity 1.3s ease-out 0.5s forwards;
 }
+
+.description-block {
+  ul {
+    @apply list-inside list-disc;
+  }
+  h1 {
+    @apply typo-h1;
+  }
+  h2 {
+    @apply typo-h2;
+  }
+  h3 {
+    @apply typo-h3;
+  }
+  h4 {
+    @apply typo-h4;
+  }
+  h5 {
+    @apply typo-h5;
+  }
+  h6 {
+    @apply typo-h6;
+  }
+  p {
+    @apply typo-body-medium;
+  }
+  p + p {
+    margin-top: 1rem;
+  }
+}

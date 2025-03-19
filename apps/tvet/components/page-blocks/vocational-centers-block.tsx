@@ -39,7 +39,7 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
 
         <div className="mt-8 grid auto-cols-max gap-4">
           {Object.entries(locations).map(([locality, institutions]) => (
-            <div key={locality} className="grid gap-1">
+            <div className="grid gap-1" key={locality}>
               <p className="typo-h5">{locality}</p>
               {institutions.map((institution) => (
                 <Underline asChild key={institution.id}>
@@ -54,7 +54,7 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
         </div>
       </section>
 
-      <section className="map relative box-border min-h-[550px] w-full md:my-8">
+      <section className="map relative box-border min-h-[550px] w-full md:my-8 md:pl-4">
         <LocationMap institutes={institutions} />
       </section>
     </Container>

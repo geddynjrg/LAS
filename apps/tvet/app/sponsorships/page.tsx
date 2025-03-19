@@ -11,13 +11,14 @@ import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card"
 
 import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
+import { getSponsorships } from "@/lib/api/sponsorships";
 
 export interface SponsorshipsPageProps {
   params: Promise<{ page?: number; take?: number }>;
 }
 
 export default async function SponsorshipsPage(_props: SponsorshipsPageProps) {
-  // const {page,take} = await props.params;
+  const pageData = getSponsorships();
 
   const data = {
     page: 1,

@@ -24,22 +24,19 @@ export function validate<T extends z.Schema>(
   res: Record<string, unknown>,
   schema: T,
 ) {
-  const response = (res as any)?.data?.data ?? (res as any)?.data ?? res;
+  const response = (res as any)?.data ?? res;
 
   if (res.error) {
-    console.log({ error: response.error.message });
-    return {
-      type: "error",
-      error: response.error.message,
-      content: null,
-    };
+    //handle API error
+    console.warn({ error: response.error.message });
+    throw new Error(response.error.message);
   }
 
-  const result = schema.safeParse(response);
+  const result = schema.safeParse(response.data);
 
   // return response even if validation fails, but log out the errors
   if (!result.success) {
-    console.warn(result.error);
+    console.warn(result.error.toString());
   }
 
   return response as z.infer<T>;

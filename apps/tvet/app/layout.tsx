@@ -5,7 +5,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { DM_Sans } from "next/font/google";
 import { Suspense, type ReactNode } from "react";
 
-import { ErrorBoundary } from "@workspace/ui/components/error-boundary";
+import { ErrorPage } from "@workspace/ui/components/error-page";
 import { SidebarInset } from "@workspace/ui/components/sidebar";
 
 import { AppFooter } from "@/components/app-footer";
@@ -39,10 +39,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <AppHeader />
             <AppSidebar locale={locale} />
             <SidebarInset className="min-h-svh">
-              <ErrorBoundary>
-                <Suspense fallback={<p>loading</p>}>{children}</Suspense>
-                <AppFooter />
-              </ErrorBoundary>
+              <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+              <AppFooter />
             </SidebarInset>
           </Providers>
         </NextIntlClientProvider>

@@ -15,7 +15,7 @@ export const TrainingAreasBlock: FC<TrainingAreasBlockProps> = ({ areas }) => {
       <Heading type="h2">Training areas</Heading>
       <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 xl:grid-cols-3">
         {areas.map((area) => (
-          <Link href="#">
+          <Link key={area.id} href="#">
             <TrainingAreaCard title={area.name}>
               {area.course_count} courses available
             </TrainingAreaCard>

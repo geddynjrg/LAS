@@ -13,7 +13,7 @@ export const Tag: FC<TagProps> = ({ children, className, onRemove }) => {
   return (
     <span
       className={cn(
-        "typo-body-small border-(--text-foreground) border-1 flex w-fit items-center gap-1 rounded-full px-3 py-0.5",
+        "typo-body-small border-(--text-foreground) border-1 flex w-fit items-center gap-1 whitespace-nowrap rounded-full px-3 py-0.5",
         className,
       )}
     >

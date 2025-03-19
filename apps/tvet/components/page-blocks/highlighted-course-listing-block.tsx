@@ -1,10 +1,12 @@
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
+import { useFormatter } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { cn } from "@workspace/ui/lib/utils";
 
 import { Heading } from "@/components/heading";
 import type { HighlightedCourseListingBlockType } from "@/lib/api/types";
@@ -16,6 +18,8 @@ export const HighlightedCourseListingBlock: FC<
   HighlightedCourseListingBlockProps
 > = ({ courses }) => {
   const borders = ["#588157", "#AD6A6C", "#283044"];
+  const format = useFormatter();
+
   return (
     <section className="bg-background mt-4 pb-12 pt-8">
       <Container className="flex flex-col items-center gap-4">
@@ -30,20 +34,29 @@ export const HighlightedCourseListingBlock: FC<
           </div>
         </div>
 
-        <section className="grid w-full gap-4 xl:grid xl:grid-cols-3">
+        <div
+          className={cn(
+            "grid w-full gap-4 xl:grid",
+            courses.length === 2 && "xl:grid-cols-2",
+            courses.length > 3 && "xl:grid-cols-3",
+          )}
+        >
           {courses.map((course) => (
             <ApplyCard
+              key={course.id}
               tags={course.tags}
               title={course.title}
               fee={course.course_fee}
               school={(course.institution as { title: string }).title}
-              applyByDate={course.apply_till.toString()}
-              startsOnDate={course.start_on.toString()}
+              applyByDate={format.dateTime(
+                new Date(course.apply_till[0] ?? ""),
+              )}
+              startsOnDate={format.dateTime(new Date(course.start_on[0] ?? ""))}
               borderColor={borders[Math.floor(Math.random() * borders.length)]}
-              href={course.url}
+              href={`/institution/${course.institution?.id}/course/${course.id}`}
             />
           ))}
-        </section>
+        </div>
 
         <Button
           className="md:max-w-3xs mx-auto mt-4 w-full"

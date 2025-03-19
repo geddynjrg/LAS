@@ -35,7 +35,8 @@
   "ErrorBoundary": {
     "title": "Oops, there is an error!",
     "description": "Please try to reload the page.",
-    "button": "Reload"
+    "reload": "Reload",
+    "home": "Go to home"
   },
 
   "Buttons": {
