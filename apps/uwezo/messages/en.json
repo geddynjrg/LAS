@@ -72,7 +72,15 @@
     "nationalIdSectionTitle": "Group members national IDs",
     "exampleId": "Example of national ID",
     "membersMustBeInformed": "Members must be informed of the application and will be asked to <bold>give their consent through SMS service</bold>",
-    "beginFillingForm": "Begin filling form"
+    "beginFillingForm": "Begin filling form",
+    "DonePage": {
+      "title": "Thank you for your application!",
+      "application-received-message": "It has successfully reached our systems and we will begin reviewing it as soon as possible.",
+      "download-application": "Download application",
+      "send-to-email": "Send to e-mail",
+      "tracking-hint": "You can also track the progress of your application on your account dashboard.",
+      "go-to-applications": "Go to my applications"
+    }
   },
   "LoginPage": {
     "title": "Get started",

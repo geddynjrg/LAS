@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { DataPair } from "@workspace/ui/components/data-pair";
@@ -5,6 +7,8 @@ import { IconCheck } from "@workspace/ui/components/icon-check";
 import { cn } from "@workspace/ui/lib/utils";
 
 export default async function Page() {
+  const t = await getTranslations();
+
   return (
     <Container
       className={cn("grow-1 flex flex-col items-center gap-3", "mb-20 mt-7")}
@@ -12,31 +16,34 @@ export default async function Page() {
       <IconCheck className={cn("h-[4.75rem] w-[4.75rem]")} />
 
       <div className={cn("flex flex-col items-center gap-7", "text-center")}>
-        <h2 className={cn("typo-h2")}>Thank you for your application!</h2>
+        <h2 className={cn("typo-h2")}>{t("ApplyPage.DonePage.title")}</h2>
 
-        <p>
-          It has successfully reached our systems and we will begin reviewing it
-          as soon as possible.
-        </p>
+        <p>{t("ApplyPage.DonePage.application-received-message")}</p>
 
         <DataPair className={cn("w-full gap-2")}>
-          <Button className={cn("grow-1 px-3")} variant="secondary" asChild>
+          <Button
+            className={cn("grow-1", "w-full max-w-[27rem] px-3")}
+            variant="secondary"
+            asChild
+          >
             <a href="#" download="Application">
-              Download application
+              {t("ApplyPage.DonePage.download-application")}
             </a>
           </Button>
-          <Button className={cn("grow-1 px-3")} variant="secondary">
-            Send to e-mail
+          <Button
+            className={cn("grow-1", "w-full max-w-[27rem] px-3")}
+            variant="secondary"
+          >
+            {t("ApplyPage.DonePage.send-to-email")}
           </Button>
         </DataPair>
 
         <p className={cn("border-t border-solid border-neutral-400", "pt-7")}>
-          You can also track the progress of your application on your account
-          dashboard.
+          {t("ApplyPage.DonePage.tracking-hint")}
         </p>
 
         <Button className={cn("w-full max-w-[27rem]")} asChild>
-          <a href="#">Go to my applications</a>
+          <a href="#">{t("ApplyPage.DonePage.go-to-applications")}</a>
         </Button>
       </div>
     </Container>
