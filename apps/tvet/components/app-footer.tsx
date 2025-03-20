@@ -17,7 +17,7 @@ export const AppFooter: FC<AppFooterProps> = ({ institutions }) => {
           <FooterNavItem href="/">Home</FooterNavItem>
           <FooterNavItem href="/institutions">Institutions</FooterNavItem>
           <FooterNavItem href="/courses">Courses</FooterNavItem>
-          <FooterNavItem href="/sponsorsips">Sponsorships</FooterNavItem>
+          <FooterNavItem href="/sponsorships">Sponsorships</FooterNavItem>
           <FooterNavItem href="/apply">Apply now!</FooterNavItem>
           <FooterNavItem href="/contact">Contact</FooterNavItem>
         </FooterNavGroup>

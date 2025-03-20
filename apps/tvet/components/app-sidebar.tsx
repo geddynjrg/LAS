@@ -87,7 +87,7 @@ export const AppSidebar: FC<AppSidebarProps> = ({
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
-            <NavLink href="/sponsorships">
+            <NavLink href="/contact">
               <IconPhone />
               Contact
             </NavLink>
