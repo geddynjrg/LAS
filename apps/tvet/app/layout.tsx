@@ -12,6 +12,7 @@ import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Providers } from "@/components/providers";
 import { type Locale } from "@/i18n/config";
+import { getInstitutions } from "@/lib/api/institutions";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export interface RootLayoutProps {
 export default async function RootLayout({ children }: RootLayoutProps) {
   const locale = (await getLocale()) as Locale;
   const messages = await getMessages();
+  const institutions = await getInstitutions();
 
   return (
     <html
@@ -36,10 +38,13 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <AppHeader />
-            <AppSidebar locale={locale} />
+            <AppSidebar
+              locale={locale}
+              institutions={institutions.data?.institutions}
+            />
             <SidebarInset className="min-h-svh">
               <Suspense fallback={<p>loading</p>}>{children}</Suspense>
-              <AppFooter />
+              <AppFooter institutions={institutions.data?.institutions} />
             </SidebarInset>
           </Providers>
         </NextIntlClientProvider>

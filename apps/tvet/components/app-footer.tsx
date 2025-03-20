@@ -5,34 +5,31 @@ import { type FC, type ReactNode } from "react";
 import { Container } from "@workspace/ui/components/container";
 import { Underline } from "@workspace/ui/components/underline";
 
-export interface AppFooterProps {}
+export interface AppFooterProps {
+  institutions?: { id: string; title: string; path_alias: string }[];
+}
 
-export const AppFooter: FC<AppFooterProps> = () => {
+export const AppFooter: FC<AppFooterProps> = ({ institutions }) => {
   return (
     <footer className="bg-theme-500 text-primary-foreground mt-auto">
       <Container className="grid gap-6 p-4 lg:grid-cols-2 xl:grid-cols-3">
         <FooterNavGroup title="Navigate">
-          <FooterNavItem href="#">Home</FooterNavItem>
-          <FooterNavItem href="#">Institutions</FooterNavItem>
-          <FooterNavItem href="#">Courses</FooterNavItem>
-          <FooterNavItem href="#">Sponsorships</FooterNavItem>
-          <FooterNavItem href="#">Apply now!</FooterNavItem>
-          <FooterNavItem href="#">Contact</FooterNavItem>
+          <FooterNavItem href="/">Home</FooterNavItem>
+          <FooterNavItem href="/institutions">Institutions</FooterNavItem>
+          <FooterNavItem href="/courses">Courses</FooterNavItem>
+          <FooterNavItem href="/sponsorsips">Sponsorships</FooterNavItem>
+          <FooterNavItem href="/apply">Apply now!</FooterNavItem>
+          <FooterNavItem href="/contact">Contact</FooterNavItem>
         </FooterNavGroup>
-        <FooterNavGroup title="Institutions">
-          <FooterNavItem href="#">
-            Waithaka Vocational Training Centre
-          </FooterNavItem>
-          <FooterNavItem href="#">
-            Old Mathari Vocational Training Centre
-          </FooterNavItem>
-          <FooterNavItem href="#">
-            Lorem Ipsum Vocational Training Centre
-          </FooterNavItem>
-          <FooterNavItem href="#">
-            Lorem Ipsum Vocational Training Centre
-          </FooterNavItem>
-        </FooterNavGroup>
+        {(institutions?.length ?? 0) > 0 && (
+          <FooterNavGroup title="Institutions">
+            {institutions?.map((institution) => (
+              <FooterNavItem key={institution.id} href={institution.path_alias}>
+                {institution.title}
+              </FooterNavItem>
+            ))}
+          </FooterNavGroup>
+        )}
       </Container>
       <SubFooter />
     </footer>

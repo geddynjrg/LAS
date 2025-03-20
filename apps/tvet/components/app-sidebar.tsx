@@ -9,12 +9,10 @@ import {
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
-import { Flag } from "@workspace/ui/components/flag";
 import { FlagSelect } from "@workspace/ui/components/flag-select";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
@@ -27,9 +25,13 @@ import { setUserLocale } from "@/lib/locale";
 
 export interface AppSidebarProps {
   locale: Locale;
+  institutions?: { id: string; title: string; path_alias: string }[];
 }
 
-export const AppSidebar: FC<AppSidebarProps> = ({ locale }) => {
+export const AppSidebar: FC<AppSidebarProps> = ({
+  locale,
+  institutions = [],
+}) => {
   const t = useTranslations("Common");
 
   return (
@@ -51,26 +53,17 @@ export const AppSidebar: FC<AppSidebarProps> = ({ locale }) => {
             </NavLink>
           </SidebarMenuItem>
 
-          <SidebarSubmenu title="Institutions" icon={<IconBuilding />}>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/1">institution 1</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/2">institution 2</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/3">institution 3</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/4">institution 4</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/5">institution 5</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/6">institution 6</NavLink>
-            </SidebarMenuItem>
-          </SidebarSubmenu>
+          {institutions.length > 0 && (
+            <SidebarSubmenu title="Institutions" icon={<IconBuilding />}>
+              {institutions.map((institution) => (
+                <SidebarMenuItem key={institution.id} asChild>
+                  <NavLink href={institution.path_alias}>
+                    {institution.title}
+                  </NavLink>
+                </SidebarMenuItem>
+              ))}
+            </SidebarSubmenu>
+          )}
 
           <SidebarMenuItem asChild>
             <NavLink href="/courses">
@@ -101,7 +94,6 @@ export const AppSidebar: FC<AppSidebarProps> = ({ locale }) => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>nav user</SidebarFooter>
     </Sidebar>
   );
 };
