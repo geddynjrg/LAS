@@ -4,31 +4,29 @@ info:
   description: The REST API provide by the core REST module.
   version: Versioning not supported
 servers:
-- url: https://tvet-api-qa.fusion.adm.ee/
+  - url: https://tvet-api-qa.fusion.adm.ee/
 security:
-- basic_auth: []
-- csrf_token: []
+  - basic_auth: []
+  - csrf_token: []
 tags:
-- name: node
-  description: "Entity type: Content"
-  x-entity-type: node
-  x-definition:
-    $ref: '#/definitions/node'
+  - name: node
+    description: "Entity type: Content"
+    x-entity-type: node
 paths:
   /api/v1/courses:
     get:
-      summary: Course List Resource
+      summary: TVET Course List Resource
       operationId: course_list_resource:GET
       parameters:
-      - name: _format
-        in: query
-        description: Request format
-        required: true
-        schema:
-          type: string
-          default: json
-          enum:
-          - json
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
       responses:
         "200":
           description: successful operation
@@ -54,36 +52,36 @@ paths:
                     type: string
                     example: Internal server error.
       security:
-      - cookie: []
+        - cookie: []
   /node/{node}:
     get:
       tags:
-      - node
+        - node
       summary: Get a Content
       operationId: entity:node:GET
       parameters:
-      - name: _format
-        in: query
-        description: Request format
-        required: true
-        schema:
-          type: string
-          default: json
-          enum:
-          - json
-      - name: node
-        in: path
-        description: "The nid,id, of the node."
-        required: true
-        schema:
-          type: string
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
+        - name: node
+          in: path
+          description: "The nid,id, of the node."
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/node'
+                $ref: "#/components/schemas/node"
         "400":
           description: Bad request
           content:
@@ -105,29 +103,29 @@ paths:
                     type: string
                     example: Internal server error.
       security:
-      - basic_auth: []
-      - csrf_token: []
+        - basic_auth: []
+        - csrf_token: []
     delete:
       tags:
-      - node
+        - node
       summary: Delete a Content
       operationId: entity:node:DELETE
       parameters:
-      - name: _format
-        in: query
-        description: Request format
-        required: true
-        schema:
-          type: string
-          default: json
-          enum:
-          - json
-      - name: node
-        in: path
-        description: "The nid,id, of the node."
-        required: true
-        schema:
-          type: string
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
+        - name: node
+          in: path
+          description: "The nid,id, of the node."
+          required: true
+          schema:
+            type: string
       responses:
         "204":
           description: Entity deleted
@@ -153,35 +151,35 @@ paths:
                     type: string
                     example: Internal server error.
       security:
-      - basic_auth: []
-      - csrf_token: []
+        - basic_auth: []
+        - csrf_token: []
     patch:
       tags:
-      - node
+        - node
       summary: Patch a Content
       operationId: entity:node:PATCH
       parameters:
-      - name: _format
-        in: query
-        description: Request format
-        required: true
-        schema:
-          type: string
-          default: json
-          enum:
-          - json
-      - name: node
-        in: path
-        description: "The nid,id, of the node."
-        required: true
-        schema:
-          type: string
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
+        - name: node
+          in: path
+          description: "The nid,id, of the node."
+          required: true
+          schema:
+            type: string
       requestBody:
         description: The Content object
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/node'
+              $ref: "#/components/schemas/node"
         required: true
       responses:
         "400":
@@ -205,31 +203,31 @@ paths:
                     type: string
                     example: Internal server error.
       security:
-      - basic_auth: []
-      - csrf_token: []
+        - basic_auth: []
+        - csrf_token: []
       x-codegen-request-body-name: body
   /node:
     post:
       tags:
-      - node
+        - node
       summary: Post a Content
       operationId: entity:node:POST
       parameters:
-      - name: _format
-        in: query
-        description: Request format
-        required: true
-        schema:
-          type: string
-          default: json
-          enum:
-          - json
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
       requestBody:
         description: The Content object
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/node'
+              $ref: "#/components/schemas/node"
         required: true
       responses:
         "201":
@@ -237,7 +235,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/node'
+                $ref: "#/components/schemas/node"
         "400":
           description: Bad request
           content:
@@ -259,28 +257,68 @@ paths:
                     type: string
                     example: Internal server error.
       security:
-      - basic_auth: []
-      - csrf_token: []
+        - basic_auth: []
+        - csrf_token: []
       x-codegen-request-body-name: body
+  /api/v1/institutions:
+    get:
+      summary: TVET Institutions Resource
+      operationId: institutions_resource:GET
+      parameters:
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
+      responses:
+        "200":
+          description: successful operation
+          content: {}
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad data
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error.
+      security:
+        - cookie: []
   /api/v1/node/{id}:
     get:
       summary: TVET Node Resource
       operationId: tvet_node_resource:GET
       parameters:
-      - name: _format
-        in: query
-        description: Request format
-        required: true
-        schema:
-          type: string
-          default: json
-          enum:
-          - json
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: successful operation
@@ -306,21 +344,21 @@ paths:
                     type: string
                     example: Internal server error.
       security:
-      - cookie: []
+        - cookie: []
   /api/v1/resolve:
     get:
       summary: TVET Path Resource
       operationId: tvet_path_resource:GET
       parameters:
-      - name: _format
-        in: query
-        description: Request format
-        required: true
-        schema:
-          type: string
-          default: json
-          enum:
-          - json
+        - name: _format
+          in: query
+          description: Request format
+          required: true
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
       responses:
         "200":
           description: successful operation
@@ -346,14 +384,14 @@ paths:
                     type: string
                     example: Internal server error.
       security:
-      - cookie: []
+        - cookie: []
 components:
   schemas:
     node:
       title: node Schema
       required:
-      - title
-      - type
+        - title
+        - type
       type: object
       properties:
         nid:
@@ -363,7 +401,7 @@ components:
           items:
             title: Number (integer)
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -376,7 +414,7 @@ components:
           items:
             title: UUID
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -390,7 +428,7 @@ components:
           items:
             title: Number (integer)
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -403,7 +441,7 @@ components:
           items:
             title: Language
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -417,7 +455,7 @@ components:
           items:
             title: Entity reference
             required:
-            - target_id
+              - target_id
             type: object
             properties:
               target_id:
@@ -431,7 +469,7 @@ components:
           items:
             title: Created
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -446,7 +484,7 @@ components:
           items:
             title: User
             required:
-            - target_id
+              - target_id
             type: object
             properties:
               target_id:
@@ -461,7 +499,7 @@ components:
           items:
             title: "Text (plain, long)"
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -474,7 +512,7 @@ components:
           items:
             title: Boolean
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -488,7 +526,7 @@ components:
           items:
             title: User
             required:
-            - target_id
+              - target_id
             type: object
             properties:
               target_id:
@@ -503,7 +541,7 @@ components:
           items:
             title: Text (plain)
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -518,7 +556,7 @@ components:
           items:
             title: Created
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -533,7 +571,7 @@ components:
           items:
             title: Last changed
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -547,7 +585,7 @@ components:
           items:
             title: Boolean
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -560,7 +598,7 @@ components:
           items:
             title: Boolean
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -574,7 +612,7 @@ components:
           items:
             title: Boolean
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -584,12 +622,13 @@ components:
           title: Default revision
           maxItems: 1
           type: array
-          description: A flag indicating whether this was a default revision when
+          description:
+            A flag indicating whether this was a default revision when
             it was saved.
           items:
             title: Boolean
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -599,12 +638,13 @@ components:
           title: Revision translation affected
           maxItems: 1
           type: array
-          description: Indicates if the last edit of a translation belongs to current
+          description:
+            Indicates if the last edit of a translation belongs to current
             revision.
           items:
             title: Boolean
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -635,12 +675,13 @@ components:
           title: Menu link
           maxItems: 1
           type: array
-          description: Computed menu link for the node (only available during node
+          description:
+            Computed menu link for the node (only available during node
             saving).
           items:
             title: Custom menu link
             required:
-            - target_id
+              - target_id
             type: object
             properties:
               target_id:
@@ -655,7 +696,7 @@ components:
           items:
             title: Language
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -669,7 +710,7 @@ components:
           items:
             title: Boolean
             required:
-            - value
+              - value
             type: object
             properties:
               value:
@@ -680,394 +721,410 @@ components:
         propertyName: type
     node:course:
       allOf:
-      - $ref: '#/components/schemas/node'
-      - title: node:course Schema
-        type: object
-        properties:
-          field_application_fee:
-            title: Application fee
-            maxItems: 1
-            type: array
-            items:
-              title: Number (decimal)
-              type: object
-              properties: {}
-          field_apply_till:
-            title: Apply Till
-            maxItems: 1
-            type: array
-            items:
-              title: Date
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Date value
-                  type: string
-                  format: date
-          field_course_fee:
-            title: Course fee
-            maxItems: 1
-            type: array
-            items:
-              title: Number (decimal)
-              type: object
-              properties: {}
-          field_duration:
-            title: Duration
-            maxItems: 1
-            type: array
-            items:
-              title: Number (integer)
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Integer value
-                  type: integer
-          field_education_level:
-            title: Education level
-            type: array
-            items:
-              title: Taxonomy term
-              required:
-              - target_id
-              type: object
-              properties:
-                target_id:
-                  title: Taxonomy term ID
-                  type: integer
-              description: The referenced entity
-          field_image:
-            title: Image
-            maxItems: 1
-            type: array
-            items:
-              title: Media
-              required:
-              - target_id
-              type: object
-              properties:
-                target_id:
-                  title: Media ID
-                  type: integer
-              description: The referenced entity
-          field_institution:
-            title: Institution
-            maxItems: 1
-            type: array
-            items:
-              title: Content
-              required:
-              - target_id
-              type: object
-              properties:
-                target_id:
-                  title: Content ID
-                  type: integer
-              description: The referenced entity
-          field_page_components:
-            title: Page components
-            type: array
-            items:
-              title: Entity reference revisions
-              required:
-              - target_id
-              - target_revision_id
-              type: object
-              properties:
-                target_id:
-                  title: Paragraph ID
-                  type: integer
-                target_revision_id:
-                  title: Paragraph revision ID
-                  type: integer
-          field_start_on:
-            title: Start on
-            maxItems: 1
-            type: array
-            items:
-              title: Date
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Date value
-                  type: string
-                  format: date
-          field_tags:
-            title: Tags
-            type: array
-            items:
-              title: Taxonomy term
-              required:
-              - target_id
-              type: object
-              properties:
-                target_id:
-                  title: Taxonomy term ID
-                  type: integer
-              description: The referenced entity
-          field_test_booking_fee:
-            title: Test booking fee
-            maxItems: 1
-            type: array
-            items:
-              title: Number (decimal)
-              type: object
-              properties: {}
-        description: "Defines a course with structured fields for details, curriculum,\
-          \ and related resources."
+        - $ref: "#/components/schemas/node"
+        - title: node:course Schema
+          type: object
+          properties:
+            field_application_fee:
+              title: Application fee
+              maxItems: 1
+              type: array
+              items:
+                title: Number (decimal)
+                type: object
+                properties: {}
+            field_apply_till:
+              title: Apply Till
+              maxItems: 1
+              type: array
+              items:
+                title: Date
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Date value
+                    type: string
+                    format: date
+            field_course_fee:
+              title: Course fee
+              maxItems: 1
+              type: array
+              items:
+                title: Number (decimal)
+                type: object
+                properties: {}
+            field_duration:
+              title: Duration
+              maxItems: 1
+              type: array
+              items:
+                title: Number (integer)
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Integer value
+                    type: integer
+            field_education_level:
+              title: Education level
+              type: array
+              items:
+                title: Taxonomy term
+                required:
+                  - target_id
+                type: object
+                properties:
+                  target_id:
+                    title: Taxonomy term ID
+                    type: integer
+                description: The referenced entity
+            field_group_size:
+              title: Group size
+              maxItems: 1
+              type: array
+              items:
+                title: Number (integer)
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Integer value
+                    type: integer
+            field_image:
+              title: Image
+              maxItems: 1
+              type: array
+              items:
+                title: Media
+                required:
+                  - target_id
+                type: object
+                properties:
+                  target_id:
+                    title: Media ID
+                    type: integer
+                description: The referenced entity
+            field_institution:
+              title: Institution
+              maxItems: 1
+              type: array
+              items:
+                title: Content
+                required:
+                  - target_id
+                type: object
+                properties:
+                  target_id:
+                    title: Content ID
+                    type: integer
+                description: The referenced entity
+            field_page_components:
+              title: Page components
+              type: array
+              items:
+                title: Entity reference revisions
+                required:
+                  - target_id
+                  - target_revision_id
+                type: object
+                properties:
+                  target_id:
+                    title: Paragraph ID
+                    type: integer
+                  target_revision_id:
+                    title: Paragraph revision ID
+                    type: integer
+            field_start_on:
+              title: Start on
+              maxItems: 1
+              type: array
+              items:
+                title: Date
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Date value
+                    type: string
+                    format: date
+            field_tags:
+              title: Tags
+              type: array
+              items:
+                title: Taxonomy term
+                required:
+                  - target_id
+                type: object
+                properties:
+                  target_id:
+                    title: Taxonomy term ID
+                    type: integer
+                description: The referenced entity
+            field_test_booking_fee:
+              title: Test booking fee
+              maxItems: 1
+              type: array
+              items:
+                title: Number (decimal)
+                type: object
+                properties: {}
+          description:
+            "Defines a course with structured fields for details, curriculum,\
+            \ and related resources."
     node:institution:
       allOf:
-      - $ref: '#/components/schemas/node'
-      - title: node:institution Schema
-        type: object
-        properties:
-          promote:
-            title: Promoted to front page
-            maxItems: 1
-            type: array
-            items:
-              title: Boolean
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Boolean value
-                  type: boolean
-          field_address:
-            title: Address
-            maxItems: 1
-            type: array
-            items:
+        - $ref: "#/components/schemas/node"
+        - title: node:institution Schema
+          type: object
+          properties:
+            promote:
+              title: Promoted to front page
+              maxItems: 1
+              type: array
+              items:
+                title: Boolean
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Boolean value
+                    type: boolean
+            field_address:
               title: Address
-              type: object
-              properties:
-                langcode:
-                  title: The language code
-                  type: string
-                country_code:
-                  title: The two-letter country code
-                  type: string
-                administrative_area:
-                  title: The top-level administrative subdivision of the country
-                  type: string
-                locality:
-                  title: The locality (i.e. city)
-                  type: string
-                dependent_locality:
-                  title: The dependent locality (i.e. neighbourhood)
-                  type: string
-                postal_code:
-                  title: The postal code
-                  type: string
-                sorting_code:
-                  title: The sorting code
-                  type: string
-                address_line1:
-                  title: The first line of the address block
-                  type: string
-                address_line2:
-                  title: The second line of the address block
-                  type: string
-                address_line3:
-                  title: The third line of the address block
-                  type: string
-                organization:
-                  title: The organization
-                  type: string
-                given_name:
-                  title: The given name
-                  type: string
-                additional_name:
-                  title: The additional name
-                  type: string
-                family_name:
-                  title: The family name
-                  type: string
-          field_body:
-            title: Body
-            maxItems: 1
-            type: array
-            items:
-              title: "Text (formatted, long)"
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Text
-                  type: string
-                format:
-                  title: Text format
-                  type: string
-          field_contact_text:
-            title: Text
-            maxItems: 1
-            type: array
-            items:
-              title: "Text (formatted, long)"
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Text
-                  type: string
-                format:
-                  title: Text format
-                  type: string
-          field_email:
-            title: Email
-            maxItems: 1
-            type: array
-            items:
+              maxItems: 1
+              type: array
+              items:
+                title: Address
+                type: object
+                properties:
+                  langcode:
+                    title: The language code
+                    type: string
+                  country_code:
+                    title: The two-letter country code
+                    type: string
+                  administrative_area:
+                    title: The top-level administrative subdivision of the country
+                    type: string
+                  locality:
+                    title: The locality (i.e. city)
+                    type: string
+                  dependent_locality:
+                    title: The dependent locality (i.e. neighbourhood)
+                    type: string
+                  postal_code:
+                    title: The postal code
+                    type: string
+                  sorting_code:
+                    title: The sorting code
+                    type: string
+                  address_line1:
+                    title: The first line of the address block
+                    type: string
+                  address_line2:
+                    title: The second line of the address block
+                    type: string
+                  address_line3:
+                    title: The third line of the address block
+                    type: string
+                  organization:
+                    title: The organization
+                    type: string
+                  given_name:
+                    title: The given name
+                    type: string
+                  additional_name:
+                    title: The additional name
+                    type: string
+                  family_name:
+                    title: The family name
+                    type: string
+            field_body:
+              title: Body
+              maxItems: 1
+              type: array
+              items:
+                title: "Text (formatted, long)"
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Text
+                    type: string
+                  format:
+                    title: Text format
+                    type: string
+            field_contact_text:
+              title: Text
+              maxItems: 1
+              type: array
+              items:
+                title: "Text (formatted, long)"
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Text
+                    type: string
+                  format:
+                    title: Text format
+                    type: string
+            field_email:
               title: Email
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Email
-                  type: string
-                  format: email
-          field_image:
-            title: Image
-            maxItems: 1
-            type: array
-            items:
-              title: Media
-              required:
-              - target_id
-              type: object
-              properties:
-                target_id:
-                  title: Media ID
-                  type: integer
-              description: The referenced entity
-          field_location:
-            title: Location
-            maxItems: 1
-            type: array
-            items:
-              title: Geofield
-              type: object
-              properties:
-                value:
-                  title: Geometry
-                  type: string
-                geo_type:
-                  title: Geometry Type
-                  type: string
-                geohash:
-                  title: Geohash
-                  type: string
-                latlon:
-                  title: LatLong Pair
-                  type: string
-          field_page_components:
-            title: Page components
-            type: array
-            items:
-              title: Entity reference revisions
-              required:
-              - target_id
-              - target_revision_id
-              type: object
-              properties:
-                target_id:
-                  title: Paragraph ID
-                  type: integer
-                target_revision_id:
-                  title: Paragraph revision ID
-                  type: integer
-          field_phone:
-            title: Phone
-            maxItems: 1
-            type: array
-            items:
-              title: Telephone number
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Telephone number
-                  type: string
-        description: "Represents an institution with structured fields for details,\
-          \ branding, and related content."
+              maxItems: 1
+              type: array
+              items:
+                title: Email
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Email
+                    type: string
+                    format: email
+            field_image:
+              title: Image
+              maxItems: 1
+              type: array
+              items:
+                title: Media
+                required:
+                  - target_id
+                type: object
+                properties:
+                  target_id:
+                    title: Media ID
+                    type: integer
+                description: The referenced entity
+            field_location:
+              title: Location
+              maxItems: 1
+              type: array
+              items:
+                title: Geofield
+                type: object
+                properties:
+                  value:
+                    title: Geometry
+                    type: string
+                  geo_type:
+                    title: Geometry Type
+                    type: string
+                  geohash:
+                    title: Geohash
+                    type: string
+                  latlon:
+                    title: LatLong Pair
+                    type: string
+            field_page_components:
+              title: Page components
+              type: array
+              items:
+                title: Entity reference revisions
+                required:
+                  - target_id
+                  - target_revision_id
+                type: object
+                properties:
+                  target_id:
+                    title: Paragraph ID
+                    type: integer
+                  target_revision_id:
+                    title: Paragraph revision ID
+                    type: integer
+            field_phone:
+              title: Phone
+              maxItems: 1
+              type: array
+              items:
+                title: Telephone number
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Telephone number
+                    type: string
+          description:
+            "Represents an institution with structured fields for details,\
+            \ branding, and related content."
     node:landing:
       allOf:
-      - $ref: '#/components/schemas/node'
-      - title: node:landing Schema
-        type: object
-        properties:
-          promote:
-            title: Promoted to front page
-            maxItems: 1
-            type: array
-            items:
-              title: Boolean
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Boolean value
-                  type: boolean
-          field_body:
-            title: Body
-            maxItems: 1
-            type: array
-            items:
-              title: "Text (formatted, long)"
-              required:
-              - value
-              type: object
-              properties:
-                value:
-                  title: Text
-                  type: string
-                format:
-                  title: Text format
-                  type: string
-          field_image:
-            title: Image
-            maxItems: 1
-            type: array
-            items:
-              title: Media
-              required:
-              - target_id
-              type: object
-              properties:
-                target_id:
-                  title: Media ID
-                  type: integer
-              description: The referenced entity
-          field_page_components:
-            title: Page components
-            type: array
-            items:
-              title: Entity reference revisions
-              required:
-              - target_id
-              - target_revision_id
-              type: object
-              properties:
-                target_id:
-                  title: Paragraph ID
-                  type: integer
-                target_revision_id:
-                  title: Paragraph revision ID
-                  type: integer
-        description: "Defines the structure and fields for landing pages, enabling\
-          \ flexible layouts, reusable components, and consistent content presentation."
+        - $ref: "#/components/schemas/node"
+        - title: node:landing Schema
+          type: object
+          properties:
+            promote:
+              title: Promoted to front page
+              maxItems: 1
+              type: array
+              items:
+                title: Boolean
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Boolean value
+                    type: boolean
+            field_body:
+              title: Body
+              maxItems: 1
+              type: array
+              items:
+                title: "Text (formatted, long)"
+                required:
+                  - value
+                type: object
+                properties:
+                  value:
+                    title: Text
+                    type: string
+                  format:
+                    title: Text format
+                    type: string
+            field_image:
+              title: Image
+              maxItems: 1
+              type: array
+              items:
+                title: Media
+                required:
+                  - target_id
+                type: object
+                properties:
+                  target_id:
+                    title: Media ID
+                    type: integer
+                description: The referenced entity
+            field_page_components:
+              title: Page components
+              type: array
+              items:
+                title: Entity reference revisions
+                required:
+                  - target_id
+                  - target_revision_id
+                type: object
+                properties:
+                  target_id:
+                    title: Paragraph ID
+                    type: integer
+                  target_revision_id:
+                    title: Paragraph revision ID
+                    type: integer
+          description:
+            "Defines the structure and fields for landing pages, enabling\
+            \ flexible layouts, reusable components, and consistent content presentation."
   securitySchemes:
     basic_auth:
       type: http

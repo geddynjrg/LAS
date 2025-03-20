@@ -5,7 +5,6 @@ import { getLocale, getMessages } from "next-intl/server";
 import { DM_Sans } from "next/font/google";
 import { Suspense, type ReactNode } from "react";
 
-import { ErrorPage } from "@workspace/ui/components/error-page";
 import { SidebarInset } from "@workspace/ui/components/sidebar";
 
 import { AppFooter } from "@/components/app-footer";

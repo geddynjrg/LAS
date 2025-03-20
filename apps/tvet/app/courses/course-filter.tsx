@@ -39,11 +39,16 @@ export interface CourseFilterProps {
     id: string;
     name: string;
   }[];
+  tags?: {
+    id: string;
+    name: string;
+  }[];
 }
 
 export const CourseFilter: FC<CourseFilterProps> = ({
   educationLevels = [],
   institutions = [],
+  tags = [],
 }) => {
   const t = useTranslations("CoursesPage");
   const pathname = usePathname();
@@ -62,6 +67,7 @@ export const CourseFilter: FC<CourseFilterProps> = ({
       searchParams.getAll("education_level" satisfies FilterKey) ?? undefined,
     institution:
       searchParams.get("institution" satisfies FilterKey) ?? undefined,
+    tags: searchParams.getAll("tags" satisfies FilterKey) ?? undefined,
   };
 
   const hasSelectedFilters = Object.values(defaultValues).some((value) =>
@@ -213,6 +219,28 @@ export const CourseFilter: FC<CourseFilterProps> = ({
               />
             )}
 
+            {tags.length > 0 && (
+              <Field
+                name="tags"
+                label={t("tags")}
+                control={(props) => (
+                  <CheckboxGroup
+                    orientation="horizontal"
+                    size="sm"
+                    {...props}
+                    defaultValue={defaultValues.tags}
+                    options={tags.map((tag) => ({
+                      label: tag.name,
+                      value: tag.id,
+                    }))}
+                    onValueChange={(value) => {
+                      handleFilterChange("tags", value);
+                    }}
+                  />
+                )}
+              />
+            )}
+
             {institutions.length > 0 && (
               <Field
                 name="institution"
@@ -233,26 +261,6 @@ export const CourseFilter: FC<CourseFilterProps> = ({
                 )}
               />
             )}
-            {/* {tags.length > 0 && (
-              <Field
-                name="tags"
-                label={t("trainingAreas")}
-                control={(props) => (
-                  <Select
-                    {...props}
-                    defaultValue={defaultValues.tags}
-                    placeholder={t("trainingAreas")}
-                    options={tags.map((tag) => ({
-                      value: tag.id,
-                      label: tag.name,
-                    }))}
-                    onValueChange={(value) =>
-                      handleFilterChange("tags", value)
-                    }
-                  />
-                )}
-              />
-            )} */}
           </CollapsibleContent>
 
           <CollapsibleTrigger asChild className="flex w-full">

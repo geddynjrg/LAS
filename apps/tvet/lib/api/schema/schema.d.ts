@@ -5,24 +5,111 @@
 
 export interface paths {
   "/api/v1/courses": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** TVET Course List Resource */
     get: operations["course_list_resource:GET"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/node/{node}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get a Content */
     get: operations["entity:node:GET"];
+    put?: never;
+    post?: never;
+    /** Delete a Content */
     delete: operations["entity:node:DELETE"];
+    options?: never;
+    head?: never;
+    /** Patch a Content */
     patch: operations["entity:node:PATCH"];
+    trace?: never;
   };
   "/node": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Post a Content */
     post: operations["entity:node:POST"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/institutions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** TVET Institutions Resource */
+    get: operations["institutions_resource:GET"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/node/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** TVET Node Resource */
     get: operations["tvet_node_resource:GET"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/resolve": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** TVET Path Resource */
     get: operations["tvet_path_resource:GET"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     /**
@@ -195,9 +282,11 @@ export interface components {
         value: boolean;
       }[];
     };
-    "node:course": components["schemas"]["node"] & {
+    "node:course": {
+      type: "node:course";
+    } & (Omit<components["schemas"]["node"], "type"> & {
       /** Application fee */
-      field_application_fee?: { [key: string]: unknown }[];
+      field_application_fee?: Record<string, never>[];
       /** Apply Till */
       field_apply_till?: {
         /**
@@ -207,7 +296,7 @@ export interface components {
         value: string;
       }[];
       /** Course fee */
-      field_course_fee?: { [key: string]: unknown }[];
+      field_course_fee?: Record<string, never>[];
       /** Duration */
       field_duration?: {
         /** Integer value */
@@ -217,6 +306,11 @@ export interface components {
       field_education_level?: {
         /** Taxonomy term ID */
         target_id: number;
+      }[];
+      /** Group size */
+      field_group_size?: {
+        /** Integer value */
+        value: number;
       }[];
       /** Image */
       field_image?: {
@@ -249,9 +343,11 @@ export interface components {
         target_id: number;
       }[];
       /** Test booking fee */
-      field_test_booking_fee?: { [key: string]: unknown }[];
-    };
-    "node:institution": components["schemas"]["node"] & {
+      field_test_booking_fee?: Record<string, never>[];
+    });
+    "node:institution": {
+      type: "node:institution";
+    } & (Omit<components["schemas"]["node"], "type"> & {
       /** Promoted to front page */
       promote?: {
         /** Boolean value */
@@ -338,8 +434,10 @@ export interface components {
         /** Telephone number */
         value: string;
       }[];
-    };
-    "node:landing": components["schemas"]["node"] & {
+    });
+    "node:landing": {
+      type: "node:landing";
+    } & (Omit<components["schemas"]["node"], "type"> & {
       /** Promoted to front page */
       promote?: {
         /** Boolean value */
@@ -364,23 +462,40 @@ export interface components {
         /** Paragraph revision ID */
         target_revision_id: number;
       }[];
-    };
+    });
   };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
-
+export type $defs = Record<string, never>;
 export interface operations {
   "course_list_resource:GET": {
     parameters: {
       query: {
-        /** Request format */
+        /** @description Request format */
         _format: "json";
       };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    requestBody?: never;
     responses: {
-      /** successful operation */
-      200: unknown;
-      /** Bad request */
+      /** @description successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Bad data */
@@ -388,8 +503,11 @@ export interface operations {
           };
         };
       };
-      /** Internal server error. */
+      /** @description Internal server error. */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Internal server error. */
@@ -401,24 +519,33 @@ export interface operations {
   };
   "entity:node:GET": {
     parameters: {
-      query?: {
-        /** Request format */
-        _format?: "json";
+      query: {
+        /** @description Request format */
+        _format: "json";
       };
+      header?: never;
       path: {
-        /** The nid,id, of the node. */
+        /** @description The nid,id, of the node. */
         node: string;
       };
+      cookie?: never;
     };
+    requestBody?: never;
     responses: {
-      /** successful operation */
+      /** @description successful operation */
       200: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": components["schemas"]["node"];
         };
       };
-      /** Bad request */
+      /** @description Bad request */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Bad data */
@@ -426,8 +553,11 @@ export interface operations {
           };
         };
       };
-      /** Internal server error. */
+      /** @description Internal server error. */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Internal server error. */
@@ -440,19 +570,30 @@ export interface operations {
   "entity:node:DELETE": {
     parameters: {
       query: {
-        /** Request format */
+        /** @description Request format */
         _format: "json";
       };
+      header?: never;
       path: {
-        /** The nid,id, of the node. */
+        /** @description The nid,id, of the node. */
         node: string;
       };
+      cookie?: never;
     };
+    requestBody?: never;
     responses: {
-      /** Entity deleted */
-      204: never;
-      /** Bad request */
+      /** @description Entity deleted */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Bad data */
@@ -460,8 +601,11 @@ export interface operations {
           };
         };
       };
-      /** Internal server error. */
+      /** @description Internal server error. */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Internal server error. */
@@ -474,17 +618,28 @@ export interface operations {
   "entity:node:PATCH": {
     parameters: {
       query: {
-        /** Request format */
+        /** @description Request format */
         _format: "json";
       };
+      header?: never;
       path: {
-        /** The nid,id, of the node. */
+        /** @description The nid,id, of the node. */
         node: string;
+      };
+      cookie?: never;
+    };
+    /** @description The Content object */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["node"];
       };
     };
     responses: {
-      /** Bad request */
+      /** @description Bad request */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Bad data */
@@ -492,39 +647,51 @@ export interface operations {
           };
         };
       };
-      /** Internal server error. */
+      /** @description Internal server error. */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Internal server error. */
             message?: string;
           };
         };
-      };
-    };
-    /** The Content object */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["node"];
       };
     };
   };
   "entity:node:POST": {
     parameters: {
       query: {
-        /** Request format */
+        /** @description Request format */
         _format: "json";
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description The Content object */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["node"];
       };
     };
     responses: {
-      /** Entity created */
+      /** @description Entity created */
       201: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": components["schemas"]["node"];
         };
       };
-      /** Bad request */
+      /** @description Bad request */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Bad data */
@@ -532,8 +699,11 @@ export interface operations {
           };
         };
       };
-      /** Internal server error. */
+      /** @description Internal server error. */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Internal server error. */
@@ -542,28 +712,31 @@ export interface operations {
         };
       };
     };
-    /** The Content object */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["node"];
-      };
-    };
   };
-  "tvet_node_resource:GET": {
+  "institutions_resource:GET": {
     parameters: {
-      query?: {
-        /** Request format */
-        _format?: "json";
+      query: {
+        /** @description Request format */
+        _format: "json";
       };
-      path: {
-        id: string;
-      };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    requestBody?: never;
     responses: {
-      /** successful operation */
-      200: unknown;
-      /** Bad request */
+      /** @description successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Bad data */
@@ -571,8 +744,58 @@ export interface operations {
           };
         };
       };
-      /** Internal server error. */
+      /** @description Internal server error. */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example Internal server error. */
+            message?: string;
+          };
+        };
+      };
+    };
+  };
+  "tvet_node_resource:GET": {
+    parameters: {
+      query: {
+        /** @description Request format */
+        _format: "json";
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example Bad data */
+            error?: string;
+          };
+        };
+      };
+      /** @description Internal server error. */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Internal server error. */
@@ -584,17 +807,28 @@ export interface operations {
   };
   "tvet_path_resource:GET": {
     parameters: {
-      query?: {
-        /** Request format */
-        _format?: "json";
-        path?: string;
+      query: {
+        /** @description Request format */
+        _format: "json";
       };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    requestBody?: never;
     responses: {
-      /** successful operation */
-      200: unknown;
-      /** Bad request */
+      /** @description successful operation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad request */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Bad data */
@@ -602,8 +836,11 @@ export interface operations {
           };
         };
       };
-      /** Internal server error. */
+      /** @description Internal server error. */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
         content: {
           "application/json": {
             /** @example Internal server error. */
@@ -614,5 +851,3 @@ export interface operations {
     };
   };
 }
-
-export interface external {}

@@ -68,6 +68,7 @@ export interface CoursesTableDataQueryParams {
   page?: number;
   limit?: number;
   sort?: string;
+  tags?: string[];
   direction?: "ASC" | "DESC";
 }
 
@@ -87,6 +88,7 @@ export async function getCoursesTableData(params: CoursesTableDataQueryParams) {
         limit: params.limit,
         sort: params.sort,
         direction: params.direction,
+        tags: params.tags,
       },
     },
   });
@@ -96,21 +98,33 @@ export async function getCoursesTableData(params: CoursesTableDataQueryParams) {
 
 const courseSchema = z.object({
   id: z.string(),
+  type: z.string(),
+  uuid: z.string(),
   title: z.string(),
-  tags: z.array(z.string()),
-  application_fee: z.string(),
-  course_fee: z.string(),
-  apply_till: z.string(),
-  start_on: z.string(),
-  institution: z.object({
-    id: z.string(),
-    title: z.string(),
-    url: z.string(),
+  language: z.object({
+    code: z.string(),
+    name: z.string(),
+    direction: z.string(),
   }),
-  duration: z.string(),
-  education_level: z.string(),
   url: z.string(),
   path_alias: z.string(),
+  content: z.object({
+    application_fee: z.number(),
+    apply_till: z.array(z.string()),
+    test_booking_fee: z.number(),
+    course_fee: z.number(),
+    duration: z.number(),
+    education_level: z.array(z.string()),
+    group_size: z.number(),
+    tags: z.array(z.string()).optional(),
+    institution: z.object({
+      id: z.string(),
+      type: z.string(),
+      uuid: z.string(),
+      title: z.string(),
+      path_alias: z.string(),
+    }),
+  }),
 });
 
 const schema = z.object({
@@ -152,6 +166,13 @@ const schema = z.object({
             id: z.string(),
             name: z.string(),
             path_alias: z.string(),
+          }),
+        ),
+        tags: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+            weight: z.string(),
           }),
         ),
       }),

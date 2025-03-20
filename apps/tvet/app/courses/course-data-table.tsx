@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useState, type FC, type ReactNode } from "react";
 
+import { Currency } from "@workspace/ui/components/currency";
 import { Select } from "@workspace/ui/components/select";
 import {
   Table,
@@ -192,12 +193,18 @@ export const CoursesRow: FC<courseRowProps> = (props) => {
           {props.title}
         </TableCell>
         <TableCell className="whitespace-normal">
-          {props.institution.title}
+          {props.content.institution.title}
         </TableCell>
         <TableCell className="hidden sm:table-cell">
-          {props.course_fee ? `${props.course_fee} KSh` : "none"}
+          {props.content.course_fee ? (
+            <Currency amount={props.content.course_fee} currency="KES" />
+          ) : (
+            "none"
+          )}
         </TableCell>
-        <TableCell className="hidden md:table-cell">{props.duration}</TableCell>
+        <TableCell className="hidden md:table-cell">
+          {props.content.duration}
+        </TableCell>
       </TableRow>
       <TableRow className="border-0">
         <TableCell colSpan={5} className="bg-theme-100 p-0">
@@ -220,52 +227,61 @@ const ItemDetails: FC<courseRowProps> = (props) => {
     >
       <div className="p-4">
         <div className="flex flex-wrap justify-center gap-2">
-          {props.tags.map((tag, index) => (
+          {props.content.tags?.map((tag, index) => (
             <Tag key={index} className="tag">
               {tag}
             </Tag>
           ))}
         </div>
 
-        {props.duration && (
+        {props.content.duration && (
           <div>
             <span className="font-bold">{t("duration")}: </span>
-            <span>{props.duration}</span>
+            <span>{props.content.duration}</span>
           </div>
         )}
 
-        {/* {props.group_size && (
+        {props.content.group_size && (
           <div className="mt-4">
             <span className="font-bold">{t("groupSize")}: </span>
-            <span>{props.group_size}</span>
+            <span>{props.content.group_size}</span>
           </div>
-        )} */}
+        )}
 
-        {props.course_fee && (
+        {props.content.course_fee && (
           <div className="mt-4">
             <span className="font-bold">{t("courseFee")}: </span>
-            <span>{props.course_fee}</span>
+            <span>
+              <Currency amount={props.content.course_fee} currency="KES" />
+            </span>
           </div>
         )}
 
-        {props.application_fee && (
+        {props.content.application_fee && (
           <div>
             <span className="font-bold">{t("applicationFee")}: </span>
-            <span>{props.application_fee}</span>
+            <span>
+              <Currency amount={props.content.application_fee} currency="KES" />
+            </span>
           </div>
         )}
 
-        {/* {props.test_booking_fee && (
+        {props.content.test_booking_fee && (
           <div>
             <span className="font-bold">{t("testBookingFee")}: </span>
-            <span>{props.test_booking_fee}</span>
+            <span>
+              <Currency
+                amount={props.content.test_booking_fee}
+                currency="KES"
+              />
+            </span>
           </div>
-        )} */}
+        )}
 
-        {props.education_level && (
+        {props.content.education_level.length > 0 && (
           <div className="mt-4">
             <span className="font-bold">{t("requiredEducation")}: </span>
-            <span>{props.education_level}</span>
+            <span>{props.content.education_level.join(", ")}</span>
           </div>
         )}
 

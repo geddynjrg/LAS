@@ -33,6 +33,7 @@ export default async function CoursesPage(props: PageProps) {
         <CourseFilter
           educationLevels={meta?.filter_options.education_levels}
           institutions={meta?.filter_options.institutions}
+          tags={meta?.filter_options.tags}
         />
       </div>
 
