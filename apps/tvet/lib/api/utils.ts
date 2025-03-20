@@ -16,13 +16,7 @@ api.use({
     request.headers.set("x-path", headersList.get("x-path") || "");
     request.headers.set("x-language", locale || "");
 
-    console.log("req", request);
-
     return request;
-  },
-  onResponse({ response }) {
-    console.log("res", response);
-    return response;
   },
 });
 

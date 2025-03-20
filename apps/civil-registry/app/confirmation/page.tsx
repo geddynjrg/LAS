@@ -14,7 +14,7 @@ export interface ApplicantPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const save = async () => {
+const save = async () => {
   saveForm();
 };
 
