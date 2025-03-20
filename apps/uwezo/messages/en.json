@@ -2,7 +2,14 @@
   "Common": {
     "menu": "Menu",
     "closeMenu": "Close menu",
-    "apply": "Apply"
+    "apply": "Apply",
+    "other": "Other",
+    "specify": "Specify",
+    "constituency": "Constituency",
+    "ward": "Ward",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit"
   },
 
   "Footer": {
@@ -180,7 +187,9 @@
         "registrationNumber": "registration number",
         "dateFormed": "Date formed",
         "groupRegistrationCert": "Group registration certificate",
-        "listOfMembersOnCert": "List of members on certificate"
+        "listOfMembersOnCert": "List of members on certificate",
+        "groupRegistrationNumber": "Group registration number",
+        "dateRegistered": "Date registered"
       },
       "locationInfo": {
         "locationOfTheGroup": "Location of the group",
@@ -194,7 +203,28 @@
         "groupBackground": "Group background",
         "purposeOfTheGroup": "Purpose of the group",
         "keyActivitiesOfGroup": "Key activities of the group",
-        "creditHistory": "Group credit history"
+        "creditHistory": "Group credit history",
+        "welfareIssues": "Welfare issues",
+        "incomeActivities": "Income generating activities",
+        "valueChain": "Value chain",
+        "tableBanking": "Table banking",
+        "leatherProducts": "Leather and leather products",
+        "cottonAndTextile": "Cotton and textiles",
+        "blueEconomy": "Blue economy",
+        "edibleOils": "Edible oils",
+        "constructionAndBuilding": "Construction and building materials",
+        "dairyProducts": "Dairy and dairy products",
+        "tableBankingPractice": "How long has the group practiced table banking?",
+        "monthlyShareContribution": "Total monthly share contribution",
+        "totalLoanedOut": "Total amount loaned out",
+        "totalRevolvingFund": "Total revolving fund",
+        "creditHistoryDocument": "Which documents can be used to show group credit history?",
+        "groupReferralContact": "The relevant sub-county chief will be contacted for a referral for the group",
+        "countyOfOperation": "County of Operation",
+        "chooseOrSearch": "Choose or search",
+        "enterWard": "Enter ward",
+        "meetingPointExamples": "e.g. social hall, school, etc.",
+        "nearestLandmarkExamples": "e.g. school, mosque, church"
       }
     },
     "proposedBusiness": {

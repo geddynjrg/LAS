@@ -1,6 +1,7 @@
 "use client";
 
 import { IconInfoCircle } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useState, type FC } from "react";
 
@@ -29,6 +30,7 @@ export interface GroupDataProps {
 }
 
 export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
+  const t = useTranslations();
   const [state, formAction, isPending] = useForm(action, groupDataSchema);
   const [chosenCounty, setChosenCounty] = useState(
     state.values?.countyOfOperation,
@@ -43,25 +45,32 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">
       <Container>
-        <FormCard title="Group basics" className="mt-7 grid gap-4">
+        <FormCard
+          title={t("ApplicationDetailsPage.groupData.basicInfo.groupBasics")}
+          className="mt-7 grid gap-4"
+        >
           <Field
             state={state}
             name="groupName"
-            label={"Group name"}
+            label={t("ApplicationDetailsPage.groupData.basicInfo.groupName")}
             required
             control={(props) => <Input placeholder="Enter name" {...props} />}
           />
           <Field
             state={state}
             name="groupRegistrationNumber"
-            label={"Group registration number"}
+            label={t(
+              "ApplicationDetailsPage.groupData.basicInfo.groupRegistrationNumber",
+            )}
             required
             control={(props) => (
               <Input type="tel" placeholder="Registration number" {...props} />
             )}
           />
           <Field
-            label="Date registered"
+            label={t(
+              "ApplicationDetailsPage.groupData.basicInfo.dateRegistered",
+            )}
             name="dateFormed"
             required
             control={(props) => (
@@ -75,7 +84,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
           <Field
             state={state}
             name="groupRegistrationCertificate"
-            label="Group registration certificate"
+            label={t(
+              "ApplicationDetailsPage.groupData.basicInfo.groupRegistrationCert",
+            )}
             required
             control={(props) => (
               <FileUploadInput
@@ -92,7 +103,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
           <Field
             state={state}
             name="listOfMembersOnCertificate"
-            label="List of members on certificate"
+            label={t(
+              "ApplicationDetailsPage.groupData.basicInfo.listOfMembersOnCert",
+            )}
             required
             control={(props) => (
               <FileUploadInput
@@ -107,25 +120,36 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
           />
         </FormCard>
 
-        <FormCard title="Group background" className="mt-7 grid gap-4">
+        <FormCard
+          title={t(
+            "ApplicationDetailsPage.groupData.groupBackground.groupBackground",
+          )}
+          className="mt-7 grid gap-4"
+        >
           <Field
             state={state}
             name="groupPurpose"
-            label={"Group background"}
+            label={t(
+              "ApplicationDetailsPage.groupData.groupBackground.groupBackground",
+            )}
             required
             control={() => (
               <CheckboxGroup
                 options={[
                   {
-                    label: "Welfare issues",
+                    label: t(
+                      "ApplicationDetailsPage.groupData.groupBackground.welfareIssues",
+                    ),
                     value: "Welfare issues",
                   },
                   {
-                    label: "Income generating activities",
+                    label: t(
+                      "ApplicationDetailsPage.groupData.groupBackground.incomeActivities",
+                    ),
                     value: "Income generating activities",
                   },
                   {
-                    label: "Other",
+                    label: t("Common.other"),
                     value: "Other",
                   },
                 ]}
@@ -137,7 +161,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
           <Field
             state={state}
             name="groupActivities"
-            label={"Key activities of the group"}
+            label={t(
+              "ApplicationDetailsPage.groupData.groupBackground.keyActivitiesOfGroup",
+            )}
             required
             control={() => (
               <CheckboxGroup
@@ -146,15 +172,19 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
                 }}
                 options={[
                   {
-                    label: "Value chain",
+                    label: t(
+                      "ApplicationDetailsPage.groupData.groupBackground.valueChain",
+                    ),
                     value: "Value chain",
                   },
                   {
-                    label: "Table banking",
+                    label: t(
+                      "ApplicationDetailsPage.groupData.groupBackground.tableBanking",
+                    ),
                     value: "Table banking",
                   },
                   {
-                    label: "Other",
+                    label: t("Common.other"),
                     value: "Other",
                   },
                 ]}
@@ -167,33 +197,47 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
             <Field
               state={state}
               name="valueChain"
-              label="Value chain"
+              label={t(
+                "ApplicationDetailsPage.groupData.groupBackground.valueChain",
+              )}
               required
               control={(props) => (
                 <CheckboxGroup
                   options={[
                     {
-                      label: "Leather and leather products",
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.leatherProducts",
+                      ),
                       value: "Leather and leather products",
                     },
                     {
-                      label: "Cotton and textiles",
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.cottonAndTextile",
+                      ),
                       value: "Cotton and textiles",
                     },
                     {
-                      label: "Blue economy",
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.blueEconomy",
+                      ),
                       value: "Blue economy",
                     },
                     {
-                      label: "Edible oils",
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.edibleOils",
+                      ),
                       value: "Edible oils",
                     },
                     {
-                      label: "Construction and building materials",
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.constructionAndBuilding",
+                      ),
                       value: "Construction and building materials",
                     },
                     {
-                      label: "Dairy and dairy products",
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.dairyProducts",
+                      ),
                       value: "Dairy and dairy products",
                     },
                   ]}
@@ -207,28 +251,36 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
               <Field
                 state={state}
                 name="tableBankingExperience"
-                label="How long has the group practiced table banking?"
+                label={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.tableBankingPractice",
+                )}
                 required
                 control={(_props) => <Input type="number" />}
               />
               <Field
                 state={state}
                 name="tableBankingShareContribution"
-                label="Total monthly share contribution"
+                label={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.monthlyShareContribution",
+                )}
                 required
                 control={(_props) => <Input type="number" />}
               />
               <Field
                 state={state}
                 name="tableBankingTotalLoanedOut"
-                label="Total amount loaned out"
+                label={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.totalLoanedOut",
+                )}
                 required
                 control={(_props) => <Input type="number" endDecorator="KSh" />}
               />
               <Field
                 state={state}
                 name="tableBankingTotalRevolvingFund"
-                label="Total revolving fund"
+                label={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.totalRevolvingFund",
+                )}
                 required
                 control={(_props) => <Input type="number" endDecorator="KSh" />}
               />
@@ -238,7 +290,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
             <Field
               state={state}
               name="other"
-              label="Specify"
+              label={t("Common.specify")}
               required
               control={(props) => <Input {...props} />}
             />
@@ -246,7 +298,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
           <Field
             state={state}
             name="groupCreditHistory"
-            label="Group credit history"
+            label={t(
+              "ApplicationDetailsPage.groupData.groupBackground.creditHistory",
+            )}
             required
             control={(props) => (
               <FileUploadInput
@@ -267,27 +321,37 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
             >
               <p className="mt-4 flex items-center gap-1">
                 <IconInfoCircle />
-                Which documents can be used to show group credit history?
+                {t(
+                  "ApplicationDetailsPage.groupData.groupBackground.creditHistoryDocument",
+                )}
               </p>
             </Underline>
           </Link>
         </FormCard>
 
         <FormCard
-          title="Location of the group"
-          subtitle="The relevant sub-county chief will be contacted for a referral for the group"
+          title={t(
+            "ApplicationDetailsPage.groupData.locationInfo.locationOfTheGroup",
+          )}
+          subtitle={t(
+            "ApplicationDetailsPage.groupData.groupBackground.groupReferralContact",
+          )}
           className="mt-7 grid gap-4"
         >
           <Field
             state={state}
             name="countyOfOperation"
-            label="County of Operation"
+            label={t(
+              "ApplicationDetailsPage.groupData.groupBackground.countyOfOperation",
+            )}
             required
             control={(props) => (
               <SearchInput
                 {...props}
                 onValueChange={setChosenCounty}
-                placeholder="Choose or search"
+                placeholder={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch",
+                )}
                 options={dummyCounty.map((county) => ({
                   label: county.name,
                   value: county.name,
@@ -299,12 +363,14 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
           <Field
             state={state}
             name="constituency"
-            label="Constituency"
+            label={t("Common.constituency")}
             required
             control={(props) => (
               <SearchInput
                 {...props}
-                placeholder="Choose or search"
+                placeholder={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch",
+                )}
                 options={dummyCounty
                   .find((county) => county.name === chosenCounty)
                   ?.constituencies.map((c) => ({
@@ -318,26 +384,47 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
           <Field
             state={state}
             name="ward"
-            label={"Ward"}
+            label={t("Common.ward")}
             required
-            control={(props) => <Input placeholder="Enter ward" {...props} />}
+            control={(props) => (
+              <Input
+                placeholder={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.enterWard",
+                )}
+                {...props}
+              />
+            )}
           />
 
           <Field
             state={state}
             name="meetingPoint"
-            label={"Meeting Point/Physical location/Village"}
+            label={t(
+              "ApplicationDetailsPage.groupData.locationInfo.meetingPoint",
+            )}
             control={(props) => (
-              <Input placeholder="e.g. social hall, school, etc." {...props} />
+              <Input
+                placeholder={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.meetingPointExamples",
+                )}
+                {...props}
+              />
             )}
           />
 
           <Field
             state={state}
             name="nearestLandmark"
-            label={"Nearest landmark"}
+            label={t(
+              "ApplicationDetailsPage.groupData.locationInfo.nearestLandmark",
+            )}
             control={(props) => (
-              <Input placeholder="e.g. school, mosque, church" {...props} />
+              <Input
+                placeholder={t(
+                  "ApplicationDetailsPage.groupData.groupBackground.nearestLandmarkExamples",
+                )}
+                {...props}
+              />
             )}
           />
         </FormCard>

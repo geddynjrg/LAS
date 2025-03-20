@@ -1,6 +1,7 @@
 "use client";
 
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { FC } from "react";
@@ -23,6 +24,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   prevUrl,
 }) => {
   const pathName = usePathname();
+  const t = useTranslations();
 
   const activeStep =
     steps.find((step) => pathName.includes(step.path))?.index ?? 1;
@@ -33,20 +35,20 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
         <Button variant="secondary" asChild>
           <Link href={prevUrl}>
             <IconArrowLeft />
-            Back
+            {t("Common.back")}
           </Link>
         </Button>
         {activeStep === 6 ? (
           <Button asChild disabled={disabled}>
             <Link href={nextUrl}>
-              Next
+              {t("Common.next")}
               <IconArrowRight />
             </Link>
           </Button>
         ) : (
           <SubmitButton disabled={disabled}>
             <div className="flex flex-row gap-1">
-              Submit
+              {t("Common.submit")}
               <IconArrowRight />
             </div>
           </SubmitButton>

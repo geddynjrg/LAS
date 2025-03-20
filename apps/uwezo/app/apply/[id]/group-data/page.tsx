@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/info-popover";
 
@@ -10,6 +12,7 @@ export interface GroupDataPageProps {
 
 export default async function Page({ params }: GroupDataPageProps) {
   const { id } = await params;
+  const t = await getTranslations();
 
   return (
     <>
@@ -17,7 +20,9 @@ export default async function Page({ params }: GroupDataPageProps) {
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
-            <h2 className="typo-h2">Group data</h2>
+            <h2 className="typo-h2">
+              {t("ApplicationDetailsPage.groupData.groupData")}
+            </h2>
           </div>
         </div>
       </Container>
