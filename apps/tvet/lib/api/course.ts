@@ -8,7 +8,7 @@ import { api, validate } from "@/lib/api/utils";
 
 export async function getCourseData(course: string) {
   const res = await api.GET("/api/v1/node/{id}", {
-    params: { path: { id: course } },
+    params: { path: { id: course }, query: { _format: "json" } },
   });
 
   return validate(res, schema);

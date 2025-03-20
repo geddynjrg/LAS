@@ -5,7 +5,7 @@ import {
   gradientCornerCardVariants,
 } from "@/components/gradient-corner-card";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { TextBlockWithGradientBlockType } from "@/lib/api/types";
+import type { TextBlockWithGradientBlockType } from "@/lib/api/schema/block/text-block-with-gradient.schema";
 
 export interface TextWithGradientBlockProps
   extends TextBlockWithGradientBlockType {}

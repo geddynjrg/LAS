@@ -8,7 +8,7 @@ import {
 } from "@workspace/ui/components/numbered-list";
 
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { ApplicationBlockType } from "@/lib/api/types";
+import type { ApplicationBlockType } from "@/lib/api/schema/block/application-block.schema";
 
 export interface ApplicationBlockProps extends ApplicationBlockType {
   id?: string;

@@ -285,8 +285,8 @@ const ItemDetails: FC<courseRowProps> = (props) => {
           </div>
         )}
 
-        {props.url && (
-          <Link href={props.url}>
+        {props.path_alias && (
+          <Link href={props.path_alias}>
             <Underline className="mx-auto my-4">
               {t("goToCourse")} <IconArrowRight />
             </Underline>

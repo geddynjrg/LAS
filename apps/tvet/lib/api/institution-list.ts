@@ -7,9 +7,9 @@ import { ImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 import { api, validate } from "@/lib/api/utils";
 
-export async function getInstitutionData(institute: string) {
+export async function getInstitutionData() {
   const res = await api.GET("/api/v1/institutions", {
-    params: { path: { id: institute } },
+    params: { query: { _format: "json" } },
   });
 
   return validate(res, schema);

@@ -6,7 +6,7 @@ import { Container } from "@workspace/ui/components/container";
 import { TrainingAreaCard } from "@workspace/ui/components/tvet/training-area-card";
 
 import { Heading } from "@/components/heading";
-import type { TrainingAreasBlockType } from "@/lib/api/types";
+import type { TrainingAreasBlockType } from "@/lib/api/schema/block/training-areas-block.schema";
 
 export interface TrainingAreasBlockProps extends TrainingAreasBlockType {}
 

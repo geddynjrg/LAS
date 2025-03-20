@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { Container } from "@workspace/ui/components/container";
-import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
+import { InfoPopover } from "@workspace/ui/components/info-popover";
 
 import { groupData } from "@/actions/apply-form/group-data";
 import { GroupDataForm } from "@/app/apply/[id]/group-data/group-data-form";

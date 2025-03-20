@@ -1,5 +1,5 @@
 import { Container } from "@workspace/ui/components/container";
-import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
+import { InfoPopover } from "@workspace/ui/components/info-popover";
 
 import { proposedBusiness } from "@/actions/apply-form/proposed-business";
 import { ProposedBusinessDataForm } from "@/app/apply/[id]/proposed-business/proposed-business-data-form";

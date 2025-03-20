@@ -9,7 +9,7 @@ import { api, validate } from "@/lib/api/utils";
 
 export async function getInstitutionData(institute: string) {
   const res = await api.GET("/api/v1/node/{id}", {
-    params: { path: { id: institute } },
+    params: { path: { id: institute }, query: { _format: "json" } },
   });
 
   return validate(res, schema);
