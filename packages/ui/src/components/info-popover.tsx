@@ -44,7 +44,7 @@ export const InfoPopover: FC<InfoPopoverProps> = ({
       align="end"
       side="bottom"
       className={cn(
-        "-translate-y-[2.5rem]",
+        "z-50 -translate-y-[2.5rem]",
         "rounded-l-md border-b border-l border-t border-solid border-neutral-400 pb-4 pl-6 pr-3 pt-1 shadow-[0px_1px_5px_0px_rgba(0,0,0,0.2)]",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
         "bg-background text-popover-foreground",
