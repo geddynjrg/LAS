@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { FC } from "react";
 
 import { Header } from "@workspace/ui/components/header";
@@ -14,7 +15,11 @@ export interface AppHeaderProps {
 export const AppHeader: FC<AppHeaderProps> = ({ locale }) => {
   return (
     <Header
-      startDecorator={<Logo className="size-11" />}
+      startDecorator={
+        <Link href="/" className="mt-2 block">
+          <Logo className="size-11" />
+        </Link>
+      }
       endDecorator={
         <>
           <LocaleSelect defaultValue={locale} />

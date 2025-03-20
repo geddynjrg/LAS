@@ -53,7 +53,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
   );
 
   return (
-    <FormWrap action={formAction} cancelUrl="/dashboard" className="space-y-4">
+    <FormWrap action={formAction} cancelUrl="/" className="space-y-4">
       <input type="hidden" name="id" value={id} />
       <DataBlock
         title={t(`DetailsPage.title-child`)}

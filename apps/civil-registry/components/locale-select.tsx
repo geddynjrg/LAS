@@ -55,7 +55,6 @@ const Icon: FC = () => {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 25 25"
-      aria-hidden="true"
     >
       <path
         fill="currentColor"
@@ -63,23 +62,23 @@ const Icon: FC = () => {
       ></path>
       <path
         stroke="#fff"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
         d="M9.5 2.5c-1.95 5.84-1.95 14.16 0 20m5.5-20c.97 2.92 1.46 6.96 1.46 10"
       ></path>
       <path
         stroke="#fff"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
         d="M2 15c2.92.97 6.96 1.96 10 1.96M2 9.498c5.84-1.95 14.16-1.446 20 .503"
       ></path>
       <path
         fill="currentColor"
         stroke="#fff"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         d="M17.5 24a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z"
       ></path>
       <path
