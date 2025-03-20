@@ -10,10 +10,10 @@ import {
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DatePicker } from "@workspace/ui/components/date-picker";
-import { Field, FieldGroup, Form } from "@workspace/ui/components/form";
+import { Field, FieldGroup } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { useDebounce } from "@workspace/ui/hooks/use-debounce";
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { informantAction } from "@/app/add/informant/informant-action";
@@ -61,7 +61,7 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
     value: nationality,
   }));
 
-  const debouncedSearch = useDebounce(async (search?: string) => {
+  const debouncedSearch = useDebouncedCallback(async (search?: string) => {
     if (!search) {
       setNationalIdOptions([]);
       return;

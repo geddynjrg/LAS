@@ -2,7 +2,7 @@
 
 import { IconChevronLeft, IconPlus } from "@tabler/icons-react";
 import { useFormatter, useTranslations } from "next-intl";
-import React, { useCallback, useEffect, useState, type FC } from "react";
+import React, { useCallback, useState, type FC } from "react";
 
 import {
   ButtonGroup,
@@ -16,16 +16,13 @@ import { Field, FieldGroup } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { useDebounce } from "@workspace/ui/hooks/use-debounce";
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { FormWrap } from "@/app/add/form-wrap";
 import { informantAction } from "@/app/add/informant/informant-action";
-import {
-  informantSchema,
-  type InformantSchema,
-} from "@/app/add/informant/informant-schema";
+import { informantSchema } from "@/app/add/informant/informant-schema";
 import type { Person } from "@/lib/schema/person-schema";
 import { searchPerson } from "@/lib/services/birth-registration-service";
 import { nationalities } from "@/lib/util/nationalities";
@@ -92,7 +89,7 @@ export const InformantForm: FC<InformantFormProps> = ({
   }));
   const [searchedText, setSearchedText] = useState<string>("");
 
-  const [debouncedSearch] = useDebounce(async (search?: string) => {
+  const debouncedSearch = useDebouncedCallback(async (search?: string) => {
     if (search === searchedText) {
       return;
     }

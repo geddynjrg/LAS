@@ -2,7 +2,7 @@
 
 import { IconChevronLeft, IconPlus } from "@tabler/icons-react";
 import { useFormatter, useTranslations } from "next-intl";
-import React, { useCallback, useState, type FC } from "react";
+import { useCallback, useState, type FC } from "react";
 
 import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
@@ -12,7 +12,7 @@ import { Field, FieldGroup } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { useDebounce } from "@workspace/ui/hooks/use-debounce";
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -85,7 +85,7 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
     { label: t("DetailsPage.widowed"), value: "Widowed" },
   ];
 
-  const [debouncedSearch] = useDebounce(async (search?: string) => {
+  const debouncedSearch = useDebouncedCallback(async (search?: string) => {
     if (search === searchedText) {
       return;
     }
