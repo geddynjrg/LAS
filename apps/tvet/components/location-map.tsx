@@ -14,11 +14,14 @@ import { Button } from "@workspace/ui/components/button";
 import type { InstitutionType } from "@/lib/api/schema/institution.schema";
 
 export interface LocationMapProps {
-  institutes: InstitutionType[];
-  children?: ReactNode;
+  institutes?: InstitutionType[];
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
-export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
+export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
   const [showInfoWindow, setShowInfoWindow] = useState<InstitutionType | null>(
     null,
   );
@@ -29,14 +32,14 @@ export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
       <div className="relative box-border w-full">
         <Map
           defaultCenter={
-            institutes[0]?.location
+            institutes && institutes[0]?.location
               ? {
                   lat: institutes[0].location.latitude,
                   lng: institutes[0].location.longitude,
                 }
               : {
-                  lat: -1.286273,
-                  lng: 36.817371,
+                  lat: location?.latitude ?? 1.2921,
+                  lng: location?.longitude ?? 36.817371,
                 }
           }
           mapId="2471b6743fd8b796"
@@ -45,7 +48,7 @@ export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
           onZoomChanged={(zoom) => setZoom(zoom.detail.zoom)}
           className="aspect-square w-full"
         >
-          {institutes.map((institute, index) => (
+          {institutes?.map((institute, index) => (
             <AdvancedMarker
               key={index}
               position={{
@@ -61,7 +64,18 @@ export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
               <IconMapPin className="text-primary" />
             </AdvancedMarker>
           ))}
-          {showInfoWindow && (
+          {location && (
+            <AdvancedMarker
+              key="location"
+              position={{
+                lat: location.latitude,
+                lng: location.longitude,
+              }}
+            >
+              <IconMapPin className="text-primary" />
+            </AdvancedMarker>
+          )}
+          {institutes && showInfoWindow && (
             <InfoWindow
               onClose={() => setShowInfoWindow(null)}
               headerContent={

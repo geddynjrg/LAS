@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { addressSchema } from "@/lib/api/schema/address.schema";
 import { AbstractBlockSchema } from "@/lib/api/schema/block/abstract-block.schema";
 import { ImageSchema } from "@/lib/api/schema/image-file.schema";
 
@@ -10,15 +11,7 @@ export const LocationBlockSchema = AbstractBlockSchema.extend({
   image: z.array(ImageSchema),
   show_map: z.boolean(),
   show_directions: z.boolean(),
-  address: z.object({
-    country_code: z.string(),
-    administrative_area: z.string().nullable(),
-    locality: z.string().nullable(),
-    dependent_locality: z.string().nullable(),
-    postal_code: z.string(),
-    address_line: z.string(),
-    organization: z.string().nullable(),
-  }),
+  address: addressSchema,
   location: z.object({
     latitude: z.number(),
     longitude: z.number(),

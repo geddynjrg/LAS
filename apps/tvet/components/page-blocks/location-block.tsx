@@ -17,6 +17,7 @@ export const LocationBlock: FC<LocationBlockProps> = ({
   image,
   show_directions,
   show_map,
+  location,
 }) => {
   return (
     <Container asChild>
@@ -62,7 +63,14 @@ export const LocationBlock: FC<LocationBlockProps> = ({
         {show_map && (
           <div className="map relative box-border w-full shrink bg-neutral-100 lg:flex-1">
             <section className="map relative box-border w-full">
-              <LocationMap institutes={[]} />
+              <LocationMap
+                location={
+                  location && {
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                  }
+                }
+              />
             </section>
           </div>
         )}
