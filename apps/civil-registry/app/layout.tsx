@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       suppressHydrationWarning
       className={`${dmSans.variable} font-sans`}
     >
-      <body className="min-h-svh antialiased [--header-height:4.5rem] [--sidebar-width:15.5rem] md:[--header-height:5.5rem]">
+      <body className="min-h-svh antialiased [--header-height:4.5rem] [--sidebar-width:15.5rem]">
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <AppHeader locale={locale} />

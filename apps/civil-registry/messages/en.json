@@ -12,6 +12,14 @@
       "title": "My children"
     }
   },
+  "Navigation": {
+    "home": "Home",
+    "national": "National",
+    "countries": "Counties",
+    "help-and-support": "Help & Support",
+    "terms-and-conditions": "Terms & Conditions",
+    "privacy-policy": "Privacy Policy"
+  },
   "Components": {
     "person-card": {
       "validate-data": "Validate data",
@@ -25,12 +33,6 @@
     },
     "app-footer": {
       "title-message": "Giving Kenyans easy access to online government services.",
-      "home": "Home",
-      "national": "National",
-      "countries": "Counties",
-      "help-and-support": "Help & Support",
-      "terms-and-conditions": "Terms & Conditions",
-      "privacy-policy": "Privacy Policy",
       "rights": "All rights reserved"
     }
   },

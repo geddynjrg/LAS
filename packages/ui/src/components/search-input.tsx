@@ -71,7 +71,7 @@ export const SearchInput: FC<SearchInputProps> = ({
           asChild
           align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
-          className="w-(--radix-popover-trigger-width) z-10"
+          className="w-(--radix-popover-trigger-width) z-20 shadow-md"
         >
           <CommandList>
             {isLoading ? (

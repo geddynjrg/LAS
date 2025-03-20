@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import type { FC } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
@@ -20,14 +21,12 @@ export const AppFooter: FC = () => {
         {t("Components.app-footer.title-message")}
       </p>
 
-      <Anchor href="#">{t("Components.app-footer.home")}</Anchor>
-      <Anchor href="#">{t("Components.app-footer.national")}</Anchor>
-      <Anchor href="#">{t("Components.app-footer.countries")}</Anchor>
-      <Anchor href="#">{t("Components.app-footer.help-and-support")}</Anchor>
-      <Anchor href="#">
-        {t("Components.app-footer.terms-and-conditions")}
-      </Anchor>
-      <Anchor href="#">{t("Components.app-footer.privacy-policy")}</Anchor>
+      <Anchor href="/">{t("Navigation.home")}</Anchor>
+      <Anchor href="#">{t("Navigation.national")}</Anchor>
+      <Anchor href="#">{t("Navigation.countries")}</Anchor>
+      <Anchor href="#">{t("Navigation.help-and-support")}</Anchor>
+      <Anchor href="#">{t("Navigation.terms-and-conditions")}</Anchor>
+      <Anchor href="#">{t("Navigation.privacy-policy")}</Anchor>
 
       <div className="typo-body-extra-small border-t border-solid border-neutral-700 px-12 pt-[1.625rem]">
         &copy; 2025 eCitizen. {t("Components.app-footer.rights")}
@@ -37,12 +36,12 @@ export const AppFooter: FC = () => {
 };
 
 interface AnchorProps {
-  href?: string;
+  href: string;
   children?: string;
 }
 
 const Anchor: FC<AnchorProps> = ({ href, children }) => (
-  <a href={href} className="text-neutral-100">
+  <Link href={href} className="text-neutral-100">
     {children}
-  </a>
+  </Link>
 );

@@ -1,61 +1,42 @@
-import { IconHome } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarSubmenu,
 } from "@workspace/ui/components/sidebar";
 
 import { NavLink } from "./nav-link";
 
 export const AppSidebar: FC = () => {
-  const t = useTranslations("Common");
+  const t = useTranslations();
 
   return (
-    <Sidebar title={t("menu")}>
-      <SidebarHeader>Language select</SidebarHeader>
+    <Sidebar title={t("Common.menu")}>
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem asChild>
-            <NavLink href="/">
-              <IconHome />
-              Dashboard
-            </NavLink>
+            <NavLink href="/">{t("Navigation.home")}</NavLink>
           </SidebarMenuItem>
-
-          <SidebarSubmenu title="Institutions">
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/1">institution 1</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/2">institution 2</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/3">institution 3</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/4">institution 4</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/5">institution 5</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/6">institution 6</NavLink>
-            </SidebarMenuItem>
-          </SidebarSubmenu>
-
           <SidebarMenuItem asChild>
-            <NavLink href="/courses">Courses</NavLink>
+            <NavLink href="#">{t("Navigation.national")}</NavLink>
+          </SidebarMenuItem>
+          <SidebarMenuItem asChild>
+            <NavLink href="#">{t("Navigation.countries")}</NavLink>
+          </SidebarMenuItem>
+          <SidebarMenuItem asChild>
+            <NavLink href="#">{t("Navigation.help-and-support")}</NavLink>
+          </SidebarMenuItem>
+          <SidebarMenuItem asChild>
+            <NavLink href="#">{t("Navigation.terms-and-conditions")}</NavLink>
+          </SidebarMenuItem>
+          <SidebarMenuItem asChild>
+            <NavLink href="#">{t("Navigation.privacy-policy")}</NavLink>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>nav user</SidebarFooter>
     </Sidebar>
   );
 };

@@ -1,13 +1,11 @@
-import { useTranslations } from "next-intl";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
-import { FlagSelect } from "@workspace/ui/components/flag-select";
 import { Header } from "@workspace/ui/components/header";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 
+import { LocaleSelect } from "@/components/locale-select";
 import { Logo } from "@/components/logo";
-import { locales, type Locale } from "@/i18n/config";
-import { setUserLocale } from "@/lib/locale";
+import { type Locale } from "@/i18n/config";
 
 export interface AppHeaderProps {
   locale: Locale;
@@ -16,19 +14,11 @@ export interface AppHeaderProps {
 export const AppHeader: FC<AppHeaderProps> = ({ locale }) => {
   return (
     <Header
-      startDecorator={<Logo />}
+      startDecorator={<Logo className="size-11" />}
       endDecorator={
         <>
-          <FlagSelect
-            className="max-md:hidden"
-            defaultValue={locale}
-            options={locales.map((locale) => ({
-              value: locale.value,
-              label: locale.labelShort,
-            }))}
-            onChange={setUserLocale}
-          />
-          <SidebarTrigger />
+          <LocaleSelect defaultValue={locale} />
+          <SidebarTrigger className="mr-4 w-4" />
         </>
       }
     />
