@@ -8,7 +8,7 @@ import { Container } from "@workspace/ui/components/container";
 
 import { Heading } from "@/components/heading";
 import { LocationMap } from "@/components/location-map";
-import type { InstituteType, LocationBlockType } from "@/lib/api/types";
+import type { LocationBlockType } from "@/lib/api/schema/block/location-block.schema";
 
 export interface LocationBlockProps extends LocationBlockType {}
 

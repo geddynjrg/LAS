@@ -57,6 +57,7 @@ export default async function Page(props: PageProps) {
           </div>
         </div>
       </HeroSection>
+
       <section id="content">
         <PageComponents
           page_components={pageData.data?.content.page_components ?? []}

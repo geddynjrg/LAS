@@ -35,9 +35,7 @@ export const PageComponents: FC<PageComponentsProps> = ({
 
     switch (component.block_type) {
       case "application":
-        return (
-          <ApplicationBlock {...component} key={key} id={applicationBlockId} />
-        );
+        return <ApplicationBlock {...component} key={key} />;
 
       case "section_heading":
         return <SectionHeaderBlock {...component} key={key} />;

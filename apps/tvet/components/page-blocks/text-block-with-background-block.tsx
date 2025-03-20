@@ -12,7 +12,7 @@ import {
 
 import { GradientCornerCard } from "@/components/gradient-corner-card";
 import { Heading } from "@/components/heading";
-import type { TextBlockWithBackgroundBlockType } from "@/lib/api/types";
+import type { TextBlockWithBackgroundBlockType } from "@/lib/api/schema/block/text-block-with-background-block.schema";
 
 export interface TextBlockWithBackgroundBlockProps
   extends TextBlockWithBackgroundBlockType {}

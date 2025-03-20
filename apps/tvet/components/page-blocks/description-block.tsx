@@ -2,7 +2,7 @@ import type { FC } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
-import type { DescriptionType } from "@/lib/api/types";
+import type { DescriptionType } from "@/lib/api/schema/description.schema";
 
 export interface DescriptionBlockProps extends DescriptionType {
   className?: string;

@@ -7,7 +7,7 @@ import {
 
 import { Heading } from "@/components/heading";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { TextListBlockType } from "@/lib/api/types";
+import type { TextListBlockType } from "@/lib/api/schema/block/text-list-block.schema";
 
 export interface TextListBlockProps extends TextListBlockType {}
 

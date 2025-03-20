@@ -8,7 +8,7 @@ import { Underline } from "@workspace/ui/components/underline";
 
 import { Heading } from "@/components/heading";
 import { LocationMap } from "@/components/location-map";
-import type { VocationalCentresBlockType } from "@/lib/api/types";
+import type { VocationalCentresBlockType } from "@/lib/api/schema/block/vocational-centres-block.schema";
 
 export interface VocationalCentersBlockProps
   extends VocationalCentresBlockType {}

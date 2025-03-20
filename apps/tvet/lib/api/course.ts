@@ -2,7 +2,8 @@
 
 import { z } from "zod";
 
-import { BlockSchema, ImageSchema } from "@/lib/api/types";
+import { ImageSchema } from "@/lib/api/schema/image-file.schema";
+import { BlockSchema } from "@/lib/api/types";
 import { api, validate } from "@/lib/api/utils";
 
 export async function getCourseData(course: string) {

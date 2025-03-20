@@ -2,7 +2,9 @@
 
 import { z } from "zod";
 
-import { BlockSchema, DescriptionSchema, ImageSchema } from "@/lib/api/types";
+import { DescriptionSchema } from "@/lib/api/schema/description.schema";
+import { ImageSchema } from "@/lib/api/schema/image-file.schema";
+import { BlockSchema } from "@/lib/api/types";
 import { api, validate } from "@/lib/api/utils";
 
 export async function getInstitutionData(institute: string) {

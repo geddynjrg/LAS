@@ -9,8 +9,8 @@ import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { Heading } from "@/components/heading";
+import type { HighlightedCourseListingBlockType } from "@/lib/api/schema/block/highlighted-course-listing-block.schema";
 import { SearchCoursesForm } from "@/components/search-courses-form";
-import type { HighlightedCourseListingBlockType } from "@/lib/api/types";
 
 export interface HighlightedCourseListingBlockProps
   extends HighlightedCourseListingBlockType {}

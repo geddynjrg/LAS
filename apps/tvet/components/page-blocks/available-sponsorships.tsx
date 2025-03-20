@@ -4,7 +4,7 @@ import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card"
 
 import { Heading } from "@/components/heading";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { AvailableSponsorshipsBlockType } from "@/lib/api/types";
+import type { AvailableSponsorshipsBlockType } from "@/lib/api/schema/block/available-sponsorships-block.schema";
 
 export interface AvailableSponsorshipsProps
   extends AvailableSponsorshipsBlockType {}

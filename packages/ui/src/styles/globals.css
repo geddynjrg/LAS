@@ -576,3 +576,9 @@
     text-underline-offset: 6px;
   }
 }
+
+/** override CSS entries*/
+/* google maps override info window*/
+.gm-style-iw.gm-style-iw-c {
+  max-width: 19.5rem !important;
+}

@@ -6,7 +6,7 @@ import { IconTikTok } from "@workspace/ui/components/icon/icon-tiktok";
 import { IconX } from "@workspace/ui/components/icon/icon-x";
 import { IconYoutube } from "@workspace/ui/components/icon/icon-youtube";
 
-import type { SocialBlockType } from "@/lib/api/types";
+import type { SocialBlockType } from "@/lib/api/schema/block/social-block.schema";
 
 export interface SocialBlockProps extends SocialBlockType {}
 

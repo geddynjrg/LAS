@@ -4,7 +4,7 @@ import { Container } from "@workspace/ui/components/container";
 import { SectionHeader } from "@workspace/ui/components/tvet/section-header";
 
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { SectionHeadingBlockType } from "@/lib/api/types";
+import type { SectionHeadingBlockType } from "@/lib/api/schema/block/section-heading-block.schema";
 
 export interface SectionHeaderBlockProps extends SectionHeadingBlockType {}
 

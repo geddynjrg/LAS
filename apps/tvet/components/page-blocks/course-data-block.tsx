@@ -4,7 +4,7 @@ import type { FC, ReactNode } from "react";
 import { Button } from "@workspace/ui/components/button";
 
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { CourseDataBlockType } from "@/lib/api/types";
+import type { CourseDataBlockType } from "@/lib/api/schema/block/course-data-block.schema";
 
 export interface CourseDataBlockProps extends CourseDataBlockType {}
 

@@ -8,7 +8,7 @@ import { cn } from "@workspace/ui/lib/utils";
 
 import { Heading } from "@/components/heading";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { CoursesBlockType } from "@/lib/api/types";
+import type { CoursesBlockType } from "@/lib/api/schema/block/course-block.schema";
 
 export interface CoursesBlockProps extends CoursesBlockType {}
 

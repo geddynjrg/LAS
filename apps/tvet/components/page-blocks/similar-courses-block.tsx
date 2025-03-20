@@ -10,7 +10,7 @@ import {
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 
 import { Heading } from "@/components/heading";
-import type { SimilarCoursesBlockType } from "@/lib/api/types";
+import type { SimilarCoursesBlockType } from "@/lib/api/schema/block/similar-courses-block.schema";
 
 export interface SimilarCoursesBlockProps extends SimilarCoursesBlockType {}
 

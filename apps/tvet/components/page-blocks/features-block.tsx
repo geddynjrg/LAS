@@ -4,7 +4,7 @@ import type { FC, ReactNode } from "react";
 import { FeatureSection } from "@workspace/ui/components/tvet/feature-section";
 
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { FeaturesBlockType } from "@/lib/api/types";
+import type { FeaturesBlockType } from "@/lib/api/schema/block/features-block.schema";
 
 export interface FeaturesBlockProps extends FeaturesBlockType {}
 

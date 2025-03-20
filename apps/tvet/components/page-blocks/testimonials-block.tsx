@@ -10,7 +10,7 @@ import { Testimonial } from "@workspace/ui/components/testimonial";
 
 import { Heading } from "@/components/heading";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { TestimonialsBlockType } from "@/lib/api/types";
+import type { TestimonialsBlockType } from "@/lib/api/schema/block/testimonials-block.schema";
 
 export interface TestimonialsBlockProps extends TestimonialsBlockType {}
 

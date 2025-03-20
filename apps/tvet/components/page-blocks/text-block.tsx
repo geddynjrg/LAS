@@ -7,7 +7,7 @@ import { Underline } from "@workspace/ui/components/underline";
 
 import { Heading } from "@/components/heading";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { TextBlockType } from "@/lib/api/types";
+import type { TextBlockType } from "@/lib/api/schema/block/text-block.schema";
 
 export interface TextBlockProps extends TextBlockType {}
 

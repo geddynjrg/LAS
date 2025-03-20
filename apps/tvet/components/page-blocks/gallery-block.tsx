@@ -10,7 +10,7 @@ import {
 
 import { Heading } from "@/components/heading";
 import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { GalleryBlockType } from "@/lib/api/types";
+import type { GalleryBlockType } from "@/lib/api/schema/block/gallery-block.schema";
 
 export interface GalleryBlockProps extends GalleryBlockType {}
 

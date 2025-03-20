@@ -11,15 +11,15 @@ import { useState, type FC, type ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 
-import type { InstituteType } from "@/lib/api/types";
+import type { InstitutionType } from "@/lib/api/schema/institution.schema";
 
 export interface LocationMapProps {
-  institutes: InstituteType[];
+  institutes: InstitutionType[];
   children?: ReactNode;
 }
 
 export const LocationMap: FC<LocationMapProps> = ({ children, institutes }) => {
-  const [showInfoWindow, setShowInfoWindow] = useState<InstituteType | null>(
+  const [showInfoWindow, setShowInfoWindow] = useState<InstitutionType | null>(
     null,
   );
   const [zoom, setZoom] = useState(13);

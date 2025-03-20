@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 
-import type { MediaBlockBlockType } from "@/lib/api/types";
+import type { MediaBlockBlockType } from "@/lib/api/schema/block/media-block.schema";
 
 export interface MediaBlockProps extends MediaBlockBlockType {}
 
