@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import {
@@ -35,6 +36,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
   id,
   action,
 }) => {
+  const t = useTranslations();
   const [state, formAction, isPending] = useForm(
     action,
     proposedBusinessDataSchema,
@@ -46,16 +48,31 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
   return (
     <Form action={formAction} autoComplete="on">
       <Container>
-        <FormCard title="Business information" className="space-y-4">
+        <FormCard
+          title={t(
+            "ApplicationDetailsPage.proposedBusiness.businessInfo.businessInformation",
+          )}
+          className="space-y-4"
+        >
           <Field
             state={state}
             name="natureOfBusiness"
-            label="Nature of business"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessInfo.natureOfBusiness",
+            )}
             required
             control={(props) => (
               <ButtonGroup {...props} type="single">
-                <ButtonGroupItem value="Start-up">Start-up</ButtonGroupItem>
-                <ButtonGroupItem value="Expansion">Expansion</ButtonGroupItem>
+                <ButtonGroupItem value="Start-up">
+                  {t(
+                    "ApplicationDetailsPage.proposedBusiness.businessInfo.startup",
+                  )}
+                </ButtonGroupItem>
+                <ButtonGroupItem value="Expansion">
+                  {t(
+                    "ApplicationDetailsPage.proposedBusiness.businessInfo.expansion",
+                  )}
+                </ButtonGroupItem>
               </ButtonGroup>
             )}
           />
@@ -63,17 +80,19 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <Field
             state={state}
             name="businessType"
-            label="Business type"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessInfo.businessType",
+            )}
             required
             control={(props) => (
               <CheckboxGroup
                 {...props}
                 options={[
-                  { label: "Trade", value: "Trade" },
-                  { label: "Service", value: "Service" },
-                  { label: "Manufacturing", value: "Manufacturing" },
-                  { label: "Agriculture", value: "Agriculture" },
-                  { label: "Other", value: "Other" },
+                  { label: t("Common.trade"), value: "Trade" },
+                  { label: t("Common.service"), value: "Service" },
+                  { label: t("Common.manufacturing"), value: "Manufacturing" },
+                  { label: t("Common.agriculture"), value: "Agriculture" },
+                  { label: t("Common.other"), value: "Other" },
                 ]}
               />
             )}
@@ -82,21 +101,39 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <Field
             state={state}
             name="yearsInBusiness"
-            label="Years in business"
-            required
-            control={(_props) => <Input placeholder="Enter years" type="tel" />}
-          />
-        </FormCard>
-
-        <FormCard title="Business performance" className="space-y-4">
-          <Field
-            state={state}
-            name="averageIncome"
-            label="Average income per month"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessInfo.yearsInBusiness",
+            )}
             required
             control={(_props) => (
               <Input
-                placeholder="Enter amount"
+                placeholder={t(
+                  "ApplicationDetailsPage.proposedBusiness.businessInfo.enterYears",
+                )}
+                type="tel"
+              />
+            )}
+          />
+        </FormCard>
+
+        <FormCard
+          title={t(
+            "ApplicationDetailsPage.proposedBusiness.businessPerformance.businessPerformance",
+          )}
+          className="space-y-4"
+        >
+          <Field
+            state={state}
+            name="averageIncome"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessPerformance.averageIncomePerMonth",
+            )}
+            required
+            control={(_props) => (
+              <Input
+                placeholder={t(
+                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                )}
                 type="tel"
                 startDecorator="KES"
               />
@@ -106,11 +143,15 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <Field
             state={state}
             name="costOfGoods"
-            label="Cost of goods/services per month"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessPerformance.goodsServicesCost",
+            )}
             required
             control={(_props) => (
               <Input
-                placeholder="Enter amount"
+                placeholder={t(
+                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                )}
                 type="tel"
                 startDecorator="KES"
               />
@@ -120,11 +161,15 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <Field
             state={state}
             name="rentForBusiness"
-            label="Rent for business"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessPerformance.rendForBusiness",
+            )}
             required
             control={(_props) => (
               <Input
-                placeholder="Enter amount"
+                placeholder={t(
+                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                )}
                 type="tel"
                 startDecorator="KES"
               />
@@ -134,11 +179,15 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <Field
             state={state}
             name="salaries"
-            label="Salaries/wages for workers"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessPerformance.salaries",
+            )}
             required
             control={(_props) => (
               <Input
-                placeholder="Enter amount"
+                placeholder={t(
+                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                )}
                 type="tel"
                 startDecorator="KES"
               />
@@ -148,11 +197,15 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <Field
             state={state}
             name="transportForBusinessStock"
-            label="Transport for business stock"
+            label={t(
+              "ApplicationDetailsPage.proposedBusiness.businessPerformance.transportCosts",
+            )}
             required
             control={(_props) => (
               <Input
-                placeholder="Enter amount"
+                placeholder={t(
+                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                )}
                 type="tel"
                 startDecorator="KES"
               />

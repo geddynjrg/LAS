@@ -13,7 +13,11 @@
     "submit": "Submit",
     "help": "Help",
     "faq": "Frequently asked questions",
-    "monthCount": "{count, plural, =1 {# month} other {# months}}"
+    "monthCount": "{count, plural, =1 {# month} other {# months}}",
+    "trade": "Trade",
+    "service": "Service",
+    "manufacturing": "Manufacturing",
+    "agriculture": "Agriculture"
   },
 
   "Footer": {
@@ -244,7 +248,11 @@
         "businessInformation": "Business information",
         "natureOfBusiness": "Nature of business",
         "businessType": "Business type",
-        "operationPeriod": "How many years has been in operation?"
+        "operationPeriod": "How many years has been in operation?",
+        "startup": "Start-up",
+        "expansion": "Expansion",
+        "yearsInBusiness": "Years in business",
+        "enterYears": "Enter years"
       },
       "businessPerformance": {
         "businessPerformance": "Business performance",
@@ -253,7 +261,10 @@
         "rent": "Rent for your business",
         "salaries": "Salaries/wages for workers",
         "transportCosts": "Transport for business stock",
-        "netSurplus": "Net surplus/deficit"
+        "netSurplus": "Net surplus/deficit",
+        "enterAmount": "Enter amount",
+        "goodsServicesCost": "Cost of goods/services per month",
+        "rendForBusiness": "Rent for business"
       }
     }
   },
