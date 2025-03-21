@@ -1,7 +1,7 @@
 import "@workspace/ui/globals.css";
 
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { DM_Sans } from "next/font/google";
 import { Suspense, type ReactNode } from "react";
 
@@ -23,6 +23,7 @@ export interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
+  const t = await getTranslations();
   const locale = (await getLocale()) as Locale;
   const messages = await getMessages();
 
@@ -38,7 +39,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <AppHeader />
             <AppSidebar locale={locale} />
             <SidebarInset>
-              <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+              <Suspense fallback={<p>{t("Common.loading")}</p>}>
+                {children}
+              </Suspense>
             </SidebarInset>
             <AppFooter />
           </Providers>

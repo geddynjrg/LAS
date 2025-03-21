@@ -17,7 +17,8 @@
     "trade": "Trade",
     "service": "Service",
     "manufacturing": "Manufacturing",
-    "agriculture": "Agriculture"
+    "agriculture": "Agriculture",
+    "loading": "Loading"
   },
 
   "Footer": {
