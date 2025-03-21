@@ -94,5 +94,21 @@
     "title": "Apply now",
     "searchTitle": "Search for courses",
     "linkTitle": "View all"
+  },
+  "LocationMap": {
+    "getDirections": "Get Directions",
+    "viewMore": "View more"
+  },
+  "AvailableSponsorshipsBlock": {
+    "availableSponsorships": "Available sponsorships"
+  },
+  "CourseDataBlock": {
+    "applyNow": "Apply now",
+    "fees": "Fees",
+    "trainingFormat": "Training Format",
+    "groupSize": "Group Size",
+    "minimumEntryRequirements": "Minimum entry requirements",
+    "equipmentAvailableAtInstitution": "Equipment available at institution",
+    "duration": "Duration"
   }
 }

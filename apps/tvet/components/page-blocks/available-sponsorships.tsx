@@ -1,4 +1,5 @@
-import type { FC, ReactNode } from "react";
+import { useTranslations } from "next-intl";
+import type { FC } from "react";
 
 import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card";
 
@@ -12,10 +13,11 @@ export interface AvailableSponsorshipsProps
 export const AvailableSponsorships: FC<AvailableSponsorshipsProps> = ({
   sponsorships,
 }) => {
+  const t = useTranslations("AvailableSponsorshipsBlock");
   return (
     <section className="py-10">
       <div className="app-container flex flex-col gap-4 px-4">
-        <Heading type="h3">Available sponsorships</Heading>
+        <Heading type="h3">{t("availableSponsorships")}</Heading>
         {sponsorships.map((sponsorship, key) => (
           <SponsorshipCard
             key={`sponsorship-${key}`}

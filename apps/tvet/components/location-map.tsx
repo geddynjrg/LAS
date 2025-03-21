@@ -1,12 +1,18 @@
 "use client";
 
-import { IconMapPin, IconMinus, IconPlus } from "@tabler/icons-react";
+import {
+  IconMapPin,
+  IconMapPinFilled,
+  IconMinus,
+  IconPlus,
+} from "@tabler/icons-react";
 import {
   AdvancedMarker,
   APIProvider,
   InfoWindow,
   Map,
 } from "@vis.gl/react-google-maps";
+import { useTranslations } from "next-intl";
 import { useState, type FC, type ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -26,6 +32,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
     null,
   );
   const [zoom, setZoom] = useState(13);
+  const t = useTranslations("LocationMap");
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
@@ -61,7 +68,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                   : setShowInfoWindow(null)
               }
             >
-              <IconMapPin className="text-primary" />
+              <IconMapPinFilled className="text-primary" size={32} />
             </AdvancedMarker>
           ))}
           {location && (
@@ -72,7 +79,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                 lng: location.longitude,
               }}
             >
-              <IconMapPin className="text-primary" />
+              <IconMapPinFilled className="text-primary" size={32} />
             </AdvancedMarker>
           )}
           {institutes && showInfoWindow && (
@@ -93,7 +100,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                 <div className="mt-2 flex flex-col gap-2">
                   <p>{showInfoWindow.address.address_line}</p>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold">Get Directions</span>
+                    <span className="font-bold">{t("getDirections")}</span>
                     <Button asChild>
                       <a
                         href={`https://www.google.com/maps/search/?api=1&query=${showInfoWindow.location.latitude},${showInfoWindow.location.longitude}`}
@@ -101,7 +108,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                         rel="noreferrer"
                         target="_blank"
                       >
-                        View more
+                        {t("viewMore")}
                       </a>
                     </Button>
                   </div>
