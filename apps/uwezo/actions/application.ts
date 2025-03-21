@@ -148,13 +148,17 @@ export async function createApplication() {
 
 async function getApplication(id: string) {
   const session = await auth();
+  console.log(
+    dummyApplicationsTest.map((app) => app.generalDetails.applicationId),
+  );
   const applicationIndex = dummyApplicationsTest.findIndex(
-    (app) =>
-      app.generalDetails.applicationId === id &&
-      app.generalDetails.user === session?.user?.email,
+    (app) => app.generalDetails.applicationId === id,
   );
 
+  console.log(id);
+  console.log(applicationIndex);
   const application = dummyApplicationsTest[applicationIndex];
+  console.log(application);
 
   /* this should not happen */
   if (applicationIndex === -1 || !application) {
