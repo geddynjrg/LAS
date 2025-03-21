@@ -37,9 +37,7 @@ export default async function CoursePageNode(pageData: CourseNodeType) {
       >
         <div className="mt-4">
           <Underline asChild variant="white">
-            <Link
-              href={`/institution/${pageData.data?.content?.institution?.id}`}
-            >
+            <Link href={pageData.data?.content?.institution?.path_alias ?? "#"}>
               {pageData.data?.content?.institution?.title}
               <IconArrowRight />
             </Link>

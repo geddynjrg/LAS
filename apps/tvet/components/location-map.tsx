@@ -49,11 +49,12 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                   lng: location?.longitude ?? 36.817371,
                 }
           }
-          mapId="2471b6743fd8b796"
+          mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID}
           disableDefaultUI={true}
           zoom={zoom}
           onZoomChanged={(zoom) => setZoom(zoom.detail.zoom)}
           className="aspect-square w-full"
+          gestureHandling={"greedy"}
         >
           {institutes?.map((institute, index) => (
             <AdvancedMarker
@@ -100,10 +101,18 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                 <div className="mt-2 flex flex-col gap-2">
                   <p>{showInfoWindow.address.address_line}</p>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold">{t("getDirections")}</span>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&travelmode=driving&layer=traffic&destination=${showInfoWindow.location.latitude},${showInfoWindow.location.longitude}`}
+                      className="text-foreground font-bold"
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      {t("getDirections")}
+                    </a>
+
                     <Button asChild>
                       <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${showInfoWindow.location.latitude},${showInfoWindow.location.longitude}`}
+                        href={showInfoWindow.path_alias}
                         className="cl mt-2"
                         rel="noreferrer"
                         target="_blank"

@@ -57,7 +57,7 @@ export const CoursesBlock: FC<CoursesBlockProps> = ({
                 startsOnDate={format.dateTime(
                   new Date(course.start_on[0] ?? ""),
                 )}
-                href={`/institution/${course.institution?.id}/course/${course.id}`}
+                href={course.path_alias}
                 variant="secondary"
               />
             ),

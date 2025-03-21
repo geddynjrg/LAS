@@ -1,4 +1,4 @@
-import { useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import type { FC, ReactNode } from "react";
 
 import {
@@ -18,6 +18,7 @@ export const SimilarCoursesBlock: FC<SimilarCoursesBlockProps> = ({
   courses,
 }) => {
   const format = useFormatter();
+  const t = useTranslations("SimilarCoursesBlock");
 
   if (!courses || courses.length === 0) {
     return null;
@@ -26,7 +27,7 @@ export const SimilarCoursesBlock: FC<SimilarCoursesBlockProps> = ({
   return (
     <section className="bg-neutral-100 py-10">
       <div className="app-container px-4">
-        <Heading type="h3">Similar courses</Heading>
+        <Heading type="h3">{t("similarCourses")}</Heading>
         <Carousel className="mt-6">
           <CarouselContent>
             {courses.map((course, key) => (
@@ -43,7 +44,7 @@ export const SimilarCoursesBlock: FC<SimilarCoursesBlockProps> = ({
                     new Date(course.start_on[0] ?? ""),
                   )}
                   borderColor="#588157"
-                  href={`/institution/${course.institution?.id}/course/${course.id}`}
+                  href={course.path_alias}
                 />
               </CarouselItem>
             ))}

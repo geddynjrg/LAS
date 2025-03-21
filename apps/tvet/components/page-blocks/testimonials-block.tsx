@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { FC, ReactNode } from "react";
 
 import {
@@ -17,10 +18,12 @@ export interface TestimonialsBlockProps extends TestimonialsBlockType {}
 export const TestimonialsBlock: FC<TestimonialsBlockProps> = ({
   testimonials,
 }) => {
+  const t = useTranslations("TestimonialsBlock");
+
   return (
     <section className="bg-neutral-100 py-10">
       <div className="app-container gap-4 px-4">
-        <Heading type="h3">Testimonials</Heading>
+        <Heading type="h3">{t("testimonials")}</Heading>
         <Carousel className="mt-6">
           <CarouselContent>
             {testimonials.map((testimonial, key) => (

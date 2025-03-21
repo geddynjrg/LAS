@@ -9,8 +9,8 @@ import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { Heading } from "@/components/heading";
-import type { HighlightedCourseListingBlockType } from "@/lib/api/schema/block/highlighted-course-listing-block.schema";
 import { SearchCoursesForm } from "@/components/search-courses-form";
+import type { HighlightedCourseListingBlockType } from "@/lib/api/schema/block/highlighted-course-listing-block.schema";
 
 export interface HighlightedCourseListingBlockProps
   extends HighlightedCourseListingBlockType {}
@@ -57,7 +57,7 @@ export const HighlightedCourseListingBlock: FC<
               )}
               startsOnDate={format.dateTime(new Date(course.start_on[0] ?? ""))}
               borderColor={borders[Math.floor(Math.random() * borders.length)]}
-              href={`/institution/${course.institution?.id}/course/${course.id}`}
+              href={course.path_alias}
             />
           ))}
         </div>

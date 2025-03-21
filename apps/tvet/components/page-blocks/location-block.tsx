@@ -1,4 +1,5 @@
 import { IconArrowGuide } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
@@ -19,25 +20,28 @@ export const LocationBlock: FC<LocationBlockProps> = ({
   show_map,
   location,
 }) => {
+  const t = useTranslations("LocationMap");
+
   return (
     <Container asChild>
       <section className="mt-12 flex flex-col lg:flex-row lg:gap-4 lg:pb-16">
         <div className="flex flex-col justify-between lg:flex-1">
           <div className="px-4">
-            <Heading type="h2">Location</Heading>
+            <Heading type="h2">{t("location")}</Heading>
             <div className="grid grid-cols-2 items-center gap-2">
               <div className="typo-body-large">
-                <p className="font-bold">Address</p>
+                <p className="font-bold">{t("address")}</p>
                 <p>{hint}</p>
               </div>
               {show_directions && (
                 <Button variant="secondary" className="w-full" asChild>
                   <Link
-                    href={`https://www.google.com/maps/search/?api=1&query=${hint.replace(" ", "+")}`}
+                    href={`https://www.google.com/maps/dir/?api=1&travelmode=driving&layer=traffic&destination=${location.latitude},${location.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Get directions <IconArrowGuide />
+                    {t("getDirections")}
+                    <IconArrowGuide />
                   </Link>
                 </Button>
               )}
@@ -45,7 +49,9 @@ export const LocationBlock: FC<LocationBlockProps> = ({
           </div>
 
           <div>
-            <p className="typo-body-large mt-4 px-4 font-bold">Our gates</p>
+            <p className="typo-body-large mt-4 px-4 font-bold">
+              {t("ourGates")}
+            </p>
             <div className="relative mt-4 aspect-[16/9]">
               {image[0] && image[0].url && (
                 <Image

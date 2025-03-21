@@ -1,4 +1,5 @@
 import { IconArrowRight } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
@@ -16,6 +17,7 @@ export interface VocationalCentersBlockProps
 export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
   institutions,
 }) => {
+  const t = useTranslations("VocationalCentersBlock");
   // split institutions by address locality (town?)
   const locations = institutions.reduce(
     (acc: { [key: string]: typeof institutions }, institution) => {
@@ -34,7 +36,7 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
     <Container className="flex flex-col gap-4 px-0 lg:flex-row-reverse">
       <section className="mt-4 px-4 py-12 lg:shrink">
         <Heading type="h2" className="typo-h2">
-          Nairobi Vocational Centres
+          {t("nairobiVocationalCenters")}
         </Heading>
 
         <div className="mt-8 grid auto-cols-max gap-4">
@@ -43,7 +45,7 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
               <p className="typo-h5">{locality}</p>
               {institutions.map((institution) => (
                 <Underline asChild key={institution.id}>
-                  <Link href={`/institution/${institution.id}`}>
+                  <Link href={institution.path_alias}>
                     {institution.title}
                     <IconArrowRight />
                   </Link>

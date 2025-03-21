@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { FC, ReactElement, ReactNode } from "react";
 
 import { IconFacebook } from "@workspace/ui/components/icon/icon-facebook";
@@ -11,9 +12,10 @@ import type { SocialBlockType } from "@/lib/api/schema/block/social-block.schema
 export interface SocialBlockProps extends SocialBlockType {}
 
 export const SocialBlock: FC<SocialBlockProps> = ({ social_links }) => {
+  const t = useTranslations("SocialBlock");
   return (
     <section className="flex flex-col items-center bg-neutral-200 pb-8 pt-6">
-      <div className="typo-h5">Follow us!</div>
+      <div className="typo-h5">{t("followUs")}</div>
 
       <div className="mt-5 flex gap-4">
         {social_links.map((link) =>
