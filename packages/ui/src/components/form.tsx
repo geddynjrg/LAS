@@ -15,22 +15,34 @@ import type { FlattenObjectKeys } from "@workspace/ui/types";
 
 export const Form = FormPrimitive.Root;
 
+export type Path<T> = T extends object
+  ? {
+      [K in keyof T]: T[K] extends Array<infer U>
+        ? `${Extract<K, string>}.${number}.${Path<U>}` | Extract<K, string>
+        : T[K] extends object
+          ? `${Extract<K, string>}.${Path<T[K]>}` | Extract<K, string>
+          : Extract<K, string>;
+    }[keyof T]
+  : never;
+
 export interface FormFieldState<T extends Record<string, unknown>> {
   values?: Partial<T>;
   errors?: { [K in keyof T]?: (string | z.ZodIssue)[] };
 }
 
-export interface FieldControlProps<TName, TValue> {
+export interface FieldControlProps<TName, TValue = string> {
   id: string;
   name: TName;
-  defaultValue?: TValue;
+  defaultValue?: TValue extends boolean
+    ? boolean | "on" | null | undefined
+    : TValue;
 }
 
 export interface FieldProps<
   TInputs extends Record<string, unknown>,
-  TName extends Extract<keyof TInputs, unknown>,
+  TName extends Path<TInputs>,
 > {
-  control: (props: FieldControlProps<TName, TInputs[TName]>) => ReactNode;
+  control: (props: FieldControlProps<TName, Path<TInputs>>) => ReactNode;
   name: TName;
   state?: FormFieldState<TInputs>;
   label?: ReactNode;
@@ -45,7 +57,7 @@ export interface FieldProps<
 export const Field = <
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- this allows using <Field /> without the 'state' prop
   TInputs extends Record<string, any>,
-  TName extends Extract<keyof TInputs, string>,
+  TName extends Path<TInputs>,
 >({
   state,
   name,
@@ -64,8 +76,39 @@ export const Field = <
 
   const descId = description ? `${id}-message` : undefined;
 
-  const defaultValue = state?.values?.[name];
-  const errorMessage = state?.errors?.[name]?.[0];
+  let defaultValue = state?.values?.[name] as TInputs[TName] | undefined;
+  let errorMessage = undefined;
+
+  if (state?.values?.children) {
+    const parts = name.split(".");
+    const fieldName = parts.pop();
+
+    const index = parseInt(parts[1] ?? "0", 10);
+
+    if (!isNaN(index) && state.values.children[index]) {
+      defaultValue = state.values.children[index][fieldName!] as
+        | TInputs[TName]
+        | undefined;
+    }
+  }
+
+  if (state?.errors?.children) {
+    const parts = name.split(".");
+    const fieldName = parts.pop();
+    const index = parseInt(parts[1] ?? "0", 10);
+    const findErrorMessage = state.errors.children.find(
+      (err): err is z.ZodIssue =>
+        typeof err === "object" &&
+        "path" in err &&
+        Array.isArray(err.path) &&
+        err.path.includes(index) &&
+        err.path.includes(fieldName ?? name),
+    );
+
+    errorMessage = findErrorMessage;
+  } else {
+    errorMessage = state?.errors?.[name]?.[0];
+  }
 
   return (
     <FormPrimitive.Field
@@ -85,7 +128,11 @@ export const Field = <
       {isVisible ? (
         editable ? (
           <FormPrimitive.Control asChild>
-            {control({ id, name, defaultValue })}
+            {control({
+              id,
+              name,
+              defaultValue,
+            })}
           </FormPrimitive.Control>
         ) : (
           <p>

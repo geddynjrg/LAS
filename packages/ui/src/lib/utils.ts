@@ -23,29 +23,82 @@ export function assertNever(value: never): never {
   );
 }
 
-/** get values from form data based on Zod schema */
+// /** get values from form data based on Zod schema */
+// export function getFormDataValues<T extends z.Schema>(
+//   formData: FormData,
+//   schema: T,
+// ) {
+//   const keys = Array.from(new Set(zodKeys(schema)));
+//   for (const [key, value] of formData.entries()) {
+//     console.log({ key, value });
+//   }
+//   const values = keys.reduce(
+//     (acc, key) => {
+//       console.log({ acc, key });
+//       const value = formData.getAll(key);
+
+//       //   if (value.length > 1 || key.endsWith("[]")) {
+//       //     return { ...acc, [key]: value };
+//       //   }
+
+//       return { ...acc, [key]: value[0] };
+//     },
+//     {} as Partial<z.infer<T>>,
+//   );
+
+//   return values;
+// }
+
 export function getFormDataValues<T extends z.Schema>(
   formData: FormData,
   schema: T,
-) {
-  const keys = Array.from(new Set(zodKeys(schema)));
+): Partial<z.infer<T>> {
+  const values: Record<string, any> = {};
 
-  const values = keys.reduce(
-    (acc, key) => {
-      const value = formData.getAll(key);
+  for (const [key, value] of formData.entries()) {
+    values[key] =
+      values[key] !== undefined
+        ? Array.isArray(values[key])
+          ? [...values[key], value]
+          : [values[key], value]
+        : value;
+  }
 
-      if (value.length > 1 || key.endsWith("[]")) {
-        return { ...acc, [key]: value };
-      }
-
-      return { ...acc, [key]: value[0] };
-    },
-    {} as Partial<z.infer<T>>,
-  );
-
-  return values;
+  return values as Partial<z.infer<T>>;
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
   return prettyBytes(bytes, { maximumFractionDigits: decimals });
+}
+export function getFormZodDataValues<T extends z.Schema>(
+  formData: FormData,
+  schema: T,
+): Partial<z.infer<T>> {
+  const values: Partial<z.infer<T>> = {};
+
+  for (const [key, value] of formData.entries()) {
+    const parts = key.match(/([^[\].]+)/g); // Correctly extract keys & indices
+    if (!parts) continue;
+
+    let obj: any = values;
+    while (parts.length > 1) {
+      const part = parts.shift()!;
+      const nextPart = parts[0];
+      const isArray = /^\d+$/.test(nextPart); // Check if next is an array index
+
+      if (!obj[part]) obj[part] = isArray ? [] : {};
+      obj = obj[part];
+    }
+
+    const lastPart = parts.shift()!;
+    if (Array.isArray(obj[lastPart])) {
+      obj[lastPart].push(value);
+    } else if (obj[lastPart] !== undefined) {
+      obj[lastPart] = [obj[lastPart], value].flat();
+    } else {
+      obj[lastPart] = value;
+    }
+  }
+
+  return values as Partial<z.infer<T>>;
 }

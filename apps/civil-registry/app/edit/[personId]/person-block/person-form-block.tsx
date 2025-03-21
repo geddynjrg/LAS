@@ -161,7 +161,7 @@ export const PersonFormBlock: FC<PersonFormBlockProps> = ({
     healthInstitution: person?.healthInstitution,
     birthSublocation: person?.birthSublocation,
     birthSublocationDistrict: person?.birthSublocationDistrict,
-    father: person?.father ? getPersonName(person.father) : undefined,
+    father: person?.fatherName,
     mother: person?.mother ? getPersonName(person.mother) : undefined,
     phone: person?.phone,
     residenceDistrict: person?.residenceDistrict,

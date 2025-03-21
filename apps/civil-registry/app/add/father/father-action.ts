@@ -9,7 +9,6 @@ import {
   fatherSchema,
   type FatherSchema,
 } from "@/app/add/father/father-schema";
-import type { Person } from "@/lib/schema/person-schema";
 import { createNewPerson } from "@/lib/services/birth-registration-service";
 
 export const fatherAction: FormAction<FatherSchema> = async (
@@ -27,7 +26,7 @@ export const fatherAction: FormAction<FatherSchema> = async (
       values,
     };
   }
-  createNewPerson("father", data as Partial<Person>);
+  createNewPerson("father", data);
 
   redirect(`/add/informant`);
 };

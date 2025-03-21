@@ -22,7 +22,7 @@ export const checkboxVariants = cva({
 export interface CheckboxProps extends VariantProps<typeof checkboxVariants> {
   id?: string;
   name?: string;
-  defaultValue?: "on" | null | boolean;
+  defaultValue?: "on" | null | boolean | undefined | string;
   onValueChange?: (checked: boolean) => void;
   disabled?: boolean;
   invalid?: boolean;

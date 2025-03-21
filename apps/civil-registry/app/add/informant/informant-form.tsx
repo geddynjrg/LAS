@@ -165,7 +165,6 @@ export const InformantForm: FC<InformantFormProps> = ({
           <ButtonGroup
             name="informantType"
             onValueChange={(value) => {
-              console.log(value);
               if (value === "Other") {
                 setFormValues(defaultValues);
                 setInformantType("Other");

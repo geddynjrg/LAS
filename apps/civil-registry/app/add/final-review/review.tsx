@@ -11,7 +11,7 @@ import { FormWrap } from "@/app/add/form-wrap";
 import type { Person } from "@/lib/schema/person-schema";
 
 export interface ReviewFormProps {
-  child: Partial<Person>;
+  child: Partial<Person>[];
   mother: Partial<Person>;
   father: Partial<Person>;
   informant: Partial<Person>;

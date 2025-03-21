@@ -1,9 +1,11 @@
+import { generateUUID } from "@/lib/data/dummy-data";
+
 export type ValidationStatus = "alert" | "success" | "pending";
 export type SexType = "M" | "F" | "I";
 export type NatureOfBirth = "LiveBirth" | "StillBirth";
 
 export interface Person {
-  id?: string;
+  id: string;
   firstName?: string;
   lastName?: string;
   sex?: SexType;
@@ -59,6 +61,7 @@ export let persons: Person[] = [
     spouse: "3",
     children: ["3", "4", "5"],
     father: "6",
+    fatherName: "Waweru",
     validationStatus: "success",
   },
   {
@@ -141,7 +144,7 @@ export type BirthRegistrationsTypes =
   | "informant";
 
 export type BirthRegistrationStore = {
-  child: Person | Person[];
+  child: Person[];
 } & {
   [K in Exclude<BirthRegistrationsTypes, "child">]: Person;
 };
@@ -152,7 +155,12 @@ declare global {
 }
 
 globalThis.personsStore = globalThis.personsStore || persons;
-globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {};
+globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {
+  child: [{ id: generateUUID() }] as Person[],
+  mother: { id: generateUUID() } as Person,
+  father: { id: generateUUID() } as Person,
+  informant: { id: generateUUID() } as Person,
+};
 
 export const personsStore: Person[] = globalThis.personsStore;
 export let birthRegistrationStore: BirthRegistrationStore =
@@ -160,10 +168,10 @@ export let birthRegistrationStore: BirthRegistrationStore =
 
 export function resetBirthRegistrationStore() {
   globalThis.birthRegistrationStore = {
-    child: {} as Person,
-    mother: {} as Person,
-    father: {} as Person,
-    informant: {} as Person,
+    child: [{ id: generateUUID() }] as Person[],
+    mother: { id: generateUUID() } as Person,
+    father: { id: generateUUID() } as Person,
+    informant: { id: generateUUID() } as Person,
   };
 
   birthRegistrationStore = globalThis.birthRegistrationStore;

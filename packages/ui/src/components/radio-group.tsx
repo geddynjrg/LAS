@@ -35,8 +35,8 @@ export interface RadioGroupProps<T extends string = string>
   id?: string;
   name?: string;
   options?: RadioOption<T>[] | readonly RadioOption<T>[];
-  defaultValue?: T;
-  onValueChange?: (value: T) => void;
+  defaultValue?: any;
+  onValueChange?: (value: any) => void;
   className?: string;
   children?: ReactNode;
 }

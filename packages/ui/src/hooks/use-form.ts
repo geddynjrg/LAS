@@ -3,7 +3,7 @@
 import { useActionState, useCallback } from "react";
 import type { z } from "zod";
 
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 import { zodErrorMap } from "@workspace/ui/lib/zod";
 
 export type FormAction<T extends Record<string, unknown>> = (
@@ -48,7 +48,7 @@ export function useForm<
 ) {
   const formAction = useCallback<FormAction<TValues>>(
     (_prev, formData) => {
-      const values = getFormDataValues(formData, schema);
+      const values = getFormZodDataValues(formData, schema);
       const { success, error } = schema.safeParse(values, {
         errorMap: zodErrorMap,
       });

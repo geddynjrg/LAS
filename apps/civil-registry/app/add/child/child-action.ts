@@ -3,16 +3,27 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import {
+  getFormDataValues,
+  getFormZodDataValues,
+} from "@workspace/ui/lib/utils";
 
-import { childSchema, type ChildSchema } from "@/app/add/child/child-schema";
-import type { Person } from "@/lib/schema/person-schema";
+import {
+  multiChildSchema,
+  type MultiChildSchema,
+} from "@/app/add/child/child-schema";
+import type { Person } from "@/lib/data/person";
 import { createNewPerson } from "@/lib/services/birth-registration-service";
 
-export const childAction: FormAction<ChildSchema> = async (_prev, formData) => {
-  const values = getFormDataValues(formData, childSchema);
+export const childAction: FormAction<MultiChildSchema> = async (
+  _prev,
+  formData,
+) => {
+  const values = getFormDataValues(formData, multiChildSchema);
+  const zodValues = getFormZodDataValues(formData, multiChildSchema);
 
-  const { error, data, success } = childSchema.safeParse(values);
+  const { error, data, success } = multiChildSchema.safeParse(zodValues);
+
   if (!success) {
     return {
       success,
@@ -20,7 +31,8 @@ export const childAction: FormAction<ChildSchema> = async (_prev, formData) => {
       values,
     };
   }
-  createNewPerson("child", data as Partial<Person>);
+
+  data.children.forEach((child) => createNewPerson("child", child as Person));
 
   redirect(`/add/mother`);
 };

@@ -9,7 +9,6 @@ import {
   informantSchema,
   type InformantSchema,
 } from "@/app/add/informant/informant-schema";
-import type { Person } from "@/lib/schema/person-schema";
 import { createNewPerson } from "@/lib/services/birth-registration-service";
 
 export const informantAction: FormAction<InformantSchema> = async (
@@ -27,7 +26,7 @@ export const informantAction: FormAction<InformantSchema> = async (
       values,
     };
   }
-  createNewPerson("informant", data as Partial<Person>);
+  createNewPerson("informant", data);
 
   redirect(`/add/final-review`);
 };
