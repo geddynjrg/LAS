@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
 import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
@@ -11,21 +12,46 @@ export interface ApplyStep {
   path: string;
 }
 
-const steps: ApplyStep[] = [
-  { index: 1, title: "Group data", path: "/group-data" },
-  { index: 2, title: "Group members", path: "/members" },
-  { index: 3, title: "Loan conditions", path: "/loan-conditions" },
-  { index: 4, title: "Proposed business", path: "/proposed-business" },
-  { index: 5, title: "Confirmations", path: "/confirmations" },
-  { index: 6, title: "Final review", path: "/finish" },
-];
-
 export interface ApplyLayoutProps {
   children?: ReactNode;
 }
 
 export default async function IdLayout({ children }: ApplyLayoutProps) {
+  const t = await getTranslations();
   const session = await auth();
+
+  const steps: ApplyStep[] = [
+    {
+      index: 1,
+      title: t("ApplicationDetailsPage.groupData.groupData"),
+      path: "/group-data",
+    },
+    {
+      index: 2,
+      title: t("ApplicationDetailsPage.groupData.steps.groupMembers"),
+      path: "/members",
+    },
+    {
+      index: 3,
+      title: t("ApplicationDetailsPage.loan.loanConditions"),
+      path: "/loan-conditions",
+    },
+    {
+      index: 4,
+      title: t("ApplicationDetailsPage.proposedBusiness.proposedBusiness"),
+      path: "/proposed-business",
+    },
+    {
+      index: 5,
+      title: t("ApplicationDetailsPage.groupData.steps.confirmations"),
+      path: "/confirmations",
+    },
+    {
+      index: 6,
+      title: t("ApplicationDetailsPage.groupData.steps.finalReview"),
+      path: "/finish",
+    },
+  ];
 
   return (
     <Authenticated session={session}>
