@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
+import { getApplicationById } from "@/actions/application";
 import { groupData } from "@/actions/apply-form/group-data";
 import { GroupDataForm } from "@/app/apply/[id]/group-data/group-data-form";
 
@@ -13,10 +14,11 @@ export interface GroupDataPageProps {
 export default async function Page({ params }: GroupDataPageProps) {
   const { id } = await params;
   const t = await getTranslations();
+  const application = await getApplicationById(id);
 
   return (
     <>
-      <Container>
+      <Container className="pb-7">
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
@@ -28,8 +30,11 @@ export default async function Page({ params }: GroupDataPageProps) {
       </Container>
 
       <InfoPopover />
-
-      <GroupDataForm action={groupData} id={id} />
+      <GroupDataForm
+        action={groupData}
+        id={id}
+        applicationGroupData={application?.groupData}
+      />
     </>
   );
 }

@@ -3,7 +3,7 @@
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 
 import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { Container } from "@workspace/ui/components/container";
@@ -16,6 +16,7 @@ import { Underline } from "@workspace/ui/components/underline";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
+import { GroupData as ApplicationGroupData } from "@/actions/application";
 import {
   groupDataSchema,
   type GroupData,
@@ -26,12 +27,43 @@ import { dummyCounty } from "@/lib/dummy-data";
 
 export interface GroupDataProps {
   id: string;
+  applicationGroupData?: ApplicationGroupData;
   action: FormAction<GroupData>;
 }
 
-export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
+export const GroupDataForm: FC<GroupDataProps> = ({
+  action,
+  id,
+  applicationGroupData,
+}) => {
+  const [state, formAction, isPending] = useForm(action, groupDataSchema, {
+    groupName: applicationGroupData?.basics.groupName,
+    groupRegistrationNumber:
+      applicationGroupData?.basics.groupRegistrationNumber,
+    dateFormed: applicationGroupData?.basics.dateFormed,
+
+    groupPurpose: applicationGroupData?.background.purposeOfTheGroup,
+    groupActivities: applicationGroupData?.background.keyActivitiesOfTheGroup,
+    valueChain: applicationGroupData?.background.valueChain ?? undefined,
+    tableBankingExperience:
+      applicationGroupData?.background.tableBanking?.tableBankingExperience,
+    tableBankingShareContribution:
+      applicationGroupData?.background.tableBanking
+        ?.tableBankingShareContribution,
+    tableBankingTotalLoanedOut:
+      applicationGroupData?.background.tableBanking?.tableBankingTotalLoanedOut,
+    tableBankingTotalRevolvingFund:
+      applicationGroupData?.background.tableBanking
+        ?.tableBankingTotalRevolvingFund,
+    other: applicationGroupData?.background.other,
+    countyOfOperation: applicationGroupData?.location.countyOfOperation,
+    constituency: applicationGroupData?.location.constituency,
+    ward: applicationGroupData?.location.ward,
+    meetingPoint: applicationGroupData?.location.meetingPoint,
+    nearestLandmark: applicationGroupData?.location.nearestLandmark,
+  });
+
   const t = useTranslations();
-  const [state, formAction, isPending] = useForm(action, groupDataSchema);
   const [chosenCounty, setChosenCounty] = useState(
     state.values?.countyOfOperation,
   );
@@ -78,8 +110,6 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
             )}
             state={state}
           />
-
-          {/* TODO: Add image upload and file upload here when components ready */}
 
           <Field
             state={state}
@@ -133,8 +163,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
               "ApplicationDetailsPage.groupData.groupBackground.groupBackground",
             )}
             required
-            control={() => (
+            control={(props) => (
               <CheckboxGroup
+                {...props}
                 options={[
                   {
                     label: t(
@@ -165,8 +196,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
               "ApplicationDetailsPage.groupData.groupBackground.keyActivitiesOfGroup",
             )}
             required
-            control={() => (
+            control={(props) => (
               <CheckboxGroup
+                {...props}
                 onValueChange={(val) => {
                   setChosenKeyActivities(val);
                 }}
@@ -203,6 +235,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
               required
               control={(props) => (
                 <CheckboxGroup
+                  {...props}
                   options={[
                     {
                       label: t(
@@ -292,9 +325,15 @@ export const GroupDataForm: FC<GroupDataProps> = ({ action, id }) => {
               name="other"
               label={t("Common.specify")}
               required
-              control={(props) => <Input {...props} />}
+              control={(props) => (
+                <Input
+                  {...props}
+                  defaultValue={props.defaultValue ?? undefined}
+                />
+              )}
             />
           )}
+
           <Field
             state={state}
             name="groupCreditHistory"

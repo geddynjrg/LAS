@@ -20,16 +20,6 @@ import { auth } from "@/lib/auth";
 export default async function Page() {
   const t = await getTranslations("DashboardPage");
   const data = await getApplications();
-  const session = await auth();
-
-  console.log(session);
-
-  const handleCreateApplication = async () => {
-    "use server";
-    const application = await createApplication();
-
-    console.log(application);
-  };
 
   return (
     <Container>
@@ -46,13 +36,12 @@ export default async function Page() {
           <GroupDetails
             key={data.generalDetails.applicationId}
             applicationId={data.generalDetails.applicationId}
-            groupName={data.groupDetails?.basicInfo.name}
-            loanAmount={data.loanDetails?.amount}
+            groupName={data.groupData?.basics.groupName}
+            loanAmount={data.loanConditions?.loanAmount}
             status={data.generalDetails.status}
           />
         ))}
       </div>
-      <Button onClick={handleCreateApplication}>New</Button>
     </Container>
   );
 }

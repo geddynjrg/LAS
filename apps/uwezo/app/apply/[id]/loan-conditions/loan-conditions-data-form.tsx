@@ -17,6 +17,7 @@ import { Card } from "@workspace/ui/components/uwezo/card";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
+import { LoanConditionsData as ApplicationLoanConditionsData } from "@/actions/application";
 import {
   loanConditionsDataSchema,
   type LoanConditionsData,
@@ -26,16 +27,27 @@ import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 export interface LoanConditionsDataProps {
   id: string;
   action: FormAction<LoanConditionsData>;
+  loanConditionsData?: ApplicationLoanConditionsData;
 }
 
 export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
   id,
   action,
+  loanConditionsData,
 }) => {
   const t = useTranslations();
   const [state, formAction, isPending] = useForm(
     action,
     loanConditionsDataSchema,
+    {
+      accountNumber: loanConditionsData?.accountNumber,
+      bankBranch: loanConditionsData?.bankBranch,
+      bankName: loanConditionsData?.bankName,
+      loanAmount: loanConditionsData?.loanAmount,
+      loanType: loanConditionsData?.loanType,
+      purposeOfLoan: loanConditionsData?.purposeOfLoan,
+      repaymentPeriod: loanConditionsData?.repaymentPeriod,
+    },
   );
 
   const prevUrl = `/apply/${id}/members`;
@@ -101,7 +113,13 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             label={t("ApplicationDetailsPage.loan.loanAmount")}
             required
             description={t("ApplicationDetailsPage.loan.maximumLoan")}
-            control={(props) => <Input type="tel" endDecorator="KSh" />}
+            control={(props) => (
+              <Input
+                {...props}
+                endDecorator="KSh"
+                defaultValue={props.defaultValue?.toString()}
+              />
+            )}
           />
 
           <Field

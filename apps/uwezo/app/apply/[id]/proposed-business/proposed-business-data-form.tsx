@@ -1,7 +1,8 @@
 "use client";
 
+import { IconPlus } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import type { FC } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import {
   ButtonGroup,
@@ -9,45 +10,95 @@ import {
 } from "@workspace/ui/components/button-group";
 import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { Container } from "@workspace/ui/components/container";
+import { Currency } from "@workspace/ui/components/currency";
 import { Field, Form } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import { SearchInput } from "@workspace/ui/components/search-input";
-import { Slider } from "@workspace/ui/components/slider";
-import { Card } from "@workspace/ui/components/uwezo/card";
+import { Underline } from "@workspace/ui/components/underline";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
-import {
-  loanConditionsDataSchema,
-  type LoanConditionsData,
-} from "@/actions/apply-form/loan-conditions-schema";
+import { ProposedBusinessData as ApplicationProposedBusinessData } from "@/actions/application";
 import {
   proposedBusinessDataSchema,
   type ProposedBusinessData,
 } from "@/actions/apply-form/proposed-business-data-schema";
 import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+import { parseNumber } from "@/lib/util";
 
 export interface ProposedBusinessDataProps {
   id: string;
   action: FormAction<ProposedBusinessData>;
+  applicationBusinessData?: ApplicationProposedBusinessData;
 }
 
 export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
   id,
   action,
+  applicationBusinessData,
 }) => {
   const t = useTranslations();
   const [state, formAction, isPending] = useForm(
     action,
     proposedBusinessDataSchema,
+    {
+      averageIncome: applicationBusinessData?.averageIncome,
+      businessType: applicationBusinessData?.businessType,
+      costOfGoods: applicationBusinessData?.costOfGoods,
+      natureOfBusiness: applicationBusinessData?.natureOfBusiness,
+      rentForBusiness: applicationBusinessData?.rentForBusiness,
+      salaries: applicationBusinessData?.salaries,
+      transportForBusinessStock:
+        applicationBusinessData?.transportForBusinessStock,
+      yearsInBusiness: applicationBusinessData?.yearsInBusiness,
+    },
   );
+
+  const [averageIncome, setAverageIncome] = useState(
+    state.values?.averageIncome,
+  );
+
+  const [costOfGoods, setCostOfGoods] = useState(state.values?.costOfGoods);
+
+  const [rentForBusiness, setRentForBusiness] = useState(
+    state.values?.rentForBusiness,
+  );
+
+  const [salaries, setSalaries] = useState(state.values?.salaries);
+
+  const [transportForBusinessStock, setTransportForBusinessStock] = useState(
+    state.values?.transportForBusinessStock,
+  );
+
+  const [surplusDeficit, setSurplusDeficit] = useState(
+    (averageIncome ?? 0) -
+      (costOfGoods ?? 0) -
+      (rentForBusiness ?? 0) -
+      (salaries ?? 0) -
+      (transportForBusinessStock ?? 0),
+  );
+
+  useEffect(() => {
+    setSurplusDeficit(
+      (averageIncome ?? 0) -
+        (costOfGoods ?? 0) -
+        (rentForBusiness ?? 0) -
+        (salaries ?? 0) -
+        (transportForBusinessStock ?? 0),
+    );
+  }, [
+    averageIncome,
+    rentForBusiness,
+    salaries,
+    transportForBusinessStock,
+    costOfGoods,
+  ]);
 
   const prevUrl = `/apply/${id}/loan-conditions`;
   const nextUrl = `/apply/${id}/confirmations`;
 
   return (
     <Form action={formAction} autoComplete="on">
-      <Container>
+      <Container className="space-y-8">
         <FormCard
           title={t(
             "ApplicationDetailsPage.proposedBusiness.businessInfo.businessInformation",
@@ -105,8 +156,9 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
               "ApplicationDetailsPage.proposedBusiness.businessInfo.yearsInBusiness",
             )}
             required
-            control={(_props) => (
+            control={(props) => (
               <Input
+                defaultValue={props.defaultValue?.toString()}
                 placeholder={t(
                   "ApplicationDetailsPage.proposedBusiness.businessInfo.enterYears",
                 )}
@@ -122,97 +174,150 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           )}
           className="space-y-4"
         >
-          <Field
-            state={state}
-            name="averageIncome"
-            label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessPerformance.averageIncomePerMonth",
-            )}
-            required
-            control={(_props) => (
-              <Input
-                placeholder={t(
-                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
-                )}
-                type="tel"
-                startDecorator="KES"
-              />
-            )}
-          />
+          <div className="grid gap-4">
+            <h2 className="typo-h5">
+              {t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.income",
+              )}
+            </h2>
+            <Field
+              state={state}
+              name="averageIncome"
+              label={t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.averageIncomePerMonth",
+              )}
+              required
+              control={(props) => (
+                <Input
+                  defaultValue={props.defaultValue?.toString()}
+                  placeholder={t(
+                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                  )}
+                  type="tel"
+                  endDecorator="KES"
+                  onValueChange={(value) =>
+                    setAverageIncome(parseNumber(value))
+                  }
+                />
+              )}
+            />
+          </div>
+          <div className="grid gap-4 border-t border-neutral-400">
+            <h2 className="typo-h5 pt-4">
+              {t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.expenses",
+              )}
+            </h2>
+            <Field
+              state={state}
+              name="costOfGoods"
+              label={t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.costOfGoods",
+              )}
+              required
+              control={(props) => (
+                <Input
+                  defaultValue={props.defaultValue?.toString()}
+                  placeholder={t(
+                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                  )}
+                  type="tel"
+                  endDecorator="KES"
+                  onValueChange={(value) => {
+                    setCostOfGoods(parseNumber(value));
+                  }}
+                />
+              )}
+            />
 
-          <Field
-            state={state}
-            name="costOfGoods"
-            label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessPerformance.goodsServicesCost",
-            )}
-            required
-            control={(_props) => (
-              <Input
-                placeholder={t(
-                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
-                )}
-                type="tel"
-                startDecorator="KES"
-              />
-            )}
-          />
+            <Field
+              state={state}
+              name="rentForBusiness"
+              label={t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.rent",
+              )}
+              required
+              control={(props) => (
+                <Input
+                  defaultValue={props.defaultValue?.toString()}
+                  placeholder={t(
+                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                  )}
+                  type="tel"
+                  endDecorator="KES"
+                  onValueChange={(value) =>
+                    setRentForBusiness(parseNumber(value))
+                  }
+                />
+              )}
+            />
 
-          <Field
-            state={state}
-            name="rentForBusiness"
-            label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessPerformance.rendForBusiness",
-            )}
-            required
-            control={(_props) => (
-              <Input
-                placeholder={t(
-                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
-                )}
-                type="tel"
-                startDecorator="KES"
-              />
-            )}
-          />
+            <Field
+              state={state}
+              name="salaries"
+              label={t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.salaries",
+              )}
+              required
+              control={(props) => (
+                <Input
+                  defaultValue={props.defaultValue?.toString()}
+                  placeholder={t(
+                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                  )}
+                  type="tel"
+                  endDecorator="KES"
+                  onValueChange={(value) => setSalaries(parseNumber(value))}
+                />
+              )}
+            />
 
-          <Field
-            state={state}
-            name="salaries"
-            label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessPerformance.salaries",
-            )}
-            required
-            control={(_props) => (
-              <Input
-                placeholder={t(
-                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
-                )}
-                type="tel"
-                startDecorator="KES"
-              />
-            )}
-          />
+            <Field
+              state={state}
+              name="transportForBusinessStock"
+              label={t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.transportCosts",
+              )}
+              required
+              control={(props) => (
+                <Input
+                  defaultValue={props.defaultValue?.toString()}
+                  placeholder={t(
+                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                  )}
+                  type="tel"
+                  endDecorator="KES"
+                  onValueChange={(value) =>
+                    setTransportForBusinessStock(parseNumber(value))
+                  }
+                />
+              )}
+            />
 
-          <Field
-            state={state}
-            name="transportForBusinessStock"
-            label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessPerformance.transportCosts",
-            )}
-            required
-            control={(_props) => (
-              <Input
-                placeholder={t(
-                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+            {/* TODO: add the option to add custom field, currently missing design */}
+            {/* TODO: Look into how to use button here, currently button ghost adds unneeded styles */}
+            <Underline className="border-b-primary text-primary hover:text-primary hover:cursor-pointer">
+              <IconPlus className="!text-primary" size={20} />
+              <p className="typo-body-medium">
+                {t(
+                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.addCustomField",
                 )}
-                type="tel"
-                startDecorator="KES"
-              />
-            )}
-          />
+              </p>
+            </Underline>
+          </div>
 
-          {/* TODO: add the option to add custom field  */}
+          <div className="border-t border-neutral-400">
+            <h2 className="typo-h5 py-4">
+              {t(
+                "ApplicationDetailsPage.proposedBusiness.businessPerformance.netSurplus",
+              )}
+            </h2>
+            <Currency
+              amount={surplusDeficit}
+              currency="KSh"
+              signDisplay="always"
+            />
+          </div>
         </FormCard>
       </Container>
 

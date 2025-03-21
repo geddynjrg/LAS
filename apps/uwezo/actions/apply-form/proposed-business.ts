@@ -6,6 +6,10 @@ import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
 import {
+  updateApplicationLoanConditionsData,
+  updateApplicationProposedBusinessData,
+} from "@/actions/application";
+import {
   loanConditionsDataSchema,
   type LoanConditionsData,
 } from "@/actions/apply-form/loan-conditions-schema";
@@ -21,6 +25,8 @@ export const proposedBusiness: FormAction<ProposedBusinessData> = async (
   const values = getFormDataValues(formData, proposedBusinessDataSchema);
   const redirectTo = formData.get("redirectTo")?.toString();
   const id = formData.get("id")?.toString();
+
+  console.log(values);
 
   const { success, data, error } = proposedBusinessDataSchema.safeParse(values);
 
@@ -41,6 +47,16 @@ export const proposedBusiness: FormAction<ProposedBusinessData> = async (
   }
 
   /* Submit data to dummy data list */
+  await updateApplicationProposedBusinessData(id, {
+    averageIncome: data.averageIncome,
+    businessType: data.businessType,
+    costOfGoods: data.costOfGoods,
+    natureOfBusiness: data.natureOfBusiness,
+    rentForBusiness: data.rentForBusiness,
+    salaries: data.salaries,
+    transportForBusinessStock: data.transportForBusinessStock,
+    yearsInBusiness: data.yearsInBusiness,
+  });
 
   redirect(redirectTo);
 };

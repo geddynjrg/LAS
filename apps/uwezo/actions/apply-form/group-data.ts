@@ -35,7 +35,7 @@ export const groupData: FormAction<GroupData> = async (_prev, formData) => {
   }
 
   /* Submit data to dummy data list */
-  await updateApplicationGroupData(id, {
+  const a = await updateApplicationGroupData(id, {
     basics: {
       groupName: data.groupName,
       groupRegistrationNumber: data.groupRegistrationNumber,
@@ -44,9 +44,19 @@ export const groupData: FormAction<GroupData> = async (_prev, formData) => {
       listOfMembersOnCertificate: data.listOfMembersOnCertificate.name,
     },
     background: {
-      groupBackground: data.groupPurpose,
+      purposeOfTheGroup: data.groupPurpose,
       keyActivitiesOfTheGroup: data.groupActivities,
       groupCreditHistory: data.groupCreditHistory.name,
+      other: data.other,
+      tableBanking: {
+        tableBankingExperience: data.tableBankingExperience ?? undefined,
+        tableBankingShareContribution:
+          data.tableBankingShareContribution ?? undefined,
+        tableBankingTotalLoanedOut:
+          data.tableBankingTotalLoanedOut ?? undefined,
+        tableBankingTotalRevolvingFund:
+          data.tableBankingTotalRevolvingFund ?? undefined,
+      },
     },
     location: {
       countyOfOperation: data.countyOfOperation,

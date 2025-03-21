@@ -199,13 +199,40 @@
       },
       "businessPerformance": {
         "businessPerformance": "Utendaji wa biashara",
+        "income": "Mapato",
+        "expenses": "Matumizi",
         "averageIncomePerMonth": "Mapato ya wastani kwa mwezi",
         "costOfGoods": "Gharama ya bidhaa/huduma kwa mwezi",
         "rent": "Kodi ya biashara yako",
         "salaries": "Mishahara/malipo kwa wafanyakazi",
-        "transportCosts": "Gharama za usafiri wa bidhaa za biashara",
-        "netSurplus": "Ziada/hasara halisi"
+        "transportCosts": "Usafiri wa hisa za biashara",
+        "netSurplus": "Ziada/hasara halisi",
+        "enterAmount": "Ingiza kiasi",
+        "goodsServicesCost": "Gharama ya bidhaa/huduma kwa mwezi",
+        "rendForBusiness": "Kodi ya biashara",
+        "addCustomField": "Ongeza uwanja maalum"
       }
     }
+  },
+  "ConfirmationsPage": {
+    "title": "Uthibitisho",
+    "form-title": "Tamko la Kikundi",
+    "confirmationDataForm": {
+      "group-member": "Tunathibitisha kuwa sisi ni wanachama wa kikundi hiki",
+      "declare-true-information": "Tunathibitisha kuwa taarifa zilizotolewa hapa ni za kweli kwa kadri ya ufahamu wetu. Tunamruhusu Mfuko wa Uwezo kuthibitisha taarifa zilizotolewa hapa na kufanya marejeleo yaliyotolewa hapa.",
+      "agree-to-repayment": "Tunakubali kwamba tunawajibika kwa pamoja na kibinafsi kwa urejeshaji wa mkopo endapo kutakuwa na kutokulipa na",
+      "no-additional-loans": "Hatutastahiki mikopo ya ziada isipokuwa kiasi kilichokosa kulipwa kimefutwa kabisa"
+    },
+    "confirmMembersForm": {
+      "confirmation-instructions": "Uthibitisho unafanywa kupitia SMS. Mara tu unapobofya kitufe hapa chini, wanachama wanaochukua mkopo watajulishwa kupitia simu zao kwamba wanahitaji kutoa idhini. Mara tu theluthi mbili yao watakapotoa idhini, unaweza kuendelea na hatua ya mwisho.",
+      "progress-saved": "Unaweza kufunga ukurasa wa kivinjari kwa usalama na kurudi baadaye. Maendeleo yako yamehifadhiwa, <strong>utajulishwa kupitia SMS mara tu wanachama wa kutosha watakapothibitisha kuendelea.</strong>",
+      "select-members": "Chagua wanachama wanaochukua mkopo",
+      "select-all": "Chagua wanachama wote",
+      "send-to-members": "Tuma kwa wanachama kwa uthibitisho",
+      "confirmed-members": "{confirmed}/{total} wanachama wamethibitisha"
+    }
+  },
+  "InfoPopover": {
+    "title": "Unahitaji msaada?"
   }
 }

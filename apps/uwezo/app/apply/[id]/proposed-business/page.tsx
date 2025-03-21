@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
+import { getApplicationById } from "@/actions/application";
 import { proposedBusiness } from "@/actions/apply-form/proposed-business";
 import { ProposedBusinessDataForm } from "@/app/apply/[id]/proposed-business/proposed-business-data-form";
 
@@ -13,10 +14,11 @@ export interface ProposedBusinessPageProps {
 export default async function Page({ params }: ProposedBusinessPageProps) {
   const t = await getTranslations();
   const { id } = await params;
+  const application = await getApplicationById(id);
 
   return (
     <>
-      <Container>
+      <Container className="pb-7">
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
@@ -28,8 +30,11 @@ export default async function Page({ params }: ProposedBusinessPageProps) {
       </Container>
 
       <InfoPopover />
-
-      <ProposedBusinessDataForm action={proposedBusiness} id={id} />
+      <ProposedBusinessDataForm
+        action={proposedBusiness}
+        id={id}
+        applicationBusinessData={application?.proposedBusiness}
+      />
     </>
   );
 }

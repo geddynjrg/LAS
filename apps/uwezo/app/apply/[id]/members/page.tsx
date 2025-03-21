@@ -1,6 +1,7 @@
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
+import { getApplicationById } from "@/actions/application";
 import { membersData } from "@/actions/apply-form/members-data";
 import { MembersDataForm } from "@/app/apply/[id]/members/members-data-form";
 
@@ -10,10 +11,11 @@ export interface MembersPageProps {
 
 export default async function Page({ params }: MembersPageProps) {
   const { id } = await params;
+  const application = await getApplicationById(id);
 
   return (
     <>
-      <Container>
+      <Container className="pb-7">
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
@@ -26,8 +28,11 @@ export default async function Page({ params }: MembersPageProps) {
       </Container>
 
       <InfoPopover />
-
-      <MembersDataForm action={membersData} id={id} />
+      <MembersDataForm
+        action={membersData}
+        id={id}
+        applicationMembersData={application?.members}
+      />
     </>
   );
 }

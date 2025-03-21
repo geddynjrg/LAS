@@ -8,3 +8,9 @@ export const createApplicationId = () => {
 
   return uniqueId;
 };
+
+export const parseNumber = (value: string) => {
+  const num = Number(value);
+
+  return Number.isFinite(num) ? num : 0;
+};

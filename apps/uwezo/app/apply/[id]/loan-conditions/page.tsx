@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
+import { getApplicationById } from "@/actions/application";
 import { loanConditions } from "@/actions/apply-form/loan-conditions";
 import { LoanConditionsDataForm } from "@/app/apply/[id]/loan-conditions/loan-conditions-data-form";
 
@@ -12,11 +13,12 @@ export interface LoanConditionsPageProps {
 
 export default async function Page({ params }: LoanConditionsPageProps) {
   const { id } = await params;
+  const application = await getApplicationById(id);
   const t = await getTranslations();
 
   return (
     <>
-      <Container>
+      <Container className="pb-7">
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
@@ -28,8 +30,11 @@ export default async function Page({ params }: LoanConditionsPageProps) {
       </Container>
 
       <InfoPopover />
-
-      <LoanConditionsDataForm action={loanConditions} id={id} />
+      <LoanConditionsDataForm
+        action={loanConditions}
+        id={id}
+        loanConditionsData={application?.loanConditions}
+      />
     </>
   );
 }

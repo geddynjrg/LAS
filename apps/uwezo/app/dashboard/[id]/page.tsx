@@ -14,15 +14,14 @@ import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Currency } from "@workspace/ui/components/currency";
 import { DataNode } from "@workspace/ui/components/data-node";
-import { cn } from "@workspace/ui/lib/utils";
 
 import {
   getApplicationById,
-  type BankAccountDetails,
-  type businessDetails,
-  type GroupDetails,
-  type LoanDetails,
+  type GroupData,
+  type LoanConditionsData,
+  type MembersData,
 } from "@/actions/application";
+import type { ProposedBusinessData } from "@/actions/apply-form/proposed-business-data-schema";
 import { ApplicationStatus } from "@/components/application-status";
 
 interface Props {
@@ -59,32 +58,25 @@ export default async function Page({ params }: Props) {
         <ApplicationStatus status={data.generalDetails.status} />
       </div>
 
-      <LoanConditions
-        bankAccountDetails={data.bankAccountDetails}
-        loanDetails={data.loanDetails}
-      />
+      <LoanConditions loanConditionsData={data.loanConditions} />
 
-      <Members groupDetails={data.groupDetails} />
+      <Members groupDetails={data.members} />
 
-      <GroupData groupDetails={data.groupDetails} />
+      <GroupData groupDetails={data.groupData} />
 
-      <ProposedBusiness businessDetails={data.businessDetails} />
+      <ProposedBusiness businessDetails={data.proposedBusiness} />
     </Container>
   );
 }
 
 interface LoanConditionProps {
-  loanDetails?: LoanDetails;
-  bankAccountDetails?: BankAccountDetails;
+  loanConditionsData?: LoanConditionsData;
 }
 
-const LoanConditions: FC<LoanConditionProps> = ({
-  bankAccountDetails,
-  loanDetails,
-}) => {
+const LoanConditions: FC<LoanConditionProps> = ({ loanConditionsData }) => {
   const t = useTranslations("ApplicationDetailsPage");
 
-  if (!loanDetails && !bankAccountDetails) {
+  if (!loanConditionsData) {
     return null;
   }
 
@@ -92,53 +84,53 @@ const LoanConditions: FC<LoanConditionProps> = ({
     <div className="mt-6 grid">
       <h4 className="typo-h4 pb-2">{t("loan.loanConditions")}</h4>
       <Accordion type="multiple" className="space-y-2">
-        {loanDetails && (
-          <AccordionItem value="loan-details">
-            <AccordionTrigger>{t("loan.loanDetails")}</AccordionTrigger>
-            <AccordionContent>
-              <div className="grid gap-4">
-                <DataNode label={t("loan.purposeOfTheLoan")}>
-                  {loanDetails.purpose}
-                </DataNode>
-                <DataNode label={t("loan.loanType")}>
-                  {loanDetails.type}
-                </DataNode>
-                <DataNode label={t("loan.loanAmount")}>
-                  <Currency amount={loanDetails.amount} currency="KES" />
-                </DataNode>
-                <DataNode label={t("loan.repaymentPeriod")}>
-                  {t("numberMonths", {
-                    month: loanDetails.repaymentPeriod,
-                  })}
-                </DataNode>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        )}
-        {bankAccountDetails && (
-          <AccordionItem value="bank-account-details">
-            <AccordionTrigger>{t("loan.bankAccountDetails")}</AccordionTrigger>
-            <AccordionContent>
-              <div className="grid gap-4">
-                <DataNode label={t("loan.groupsBankName")}>
-                  {bankAccountDetails.bankName}
-                </DataNode>
-                <DataNode label={t("loan.groupsBankBranch")}>
-                  {bankAccountDetails.groupsBankBranch}
-                </DataNode>
-                <DataNode label={t("loan.bankAccountNumber")}>
-                  {bankAccountDetails.accountNumber}
-                </DataNode>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        )}
+        <AccordionItem value="loan-details">
+          <AccordionTrigger>{t("loan.loanDetails")}</AccordionTrigger>
+          <AccordionContent>
+            <div className="grid gap-4">
+              <DataNode label={t("loan.purposeOfTheLoan")}>
+                {loanConditionsData.purposeOfLoan}
+              </DataNode>
+              <DataNode label={t("loan.loanType")}>
+                {loanConditionsData.loanType}
+              </DataNode>
+              <DataNode label={t("loan.loanAmount")}>
+                <Currency
+                  amount={loanConditionsData.loanAmount}
+                  currency="KES"
+                />
+              </DataNode>
+              <DataNode label={t("loan.repaymentPeriod")}>
+                {t("numberMonths", {
+                  month: loanConditionsData.repaymentPeriod,
+                })}
+              </DataNode>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="bank-account-details">
+          <AccordionTrigger>{t("loan.bankAccountDetails")}</AccordionTrigger>
+          <AccordionContent>
+            <div className="grid gap-4">
+              <DataNode label={t("loan.groupsBankName")}>
+                {loanConditionsData.bankName}
+              </DataNode>
+              <DataNode label={t("loan.groupsBankBranch")}>
+                {loanConditionsData.bankBranch}
+              </DataNode>
+              <DataNode label={t("loan.bankAccountNumber")}>
+                {loanConditionsData.accountNumber}
+              </DataNode>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
     </div>
   );
 };
 
-const Members: FC<{ groupDetails?: GroupDetails }> = ({ groupDetails }) => {
+const Members: FC<{ groupDetails?: MembersData }> = ({ groupDetails }) => {
   const t = useTranslations("ApplicationDetailsPage");
 
   if (!groupDetails?.members) {
@@ -154,10 +146,7 @@ const Members: FC<{ groupDetails?: GroupDetails }> = ({ groupDetails }) => {
           <AccordionContent>
             <div className="grid gap-4">
               {groupDetails.members.map((member, index) => (
-                <DataNode
-                  key={index}
-                  label={`${member.name} ${member.lastName}`}
-                >
+                <DataNode key={index} label={member.fullname ?? ""}>
                   {member.type}
                 </DataNode>
               ))}
@@ -169,14 +158,14 @@ const Members: FC<{ groupDetails?: GroupDetails }> = ({ groupDetails }) => {
   );
 };
 
-const GroupData: FC<{ groupDetails?: GroupDetails }> = async ({
+const GroupData: FC<{ groupDetails?: GroupData }> = async ({
   groupDetails,
 }) => {
   const t = await getTranslations("ApplicationDetailsPage");
   const format = await getFormatter();
 
   if (
-    !groupDetails?.basicInfo &&
+    !groupDetails?.basics &&
     !groupDetails?.location &&
     !groupDetails?.background
   ) {
@@ -187,7 +176,7 @@ const GroupData: FC<{ groupDetails?: GroupDetails }> = async ({
     <div className="mt-6 grid">
       <h4 className="typo-h4 pb-2">{t("groupData.groupData")}</h4>
       <Accordion type="multiple" className="space-y-2">
-        {groupDetails.basicInfo && (
+        {groupDetails.basics && (
           <AccordionItem value="basics">
             <AccordionTrigger>
               {t("groupData.basicInfo.groupBasics")}
@@ -195,13 +184,13 @@ const GroupData: FC<{ groupDetails?: GroupDetails }> = async ({
             <AccordionContent>
               <div className="grid gap-4">
                 <DataNode label={t("groupData.basicInfo.groupName")}>
-                  {groupDetails.basicInfo.name}
+                  {groupDetails.basics.groupName}
                 </DataNode>
                 <DataNode label={t("groupData.basicInfo.registrationNumber")}>
-                  {groupDetails.basicInfo.registrationNumber}
+                  {groupDetails.basics.groupRegistrationNumber}
                 </DataNode>
                 <DataNode label={t("groupData.basicInfo.dateFormed")}>
-                  {format.dateTime(groupDetails.basicInfo.dateFormed, {
+                  {format.dateTime(groupDetails.basics.dateFormed, {
                     year: "numeric",
                     month: "numeric",
                     day: "numeric",
@@ -210,10 +199,10 @@ const GroupData: FC<{ groupDetails?: GroupDetails }> = async ({
                 <DataNode
                   label={t("groupData.basicInfo.groupRegistrationCert")}
                 >
-                  {groupDetails.basicInfo.registrationCert}
+                  {groupDetails.basics.groupRegistrationCertificate}
                 </DataNode>
                 <DataNode label={t("groupData.basicInfo.listOfMembersOnCert")}>
-                  {groupDetails.basicInfo.listOfMembersOnCert}
+                  {groupDetails.basics.listOfMembersOnCertificate}
                 </DataNode>
               </div>
             </AccordionContent>
@@ -259,15 +248,15 @@ const GroupData: FC<{ groupDetails?: GroupDetails }> = async ({
                 <DataNode
                   label={t("groupData.groupBackground.purposeOfTheGroup")}
                 >
-                  {groupDetails.background.purpose}
+                  {groupDetails.background.purposeOfTheGroup}
                 </DataNode>
                 <DataNode
                   label={t("groupData.groupBackground.keyActivitiesOfGroup")}
                 >
-                  {groupDetails.background.keyActivities}
+                  {groupDetails.background.keyActivitiesOfTheGroup}
                 </DataNode>
                 <DataNode label={t("groupData.groupBackground.creditHistory")}>
-                  {groupDetails.background.creditHistory}
+                  {groupDetails.background.groupCreditHistory}
                 </DataNode>
               </div>
             </AccordionContent>
@@ -278,13 +267,13 @@ const GroupData: FC<{ groupDetails?: GroupDetails }> = async ({
   );
 };
 
-const ProposedBusiness: FC<{ businessDetails?: businessDetails }> = async ({
-  businessDetails,
-}) => {
+const ProposedBusiness: FC<{
+  businessDetails?: ProposedBusinessData;
+}> = async ({ businessDetails }) => {
   const t = await getTranslations("ApplicationDetailsPage");
   const format = await getFormatter();
 
-  if (!businessDetails?.information && !businessDetails?.performance) {
+  if (!businessDetails) {
     return null;
   }
 
@@ -292,99 +281,89 @@ const ProposedBusiness: FC<{ businessDetails?: businessDetails }> = async ({
     <div className="mt-6 grid">
       <h4 className="typo-h4 pb-2">{t("proposedBusiness.proposedBusiness")}</h4>
       <Accordion type="multiple" className="space-y-2">
-        {businessDetails.information && (
-          <AccordionItem value="proposed-business-information">
-            <AccordionTrigger>
-              {t("proposedBusiness.businessInfo.businessInformation")}
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="grid gap-4">
-                <DataNode
-                  label={t("proposedBusiness.businessInfo.natureOfBusiness")}
-                >
-                  {businessDetails.information.natureOfBusiness}
-                </DataNode>
-                <DataNode
-                  label={t("proposedBusiness.businessInfo.businessType")}
-                >
-                  {businessDetails.information.type}
-                </DataNode>
-                <DataNode
-                  label={t("proposedBusiness.businessInfo.operationPeriod")}
-                >
-                  {t("numberYears", {
-                    year: businessDetails.information.operationPeriod,
-                  })}
-                </DataNode>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        )}
+        <AccordionItem value="proposed-business-information">
+          <AccordionTrigger>
+            {t("proposedBusiness.businessInfo.businessInformation")}
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="grid gap-4">
+              <DataNode
+                label={t("proposedBusiness.businessInfo.natureOfBusiness")}
+              >
+                {businessDetails.natureOfBusiness}
+              </DataNode>
+              <DataNode label={t("proposedBusiness.businessInfo.businessType")}>
+                {businessDetails.businessType}
+              </DataNode>
+              <DataNode
+                label={t("proposedBusiness.businessInfo.operationPeriod")}
+              >
+                {t("numberYears", {
+                  year: businessDetails.yearsInBusiness,
+                })}
+              </DataNode>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
 
-        {businessDetails.performance && (
-          <AccordionItem value="proposed-business-performance">
-            <AccordionTrigger>
-              {t("proposedBusiness.businessPerformance.businessPerformance")}
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="grid gap-4">
-                <DataNode
-                  label={t(
-                    "proposedBusiness.businessPerformance.averageIncomePerMonth",
-                  )}
-                >
-                  <Currency
-                    amount={businessDetails.performance.averageMonthIncome}
-                    currency="KES"
-                  />
-                </DataNode>
-                <DataNode
-                  label={t("proposedBusiness.businessPerformance.costOfGoods")}
-                >
-                  <Currency
-                    amount={businessDetails.performance.costOfGoodsPerMonth}
-                    currency="KES"
-                  />
-                </DataNode>
-                <DataNode
-                  label={t("proposedBusiness.businessPerformance.rent")}
-                >
-                  <Currency
-                    amount={businessDetails.performance.rent}
-                    currency="KES"
-                  />
-                </DataNode>
-                <DataNode
-                  label={t("proposedBusiness.businessPerformance.salaries")}
-                >
-                  <Currency
-                    amount={businessDetails.performance.salaries}
-                    currency="KES"
-                  />
-                </DataNode>
-                <DataNode
-                  label={t(
-                    "proposedBusiness.businessPerformance.transportCosts",
-                  )}
-                >
-                  <Currency
-                    amount={businessDetails.performance.transportCosts}
-                    currency="KES"
-                  />
-                </DataNode>
-                <DataNode
-                  label={t("proposedBusiness.businessPerformance.netSurplus")}
-                >
-                  <Currency
-                    amount={businessDetails.performance.netSurplus}
-                    currency="KES"
-                    signDisplay="always"
-                  />
-                </DataNode>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        )}
+        <AccordionItem value="proposed-business-performance">
+          <AccordionTrigger>
+            {t("proposedBusiness.businessPerformance.businessPerformance")}
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="grid gap-4">
+              <DataNode
+                label={t(
+                  "proposedBusiness.businessPerformance.averageIncomePerMonth",
+                )}
+              >
+                <Currency
+                  amount={businessDetails.averageIncome}
+                  currency="KES"
+                />
+              </DataNode>
+              <DataNode
+                label={t("proposedBusiness.businessPerformance.costOfGoods")}
+              >
+                <Currency amount={businessDetails.costOfGoods} currency="KES" />
+              </DataNode>
+              <DataNode label={t("proposedBusiness.businessPerformance.rent")}>
+                <Currency
+                  amount={businessDetails.rentForBusiness}
+                  currency="KES"
+                />
+              </DataNode>
+              <DataNode
+                label={t("proposedBusiness.businessPerformance.salaries")}
+              >
+                <Currency amount={businessDetails.salaries} currency="KES" />
+              </DataNode>
+              <DataNode
+                label={t("proposedBusiness.businessPerformance.transportCosts")}
+              >
+                <Currency
+                  amount={businessDetails.transportForBusinessStock}
+                  currency="KES"
+                />
+              </DataNode>
+              <DataNode
+                label={t("proposedBusiness.businessPerformance.netSurplus")}
+              >
+                <Currency
+                  amount={
+                    (businessDetails.averageIncome ?? 0) -
+                    (businessDetails.costOfGoods ?? 0) -
+                    (businessDetails.rentForBusiness ?? 0) -
+                    (businessDetails.salaries ?? 0) -
+                    (businessDetails.transportForBusinessStock ?? 0)
+                  }
+                  currency="KES"
+                  signDisplay="always"
+                />
+              </DataNode>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
     </div>
   );

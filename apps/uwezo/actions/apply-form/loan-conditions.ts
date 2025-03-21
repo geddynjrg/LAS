@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
+import { updateApplicationLoanConditionsData } from "@/actions/application";
 import {
   loanConditionsDataSchema,
   type LoanConditionsData,
@@ -37,6 +38,15 @@ export const loanConditions: FormAction<LoanConditionsData> = async (
   }
 
   /* Submit data to dummy data list */
+  await updateApplicationLoanConditionsData(id, {
+    purposeOfLoan: data.purposeOfLoan,
+    loanType: data.loanType,
+    loanAmount: data.loanAmount,
+    repaymentPeriod: data.repaymentPeriod,
+    accountNumber: data.accountNumber,
+    bankBranch: data.bankBranch,
+    bankName: data.bankName,
+  });
 
   redirect(redirectTo);
 };

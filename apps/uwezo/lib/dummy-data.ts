@@ -1,4 +1,4 @@
-import { Application, type Member } from "@/actions/application";
+import { type ApplicationData, type Member } from "@/actions/application";
 
 export const dummyCounty = [
   {
@@ -160,182 +160,218 @@ export const dummyCounty = [
   },
 ];
 
-export const dummyApplications: Application[] = [
+export const dummyApplications: ApplicationData[] = [
   {
     generalDetails: {
-      applicationId: "LFR-D5SP6A",
-      status: "IN_REVIEW",
-      user: "user@user.com",
-    },
-    loanDetails: {
-      purpose: "To buy more stock",
-      type: "Group Loan",
-      amount: 200000,
-      repaymentPeriod: 6,
-    },
-    bankAccountDetails: {
-      bankName: "Equity Bank",
-      groupsBankBranch: "Kisumu",
-      accountNumber: "1234567890",
-    },
-    groupDetails: {
-      natureOfGroup: "Chama",
-      basicInfo: {
-        name: "Beacon",
-        registrationNumber: "123456",
-        dateFormed: new Date("2021-01-01"),
-        registrationCert: "Cert",
-        listOfMembersOnCert: "Members",
-      },
-      members: [
-        {
-          name: "John",
-          lastName: "Doe",
-          type: "Chairman",
-        },
-        {
-          name: "Jane",
-          lastName: "Doe",
-          type: "Secretary",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-      ],
-      location: {
-        countyOfOperation: "Kenya",
-        constituency: "Kisumu",
-        ward: "Kisumu Central",
-        meetingPoint: "Kisumu CBD",
-        nearestLandmark: "Kisumu Post Office",
-      },
-      background: {
-        purpose: "To buy more stock",
-        keyActivities: "Selling",
-        creditHistory: "Good",
-      },
-    },
-    businessDetails: {
-      information: {
-        natureOfBusiness: "Retail",
-        type: "Grocery",
-        operationPeriod: 12,
-      },
-      performance: {
-        averageMonthIncome: 100000,
-        costOfGoodsPerMonth: 50000,
-        rent: 10000,
-        salaries: 20000,
-        transportCosts: 5000,
-        netSurplus: 15000,
-      },
-    },
-  },
-  {
-    generalDetails: {
-      applicationId: "LFR-F66Q6A",
+      applicationId: "APP-12345",
+      user: "email@email.com",
       status: "PENDING",
-      user: "user@user.com",
     },
-    loanDetails: {
-      purpose: "To buy more stock",
-      type: "Group Loan",
-      amount: 420000,
-      repaymentPeriod: 6,
-    },
-    bankAccountDetails: {
-      bankName: "KCB",
-      groupsBankBranch: "Nairobi",
-      accountNumber: "0987654321",
-    },
-    groupDetails: {
-      natureOfGroup: "Chama",
-      basicInfo: {
-        name: "Candle",
-        registrationNumber: "654321",
-        dateFormed: new Date("2021-01-01"),
-        registrationCert: "Cert",
-        listOfMembersOnCert: "Members",
-      },
-      members: [
-        {
-          name: "John",
-          lastName: "Doe",
-          type: "Chairman",
-        },
-        {
-          name: "Jane",
-          lastName: "Doe",
-          type: "Secretary",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-        {
-          name: "Alice",
-          lastName: "Doe",
-          type: "Member",
-        },
-      ],
-      location: {
-        countyOfOperation: "Kenya",
-        constituency: "Nairobi",
-        ward: "Kasarani",
-        meetingPoint: "Kasarani",
-        nearestLandmark: "Kasarani Police Station",
+    groupData: {
+      basics: {
+        groupName: "Sunrise Farmers Group",
+        groupRegistrationNumber: "REG-2024-001",
+        dateFormed: new Date("2022-05-10"),
+        groupRegistrationCertificate: "certificate_sunrise_farmers.pdf",
+        listOfMembersOnCertificate: "members_list_sunrise.pdf",
       },
       background: {
-        purpose: "To buy more stock",
-        keyActivities: "Selling",
-        creditHistory: "Good",
+        purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
+        keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
+        groupCreditHistory: "Good",
+        valueChain: ["Poultry", "Vegetables"],
+        tableBanking: {
+          tableBankingExperience: 3,
+          tableBankingShareContribution: 50000,
+          tableBankingTotalLoanedOut: 150000,
+          tableBankingTotalRevolvingFund: 200000,
+        },
+      },
+      location: {
+        countyOfOperation: "Nakuru",
+        constituency: "Bahati",
+        ward: "Lanet",
+        meetingPoint: "Lanet Social Hall",
+        nearestLandmark: "Lanet Market",
       },
     },
-    businessDetails: {
-      information: {
-        natureOfBusiness: "Retail",
-        type: "Grocery",
-        operationPeriod: 12,
-      },
-      performance: {
-        averageMonthIncome: 100000,
-        costOfGoodsPerMonth: 50000,
-        rent: 10000,
-        salaries: 20000,
-        transportCosts: 5000,
-        netSurplus: -15000,
-      },
+    members: {
+      natureOfTheGroup: "Mixed",
+      members: [
+        {
+          fullname: "John Doe",
+          nationalIdCode: "12345678",
+          gender: "Male",
+          type: "Chairman",
+          phoneNumber: "0712345678",
+          photoOfId: "john_doe_id.jpg",
+          disability: {
+            certificateOfDisability: "",
+            pwdNumber: undefined,
+          },
+        },
+      ],
+    },
+    loanConditions: {
+      purposeOfLoan: ["Business Expansion"],
+      loanType: "Group Loan",
+      loanAmount: 250000,
+      repaymentPeriod: 12,
+      bankName: "Equity Bank",
+      bankBranch: "Nakuru",
+      accountNumber: "0123456789",
+    },
+    proposedBusiness: {
+      natureOfBusiness: "Farming",
+      businessType: ["Poultry", "Horticulture"],
+      yearsInBusiness: 5,
+      averageIncome: 80000,
+      costOfGoods: 30000,
+      rentForBusiness: 5000,
+      salaries: 10000,
+      transportForBusinessStock: 7000,
     },
   },
   {
     generalDetails: {
-      applicationId: "LFR-123456",
-      status: "UNSUBMITTED",
-      user: "user@user.com",
+      applicationId: "APP-12346",
+      user: "email@email.com",
+      status: "IN_REVIEW",
     },
-    loanDetails: {
-      purpose: "To buy more stock",
-      type: "Group Loan",
-      amount: 200000,
-      repaymentPeriod: 6,
-    },
-    groupDetails: {
-      natureOfGroup: "Chama",
-      basicInfo: {
-        name: "Sunlight",
-        registrationNumber: "123456",
-        dateFormed: new Date("2021-01-01"),
-        registrationCert: "Cert",
-        listOfMembersOnCert: "Members",
+    groupData: {
+      basics: {
+        groupName: "In review Group",
+        groupRegistrationNumber: "REG-2024-001",
+        dateFormed: new Date("2022-05-10"),
+        groupRegistrationCertificate: "certificate_sunrise_farmers.pdf",
+        listOfMembersOnCertificate: "members_list_sunrise.pdf",
       },
+      background: {
+        purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
+        keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
+        groupCreditHistory: "Good",
+        valueChain: ["Poultry", "Vegetables"],
+        tableBanking: {
+          tableBankingExperience: 3,
+          tableBankingShareContribution: 50000,
+          tableBankingTotalLoanedOut: 150000,
+          tableBankingTotalRevolvingFund: 200000,
+        },
+      },
+      location: {
+        countyOfOperation: "Nakuru",
+        constituency: "Bahati",
+        ward: "Lanet",
+        meetingPoint: "Lanet Social Hall",
+        nearestLandmark: "Lanet Market",
+      },
+    },
+    members: {
+      natureOfTheGroup: "Mixed",
+      members: [
+        {
+          fullname: "John Doe",
+          nationalIdCode: "12345678",
+          gender: "Male",
+          type: "Chairman",
+          phoneNumber: "0712345678",
+          photoOfId: "john_doe_id.jpg",
+          disability: {
+            certificateOfDisability: "",
+            pwdNumber: undefined,
+          },
+        },
+      ],
+    },
+    loanConditions: {
+      purposeOfLoan: ["Business Expansion"],
+      loanType: "Group Loan",
+      loanAmount: 250000,
+      repaymentPeriod: 12,
+      bankName: "Equity Bank",
+      bankBranch: "Nakuru",
+      accountNumber: "0123456789",
+    },
+    proposedBusiness: {
+      natureOfBusiness: "Farming",
+      businessType: ["Poultry", "Horticulture"],
+      yearsInBusiness: 5,
+      averageIncome: 80000,
+      costOfGoods: 30000,
+      rentForBusiness: 5000,
+      salaries: 10000,
+      transportForBusinessStock: 7000,
+    },
+  },
+  {
+    generalDetails: {
+      applicationId: "APP-12347",
+      user: "email@email.com",
+      status: "UNSUBMITTED",
+    },
+    groupData: {
+      basics: {
+        groupName: "test name Group",
+        groupRegistrationNumber: "REG-2024-001",
+        dateFormed: new Date("2022-05-10"),
+        groupRegistrationCertificate: "certificate_sunrise_farmers.pdf",
+        listOfMembersOnCertificate: "members_list_sunrise.pdf",
+      },
+      background: {
+        purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
+        keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
+        groupCreditHistory: "Good",
+        valueChain: ["Poultry", "Vegetables"],
+        tableBanking: {
+          tableBankingExperience: 3,
+          tableBankingShareContribution: 50000,
+          tableBankingTotalLoanedOut: 150000,
+          tableBankingTotalRevolvingFund: 200000,
+        },
+      },
+      location: {
+        countyOfOperation: "Nakuru",
+        constituency: "Bahati",
+        ward: "Lanet",
+        meetingPoint: "Lanet Social Hall",
+        nearestLandmark: "Lanet Market",
+      },
+    },
+    members: {
+      natureOfTheGroup: "Mixed",
+      members: [
+        {
+          fullname: "John Doe",
+          nationalIdCode: "12345678",
+          gender: "Male",
+          type: "Chairman",
+          phoneNumber: "0712345678",
+          photoOfId: "john_doe_id.jpg",
+          disability: {
+            certificateOfDisability: "",
+            pwdNumber: undefined,
+          },
+        },
+      ],
+    },
+    loanConditions: {
+      purposeOfLoan: ["Business Expansion"],
+      loanType: "Group Loan",
+      loanAmount: 250000,
+      repaymentPeriod: 12,
+      bankName: "Equity Bank",
+      bankBranch: "Nakuru",
+      accountNumber: "0123456789",
+    },
+    proposedBusiness: {
+      natureOfBusiness: "Farming",
+      businessType: ["Poultry", "Horticulture"],
+      yearsInBusiness: 5,
+      averageIncome: 80000,
+      costOfGoods: 30000,
+      rentForBusiness: 5000,
+      salaries: 10000,
+      transportForBusinessStock: 7000,
     },
   },
 ];

@@ -18,7 +18,8 @@
     "service": "Service",
     "manufacturing": "Manufacturing",
     "agriculture": "Agriculture",
-    "loading": "Loading"
+    "loading": "Loading",
+    "resend": "Resend"
   },
 
   "Footer": {
@@ -262,6 +263,8 @@
       },
       "businessPerformance": {
         "businessPerformance": "Business performance",
+        "income": "Income",
+        "expenses": "Expenses",
         "averageIncomePerMonth": "Average income per month",
         "costOfGoods": "Cost of goods/service per month",
         "rent": "Rent for your business",
@@ -270,8 +273,27 @@
         "netSurplus": "Net surplus/deficit",
         "enterAmount": "Enter amount",
         "goodsServicesCost": "Cost of goods/services per month",
-        "rendForBusiness": "Rent for business"
+        "rendForBusiness": "Rent for business",
+        "addCustomField": "Add custom field"
       }
+    }
+  },
+  "ConfirmationsPage": {
+    "title": "Confirmations",
+    "form-title": "Group declaration",
+    "confirmationDataForm": {
+      "group-member": "We confirm we are members of this group",
+      "declare-true-information": "Declare that the information provided herein is true to the best of our knowledge. We further authorize Uwezo Fund to verify the information given herein and make reference provided here in.",
+      "agree-to-repayment": "We agree that we are jointly and severally liable for repayment of loan in event of default and",
+      "no-additional-loans": "We shall not be eligible for additional loans unless the amount in default has been cleared in full"
+    },
+    "confirmMembersForm": {
+      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, the members undertaking the loan will be informed through their phones that they need to give consent. Once two thirds of them have given consent, you can move to the final step.",
+      "progress-saved": "You can safely close the browser page and come back to it later. Your progress has been saved, <strong>you will be notified via SMS once enough members have confirmed to proceed.</strong>",
+      "select-members": "Select members undertaking the loan",
+      "select-all": "Select all members",
+      "send-to-members": "Send to members for confirmation",
+      "confirmed-members": "{confirmed}/{total} members have confirmed"
     }
   },
   "InfoPopover": {
