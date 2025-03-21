@@ -96,6 +96,7 @@ export const SearchInput: FC<SearchInputProps> = ({
                       options.find((option) => option.label === currentValue)
                         ?.value ?? "",
                     );
+                    setIsOpen(false);
                   }}
                 >
                   {option.label}
