@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { InfoPopover } from "@workspace/ui/components/info-popover";
+import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 import { cn } from "@workspace/ui/lib/utils";
 
 const meta = {

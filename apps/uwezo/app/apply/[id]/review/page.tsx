@@ -1,5 +1,5 @@
 import { Container } from "@workspace/ui/components/container";
-import { InfoPopover } from "@workspace/ui/components/info-popover";
+import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 export default async function Page() {
   return (
