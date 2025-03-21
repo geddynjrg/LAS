@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import {
@@ -31,6 +32,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
   id,
   action,
 }) => {
+  const t = useTranslations();
   const [state, formAction, isPending] = useForm(
     action,
     loanConditionsDataSchema,
@@ -42,19 +44,29 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
   return (
     <Form action={formAction} autoComplete="on">
       <Container>
-        <FormCard title="Loan Details" className="space-y-4">
+        <FormCard
+          title={t("ApplicationDetailsPage.loan.loanDetails")}
+          className="space-y-4"
+        >
           <Field
             state={state}
             name="purposeOfLoan"
-            label="Purpose of the loan"
+            label={t("ApplicationDetailsPage.loan.purposeOfTheLoan")}
             required
             control={(props) => (
               <CheckboxGroup
                 {...props}
                 options={[
-                  { label: "Table banking", value: "Table banking" },
                   {
-                    label: "Common group project",
+                    label: t(
+                      "ApplicationDetailsPage.groupData.groupBackground.tableBanking",
+                    ),
+                    value: "Table banking",
+                  },
+                  {
+                    label: t(
+                      "ApplicationDetailsPage.groupData.groupBackground.commonGroupProject",
+                    ),
                     value: "Common group project",
                   },
                 ]}
@@ -65,7 +77,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="loanType"
-            label="Loan type"
+            label={t("ApplicationDetailsPage.loan.loanType")}
             required
             control={(props) => (
               <ButtonGroup {...props} type="single">
@@ -76,33 +88,32 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           />
 
           <Card variant="blue" radius="sm">
-            <p>
-              Wezesha is for first time borrowers. Loan amount range is 50 000
-              KSh - 100 000 KSh. Maximum repayment period is 24 months.
-            </p>
+            <p>{t("ApplicationDetailsPage.loan.wezeshaLoanDescription")}</p>
             <br />
-            <p className="font-bold">The loan has a 1% interest rate</p>
+            <p className="font-bold">
+              {t("ApplicationDetailsPage.loan.wezeshaInterest")}
+            </p>
           </Card>
 
           <Field
             state={state}
             name="loanAmount"
-            label="Loan amount"
+            label={t("ApplicationDetailsPage.loan.loanAmount")}
             required
-            description="Maximum amount is 100 000 KSh"
+            description={t("ApplicationDetailsPage.loan.maximumLoan")}
             control={(props) => <Input type="tel" endDecorator="KSh" />}
           />
 
           <Field
             state={state}
             name="repaymentPeriod"
-            label="Proposed repayment period in months"
+            label={t("ApplicationDetailsPage.loan.repaymentPeriod")}
             required
             control={(props) => (
               <Slider
-                startDecorator="1 month"
-                endDecorator="12 months"
-                thumbLabel={(value) => `${value} months`} // fix in post AKA translations
+                startDecorator={t("Common.monthCount", { count: 1 })}
+                endDecorator={t("Common.monthCount", { count: 12 })}
+                thumbLabel={(value) => t("Common.monthCount", { count: value })}
                 {...props}
                 min={1}
                 max={12}
@@ -111,11 +122,14 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           />
         </FormCard>
 
-        <FormCard title="Bank account details" className="space-y-4">
+        <FormCard
+          title={t("ApplicationDetailsPage.loan.bankAccountDetails")}
+          className="space-y-4"
+        >
           <Field
             state={state}
             name="bankName"
-            label="Bank name"
+            label={t("ApplicationDetailsPage.loan.bankName")}
             required
             control={(props) => (
               <SearchInput
@@ -131,7 +145,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="bankBranch"
-            label="Bank branch"
+            label={t("ApplicationDetailsPage.loan.bankBranch")}
             required
             control={(props) => <Input {...props} />}
           />
@@ -139,7 +153,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="accountNumber"
-            label="Account number"
+            label={t("ApplicationDetailsPage.loan.accountNumber")}
             required
             control={(props) => <Input {...props} />}
           />

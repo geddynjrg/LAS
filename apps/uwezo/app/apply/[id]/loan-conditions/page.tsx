@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
@@ -10,6 +12,7 @@ export interface LoanConditionsPageProps {
 
 export default async function Page({ params }: LoanConditionsPageProps) {
   const { id } = await params;
+  const t = await getTranslations();
 
   return (
     <>
@@ -17,7 +20,9 @@ export default async function Page({ params }: LoanConditionsPageProps) {
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
-            <h2 className="typo-h2">Loan conditions</h2>
+            <h2 className="typo-h2">
+              {t("ApplicationDetailsPage.loan.loanConditions")}
+            </h2>
           </div>
         </div>
       </Container>

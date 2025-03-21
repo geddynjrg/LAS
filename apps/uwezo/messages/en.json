@@ -1,6 +1,7 @@
 {
   "Common": {
     "menu": "Menu",
+    "close": "Close",
     "closeMenu": "Close menu",
     "apply": "Apply",
     "other": "Other",
@@ -9,7 +10,10 @@
     "ward": "Ward",
     "back": "Back",
     "next": "Next",
-    "submit": "Submit"
+    "submit": "Submit",
+    "help": "Help",
+    "faq": "Frequently asked questions",
+    "monthCount": "{count, plural, =1 {# month} other {# months}}"
   },
 
   "Footer": {
@@ -170,7 +174,13 @@
       "bankAccountDetails": "Bank account details",
       "groupsBankName": "Group Bank name",
       "groupsBankBranch": "Group's Bank branch",
-      "bankAccountNumber": "Bank account number"
+      "bankAccountNumber": "Bank account number",
+      "wezeshaLoanDescription": "Wezesha is for first time borrowers. Loan amount range is 50 000 KSh - 100 000 KSh. Maximum repayment period is 24 months.",
+      "wezeshaInterest": "The loan has a 1% interest rate",
+      "maximumLoan": "Maximum amount is 100 000 KSh",
+      "bankName": "Bank name",
+      "bankBranch": "Bank branch",
+      "accountNumber": "Account number"
     },
     "members": {
       "members": "Members",
@@ -224,7 +234,8 @@
         "chooseOrSearch": "Choose or search",
         "enterWard": "Enter ward",
         "meetingPointExamples": "e.g. social hall, school, etc.",
-        "nearestLandmarkExamples": "e.g. school, mosque, church"
+        "nearestLandmarkExamples": "e.g. school, mosque, church",
+        "commonGroupProject": "Common group project"
       }
     },
     "proposedBusiness": {
@@ -245,5 +256,8 @@
         "netSurplus": "Net surplus/deficit"
       }
     }
+  },
+  "InfoPopover": {
+    "title": "Do you need help?"
   }
 }
