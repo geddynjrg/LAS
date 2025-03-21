@@ -236,6 +236,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               control={(props) => (
                 <CheckboxGroup
                   {...props}
+                  defaultValue={props.defaultValue ?? []}
                   options={[
                     {
                       label: t(
@@ -288,7 +289,12 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   "ApplicationDetailsPage.groupData.groupBackground.tableBankingPractice",
                 )}
                 required
-                control={(_props) => <Input type="number" />}
+                control={(props) => (
+                  <Input
+                    defaultValue={props.defaultValue?.toString()}
+                    type="number"
+                  />
+                )}
               />
               <Field
                 state={state}
@@ -297,7 +303,12 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   "ApplicationDetailsPage.groupData.groupBackground.monthlyShareContribution",
                 )}
                 required
-                control={(_props) => <Input type="number" />}
+                control={(props) => (
+                  <Input
+                    defaultValue={props.defaultValue?.toString()}
+                    type="number"
+                  />
+                )}
               />
               <Field
                 state={state}
@@ -306,7 +317,13 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   "ApplicationDetailsPage.groupData.groupBackground.totalLoanedOut",
                 )}
                 required
-                control={(_props) => <Input type="number" endDecorator="KSh" />}
+                control={(props) => (
+                  <Input
+                    defaultValue={props.defaultValue?.toString()}
+                    type="number"
+                    endDecorator="KSh"
+                  />
+                )}
               />
               <Field
                 state={state}
@@ -315,7 +332,13 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   "ApplicationDetailsPage.groupData.groupBackground.totalRevolvingFund",
                 )}
                 required
-                control={(_props) => <Input type="number" endDecorator="KSh" />}
+                control={(props) => (
+                  <Input
+                    defaultValue={props.defaultValue?.toString()}
+                    type="number"
+                    endDecorator="KSh"
+                  />
+                )}
               />
             </div>
           )}

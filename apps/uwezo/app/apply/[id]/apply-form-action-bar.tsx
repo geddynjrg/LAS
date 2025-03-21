@@ -57,14 +57,14 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
                 disabled && "text-neutral-400",
               )}
             >
-              {activeStep === 6 ? t("Common.next") : t("Common.submit")}
+              {activeStep === 6 ? t("Common.submit") : t("Common.next")}
               <IconArrowRight />
             </Link>
           </Button>
         ) : (
           <SubmitButton disabled={disabled}>
             <div className="flex flex-row gap-1">
-              {t("Common.submit")}
+              {t("Common.next")}
               <IconArrowRight />
             </div>
           </SubmitButton>

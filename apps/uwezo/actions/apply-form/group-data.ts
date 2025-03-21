@@ -47,6 +47,7 @@ export const groupData: FormAction<GroupData> = async (_prev, formData) => {
       purposeOfTheGroup: data.groupPurpose,
       keyActivitiesOfTheGroup: data.groupActivities,
       groupCreditHistory: data.groupCreditHistory.name,
+      valueChain: data.valueChain,
       other: data.other,
       tableBanking: {
         tableBankingExperience: data.tableBankingExperience ?? undefined,

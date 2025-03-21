@@ -49,7 +49,7 @@ export default async function IdLayout({ children }: ApplyLayoutProps) {
     {
       index: 6,
       title: t("ApplicationDetailsPage.groupData.steps.finalReview"),
-      path: "/finish",
+      path: "/review",
     },
   ];
 

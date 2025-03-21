@@ -8,5 +8,5 @@ export const steps: ApplyStep[] = [
   { index: 3, title: "Loan conditions", path: "/loan-conditions" },
   { index: 4, title: "Proposed business", path: "/proposed-business" },
   { index: 5, title: "Confirmations", path: "/confirmations" },
-  { index: 6, title: "Final review", path: "/finish" },
+  { index: 6, title: "Final review", path: "/review" },
 ];

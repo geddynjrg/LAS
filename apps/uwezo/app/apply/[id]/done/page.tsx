@@ -43,7 +43,7 @@ export default async function Page() {
         </p>
 
         <Button className={cn("w-full max-w-[27rem]")} asChild>
-          <a href="#">{t("ApplyPage.DonePage.go-to-applications")}</a>
+          <a href="/dashboard">{t("ApplyPage.DonePage.go-to-applications")}</a>
         </Button>
       </div>
     </Container>

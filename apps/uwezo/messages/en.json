@@ -298,6 +298,10 @@
       "confirmed-members": "{confirmed}/{total} members have confirmed"
     }
   },
+  "ReviewPage": {
+    "title": "Final review",
+    "subTitle": "Review your data before submitting your application."
+  },
   "InfoPopover": {
     "title": "Do you need help?"
   }

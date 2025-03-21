@@ -76,7 +76,9 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         <Button variant="secondary" className="w-full text-neutral-700" asChild>
           <Link
             href={
-              status === "UNSUBMITTED" ? "#" : `/dashboard/${applicationId}`
+              status === "UNSUBMITTED"
+                ? `/apply/${applicationId}/group-data`
+                : `/dashboard/${applicationId}`
             }
           >
             {status === "UNSUBMITTED"

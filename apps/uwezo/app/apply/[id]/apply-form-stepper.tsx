@@ -15,8 +15,11 @@ export interface ApplyFormStepperProps {
 export const ApplyFormStepper: FC<ApplyFormStepperProps> = ({ steps }) => {
   const pathname = usePathname();
 
-  const activeStep =
-    steps.find((step) => pathname.includes(step.path))?.index ?? 1;
+  const activeStep = steps.find((step) => pathname.includes(step.path))?.index;
+
+  if (!activeStep) {
+    return null;
+  }
 
   return (
     <Container className="mt-7">
