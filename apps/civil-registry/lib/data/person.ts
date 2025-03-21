@@ -155,7 +155,7 @@ globalThis.personsStore = globalThis.personsStore || persons;
 globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {};
 
 export const personsStore: Person[] = globalThis.personsStore;
-export const birthRegistrationStore: BirthRegistrationStore =
+export let birthRegistrationStore: BirthRegistrationStore =
   globalThis.birthRegistrationStore;
 
 export function resetBirthRegistrationStore() {
@@ -165,4 +165,6 @@ export function resetBirthRegistrationStore() {
     father: {} as Person,
     informant: {} as Person,
   };
+
+  birthRegistrationStore = globalThis.birthRegistrationStore;
 }
