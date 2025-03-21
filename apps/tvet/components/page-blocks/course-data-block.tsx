@@ -56,7 +56,9 @@ export const CourseDataBlock: FC<CourseDataBlockProps> = ({
         <div className="app-container px-4">
           <div className="flex items-center px-4">
             <Button className="md:max-w-3xs mx-auto mt-4 w-full" asChild>
-              <Link href="/apply">{t("applyNow")}</Link>
+              <Link href="/login/phone?callbackUrl=/apply">
+                {t("applyNow")}
+              </Link>
             </Button>
           </div>
         </div>

@@ -15,10 +15,11 @@ export const AppFooter: FC<AppFooterProps> = ({ institutions }) => {
       <Container className="grid gap-6 p-4 lg:grid-cols-2 xl:grid-cols-3">
         <FooterNavGroup title="Navigate">
           <FooterNavItem href="/">Home</FooterNavItem>
-          <FooterNavItem href="/institutions">Institutions</FooterNavItem>
           <FooterNavItem href="/courses">Courses</FooterNavItem>
           <FooterNavItem href="/sponsorships">Sponsorships</FooterNavItem>
-          <FooterNavItem href="/apply">Apply now!</FooterNavItem>
+          <FooterNavItem href="/login/phone?callbackUrl=/apply">
+            Apply now!
+          </FooterNavItem>
           <FooterNavItem href="/contact">Contact</FooterNavItem>
         </FooterNavGroup>
         {(institutions?.length ?? 0) > 0 && (
