@@ -30,7 +30,7 @@ export const GalleryCarousel: FC<LightboxModalProps> = ({
 }) => {
   return (
     <GalleryModal title="Gallery" images={images}>
-      <Carousel className={cn(className)}>
+      <Carousel className={cn(className)} opts={{ active: images.length > 1 }}>
         <CarouselContent className="aspect-video lg:h-full">
           {images.map((image, index) => (
             <CarouselItem
@@ -51,11 +51,13 @@ export const GalleryCarousel: FC<LightboxModalProps> = ({
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselControls
-          position="onContent"
-          variant="white"
-          className="mb-2"
-        />
+        {images.length > 1 && (
+          <CarouselControls
+            position="onContent"
+            variant="white"
+            className="mb-2"
+          />
+        )}
       </Carousel>
     </GalleryModal>
   );
