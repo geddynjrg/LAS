@@ -16,7 +16,7 @@ export const DescriptionBlock: FC<DescriptionBlockProps> = ({
   return (
     <div
       className={cn("description-block", className)}
-      dangerouslySetInnerHTML={{ __html: processed ?? value }}
+      dangerouslySetInnerHTML={{ __html: processed ?? value ?? "" }}
     ></div>
   );
 };
