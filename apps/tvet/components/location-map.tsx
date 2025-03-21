@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  IconMapPin,
-  IconMapPinFilled,
-  IconMinus,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconMapPinFilled, IconMinus, IconPlus } from "@tabler/icons-react";
 import {
   AdvancedMarker,
   APIProvider,
@@ -13,7 +8,7 @@ import {
   Map,
 } from "@vis.gl/react-google-maps";
 import { useTranslations } from "next-intl";
-import { useState, type FC, type ReactNode } from "react";
+import { useState, type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 
@@ -26,8 +21,15 @@ export interface LocationMapProps {
     longitude: number;
   };
 }
+// TODO: fix build args
+// const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+// const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
+const API_KEY = "AIzaSyDNmBOe24CzYr6_EjmUY9Ugx7jSuvGRGWI";
+const MAP_ID = "2471b6743fd8b796";
 
 export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
+  console.log("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", `"${API_KEY}"`);
+  console.log("NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID", `"${MAP_ID}"`);
   const [showInfoWindow, setShowInfoWindow] = useState<InstitutionType | null>(
     null,
   );
@@ -35,7 +37,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
   const t = useTranslations("LocationMap");
 
   return (
-    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
+    <APIProvider apiKey={API_KEY}>
       <div className="relative box-border w-full">
         <Map
           defaultCenter={
@@ -49,7 +51,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                   lng: location?.longitude ?? 36.817371,
                 }
           }
-          mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID}
+          mapId={MAP_ID}
           disableDefaultUI={true}
           zoom={zoom}
           onZoomChanged={(zoom) => setZoom(zoom.detail.zoom)}

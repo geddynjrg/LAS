@@ -57,8 +57,4 @@ ENV PORT=${PORT}
 ENV NODE_ENV=production
 EXPOSE ${PORT}
 
-
-RUN ls
-
-
 CMD npm start
