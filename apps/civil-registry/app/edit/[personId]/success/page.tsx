@@ -34,7 +34,9 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
   return (
     <SectionWrap hasTopPadding hasBottomPadding className={cn("space-y-6")}>
       <div className={cn("flex justify-center")}>
-        <BackButton />
+        <BackButton
+          url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
+        />
       </div>
 
       <h2

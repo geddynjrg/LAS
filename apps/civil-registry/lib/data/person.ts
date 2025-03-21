@@ -100,6 +100,8 @@ export let persons: Person[] = [
     natureOfBirth: "LiveBirth",
     sex: "F",
     siblings: ["3", "5"],
+    weightOnBirth: "3.1 kg",
+    placeOfBirth: "Kajiado County Referral Hospital",
     mother: "1",
     father: "2",
     validationStatus: "alert",
@@ -126,6 +128,8 @@ export let persons: Person[] = [
     phoneCode: "+254",
     sex: "M",
     children: ["1"],
+    weightOnBirth: "3.1 kg",
+    placeOfBirth: "Kajiado County Referral Hospital",
     validationStatus: "success",
   },
 ];

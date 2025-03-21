@@ -13,11 +13,11 @@ import { ModalButton } from "@workspace/ui/components/modal-button";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { updatePersonStatusById } from "@/actions/update-person-status-by-id";
-import { PaymentBar } from "@/app/[personId]/payment-bar/payment-bar";
+import { PaymentBar } from "@/app/edit/[personId]/payment-bar/payment-bar";
 import {
   PersonFormBlock,
   PersonType,
-} from "@/app/[personId]/person-block/person-form-block";
+} from "@/app/edit/[personId]/person-block/person-form-block";
 import type { Person } from "@/lib/data/person";
 import { getFullName } from "@/lib/util/full-name";
 
@@ -49,7 +49,9 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
   return (
     <>
       <SectionWrap className={cn("space-y-6")} hasTopPadding hasBottomPadding>
-        <BackButton />
+        <BackButton
+          url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
+        />
 
         <h2 className={cn("typo-h2")}>{person && getFullName(person)}</h2>
 
@@ -134,7 +136,10 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
       {isEditing == "" && !requirePayment && (
         <ActionBar>
           <Button asChild variant="secondary">
-            <a href="/" className={cn("!px-5")}>
+            <a
+              href={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
+              className={cn("!px-5")}
+            >
               <IconArrowLeft /> {t("DetailsPage.back")}
             </a>
           </Button>

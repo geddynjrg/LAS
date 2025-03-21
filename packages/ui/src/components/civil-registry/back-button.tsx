@@ -5,11 +5,11 @@ import type { FC } from "react";
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
-export const BackButton: FC<Pick<ButtonProps, "variant">> = ({
-  variant = "secondary",
-}) => (
+export const BackButton: FC<
+  Pick<ButtonProps, "variant"> & { url?: string }
+> = ({ variant = "secondary", url = "/" }) => (
   <Button asChild variant={variant}>
-    <Link href="/" className={cn("w-full max-w-[23rem]")}>
+    <Link href={url} className={cn("w-full max-w-[23rem]")}>
       <IconArrowLeft /> Back to dashboard
     </Link>
   </Button>

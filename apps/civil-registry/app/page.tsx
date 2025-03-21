@@ -1,3 +1,5 @@
+"use server";
+
 import { IconId, IconPrinter } from "@tabler/icons-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -17,10 +19,18 @@ import type { Person, ValidationStatus } from "@/lib/data/person";
 import { getAgeByDoB } from "@/lib/util/age";
 import { getFullName } from "@/lib/util/full-name";
 
-export default async function Page() {
+export interface MainPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function Page({ params }: MainPageProps) {
+  const { id } = await params;
+
+  let personId = id ?? "1";
+
   const t = await getTranslations();
   const format = await getFormatter();
-  const person = await getPersonById("1");
+  const person = await getPersonById(personId);
 
   return (
     <SectionWrap hasTopPadding hasBottomPadding className="space-y-8">
@@ -66,7 +76,7 @@ export default async function Page() {
                 footer={
                   <Button asChild>
                     {child.id && (
-                      <Link href={child.id}>
+                      <Link href={`/edit/${child.id}`}>
                         {t("Components.person-card.validate-data")}
                       </Link>
                     )}

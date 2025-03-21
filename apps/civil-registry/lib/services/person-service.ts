@@ -1,7 +1,9 @@
+"use server";
+
 import { Person, personsStore, type ValidationStatus } from "../data/person";
 
 // Get all persons
-export function getAllPersons(): Person[] {
+export async function getAllPersons(): Promise<Person[]> {
   return personsStore
     .map((person) => populatePerson(person))
     .filter((p): p is Person => p !== undefined);
@@ -91,23 +93,27 @@ function populatePerson(person: Person | undefined): Person | undefined {
 }
 
 // Get person by ID
-export function findPersonById(id: string): Person | undefined {
+export async function findPersonById(id: string): Promise<Person | undefined> {
   const person = personsStore.find((p) => p.id === id);
 
   return populatePerson(person);
 }
 
+export async function findFemaleWithChildren(): Promise<Person[]> {
+  return personsStore.filter((p) => p.sex === "F" && Array.isArray(p.children));
+}
+
 // Create a new person
-export function createPerson(person: Person): Person {
+export async function createPerson(person: Person): Promise<Person> {
   personsStore.push(person);
   return person;
 }
 
 // Update a person by ID
-export function updatePerson(
+export async function updatePerson(
   id: string,
   updatedData: Partial<Person>,
-): Person | null {
+): Promise<Person | null> {
   const index = personsStore.findIndex((p) => p.id === id);
   if (index === -1) return null;
 
@@ -140,7 +146,7 @@ export function updatePerson(
 }
 
 // Delete a person by ID
-export function deletePerson(id: string): boolean {
+export async function deletePerson(id: string): Promise<boolean> {
   const index = personsStore.findIndex((p) => p.id === id);
   if (index === -1) return false;
 
@@ -148,10 +154,10 @@ export function deletePerson(id: string): boolean {
   return true;
 }
 
-export function updatePersonStatus(
+export async function updatePersonStatus(
   id: string,
   validationStatus: ValidationStatus,
-): Person | null {
+): Promise<Person | null> {
   const index = personsStore.findIndex((p) => p.id === id);
   if (index === -1) return null;
 

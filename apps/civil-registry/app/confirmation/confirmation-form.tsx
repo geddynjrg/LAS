@@ -12,7 +12,6 @@ import { saveForm } from "@/lib/services/birth-registration-service";
 
 export interface ConfirmationFormProps {
   defaultValues: Partial<Person>;
-  saveForm: () => void;
 }
 
 export const ConfirmationForm: FC<ConfirmationFormProps> = ({
@@ -23,7 +22,7 @@ export const ConfirmationForm: FC<ConfirmationFormProps> = ({
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      saveForm();
+      await saveForm();
       setConfirmed(true);
     }, 3000);
 

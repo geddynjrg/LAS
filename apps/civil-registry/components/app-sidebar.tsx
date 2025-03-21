@@ -1,7 +1,8 @@
-"use client";
+"use server";
 
 import { IconPlus, IconUser } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import type { FC } from "react";
 
 import {
@@ -12,14 +13,13 @@ import {
   SidebarSubmenu,
 } from "@workspace/ui/components/sidebar";
 
+import { findFemaleWithChildren } from "@/lib/services/person-service";
+import { getFullName } from "@/lib/util/full-name";
 import { NavLink } from "./nav-link";
 
-export const AppSidebar: FC = () => {
-  const t = useTranslations();
-
-  function handleChangeUser(id: string) {
-    alert("not implemented yet");
-  }
+export const AppSidebar: FC = async () => {
+  const t = await getTranslations();
+  const persons = await findFemaleWithChildren();
 
   return (
     <Sidebar title={t("Common.menu")}>
@@ -54,21 +54,11 @@ export const AppSidebar: FC = () => {
             </NavLink>
           </SidebarMenuItem>
           <SidebarSubmenu title="Change user" icon={<IconUser />}>
-            <SidebarMenuItem asChild>
-              <a href="#" onClick={() => handleChangeUser("1")}>
-                User 1
-              </a>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <a href="#" onClick={() => handleChangeUser("2")}>
-                User 2
-              </a>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <a href="#" onClick={() => handleChangeUser("3")}>
-                User 3
-              </a>
-            </SidebarMenuItem>
+            {persons.map((person) => (
+              <SidebarMenuItem asChild>
+                <Link href={`/${person.id}`}>{getFullName(person)}</Link>
+              </SidebarMenuItem>
+            ))}
           </SidebarSubmenu>
         </SidebarMenu>
       </SidebarContent>

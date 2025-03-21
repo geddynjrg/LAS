@@ -1,5 +1,8 @@
+"use client";
+
 import { IconMail, IconPhone } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { use, useEffect, useState } from "react";
 
 import { BackButton } from "@workspace/ui/components/civil-registry/back-button";
 import {
@@ -9,11 +12,31 @@ import {
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
 import { cn } from "@workspace/ui/lib/utils";
 
+import { getPersonById } from "@/actions/get-person-by-id";
+import type { Person } from "@/lib/data/person";
+
 export interface SuccessPageProps {
-  params: Promise<{}>;
+  params: Promise<{ personId: string }>;
 }
 
-export default function AmendmentSuccessPage({}: SuccessPageProps) {
+export default function AmendmentSuccessPage({ params }: SuccessPageProps) {
+  const { personId } = use(params);
+
+  const [person, setPerson] = useState<Person | null | undefined>(null);
+
+  useEffect(() => {
+    if (!personId) {
+      return;
+    }
+
+    async function getPerson() {
+      const data = await getPersonById(personId);
+      setPerson(data);
+    }
+
+    getPerson();
+  }, [personId]);
+
   const t = useTranslations();
 
   return (
@@ -28,7 +51,12 @@ export default function AmendmentSuccessPage({}: SuccessPageProps) {
       </h2>
 
       <div className={cn("flex justify-center")}>
-        <BackButton variant="default" />
+        {person && (
+          <BackButton
+            variant="default"
+            url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
+          />
+        )}
       </div>
 
       <h5 className={cn("typo-h5")}>{t("Amendment.process-title")}</h5>

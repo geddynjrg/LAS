@@ -2,13 +2,16 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { BackButton } from "@workspace/ui/components/civil-registry/back-button";
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { cn } from "@workspace/ui/lib/utils";
+
+import { getPersonById } from "@/actions/get-person-by-id";
+import type { Person } from "@/lib/data/person";
 
 export interface PaymentPageProps {
   params: Promise<{ personId: string }>;
@@ -30,16 +33,35 @@ const MOCK_PURCHASES: {
 
 export default function PaymentPage({ params }: PaymentPageProps) {
   const { personId } = use(params);
+
   const router = useRouter();
   const t = useTranslations();
 
   const purchases = MOCK_PURCHASES;
+  const [person, setPerson] = useState<Person | null | undefined>(null);
 
   const total = purchases.reduce((acc, cur) => acc + cur.price, 0);
 
+  useEffect(() => {
+    if (!personId) {
+      router.push("/");
+    }
+
+    async function getPerson() {
+      const data = await getPersonById(personId);
+      setPerson(data);
+    }
+
+    getPerson();
+  }, [personId]);
+
   return (
     <SectionWrap className={cn("space-y-6")} hasTopPadding hasBottomPadding>
-      <BackButton />
+      {person && (
+        <BackButton
+          url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
+        />
+      )}
 
       <div className={cn("space-y-5", "mb-8")}>
         <h2 className={cn("typo-h2")}>{t("PaymentPage.payment-title")}</h2>

@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { nationalIdPeopleOptions } from "@/lib/data/dummy-data";
 import { createPerson } from "@/lib/services/person-service";
 // birthRegistrationStore
@@ -79,24 +81,29 @@ export async function saveForm() {
   childValues.mother = mother?.id ?? "";
   childValues.father = father?.id ?? "";
   childValues.informant = informant?.id ?? "";
+  childValues.placeOfBirth = childValues.healthInstitution ?? "";
   childValues.validationStatus = "alert";
 
   if (mother) {
+    mother.sex = "F";
     mother.children = mother.children ?? [];
     mother.children.push(childValues.id ?? "");
-    createPerson(mother);
+    await createPerson(mother);
   }
 
   if (father) {
+    father.sex = "M";
     father.children = father.children ?? [];
     father.children.push(childValues.id ?? "");
-    createPerson(father);
+    await createPerson(father);
   }
 
-  createPerson(childValues);
+  await createPerson(childValues);
   if (informant) {
-    createPerson(informant);
+    await createPerson(informant);
   }
 
   resetBirthRegistrationStore();
+
+  revalidatePath("/");
 }
