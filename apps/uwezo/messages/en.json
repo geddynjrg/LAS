@@ -18,7 +18,9 @@
     "service": "Service",
     "manufacturing": "Manufacturing",
     "agriculture": "Agriculture",
-    "loading": "Loading",
+    "myProfile": "My Profile",
+    "myApplications": "My Applications",
+    "signOut": "Sign out",
     "resend": "Resend"
   },
 

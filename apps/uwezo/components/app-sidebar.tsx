@@ -1,29 +1,16 @@
-import {
-  IconBooks,
-  IconBuilding,
-  IconChecklist,
-  IconClipboardText,
-  IconHome,
-  IconPhone,
-} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
-import { Button } from "@workspace/ui/components/button";
-import { Flag } from "@workspace/ui/components/flag";
 import { FlagSelect } from "@workspace/ui/components/flag-select";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarSubmenu,
 } from "@workspace/ui/components/sidebar";
 
 import { NavLink } from "@/components/nav-link";
-import { SignoutButton } from "@/components/signout-button";
 import { locales, type Locale } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
 
@@ -47,68 +34,10 @@ export const AppSidebar: FC<AppSidebarProps> = ({ locale }) => {
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem asChild>
-            <NavLink href="/">
-              <IconHome />
-              Front page
-            </NavLink>
-          </SidebarMenuItem>
-
-          <SidebarSubmenu title="Institutions" icon={<IconBuilding />}>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/1">institution 1</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/2">institution 2</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/3">institution 3</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/4">institution 4</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/5">institution 5</NavLink>
-            </SidebarMenuItem>
-            <SidebarMenuItem asChild>
-              <NavLink href="/institution/6">institution 6</NavLink>
-            </SidebarMenuItem>
-          </SidebarSubmenu>
-
-          <SidebarMenuItem asChild>
-            <NavLink href="/courses">
-              <IconBooks />
-              Courses
-            </NavLink>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem asChild>
-            <NavLink href="/sponsorships">
-              <IconClipboardText />
-              Sponsorships
-            </NavLink>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem asChild>
-            <NavLink href="/apply">
-              <IconChecklist />
-              Apply now
-            </NavLink>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem asChild>
-            <NavLink href="/sponsorships">
-              <IconPhone />
-              Contact
-            </NavLink>
+            <NavLink href="/">Home</NavLink>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
-        nav user
-        <SignoutButton asChild>
-          <Button>Sign out</Button>
-        </SignoutButton>
-      </SidebarFooter>
     </Sidebar>
   );
 };

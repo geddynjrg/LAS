@@ -6,6 +6,8 @@ import type { FC } from "react";
 import { Header } from "@workspace/ui/components/header";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 
+import { ProfileMenu } from "@/components/profile-menu";
+
 export const AppHeader: FC = () => {
   const t = useTranslations("Common");
 
@@ -17,7 +19,12 @@ export const AppHeader: FC = () => {
         </Link>
       }
       className="bg-background"
-      endDecorator={<SidebarTrigger>{t("menu")}</SidebarTrigger>}
+      endDecorator={
+        <>
+          <SidebarTrigger>{t("menu")}</SidebarTrigger>
+          <ProfileMenu />
+        </>
+      }
     />
   );
 };
