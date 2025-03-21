@@ -55,7 +55,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
 
   return (
     <Form action={formAction} autoComplete="on">
-      <Container>
+      <Container className="space-y-8">
         <FormCard
           title={t("ApplicationDetailsPage.loan.loanDetails")}
           className="space-y-4"
