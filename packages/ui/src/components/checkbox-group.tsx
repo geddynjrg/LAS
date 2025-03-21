@@ -62,13 +62,15 @@ export const CheckboxGroup = <T extends string>({
   }, [value, valueProp]);
 
   function handleChange(checked: boolean, option: CheckboxGroupOption<T>) {
-    setValue((prev) =>
-      checked
+    setValue((prev) => {
+      const newVal = checked
         ? [...(prev ?? []), option.value]
-        : (prev ?? []).filter((v) => v !== option.value),
-    );
+        : (prev ?? []).filter((v) => v !== option.value);
 
-    onValueChange?.(value);
+      onValueChange?.(newVal);
+
+      return newVal;
+    });
   }
 
   return (
