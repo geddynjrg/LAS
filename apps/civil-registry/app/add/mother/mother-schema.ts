@@ -13,12 +13,18 @@ export const motherSchema = z
     passportNumber: z.string().optional(),
     fatherName: z.string().optional(),
     education: z.string().optional(),
-    email: z.string().optional(),
     dob: z.string().optional(),
     nationality: z.string().nonempty(),
     maritalStatus: z.string().nonempty(),
-    phoneCode: z.string().nonempty(),
-    phone: z.string().nonempty(),
+    contacts: z
+      .array(
+        z.object({
+          phoneCode: z.string().nonempty(),
+          phone: z.string().nonempty(),
+          email: z.string().optional(),
+        }),
+      )
+      .min(1),
     residenceSublocation: z.string().nonempty(),
     residenceDistrict: z.string().nonempty(),
     birthSublocation: z

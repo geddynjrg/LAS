@@ -6,7 +6,7 @@ import React, { useState, type FC } from "react";
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DatePicker } from "@workspace/ui/components/date-picker";
-import { Field, FieldGroup, Form } from "@workspace/ui/components/form";
+import { Field, FieldGroup } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { useDebounce } from "@workspace/ui/hooks/use-debounce";
@@ -58,27 +58,7 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
     value: nationality,
   }));
 
-  const [debouncedSearch] = useDebounce(async (search?: string) => {
-    if (!search) {
-      setNationalIdOptions([]);
-      return;
-    }
-
-    setIsLoading(true);
-    const res = await searchPersonBySex(search, "M");
-
-    const options = res.map((person: Person) => ({
-      label: `${person.firstName} ${person.lastName} (${person.nationalId})`,
-      value: person.nationalId,
-    }));
-
-    setNationalIdOptions(options);
-    setIsLoading(false);
-  }, 300);
-
-  const handleSearch = (search?: string) => {
-    debouncedSearch(search);
-  };
+  const handleSearch = (search?: string) => {};
 
   return (
     <DataBlock
@@ -173,19 +153,21 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
         editable={false}
       />
 
-      <FieldGroup label={t("DetailsPage.phone")}>
-        <p>
-          {defaultValues?.phoneCode} {defaultValues?.phone}
-        </p>
-      </FieldGroup>
+      {defaultValues?.contacts?.map((contact, index) => (
+        <>
+          <FieldGroup label={t("DetailsPage.phone")}>
+            <p>
+              +{contact?.phoneCode} {contact?.phone}
+            </p>
+          </FieldGroup>
 
-      <Field
-        state={state}
-        name="email"
-        label={t("DetailsPage.email")}
-        control={(props) => <Input {...props} />}
-        editable={false}
-      />
+          {contact?.email && (
+            <FieldGroup label={t("DetailsPage.email")}>
+              <p>{contact?.email}</p>
+            </FieldGroup>
+          )}
+        </>
+      ))}
     </DataBlock>
   );
 };

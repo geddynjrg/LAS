@@ -11,12 +11,18 @@ export const fatherSchema = z
     nationalId: z.string().optional(),
     citizenship: z.string().optional(),
     passportNumber: z.string().optional(),
+    contacts: z
+      .array(
+        z.object({
+          phoneCode: z.string().nonempty(),
+          phone: z.string().nonempty(),
+          email: z.string().optional(),
+        }),
+      )
+      .min(1),
     education: z.string().optional(),
-    email: z.string().optional(),
     dob: z.string().optional(),
     nationality: z.string().nonempty(),
-    phoneCode: z.string().nonempty(),
-    phone: z.string().nonempty(),
   })
   .superRefine((data, ctx) => {
     const isNationalIdEmpty = !data.nationalId || data.nationalId.trim() === "";

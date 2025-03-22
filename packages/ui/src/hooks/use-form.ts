@@ -54,12 +54,15 @@ export function useForm<
       });
 
       if (!success) {
-        const errors = error.flatten((issue) => issue);
+        //const errors = error.flatten((issue) => issue);
+        const errors = error.format();
 
         return {
           success,
-          errors: errors?.fieldErrors,
-          message: errors?.formErrors.map((e) => e.message).join(", "),
+          errors,
+          message: Array.isArray(errors._errors)
+            ? errors._errors.join(", ")
+            : "",
           values,
         };
       }

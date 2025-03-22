@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
   fatherSchema,
@@ -15,7 +15,7 @@ export const fatherAction: FormAction<FatherSchema> = async (
   _prev,
   formData,
 ) => {
-  const values = getFormDataValues(formData, fatherSchema);
+  const values = getFormZodDataValues(formData, fatherSchema);
 
   const { error, data, success } = fatherSchema.safeParse(values);
 

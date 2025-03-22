@@ -62,8 +62,8 @@ export const ConfirmationForm: FC<ConfirmationFormProps> = ({
             {defaultValues.firstName} {defaultValues.lastName}
           </p>
           <p className="text-xl">
-            +{defaultValues.phoneCode}
-            {defaultValues.phone}
+            +{defaultValues?.contacts?.[0]?.phoneCode}{" "}
+            {defaultValues?.contacts?.[0]?.phone}
           </p>
         </div>
       </div>

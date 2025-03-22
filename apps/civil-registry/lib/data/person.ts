@@ -40,6 +40,7 @@ export interface Person {
   natureOfRelation?: string;
   capacityOfInformant?: string;
   informantType?: string;
+  contacts?: { phoneCode: string; phone: string; email?: string }[];
 }
 
 export let persons: Person[] = [

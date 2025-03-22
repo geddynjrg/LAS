@@ -10,7 +10,7 @@ export interface SliderProps {
   min?: number;
   max?: number;
   step?: number;
-  defaultValue?: number;
+  defaultValue?: number | string;
   onValueChange?: (value: number) => void;
   startDecorator?: ReactNode;
   endDecorator?: ReactNode;
@@ -27,7 +27,11 @@ export const Slider: FC<SliderProps> = ({
   className,
   ...props
 }) => {
-  const [value, setValue] = useState([defaultValue ?? props.min ?? 0]);
+  const [value, setValue] = useState([
+    typeof defaultValue === "string"
+      ? Number(defaultValue)
+      : (defaultValue ?? props.min ?? 0),
+  ]);
 
   return (
     <div className={cn("mb-2 flex gap-2 text-neutral-500", className)}>

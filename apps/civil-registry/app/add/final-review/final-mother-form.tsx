@@ -10,7 +10,6 @@ import { Field, FieldGroup } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { motherAction } from "@/app/add/mother/mother-action";
@@ -20,7 +19,6 @@ import {
 } from "@/app/add/mother/mother-schema";
 import { educationOptions } from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/schema/person-schema";
-import { searchPerson } from "@/lib/services/birth-registration-service";
 import { nationalities } from "@/lib/util/nationalities";
 
 export interface FinalMotherFormProps {
@@ -68,27 +66,7 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
     { label: t("DetailsPage.widowed"), value: "Widowed" },
   ];
 
-  const debouncedSearch = useDebouncedCallback(async (search?: string) => {
-    if (!search) {
-      setNationalIdOptions([]);
-      return;
-    }
-
-    setIsLoading(true);
-    const res = await searchPerson(search);
-
-    const options = res.map((person: Person) => ({
-      label: `${person.firstName} ${person.lastName} (${person.nationalId})`,
-      value: person.nationalId,
-    }));
-
-    setNationalIdOptions(options);
-    setIsLoading(false);
-  }, 300);
-
-  const handleSearch = (search?: string) => {
-    debouncedSearch(search);
-  };
+  const handleSearch = (search?: string) => {};
 
   return (
     <DataBlock
@@ -206,20 +184,23 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
         editable={false}
       />
 
-      <FieldGroup label={t("DetailsPage.phone")}>
-        <p>
-          {defaultValues?.phoneCode} {defaultValues?.phone}
-        </p>
-      </FieldGroup>
+      {defaultValues?.contacts?.map((contact, index) => (
+        <>
+          <FieldGroup label={t("DetailsPage.phone")}>
+            <p>
+              +{contact?.phoneCode} {contact?.phone}
+            </p>
+          </FieldGroup>
 
-      <Field
-        state={state}
-        name="email"
-        label={t("DetailsPage.email")}
-        control={(props) => <Input {...props} />}
-        editable={false}
-      />
-
+          <Field
+            state={state}
+            name={`contacts.${index}.email`}
+            label={t("DetailsPage.email")}
+            control={(props) => <Input {...props} />}
+            editable={false}
+          />
+        </>
+      ))}
       <p className="typo-h5 mt-5">{t("DetailsPage.usual-residence")}</p>
       <Field
         state={state}

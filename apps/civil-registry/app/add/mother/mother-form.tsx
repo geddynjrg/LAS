@@ -78,6 +78,14 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
     value: nationality,
   }));
 
+  const [contacts, setContacts] = useState(
+    defaultValues?.contacts ?? [{ phoneCode: "", phone: "", email: "" }],
+  );
+
+  const addContact = () => {
+    setContacts([...contacts, { phoneCode: "", phone: "", email: "" }]);
+  };
+
   const marriedOptions = [
     { label: t("DetailsPage.married"), value: "Married" },
     { label: t("DetailsPage.divorced"), value: "Divorced" },
@@ -309,43 +317,57 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
           required={false}
         />
 
-        <FieldGroup label={t("DetailsPage.phone")} required>
-          <>
-            <Field
-              state={state}
-              name="phoneCode"
-              className="max-w-40"
-              required
-              control={(props) => <CallingCodeSelect {...props} />}
-            />
-            <Field
-              state={state}
-              name="phone"
-              required
-              control={(props) => <Input type="tel" {...props} />}
-            />
-          </>
-        </FieldGroup>
+        <>
+          {contacts.map((contact, index) => (
+            <div key={`contact-list-${index}`}>
+              <FieldGroup
+                label={t("DetailsPage.phone")}
+                required
+                key={`phone-contact-${index}`}
+              >
+                <>
+                  <Field
+                    key={`phoneCode-${index}`}
+                    state={state}
+                    name={`contacts.${index}.phoneCode`}
+                    className="max-w-40"
+                    required
+                    control={(props) => <CallingCodeSelect {...props} />}
+                  />
+                  <Field
+                    key={`phone-${index}`}
+                    state={state}
+                    name={`contacts.${index}.phone`}
+                    required
+                    control={(props) => <Input type="tel" {...props} />}
+                  />
+                </>
+              </FieldGroup>
+              <Field
+                key={`email-${index}`}
+                state={state}
+                name={`contacts.${index}.email`}
+                label={t("DetailsPage.email")}
+                control={(props) => <Input {...props} />}
+                required={false}
+              />
+            </div>
+          ))}
 
-        <Field
-          state={state}
-          name="email"
-          label={t("DetailsPage.email")}
-          control={(props) => <Input {...props} />}
-          required={false}
-        />
-        <div className={cn("flex justify-center underline")}>
-          <a
-            href="#"
-            className="flex items-center gap-1"
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <IconPlus />
-            {t("DetailsPage.add-another-contact")}
-          </a>
-        </div>
+          <div className={cn("flex justify-center underline")}>
+            <a
+              href="#"
+              className="flex items-center gap-1"
+              onClick={(e) => {
+                e.preventDefault();
+                addContact();
+              }}
+            >
+              <IconPlus />
+              {t("DetailsPage.add-another-contact")}
+            </a>
+          </div>
+        </>
 
         <p className="typo-h5 mt-5">{t("DetailsPage.usual-residence")}</p>
         <Field

@@ -61,27 +61,7 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
     value: nationality,
   }));
 
-  const debouncedSearch = useDebouncedCallback(async (search?: string) => {
-    if (!search) {
-      setNationalIdOptions([]);
-      return;
-    }
-
-    setIsLoading(true);
-    const res = await searchPerson(search);
-
-    const options = res.map((person: Person) => ({
-      label: `${person.firstName} ${person.lastName} (${person.nationalId})`,
-      value: person.nationalId,
-    }));
-
-    setNationalIdOptions(options);
-    setIsLoading(false);
-  }, 300);
-
-  const handleSearch = (search?: string) => {
-    debouncedSearch(search);
-  };
+  const handleSearch = (search?: string) => {};
 
   const informantTypeOptions = [
     { label: t("DetailsPage.mother"), value: t("DetailsPage.mother") },
@@ -197,19 +177,21 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
         <p>{defaultValues?.natureOfRelation}</p>
       </FieldGroup>
 
-      <FieldGroup label={t("DetailsPage.phone")}>
-        <p>
-          {defaultValues?.phoneCode} {defaultValues?.phone}
-        </p>
-      </FieldGroup>
+      {defaultValues?.contacts?.map((contact, index) => (
+        <>
+          <FieldGroup label={t("DetailsPage.phone")}>
+            <p>
+              +{contact?.phoneCode} {contact?.phone}
+            </p>
+          </FieldGroup>
 
-      <Field
-        state={state}
-        name="email"
-        label={t("DetailsPage.email")}
-        control={(props) => <Input {...props} />}
-        editable={false}
-      />
+          {contact?.email && (
+            <FieldGroup label={t("DetailsPage.email")}>
+              <p>{contact?.email}</p>
+            </FieldGroup>
+          )}
+        </>
+      ))}
     </DataBlock>
   );
 };

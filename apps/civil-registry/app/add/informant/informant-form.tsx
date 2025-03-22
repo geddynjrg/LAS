@@ -22,14 +22,17 @@ import { cn } from "@workspace/ui/lib/utils";
 
 import { FormWrap } from "@/app/add/form-wrap";
 import { informantAction } from "@/app/add/informant/informant-action";
-import { informantSchema } from "@/app/add/informant/informant-schema";
+import {
+  informantSchema,
+  type InformantSchema,
+} from "@/app/add/informant/informant-schema";
 import type { Person } from "@/lib/schema/person-schema";
 import { searchPerson } from "@/lib/services/birth-registration-service";
 import { nationalities } from "@/lib/util/nationalities";
 
 export interface InformantFormProps {
   id: string;
-  informant: Partial<Person>;
+  informant: Partial<InformantSchema>;
   mother: Partial<Person> | undefined;
   father: Partial<Person> | undefined;
 }
@@ -66,6 +69,14 @@ export const InformantForm: FC<InformantFormProps> = ({
   const [nationalIdOptions, setNationalIdOptions] = useState<
     { label: string; value: string }[]
   >([]);
+
+  const [contacts, setContacts] = useState(
+    informant?.contacts ?? [{ phoneCode: "", phone: "", email: "" }],
+  );
+
+  const addContact = () => {
+    setContacts([...contacts, { phoneCode: "", phone: "", email: "" }]);
+  };
 
   const [isLoading, setIsLoading] = useState(false);
   const [firstName, setFirstName] = useState<string>(
@@ -177,7 +188,7 @@ export const InformantForm: FC<InformantFormProps> = ({
               }
             }}
             type="single"
-            defaultValue={defaultValues.informantType}
+            defaultValue={informantType}
           >
             <React.Fragment key=".0">
               {informantTypeOptions.map((option) => (
@@ -406,49 +417,60 @@ export const InformantForm: FC<InformantFormProps> = ({
           />
         )}
 
-        {informantType === "Other" && (
-          <FieldGroup label={t("DetailsPage.phone")} required>
-            <>
-              <Field
-                state={state}
-                name="phoneCode"
-                className="max-w-40"
-                required
-                control={(props) => <CallingCodeSelect {...props} />}
-              />
-              <Field
-                state={state}
-                name="phone"
-                required
-                control={(props) => <Input type="tel" {...props} />}
-              />
-            </>
-          </FieldGroup>
-        )}
+        <>
+          {informantType === "Other" &&
+            contacts.map((contact, index) => (
+              <div key={`contact-list-${index}`}>
+                <FieldGroup
+                  label={t("DetailsPage.phone")}
+                  required
+                  key={`phone-contact-${index}`}
+                >
+                  <>
+                    <Field
+                      key={`phoneCode-${index}`}
+                      state={state}
+                      name={`contacts.${index}.phoneCode`}
+                      className="max-w-40"
+                      required
+                      control={(props) => <CallingCodeSelect {...props} />}
+                    />
+                    <Field
+                      key={`phone-${index}`}
+                      state={state}
+                      name={`contacts.${index}.phone`}
+                      required
+                      control={(props) => <Input type="tel" {...props} />}
+                    />
+                  </>
+                </FieldGroup>
+                <Field
+                  key={`email-${index}`}
+                  state={state}
+                  name={`contacts.${index}.email`}
+                  label={t("DetailsPage.email")}
+                  control={(props) => <Input {...props} />}
+                  required={false}
+                />
+              </div>
+            ))}
 
-        {informantType === "Other" && (
-          <>
-            <Field
-              state={state}
-              name="email"
-              label={t("DetailsPage.email")}
-              control={(props) => <Input {...props} />}
-              required={false}
-            />
+          {informantType === "Other" && (
             <div className={cn("flex justify-center underline")}>
               <a
                 href="#"
                 className="flex items-center gap-1"
                 onClick={(e) => {
                   e.preventDefault();
+                  addContact();
                 }}
               >
                 <IconPlus />
                 {t("DetailsPage.add-another-contact")}
               </a>
             </div>
-          </>
-        )}
+          )}
+        </>
       </DataBlock>
     </FormWrap>
   );

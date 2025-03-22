@@ -9,14 +9,20 @@ export const informantSchema = z
     nationalId: z.string().optional(),
     citizenship: z.string().optional(),
     passportNumber: z.string().optional(),
-    email: z.string().optional(),
     dob: z.string().optional(),
     informantType: z.string().nonempty(),
     nationality: z.string().nonempty(),
     capacityOfInformant: z.string().nonempty(),
     natureOfRelation: z.string().optional(),
-    phoneCode: z.string().nonempty(),
-    phone: z.string().nonempty(),
+    contacts: z
+      .array(
+        z.object({
+          phoneCode: z.string().nonempty(),
+          phone: z.string().nonempty(),
+          email: z.string().optional(),
+        }),
+      )
+      .optional(),
   })
   .superRefine((data, ctx) => {
     if (data.informantType === "Other") {
@@ -30,6 +36,14 @@ export const informantSchema = z
           code: "custom",
           message: "National ID is required.",
           path: ["nationalId"],
+        });
+      }
+
+      if (!data.contacts || data.contacts.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: "At least one contact is required.",
+          path: ["contacts.children.0.phone"],
         });
       }
     }
