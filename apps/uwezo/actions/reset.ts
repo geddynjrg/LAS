@@ -21,7 +21,6 @@ export const reset: FormAction<Reset> = async (_prev, formData) => {
     };
   }
 
-  console.log("submit success", data);
   // TODO: Send data to the server
 
   return { success };

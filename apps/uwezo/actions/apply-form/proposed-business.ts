@@ -26,8 +26,6 @@ export const proposedBusiness: FormAction<ProposedBusinessData> = async (
   const redirectTo = formData.get("redirectTo")?.toString();
   const id = formData.get("id")?.toString();
 
-  console.log(values);
-
   const { success, data, error } = proposedBusinessDataSchema.safeParse(values);
 
   if (error) {

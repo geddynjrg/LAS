@@ -5,8 +5,6 @@ import { createApplication } from "@/actions/application";
 export default async function CreatePage() {
   const newApplication = await createApplication();
 
-  console.log(newApplication);
-
   if (!newApplication) {
     return redirect("/dashboard");
   }

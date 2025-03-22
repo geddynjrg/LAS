@@ -14,11 +14,16 @@ export const loanConditionsDataSchema = z.object({
   loanAmount: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Must be a number") // Ensures only numbers
-    .transform((val) => Number(val)) // Convert string to number
-    .refine((num) => num <= 100000, {
-      message: "Value must not exceed 1000",
-    }),
+    .transform((value) => value.replace(/[\s,]+/g, ""))
+    .pipe(
+      z
+        .string()
+        .regex(/^\d+(\.\d+)?$/, "Must be a valid number") // Ensures only numbers
+        .transform((val) => Number(val)) // Convert string to number
+        .refine((num) => num <= 100000, {
+          message: "Value must not exceed 100000",
+        }),
+    ),
   repaymentPeriod: z.coerce.number().min(1).max(12),
   bankName: z.string().nonempty(),
   bankBranch: z.string().nonempty(),

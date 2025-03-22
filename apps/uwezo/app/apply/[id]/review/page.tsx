@@ -4,8 +4,7 @@ import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import { getApplicationById } from "@/actions/application";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
-import { ApplyFormModalActionBar } from "@/app/apply/[id]/apply-form-modal-action-bar";
+import { ReviewFooter } from "@/app/apply/[id]/review/review-footer";
 import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
 import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
 import { ApplicationReviewMembers } from "@/components/application-review-members";
@@ -53,8 +52,7 @@ export default async function Page({ params }: GroupDataPageProps) {
       </Container>
 
       <InfoPopover />
-
-      <ApplyFormModalActionBar nextUrl={nextUrl} prevUrl={prevUrl} />
+      <ReviewFooter id={id} />
     </>
   );
 }

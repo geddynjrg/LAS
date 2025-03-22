@@ -23,8 +23,6 @@ import {
 } from "@/actions/apply-form/members-confirmation-schema";
 import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 
-type MemberConfirmationStatus = "confirmed" | "pending";
-
 export interface ConfirmMembersFormProps {
   id: string;
   action: FormAction<MembersConfirmationData>;
@@ -43,6 +41,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
     membersConfirmationDataSchema,
   );
   const [allChecked, setAllChecked] = useState(false);
+  const [checkedMembers, setCheckedMembers] = useState<string[]>([]);
   const t = useTranslations();
   const [confirmationSent, setConfirmationSent] = useState<boolean>();
   const [membersList, setMembersList] = useState<Member[]>(members);
@@ -127,7 +126,16 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                 className={cn("max-sm:w-full max-sm:max-w-[27rem]")}
                 variant="secondary"
                 type="button"
-                onClick={() => setAllChecked(true)}
+                onClick={() => {
+                  setCheckedMembers(
+                    checkedMembers.length === membersList.length
+                      ? []
+                      : membersList.map(
+                          (member) => member.nationalIdCode ?? "",
+                        ),
+                  );
+                  setAllChecked(!allChecked);
+                }}
               >
                 {t("ConfirmationsPage.confirmMembersForm.select-all")}
               </Button>
@@ -144,7 +152,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                   "pt-3",
                 )}
               >
-                {confirmationSent ? (
+                {confirmationSent || isPending ? (
                   <DataNode label={member.fullname ?? ""}>
                     {member.type}
                   </DataNode>
@@ -153,7 +161,35 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                     name="membersConfirm"
                     required
                     control={(props) => (
-                      <Checkbox {...props} defaultValue={allChecked}>
+                      <Checkbox
+                        {...props}
+                        defaultValue={checkedMembers.includes(
+                          member.nationalIdCode ?? "",
+                        )}
+                        onValueChange={(value) => {
+                          if (value) {
+                            const newCheckedList = [
+                              ...checkedMembers,
+                              member.nationalIdCode ?? "",
+                            ];
+
+                            setCheckedMembers(newCheckedList);
+
+                            if (newCheckedList.length === membersList.length) {
+                              setAllChecked(true);
+                            }
+                          } else {
+                            setAllChecked(false);
+                            // Remove the member from the list of checked members
+                            setCheckedMembers(
+                              checkedMembers.filter(
+                                (checkedMember) =>
+                                  checkedMember !== member.nationalIdCode,
+                              ),
+                            );
+                          }
+                        }}
+                      >
                         <DataNode label={member.fullname ?? ""}>
                           {member.type}
                         </DataNode>
@@ -161,7 +197,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                     )}
                   />
                 )}
-                {confirmationSent && (
+                {confirmationSent && !isPending && (
                   <div className={cn("flex items-center gap-2")}>
                     {member.status === "confirmed" ? (
                       <IconCheck className={cn("text-green-400", "h-8 w-8")} />
@@ -175,6 +211,15 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                     )}
                   </div>
                 )}
+
+                {isPending &&
+                  (member.status === "confirmed" ? (
+                    <IconCheck className={cn("text-green-400", "h-8 w-8")} />
+                  ) : (
+                    <div className={cn("flex items-center gap-2")}>
+                      <Loader size={32} animation="strong" />
+                    </div>
+                  ))}
               </DataPair>
             ))}
             <div
@@ -186,7 +231,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
             >
               <SubmitButton
                 className={cn("w-full max-w-[27rem]")}
-                disabled={confirmationSent}
+                disabled={confirmationSent || checkedMembers.length === 0}
               >
                 {t("ConfirmationsPage.confirmMembersForm.send-to-members")}
               </SubmitButton>
@@ -202,9 +247,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
 
       <div className={cn("mt-auto")}>
         <ApplyFormActionBar
-          disabled={
-            isPending /* || !confirmationSent || isBelowConfirmThreshold */
-          }
+          disabled={isPending || !confirmationSent || isBelowConfirmThreshold}
           nextUrl={nextUrl}
           onBack={onBack}
         />

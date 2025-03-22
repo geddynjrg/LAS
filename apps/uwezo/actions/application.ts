@@ -147,18 +147,11 @@ export async function createApplication() {
 }
 
 async function getApplication(id: string) {
-  const session = await auth();
-  console.log(
-    dummyApplicationsTest.map((app) => app.generalDetails.applicationId),
-  );
   const applicationIndex = dummyApplicationsTest.findIndex(
     (app) => app.generalDetails.applicationId === id,
   );
 
-  console.log(id);
-  console.log(applicationIndex);
   const application = dummyApplicationsTest[applicationIndex];
-  console.log(application);
 
   /* this should not happen */
   if (applicationIndex === -1 || !application) {
@@ -281,4 +274,21 @@ export async function updateApplicationMembersConfirmationData(id: string) {
   dummyApplicationsTest[applicationIndex] = newApplicationData;
 
   return Promise.resolve(newApplicationData.members?.members);
+}
+
+export async function updateApplicationStatus(id: string) {
+  const { application, applicationIndex } = await getApplication(id);
+
+  const newApplicationData: ApplicationData = {
+    ...application,
+    generalDetails: {
+      ...application.generalDetails,
+      status: "PENDING",
+    },
+  };
+
+  // update application data
+  dummyApplicationsTest[applicationIndex] = newApplicationData;
+
+  return Promise.resolve(newApplicationData.generalDetails);
 }
