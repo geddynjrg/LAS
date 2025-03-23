@@ -15,6 +15,7 @@ import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wra
 import { cn } from "@workspace/ui/lib/utils";
 
 import { getPersonById } from "@/actions/get-person-by-id";
+import { generateMockPeople } from "@/lib/data/dummy-data";
 import type { Person, ValidationStatus } from "@/lib/data/person";
 import { getAgeByDoB } from "@/lib/util/age";
 import { getFullName } from "@/lib/util/full-name";

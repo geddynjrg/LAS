@@ -109,11 +109,19 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
               fields={{
                 name: { isEditable: false, isVisible: true },
                 nationalId: { isEditable: true, isVisible: true },
-                dob: { isEditable: false, isVisible: true },
+                passportNumber: {
+                  isEditable: true,
+                  isVisible: true,
+                  isRequired: true,
+                },
+                dob: { isEditable: true, isVisible: true },
                 citizenship: { isEditable: false, isVisible: true },
                 nationality: { isEditable: true, isVisible: true },
                 education: { isEditable: true, isVisible: true },
                 phone: { isEditable: true, isVisible: true },
+                firstName: { isEditable: true, isVisible: false },
+                middleName: { isEditable: true, isVisible: false },
+                lastName: { isEditable: true, isVisible: false },
               }}
               data={person.father as Person}
               affidavitRequired

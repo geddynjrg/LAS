@@ -115,11 +115,21 @@ export const PersonBlock: FC<PersonBlockProps> = ({
           {person?.father ? getFullName(person.father as Person) : "N/A"}
         </DataNode>
       )}
-      {displayField.phone && (
-        <DataNode label={t("DetailsPage.phone")} variant={variant}>
-          {person.phone ?? "N/A"}
-        </DataNode>
-      )}
+      {displayField.phone &&
+        person?.contacts?.map((contact, index) => (
+          <div key={`contact-list-${index}`}>
+            <DataNode label={t("DetailsPage.phone")} variant={variant}>
+              <p>
+                +{contact?.phoneCode} {contact?.phone}
+              </p>
+            </DataNode>
+            {contact?.email && (
+              <DataNode label={t("DetailsPage.email")} variant={variant}>
+                <p>{contact?.email}</p>
+              </DataNode>
+            )}
+          </div>
+        ))}
     </DataBlock>
   );
 };

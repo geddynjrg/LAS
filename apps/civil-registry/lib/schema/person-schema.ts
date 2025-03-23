@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_FILE_SIZE } from "@/lib/constants";
+
 // import type { Person } from "@/lib/data/persons";
 export const SexTypeSchema = z.enum(["M", "F", "I"]);
 export const NatureOfBirthSchema = z.enum(["LiveBirth", "StillBirth"]);
@@ -25,8 +27,15 @@ const basePersonSchema = z.object({
   nationality: z.string().optional(),
   maritalStatus: z.string().optional(),
   education: z.string().optional(),
-  phone: z.string().optional(),
-  phoneCode: z.string().optional(),
+  contacts: z
+    .array(
+      z.object({
+        phoneCode: z.string().nonempty(),
+        phone: z.string().nonempty(),
+        email: z.string().optional(),
+      }),
+    )
+    .min(1),
   healthInstitution: z.string().optional(),
   birthSublocation: z.string().optional(),
   birthSublocationDistrict: z.string().optional(),
@@ -176,8 +185,33 @@ export const personFormSchema = z.object({
     .optional()
     .nullable()
     .transform((val) => val ?? undefined),
+  affidavit: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => val ?? undefined),
+  affidavitFile: z
+    .instanceof(File)
+    .optional()
+    .nullable()
+    .transform((val) => val ?? undefined),
+  contacts: z
+    .array(
+      z.object({
+        phoneCode: z.string().nonempty(),
+        phone: z.string().nonempty(),
+        email: z.string().optional(),
+      }),
+    )
+    .min(1),
 });
 
+export const fatherFormSchema: z.ZodType<any> = personFormSchema.extend({
+  affidavitFile: z
+    .instanceof(File, { message: "File is required" })
+    .refine((file) => file.size > 0, "File is required")
+    .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
+});
 export const childFormSchema: z.ZodType<any> = personFormSchema.extend({
   natureOfBirth: NatureOfBirthSchema,
   firstName: z.string().nonempty(),
@@ -192,6 +226,17 @@ export const childFormSchema: z.ZodType<any> = personFormSchema.extend({
     .transform((val) => val ?? undefined),
   birthSublocationDistrict: z
     .string()
+    .optional()
+    .nullable()
+    .transform((val) => val ?? undefined),
+  contacts: z
+    .array(
+      z.object({
+        phoneCode: z.string().optional(),
+        phone: z.string().optional(),
+        email: z.string().optional(),
+      }),
+    )
     .optional()
     .nullable()
     .transform((val) => val ?? undefined),

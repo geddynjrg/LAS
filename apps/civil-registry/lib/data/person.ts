@@ -34,13 +34,12 @@ export interface Person {
   children?: string[] | Person[];
   informant?: string | Person;
   spouse?: string | Person;
-  phone?: string;
-  phoneCode?: string;
   passportNumber?: string;
   natureOfRelation?: string;
   capacityOfInformant?: string;
   informantType?: string;
   contacts?: { phoneCode: string; phone: string; email?: string }[];
+  affidavit?: string;
 }
 
 export let persons: Person[] = [
@@ -57,8 +56,13 @@ export let persons: Person[] = [
     nationality: "Kenyan",
     maritalStatus: "Married",
     education: "Master’s degree",
-    phone: "1123 67464",
-    phoneCode: "+254",
+    contacts: [
+      {
+        phone: "1123 67464",
+        phoneCode: "254",
+        email: "",
+      },
+    ],
     spouse: "3",
     children: ["3", "4", "5"],
     father: "6",
@@ -76,8 +80,13 @@ export let persons: Person[] = [
     citizenship: "Kenyan",
     nationality: "Kenyan",
     education: "Master’s degree",
-    phone: "734 88347",
-    phoneCode: "+254",
+    contacts: [
+      {
+        phone: "734 88347",
+        phoneCode: "254",
+        email: "",
+      },
+    ],
     spouse: "2",
     children: ["3", "4", "5"],
     validationStatus: "alert",
@@ -128,8 +137,13 @@ export let persons: Person[] = [
     lastName: "",
     dob: "1956-01-01T11:00:00.000Z",
     natureOfBirth: "LiveBirth",
-    phone: "1123 67464",
-    phoneCode: "+254",
+    contacts: [
+      {
+        phone: "1123 67464",
+        phoneCode: "254",
+        email: "",
+      },
+    ],
     sex: "M",
     children: ["1"],
     weightOnBirth: "3.1 kg",
