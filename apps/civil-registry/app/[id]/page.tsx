@@ -171,7 +171,7 @@ const CardWrap: FC<{ children: ReactNode }> = ({ children }) => (
 
 // check if there are any children to be rendered
 function hasValidCertificate(persons: Person[], status: ValidationStatus) {
-  return persons.some((person) => person.validationStatus === status);
+  return persons?.some((person) => person.validationStatus === status);
 }
 
 // check for certificate validation
