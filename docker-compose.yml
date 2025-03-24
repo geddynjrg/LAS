@@ -24,3 +24,11 @@ services:
     restart: unless-stopped
     ports:
       - 8080
+
+  docs:
+    build:
+      context: .
+      dockerfile: ./apps/docs/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 80
