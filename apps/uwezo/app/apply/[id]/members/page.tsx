@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
@@ -11,6 +13,7 @@ export interface MembersPageProps {
 
 export default async function Page({ params }: MembersPageProps) {
   const { id } = await params;
+  const t = await getTranslations();
   const application = await getApplicationById(id);
 
   return (
@@ -19,15 +22,14 @@ export default async function Page({ params }: MembersPageProps) {
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
-            <h2 className="typo-h2">Group members</h2>
-            <p>
-              Group is eligible for Uwezo Fund loan, if there are 10-15 members
-            </p>
+            <h2 className="typo-h2">{t("MembersPage.title")}</h2>
+            <p>{t("MembersPage.subTitle")}</p>
           </div>
         </div>
       </Container>
 
       <InfoPopover />
+
       <MembersDataForm
         action={membersData}
         id={id}

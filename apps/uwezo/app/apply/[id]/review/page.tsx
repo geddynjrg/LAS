@@ -28,7 +28,7 @@ export default async function Page({ params }: GroupDataPageProps) {
   const nextUrl = `/apply/${id}/done`;
 
   return (
-    <>
+    <div className="grow-1 flex flex-col justify-between">
       <Container className="pb-7">
         <div className="mt-4 flex flex-row justify-between">
           <div>
@@ -53,6 +53,6 @@ export default async function Page({ params }: GroupDataPageProps) {
 
       <InfoPopover />
       <ReviewFooter id={id} />
-    </>
+    </div>
   );
 }

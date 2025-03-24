@@ -18,6 +18,7 @@ interface ApplyFormActionBarProps {
   nextUrl?: string;
   prevUrl?: string;
   onBack?: () => void;
+  className?: string;
 }
 
 export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
@@ -25,6 +26,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   nextUrl,
   prevUrl,
   onBack,
+  className,
 }) => {
   const pathName = usePathname();
   const t = useTranslations();
@@ -33,7 +35,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
     steps.find((step) => pathName.includes(step.path))?.index ?? 1;
 
   return (
-    <ActionBar className="mt-8">
+    <ActionBar className={cn("mt-8", className)}>
       <div className="mx-auto flex flex-row items-center gap-4">
         <Button variant="secondary" asChild onClick={onBack} type="button">
           {onBack && !prevUrl ? (

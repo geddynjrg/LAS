@@ -21,7 +21,11 @@
     "myProfile": "My Profile",
     "myApplications": "My Applications",
     "signOut": "Sign out",
-    "resend": "Resend"
+    "resend": "Resend",
+    "remove": "Remove",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
 
   "Footer": {
@@ -86,8 +90,7 @@
       "letterOfClearance": "Letter of clearance from another lender",
       "others": "Others"
     },
-    "kindlyProvideAllRelatedToYourGroup": "Kindly provide all related to your group",
-    "moreInfoAboutCredit": "More information about the credit history documents",
+    "Female": "More information about the credit history documents",
     "nationalIdSectionTitle": "Group members national IDs",
     "exampleId": "Example of national ID",
     "membersMustBeInformed": "Members must be informed of the application and will be asked to <bold>give their consent through SMS service</bold>",
@@ -300,7 +303,36 @@
   },
   "ReviewPage": {
     "title": "Final review",
-    "subTitle": "Review your data before submitting your application."
+    "subTitle": "Review your data before submitting your application.",
+    "confirmationTitle": "Submit application",
+    "confirmationDescription": "Are you sure all the information in the application is correct and you want to submit?"
+  },
+  "MembersPage": {
+    "title": "Group members",
+    "subTitle": "Group is eligible for Uwezo Fund loan, if there are 10-15 members",
+    "youth": "Youth",
+    "peopleWithDisabilities": "People with disabilities",
+    "women": "Women",
+    "addMember": "Add member manually",
+    "groupBasics": "Group basics",
+    "natureOfTheGroup": "Nature of the group",
+    "searchForMembers": "Search for members",
+    "membersInfoInserted": "{count} members info inserted",
+    "enterNameOrNationalId": "Enter name or national ID number",
+    "idCode": "ID code",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "phoneNumber": "Phone number",
+    "capacity": "Capacity",
+    "memberName": "Member name",
+    "nationalIdCodeAlienId": "National ID code/Alien ID",
+    "positionOfMember": "Position of member",
+    "photoOfMemberId": "Photo of member ID",
+    "personWithDisability": "Person with disability",
+    "certificateOfDisability": "Certificate of disability",
+    "pwdNumber": "PWD number",
+    "maxFileSize": "Max file size {size}"
   },
   "InfoPopover": {
     "title": "Do you need help?"
