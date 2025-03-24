@@ -6,15 +6,39 @@ import { useState, type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { cn } from "@workspace/ui/lib/utils";
-
-import { Heading } from "@/components/heading";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { CoursesBlockType } from "@/lib/api/schema/block/course-block.schema";
 
 const VISIBLE_COURSES_LIMIT = 6;
 
-export interface CoursesBlockProps extends CoursesBlockType {}
+export interface CoursesBlockProps {
+  block_type: "courses";
+  title: string;
+  short_description: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  courses: {
+    title: string;
+    tags: string[];
+    id: string;
+    url: string;
+    path_alias: string;
+    application_fee: number | null;
+    course_fee: number | null;
+    apply_till: string[];
+    start_on: string[];
+    institution: {
+      title: string;
+      type: string;
+      id: string;
+      uuid: string;
+      path_alias: string;
+    };
+  }[];
+}
 
 export const CoursesBlock: FC<CoursesBlockProps> = ({
   title,

@@ -1,5 +1,5 @@
 import { useFormatter, useTranslations } from "next-intl";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import {
   Carousel,
@@ -8,11 +8,29 @@ import {
   CarouselItem,
 } from "@workspace/ui/components/carousel";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 
-import { Heading } from "@/components/heading";
-import type { SimilarCoursesBlockType } from "@/lib/api/schema/block/similar-courses-block.schema";
-
-export interface SimilarCoursesBlockProps extends SimilarCoursesBlockType {}
+export interface SimilarCoursesBlockProps {
+  block_type: "similar_courses";
+  courses: {
+    title: string;
+    tags: string[];
+    id: string;
+    url: string;
+    path_alias: string;
+    application_fee: number | null;
+    course_fee: number | null;
+    apply_till: string[];
+    start_on: string[];
+    institution: {
+      id: string;
+      type: string;
+      uuid: string;
+      title: string;
+      path_alias: string;
+    };
+  }[];
+}
 
 export const SimilarCoursesBlock: FC<SimilarCoursesBlockProps> = ({
   courses,

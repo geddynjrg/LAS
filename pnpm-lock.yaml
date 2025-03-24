@@ -169,9 +169,6 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.30.0
         version: 3.30.0(react@19.0.0)
-      '@vis.gl/react-google-maps':
-        specifier: ^1.5.1
-        version: 1.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -380,6 +377,9 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.30.0
         version: 3.30.0(react@19.0.0)
+      '@vis.gl/react-google-maps':
+        specifier: ^1.5.1
+        version: 1.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

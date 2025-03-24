@@ -1,24 +1,25 @@
 import type { FC } from "react";
 
-import { ApplicationBlock } from "@/components/page-blocks/application-block";
-import { AvailableSponsorships } from "@/components/page-blocks/available-sponsorships";
-import { CourseDataBlock } from "@/components/page-blocks/course-data-block";
-import { CoursesBlock } from "@/components/page-blocks/courses-block";
-import { FeaturesBlock } from "@/components/page-blocks/features-block";
-import { GalleryBlock } from "@/components/page-blocks/gallery-block";
+import { ApplicationBlock } from "@workspace/ui/components/tvet/blocks/application-block";
+import { AvailableSponsorshipsBlock } from "@workspace/ui/components/tvet/blocks/available-sponsorships-block";
+import { CourseDataBlock } from "@workspace/ui/components/tvet/blocks/course-data-block";
+import { CoursesBlock } from "@workspace/ui/components/tvet/blocks/courses-block";
+import { FeatureSectionBlock } from "@workspace/ui/components/tvet/blocks/feature-section-block";
+import { GalleryBlock } from "@workspace/ui/components/tvet/blocks/gallery-block";
+import { LocationBlock } from "@workspace/ui/components/tvet/blocks/location-block";
+import { MediaBlock } from "@workspace/ui/components/tvet/blocks/media-image-block";
+import { SectionHeaderBlock } from "@workspace/ui/components/tvet/blocks/section-header-block";
+import { SimilarCoursesBlock } from "@workspace/ui/components/tvet/blocks/similar-courses-block";
+import { SocialBlock } from "@workspace/ui/components/tvet/blocks/social-block";
+import { TestimonialsBlock } from "@workspace/ui/components/tvet/blocks/testimonials-block";
+import { TextBlock } from "@workspace/ui/components/tvet/blocks/text-block";
+import { TextListBlock } from "@workspace/ui/components/tvet/blocks/text-list-block";
+import { TrainingAreasBlock } from "@workspace/ui/components/tvet/blocks/training-areas-block";
+import { VocationalCentersBlock } from "@workspace/ui/components/tvet/blocks/vocational-centers-block";
+
 import { HighlightedCourseListingBlock } from "@/components/page-blocks/highlighted-course-listing-block";
-import { LocationBlock } from "@/components/page-blocks/location-block";
-import { MediaBlock } from "@/components/page-blocks/media-image-block";
-import { SectionHeaderBlock } from "@/components/page-blocks/section-header-block";
-import { SimilarCoursesBlock } from "@/components/page-blocks/similar-courses-block";
-import { SocialBlock } from "@/components/page-blocks/social-block";
-import { TestimonialsBlock } from "@/components/page-blocks/testimonials-block";
-import { TextBlock } from "@/components/page-blocks/text-block";
 import { TextBlockWithBackgroundBlock } from "@/components/page-blocks/text-block-with-background-block";
-import { TextListBlock } from "@/components/page-blocks/text-list-block";
 import { TextWithGradientBlock } from "@/components/page-blocks/text-with-gradient-block";
-import { TrainingAreasBlock } from "@/components/page-blocks/training-areas-block";
-import { VocationalCentersBlock } from "@/components/page-blocks/vocational-centers-block";
 import type { BlockType } from "@/lib/api/types";
 
 export interface PageComponentsProps {
@@ -41,7 +42,7 @@ export const PageComponents: FC<PageComponentsProps> = ({
         return <SectionHeaderBlock {...component} key={key} />;
 
       case "feature_section":
-        return <FeaturesBlock {...component} key={key} />;
+        return <FeatureSectionBlock {...component} key={key} />;
 
       case "vocational_centres":
         return <VocationalCentersBlock {...component} key={key} />;
@@ -86,7 +87,7 @@ export const PageComponents: FC<PageComponentsProps> = ({
         return <TestimonialsBlock {...component} key={key} />;
 
       case "available_sponsorships":
-        return <AvailableSponsorships {...component} key={key} />;
+        return <AvailableSponsorshipsBlock {...component} key={key} />;
 
       case "similar_courses":
         return <SimilarCoursesBlock {...component} key={key} />;

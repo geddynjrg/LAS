@@ -6,22 +6,27 @@ import {
   NumberedList,
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { ApplicationBlockType } from "@/lib/api/schema/block/application-block.schema";
-
-export interface ApplicationBlockProps extends ApplicationBlockType {
-  id?: string;
+export interface ApplicationBlockProps {
+  block_type: "application";
+  className?: string;
+  title: string;
+  description: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  checkpoints: string[];
 }
 
 export const ApplicationBlock: FC<ApplicationBlockProps> = ({
-  id,
   title,
   description,
   checkpoints,
 }) => {
   return (
-    <Container className="mt-4 py-8" id={id}>
+    <Container className="mt-4 py-8">
       <h2 className="typo-h2">{title}</h2>
       <hr />
 

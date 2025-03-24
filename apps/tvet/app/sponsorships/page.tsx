@@ -7,9 +7,9 @@ import {
 } from "@workspace/ui/components/numbered-list";
 import { Pagination } from "@workspace/ui/components/pagination";
 import { Select } from "@workspace/ui/components/select";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card";
 
-import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
 import { getSponsorships } from "@/lib/api/sponsorships";
 

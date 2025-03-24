@@ -1,18 +1,38 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
 import { GalleryCarousel } from "@workspace/ui/components/gallery-carousel";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
 import {
   RoundedCornerSection,
   RoundedCornerSectionHeader,
 } from "@workspace/ui/components/tvet/rounded-corner-section";
 
-import { Heading } from "@/components/heading";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { GalleryBlockType } from "@/lib/api/schema/block/gallery-block.schema";
-
-export interface GalleryBlockProps extends GalleryBlockType {}
+export interface GalleryBlockProps {
+  block_type: "gallery";
+  title: string;
+  description: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  images: {
+    title: string;
+    type: string;
+    id: string;
+    uuid: string;
+    name: string;
+    url: string;
+    bundle: string;
+    mime_type: string;
+    size: number;
+    alt: string;
+    width: string;
+    height: string;
+  }[];
+}
 
 export const GalleryBlock: FC<GalleryBlockProps> = ({
   title,

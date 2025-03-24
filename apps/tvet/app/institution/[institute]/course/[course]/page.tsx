@@ -9,9 +9,9 @@ import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Tag } from "@workspace/ui/components/tag";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { Underline } from "@workspace/ui/components/underline";
 
-import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
 import { PageComponents } from "@/components/page-components";
 import { ScrollTo } from "@/components/scroll-to";

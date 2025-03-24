@@ -2,9 +2,8 @@ import Image from "next/image";
 import type { FC, ReactNode } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
-
-import { Heading } from "@/components/heading";
 
 export interface HeroSectionProps {
   title: ReactNode;

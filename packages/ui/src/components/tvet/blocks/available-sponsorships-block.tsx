@@ -1,16 +1,39 @@
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card";
 
-import { Heading } from "@/components/heading";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { AvailableSponsorshipsBlockType } from "@/lib/api/schema/block/available-sponsorships-block.schema";
+export interface AvailableSponsorshipsProps {
+  block_type: "available_sponsorships";
+  sponsorships: {
+    title: string;
+    description: {
+      value: string;
+      format: string;
+      processed: string;
+    };
+    id: string;
+    link: {
+      title: string;
+      url: string;
+      is_external: boolean;
+    }[];
+    application_form: {
+      id: string;
+      type: string;
+      bundle: string;
+      name: string;
+      uuid: string;
+      url: string;
+      mime_type: string;
+      size: number;
+    };
+  }[];
+}
 
-export interface AvailableSponsorshipsProps
-  extends AvailableSponsorshipsBlockType {}
-
-export const AvailableSponsorships: FC<AvailableSponsorshipsProps> = ({
+export const AvailableSponsorshipsBlock: FC<AvailableSponsorshipsProps> = ({
   sponsorships,
 }) => {
   const t = useTranslations("AvailableSponsorshipsBlock");

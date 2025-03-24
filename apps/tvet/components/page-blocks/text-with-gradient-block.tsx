@@ -1,10 +1,11 @@
 import type { FC } from "react";
 
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+
 import {
   GradientCornerCard,
   gradientCornerCardVariants,
 } from "@/components/gradient-corner-card";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import type { TextBlockWithGradientBlockType } from "@/lib/api/schema/block/text-block-with-gradient.schema";
 
 export interface TextWithGradientBlockProps

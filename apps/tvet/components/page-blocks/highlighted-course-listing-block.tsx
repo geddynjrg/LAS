@@ -6,9 +6,9 @@ import type { FC } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { Heading } from "@/components/heading";
 import { SearchCoursesForm } from "@/components/search-courses-form";
 import type { HighlightedCourseListingBlockType } from "@/lib/api/schema/block/highlighted-course-listing-block.schema";
 

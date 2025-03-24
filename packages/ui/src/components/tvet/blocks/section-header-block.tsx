@@ -1,12 +1,32 @@
 import type { FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { SectionHeader } from "@workspace/ui/components/tvet/section-header";
 
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { SectionHeadingBlockType } from "@/lib/api/schema/block/section-heading-block.schema";
-
-export interface SectionHeaderBlockProps extends SectionHeadingBlockType {}
+export interface SectionHeaderBlockProps {
+  block_type: "section_heading";
+  title: string;
+  description: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  image: {
+    title: string;
+    type: string;
+    id: string;
+    uuid: string;
+    name: string;
+    url: string;
+    bundle: string;
+    mime_type: string;
+    size: number;
+    alt: string;
+    width: string;
+    height: string;
+  }[];
+}
 
 export const SectionHeaderBlock: FC<SectionHeaderBlockProps> = ({
   title,

@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.30.0",
-    "@vis.gl/react-google-maps": "^1.5.1",
     "@workspace/ui": "workspace:*",
     "add": "^2.0.6",
     "next": "^15.1.6",

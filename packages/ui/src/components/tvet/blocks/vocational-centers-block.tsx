@@ -1,18 +1,36 @@
 import { IconArrowRight } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import Link from "next/link";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import { Heading } from "@workspace/ui/components/tvet/heading";
+import { LocationMap } from "@workspace/ui/components/tvet/location-map";
 import { Underline } from "@workspace/ui/components/underline";
 
-import { Heading } from "@/components/heading";
-import { LocationMap } from "@/components/location-map";
-import type { VocationalCentresBlockType } from "@/lib/api/schema/block/vocational-centres-block.schema";
+export interface VocationalCentersBlockProps {
+  block_type: "vocational_centres";
 
-export interface VocationalCentersBlockProps
-  extends VocationalCentresBlockType {}
+  institutions: {
+    id: string;
+    title: string;
+    address: {
+      country_code?: string | null;
+      administrative_area?: string | null;
+      locality?: string | null;
+      dependent_locality?: string | null;
+      postal_code?: string | null;
+      address_line?: string | null;
+      organization?: string | null;
+    };
+    location: {
+      latitude: number;
+      longitude: number;
+    };
+    url: string;
+    path_alias: string;
+  }[];
+}
 
 export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
   institutions,
@@ -22,10 +40,12 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
   const locations = institutions.reduce(
     (acc: { [key: string]: typeof institutions }, institution) => {
       const locality = institution.address.locality;
-      if (acc[locality]) {
-        acc[locality].push(institution);
+      if (locality === null) {
+        acc[""]?.push(institution);
+      } else if (acc[locality!]) {
+        acc[locality!]?.push(institution);
       } else {
-        acc[locality] = [institution];
+        acc[locality!] = [institution];
       }
       return acc;
     },

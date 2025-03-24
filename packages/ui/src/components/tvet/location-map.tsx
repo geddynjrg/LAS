@@ -12,10 +12,26 @@ import { useState, type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 
-import type { InstitutionType } from "@/lib/api/schema/institution.schema";
+interface InstitutionProps {
+  title: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  address: {
+    country_code?: string | null;
+    administrative_area?: string | null;
+    locality?: string | null;
+    dependent_locality?: string | null;
+    postal_code?: string | null;
+    address_line?: string | null;
+    organization?: string | null;
+  };
+  path_alias: string;
+}
 
 export interface LocationMapProps {
-  institutes?: InstitutionType[];
+  institutes?: InstitutionProps[];
   location?: {
     latitude: number;
     longitude: number;
@@ -28,9 +44,7 @@ const API_KEY = "AIzaSyDNmBOe24CzYr6_EjmUY9Ugx7jSuvGRGWI";
 const MAP_ID = "2471b6743fd8b796";
 
 export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
-  console.log("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", `"${API_KEY}"`);
-  console.log("NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID", `"${MAP_ID}"`);
-  const [showInfoWindow, setShowInfoWindow] = useState<InstitutionType | null>(
+  const [showInfoWindow, setShowInfoWindow] = useState<InstitutionProps | null>(
     null,
   );
   const [zoom, setZoom] = useState(13);

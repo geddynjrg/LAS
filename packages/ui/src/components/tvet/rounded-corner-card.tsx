@@ -1,11 +1,12 @@
 import { Slot } from "@radix-ui/react-slot";
-import type { FC, PropsWithChildren } from "react";
+import type { FC } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
-export interface RoundedCornerCardProps extends PropsWithChildren {
+export interface RoundedCornerCardProps {
   asChild?: boolean;
   className?: string;
+  children?: React.ReactNode;
 }
 
 export const RoundedCornerCard: FC<RoundedCornerCardProps> = ({

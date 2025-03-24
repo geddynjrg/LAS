@@ -1,14 +1,30 @@
 import { IconTimeline, IconTools, IconZoomMoney } from "@tabler/icons-react";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { FeatureSection } from "@workspace/ui/components/tvet/feature-section";
 
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { FeaturesBlockType } from "@/lib/api/schema/block/features-block.schema";
+export interface FeaturesBlockProps {
+  block_type: "feature_section";
+  description: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  features:
+    | {
+        block_type: "feature";
+        feature: string;
+        short_description: {
+          value: string;
+          format: string;
+          processed: string;
+        };
+      }[]
+    | null;
+}
 
-export interface FeaturesBlockProps extends FeaturesBlockType {}
-
-export const FeaturesBlock: FC<FeaturesBlockProps> = ({
+export const FeatureSectionBlock: FC<FeaturesBlockProps> = ({
   features,
   description,
 }) => {

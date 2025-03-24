@@ -5,11 +5,35 @@ import type { FC } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Currency } from "@workspace/ui/components/currency";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { CourseDataBlockType } from "@/lib/api/schema/block/course-data-block.schema";
-
-export interface CourseDataBlockProps extends CourseDataBlockType {}
+export interface CourseDataBlockProps {
+  block_type: "course_data";
+  description: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  application_fee: number;
+  course_fee: number;
+  training_format: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  minimum_entry_requirements: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  equipment_available_at_ins: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  group_size: number;
+  test_booking_fee: number;
+}
 
 export const CourseDataBlock: FC<CourseDataBlockProps> = ({
   description,

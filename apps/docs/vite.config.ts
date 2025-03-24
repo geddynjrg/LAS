@@ -19,4 +19,10 @@ export default defineConfig({
       ),
     },
   },
+  define: {
+    "process.env": {
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "",
+      NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: "",
+    },
+  },
 });

@@ -3,12 +3,17 @@ import Link from "next/link";
 import type { FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { TrainingAreaCard } from "@workspace/ui/components/tvet/training-area-card";
 
-import { Heading } from "@/components/heading";
-import type { TrainingAreasBlockType } from "@/lib/api/schema/block/training-areas-block.schema";
-
-export interface TrainingAreasBlockProps extends TrainingAreasBlockType {}
+export interface TrainingAreasBlockProps {
+  block_type: "training_areas";
+  areas: {
+    id: string;
+    name: string;
+    course_count: number;
+  }[];
+}
 
 export const TrainingAreasBlock: FC<TrainingAreasBlockProps> = ({ areas }) => {
   const t = useTranslations("TrainingAreaBlock");

@@ -1,15 +1,23 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import {
   NumberedList,
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 
-import { Heading } from "@/components/heading";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { TextListBlockType } from "@/lib/api/schema/block/text-list-block.schema";
-
-export interface TextListBlockProps extends TextListBlockType {}
+export interface TextListBlockProps {
+  block_type: "text_list";
+  title: string;
+  type: string;
+  short_description: {
+    value: string;
+    format: string;
+    processed: string;
+  };
+  items: string[];
+}
 
 export const TextListBlock: FC<TextListBlockProps> = ({
   title,

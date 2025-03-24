@@ -2,10 +2,10 @@ import { getTranslations } from "next-intl/server";
 
 import { Container } from "@workspace/ui/components/container";
 import { Pagination } from "@workspace/ui/components/pagination";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 
 import { CoursesDataTable } from "@/app/courses/course-data-table";
 import { CourseFilter } from "@/app/courses/course-filter";
-import { Heading } from "@/components/heading";
 import {
   getCoursesTableData,
   type CoursesTableDataQueryParams,

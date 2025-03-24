@@ -5,9 +5,8 @@ import { Card } from "@workspace/ui/components/card";
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DataPair } from "@workspace/ui/components/data-pair";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { cn } from "@workspace/ui/lib/utils";
-
-import { Heading } from "@/components/heading";
 
 export interface DashboardPageProps {
   params: Promise<{}>;

@@ -3,9 +3,9 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 
 import { HeroSection } from "@/components/hero-section";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import { PageComponents } from "@/components/page-components";
 import { ScrollTo } from "@/components/scroll-to";
 import type { LandingNodeType } from "@/lib/api/schema/node/landing-node.schema";

@@ -4,6 +4,8 @@ import type { FC, ReactNode } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
 import {
   RoundedCornerSection,
@@ -11,8 +13,6 @@ import {
 } from "@workspace/ui/components/tvet/rounded-corner-section";
 
 import { GradientCornerCard } from "@/components/gradient-corner-card";
-import { Heading } from "@/components/heading";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import type { TextBlockWithBackgroundBlockType } from "@/lib/api/schema/block/text-block-with-background-block.schema";
 
 export interface TextBlockWithBackgroundBlockProps

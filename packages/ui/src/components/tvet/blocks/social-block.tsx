@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import type { FC, ReactElement, ReactNode } from "react";
+import type { FC, ReactElement } from "react";
 
 import { IconFacebook } from "@workspace/ui/components/icon/icon-facebook";
 import { IconInstagram } from "@workspace/ui/components/icon/icon-instagram";
@@ -7,9 +7,15 @@ import { IconTikTok } from "@workspace/ui/components/icon/icon-tiktok";
 import { IconX } from "@workspace/ui/components/icon/icon-x";
 import { IconYoutube } from "@workspace/ui/components/icon/icon-youtube";
 
-import type { SocialBlockType } from "@/lib/api/schema/block/social-block.schema";
-
-export interface SocialBlockProps extends SocialBlockType {}
+export interface SocialBlockProps {
+  block_type: "social_block";
+  social_links: {
+    url: string;
+    platform: string;
+    account: string;
+    icon: string;
+  }[];
+}
 
 export const SocialBlock: FC<SocialBlockProps> = ({ social_links }) => {
   const t = useTranslations("SocialBlock");

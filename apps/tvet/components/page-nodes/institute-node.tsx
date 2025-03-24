@@ -3,11 +3,11 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { Button } from "@workspace/ui/components/button";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { Underline } from "@workspace/ui/components/underline";
 
-import { Heading } from "@/components/heading";
 import { HeroSection } from "@/components/hero-section";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
 import { PageComponents } from "@/components/page-components";
 import { ScrollTo } from "@/components/scroll-to";
 import type { InstitutionNodeType } from "@/lib/api/schema/node/institution-node.schema";

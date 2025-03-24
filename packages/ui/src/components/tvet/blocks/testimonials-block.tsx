@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import {
   Carousel,
@@ -8,12 +8,35 @@ import {
   CarouselItem,
 } from "@workspace/ui/components/carousel";
 import { Testimonial } from "@workspace/ui/components/testimonial";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { Heading } from "@workspace/ui/components/tvet/heading";
 
-import { Heading } from "@/components/heading";
-import { DescriptionBlock } from "@/components/page-blocks/description-block";
-import type { TestimonialsBlockType } from "@/lib/api/schema/block/testimonials-block.schema";
-
-export interface TestimonialsBlockProps extends TestimonialsBlockType {}
+export interface TestimonialsBlockProps {
+  block_type: "testimonials";
+  testimonials: {
+    name: string;
+    image: {
+      title: string;
+      type: string;
+      id: string;
+      uuid: string;
+      name: string;
+      url: string;
+      bundle: string;
+      mime_type: string;
+      size: number;
+      alt: string;
+      width: string;
+      height: string;
+    }[];
+    block_type: "testimonial";
+    short_description: {
+      value: string;
+      format: string;
+      processed: string;
+    };
+  }[];
+}
 
 export const TestimonialsBlock: FC<TestimonialsBlockProps> = ({
   testimonials,

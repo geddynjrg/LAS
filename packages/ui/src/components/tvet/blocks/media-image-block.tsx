@@ -1,20 +1,36 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
-import type { MediaBlockBlockType } from "@/lib/api/schema/block/media-block.schema";
+interface Media {
+  title: string;
+  type: string;
+  id: string;
+  uuid: string;
+  name: string;
+  url: string;
+  bundle: string;
+  mime_type: string;
+  size: number;
+  alt: string;
+  width: string;
+  height: string;
+}
 
-export interface MediaBlockProps extends MediaBlockBlockType {}
+export interface MediaBlockProps {
+  block_type: "media";
+  media: Media[];
+}
 
 export const MediaBlock: FC<MediaBlockProps> = ({ media }) => {
   return (
     <section className="app-container bg-neutral-200 px-4 py-12">
-      {media?.map((media) => <MediaItem media={media} />)}
+      {media?.map((media, index) => (
+        <MediaItem media={media} key={`media-${index}`} />
+      ))}
     </section>
   );
 };
 
-const MediaItem: FC<{ media: MediaBlockBlockType["media"][0] }> = ({
-  media,
-}) => {
+const MediaItem: FC<{ media: Media }> = ({ media }) => {
   switch (media.type) {
     case "image":
       return (

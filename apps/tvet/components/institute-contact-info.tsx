@@ -2,9 +2,8 @@ import { IconMail, IconPhone } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactNode } from "react";
 
+import { Heading } from "@workspace/ui/components/tvet/heading";
 import { Underline } from "@workspace/ui/components/underline";
-
-import { Heading } from "@/components/heading";
 
 export interface InstituteContactInfoProps {
   contact_text?: ReactNode;
