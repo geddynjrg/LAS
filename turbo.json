@@ -10,6 +10,10 @@
         "!.next/cache/**",
         "storybook-static/**",
         "dist/**"
+      ],
+      "env": [
+        "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID",
+        "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
       ]
     },
     "lint": {

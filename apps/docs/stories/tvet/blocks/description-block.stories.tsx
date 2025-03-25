@@ -4,6 +4,7 @@ import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/descripti
 
 const meta = {
   component: DescriptionBlock,
+
   args: {
     value:
       "<p>The course is based on primary and secondary leaver’s students who are willingly and ready to acquire electrical knowledge and skills.</p>",
@@ -17,4 +18,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+/**
+ * Description block is able to display and process HTML content,
+ * applying some page specific styles
+ */
 export const Primary = {} satisfies Story;

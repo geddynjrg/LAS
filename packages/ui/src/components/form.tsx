@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as FormPrimitive from "@radix-ui/react-form";
 import {
   useFormatter,
@@ -145,7 +146,6 @@ const getErrorMessage = <TInputs extends Record<string, any>>(
 };
 
 export const Field = <
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- this allows using <Field /> without the 'state' prop
   TInputs extends Record<string, any>,
   TName extends Path<TInputs>,
 >({

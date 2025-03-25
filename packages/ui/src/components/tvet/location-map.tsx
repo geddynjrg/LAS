@@ -38,12 +38,13 @@ export interface LocationMapProps {
   };
 }
 // TODO: fix build args
-// const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-// const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
-const API_KEY = "AIzaSyDNmBOe24CzYr6_EjmUY9Ugx7jSuvGRGWI";
-const MAP_ID = "2471b6743fd8b796";
+
+// const API_KEY = "AIzaSyDNmBOe24CzYr6_EjmUY9Ugx7jSuvGRGWI";
+// const MAP_ID = "2471b6743fd8b796";
 
 export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
+  const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+  const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
   const [showInfoWindow, setShowInfoWindow] = useState<InstitutionProps | null>(
     null,
   );

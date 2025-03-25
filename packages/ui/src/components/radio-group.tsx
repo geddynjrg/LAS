@@ -35,7 +35,9 @@ export interface RadioGroupProps<T extends string = string>
   id?: string;
   name?: string;
   options?: RadioOption<T>[] | readonly RadioOption<T>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   defaultValue?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onValueChange?: (value: any) => void;
   className?: string;
   children?: ReactNode;

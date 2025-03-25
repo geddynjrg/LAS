@@ -3,8 +3,6 @@ import prettyBytes from "pretty-bytes";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
-import { zodKeys } from "@workspace/ui/lib/zod";
-
 export * from "cva-extended";
 
 /**
@@ -53,6 +51,7 @@ export function getFormDataValues<T extends z.Schema>(
   formData: FormData,
   schema: T,
 ): Partial<z.infer<T>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const values: Record<string, any> = {};
 
   for (const [key, value] of formData.entries()) {
@@ -80,6 +79,7 @@ export function getFormZodDataValues<T extends z.Schema>(
     const parts = key.match(/([^[\].]+)/g); // Correctly extract keys & indices
     if (!parts) continue;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let obj: any = values;
     while (parts.length > 1) {
       const part = parts.shift()!;

@@ -8,13 +8,17 @@ services:
       - 8080
 
   tvet:
+    # only user during docker runtime (not build time)
     env_file: ./apps/tvet/.env
     build:
       context: .
       dockerfile: ./apps/tvet/Dockerfile
+      args:
+        - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+        - NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID}
     restart: unless-stopped
     ports:
-      - 8080
+      - 3000:8080
 
   uwezo:
     env_file: ./apps/uwezo/.env
