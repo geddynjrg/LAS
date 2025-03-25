@@ -16,12 +16,12 @@ import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { cn } from "@workspace/ui/lib/utils";
 
-import type { Member } from "@/actions/application";
+import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   membersConfirmationDataSchema,
   type MembersConfirmationData,
-} from "@/actions/apply-form/members-confirmation-schema";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+} from "@/app/apply/[id]/confirmations/members-confirmation-schema";
+import type { Member } from "@/lib/data/application";
 
 export interface ConfirmMembersFormProps {
   id: string;

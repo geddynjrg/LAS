@@ -17,12 +17,12 @@ import { Card } from "@workspace/ui/components/uwezo/card";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
-import { LoanConditionsData as ApplicationLoanConditionsData } from "@/actions/application";
+import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   loanConditionsDataSchema,
   type LoanConditionsData,
-} from "@/actions/apply-form/loan-conditions-schema";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+} from "@/app/apply/[id]/loan-conditions/loan-conditions-schema";
+import { LoanConditionsData as ApplicationLoanConditionsData } from "@/lib/data/application";
 
 export interface LoanConditionsDataProps {
   id: string;

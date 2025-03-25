@@ -5,13 +5,16 @@ import { redirect } from "next/navigation";
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import { updateApplicationGroupData } from "@/actions/application";
 import {
   groupDataSchema,
   type GroupData,
-} from "@/actions/apply-form/group-data-schema";
+} from "@/app/apply/[id]/group-data/group-data-schema";
+import { updateApplicationGroupData } from "@/lib/data/application";
 
-export const groupData: FormAction<GroupData> = async (_prev, formData) => {
+export const groupDataAction: FormAction<GroupData> = async (
+  _prev,
+  formData,
+) => {
   const values = getFormDataValues(formData, groupDataSchema);
   const redirectTo = formData.get("redirectTo")?.toString();
   const id = formData.get("id")?.toString();

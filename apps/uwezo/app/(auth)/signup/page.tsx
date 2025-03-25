@@ -10,12 +10,12 @@ import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
-import { signup } from "@/actions/signup";
-import { signupSchema } from "@/actions/signup-schema";
+import { signupAction } from "@/app/(auth)/signup/signup-action";
+import { signupSchema } from "@/app/(auth)/signup/signup-schema";
 
 export default function Page() {
   const t = useTranslations("SignUpPage");
-  const [state, formAction, isPending] = useForm(signup, signupSchema);
+  const [state, formAction, isPending] = useForm(signupAction, signupSchema);
 
   return (
     <Container className="max-w-[500px] pt-8">

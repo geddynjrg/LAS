@@ -3,9 +3,9 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
-import { getApplicationById } from "@/actions/application";
-import { proposedBusiness } from "@/actions/apply-form/proposed-business";
+import { proposedBusinessAction } from "@/app/apply/[id]/proposed-business/proposed-business-action";
 import { ProposedBusinessDataForm } from "@/app/apply/[id]/proposed-business/proposed-business-data-form";
+import { getApplicationById } from "@/lib/data/application";
 
 export interface ProposedBusinessPageProps {
   params: Promise<{ id: string }>;
@@ -31,7 +31,7 @@ export default async function Page({ params }: ProposedBusinessPageProps) {
 
       <InfoPopover />
       <ProposedBusinessDataForm
-        action={proposedBusiness}
+        action={proposedBusinessAction}
         id={id}
         applicationBusinessData={application?.proposedBusiness}
       />

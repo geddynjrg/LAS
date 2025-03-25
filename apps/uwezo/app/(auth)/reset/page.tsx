@@ -8,12 +8,12 @@ import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
-import { reset } from "@/actions/reset";
-import { resetSchema } from "@/actions/reset-schema";
+import { resetAction } from "@/app/(auth)/reset/reset-action";
+import { resetSchema } from "@/app/(auth)/reset/reset-schema";
 
 export default function Page() {
   const t = useTranslations("ResetPage");
-  const [state, formAction, isPending] = useForm(reset, resetSchema);
+  const [state, formAction, isPending] = useForm(resetAction, resetSchema);
 
   if (state.success) {
     return (

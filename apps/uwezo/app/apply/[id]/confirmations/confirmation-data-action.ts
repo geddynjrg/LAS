@@ -5,13 +5,13 @@ import { redirect } from "next/navigation";
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import { updateApplicationDeclarationsData } from "@/actions/application";
 import {
   confirmationDataSchema,
   type ConfirmationData,
-} from "@/actions/apply-form/confirmation-data-schema";
+} from "@/app/apply/[id]/confirmations/confirmation-data-schema";
+import { updateApplicationDeclarationsData } from "@/lib/data/application";
 
-export const confirmationData: FormAction<ConfirmationData> = async (
+export const confirmationDataAction: FormAction<ConfirmationData> = async (
   _prev,
   formData,
 ) => {

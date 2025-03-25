@@ -144,15 +144,15 @@
     "successDescription": "Barua pepe imetumwa kwa anwani yako ya barua pepe na maelekezo ya jinsi ya kuweka upya nenosiri lako."
   },
   "DashboardPage": {
-    "maombiYangu": "Maombi Yangu",
-    "kikundi": "Kikundi",
-    "tazamaMaombi": "Tazama maombi",
-    "endeleaKujazaMaombi": "Endelea kujaza maombi",
-    "hali": {
-      "kichwa": "Hali",
-      "katikaMapitio": "<bold>Hatua ya 1:</bold> Inakaguliwa",
-      "inasubiri": "<bold>Hatua ya 3:</bold> Uamuzi wa kamati unasubiriwa",
-      "haijawasilishwa": "<bold>Haijawasilishwa</bold>"
+    "myApplications": "Maombi Yangu",
+    "group": "Kikundi",
+    "viewApplication": "Tazama maombi",
+    "continueFillingApplication": "Endelea kujaza maombi",
+    "status": {
+      "title": "Hali",
+      "inReview": "<bold>Hatua ya 1:</bold> Inakaguliwa",
+      "pending": "<bold>Hatua ya 3:</bold> Uamuzi wa kamati unasubiriwa",
+      "unsubmitted": "<bold>Haijawasilishwa</bold>"
     },
     "stepDescription": {
       "title": "Nini kinafanyika katika hatua hii?",

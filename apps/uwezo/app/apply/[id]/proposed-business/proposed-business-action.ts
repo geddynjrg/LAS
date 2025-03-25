@@ -6,19 +6,12 @@ import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
 import {
-  updateApplicationLoanConditionsData,
-  updateApplicationProposedBusinessData,
-} from "@/actions/application";
-import {
-  loanConditionsDataSchema,
-  type LoanConditionsData,
-} from "@/actions/apply-form/loan-conditions-schema";
-import {
   proposedBusinessDataSchema,
   type ProposedBusinessData,
-} from "@/actions/apply-form/proposed-business-data-schema";
+} from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
+import { updateApplicationProposedBusinessData } from "@/lib/data/application";
 
-export const proposedBusiness: FormAction<ProposedBusinessData> = async (
+export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
   _prev,
   formData,
 ) => {

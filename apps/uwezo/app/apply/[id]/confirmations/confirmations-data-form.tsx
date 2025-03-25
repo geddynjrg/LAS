@@ -10,12 +10,12 @@ import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { cn } from "@workspace/ui/lib/utils";
 
-import type { DeclarationsData } from "@/actions/application";
+import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   confirmationDataSchema,
   type ConfirmationData,
-} from "@/actions/apply-form/confirmation-data-schema";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+} from "@/app/apply/[id]/confirmations/confirmation-data-schema";
+import type { DeclarationsData } from "@/lib/data/application";
 
 export interface ConfirmationsDataProps {
   id: string;

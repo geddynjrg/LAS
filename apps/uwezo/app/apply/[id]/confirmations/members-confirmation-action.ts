@@ -2,13 +2,13 @@
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 
+import { type MembersConfirmationData } from "@/app/apply/[id]/confirmations/members-confirmation-schema";
 import {
   updateApplicationMembersConfirmationData,
   updateApplicationMembersData,
-} from "@/actions/application";
-import { type MembersConfirmationData } from "@/actions/apply-form/members-confirmation-schema";
+} from "@/lib/data/application";
 
-export const membersConfirmationData: FormAction<
+export const membersConfirmationDataAction: FormAction<
   MembersConfirmationData
 > = async (_prev, formData) => {
   const id = formData.get("id")?.toString();

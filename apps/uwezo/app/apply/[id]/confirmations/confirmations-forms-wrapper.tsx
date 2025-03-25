@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 
-import type { ConfirmationsData, MembersData } from "@/actions/application";
-import { confirmationData } from "@/actions/apply-form/confirmation-data";
-import { membersConfirmationData } from "@/actions/apply-form/members-confirmation";
+import { confirmationDataAction } from "@/app/apply/[id]/confirmations/confirmation-data-action";
 import { ConfirmationsDataForm } from "@/app/apply/[id]/confirmations/confirmations-data-form";
 import { ConfirmationsMembersForm } from "@/app/apply/[id]/confirmations/confirmations-members-form";
+import { membersConfirmationDataAction } from "@/app/apply/[id]/confirmations/members-confirmation-action";
+import type { ConfirmationsData, MembersData } from "@/lib/data/application";
 
 export interface GroupDataPageProps {
   id: string;
@@ -30,7 +30,7 @@ export default function ConfirmationFormsWrapper({
       {step === "declaration" && (
         <ConfirmationsDataForm
           id={id}
-          action={confirmationData}
+          action={confirmationDataAction}
           onSuccess={() => setStep("confirmation")}
           declarationsData={applicationConfirmationData?.declarations}
         />
@@ -38,7 +38,7 @@ export default function ConfirmationFormsWrapper({
       {step === "confirmation" && (
         <ConfirmationsMembersForm
           id={id}
-          action={membersConfirmationData}
+          action={membersConfirmationDataAction}
           onBack={() => setStep("declaration")}
           members={members.members}
         />

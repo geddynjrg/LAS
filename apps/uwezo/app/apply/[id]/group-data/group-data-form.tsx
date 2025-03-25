@@ -16,14 +16,14 @@ import { Underline } from "@workspace/ui/components/underline";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
-import { GroupData as ApplicationGroupData } from "@/actions/application";
+import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   groupDataSchema,
   type GroupData,
-} from "@/actions/apply-form/group-data-schema";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+} from "@/app/apply/[id]/group-data/group-data-schema";
 import { MAX_FILE_SIZE } from "@/lib/constants";
-import { dummyCounty } from "@/lib/dummy-data";
+import { GroupData as ApplicationGroupData } from "@/lib/data/application";
+import { dummyCounty } from "@/lib/data/dummy-data";
 
 export interface GroupDataProps {
   id: string;

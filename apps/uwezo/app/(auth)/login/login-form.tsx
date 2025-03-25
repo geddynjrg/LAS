@@ -7,7 +7,7 @@ import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
-import { loginSchema, type Login } from "@/actions/login-schema";
+import { loginSchema, type Login } from "@/app/(auth)/login/login-schema";
 
 export interface LoginFormProps {
   action: FormAction<Login>;

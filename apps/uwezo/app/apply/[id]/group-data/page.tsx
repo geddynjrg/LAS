@@ -3,9 +3,9 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
-import { getApplicationById } from "@/actions/application";
-import { groupData } from "@/actions/apply-form/group-data";
+import { groupDataAction } from "@/app/apply/[id]/group-data/group-data-action";
 import { GroupDataForm } from "@/app/apply/[id]/group-data/group-data-form";
+import { getApplicationById } from "@/lib/data/application";
 
 export interface GroupDataPageProps {
   params: Promise<{ id: string }>;
@@ -31,7 +31,7 @@ export default async function Page({ params }: GroupDataPageProps) {
 
       <InfoPopover />
       <GroupDataForm
-        action={groupData}
+        action={groupDataAction}
         id={id}
         applicationGroupData={application?.groupData}
       />

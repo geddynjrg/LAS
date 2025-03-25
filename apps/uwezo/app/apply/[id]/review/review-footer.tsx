@@ -9,7 +9,7 @@ import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
 import { ModalButton } from "@workspace/ui/components/modal-button";
 
-import { updateApplicationStatusById } from "@/actions/apply-form/update-application-status-by-id";
+import { updateApplicationStatusById } from "@/app/apply/[id]/review/update-application-status-by-id-action";
 
 export interface ReviewDataProps {
   id: string;

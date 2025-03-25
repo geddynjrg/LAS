@@ -17,12 +17,12 @@ import { Underline } from "@workspace/ui/components/underline";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
-import { ProposedBusinessData as ApplicationProposedBusinessData } from "@/actions/application";
+import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   proposedBusinessDataSchema,
   type ProposedBusinessData,
-} from "@/actions/apply-form/proposed-business-data-schema";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+} from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
+import { ProposedBusinessData as ApplicationProposedBusinessData } from "@/lib/data/application";
 import { parseNumber } from "@/lib/util";
 
 export interface ProposedBusinessDataProps {

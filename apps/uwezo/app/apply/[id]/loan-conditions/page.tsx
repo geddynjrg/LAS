@@ -3,9 +3,9 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
-import { getApplicationById } from "@/actions/application";
-import { loanConditions } from "@/actions/apply-form/loan-conditions";
+import { loanConditionsAction } from "@/app/apply/[id]/loan-conditions/loan-conditions-action";
 import { LoanConditionsDataForm } from "@/app/apply/[id]/loan-conditions/loan-conditions-data-form";
+import { getApplicationById } from "@/lib/data/application";
 
 export interface LoanConditionsPageProps {
   params: Promise<{ id: string }>;
@@ -31,7 +31,7 @@ export default async function Page({ params }: LoanConditionsPageProps) {
 
       <InfoPopover />
       <LoanConditionsDataForm
-        action={loanConditions}
+        action={loanConditionsAction}
         id={id}
         loanConditionsData={application?.loanConditions}
       />

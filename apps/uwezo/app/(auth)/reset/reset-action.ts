@@ -3,9 +3,9 @@
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import { resetSchema, type Reset } from "@/actions/reset-schema";
+import { resetSchema, type Reset } from "@/app/(auth)/reset/reset-schema";
 
-export const reset: FormAction<Reset> = async (_prev, formData) => {
+export const resetAction: FormAction<Reset> = async (_prev, formData) => {
   const values = getFormDataValues(formData, resetSchema);
 
   // dummy wait

@@ -1,7 +1,7 @@
 import NextAuth, { type NextAuthResult } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import { loginSchema } from "@/actions/login-schema";
+import { loginSchema } from "@/app/(auth)/login/login-schema";
 
 export const result = NextAuth({
   trustHost: true,

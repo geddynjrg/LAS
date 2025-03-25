@@ -3,8 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
-import { getApplicationById } from "@/actions/application";
 import ConfirmationFormsWrapper from "@/app/apply/[id]/confirmations/confirmations-forms-wrapper";
+import { getApplicationById } from "@/lib/data/application";
 
 export interface GroupDataPageProps {
   params: Promise<{ id: string }>;

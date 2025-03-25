@@ -10,7 +10,7 @@ import {
 import { Currency } from "@workspace/ui/components/currency";
 import { DataNode } from "@workspace/ui/components/data-node";
 
-import type { ProposedBusinessData } from "@/actions/apply-form/proposed-business-data-schema";
+import type { ProposedBusinessData } from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
 
 export const ApplicationReviewProposedBusiness: FC<{
   businessDetails?: ProposedBusinessData;

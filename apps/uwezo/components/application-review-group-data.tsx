@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui/components/accordion";
 import { DataNode } from "@workspace/ui/components/data-node";
 
-import type { GroupData } from "@/actions/application";
+import type { GroupData } from "@/lib/data/application";
 
 export const ApplicationReviewGroupData: FC<{
   groupData?: GroupData;

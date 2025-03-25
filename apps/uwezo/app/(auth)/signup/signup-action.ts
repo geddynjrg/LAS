@@ -3,9 +3,9 @@
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import { signupSchema, type Signup } from "@/actions/signup-schema";
+import { signupSchema, type Signup } from "@/app/(auth)/signup/signup-schema";
 
-export const signup: FormAction<Signup> = async (_prev, formData) => {
+export const signupAction: FormAction<Signup> = async (_prev, formData) => {
   const values = getFormDataValues(formData, signupSchema);
 
   // dummy wait

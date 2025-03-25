@@ -5,13 +5,13 @@ import { redirect } from "next/navigation";
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import { updateApplicationLoanConditionsData } from "@/actions/application";
 import {
   loanConditionsDataSchema,
   type LoanConditionsData,
-} from "@/actions/apply-form/loan-conditions-schema";
+} from "@/app/apply/[id]/loan-conditions/loan-conditions-schema";
+import { updateApplicationLoanConditionsData } from "@/lib/data/application";
 
-export const loanConditions: FormAction<LoanConditionsData> = async (
+export const loanConditionsAction: FormAction<LoanConditionsData> = async (
   _prev,
   formData,
 ) => {

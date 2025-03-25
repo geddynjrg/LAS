@@ -3,12 +3,12 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
-import { getApplicationById } from "@/actions/application";
 import { ReviewFooter } from "@/app/apply/[id]/review/review-footer";
 import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
 import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
 import { ApplicationReviewMembers } from "@/components/application-review-members";
 import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
+import { getApplicationById } from "@/lib/data/application";
 
 export interface GroupDataPageProps {
   params: Promise<{ id: string }>;
@@ -23,9 +23,6 @@ export default async function Page({ params }: GroupDataPageProps) {
     // this should never happen
     return <div>Something went wrong. Please try again later</div>;
   }
-
-  const prevUrl = `/apply/${id}/confirmations`;
-  const nextUrl = `/apply/${id}/done`;
 
   return (
     <div className="grow-1 flex flex-col justify-between">

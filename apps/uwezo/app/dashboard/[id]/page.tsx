@@ -5,12 +5,12 @@ import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 
-import { getApplicationById } from "@/actions/application";
 import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
 import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
 import { ApplicationReviewMembers } from "@/components/application-review-members";
 import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
 import { ApplicationStatus } from "@/components/application-status";
+import { getApplicationById } from "@/lib/data/application";
 
 interface Props {
   params: Promise<{ id: string }>;

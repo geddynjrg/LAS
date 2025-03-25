@@ -34,20 +34,20 @@ import {
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { formatBytes } from "@workspace/ui/lib/utils";
 
+import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+import { memberAction } from "@/app/apply/[id]/members/member-action";
+import { memberSchema } from "@/app/apply/[id]/members/member-schema";
+import {
+  membersDataSchema,
+  type MembersData,
+} from "@/app/apply/[id]/members/members-data-schema";
+import { MAX_FILE_SIZE } from "@/lib/constants";
 import {
   MembersData as ApplicationMembersData,
   type GenderType,
   type Member,
-} from "@/actions/application";
-import {
-  membersDataSchema,
-  type MembersData,
-} from "@/actions/apply-form/members-data-schema";
-import { memberAction } from "@/actions/member";
-import { memberSchema } from "@/actions/member-schema";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
-import { MAX_FILE_SIZE } from "@/lib/constants";
-import { dummyMembers } from "@/lib/dummy-data";
+} from "@/lib/data/application";
+import { dummyMembers } from "@/lib/data/dummy-data";
 
 export interface MembersDataProps {
   id: string;
@@ -328,7 +328,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   existingMember,
   isNew,
 }) => {
-  const [state, formAction, isPending] = useForm(memberAction, memberSchema, {
+  const [state] = useForm(memberAction, memberSchema, {
     fullname: existingMember?.fullname,
     nationalIdCode: existingMember?.nationalIdCode,
     gender: existingMember?.gender,

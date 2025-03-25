@@ -10,7 +10,7 @@ import {
 import { Currency } from "@workspace/ui/components/currency";
 import { DataNode } from "@workspace/ui/components/data-node";
 
-import type { LoanConditionsData } from "@/actions/apply-form/loan-conditions-schema";
+import type { LoanConditionsData } from "@/app/apply/[id]/loan-conditions/loan-conditions-schema";
 
 interface ApplicationReviewLoanConditionProps {
   loanConditionsData?: LoanConditionsData;

@@ -3,7 +3,10 @@
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import { memberSchema, type Member } from "@/actions/member-schema";
+import {
+  memberSchema,
+  type Member,
+} from "@/app/apply/[id]/members/member-schema";
 
 // This can be removed in the future, same as member-schema
 

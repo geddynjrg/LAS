@@ -1,4 +1,4 @@
-import { type ApplicationData, type Member } from "@/actions/application";
+import { type ApplicationData, type Member } from "@/lib/data/application";
 
 export const dummyCounty = [
   {

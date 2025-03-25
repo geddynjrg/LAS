@@ -3,7 +3,7 @@ import type { FC, ReactNode } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
-import type { Status } from "@/actions/application";
+import type { Status } from "@/lib/data/application";
 
 export const ApplicationStatus: FC<{ status: Status }> = ({ status }) => {
   return (
