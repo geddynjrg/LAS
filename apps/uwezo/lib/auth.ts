@@ -16,7 +16,7 @@ export const result = NextAuth({
   ],
 });
 
-async function authorizeMockUser(credentials: unknown, ...params: unknown[]) {
+async function authorizeMockUser(credentials: unknown) {
   const data = loginSchema.parse(credentials);
 
   return data;

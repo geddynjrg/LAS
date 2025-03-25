@@ -288,7 +288,7 @@ function NewsSection() {
   );
 }
 
-const ApplyButton: FC<{ className?: String }> = ({ className }) => {
+const ApplyButton: FC<{ className?: string }> = ({ className }) => {
   const t = useTranslations("FrontPage");
 
   return (

@@ -49,7 +49,7 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
     if (state.success) {
       onSuccess();
     }
-  }, [state]);
+  }, [state, onSuccess]);
 
   return (
     <Form

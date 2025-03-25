@@ -3,7 +3,7 @@ import "@workspace/ui/globals.css";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { getLocale, getMessages } from "next-intl/server";
 import { DM_Sans } from "next/font/google";
 import { Suspense, type ReactNode } from "react";
 
@@ -15,7 +15,6 @@ import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Providers } from "@/components/providers";
 import { type Locale } from "@/i18n/config";
-import { auth } from "@/lib/auth";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -31,7 +30,6 @@ export default async function RootLayout({
   children,
   session,
 }: RootLayoutProps) {
-  const t = await getTranslations();
   const locale = (await getLocale()) as Locale;
   const messages = await getMessages();
 

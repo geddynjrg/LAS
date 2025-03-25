@@ -11,7 +11,7 @@ export const signupAction: FormAction<Signup> = async (_prev, formData) => {
   // dummy wait
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const { success, data, error } = signupSchema.safeParse(values);
+  const { success, error } = signupSchema.safeParse(values);
 
   if (error) {
     return {
@@ -20,9 +20,6 @@ export const signupAction: FormAction<Signup> = async (_prev, formData) => {
       values,
     };
   }
-
-  console.log("submit success", data);
-  // TODO: Send data to the server
 
   return { success };
 };

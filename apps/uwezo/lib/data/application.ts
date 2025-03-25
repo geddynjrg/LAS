@@ -5,6 +5,7 @@ import { dummyApplications } from "@/lib/data/dummy-data";
 import { createApplicationId } from "@/lib/util";
 
 declare global {
+  /* eslint no-var: off */
   var dummyApplicationsTest: ApplicationData[];
 }
 

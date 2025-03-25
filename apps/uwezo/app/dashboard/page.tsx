@@ -10,12 +10,7 @@ import { Currency } from "@workspace/ui/components/currency";
 import { Underline } from "@workspace/ui/components/underline";
 
 import { ApplicationStatus } from "@/components/application-status";
-import { auth } from "@/lib/auth";
-import {
-  createApplication,
-  getApplications,
-  type Status,
-} from "@/lib/data/application";
+import { getApplications, type Status } from "@/lib/data/application";
 
 export default async function Page() {
   const t = await getTranslations("DashboardPage");

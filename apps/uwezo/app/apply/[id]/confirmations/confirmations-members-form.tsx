@@ -66,7 +66,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
           membersList.map((member) => member.status === "confirmed").length,
       );
     }
-  }, [state]);
+  }, [state, membersList]);
 
   useEffect(() => {
     if (membersList.find((member) => member.status)) {
@@ -75,7 +75,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
     } else {
       setConfirmationSent(false);
     }
-  });
+  }, [membersList]);
 
   // allow view to determine what stage of the confirmation process we are in and what to render
   if (confirmationSent === undefined) {

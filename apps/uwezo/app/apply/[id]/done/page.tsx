@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
@@ -26,9 +27,9 @@ export default async function Page() {
             variant="secondary"
             asChild
           >
-            <a href="#" download="Application">
+            <Link href="#" download="Application">
               {t("ApplyPage.DonePage.download-application")}
-            </a>
+            </Link>
           </Button>
           <Button
             className={cn("grow-1", "w-full max-w-[27rem] px-3")}
@@ -43,7 +44,9 @@ export default async function Page() {
         </p>
 
         <Button className={cn("w-full max-w-[27rem]")} asChild>
-          <a href="/dashboard">{t("ApplyPage.DonePage.go-to-applications")}</a>
+          <Link href="/dashboard">
+            {t("ApplyPage.DonePage.go-to-applications")}
+          </Link>
         </Button>
       </div>
     </Container>

@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
 import { Authenticated } from "@/components/authenticated";
 import { auth } from "@/lib/auth";

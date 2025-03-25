@@ -11,7 +11,7 @@ export const resetAction: FormAction<Reset> = async (_prev, formData) => {
   // dummy wait
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const { success, data, error } = resetSchema.safeParse(values);
+  const { success, error } = resetSchema.safeParse(values);
 
   if (error) {
     return {
@@ -20,9 +20,6 @@ export const resetAction: FormAction<Reset> = async (_prev, formData) => {
       values,
     };
   }
-
-  console.log("submit success", data);
-  // TODO: Send data to the server
 
   return { success };
 };

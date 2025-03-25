@@ -1,4 +1,4 @@
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import type { FC } from "react";
 
 import {
@@ -16,7 +16,6 @@ export const ApplicationReviewProposedBusiness: FC<{
   businessDetails?: ProposedBusinessData;
 }> = async ({ businessDetails }) => {
   const t = await getTranslations("ApplicationDetailsPage");
-  const format = await getFormatter();
 
   if (!businessDetails) {
     return null;

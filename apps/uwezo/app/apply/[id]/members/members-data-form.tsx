@@ -8,7 +8,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import {

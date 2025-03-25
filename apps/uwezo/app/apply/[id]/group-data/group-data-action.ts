@@ -38,7 +38,7 @@ export const groupDataAction: FormAction<GroupData> = async (
   }
 
   /* Submit data to dummy data list */
-  const a = await updateApplicationGroupData(id, {
+  await updateApplicationGroupData(id, {
     basics: {
       groupName: data.groupName,
       groupRegistrationNumber: data.groupRegistrationNumber,
