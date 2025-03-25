@@ -59,7 +59,7 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
     >
       <Container className={cn("space-y-8")}>
         <FormCard
-          title={t("ConfirmationsPage.form-title")}
+          title={t("ConfirmationsPage.form-title-declarations")}
           className="space-y-4"
         >
           <Field

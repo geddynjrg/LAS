@@ -98,9 +98,16 @@ const getFormValue = <TInputs extends Record<string, any>>(
     state.values[name] !== null
   ) {
     if (!isNaN(index) && state.values[name][index]) {
-      fieldValue = state.values[name][index][fieldKey!] as
-        | TInputs[keyof TInputs]
-        | undefined;
+      if (
+        (fieldKey !== undefined && state.values[name][index][fieldKey]) ||
+        typeof state.values[name][index] === "object"
+      ) {
+        fieldValue = state.values[name][index][fieldKey!] as
+          | TInputs[keyof TInputs]
+          | undefined;
+      } else {
+        fieldValue = state.values[name] as TInputs[keyof TInputs] | undefined;
+      }
     }
   }
 

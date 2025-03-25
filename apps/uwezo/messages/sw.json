@@ -287,7 +287,8 @@
 
   "ConfirmationsPage": {
     "title": "Uthibitisho",
-    "form-title": "Tamko la Kikundi",
+    "form-title-declarations": "Tamko la kikundi",
+    "form-title-members": "Uthibitisho wa wanachama",
     "confirmationDataForm": {
       "group-member": "Tunathibitisha kuwa sisi ni wanachama wa kikundi hiki",
       "declare-true-information": "Tunathibitisha kuwa taarifa zilizotolewa hapa ni za kweli kwa kadri ya ufahamu wetu. Tunatoa ruhusa kwa Mfuko wa Uwezo kuthibitisha taarifa zilizotolewa hapa na rejea zilizotolewa hapa.",

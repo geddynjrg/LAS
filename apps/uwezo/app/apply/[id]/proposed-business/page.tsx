@@ -23,7 +23,7 @@ export default async function Page({ params }: ProposedBusinessPageProps) {
           <div>
             <p>{id}</p>
             <h2 className="typo-h2">
-              {t("ApplicationDetailsPage.loan.loanConditions")}
+              {t("ApplicationDetailsPage.proposedBusiness.proposedBusiness")}
             </h2>
           </div>
         </div>

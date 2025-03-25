@@ -287,7 +287,8 @@
   },
   "ConfirmationsPage": {
     "title": "Confirmations",
-    "form-title": "Group declaration",
+    "form-title-declarations": "Group declaration",
+    "form-title-members": "Members confirmation",
     "confirmationDataForm": {
       "group-member": "We confirm we are members of this group",
       "declare-true-information": "Declare that the information provided herein is true to the best of our knowledge. We further authorize Uwezo Fund to verify the information given herein and make reference provided here in.",

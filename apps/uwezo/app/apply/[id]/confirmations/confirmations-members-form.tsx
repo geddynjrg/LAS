@@ -90,7 +90,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
     >
       <Container className={cn("space-y-8")}>
         <FormCard
-          title={t("ConfirmationsPage.form-title")}
+          title={t("ConfirmationsPage.form-title-members")}
           className="space-y-4"
         >
           <Card variant="blue" className={cn("text-sm")}>
