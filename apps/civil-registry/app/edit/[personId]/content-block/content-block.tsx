@@ -13,6 +13,9 @@ import { ModalButton } from "@workspace/ui/components/modal-button";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { updatePersonStatusById } from "@/actions/update-person-status-by-id";
+import { ChildFormBlock } from "@/app/edit/[personId]/child/child-form";
+import { FatherFormBlock } from "@/app/edit/[personId]/father/father-form";
+import { MotherFormBlock } from "@/app/edit/[personId]/mother/mother-form";
 import { PaymentBar } from "@/app/edit/[personId]/payment-bar/payment-bar";
 import {
   PersonFormBlock,
@@ -32,18 +35,8 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
 
   const t = useTranslations();
 
-  const toggleEdit = (id: string, reqPayment?: boolean) => {
+  const toggleEdit = (id: string) => {
     setIsEditing(id === isEditing ? "" : id);
-
-    if (reqPayment) {
-      setRequirePayment(reqPayment ?? false);
-    }
-  };
-
-  const isPersonEditing = (id: string) => {
-    if (!id || !isEditing) return false;
-
-    return isEditing === id;
   };
 
   return (
@@ -56,76 +49,31 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
         <h2 className={cn("typo-h2")}>{person && getFullName(person)}</h2>
 
         <div className={cn("space-y-12")}>
-          <PersonFormBlock
+          <ChildFormBlock
+            key={"child-block"}
+            defaultValues={person}
             disabled={isEditing !== "" && isEditing !== person.id}
-            active={isPersonEditing(person?.id ?? "")}
-            toggleEdit={toggleEdit}
-            fields={{
-              name: { isEditable: true, isVisible: true },
-              dob: { isEditable: false, isVisible: true },
-              age: {
-                isEditable: false,
-                isVisible: isEditing !== "" && isEditing !== person.id,
-              },
-              sex: { isEditable: false, isVisible: true },
-              weightOnBirth: { isEditable: false, isVisible: true },
-              placeOfBirth: { isEditable: false, isVisible: true },
-              firstName: { isEditable: true, isVisible: false },
-              middleName: { isEditable: true, isVisible: false },
-            }}
-            showFieldNotifications={isPersonEditing(person?.id ?? "")}
-            data={person}
-            type={PersonType.CHILD}
+            setRequirePayment={setRequirePayment}
+            handleIsEditing={toggleEdit}
           />
           {person.mother && (
-            <PersonFormBlock
+            <MotherFormBlock
+              key={"mother-block"}
+              defaultValues={person.mother as Person}
               disabled={
                 isEditing !== "" && isEditing !== (person.mother as Person).id
               }
-              active={isPersonEditing((person.mother as Person)?.id ?? "")}
-              toggleEdit={toggleEdit}
-              fields={{
-                name: { isEditable: false, isVisible: true },
-                nationalId: { isEditable: false, isVisible: true },
-                dob: { isEditable: false, isVisible: true },
-                citizenship: { isEditable: false, isVisible: true },
-                nationality: { isEditable: true, isVisible: true },
-                maritalStatus: { isEditable: true, isVisible: true },
-                education: { isEditable: true, isVisible: true },
-                father: { isEditable: true, isVisible: true },
-                phone: { isEditable: false, isVisible: true },
-              }}
-              data={person.mother as Person}
-              type={PersonType.MOTHER}
+              handleIsEditing={toggleEdit}
             />
           )}
           {person.father && (
-            <PersonFormBlock
+            <FatherFormBlock
+              key={"father-block"}
+              defaultValues={person.father as Person}
               disabled={
                 isEditing !== "" && isEditing !== (person.father as Person).id
               }
-              active={isPersonEditing((person.father as Person)?.id ?? "")}
-              toggleEdit={toggleEdit}
-              fields={{
-                name: { isEditable: false, isVisible: true },
-                nationalId: { isEditable: true, isVisible: true },
-                passportNumber: {
-                  isEditable: true,
-                  isVisible: true,
-                  isRequired: true,
-                },
-                dob: { isEditable: true, isVisible: true },
-                citizenship: { isEditable: false, isVisible: true },
-                nationality: { isEditable: true, isVisible: true },
-                education: { isEditable: true, isVisible: true },
-                phone: { isEditable: true, isVisible: true },
-                firstName: { isEditable: true, isVisible: false },
-                middleName: { isEditable: true, isVisible: false },
-                lastName: { isEditable: true, isVisible: false },
-              }}
-              data={person.father as Person}
-              affidavitRequired
-              type={PersonType.FATHER}
+              handleIsEditing={toggleEdit}
             />
           )}
         </div>
