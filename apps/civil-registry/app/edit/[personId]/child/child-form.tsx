@@ -128,7 +128,10 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
             <input type="hidden" name="lastName" value={lastName} />
           </>
         ) : (
-          <DataNode label={t("DetailsPage.name")} variant="default">
+          <DataNode
+            label={t("DetailsPage.name")}
+            variant={disabled ? "disabled" : "default"}
+          >
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />
@@ -148,7 +151,10 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
 
         <EditMessage>{t("DetailsPage.change-dob-message")}</EditMessage>
 
-        <DataNode label={t("DetailsPage.sex")} variant="default">
+        <DataNode
+          label={t("DetailsPage.sex")}
+          variant={disabled ? "disabled" : "default"}
+        >
           <input type="hidden" name="sex" value={person.sex} />
           {person.sex && sexDisplayFormat[person.sex]}
         </DataNode>

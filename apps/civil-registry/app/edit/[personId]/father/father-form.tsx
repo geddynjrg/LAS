@@ -60,7 +60,6 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
   });
 
   useEffect(() => {
-    console.log(state);
     if (state.success) {
       if (state.values) {
         const newValues = state.values as Partial<Person>;
@@ -266,7 +265,10 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
             />
           </>
         ) : (
-          <DataNode label={t("DetailsPage.name")} variant="default">
+          <DataNode
+            label={t("DetailsPage.name")}
+            variant={disabled ? "disabled" : "default"}
+          >
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />
@@ -297,7 +299,10 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
           />
         )}
         {birthDate && !toggleEdit && (
-          <DataNode label={t("DetailsPage.dob")}>
+          <DataNode
+            label={t("DetailsPage.dob")}
+            variant={disabled ? "disabled" : "default"}
+          >
             <input type="hidden" name="dob" value={birthDate} />
             {birthDate && format.dateTime(new Date(birthDate))}
           </DataNode>
@@ -365,16 +370,15 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
 
             {contact?.email && (
               <FieldGroup label={t("DetailsPage.email")} key={`${index}-email`}>
+                <p>{contact?.email}</p>
                 <Field
                   key={`email-${index}`}
                   state={state}
                   isVisible={false}
                   name={`contacts.${index}.email`}
-                  label={t("DetailsPage.email")}
                   control={(props) => <Input {...props} />}
                   required={false}
                 />
-                <p>{contact?.email}</p>
               </FieldGroup>
             )}
           </div>

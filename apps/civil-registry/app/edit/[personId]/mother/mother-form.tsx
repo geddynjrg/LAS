@@ -128,7 +128,10 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
           control={(props) => <Input {...props} />}
           required={false}
         />
-        <DataNode label={t("DetailsPage.name")} variant="default">
+        <DataNode
+          label={t("DetailsPage.name")}
+          variant={disabled ? "disabled" : "default"}
+        >
           <input type="hidden" name="firstName" value={firstName} />
           <input type="hidden" name="middleName" value={middleName} />
           <input type="hidden" name="lastName" value={lastName} />
@@ -233,16 +236,15 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
 
             {contact?.email && (
               <FieldGroup label={t("DetailsPage.email")} key={`${index}-email`}>
+                <p>{contact?.email}</p>
                 <Field
                   key={`email-${index}`}
                   state={state}
                   isVisible={false}
                   name={`contacts.${index}.email`}
-                  label={t("DetailsPage.email")}
                   control={(props) => <Input {...props} />}
                   required={false}
                 />
-                <p>{contact?.email}</p>
               </FieldGroup>
             )}
           </div>

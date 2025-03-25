@@ -52,9 +52,7 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
           <ChildFormBlock
             key={"child-block"}
             defaultValues={person}
-            disabled={
-              isEditing !== "" && isEditing !== (person.mother as Person).id
-            }
+            disabled={isEditing !== "" && isEditing !== person.id}
             setRequirePayment={setRequirePayment}
             handleIsEditing={toggleEdit}
           />
