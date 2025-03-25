@@ -7,6 +7,7 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import { FC, useEffect, useState } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -59,6 +60,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
   id,
   applicationMembersData,
 }) => {
+  const t = useTranslations();
   const [state, formAction, isPending] = useForm(action, membersDataSchema, {
     natureOfGroup: applicationMembersData?.natureOfTheGroup,
   });
@@ -82,33 +84,42 @@ export const MembersDataForm: FC<MembersDataProps> = ({
   };
 
   return (
-    <Form action={formAction} className="space-y-6" autoComplete="on">
+    <Form
+      action={formAction}
+      className="grow-1 flex flex-col justify-between space-y-6"
+      autoComplete="on"
+    >
       <Container>
-        <FormCard title="Group basics" className="mt-7 grid gap-4">
+        <FormCard title={t("MembersPage.title")} className="mt-7 grid gap-4">
           <Field
             className="border-b border-neutral-400 pb-4"
             state={state}
             name="natureOfGroup"
-            label="Nature of group"
+            label={t("MembersPage.natureOfTheGroup")}
             required
             control={(props) => (
               <ButtonGroup {...props} type="single">
-                <ButtonGroupItem value="youth">Youth</ButtonGroupItem>
-                <ButtonGroupItem value="People with disabilities">
-                  People with disabilities
+                <ButtonGroupItem value="youth">
+                  {t("MembersPage.youth")}
                 </ButtonGroupItem>
-                <ButtonGroupItem value="Woman">Women</ButtonGroupItem>
+                <ButtonGroupItem value="People with disabilities">
+                  {t("MembersPage.peopleWithDisabilities")}
+                </ButtonGroupItem>
+                <ButtonGroupItem value="Woman">
+                  {t("MembersPage.women")}
+                </ButtonGroupItem>
               </ButtonGroup>
             )}
           />
 
           <div>
             <div className="font-bold">
-              Search for member<span className="text-destructive">*</span>
+              {t("MembersPage.searchForMembers")}
+              <span className="text-destructive">*</span>
             </div>
             <SearchInput
               defaultValue=""
-              placeholder="Enter name or national ID number"
+              placeholder={t("MembersPage.enterNameOrNationalId")}
               options={dummyMembers.map((member) => ({
                 label: member.fullname ?? "N/A",
                 value: member.nationalIdCode ?? "N/A",
@@ -145,10 +156,10 @@ export const MembersDataForm: FC<MembersDataProps> = ({
               !displayNewMemberForm && setDisplayNewMemberForm(true)
             }
           >
-            <IconPlus /> Add member manually
+            <IconPlus /> {t("MembersPage.addMember")}
           </Button>
           <p className="typo-body-large mx-auto font-bold">
-            {members.length} members info inserted
+            {t("MembersPage.membersInfoInserted", { count: members.length })}
           </p>
 
           {displayNewMemberForm && (
@@ -201,17 +212,29 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                         {member.fullname}
                       </PersonAccordionTrigger>
                       <PersonAccordionContent className="space-y-3">
-                        <DataNode orientation="horizontal" label="Id code">
+                        <DataNode
+                          orientation="horizontal"
+                          label={t("MembersPage.idCode")}
+                        >
                           {member.nationalIdCode ?? "N/A"}
                         </DataNode>
 
-                        <DataNode orientation="horizontal" label="Gender">
+                        <DataNode
+                          orientation="horizontal"
+                          label={t("MembersPage.gender")}
+                        >
                           {member.gender ?? "N/A"}
                         </DataNode>
-                        <DataNode orientation="horizontal" label="Phone nr.">
+                        <DataNode
+                          orientation="horizontal"
+                          label={t("MembersPage.phoneNumber")}
+                        >
                           {member.phoneNumber ?? "N/A"}
                         </DataNode>
-                        <DataNode orientation="horizontal" label="Capacity">
+                        <DataNode
+                          orientation="horizontal"
+                          label={t("MembersPage.capacity")}
+                        >
                           {member.type ?? "N/A"}
                         </DataNode>
                       </PersonAccordionContent>
@@ -238,11 +261,13 @@ export const MembersDataForm: FC<MembersDataProps> = ({
 
       <input type="hidden" name="redirectTo" value={nextUrl} />
 
-      <ApplyFormActionBar
-        disabled={isPending}
-        nextUrl={nextUrl}
-        prevUrl={prevUrl}
-      />
+      <div className="mt-auto">
+        <ApplyFormActionBar
+          disabled={isPending}
+          nextUrl={nextUrl}
+          prevUrl={prevUrl}
+        />
+      </div>
     </Form>
   );
 };
@@ -255,36 +280,40 @@ interface MemberAccordionFooterProps {
 const MemberAccordionFooter = ({
   onRemove,
   onEdit,
-}: MemberAccordionFooterProps) => (
-  <div className="flex flex-row justify-center gap-8">
-    <Button
-      variant="ghost"
-      asChild
-      className="p-0 active:bg-transparent"
-      onClick={onRemove}
-    >
-      <div>
-        <Underline className="text-destructive border-b-destructive hover:text-destructive">
-          <IconTrash className="!text-destructive" />
-          Remove
-        </Underline>
-      </div>
-    </Button>
-    <Button
-      variant="ghost"
-      asChild
-      className="p-0 active:bg-transparent"
-      onClick={onEdit}
-    >
-      <div>
-        <Underline className="border-b-blue-400 text-blue-400">
-          <IconPencil />
-          Edit
-        </Underline>
-      </div>
-    </Button>
-  </div>
-);
+}: MemberAccordionFooterProps) => {
+  const t = useTranslations();
+
+  return (
+    <div className="flex flex-row justify-center gap-8">
+      <Button
+        variant="ghost"
+        asChild
+        className="p-0 active:bg-transparent"
+        onClick={onRemove}
+      >
+        <div>
+          <Underline className="text-destructive border-b-destructive hover:text-destructive">
+            <IconTrash className="!text-destructive" />
+            {t("Common.remove")}
+          </Underline>
+        </div>
+      </Button>
+      <Button
+        variant="ghost"
+        asChild
+        className="p-0 active:bg-transparent"
+        onClick={onEdit}
+      >
+        <div>
+          <Underline className="border-b-blue-400 text-blue-400">
+            <IconPencil />
+            {t("Common.edit")}
+          </Underline>
+        </div>
+      </Button>
+    </div>
+  );
+};
 
 interface NewMemberFormFieldsProps {
   onSuccess: (member: Partial<Member>) => void;
@@ -314,13 +343,14 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   const [member, setMember] = useState<Partial<Member> | undefined>(
     existingMember,
   );
+  const t = useTranslations();
 
   return (
     <div className="border-primary grid gap-4 rounded-md border bg-neutral-200 p-4">
       <Field
         state={state}
         name="fullname"
-        label="Member name"
+        label={t("MembersPage.memberName")}
         required
         editable={isNew}
         control={(props) => (
@@ -340,7 +370,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       <Field
         state={state}
         name="nationalIdCode"
-        label="National ID code/Alien ID"
+        label={t("MembersPage.nationalIdCodeAlienId")}
         required
         editable={isNew}
         control={(props) => (
@@ -360,7 +390,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       <Field
         state={state}
         name="gender"
-        label="Gender"
+        label={t("MembersPage.gender")}
         required
         editable={isNew}
         control={(props) => (
@@ -375,15 +405,19 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               }));
             }}
           >
-            <ButtonGroupItem value="Male">Male</ButtonGroupItem>
-            <ButtonGroupItem value="Female">Female</ButtonGroupItem>
-            <ButtonGroupItem value="Other">Other</ButtonGroupItem>
+            <ButtonGroupItem value="Male">
+              {t("MembersPage.male")}
+            </ButtonGroupItem>
+            <ButtonGroupItem value="Female">
+              {t("MembersPage.female")}
+            </ButtonGroupItem>
+            <ButtonGroupItem value="Other">{t("Common.other")}</ButtonGroupItem>
           </ButtonGroup>
         )}
       />
       <Field
         name="phone"
-        label="Phone number"
+        label={t("MembersPage.phoneNumber")}
         required
         control={(props) => (
           <Input
@@ -403,14 +437,23 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
       <Field
         name="position"
-        label="Position of member"
+        label={t("MembersPage.positionOfMember")}
         required
         control={(props) => (
           <Select
             options={[
-              { label: "Chairman", value: "Chairman" },
-              { label: "Secretary", value: "Secretary" },
-              { label: "Member", value: "Member" },
+              {
+                label: t("ApplicationDetailsPage.members.chairman"),
+                value: "Chairman",
+              },
+              {
+                label: t("ApplicationDetailsPage.members.secretary"),
+                value: "Secretary",
+              },
+              {
+                label: t("ApplicationDetailsPage.members.member"),
+                value: "Member",
+              },
             ]}
             {...props}
             defaultValue={member?.type}
@@ -426,7 +469,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
       <Field
         name="photo"
-        label="Photo of member ID"
+        label={t("MembersPage.photoOfMemberId")}
         required
         control={(props) => (
           <FileUploadInput
@@ -439,7 +482,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             /* TODO: On value change might be needed here */
           />
         )}
-        description={`Max file size ${formatBytes(MAX_FILE_SIZE)}`}
+        description={t("MembersPage.maxFileSize", {
+          size: formatBytes(MAX_FILE_SIZE),
+        })}
       />
 
       <Field
@@ -452,7 +497,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             onValueChange={(value) => setWithDisability(value)}
             defaultValue={withDisability}
           >
-            Person with disability
+            {t("MembersPage.personWithDisability")}
           </Checkbox>
         )}
       />
@@ -462,7 +507,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <Field
             state={state}
             name="certificateOfDisability"
-            label="Certificate of disability"
+            label={t("MembersPage.certificateOfDisability")}
             required
             control={(props) => (
               <FileUploadInput
@@ -479,7 +524,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <Field
             state={state}
             name="pwdNumber"
-            label="PWD number"
+            label={t("MembersPage.pwdNumber")}
             control={(props) => (
               <Input
                 {...props}
@@ -509,7 +554,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <div>
             <Underline className="text-destructive border-b-destructive hover:text-destructive">
               <IconX className="!text-destructive" />
-              Cancel
+              {t("Common.cancel")}
             </Underline>
           </div>
         </Button>
@@ -522,7 +567,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <div>
             <Underline className="border-b-green-400 text-green-400">
               <IconCheck className="!text-green-400" />
-              Confirm
+              {t("Common.confirm")}
             </Underline>
           </div>
         </Button>
