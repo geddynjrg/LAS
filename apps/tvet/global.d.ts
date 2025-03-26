@@ -1,6 +1,6 @@
-import commonEn from "@workspace/ui/messages/en";
+import commonEn from "@workspace/ui/messages/en-gb.json";
 
-import en from "@/messages/en.json";
+import en from "@/messages/en-gb.json";
 
 type Messages = typeof en & typeof commonEn;
 

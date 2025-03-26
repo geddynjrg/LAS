@@ -99,7 +99,10 @@ export function validFile(accept: Accept, fileSize: number) {
       // check if file exists
       .refine((file) => file && file.size > 0, getIntlKey("required"))
       // check that file is not too large
-      .refine((file) => file.size <= fileSize, getIntlKey("too_large"))
+      .refine(
+        (file) => file.size <= fileSize,
+        getIntlKey("file_too_large", { maximum: fileSize } as z.ZodIssue),
+      )
       // check that file is one of the accepted types
       .refine(
         (file) => expandMimeTypes(accept).includes(file.type),
