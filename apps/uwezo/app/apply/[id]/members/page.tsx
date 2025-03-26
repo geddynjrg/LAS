@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
-import { membersDataAction } from "@/app/apply/[id]/members/members-data";
+import { membersDataAction } from "@/app/apply/[id]/members/members-data-action";
 import { MembersDataForm } from "@/app/apply/[id]/members/members-data-form";
 import { getApplicationById } from "@/lib/data/application";
 

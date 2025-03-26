@@ -43,13 +43,22 @@ export const groupDataAction: FormAction<GroupData> = async (
       groupName: data.groupName,
       groupRegistrationNumber: data.groupRegistrationNumber,
       dateFormed: data.dateFormed,
-      groupRegistrationCertificate: data.groupRegistrationCertificate.name,
-      listOfMembersOnCertificate: data.listOfMembersOnCertificate.name,
+      groupRegistrationCertificate: {
+        name: data.groupRegistrationCertificate.name,
+        size: data.groupRegistrationCertificate.size,
+      } as File,
+      listOfMembersOnCertificate: {
+        name: data.listOfMembersOnCertificate.name,
+        size: data.listOfMembersOnCertificate.size,
+      } as File,
     },
     background: {
       purposeOfTheGroup: data.groupPurpose,
       keyActivitiesOfTheGroup: data.groupActivities,
-      groupCreditHistory: data.groupCreditHistory.name,
+      groupCreditHistory: {
+        size: data.groupCreditHistory.size,
+        name: data.groupCreditHistory.name,
+      } as File,
       valueChain: data.valueChain,
       other: data.other,
       tableBanking: {

@@ -41,7 +41,10 @@ export const GroupDataForm: FC<GroupDataProps> = ({
     groupRegistrationNumber:
       applicationGroupData?.basics.groupRegistrationNumber,
     dateFormed: applicationGroupData?.basics.dateFormed,
-
+    groupRegistrationCertificate:
+      applicationGroupData?.basics.groupRegistrationCertificate,
+    listOfMembersOnCertificate:
+      applicationGroupData?.basics.listOfMembersOnCertificate,
     groupPurpose: applicationGroupData?.background.purposeOfTheGroup,
     groupActivities: applicationGroupData?.background.keyActivitiesOfTheGroup,
     valueChain: applicationGroupData?.background.valueChain ?? undefined,
@@ -56,6 +59,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
       applicationGroupData?.background.tableBanking
         ?.tableBankingTotalRevolvingFund,
     other: applicationGroupData?.background.other,
+    groupCreditHistory: applicationGroupData?.background.groupCreditHistory,
     countyOfOperation: applicationGroupData?.location.countyOfOperation,
     constituency: applicationGroupData?.location.constituency,
     ward: applicationGroupData?.location.ward,
