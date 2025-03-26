@@ -19,22 +19,22 @@ export default async function LandingPageNode(pageData: LandingNodeType) {
         title={pageData.data.title}
         backgroundUrl={pageData.data.content.image?.url}
         backgroundAlt={pageData.data.title}
-        actions={
-          <>
-            <ScrollTo targetId="content">
-              <Button variant="secondary" className="px-6">
-                {t("learnMore")}
-                <IconChevronDown />
-              </Button>
-            </ScrollTo>
+        // actions={
+        //   <>
+        //     <ScrollTo targetId="content">
+        //       <Button variant="secondary" className="px-6">
+        //         {t("learnMore")}
+        //         <IconChevronDown />
+        //       </Button>
+        //     </ScrollTo>
 
-            <Button className="px-6" asChild>
-              <Link href="/apply">
-                {t("applyNow")} <IconChecklist />
-              </Link>
-            </Button>
-          </>
-        }
+        //     <Button className="px-6" asChild>
+        //       <Link href="/apply">
+        //         {t("applyNow")} <IconChecklist />
+        //       </Link>
+        //     </Button>
+        //   </>
+        // }
       >
         {pageData.data.content.body && (
           <DescriptionBlock {...pageData.data.content.body} />
