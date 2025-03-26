@@ -48,30 +48,54 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
   const [showInfoWindow, setShowInfoWindow] = useState<InstitutionProps | null>(
     null,
   );
-  const [zoom, setZoom] = useState(13);
+  const [zoom, setZoom] = useState<number | null>(
+    !institutes && location ? 12 : null,
+  );
   const t = useTranslations("LocationMap");
+  const bounds = institutes?.reduce(
+    (acc, curr) => {
+      return {
+        east: Math.max(acc.east, curr.location.longitude),
+        north: Math.max(acc.north, curr.location.latitude),
+        south: Math.min(acc.south, curr.location.latitude),
+        west: Math.min(acc.west, curr.location.longitude),
+      };
+    },
+    {
+      east: institutes?.[0]?.location.longitude ?? 0,
+      north: institutes?.[0]?.location.latitude ?? 0,
+      south: institutes?.[0]?.location.latitude ?? 0,
+      west: institutes?.[0]?.location.longitude ?? 0,
+    },
+  ) ?? {
+    east: location?.longitude ?? 0,
+    north: location?.latitude ?? 0,
+    south: location?.latitude ?? 0,
+    west: location?.longitude ?? 0,
+  };
+  // display all coordinates of institutes as a string array
+  console.log(
+    "Institutions",
+    institutes
+      ?.map(
+        (institute) =>
+          institute.location.latitude + ", " + institute.location.longitude,
+      )
+      .join(", "),
+  );
+  console.log(bounds);
 
   return (
     <APIProvider apiKey={API_KEY}>
       <div className="relative box-border w-full">
         <Map
-          defaultCenter={
-            institutes && institutes[0]?.location
-              ? {
-                  lat: institutes[0].location.latitude,
-                  lng: institutes[0].location.longitude,
-                }
-              : {
-                  lat: location?.latitude ?? 1.2921,
-                  lng: location?.longitude ?? 36.817371,
-                }
-          }
+          defaultBounds={{ ...bounds, padding: 20 }}
           mapId={MAP_ID}
           disableDefaultUI={true}
-          zoom={zoom}
-          onZoomChanged={(zoom) => setZoom(zoom.detail.zoom)}
           className="aspect-square w-full"
           gestureHandling={"greedy"}
+          zoom={zoom}
+          onZoomChanged={(zoom) => setZoom(zoom.detail.zoom)}
         >
           {institutes?.map((institute, index) => (
             <AdvancedMarker
