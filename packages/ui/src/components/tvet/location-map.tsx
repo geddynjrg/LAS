@@ -37,10 +37,6 @@ export interface LocationMapProps {
     longitude: number;
   };
 }
-// TODO: fix build args
-
-// const API_KEY = "AIzaSyDNmBOe24CzYr6_EjmUY9Ugx7jSuvGRGWI";
-// const MAP_ID = "2471b6743fd8b796";
 
 export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
   const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
@@ -52,6 +48,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
     !institutes && location ? 9 : null,
   );
   const t = useTranslations("LocationMap");
+  // calculate map bounds based on institutes or location
   const bounds = institutes?.reduce(
     (acc, curr) => {
       return {
@@ -73,17 +70,6 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
     south: location?.latitude ?? 0,
     west: location?.longitude ?? 0,
   };
-  // display all coordinates of institutes as a string array
-  console.log(
-    "Institutions",
-    institutes
-      ?.map(
-        (institute) =>
-          institute.location.latitude + ", " + institute.location.longitude,
-      )
-      .join(", "),
-  );
-  console.log(bounds);
 
   return (
     <APIProvider apiKey={API_KEY}>
@@ -151,12 +137,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
                     </a>
 
                     <Button asChild>
-                      <a
-                        href={showInfoWindow.path_alias}
-                        className="cl mt-2"
-                        rel="noreferrer"
-                        target="_blank"
-                      >
+                      <a href={showInfoWindow.path_alias} className="cl mt-2">
                         {t("viewMore")}
                       </a>
                     </Button>
@@ -168,14 +149,14 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
         </Map>
         <div className="absolute right-4 top-4 flex flex-col gap-2">
           <Button
-            onClick={() => setZoom(zoom + 1)}
+            onClick={() => setZoom((zoom ?? 9) + 1)}
             className="size-8 p-0"
             size="md"
           >
             <IconPlus />
           </Button>
           <Button
-            onClick={() => setZoom(zoom - 1)}
+            onClick={() => setZoom((zoom ?? 9) - 1)}
             className="size-8 p-0"
             size="md"
           >
