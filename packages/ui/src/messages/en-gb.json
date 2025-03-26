@@ -43,6 +43,12 @@
   "Buttons": {
     "amend": "Amend"
   },
+  "InfoPopover": {
+    "help": "Help",
+    "close": "Close",
+    "title": "Do you need help?",
+    "faq": "Frequently asked questions"
+  },
   "TrainingAreaBlock": {
     "title": "Training areas",
     "coursesAvailable": "{count, plural, =1 {# course available}  other {# courses available}}."

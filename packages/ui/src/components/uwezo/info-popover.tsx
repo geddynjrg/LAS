@@ -27,7 +27,7 @@ export const InfoPopover: FC<InfoPopoverProps> = ({
   floating = "true",
   className,
 }) => {
-  const t = useTranslations();
+  const t = useTranslations("InfoPopover");
 
   return (
     <Popover>
@@ -39,7 +39,7 @@ export const InfoPopover: FC<InfoPopoverProps> = ({
             floating && "fixed right-0 top-[9.6875rem]",
           )}
         >
-          {t("Common.help")}
+          {t("help")}
           <IconHelpCircle />
         </Button>
       </PopoverTrigger>
@@ -66,17 +66,17 @@ export const InfoPopover: FC<InfoPopoverProps> = ({
               "active:bg-transparent",
             )}
           >
-            {t("Common.close")}
+            {t("close")}
             <IconX className="text-color-foreground" />
           </Button>
         </PopoverPrimitive.Close>
 
-        <h5 className={cn("typo-h5", "mb-2")}>{t("InfoPopover.title")}</h5>
+        <h5 className={cn("typo-h5", "mb-2")}>{t("title")}</h5>
 
         <ul className={cn("text-primary", "space-y-3")}>
           <li>
             <a className={cn("text-inherit underline", "flex gap-1")} href="#">
-              <IconHelpOctagon /> {t("Common.faq")}
+              <IconHelpOctagon /> {t("faq")}
             </a>
           </li>
 
