@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 
-import { defaultLocale, type Locale } from "@/i18n/config";
+import { defaultLocale, locales, type Locale } from "@/i18n/config";
 
 const COOKIE_NAME = "i18n_locale";
 
@@ -15,11 +15,14 @@ export async function setUserLocale(locale: Locale) {
 }
 
 export async function getMessages(locale: string) {
+  const localeExists = locales.find((l) => l.value === locale);
+  const localeFileName = localeExists ? locale : defaultLocale;
+
   const [messages, commonMessages] = await Promise.all([
-    import(`@/messages/${locale}`),
+    import(`@/messages/${localeFileName}`),
     // `@workspace/ui/messages/${locale}` seems not to work
     // https://github.com/vercel/next.js/issues/63372
-    import(`../../../packages/ui/src/messages/${locale}`),
+    import(`../../../packages/ui/src/messages/${localeFileName}`),
   ]).catch((err) => {
     console.error("Failed to load messages", err);
 

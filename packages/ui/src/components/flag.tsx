@@ -41,6 +41,7 @@ export const Flag: FC<FlagProps> = ({ code, size, className }) => {
 function getCountryCode(code: string) {
   switch (code) {
     case "EN":
+    case "EN-GB":
       return "GB";
     case "MF":
       return "FR";
