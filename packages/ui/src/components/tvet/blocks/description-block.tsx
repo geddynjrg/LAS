@@ -4,9 +4,9 @@ import { cn } from "@workspace/ui/lib/utils";
 
 export interface DescriptionBlockProps {
   className?: string;
-  value: string;
-  format: string;
-  processed: string;
+  value?: string;
+  format?: string;
+  processed?: string;
 }
 
 export const DescriptionBlock: FC<DescriptionBlockProps> = ({

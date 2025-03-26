@@ -83,54 +83,5 @@
     "learnMore": "Learn more",
     "doYouHaveAnyQuestions": "Do you have any questions?",
     "getInTouch": "Get in contact with us and we’ll help you get the answers you need."
-  },
-
-  "TrainingAreaBlock": {
-    "title": "Training areas",
-    "coursesAvailable": "{count, plural, =1 {# course available}  other {# courses available}}."
-  },
-
-  "HighlightedCourseListingBlock": {
-    "title": "Apply now",
-    "searchTitle": "Search for courses",
-    "linkTitle": "View all"
-  },
-  "LocationMap": {
-    "getDirections": "Get Directions",
-    "viewMore": "View more",
-    "location": "Location",
-    "address": "Address",
-    "ourGates": "Our gates"
-  },
-  "AvailableSponsorshipsBlock": {
-    "availableSponsorships": "Available sponsorships"
-  },
-  "CourseDataBlock": {
-    "applyNow": "Apply now",
-    "fees": "Fees",
-    "trainingFormat": "Training Format",
-    "groupSize": "Group Size",
-    "minimumEntryRequirements": "Minimum entry requirements",
-    "equipmentAvailableAtInstitution": "Equipment available at institution",
-    "duration": "Duration",
-    "courseFee": "Course fee",
-    "applicationFee": "Application fee",
-    "testBookingFee": "Test booking fee"
-  },
-  "SimilarCoursesBlock": {
-    "similarCourses": "Similar courses"
-  },
-  "SocialBlock": {
-    "followUs": "Follow us!"
-  },
-  "TestimonialsBlock": {
-    "testimonials": "Testimonials"
-  },
-  "VocationalCentersBlock": {
-    "nairobiVocationalCenters": "Nairobi Vocational Centres"
-  },
-  "InstituteContactInfo": {
-    "doYouHaveQuestions": "Do you have questions?",
-    "getInContact": "Get in contact with us and we’ll help you get the answers you need."
   }
 }

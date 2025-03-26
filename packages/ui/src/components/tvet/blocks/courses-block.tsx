@@ -46,7 +46,7 @@ export const CoursesBlock: FC<CoursesBlockProps> = ({
   courses,
 }) => {
   const format = useFormatter();
-  const t = useTranslations("Common");
+  const t = useTranslations("CourseBlock");
   const [isAllCoursesVisible, setIsAllCoursesVisible] = useState(false);
 
   const visibleCourses = courses.slice(0, VISIBLE_COURSES_LIMIT);

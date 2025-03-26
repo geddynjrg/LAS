@@ -8,18 +8,18 @@ import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/descripti
 import { HeroSection } from "@/components/hero-section";
 import { PageComponents } from "@/components/page-components";
 import { ScrollTo } from "@/components/scroll-to";
-import { getDashboardData } from "@/lib/api/dashboard";
+import { getLanding } from "@/lib/api/landing";
 
 export default async function Page() {
   const t = await getTranslations("FrontPage");
-  const frontPage = await getDashboardData();
+  const frontPage = await getLanding();
 
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection
         title={frontPage.data.title}
-        backgroundUrl={frontPage.data.content.image.url}
-        backgroundAlt={frontPage.data.title}
+        backgroundUrl={frontPage.data.content.image?.url}
+        backgroundAlt={frontPage.data.content.image?.alt}
         actions={
           <>
             <ScrollTo targetId="content">
