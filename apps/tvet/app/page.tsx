@@ -30,7 +30,7 @@ export default async function Page() {
             </ScrollTo>
 
             <Button className="px-6" asChild>
-              <Link href="/login/username?callbackUrl=/apply">
+              <Link href="/apply">
                 {t("applyNow")} <IconChecklist />
               </Link>
             </Button>

@@ -5,7 +5,13 @@ import { Container } from "@workspace/ui/components/container";
 
 import { SignupForm } from "@/app/(auth)/signup/signup-form";
 
-export default async function Page() {
+export interface SignupPageProps {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}
+
+export default async function SignupPage({ searchParams }: SignupPageProps) {
+  const { callbackUrl } = await searchParams;
+
   const t = await getTranslations("SignUpPage");
 
   return (
@@ -15,7 +21,7 @@ export default async function Page() {
         <p className="typo-body-medium">{t("description")}</p>
       </div>
 
-      <SignupForm />
+      <SignupForm redirectTo={callbackUrl} />
 
       <div className="flex justify-center gap-2 pt-4">
         <p className="typo-body-medium">{t("alreadyHaveAccount")}</p>

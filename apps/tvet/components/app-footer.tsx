@@ -17,9 +17,7 @@ export const AppFooter: FC<AppFooterProps> = ({ institutions }) => {
           <FooterNavItem href="/">Home</FooterNavItem>
           <FooterNavItem href="/courses">Courses</FooterNavItem>
           <FooterNavItem href="/sponsorships">Sponsorships</FooterNavItem>
-          <FooterNavItem href="/login/username?callbackUrl=/apply">
-            Apply now!
-          </FooterNavItem>
+          <FooterNavItem href="/apply">Apply now!</FooterNavItem>
           <FooterNavItem href="/contact">Contact</FooterNavItem>
         </FooterNavGroup>
         {(institutions?.length ?? 0) > 0 && (

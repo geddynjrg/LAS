@@ -80,7 +80,7 @@ export const AppSidebar: FC<AppSidebarProps> = ({
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
-            <NavLink href="/login/username?callbackUrl=/apply">
+            <NavLink href="/apply">
               <IconChecklist />
               Apply now
             </NavLink>

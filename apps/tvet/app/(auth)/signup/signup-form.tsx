@@ -13,9 +13,11 @@ import { signupAction } from "@/app/(auth)/signup/signup-action";
 import { signupSchema } from "@/app/(auth)/signup/signup-schema";
 import { useSession } from "@/hooks/useSession";
 
-export type SignupFormProps = {};
+export interface SignupFormProps {
+  redirectTo?: string;
+}
 
-export const SignupForm: FC<SignupFormProps> = () => {
+export const SignupForm: FC<SignupFormProps> = ({ redirectTo }) => {
   const t = useTranslations("SignUpPage");
   const { setSession } = useSession();
   const router = useRouter();
@@ -25,7 +27,7 @@ export const SignupForm: FC<SignupFormProps> = () => {
   useEffect(() => {
     if (state.success) {
       setSession(true);
-      router.push("/dashboard");
+      router.replace(redirectTo ?? "/dashboard");
     }
   }, [state.success]);
 

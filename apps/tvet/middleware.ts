@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSession } from "@/lib/session";
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/apply"];
 const publicRoutes = ["/login", "/signup"];
 
 const loggedInRedirect = "/dashboard";
@@ -28,7 +28,10 @@ export async function middleware(request: NextRequest) {
 
   // redirect logged out user to login page if they try to access protected route
   if (isProtectedRoute && !session && !path.startsWith(loggedOutRedirect)) {
-    return NextResponse.redirect(new URL(loggedOutRedirect, request.nextUrl), {
+    const newUrl = new URL(loggedOutRedirect, request.nextUrl);
+    newUrl.searchParams.set("callbackUrl", path);
+
+    return NextResponse.redirect(newUrl, {
       headers: requestHeaders,
     });
   }

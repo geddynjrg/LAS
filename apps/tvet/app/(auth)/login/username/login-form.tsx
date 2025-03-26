@@ -27,7 +27,7 @@ export const LoginForm: FC<LoginFormProps> = ({ redirectTo }) => {
   useEffect(() => {
     if (state.success) {
       setSession(true);
-      router.push(redirectTo ?? "/dashboard");
+      router.replace(redirectTo ?? "/dashboard");
     }
   }, [state.success]);
 

@@ -28,7 +28,7 @@ export const AppHeader: FC<AppHeaderProps> = () => {
       endDecorator={
         <>
           <Button asChild>
-            <Link href="/login/username?callbackUrl=/apply">{t("apply")}</Link>
+            <Link href="/apply">{t("apply")}</Link>
           </Button>
           {session && (
             <Button asChild variant="secondary">
