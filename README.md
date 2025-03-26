@@ -47,7 +47,7 @@ pnpm run lint
 To check typescript issues run the following command at the root of the project:
 
 ```bash
-pnpm run typecheck
+pnpm run check-types
 ```
 
 To fix code formatting issues run the following command at the root of the project:

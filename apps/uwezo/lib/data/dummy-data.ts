@@ -172,13 +172,21 @@ export const dummyApplications: ApplicationData[] = [
         groupName: "Sunrise Farmers Group",
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
-        groupRegistrationCertificate: "certificate_sunrise_farmers.pdf",
-        listOfMembersOnCertificate: "members_list_sunrise.pdf",
+        groupRegistrationCertificate: new File(
+          ["Sample content"],
+          "sample.txt",
+          { type: "text/plain" },
+        ),
+        listOfMembersOnCertificate: new File(["Sample content"], "sample.txt", {
+          type: "text/plain",
+        }),
       },
       background: {
         purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
         keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
-        groupCreditHistory: "Good",
+        groupCreditHistory: new File(["Sample content"], "sample.txt", {
+          type: "text/plain",
+        }),
         valueChain: ["Poultry", "Vegetables"],
         tableBanking: {
           tableBankingExperience: 3,
@@ -243,13 +251,21 @@ export const dummyApplications: ApplicationData[] = [
         groupName: "In review Group",
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
-        groupRegistrationCertificate: "certificate_sunrise_farmers.pdf",
-        listOfMembersOnCertificate: "members_list_sunrise.pdf",
+        groupRegistrationCertificate: new File(
+          ["Sample content"],
+          "sample.txt",
+          { type: "text/plain" },
+        ),
+        listOfMembersOnCertificate: new File(["Sample content"], "sample.txt", {
+          type: "text/plain",
+        }),
       },
       background: {
         purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
         keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
-        groupCreditHistory: "Good",
+        groupCreditHistory: new File(["Sample content"], "sample.txt", {
+          type: "text/plain",
+        }),
         valueChain: ["Poultry", "Vegetables"],
         tableBanking: {
           tableBankingExperience: 3,
@@ -314,13 +330,21 @@ export const dummyApplications: ApplicationData[] = [
         groupName: "test name Group",
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
-        groupRegistrationCertificate: "certificate_sunrise_farmers.pdf",
-        listOfMembersOnCertificate: "members_list_sunrise.pdf",
+        groupRegistrationCertificate: new File(
+          ["Sample content"],
+          "sample.txt",
+          { type: "text/plain" },
+        ),
+        listOfMembersOnCertificate: new File(["Sample content"], "sample.txt", {
+          type: "text/plain",
+        }),
       },
       background: {
         purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
         keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
-        groupCreditHistory: "Good",
+        groupCreditHistory: new File(["Sample content"], "sample.txt", {
+          type: "text/plain",
+        }),
         valueChain: ["Poultry", "Vegetables"],
         tableBanking: {
           tableBankingExperience: 3,

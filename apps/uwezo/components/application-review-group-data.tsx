@@ -48,10 +48,10 @@ export const ApplicationReviewGroupData: FC<{
                 <DataNode
                   label={t("groupData.basicInfo.groupRegistrationCert")}
                 >
-                  {groupData.basics.groupRegistrationCertificate}
+                  {groupData.basics.groupRegistrationCertificate.name}
                 </DataNode>
                 <DataNode label={t("groupData.basicInfo.listOfMembersOnCert")}>
-                  {groupData.basics.listOfMembersOnCertificate}
+                  {groupData.basics.listOfMembersOnCertificate.name}
                 </DataNode>
               </div>
             </AccordionContent>
@@ -105,7 +105,7 @@ export const ApplicationReviewGroupData: FC<{
                   {groupData.background.keyActivitiesOfTheGroup}
                 </DataNode>
                 <DataNode label={t("groupData.groupBackground.creditHistory")}>
-                  {groupData.background.groupCreditHistory}
+                  {groupData.background.groupCreditHistory.name}
                 </DataNode>
               </div>
             </AccordionContent>
