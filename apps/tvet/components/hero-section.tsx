@@ -41,7 +41,7 @@ export const HeroSection: FC<HeroSectionProps> = ({
             <Heading className="-mb-13 -translate-y-13 md:-mb-16 md:-translate-y-16 xl:mb-0 xl:translate-y-0">
               {title}
             </Heading>
-            <div className="mt-4">{children}</div>
+            <div className="mt-8 xl:mt-4">{children}</div>
           </Container>
         </RoundedCornerCard>
         {actions && (

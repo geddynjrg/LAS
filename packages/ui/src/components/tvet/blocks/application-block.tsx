@@ -26,24 +26,19 @@ export const ApplicationBlock: FC<ApplicationBlockProps> = ({
   checkpoints,
 }) => {
   return (
-    <Container className="mt-4 py-8">
+    <Container className="mt-4 flex flex-col gap-6 py-8">
       <h2 className="typo-h2">{title}</h2>
       <hr />
 
-      <section className="mt-4">
-        <NumberedList className="my-4" variant="numbers">
-          {checkpoints?.map((checkpoint, index) => (
-            <NumberedListItem
-              key={index}
-              icon={<CheckpointIcon index={index} />}
-            >
-              {checkpoint}
-            </NumberedListItem>
-          ))}
-        </NumberedList>
-        <DescriptionBlock {...description} />
-      </section>
-      <hr />
+      <NumberedList variant="numbers">
+        {checkpoints?.map((checkpoint, index) => (
+          <NumberedListItem key={index} icon={<CheckpointIcon index={index} />}>
+            {checkpoint}
+          </NumberedListItem>
+        ))}
+      </NumberedList>
+
+      <DescriptionBlock {...description} />
     </Container>
   );
 };
