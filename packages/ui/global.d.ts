@@ -1,4 +1,4 @@
-import en from "./src/messages/en";
+import en from "@workspace/ui/messages/en-gb.json";
 
 type Messages = typeof en;
 
