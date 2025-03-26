@@ -49,7 +49,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
     null,
   );
   const [zoom, setZoom] = useState<number | null>(
-    !institutes && location ? 12 : null,
+    !institutes && location ? 9 : null,
   );
   const t = useTranslations("LocationMap");
   const bounds = institutes?.reduce(
@@ -93,7 +93,6 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
           mapId={MAP_ID}
           disableDefaultUI={true}
           className="aspect-square w-full"
-          gestureHandling={"greedy"}
           zoom={zoom}
           onZoomChanged={(zoom) => setZoom(zoom.detail.zoom)}
         >
