@@ -3,7 +3,12 @@
 import { IconCamera } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState, type FC } from "react";
-import type { Accept, ErrorCode, FileError } from "react-dropzone";
+import type {
+  Accept,
+  ErrorCode,
+  FileError,
+  FileWithPath,
+} from "react-dropzone";
 
 import { Attachment } from "@workspace/ui/components/attachment";
 import {
@@ -24,6 +29,7 @@ export interface FileUploadInputProps {
   name?: string;
   multiple?: boolean;
   disabled?: boolean;
+  defaultValue?: File | File[] | undefined | string;
 }
 
 export const FileUploadInput: FC<FileUploadInputProps> = ({
@@ -32,6 +38,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   name,
   multiple,
   disabled,
+  defaultValue,
 }) => {
   const t = useTranslations("FileUploadInput");
 
@@ -87,20 +94,17 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       <DropzoneAccepted>
         {(files) => (
           <ul className="mt-4 space-y-2">
-            {files.map(
-              (file) =>
-                !!files.length && (
-                  <Attachment
-                    key={file.path}
-                    className="shadow"
-                    onDelete={() => {
-                      setResetCount((prev) => prev + 1);
-                    }}
-                  >
-                    {file.path}
-                  </Attachment>
-                ),
-            )}
+            {getValues(files, resetCount, defaultValue).map((file, index) => (
+              <Attachment
+                key={index}
+                className="shadow"
+                onDelete={() => {
+                  setResetCount((prev) => prev + 1);
+                }}
+              >
+                {file.name}
+              </Attachment>
+            ))}
           </ul>
         )}
       </DropzoneAccepted>
@@ -128,6 +132,34 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
     </Dropzone>
   );
 };
+
+function getValues(
+  files: readonly FileWithPath[],
+  resetCount: number,
+  defaultValue?: File | File[] | string,
+) {
+  if (files.length) {
+    return files;
+  }
+
+  if (resetCount > 0) {
+    return [];
+  }
+
+  if (typeof defaultValue === "string") {
+    return [{ name: defaultValue }];
+  }
+
+  if (Array.isArray(defaultValue)) {
+    return defaultValue;
+  }
+
+  if (!defaultValue) {
+    return [];
+  }
+
+  return [defaultValue];
+}
 
 function getTranslatedError(
   errors: readonly FileError[],

@@ -41,13 +41,13 @@ export interface GroupData {
     groupName: string;
     groupRegistrationNumber: string;
     dateFormed: Date;
-    groupRegistrationCertificate: string;
-    listOfMembersOnCertificate: string;
+    groupRegistrationCertificate: File;
+    listOfMembersOnCertificate: File;
   };
   background: {
     purposeOfTheGroup: string[];
     keyActivitiesOfTheGroup: string[];
-    groupCreditHistory: string;
+    groupCreditHistory: File;
     other?: string | null;
     valueChain?: string[] | null;
     tableBanking?: {
@@ -167,7 +167,30 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
 
   const newApplicationData: ApplicationData = {
     ...application,
-    groupData: data,
+    groupData: {
+      background: {
+        ...data.background,
+        groupCreditHistory:
+          data.background.groupCreditHistory.size === 0 &&
+          application.groupData?.background.groupCreditHistory
+            ? application.groupData?.background.groupCreditHistory
+            : data.background.groupCreditHistory,
+      },
+      location: { ...data.location },
+      basics: {
+        ...data.basics,
+        groupRegistrationCertificate:
+          data.basics.groupRegistrationCertificate.size === 0 &&
+          application.groupData?.basics.groupRegistrationCertificate
+            ? application.groupData?.basics.groupRegistrationCertificate
+            : data.basics.groupRegistrationCertificate,
+        listOfMembersOnCertificate:
+          application.groupData?.basics.listOfMembersOnCertificate &&
+          data.basics.listOfMembersOnCertificate.size === 0
+            ? application.groupData?.basics.listOfMembersOnCertificate
+            : data.basics.listOfMembersOnCertificate,
+      },
+    },
   };
 
   // update application data
