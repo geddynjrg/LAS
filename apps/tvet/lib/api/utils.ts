@@ -1,8 +1,10 @@
 import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import createClient from "openapi-fetch";
 import type { z } from "zod";
 
+import { getSession } from "@/lib/session";
 import type { paths } from "./schema/schema";
 
 export const api = createClient<paths>({
@@ -11,12 +13,28 @@ export const api = createClient<paths>({
 
 api.use({
   async onRequest({ request }) {
-    const [headersList, locale] = await Promise.all([headers(), getLocale()]);
+    const [headersList, locale, session] = await Promise.all([
+      headers(),
+      getLocale(),
+      getSession(),
+    ]);
 
     request.headers.set("x-path", headersList.get("x-path") || "");
     request.headers.set("x-language", locale || "");
 
+    if (session) {
+      request.headers.set("authorization", `Bearer ${session}`);
+    }
+
     return request;
+  },
+
+  async onResponse({ response }) {
+    if (response.status === 401) {
+      //handle unauthorized error
+      console.warn("Unauthorized:", response.status);
+      redirect("/login");
+    }
   },
 });
 
@@ -28,7 +46,7 @@ export function validate<T extends z.Schema>(
 
   if (res.error) {
     //handle API error
-    console.warn("API Error:", response.error);
+    console.warn("API Error:", response.status, response.error);
     throw new Error(response?.error?.message);
   }
 

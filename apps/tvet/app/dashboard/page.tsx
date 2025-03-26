@@ -8,6 +8,8 @@ import { DataPair } from "@workspace/ui/components/data-pair";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 import { cn } from "@workspace/ui/lib/utils";
 
+import { profile } from "@/lib/api/profile";
+
 export interface DashboardPageProps {
   params: Promise<{}>;
 }
@@ -80,10 +82,11 @@ const MOCK_COURSES: CourseType[] = [
 
 export default async function DashboardPage({}: DashboardPageProps) {
   const courses = MOCK_COURSES;
+  const userProfile = await profile();
 
   return (
     <SectionWrap hasBottomPadding>
-      <h5 className={cn("typo-h5 mb-1")}>Firstname Lastname</h5>
+      <h5 className={cn("typo-h5 mb-1")}>{userProfile.data.name}</h5>
       <Heading type="h2">My applications</Heading>
 
       <div className={cn("mt-7 space-y-5")}>

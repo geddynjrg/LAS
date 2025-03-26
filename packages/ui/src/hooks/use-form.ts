@@ -16,6 +16,7 @@ export type FormActionResponse<T extends Record<string, unknown>> =
   | {
       success?: undefined;
       errors?: never;
+      message?: string;
       values: Partial<T>;
     }
   // error state

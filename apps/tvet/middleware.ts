@@ -1,10 +1,37 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+import { getSession } from "@/lib/session";
+
+const protectedRoutes = ["/dashboard"];
+const publicRoutes = ["/login", "/signup"];
+
+const loggedInRedirect = "/dashboard";
+const loggedOutRedirect = "/login";
+
+export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
   // Add new request headers
   requestHeaders.set("x-path", request.nextUrl.pathname);
+
+  const path = request.nextUrl.pathname;
+  const isProtectedRoute = protectedRoutes.some((r) => path.startsWith(r));
+  const isPublicRoute = publicRoutes.some((r) => path.startsWith(r));
+  const session = await getSession();
+
+  // redirect logged in user to dashboard if they try to access public route
+  if (isPublicRoute && session && !path.startsWith(loggedInRedirect)) {
+    return NextResponse.redirect(new URL(loggedInRedirect, request.nextUrl), {
+      headers: requestHeaders,
+    });
+  }
+
+  // redirect logged out user to login page if they try to access protected route
+  if (isProtectedRoute && !session && !path.startsWith(loggedOutRedirect)) {
+    return NextResponse.redirect(new URL(loggedOutRedirect, request.nextUrl), {
+      headers: requestHeaders,
+    });
+  }
 
   return NextResponse.next({ request: { headers: requestHeaders } });
 }

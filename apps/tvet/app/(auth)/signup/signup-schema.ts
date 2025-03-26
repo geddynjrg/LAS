@@ -1,9 +1,21 @@
 import { z } from "zod";
 
-export const signupSchema = z.object({
-  email: z.string().nonempty().email(),
-  password: z.string().nonempty(),
-  passwordConfirm: z.string().nonempty(),
-});
+export const signupSchema = z
+  .object({
+    username: z.string().trim().nonempty(),
+    email: z.string().trim().nonempty().email(),
+    password: z.string().nonempty(),
+    passwordConfirm: z.string().nonempty(),
+  })
+  .superRefine((val, ctx) => {
+    console.log("val", val);
+    if (val.password !== val.passwordConfirm) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Form.errors.password_mismatch",
+        path: ["passwordConfirm"],
+      });
+    }
+  });
 
-export type Signup = z.infer<typeof signupSchema>;
+export type SignupSchema = z.infer<typeof signupSchema>;

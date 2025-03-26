@@ -34,7 +34,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         className="text-primary mx-auto mt-4"
       >
         <Link
-          href={`/login/email?callbackUrl=${encodeURIComponent(callbackUrl ?? "/dashboard")}`}
+          href={`/login/username?callbackUrl=${encodeURIComponent(callbackUrl ?? "/dashboard")}`}
         >
           {t("useEmailInstead")}
         </Link>

@@ -5,13 +5,11 @@ export interface LoginPageProps {
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const callbackUrl = await (await searchParams).callbackUrl;
+  const callbackUrl = (await searchParams).callbackUrl;
 
   if (callbackUrl) {
-    redirect(`/login/phone?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    redirect(`/login/username?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 
-  redirect("login/phone");
-
-  return null;
+  redirect("/login/username");
 }

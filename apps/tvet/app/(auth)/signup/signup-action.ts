@@ -3,20 +3,37 @@
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormDataValues } from "@workspace/ui/lib/utils";
 
-import { signupSchema, type Signup } from "@/app/(auth)/signup/signup-schema";
+import {
+  signupSchema,
+  type SignupSchema,
+} from "@/app/(auth)/signup/signup-schema";
+import { register } from "@/lib/api/register";
 
-export const signupAction: FormAction<Signup> = async (_prev, formData) => {
+export const signupAction: FormAction<SignupSchema> = async (
+  _prev,
+  formData,
+) => {
   const values = getFormDataValues(formData, signupSchema);
 
-  // dummy wait
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  const { success, error } = signupSchema.safeParse(values);
+  const { data, success, error } = signupSchema.safeParse(values);
 
   if (error) {
     return {
       success,
       errors: error.flatten().fieldErrors,
+      values,
+    };
+  }
+
+  try {
+    const res = await register(data);
+  } catch (error) {
+    console.warn("Error during signup:", error);
+
+    return {
+      success: false,
+      errors: {},
+      message: error instanceof Error ? error.message : "Unknown error",
       values,
     };
   }

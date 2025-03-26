@@ -25,7 +25,7 @@ export default function Page() {
 
         <div className="flex gap-2 pt-4">
           <p className="typo-body-medium">{t("backTo")}</p>
-          <Link href="/login/email" className="text-primary underline">
+          <Link href="/login/username" className="text-primary underline">
             {t("login")}
           </Link>
         </div>
@@ -59,7 +59,7 @@ export default function Page() {
 
         <div className="flex justify-center gap-2 pt-4">
           <p className="typo-body-medium">{t("alreadyHaveAccount")}</p>
-          <Link href="/login/email" className="text-primary underline">
+          <Link href="/login/username" className="text-primary underline">
             {t("login")}
           </Link>
         </div>

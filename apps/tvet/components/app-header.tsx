@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC } from "react";
@@ -7,11 +9,13 @@ import { Header } from "@workspace/ui/components/header";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 
 import { Logo } from "@/components/logo";
+import { useSession } from "@/hooks/useSession";
 
 export interface AppHeaderProps {}
 
 export const AppHeader: FC<AppHeaderProps> = () => {
   const t = useTranslations("Common");
+  const { session } = useSession();
 
   return (
     <Header
@@ -24,8 +28,13 @@ export const AppHeader: FC<AppHeaderProps> = () => {
       endDecorator={
         <>
           <Button asChild>
-            <Link href="/login/phone?callbackUrl=/apply">{t("apply")}</Link>
+            <Link href="/login/username?callbackUrl=/apply">{t("apply")}</Link>
           </Button>
+          {session && (
+            <Button asChild variant="secondary">
+              <Link href="/dashboard">Dashh!!</Link>
+            </Button>
+          )}
           <SidebarTrigger>{t("menu")}</SidebarTrigger>
         </>
       }

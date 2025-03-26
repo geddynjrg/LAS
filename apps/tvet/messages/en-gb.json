@@ -45,7 +45,7 @@
     "title": "Start applying",
     "description": "Log in or create and account to apply for the Uwezo Fund loan.",
     "doNotHaveAccount": "Don't have an account?",
-    "email": "E-mail",
+    "username": "Username",
     "password": "Password",
     "phone": "Phone number",
     "login": "Log in",
@@ -59,6 +59,7 @@
   "SignUpPage": {
     "title": "Create an Account",
     "description": "Fill in the details below to create your account.",
+    "username": "Username",
     "email": "E-mail",
     "password": "Password",
     "passwordConfirm": "Confirm password",
