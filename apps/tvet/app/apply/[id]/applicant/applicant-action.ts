@@ -3,16 +3,34 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
+import {
+  getFormDataValues,
+  getFormZodDataValues,
+} from "@workspace/ui/lib/utils";
 
-import type { ApplicantSchema } from "@/app/apply/[id]/applicant/applicant-schema";
+import {
+  applicantSchema,
+  type ApplicantSchema,
+} from "@/app/apply/[id]/applicant/applicant-schema";
 
 export const applicantAction: FormAction<ApplicantSchema> = async (
   _prev,
   formData,
 ) => {
   const id = formData.get("id")?.toString();
+  const values = getFormZodDataValues(formData, applicantSchema);
 
-  console.log("server action");
+  const { error, data, success } = applicantSchema.safeParse(values);
+
+  if (!success) {
+    return {
+      success,
+      errors: error.flatten().fieldErrors,
+      values: getFormDataValues(formData, applicantSchema),
+    };
+  }
+
+  console.log("applicantAction", data);
 
   redirect(`/apply/${id}/guardian`);
 };

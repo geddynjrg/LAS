@@ -1,11 +1,20 @@
 import { z } from "zod";
 
+import { validFile } from "@workspace/ui/lib/zod";
+
+export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
+
+export const FILE_TYPE = {
+  "image/*": [".jpg", ".jpeg", ".png"],
+  "application/pdf": [".pdf"],
+};
+
 export const courseSchema = z.object({
   institute: z.string().nonempty(),
   course: z.string().nonempty(),
   intakePeriod: z.string().nonempty(),
-  highestQualificationCertificate: z.instanceof(File),
-  otherCertificate: z.instanceof(File),
+  highestQualificationCertificate: validFile(FILE_TYPE, MAX_FILE_SIZE),
+  otherCertificate: validFile(FILE_TYPE, MAX_FILE_SIZE),
 });
 
 export type CourseSchema = z.infer<typeof courseSchema>;

@@ -2,6 +2,10 @@ import { z } from "zod";
 
 const sex = z.enum(["male", "female", "intersex"]);
 const idType = z.enum(["national-id", "birth-certificate", "alien-id"]);
+const phone = z.object({
+  callingCode: z.string().nonempty(),
+  phone: z.string().nonempty(),
+});
 
 export const applicantSchema = z.object({
   firstName: z.string().nonempty(),
@@ -10,10 +14,7 @@ export const applicantSchema = z.object({
   sex: sex,
   dateOfBirth: z.coerce.date(),
   idType: idType,
-  callingCode: z.string().nonempty(),
-  phone: z.string().nonempty(),
-  secondaryCallingCode: z.string().optional(),
-  secondaryPhone: z.string().optional(),
+  phones: z.array(phone),
   email: z.union([z.literal(""), z.string().email()]),
   personWithDisabilities: z.union([z.literal("on"), z.undefined()]),
   county: z.string().nonempty(),

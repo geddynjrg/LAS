@@ -1,15 +1,12 @@
 "use client";
 
-import { IconPlus } from "@tabler/icons-react";
 import { useMemo, useState, type FC } from "react";
 
-import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
-import { Field, FieldGroup } from "@workspace/ui/components/form";
+import { Field } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
-import { Underline } from "@workspace/ui/components/underline";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
@@ -20,6 +17,7 @@ import {
   guardianSchema,
   type GuardianSchema,
 } from "@/app/apply/[id]/guardian/guardian-schema";
+import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
 
 const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
@@ -50,8 +48,6 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
 
   const [chosenNationalIdType, setChosenNationalIdType] =
     useState<(typeof nationalIdTypes)[number]["value"]>();
-
-  const [isSecondaryPhoneVisible, setIsSecondaryPhoneVisible] = useState(false);
 
   const GuardianRoleFields = () => {
     switch (guardianRole) {
@@ -247,54 +243,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
 
       <IdTypeFields />
 
-      <FieldGroup
-        label="Phone Number"
-        required
-        description={
-          isSecondaryPhoneVisible ? null : (
-            <Underline asChild className="typo-body-medium">
-              <button
-                type="button"
-                onClick={() => setIsSecondaryPhoneVisible(true)}
-              >
-                <IconPlus className="mr-1" /> Add another phone number
-              </button>
-            </Underline>
-          )
-        }
-      >
-        <Field
-          state={state}
-          name="callingCode"
-          className="max-w-40"
-          required
-          control={(props) => <CallingCodeSelect {...props} />}
-        />
-        <Field
-          state={state}
-          name="phone"
-          required
-          control={(props) => <Input type="tel" {...props} />}
-        />
-      </FieldGroup>
-
-      {isSecondaryPhoneVisible && (
-        <FieldGroup label="Secondary Phone Number" required>
-          <Field
-            state={state}
-            name="secondaryCallingCode"
-            className="max-w-40"
-            required
-            control={(props) => <CallingCodeSelect {...props} />}
-          />
-          <Field
-            state={state}
-            name="secondaryPhone"
-            required
-            control={(props) => <Input type="tel" {...props} />}
-          />
-        </FieldGroup>
-      )}
+      <PhoneNumbersField state={state} />
 
       <Field
         state={state}

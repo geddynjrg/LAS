@@ -1,23 +1,20 @@
 "use client";
 
-import { IconPlus } from "@tabler/icons-react";
 import { useMemo, useState, type FC } from "react";
 
 import {
   ButtonGroup,
   ButtonGroupItem,
 } from "@workspace/ui/components/button-group";
-import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DatePicker } from "@workspace/ui/components/date-picker";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
-import { Field, FieldGroup } from "@workspace/ui/components/form";
+import { Field } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { Underline } from "@workspace/ui/components/underline";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { applicantAction } from "@/app/apply/[id]/applicant/applicant-action";
@@ -30,6 +27,7 @@ import {
 } from "@/app/apply/[id]/applicant/applicant-schema";
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
+import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
 
 const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
@@ -61,7 +59,6 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
   const [chosenNationalIdType, setChosenNationalIdType] =
     useState<(typeof nationalIdTypes)[number]["value"]>();
 
-  const [isSecondaryPhoneVisible, setIsSecondaryPhoneVisible] = useState(false);
   const [isPersonWithDisabilities, setIsPersonWithDisabilities] = useState(
     state.values?.personWithDisabilities === "on",
   );
@@ -264,54 +261,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
 
       <IdTypeFields />
 
-      <FieldGroup
-        label="Phone Number"
-        required
-        description={
-          isSecondaryPhoneVisible ? null : (
-            <Underline asChild className="typo-body-medium">
-              <button
-                type="button"
-                onClick={() => setIsSecondaryPhoneVisible(true)}
-              >
-                <IconPlus className="mr-1" /> Add another phone number
-              </button>
-            </Underline>
-          )
-        }
-      >
-        <Field
-          state={state}
-          name="callingCode"
-          className="max-w-40"
-          required
-          control={(props) => <CallingCodeSelect {...props} />}
-        />
-        <Field
-          state={state}
-          name="phone"
-          required
-          control={(props) => <Input type="tel" {...props} />}
-        />
-      </FieldGroup>
-
-      {isSecondaryPhoneVisible && (
-        <FieldGroup label="Secondary Phone Number" required>
-          <Field
-            state={state}
-            name="secondaryCallingCode"
-            className="max-w-40"
-            required
-            control={(props) => <CallingCodeSelect {...props} />}
-          />
-          <Field
-            state={state}
-            name="secondaryPhone"
-            required
-            control={(props) => <Input type="tel" {...props} />}
-          />
-        </FieldGroup>
-      )}
+      <PhoneNumbersField state={state} />
 
       <Field
         state={state}

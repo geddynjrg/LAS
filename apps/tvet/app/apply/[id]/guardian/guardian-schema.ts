@@ -2,6 +2,10 @@ import { z } from "zod";
 
 const guardianRole = z.enum(["parent", "grandparent", "relative", "other"]);
 const idType = z.enum(["national-id", "birth-certificate", "alien-id"]);
+const phone = z.object({
+  callingCode: z.string().nonempty(),
+  phone: z.string().nonempty(),
+});
 
 export const guardianSchema = z.object({
   firstName: z.string().nonempty(),
@@ -9,10 +13,7 @@ export const guardianSchema = z.object({
   surname: z.string().min(1),
   guardianRole: guardianRole,
   idType: idType,
-  callingCode: z.string().nonempty(),
-  phone: z.string().nonempty(),
-  secondaryCallingCode: z.string().optional(),
-  secondaryPhone: z.string().optional(),
+  phones: z.array(phone),
   email: z.union([z.literal(""), z.string().email()]),
 
   // guardianRole === "parent"

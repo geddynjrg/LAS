@@ -49,7 +49,7 @@ export function assertNever(value: never): never {
 
 export function getFormDataValues<T extends z.Schema>(
   formData: FormData,
-  schema: T,
+  _schema: T,
 ): Partial<z.infer<T>> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const values: Record<string, any> = {};
@@ -71,7 +71,7 @@ export function formatBytes(bytes: number, decimals = 2) {
 }
 export function getFormZodDataValues<T extends z.Schema>(
   formData: FormData,
-  schema: T,
+  _schema: T,
 ): Partial<z.infer<T>> {
   const values: Partial<z.infer<T>> = {};
 

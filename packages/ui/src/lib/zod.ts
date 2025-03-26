@@ -1,3 +1,4 @@
+import type { Accept } from "react-dropzone";
 import { z } from "zod";
 
 /**
@@ -91,9 +92,37 @@ export const zodKeys = <T extends z.ZodTypeAny>(schema: T): string[] => {
   return Array.from(paths);
 };
 
+export function validFile(accept: Accept, fileSize: number) {
+  return (
+    z
+      .instanceof(File)
+      // check if file exists
+      .refine((file) => file && file.size > 0, getIntlKey("required"))
+      // check that file is not too large
+      .refine((file) => file.size <= fileSize, getIntlKey("too_large"))
+      // check that file is one of the accepted types
+      .refine(
+        (file) => expandMimeTypes(accept).includes(file.type),
+        getIntlKey("invalid"),
+      )
+  );
+}
+
 function getIntlKey<T extends z.ZodIssueBase>(
   key: keyof IntlMessages["Form"]["errors"],
   params?: T,
 ): { message: string; params?: T } {
   return { message: `Form.errors.${String(key)}`, params };
+}
+
+function expandMimeTypes(accept: Accept) {
+  return Object.entries(accept).flatMap(([key, value]) => {
+    if (key.includes("/*")) {
+      const mimeType = key.split("/")[0];
+
+      return value.map((v) => `${mimeType}/${v.replace(".", "")}`);
+    }
+
+    return value;
+  });
 }

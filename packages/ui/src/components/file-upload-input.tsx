@@ -36,6 +36,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   const t = useTranslations("FileUploadInput");
 
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
+  const [resetCount, setResetCount] = useState(0);
 
   const hasImageType = "image/*" in accept;
 
@@ -47,6 +48,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
 
   return (
     <Dropzone
+      key={resetCount}
       accept={acceptWithCamera}
       multiple={multiple}
       maxSize={maxSize}
@@ -88,7 +90,13 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
             {files.map(
               (file) =>
                 !!files.length && (
-                  <Attachment key={file.path} className="shadow">
+                  <Attachment
+                    key={file.path}
+                    className="shadow"
+                    onDelete={() => {
+                      setResetCount((prev) => prev + 1);
+                    }}
+                  >
                     {file.path}
                   </Attachment>
                 ),
@@ -106,6 +114,9 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
                   key={file.file.name}
                   className="shadow"
                   error={getTranslatedError(file.errors, t)}
+                  onDelete={() => {
+                    setResetCount((prev) => prev + 1);
+                  }}
                 >
                   {file.file.name}
                 </Attachment>
