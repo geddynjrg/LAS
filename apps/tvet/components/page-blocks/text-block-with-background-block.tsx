@@ -11,22 +11,35 @@ import {
   RoundedCornerSection,
   RoundedCornerSectionHeader,
 } from "@workspace/ui/components/tvet/rounded-corner-section";
+import { cn } from "@workspace/ui/lib/utils";
 
-import { GradientCornerCard } from "@/components/gradient-corner-card";
+import {
+  GradientCornerCard,
+  gradientCornerCardVariants,
+} from "@/components/gradient-corner-card";
 import type { TextBlockWithBackgroundBlockType } from "@/lib/api/schema/block/text-block-with-background-block.schema";
 
 export interface TextBlockWithBackgroundBlockProps
-  extends TextBlockWithBackgroundBlockType {}
+  extends TextBlockWithBackgroundBlockType {
+  className?: string;
+  index: number;
+}
 
 export const TextBlockWithBackgroundBlock: FC<
   TextBlockWithBackgroundBlockProps
-> = ({ title, link, block_text, button_type }) => {
+> = ({ title, link, block_text, button_type, className, index }) => {
   return (
-    <section className="bg-neutral-100">
+    <section className={cn("bg-neutral-100", className)}>
       <Container className="max-lg:px-0 lg:py-8">
         <RoundedCornerSection>
           <RoundedCornerSectionHeader asChild variant="rounded">
-            <GradientCornerCard color="blue" gradient="blend1">
+            <GradientCornerCard
+              color={
+                gradientCornerCardVariants.variants.color[(index + 1) % 3] ||
+                "blue"
+              }
+              gradient={gradientCornerCardVariants.variants.gradient[index % 3]}
+            >
               <Heading
                 type="h2"
                 className="text-primary-foreground typo-h1-sm bottom-8 m-4 self-end"

@@ -57,7 +57,14 @@ export const PageComponents: FC<PageComponentsProps> = ({
         return <TrainingAreasBlock {...component} key={key} />;
 
       case "text_block_with_background":
-        return <TextBlockWithBackgroundBlock {...component} key={key} />;
+        return (
+          <TextBlockWithBackgroundBlock
+            {...component}
+            index={index}
+            key={key}
+            className={index < page_components.length - 1 ? "pb-4" : undefined}
+          />
+        );
 
       case "media":
         return <MediaBlock {...component} key={key} />;
