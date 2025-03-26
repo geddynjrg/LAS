@@ -3,7 +3,7 @@ import type { Decorator, Preview } from "@storybook/react";
 import { NextIntlClientProvider } from "next-intl";
 import React from "react";
 
-import enTranslations from "@workspace/ui/messages/en";
+import enTranslations from "@workspace/ui/messages/en-gb";
 import swTranslations from "@workspace/ui/messages/sw";
 
 import "@workspace/ui/globals.css";
