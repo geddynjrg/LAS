@@ -336,8 +336,5 @@
     "certificateOfDisability": "Cheti cha ulemavu",
     "pwdNumber": "Nambari ya PWD",
     "maxFileSize": "Ukubwa wa faili wa juu zaidi {size}"
-  },
-  "InfoPopover": {
-    "title": "Unahitaji msaada?"
   }
 }

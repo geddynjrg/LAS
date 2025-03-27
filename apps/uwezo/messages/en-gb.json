@@ -336,8 +336,5 @@
     "certificateOfDisability": "Certificate of disability",
     "pwdNumber": "PWD number",
     "maxFileSize": "Max file size {size}"
-  },
-  "InfoPopover": {
-    "title": "Do you need help?"
   }
 }
