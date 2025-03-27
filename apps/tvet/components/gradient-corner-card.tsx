@@ -12,10 +12,9 @@ export const gradientCornerCardVariants = cva({
       blue: "bg-[#283044]",
     },
     gradient: {
-      blend1:
-        "bg-[url(/gradients/blend1.jpg)] bg-cover bg-bottom bg-blend-multiply",
-      blend2: "bg-[url(/gradients/blend1.jpg)] bg-cover bg-blend-multiply",
-      blend3: "bg-[url(/gradients/blend1.jpg)] bg-cover bg-blend-multiply",
+      blend1: "blend-gradient bg-blend-multiply",
+      blend2: "blend-gradient bg-blend-multiply",
+      blend3: "blend-gradient bg-blend-multiply",
     },
   },
   defaultVariants: {
