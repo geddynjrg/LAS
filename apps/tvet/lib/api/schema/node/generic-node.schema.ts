@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ImageSchema } from "@/lib/api/schema/image-file.schema";
+import { SingleImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
 export const GenericNodeSchema = z.object({
@@ -25,7 +25,7 @@ export const GenericNodeSchema = z.object({
             processed: z.string(),
           })
           .optional(),
-        image: ImageSchema.optional(),
+        image: SingleImageSchema,
         page_components: z.array(BlockSchema),
       }),
     })

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ImageSchema } from "@/lib/api/schema/image-file.schema";
+import { SingleImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
 export const CourseNodeSchema = z.object({
@@ -24,15 +24,15 @@ export const CourseNodeSchema = z.object({
         duration: z.number().nullable(),
         education_level: z.array(z.any()),
         body: z.object({
-          value: z.string(),
-          format: z.string(),
-          processed: z.string(),
+          value: z.string().nullable(),
+          format: z.string().nullable(),
+          processed: z.string().nullable(),
         }),
-        image: ImageSchema,
+        image: SingleImageSchema,
         tags: z.array(z.string()),
         institution: z.object({
           id: z.string(),
-          type: z.literal("institution"),
+          type: z.string(),
           uuid: z.string(),
           title: z.string(),
           path_alias: z.string(),

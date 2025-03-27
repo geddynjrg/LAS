@@ -5,7 +5,7 @@ import { cn } from "@workspace/ui/lib/utils";
 
 export interface FeatureInfo {
   title: string;
-  text: string;
+  text: string | null;
   icon: ReactNode;
 }
 

@@ -5,20 +5,21 @@ import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/descripti
 import { FeatureSection } from "@workspace/ui/components/tvet/feature-section";
 
 export interface FeaturesBlockProps {
+  className?: string;
   block_type: "feature_section";
   description: {
-    value: string;
-    format: string;
-    processed: string;
+    value: string | null;
+    format: string | null;
+    processed: string | null;
   };
   features:
     | {
         block_type: "feature";
         feature: string;
         short_description: {
-          value: string;
-          format: string;
-          processed: string;
+          value: string | null;
+          format: string | null;
+          processed: string | null;
         };
       }[]
     | null;

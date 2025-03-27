@@ -5,8 +5,10 @@ import type { FC } from "react";
 import { Container } from "@workspace/ui/components/container";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 import { TrainingAreaCard } from "@workspace/ui/components/tvet/training-area-card";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface TrainingAreasBlockProps {
+  className?: string;
   block_type: "training_areas";
   areas: {
     id: string;
@@ -15,11 +17,14 @@ export interface TrainingAreasBlockProps {
   }[];
 }
 
-export const TrainingAreasBlock: FC<TrainingAreasBlockProps> = ({ areas }) => {
+export const TrainingAreasBlock: FC<TrainingAreasBlockProps> = ({
+  areas,
+  className,
+}) => {
   const t = useTranslations("TrainingAreaBlock");
 
   return (
-    <Container className="mt-4 py-12">
+    <Container className={cn("mt-4 py-12", className)}>
       <Heading type="h2">{t("title")}</Heading>
       <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 xl:grid-cols-3">
         {areas.map((area) => (

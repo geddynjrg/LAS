@@ -7,7 +7,11 @@ const nextConfig = {
   transpilePackages: ["@workspace/ui"],
   output: "standalone",
   images: {
-    domains: ["tvet-api-qa.fusion.adm.ee"],
+    remotePatterns: [
+      {
+        hostname: "tvet-api-qa.fusion.adm.ee",
+      },
+    ],
   },
 };
 

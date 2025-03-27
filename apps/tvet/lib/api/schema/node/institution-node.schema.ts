@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ImageSchema } from "@/lib/api/schema/image-file.schema";
+import { SingleImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
 export const InstitutionNodeSchema = z.object({
@@ -27,20 +27,20 @@ export const InstitutionNodeSchema = z.object({
         organization: z.null(),
       }),
       body: z.object({
-        value: z.string(),
-        format: z.string(),
-        processed: z.string(),
+        value: z.string().nullable(),
+        format: z.string().nullable(),
+        processed: z.string().nullable(),
       }),
       contact_text: z.object({
-        value: z.string(),
-        format: z.string(),
-        processed: z.string(),
+        value: z.string().nullable(),
+        format: z.string().nullable(),
+        processed: z.string().nullable(),
       }),
       location: z.object({
         latitude: z.number(),
         longitude: z.number(),
       }),
-      image: ImageSchema,
+      image: SingleImageSchema,
       page_components: z.array(BlockSchema),
     }),
   }),

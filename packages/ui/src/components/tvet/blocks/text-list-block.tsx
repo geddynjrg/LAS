@@ -8,17 +8,19 @@ import {
 } from "@workspace/ui/components/numbered-list";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { Heading } from "@workspace/ui/components/tvet/heading";
+import { cn } from "@workspace/ui/lib/utils";
 
 type listType = "what_you_will_learn" | "how_to_apply_to_sponsorships" | string;
 
 export interface TextListBlockProps {
+  className?: string;
   block_type: "text_list";
   title: string;
   type: listType;
   short_description: {
-    value: string;
-    format: string;
-    processed: string;
+    value: string | null;
+    format: string | null;
+    processed: string | null;
   };
   items: string[];
 }
@@ -28,10 +30,11 @@ export const TextListBlock: FC<TextListBlockProps> = ({
   type,
   short_description,
   items,
+  className,
 }) => {
   if (type === "how_to_apply_to_sponsorships") {
     return (
-      <Container className="mt-4 flex flex-col gap-6 py-8">
+      <Container className={cn("mt-4 flex flex-col gap-6 py-8", className)}>
         <h2 className="typo-h2">{title}</h2>
         <hr />
 

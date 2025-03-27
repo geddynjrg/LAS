@@ -10,12 +10,15 @@ import {
 import { Testimonial } from "@workspace/ui/components/testimonial";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { Heading } from "@workspace/ui/components/tvet/heading";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface TestimonialsBlockProps {
+  className?: string;
   block_type: "testimonials";
   testimonials: {
+    block_type: "testimonial";
     name: string;
-    image: {
+    image?: {
       title: string;
       type: string;
       id: string;
@@ -29,22 +32,22 @@ export interface TestimonialsBlockProps {
       width: string;
       height: string;
     }[];
-    block_type: "testimonial";
     short_description: {
-      value: string;
-      format: string;
-      processed: string;
+      value: string | null;
+      format: string | null;
+      processed: string | null;
     };
   }[];
 }
 
 export const TestimonialsBlock: FC<TestimonialsBlockProps> = ({
   testimonials,
+  className,
 }) => {
   const t = useTranslations("TestimonialsBlock");
 
   return (
-    <section className="bg-neutral-100 py-10">
+    <section className={cn("bg-neutral-100 py-10", className)}>
       <div className="app-container gap-4 px-4">
         <Heading type="h3">{t("testimonials")}</Heading>
         <Carousel className="mt-6">
@@ -53,8 +56,8 @@ export const TestimonialsBlock: FC<TestimonialsBlockProps> = ({
               <CarouselItem key={`testimonial-${key}`}>
                 <Testimonial
                   title={testimonial.name}
-                  imageUrl={testimonial.image.at(0)?.url ?? ""}
-                  imageAlt={testimonial.image.at(0)?.alt ?? ""}
+                  imageUrl={testimonial.image?.at(0)?.url ?? ""}
+                  imageAlt={testimonial.image?.at(0)?.alt ?? ""}
                 >
                   <DescriptionBlock {...testimonial.short_description} />
                 </Testimonial>

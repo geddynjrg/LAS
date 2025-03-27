@@ -14,3 +14,18 @@ export const ImageSchema = z.object({
   width: z.string(),
   height: z.string(),
 });
+
+export type ImageType = z.infer<typeof ImageSchema>;
+
+/**
+ * Single image schema (drupal API returns [] for missing image instead of an object)
+ */
+export const SingleImageSchema = z
+  .preprocess(
+    (data) =>
+      Array.isArray(data) ? (data.length > 0 ? data[0] : undefined) : data,
+    ImageSchema,
+  )
+  .optional();
+
+export type SingleImageType = z.infer<typeof SingleImageSchema>;

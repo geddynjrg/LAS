@@ -1,10 +1,14 @@
 import { IconChecklist } from "@tabler/icons-react";
 import Link from "next/link";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import {
+  GradientCornerCard,
+  gradientCornerCardVariants,
+} from "@workspace/ui/components/tvet/gradient-corner-card";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
 import {
@@ -13,16 +17,31 @@ import {
 } from "@workspace/ui/components/tvet/rounded-corner-section";
 import { cn } from "@workspace/ui/lib/utils";
 
-import {
-  GradientCornerCard,
-  gradientCornerCardVariants,
-} from "@/components/gradient-corner-card";
-import type { TextBlockWithBackgroundBlockType } from "@/lib/api/schema/block/text-block-with-background-block.schema";
-
-export interface TextBlockWithBackgroundBlockProps
-  extends TextBlockWithBackgroundBlockType {
+export interface TextBlockWithBackgroundBlockProps {
   className?: string;
-  index: number;
+  index?: number;
+  block_type: "text_block_with_background";
+  title: string;
+  block_text:
+    | {
+        value: string | null;
+        format: string | null;
+        processed: string | null;
+      }
+    | {
+        value: string | null;
+        format: string | null;
+        processed: string | null;
+      }[];
+  link?:
+    | {
+        options: unknown[];
+        title: string;
+        url: string;
+        is_external?: boolean | undefined;
+      }[]
+    | undefined;
+  button_type?: string | undefined;
 }
 
 export const TextBlockWithBackgroundBlock: FC<
@@ -35,10 +54,15 @@ export const TextBlockWithBackgroundBlock: FC<
           <RoundedCornerSectionHeader asChild variant="rounded">
             <GradientCornerCard
               color={
-                gradientCornerCardVariants.variants.color[(index + 1) % 3] ||
+                (index &&
+                  gradientCornerCardVariants.variants.color[(index + 1) % 3]) ||
                 "blue"
               }
-              gradient={gradientCornerCardVariants.variants.gradient[index % 3]}
+              gradient={
+                index
+                  ? gradientCornerCardVariants.variants.gradient[index % 3]
+                  : undefined
+              }
             >
               <Heading
                 type="h2"

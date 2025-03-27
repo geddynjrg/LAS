@@ -1,5 +1,7 @@
 import type { FC } from "react";
 
+import { cn } from "@workspace/ui/lib/utils";
+
 interface Media {
   title: string;
   type: string;
@@ -16,16 +18,18 @@ interface Media {
 }
 
 export interface MediaBlockProps {
+  className?: string;
   block_type: "media";
-  media: Media[];
+  media?: Media;
 }
 
-export const MediaBlock: FC<MediaBlockProps> = ({ media }) => {
+export const MediaBlock: FC<MediaBlockProps> = ({ media, className }) => {
+  if (!media) return null;
   return (
-    <section className="app-container bg-neutral-200 px-4 py-12">
-      {media?.map((media, index) => (
-        <MediaItem media={media} key={`media-${index}`} />
-      ))}
+    <section
+      className={cn("app-container bg-neutral-200 px-4 py-12", className)}
+    >
+      <MediaItem media={media} />
     </section>
   );
 };

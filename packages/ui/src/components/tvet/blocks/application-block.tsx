@@ -7,15 +7,16 @@ import {
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface ApplicationBlockProps {
-  block_type: "application";
   className?: string;
+  block_type: "application";
   title: string;
   description: {
-    value: string;
-    format: string;
-    processed: string;
+    value: string | null;
+    format: string | null;
+    processed: string | null;
   };
   checkpoints: string[];
 }
@@ -26,7 +27,7 @@ export const ApplicationBlock: FC<ApplicationBlockProps> = ({
   checkpoints,
 }) => {
   return (
-    <Container className="mt-4 flex flex-col gap-6 py-8">
+    <Container className={cn("mt-4 flex flex-col gap-6 py-8")}>
       <h2 className="typo-h2">{title}</h2>
       <hr />
 

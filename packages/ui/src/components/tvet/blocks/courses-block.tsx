@@ -13,12 +13,13 @@ import { cn } from "@workspace/ui/lib/utils";
 const VISIBLE_COURSES_LIMIT = 6;
 
 export interface CoursesBlockProps {
+  className?: string;
   block_type: "courses";
   title: string;
   short_description: {
-    value: string;
-    format: string;
-    processed: string;
+    value: string | null;
+    format: string | null;
+    processed: string | null;
   };
   courses: {
     title: string;
@@ -44,6 +45,7 @@ export const CoursesBlock: FC<CoursesBlockProps> = ({
   title,
   short_description,
   courses,
+  className,
 }) => {
   const format = useFormatter();
   const t = useTranslations("CourseBlock");
@@ -53,7 +55,7 @@ export const CoursesBlock: FC<CoursesBlockProps> = ({
   const hasHiddenCourses = courses.length > VISIBLE_COURSES_LIMIT;
 
   return (
-    <section className="bg-background mt-4 px-4 pb-12 pt-8">
+    <section className={cn("bg-background mt-4 px-4 pb-12 pt-8", className)}>
       <div className="app-container">
         <Heading type="h2">{title}</Heading>
         <div className="mt-4">

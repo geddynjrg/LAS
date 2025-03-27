@@ -88,6 +88,7 @@ export const ModalContent: React.FC<ModalContentProps> = ({
           </ModalPrimitive.Close>
         )}
       </ModalPrimitive.Content>
+      <ModalPrimitive.Description />
     </ModalOverlay>
   </ModalPortal>
 );

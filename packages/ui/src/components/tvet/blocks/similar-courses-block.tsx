@@ -9,8 +9,10 @@ import {
 } from "@workspace/ui/components/carousel";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 import { Heading } from "@workspace/ui/components/tvet/heading";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface SimilarCoursesBlockProps {
+  className?: string;
   block_type: "similar_courses";
   courses: {
     title: string;
@@ -34,6 +36,7 @@ export interface SimilarCoursesBlockProps {
 
 export const SimilarCoursesBlock: FC<SimilarCoursesBlockProps> = ({
   courses,
+  className,
 }) => {
   const format = useFormatter();
   const t = useTranslations("SimilarCoursesBlock");
@@ -43,7 +46,7 @@ export const SimilarCoursesBlock: FC<SimilarCoursesBlockProps> = ({
   }
 
   return (
-    <section className="bg-neutral-100 py-10">
+    <section className={cn("bg-neutral-100 py-10", className)}>
       <div className="app-container px-4">
         <Heading type="h3">{t("similarCourses")}</Heading>
         <Carousel className="mt-6">

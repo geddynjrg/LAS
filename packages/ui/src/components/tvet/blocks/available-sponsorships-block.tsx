@@ -1,24 +1,26 @@
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
+import { Container } from "@workspace/ui/components/container";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface AvailableSponsorshipsProps {
   block_type: "available_sponsorships";
   sponsorships: {
     title: string;
     description: {
-      value: string;
-      format: string;
-      processed: string;
+      value: string | null;
+      format: string | null;
+      processed: string | null;
     };
     id: string;
     link: {
       title: string;
       url: string;
-      is_external: boolean;
+      is_external?: boolean;
     }[];
     application_form: {
       id: string;
@@ -38,8 +40,8 @@ export const AvailableSponsorshipsBlock: FC<AvailableSponsorshipsProps> = ({
 }) => {
   const t = useTranslations("AvailableSponsorshipsBlock");
   return (
-    <section className="py-10">
-      <div className="app-container flex flex-col gap-4 px-4">
+    <section className={cn("py-10")}>
+      <Container className="flex flex-col gap-4 px-4">
         <Heading type="h3">{t("availableSponsorships")}</Heading>
         {sponsorships.map((sponsorship, key) => (
           <SponsorshipCard
@@ -50,7 +52,7 @@ export const AvailableSponsorshipsBlock: FC<AvailableSponsorshipsProps> = ({
             websiteHref={sponsorship.link.at(0)?.url ?? ""}
           />
         ))}
-      </div>
+      </Container>
     </section>
   );
 };

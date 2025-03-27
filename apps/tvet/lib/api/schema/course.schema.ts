@@ -21,3 +21,5 @@ export const CourseSchema = z.object({
   url: z.string(),
   path_alias: z.string(),
 });
+
+export type CourseType = z.infer<typeof CourseSchema>;

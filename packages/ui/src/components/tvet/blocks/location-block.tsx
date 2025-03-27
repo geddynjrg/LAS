@@ -1,6 +1,5 @@
 import { IconArrowGuide } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import Link from "next/link";
 import type { FC } from "react";
 
@@ -84,13 +83,10 @@ export const LocationBlock: FC<LocationBlockProps> = ({
             </p>
             <div className="relative mt-4 aspect-[16/9]">
               {image[0] && image[0].url && (
-                <Image
+                <img
                   src={image[0].url}
                   alt={image[0].alt}
-                  style={{
-                    objectFit: "cover",
-                  }}
-                  fill
+                  className="h-full w-full object-cover object-center"
                 />
               )}
             </div>

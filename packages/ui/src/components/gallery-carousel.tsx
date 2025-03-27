@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { type FC, type ReactNode } from "react";
 
 import {
@@ -38,14 +37,10 @@ export const GalleryCarousel: FC<LightboxModalProps> = ({
               className="relative box-border hover:cursor-pointer"
             >
               <GalleryModalTrigger index={index} asChild>
-                <Image
+                <img
                   src={image.url}
                   alt={image.alt}
-                  fill
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
+                  className="h-full w-full object-cover object-center"
                 />
               </GalleryModalTrigger>
             </CarouselItem>

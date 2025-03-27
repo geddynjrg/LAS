@@ -14,9 +14,9 @@ export interface GalleryBlockProps {
   block_type: "gallery";
   title: string;
   description: {
-    value: string;
-    format: string;
-    processed: string;
+    value: string | null;
+    format: string | null;
+    processed: string | null;
   };
   images: {
     title: string;

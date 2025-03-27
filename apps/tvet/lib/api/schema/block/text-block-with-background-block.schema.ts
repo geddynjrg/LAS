@@ -8,9 +8,9 @@ export const TextBlockWithBackgroundBlockSchema = AbstractBlockSchema.extend({
   block_type: z.literal("text_block_with_background"),
 
   title: z.string(),
-  link: z.array(LinkSchema),
+  link: z.array(LinkSchema).optional(),
   block_text: z.union([z.array(DescriptionSchema), DescriptionSchema]),
-  button_type: z.string(),
+  button_type: z.string().optional(),
 });
 
 export type TextBlockWithBackgroundBlockType = z.infer<

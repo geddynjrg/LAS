@@ -20,12 +20,18 @@ import type { CourseNodeType } from "@/lib/api/schema/node/course-node.schema";
 export default async function CoursePageNode(pageData: CourseNodeType) {
   const t = await getTranslations("FrontPage");
 
+  const heroImage = Array.isArray(pageData?.data?.content?.image)
+    ? pageData?.data?.content?.image.length > 0
+      ? pageData?.data?.content?.image[0]
+      : undefined
+    : pageData?.data?.content?.image;
+
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection
         title={pageData?.data?.title}
-        backgroundUrl={pageData?.data?.content?.image?.url}
-        backgroundAlt={pageData?.data?.content?.image?.alt}
+        backgroundUrl={heroImage?.url}
+        backgroundAlt={heroImage?.alt}
         actions={
           <ScrollTo targetId="content">
             <Button variant="secondary" className="px-6">

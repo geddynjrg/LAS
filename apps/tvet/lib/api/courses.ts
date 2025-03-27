@@ -172,7 +172,7 @@ const schema = z.object({
           z.object({
             id: z.string(),
             name: z.string(),
-            weight: z.string(),
+            weight: z.number(),
           }),
         ),
       }),

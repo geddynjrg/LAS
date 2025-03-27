@@ -13,13 +13,13 @@ import { SimilarCoursesBlock } from "@workspace/ui/components/tvet/blocks/simila
 import { SocialBlock } from "@workspace/ui/components/tvet/blocks/social-block";
 import { TestimonialsBlock } from "@workspace/ui/components/tvet/blocks/testimonials-block";
 import { TextBlock } from "@workspace/ui/components/tvet/blocks/text-block";
+import { TextBlockWithBackgroundBlock } from "@workspace/ui/components/tvet/blocks/text-block-with-background-block";
 import { TextListBlock } from "@workspace/ui/components/tvet/blocks/text-list-block";
+import { TextWithGradientBlock } from "@workspace/ui/components/tvet/blocks/text-with-gradient-block";
 import { TrainingAreasBlock } from "@workspace/ui/components/tvet/blocks/training-areas-block";
 import { VocationalCentersBlock } from "@workspace/ui/components/tvet/blocks/vocational-centers-block";
 
 import { HighlightedCourseListingBlock } from "@/components/page-blocks/highlighted-course-listing-block";
-import { TextBlockWithBackgroundBlock } from "@/components/page-blocks/text-block-with-background-block";
-import { TextWithGradientBlock } from "@/components/page-blocks/text-with-gradient-block";
 import type { BlockType } from "@/lib/api/types";
 
 export interface PageComponentsProps {
@@ -28,7 +28,6 @@ export interface PageComponentsProps {
 }
 
 export const PageComponents: FC<PageComponentsProps> = ({
-  applicationBlockId,
   page_components = [],
 }) => {
   return page_components.map((component, index) => {

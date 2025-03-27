@@ -7,6 +7,7 @@ import { Container } from "@workspace/ui/components/container";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 import { LocationMap } from "@workspace/ui/components/tvet/location-map";
 import { Underline } from "@workspace/ui/components/underline";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface VocationalCentersBlockProps {
   block_type: "vocational_centres";
@@ -53,7 +54,7 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
   );
 
   return (
-    <Container className="flex flex-col gap-4 px-0 lg:flex-row-reverse">
+    <Container className={cn("flex flex-col gap-4 px-0 lg:flex-row-reverse")}>
       <section className="mt-4 px-4 py-12 lg:shrink">
         <Heading type="h2" className="typo-h2">
           {t("nairobiVocationalCenters")}

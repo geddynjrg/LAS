@@ -1,21 +1,33 @@
 import type { FC } from "react";
 
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
-
 import {
   GradientCornerCard,
   gradientCornerCardVariants,
-} from "@/components/gradient-corner-card";
-import type { TextBlockWithGradientBlockType } from "@/lib/api/schema/block/text-block-with-gradient.schema";
+} from "@workspace/ui/components/tvet/gradient-corner-card";
+import { cn } from "@workspace/ui/lib/utils";
 
-export interface TextWithGradientBlockProps
-  extends TextBlockWithGradientBlockType {}
+export interface TextWithGradientBlockProps {
+  className?: string;
+  block_type: "text_block_with_gradient";
+  block_text: {
+    value: string | null;
+    format: string | null;
+    processed: string | null;
+  }[];
+}
 
 export const TextWithGradientBlock: FC<TextWithGradientBlockProps> = ({
   block_text,
+  className,
 }) => {
   return (
-    <section className="bg-background grid grid-cols-1 gap-4 px-4 pb-12 pt-8">
+    <section
+      className={cn(
+        "bg-background grid grid-cols-1 gap-4 px-4 pb-12 pt-8",
+        className,
+      )}
+    >
       <div className="app-container grid grid-cols-1 gap-4 lg:grid-cols-3">
         {block_text.map((description, index) => (
           <GradientCornerCard

@@ -1,6 +1,5 @@
 import { IconChevronDown, IconMail, IconPhone } from "@tabler/icons-react";
 import { getTranslations } from "next-intl/server";
-import { redirect } from "next/navigation";
 
 import { Button } from "@workspace/ui/components/button";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
@@ -17,12 +16,18 @@ export default async function InstitutionPageNode(
 ) {
   const t = await getTranslations("InstitutionPage");
 
+  const heroImage = Array.isArray(pageData?.data?.content?.image)
+    ? pageData?.data?.content?.image.length > 0
+      ? pageData?.data?.content?.image[0]
+      : undefined
+    : pageData?.data?.content?.image;
+
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection
         title={pageData.data.title}
-        backgroundUrl={pageData.data?.content.image.url}
-        backgroundAlt={pageData.data?.content.image.alt}
+        backgroundUrl={heroImage?.url}
+        backgroundAlt={heroImage?.alt}
         actions={
           <ScrollTo targetId="content">
             <Button variant="secondary">
