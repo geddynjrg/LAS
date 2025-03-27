@@ -1,7 +1,7 @@
 import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import createClient from "openapi-fetch";
+import createClient, { type FetchResponse } from "openapi-fetch";
 import type { z } from "zod";
 
 import { getSession } from "@/lib/session";
@@ -32,30 +32,34 @@ api.use({
   async onResponse({ response }) {
     if (response.status === 401) {
       //handle unauthorized error
-      console.warn("Unauthorized:", response.status);
+      console.warn("[API] Unauthorized:", response.status);
       redirect("/login");
     }
+
+    return response;
   },
 });
 
-export function validate<T extends z.Schema>(
-  res: Record<string, unknown>,
-  schema: T,
-) {
-  const response = (res as any)?.data ?? res;
-
+export function validate<
+  TRes extends FetchResponse<any, any, any>,
+  TSchema extends z.Schema,
+>(res: TRes, schema: TSchema) {
+  // return error if response is not ok
   if (res.error) {
-    //handle API error
-    console.warn("API Error:", response.status, response.error);
-    throw new Error(response?.error?.message);
+    console.warn("[API] Error:", res.response.status, res.error);
+    throw new Error(res.error?.message || "[API] Unknown Error");
   }
 
-  const result = schema.safeParse(response.data);
+  const validation = schema.safeParse(res.data);
 
   // return response even if validation fails, but log out the errors
-  if (!result.success) {
-    console.warn(result.error.toString());
+  if (!validation.success) {
+    console.warn(
+      `[API] Response Schema Error (${res.response.url}):`,
+      validation.error.toString(),
+      res.data,
+    );
   }
 
-  return response as z.infer<T>;
+  return res.data as z.infer<TSchema>;
 }

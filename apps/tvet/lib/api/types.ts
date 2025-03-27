@@ -20,7 +20,7 @@ import { TextListBlockSchema } from "@/lib/api/schema/block/text-list-block.sche
 import { TrainingAreasBlockSchema } from "@/lib/api/schema/block/training-areas-block.schema";
 import { VocationalCentresBlockSchema } from "@/lib/api/schema/block/vocational-centres-block.schema";
 
-export const BlockSchema = z.union([
+export const BlockSchema = z.discriminatedUnion("block_type", [
   ApplicationBlockSchema,
   SectionHeadingBlockSchema,
   FeaturesBlockSchema,

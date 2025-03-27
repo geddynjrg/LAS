@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { DescriptionSchema } from "@/lib/api/schema/description.schema";
 import { ImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
