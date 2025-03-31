@@ -157,6 +157,10 @@
   --box-shadow-elevation-03: 0px -1px 5px 0px hsla(0, 0%, 0%, 0.2);
   --box-shadow-elevation-04: 0px -2px 3px 0px hsla(0, 0%, 0%, 0.2);
 
+  /* socials */
+  --color-twitter-background: hsl(212, 100%, 62.5%);
+  --color-facebook-background: hsl(220.6, 44.1%, 41.4%);
+
   /* accordion */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;

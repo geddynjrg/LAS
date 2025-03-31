@@ -200,7 +200,7 @@ function AchievementsSection() {
       <Container className="grid gap-4 py-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="mb-8">
           <LeadingSlash>{t("achievements.successfulFunding")}</LeadingSlash>
-          <h2 className="typo-h1-lg mt-2 leading-[2.8rem] lg:text-[2.3rem]">
+          <h2 className="typo-h1-lg mt-2 leading-[2.8rem] lg:text-[2.1rem]">
             {t("achievements.title")}
           </h2>
         </div>
@@ -296,7 +296,7 @@ const ApplyButton: FC<{ className?: string }> = ({ className }) => {
       asChild
       variant="secondary"
       className={cn(
-        "bg-background text-primary hover:text-background px-6",
+        "bg-background text-primary hover:text-background border-primary px-6",
         className,
       )}
     >

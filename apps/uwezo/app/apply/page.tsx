@@ -1,4 +1,4 @@
-import { IconArrowLeft, IconPinInvoke } from "@tabler/icons-react";
+import { IconArrowLeft, IconPinEnd } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import {
   CarouselItem,
 } from "@workspace/ui/components/carousel";
 import { Container } from "@workspace/ui/components/container";
+import { Underline } from "@workspace/ui/components/underline";
 
 import { ApplySideLogo } from "@/components/apply-side-logo";
 
@@ -52,11 +53,16 @@ export default function Page() {
               width={300}
               height={200}
             />
-            <div className="text-primary flex flex-row gap-1">
-              <Link href="#" className={"text-primary typo-link underline"}>
-                {t("moreInfoAboutTheCertificate")}
+            <div className="flex flex-row gap-1">
+              <Link href="#" className={"text-primary typo-link"}>
+                <Underline
+                  variant="primary"
+                  className="text-primary items-center"
+                >
+                  {t("moreInfoAboutTheCertificate")}
+                  <IconPinEnd className="scale-x-[-1]" />
+                </Underline>
               </Link>
-              <IconPinInvoke />
             </div>
           </div>
         </ApplyContentContainer>
@@ -101,12 +107,20 @@ export default function Page() {
                   />
                 </CarouselItem>
               </CarouselContent>
-              <div className="text-primary flex flex-row justify-center gap-1">
-                <Link href="#" className={"text-primary typo-link underline"}>
+              <Link
+                href="#"
+                className={
+                  "text-primary typo-link flex flex-row justify-center gap-1 px-4"
+                }
+              >
+                <Underline
+                  variant="primary"
+                  className="text-primary items-center"
+                >
                   {t("moreInfoAboutCredit")}
-                </Link>
-                <IconPinInvoke />
-              </div>
+                  <IconPinEnd className="scale-x-[-1]" />
+                </Underline>
+              </Link>
               <CarouselControls />
             </Carousel>
           </div>

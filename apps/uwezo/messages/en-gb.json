@@ -43,13 +43,13 @@
       "title": "Eligibility Criteria",
       "one": "Group must be registered with the Department of Social Services, Cooperatives or the Registrar of Societies body with a valid group registration certificate",
       "two": "Group membership must be as guided by the registering entity, membership should be between 10-15 members.",
-      "three": "<bold>Group Membership must be at least:</bold><ul> <li>For youth groups: membership at least 70% youth (18-35 years), and leadership 100% youth </li><li>For women’s groups: membership at least 70% women (18+ years), and leadership 100% women </li><li>For people with disabilities groups: membership at least 70% PWDs, and leadership 100% PWDs.</li></ul>",
+      "three": "<bold>Group Membership must be at least:</bold><ul> <li>For youth groups: membership at least 70% youth (18-35 years), and leadership 100% youth </li><li>For women’s groups: membership at least 70% women (18+ years), and leadership 100% women </li><li>For people with disabilities groups: membership at least 70% PWDs, and leadership 100% PWDs</li></ul>",
       "four": "Group operates a table banking structure or any other group fund structure where members make monthly contribution according to the group’s internal guidelines",
       "five": "Group holds a bank account in the name of the group",
       "six": "Institutions are eligible if they have listed youth, women, and PWDs groups within them"
     },
     "fundDescription": {
-      "welcome": "Welcome to",
+      "welcome": "Welcome To",
       "title": "Uwezo Fund",
       "description": "Uwezo Fund is a flagship programme for vision 2030 aimed at enabling women, youth and persons with disabilities access finances to promote businesses and enterprises at the constituency level, thereby enhancing economic growth towards the realization of the same and the Sustainable Development Goals No.1 (eradicate extreme poverty and hunger) and 3 (promote gender equality and empower women). The Fund is highly devolved and adopted the concept of bottom-up approach with decision making done at the grass-root level.",
       "objectives": "The Fund is revolving in nature and its operations are based in the constituencies. The Objectives of the Fund are;",
@@ -96,7 +96,7 @@
     "nationalIdSectionTitle": "Group members national IDs",
     "exampleId": "Example of national ID",
     "membersMustBeInformed": "Members must be informed of the application and will be asked to <bold>give their consent through SMS service</bold>",
-    "beginFillingForm": "Begin filling form",
+    "beginFillingForm": "Begin filling the form",
     "DonePage": {
       "title": "Thank you for your application!",
       "application-received-message": "It has successfully reached our systems and we will begin reviewing it as soon as possible.",

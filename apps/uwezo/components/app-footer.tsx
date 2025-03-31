@@ -1,4 +1,6 @@
 import {
+  IconBrandFacebookFilled,
+  IconBrandTwitterFilled,
   IconDeviceMobile,
   IconHomeFilled,
   IconMail,
@@ -8,6 +10,9 @@ import Link from "next/link";
 import { Children, FC, ReactNode } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import { IconFacebook } from "@workspace/ui/components/icon/icon-facebook";
+import { IconFacebookInverted } from "@workspace/ui/components/icon/icon-facebook-inverted";
+import { cn } from "@workspace/ui/lib/utils";
 
 export const AppFooter: FC = () => {
   const t = useTranslations("Footer");
@@ -19,13 +24,17 @@ export const AppFooter: FC = () => {
           <FooterNavItem href="/#">Hustler Fund</FooterNavItem>
           <FooterNavItem href="/#">Youth Fund</FooterNavItem>
           <FooterNavItem href="/#">New KCC</FooterNavItem>
-          <FooterNavItem href="/#">Women Fund</FooterNavItem>
+          <FooterNavItem href="/#" hasBorder={false}>
+            Women Fund
+          </FooterNavItem>
         </FooterNavGroup>
         <FooterNavGroup title={t("usefulLinks")}>
           <FooterNavItem href="/#">Staff Mail</FooterNavItem>
           <FooterNavItem href="/#">MyGov</FooterNavItem>
           <FooterNavItem href="/#">eCitizen</FooterNavItem>
-          <FooterNavItem href="/#">Public Service Jobs</FooterNavItem>
+          <FooterNavItem href="/#" hasBorder={false}>
+            Public Service Jobs
+          </FooterNavItem>
         </FooterNavGroup>
         <FooterNavGroup title={t("quickContacts")}>
           <FooterNavItem>
@@ -44,7 +53,7 @@ export const AppFooter: FC = () => {
             <IconDeviceMobile size={20} />
             Tel. +254 0776 154 215
           </FooterNavItem>
-          <FooterNavItem href="mailto:info@uwezo.go.ke">
+          <FooterNavItem href="mailto:info@uwezo.go.ke" hasBorder={false}>
             <IconMail size={20} />
             info@uwezo.go.ke
           </FooterNavItem>
@@ -83,15 +92,23 @@ export const FooterNavGroup: FC<FooterNavGroupProps> = ({
 interface FooterNavItemProps {
   href?: string;
   children?: ReactNode;
+  hasBorder?: boolean;
 }
 
-const FooterNavItem: FC<FooterNavItemProps> = ({ href, children }) => {
+const FooterNavItem: FC<FooterNavItemProps> = ({
+  href,
+  children,
+  hasBorder = true,
+}) => {
   const Comp = href ? Link : "div";
 
   return (
     <Comp
       href={href as string}
-      className="border-primary-foreground/10 text-primary-foreground typo-body-small flex max-w-[380px] flex-row gap-2.5 border-b pb-1"
+      className={cn(
+        "border-primary-foreground/10 text-primary-foreground typo-body-small flex max-w-[380px] flex-row gap-2.5 pb-1",
+        hasBorder && "border-b",
+      )}
     >
       {children}
     </Comp>
@@ -101,8 +118,24 @@ const FooterNavItem: FC<FooterNavItemProps> = ({ href, children }) => {
 const SubFooter: FC = () => {
   return (
     <div className="bg-primary-hover">
-      <Container className="text-primary-foreground typo-body-small flex justify-between pb-2.5 pt-5">
-        <p>&copy; Copyright 2023 | Uwezo Fund. | All Rights Reserved.</p>
+      <Container className="text-primary-foreground typo-body-small flex justify-between gap-4 pb-2.5 pt-5">
+        <div>
+          <p>&copy; Copyright 2025 | Uwezo Fund. | All Rights Reserved.</p>
+        </div>
+        <div className="flex flex-row gap-2">
+          <Link
+            href={"#"}
+            className="bg-twitter-background text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full"
+          >
+            <IconBrandTwitterFilled width={16} height={16} />
+          </Link>
+          <Link
+            href={"#"}
+            className="bg-facebook-background flex h-8 w-8 items-center justify-center rounded-full"
+          >
+            <IconFacebookInverted height={17} width={17} />
+          </Link>
+        </div>
       </Container>
     </div>
   );
