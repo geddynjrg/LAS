@@ -8,6 +8,7 @@ import { Alert } from "@workspace/ui/components/alert";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm } from "@workspace/ui/hooks/use-form";
+import { useMount } from "@workspace/ui/hooks/use-mount";
 
 import { loginAction } from "@/app/(auth)/login/username/login-action";
 import { loginSchema } from "@/app/(auth)/login/username/login-schema";
@@ -22,6 +23,11 @@ export const LoginForm: FC<LoginFormProps> = ({ redirectTo }) => {
   const { setSession } = useSession();
   const router = useRouter();
   const [state, formAction, isPending] = useForm(loginAction, loginSchema);
+
+  // update ui session
+  useMount(() => {
+    setSession(null);
+  });
 
   // update session on login
   useEffect(() => {

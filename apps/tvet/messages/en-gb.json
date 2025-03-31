@@ -4,7 +4,10 @@
     "closeMenu": "Close menu",
     "apply": "Apply",
     "availableSponsorships": "Available sponsorships",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "myProfile": "My profile",
+    "myApplications": "My applications",
+    "signOut": "Sign out"
   },
 
   "FrontPage": {

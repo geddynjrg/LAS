@@ -2,6 +2,9 @@
 
 import { cookies } from "next/headers";
 
+const REFRESH_TOKENS_URL = `${process.env.NEXT_API_URL}/api/v1/user/token/refresh`;
+const LOGOUT_URL = `${process.env.NEXT_API_URL}/api/v1/user/logout`;
+
 const ACCESS_TOKEN_COOKIE_NAME = "access-token";
 const REFRESH_TOKEN_COOKIE_NAME = "refresh-token";
 
@@ -10,7 +13,6 @@ export async function createSession(data: {
   refreshToken: string;
 }) {
   const cookieStore = await cookies();
-
   const now = Date.now();
 
   const refreshTokenExpiresAt = new Date(now + 7 * 24 * 60 * 60 * 1000);
@@ -30,32 +32,104 @@ export async function createSession(data: {
   });
 }
 
-export async function updateSession(accessToken: string, expiresAt: number) {
-  const cookie = await getSession();
+export async function getSession() {
+  return (await cookies()).get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+}
 
-  if (!cookie) {
+export async function updateSession() {
+  const accessToken = await getSession();
+
+  if (accessToken && !isTokenExpired(accessToken)) {
+    return accessToken; // Token is valid
+  }
+
+  // access token is not set or is expired
+  // try to refresh it using the refresh token
+  const newTokens = await getNewTokens();
+
+  // remove session if refreshing tokens fails
+  if (!newTokens || isTokenExpired(newTokens.accessToken)) {
+    // deleteSession();
     return null;
   }
 
-  const cookieStore = await cookies();
-  cookieStore.set("session", accessToken, {
-    httpOnly: true,
-    secure: true,
-    expires: expiresAt,
-    sameSite: "lax",
-    path: "/",
+  // create new session with the new tokens
+  await createSession(newTokens);
+
+  return newTokens.accessToken; // Return the new access token
+}
+
+export async function invalidateSession() {
+  const accessToken = await getSession();
+
+  // invalidate token on the server
+  await fetch(LOGOUT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
+
+  // delete token from cookies
+  await deleteCookies();
 }
 
-export async function getSession() {
-  const cookie = (await cookies()).get(ACCESS_TOKEN_COOKIE_NAME)?.value;
-
-  return cookie;
-}
-
-export async function deleteSession() {
+async function deleteCookies() {
   const cookieStore = await cookies();
 
   cookieStore.delete(ACCESS_TOKEN_COOKIE_NAME);
   cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME);
+}
+
+function isTokenExpired(token: unknown) {
+  if (typeof token !== "string") {
+    return true; // Invalid token type
+  }
+
+  try {
+    const tokenPayloadBase64 = token.split(".")[1];
+
+    if (!tokenPayloadBase64) {
+      return true; // Invalid token format
+    }
+
+    const exp: number = JSON.parse(atob(tokenPayloadBase64))?.exp ?? 0;
+
+    return Date.now() > exp * 1000;
+  } catch (_err) {
+    return true; // If the token is invalid, consider it expired
+  }
+}
+
+async function getNewTokens() {
+  const cookieStore = await cookies();
+  const currentRefreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
+
+  const res = await fetch(REFRESH_TOKENS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh_token: currentRefreshToken }),
+  });
+
+  if (!res.ok) {
+    console.warn(
+      "[Session] Failed to refresh tokens:",
+      res.status,
+      res.statusText,
+    );
+
+    return null;
+  }
+
+  const data = await res.json();
+  const accessToken = data.access_token;
+  const refreshToken = data.refresh_token;
+
+  if (typeof accessToken !== "string" || typeof refreshToken !== "string") {
+    console.warn("[Session] Invalid tokens:", data);
+    return null;
+  }
+
+  return { accessToken, refreshToken };
 }

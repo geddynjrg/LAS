@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { getSession } from "@/lib/session";
+import { updateSession } from "@/lib/session";
 
 const protectedRoutes = ["/dashboard", "/apply"];
 const publicRoutes = ["/login", "/signup"];
@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((r) => path.startsWith(r));
   const isPublicRoute = publicRoutes.some((r) => path.startsWith(r));
-  const session = await getSession();
+  const session = await updateSession();
 
   // redirect logged in user to dashboard if they try to access public route
   if (isPublicRoute && session && !path.startsWith(loggedInRedirect)) {

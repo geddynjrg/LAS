@@ -131,7 +131,7 @@ export const SidebarTrigger: FC<ButtonProps> = ({
       data-sidebar="trigger"
       variant="neutral"
       className={cn(
-        "h-13 hover:bg-header focus-visible:bg-header w-13 flex flex-col gap-0 rounded-none p-0",
+        "size-13 hover:bg-header focus-visible:bg-header flex flex-col gap-0 rounded-none p-0",
         className,
       )}
       onClick={(event) => {

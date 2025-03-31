@@ -1,6 +1,5 @@
 import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import createClient, { type FetchResponse } from "openapi-fetch";
 import type { z } from "zod";
 
@@ -27,16 +26,6 @@ api.use({
     }
 
     return request;
-  },
-
-  async onResponse({ response }) {
-    if (response.status === 401) {
-      //handle unauthorized error
-      console.warn("[API] Unauthorized:", response.status);
-      redirect("/login");
-    }
-
-    return response;
   },
 });
 

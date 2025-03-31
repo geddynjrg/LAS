@@ -1,5 +1,5 @@
 import { PageNode } from "@/components/page-nodes";
-import { getPageData } from "@/lib/api/getPageData";
+import { getNode } from "@/lib/api/node";
 
 interface PageProps {
   params: Promise<Record<string, string[]>>;
@@ -10,7 +10,7 @@ export default async function Page(props: PageProps) {
   const params = await props.params;
 
   console.log(params.path);
-  const pageData = await getPageData();
+  const pageData = await getNode();
 
   if (!pageData?.data) {
     throw Error("Page not found");
