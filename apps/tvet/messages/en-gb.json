@@ -71,16 +71,23 @@
     "login": "Log in"
   },
 
-  "ResetPage": {
+  "ResetRequestPage": {
     "title": "Reset Password",
     "description": "Enter your e-mail address to reset your password.",
     "email": "E-mail",
-    "alreadyHaveAccount": "Already have an account?",
-    "login": "Log in",
     "reset": "Reset",
     "backTo": "Back to",
-    "success": "Reset email sent",
-    "successDescription": "An email has been sent to your e-mail address with instructions on how to reset your password."
+    "success": "Reset email sent"
+  },
+
+  "ResetPage": {
+    "title": "New Password",
+    "description": "Please create an new password that you don't use on any other site.",
+    "password": "New Password",
+    "passwordConfirm": "Confirm New Password",
+    "change": "Change",
+    "success": "Password changed.",
+    "login": "Go to Log in"
   },
 
   "InstitutionPage": {

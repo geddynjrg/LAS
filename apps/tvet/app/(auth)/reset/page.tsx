@@ -1,69 +1,64 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 
-import { Container } from "@workspace/ui/components/container";
+import { Alert } from "@workspace/ui/components/alert";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
-import { resetAction } from "@/app/(auth)/reset/reset-action";
-import { resetSchema } from "@/app/(auth)/reset/reset-schema";
+import { AlreadyHaveAccount } from "@/app/(auth)/already-have-account";
+import { resetRequestAction } from "@/app/(auth)/reset/reset-request-action";
+import { resetRequestSchema } from "@/app/(auth)/reset/reset-request-schema";
 
-export default function Page() {
-  const t = useTranslations("ResetPage");
-  const [state, formAction, isPending] = useForm(resetAction, resetSchema);
+export default function ResetRequestPage() {
+  const t = useTranslations("ResetRequestPage");
+  const [state, formAction, isPending] = useForm(
+    resetRequestAction,
+    resetRequestSchema,
+  );
 
   if (state.success) {
     return (
-      <Container className="max-w-[500px] pt-8">
+      <>
         <div className="flex flex-col gap-2 pb-4">
           <h2 className="typo-h2">{t("success")}</h2>
-          <p className="typo-body-medium">{t("successDescription")}</p>
+          <p className="typo-body-medium">{state.message}</p>
         </div>
 
-        <div className="flex gap-2 pt-4">
-          <p className="typo-body-medium">{t("backTo")}</p>
-          <Link href="/login/username" className="text-primary underline">
-            {t("login")}
-          </Link>
-        </div>
-      </Container>
+        <AlreadyHaveAccount />
+      </>
     );
   }
 
   return (
-    <Container className="max-w-[500px] pt-8">
+    <>
       <div className="flex flex-col gap-2 pb-4">
         <h2 className="typo-h2">{t("title")}</h2>
         <p className="typo-body-medium">{t("description")}</p>
       </div>
 
-      <div>
-        <Form action={formAction} className="space-y-6" autoComplete="on">
-          <Field
-            state={state}
-            name="email"
-            label={t("email")}
-            required
-            control={(props) => (
-              <Input placeholder="email@email.com" {...props} />
-            )}
-          />
+      {!state.success && state.message && (
+        <Alert variant="error" className="mb-4">
+          {state.message}
+        </Alert>
+      )}
 
-          <SubmitButton className="w-full" disabled={isPending}>
-            {t("reset")}
-          </SubmitButton>
-        </Form>
+      <Form action={formAction} className="space-y-6" autoComplete="on">
+        <Field
+          state={state}
+          name="email"
+          label={t("email")}
+          required
+          control={(props) => <Input {...props} />}
+        />
 
-        <div className="flex justify-center gap-2 pt-4">
-          <p className="typo-body-medium">{t("alreadyHaveAccount")}</p>
-          <Link href="/login/username" className="text-primary underline">
-            {t("login")}
-          </Link>
-        </div>
-      </div>
-    </Container>
+        <SubmitButton className="w-full" disabled={isPending}>
+          {t("reset")}
+        </SubmitButton>
+      </Form>
+
+      <AlreadyHaveAccount />
+    </>
   );
 }

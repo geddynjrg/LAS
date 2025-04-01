@@ -37,10 +37,15 @@ export async function getSession() {
 }
 
 export async function updateSession() {
-  const accessToken = await getSession();
+  const { accessToken, refreshToken } = await getStoredTokens();
 
   if (accessToken && !isTokenExpired(accessToken)) {
     return accessToken; // Token is valid
+  }
+
+  // cannot update session if refresh token is not set
+  if (!refreshToken) {
+    return null;
   }
 
   // access token is not set or is expired
@@ -101,6 +106,14 @@ function isTokenExpired(token: unknown) {
   } catch (_err) {
     return true; // if the token is invalid, consider it expired
   }
+}
+
+async function getStoredTokens() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
+
+  return { accessToken, refreshToken };
 }
 
 async function getNewTokens() {
