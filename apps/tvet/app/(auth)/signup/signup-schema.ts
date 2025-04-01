@@ -8,7 +8,6 @@ export const signupSchema = z
     passwordConfirm: z.string().nonempty(),
   })
   .superRefine((val, ctx) => {
-    console.log("val", val);
     if (val.password !== val.passwordConfirm) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

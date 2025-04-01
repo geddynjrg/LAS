@@ -6,10 +6,7 @@ interface PageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
-export default async function Page(props: PageProps) {
-  const params = await props.params;
-
-  console.log(params.path);
+export default async function Page(_props: PageProps) {
   const pageData = await getNode();
 
   if (!pageData?.data) {

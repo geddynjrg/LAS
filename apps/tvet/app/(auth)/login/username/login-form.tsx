@@ -24,12 +24,12 @@ export const LoginForm: FC<LoginFormProps> = ({ redirectTo }) => {
   const router = useRouter();
   const [state, formAction, isPending] = useForm(loginAction, loginSchema);
 
-  // update ui session
+  // reset ui session
   useMount(() => {
     setSession(null);
   });
 
-  // update session on login
+  // set new session on login
   useEffect(() => {
     if (state.success) {
       setSession(true);

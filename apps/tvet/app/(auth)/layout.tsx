@@ -11,7 +11,7 @@ export default function ApplyLayout({ children }: ApplyLayoutProps) {
     <>
       <div className="h-(--header-height) bg-primary mb-8" />
 
-      <Container>{children}</Container>
+      <Container className="max-w-[500px] pt-8">{children}</Container>
     </>
   );
 }
