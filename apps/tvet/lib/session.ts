@@ -49,14 +49,15 @@ export async function updateSession() {
 
   // remove session if refreshing tokens fails
   if (!newTokens || isTokenExpired(newTokens.accessToken)) {
-    // deleteSession();
+    deleteCookies();
     return null;
   }
 
   // create new session with the new tokens
   await createSession(newTokens);
 
-  return newTokens.accessToken; // Return the new access token
+  // return the new access token
+  return newTokens.accessToken;
 }
 
 export async function invalidateSession() {
@@ -91,14 +92,14 @@ function isTokenExpired(token: unknown) {
     const tokenPayloadBase64 = token.split(".")[1];
 
     if (!tokenPayloadBase64) {
-      return true; // Invalid token format
+      return true; // invalid token format
     }
 
     const exp: number = JSON.parse(atob(tokenPayloadBase64))?.exp ?? 0;
 
     return Date.now() > exp * 1000;
   } catch (_err) {
-    return true; // If the token is invalid, consider it expired
+    return true; // if the token is invalid, consider it expired
   }
 }
 
@@ -122,12 +123,13 @@ async function getNewTokens() {
     return null;
   }
 
-  const data = await res.json();
-  const accessToken = data.access_token;
-  const refreshToken = data.refresh_token;
+  const resJson = await res.json();
+
+  const accessToken = resJson?.data?.access_token;
+  const refreshToken = resJson?.data?.refresh_token;
 
   if (typeof accessToken !== "string" || typeof refreshToken !== "string") {
-    console.warn("[Session] Invalid tokens:", data);
+    console.warn("[Session] Invalid tokens:", resJson);
     return null;
   }
 
