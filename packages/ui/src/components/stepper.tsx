@@ -16,6 +16,9 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
 
   useMount(() => {
     handleScrollToActiveStep();
+    window.addEventListener("resize", handleScrollToActiveStep, {
+      passive: true,
+    });
   });
 
   useEffect(() => {
