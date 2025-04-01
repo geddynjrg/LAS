@@ -189,12 +189,12 @@
       "groupsBankName": "Jina la Benki ya Kikundi",
       "groupsBankBranch": "Tawi la Benki ya Kikundi",
       "bankAccountNumber": "Nambari ya akaunti ya benki",
-      "wezeshaLoanDescription": "Wezesha ni kwa wakopaji wa mara ya kwanza. Kiwango cha mkopo ni kati ya 50,000 KSh - 100,000 KSh. Kipindi cha juu cha marejesho ni miezi 24.",
-      "wezeshaInterest": "Mkopo una riba ya 1%",
+      "LoanDescription": "Wezesha ni kwa wakopaji wa mara ya kwanza. Kiwango cha mkopo ni kati ya 50,000 KSh - 100,000 KSh. Kipindi cha juu cha marejesho ni miezi 24.",
+      "Interest": "Mkopo una riba ya 1%.",
       "maximumLoan": "Kiwango cha juu ni 100,000 KSh",
-      "bankName": "Jina la benki",
-      "bankBranch": "Tawi la benki",
-      "accountNumber": "Nambari ya akaunti"
+      "bankName": "Jina la Benki ya Kikundi",
+      "bankBranch": "Tawi la Benki ya Kikundi",
+      "accountNumber": "Nambari ya Akaunti ya Benki"
     },
     "members": {
       "members": "Wanachama",
@@ -266,7 +266,6 @@
         "operationPeriod": "Imekuwa ikifanya kazi kwa miaka mingapi?",
         "startup": "Kuanzisha",
         "expansion": "Kupanua",
-        "yearsInBusiness": "Miaka katika biashara",
         "enterYears": "Ingiza miaka"
       },
       "businessPerformance": {
@@ -315,14 +314,15 @@
   "MembersPage": {
     "title": "Wanachama wa Kikundi",
     "subTitle": "Kikundi kinastahiki mkopo wa Mfuko wa Uwezo, ikiwa kuna wanachama 10-15",
+    "member": "Wanachama",
     "youth": "Vijana",
     "peopleWithDisabilities": "Watu wenye ulemavu",
     "women": "Wanawake",
     "addMember": "Ongeza mwanachama kwa mkono",
     "groupBasics": "Misingi ya Kikundi",
     "natureOfTheGroup": "Asili ya kikundi",
-    "searchForMembers": "Tafuta wanachama",
-    "membersInfoInserted": "Taarifa za wanachama {count} zimeingizwa",
+    "searchForMember": "Tafuta mwanachama",
+    "membersInfoInserted": "Maelezo ya wanachama {count} yameingizwa",
     "enterNameOrNationalId": "Ingiza jina au nambari ya kitambulisho",
     "idCode": "Nambari ya Kitambulisho",
     "gender": "Jinsia",

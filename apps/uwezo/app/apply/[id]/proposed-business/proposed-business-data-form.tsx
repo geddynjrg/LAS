@@ -153,7 +153,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             state={state}
             name="yearsInBusiness"
             label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessInfo.yearsInBusiness",
+              "ApplicationDetailsPage.proposedBusiness.businessInfo.operationPeriod",
             )}
             required
             control={(props) => (

@@ -100,10 +100,10 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           />
 
           <Card variant="blue" radius="sm">
-            <p>{t("ApplicationDetailsPage.loan.wezeshaLoanDescription")}</p>
+            <p>{t("ApplicationDetailsPage.loan.LoanDescription")}</p>
             <br />
             <p className="font-bold">
-              {t("ApplicationDetailsPage.loan.wezeshaInterest")}
+              {t("ApplicationDetailsPage.loan.Interest")}
             </p>
           </Card>
 

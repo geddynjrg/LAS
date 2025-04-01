@@ -190,12 +190,12 @@
       "groupsBankName": "Group Bank name",
       "groupsBankBranch": "Group's Bank branch",
       "bankAccountNumber": "Bank account number",
-      "wezeshaLoanDescription": "Wezesha is for first time borrowers. Loan amount range is 50 000 KSh - 100 000 KSh. Maximum repayment period is 24 months.",
-      "wezeshaInterest": "The loan has a 1% interest rate",
+      "LoanDescription": "Wezesha is for first time borrowers. Loan amount range is 50 000 KSh - 100 000 KSh. Maximum repayment period is 24 months.",
+      "Interest": "The loan has a 1% interest rate.",
       "maximumLoan": "Maximum amount is 100 000 KSh",
-      "bankName": "Bank name",
-      "bankBranch": "Bank branch",
-      "accountNumber": "Account number"
+      "bankName": "Group Bank name",
+      "bankBranch": "Group Bank branch",
+      "accountNumber": "Bank Account number"
     },
     "members": {
       "members": "Members",
@@ -267,7 +267,6 @@
         "operationPeriod": "How many years has been in operation?",
         "startup": "Start-up",
         "expansion": "Expansion",
-        "yearsInBusiness": "Years in business",
         "enterYears": "Enter years"
       },
       "businessPerformance": {
@@ -316,13 +315,14 @@
     "title": "Group members",
     "subTitle": "Group is eligible for Uwezo Fund loan, if there are 10-15 members",
     "youth": "Youth",
+    "member": "Members",
     "peopleWithDisabilities": "People with disabilities",
     "women": "Women",
     "addMember": "Add member manually",
     "groupBasics": "Group basics",
     "natureOfTheGroup": "Nature of the group",
-    "searchForMembers": "Search for members",
-    "membersInfoInserted": "{count} members info inserted",
+    "searchForMember": "Search for member",
+    "membersInfoInserted": "{count} members’ info inserted",
     "enterNameOrNationalId": "Enter name or national ID number",
     "idCode": "ID code",
     "gender": "Gender",

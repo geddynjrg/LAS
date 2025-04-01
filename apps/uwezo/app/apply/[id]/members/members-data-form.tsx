@@ -90,7 +90,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       autoComplete="on"
     >
       <Container>
-        <FormCard title={t("MembersPage.title")} className="mt-7 grid gap-4">
+        <FormCard title={t("MembersPage.member")} className="mt-7 grid gap-4">
           <Field
             className="border-b border-neutral-400 pb-4"
             state={state}
@@ -114,7 +114,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
 
           <div>
             <div className="font-bold">
-              {t("MembersPage.searchForMembers")}
+              {t("MembersPage.searchForMember")}
               <span className="text-destructive">*</span>
             </div>
             <SearchInput
