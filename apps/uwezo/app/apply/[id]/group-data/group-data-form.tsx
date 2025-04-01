@@ -129,6 +129,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   "application/pdf": [".pdf"],
                 }}
                 maxSize={MAX_FILE_SIZE}
+                attachmentBgInverted
                 {...props}
               />
             )}
@@ -148,6 +149,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   "application/pdf": [".pdf"],
                 }}
                 maxSize={MAX_FILE_SIZE}
+                attachmentBgInverted
                 {...props}
               />
             )}
@@ -368,6 +370,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               "ApplicationDetailsPage.groupData.groupBackground.creditHistory",
             )}
             required
+            description={t("Common.youCanAddMultipleFiles")}
             control={(props) => (
               <FileUploadInput
                 accept={{
@@ -375,6 +378,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   "application/pdf": [".pdf"],
                 }}
                 maxSize={MAX_FILE_SIZE}
+                attachmentBgInverted
                 {...props}
               />
             )}

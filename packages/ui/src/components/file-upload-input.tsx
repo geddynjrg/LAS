@@ -22,6 +22,7 @@ import {
   DropzoneUploadIcon,
   DropzoneZone,
 } from "@workspace/ui/components/dropzone";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface FileUploadInputProps {
   accept: Accept;
@@ -30,6 +31,7 @@ export interface FileUploadInputProps {
   multiple?: boolean;
   disabled?: boolean;
   defaultValue?: File | File[] | undefined | string;
+  attachmentBgInverted?: boolean;
 }
 
 export const FileUploadInput: FC<FileUploadInputProps> = ({
@@ -39,6 +41,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   multiple,
   disabled,
   defaultValue,
+  attachmentBgInverted = false,
 }) => {
   const t = useTranslations("FileUploadInput");
 
@@ -97,7 +100,10 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
             {getValues(files, resetCount, defaultValue).map((file, index) => (
               <Attachment
                 key={index}
-                className="shadow"
+                className={cn(
+                  "shadow",
+                  attachmentBgInverted && "bg-site-background",
+                )}
                 onDelete={() => {
                   setResetCount((prev) => prev + 1);
                 }}

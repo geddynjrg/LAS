@@ -478,6 +478,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               "application/pdf": [".pdf"],
             }}
             maxSize={MAX_FILE_SIZE}
+            attachmentBgInverted
             {...props}
             /* TODO: On value change might be needed here */
           />
@@ -516,6 +517,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                   "application/pdf": [".pdf"],
                 }}
                 maxSize={MAX_FILE_SIZE}
+                attachmentBgInverted
                 {...props}
               />
             )}

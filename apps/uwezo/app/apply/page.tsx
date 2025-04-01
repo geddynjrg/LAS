@@ -129,6 +129,9 @@ export default function Page() {
         <ApplyContentContainer>
           <SectionHeader index={3}>{t("validGroupSectionTitle")}</SectionHeader>
           <div className="flex flex-col items-center">
+            <p className="typo-body-medium mb-3 font-bold">
+              {t("exampleOfNationalId")}
+            </p>
             <Image
               src={"/images/id-example.jpg"}
               alt="national ID example"

@@ -35,7 +35,7 @@ export const InfoPopover: FC<InfoPopoverProps> = ({
         <Button
           style={{ flexGrow: 0 }}
           className={cn(
-            "h-[2.5rem] rounded-br-none rounded-tr-none pl-6 pr-3",
+            "z-20 h-[2.5rem] rounded-br-none rounded-tr-none pl-6 pr-3",
             floating && "fixed right-0 top-[9.6875rem]",
           )}
         >

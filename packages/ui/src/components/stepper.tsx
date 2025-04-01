@@ -32,7 +32,7 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
   return (
     <ol
       className={cn(
-        "bg-background scrollbar-width-none flex flex-row overflow-x-auto",
+        "bg-background scrollbar-width-none flex flex-row overflow-x-auto rounded-bl-sm rounded-tl-sm",
         className,
       )}
       ref={wrapRef}

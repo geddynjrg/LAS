@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Divider } from "@workspace/ui/components/divider";
+import { Underline } from "@workspace/ui/components/underline";
 
 import { LoginForm } from "@/app/(auth)/login/login-form";
 import { signIn } from "@/lib/auth";
@@ -43,9 +44,11 @@ export default async function Page({ searchParams }: LoginPageProps) {
 
         <div className="flex justify-center gap-2 pt-4">
           <p className="typo-body-medium">{t("doNotHaveAccount")}</p>
-          <Link href="signup" className="text-primary underline">
-            {t("signUp")}
-          </Link>
+          <Underline variant="primary">
+            <Link href="signup" className="text-primary">
+              {t("signUp")}
+            </Link>
+          </Underline>
         </div>
       </div>
 

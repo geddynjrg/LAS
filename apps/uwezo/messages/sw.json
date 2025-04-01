@@ -25,7 +25,8 @@
     "remove": "Ondoa",
     "edit": "Hariri",
     "cancel": "Ghairi",
-    "confirm": "Thibitisha"
+    "confirm": "Thibitisha",
+    "youCanAddMultipleFiles": "Unaweza kuongeza faili nyingi"
   },
 
   "Footer": {
@@ -78,7 +79,8 @@
     "backToFrontPage": "Rudi kwenye ukurasa wa mbele",
     "needToKnowBefore": "Unachohitaji kujua kabla ya kuomba",
     "description": "Katika mchakato wa maombi utaombwa kutoa nyaraka na kuthibitisha kwamba wanachama wote wa kikundi wanakubaliana na ombi la mkopo.",
-    "validGroupSectionTitle": "Cheti halali cha usajili wa kikundi",
+    "validGroupSectionTitle": "Vitambulisho vya kitaifa vya wanachama wa kikundi",
+    "exampleOfNationalId": "Mfano wa kitambulisho cha kitaifa",
     "documentsRequired": "Nyaraka zinazohitajika katika maombi:",
     "example": "Mfano",
     "moreInfoAboutTheCertificate": "Maelezo zaidi kuhusu cheti",

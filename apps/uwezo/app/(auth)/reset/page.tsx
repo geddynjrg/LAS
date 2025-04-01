@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Container } from "@workspace/ui/components/container";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
+import { Underline } from "@workspace/ui/components/underline";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { resetAction } from "@/app/(auth)/reset/reset-action";
@@ -59,9 +60,11 @@ export default function Page() {
 
         <div className="flex justify-center gap-2 pt-4">
           <p className="typo-body-medium">{t("alreadyHaveAccount")}</p>
-          <Link href="/login" className="text-primary underline">
-            {t("login")}
-          </Link>
+          <Underline variant="primary">
+            <Link href="/login" className="text-primary">
+              {t("login")}
+            </Link>
+          </Underline>
         </div>
       </div>
     </Container>

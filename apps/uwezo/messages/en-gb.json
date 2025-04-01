@@ -25,7 +25,8 @@
     "remove": "Remove",
     "edit": "Edit",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "youCanAddMultipleFiles": "You can add multiple files"
   },
 
   "Footer": {
@@ -78,7 +79,8 @@
     "backToFrontPage": "Back to front page",
     "needToKnowBefore": "What you need to know before applying",
     "description": "In the application process you will be asked to provide documents and to confirm that all group members agree to the loan application.",
-    "validGroupSectionTitle": "Valid group registration certificate",
+    "validGroupSectionTitle": "Group members’ national IDs",
+    "exampleOfNationalId": "Example of national ID",
     "documentsRequired": "Documents required in the application:",
     "example": "Example",
     "moreInfoAboutTheCertificate": "More info about the certificate",
