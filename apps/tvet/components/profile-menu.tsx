@@ -30,7 +30,7 @@ export const ProfileMenu: FC = () => {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="size-13 hover:bg-header flex flex-col items-center gap-0 rounded-none px-2"
+          className="h-13 hover:bg-header flex w-auto flex-col items-center gap-0 rounded-none px-0"
         >
           <IconUserCircle />
 
