@@ -24,6 +24,7 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
 
   const handleScrollToActiveStep = () => {
     wrapRef.current?.querySelector("[data-active=true]")?.scrollIntoView({
+      block: "nearest",
       behavior: "instant",
       inline: "start",
     });
