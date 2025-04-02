@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/session";
 
 const protectedRoutes = ["/dashboard", "/apply"];
-const publicRoutes = ["/login", "/signup"];
+const publicRoutes = ["/login", "/signup", "/reset"];
 
 const loggedInRedirect = "/dashboard";
 const loggedOutRedirect = "/login";
