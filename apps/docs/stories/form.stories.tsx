@@ -223,9 +223,13 @@ const schema = z.object({
   input: z.string().min(3).max(10),
   textarea: z.string().nonempty(),
   select: z.union([z.literal("1"), z.literal("2"), z.literal("3")]),
-  checkbox: z
-    .union([z.literal("on"), z.null()])
-    .refine((v) => !!v, "Please agree to the terms"),
+  checkbox: z.preprocess(
+    // preprocess values before validation, otherwise refine will not trigger with correct error message
+    (val) => val ?? null,
+    z
+      .union([z.literal("on"), z.null()])
+      .refine((v) => v === "on", { message: "Please agree to the terms" }),
+  ),
   search: z.string().nonempty(),
   callingCode: z.string().nonempty(),
   phone: z.string().nonempty(),

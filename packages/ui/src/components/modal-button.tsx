@@ -8,8 +8,9 @@ import {
   ModalFooter,
   ModalTitle,
   ModalTrigger,
+  type modalVariants,
 } from "@workspace/ui/components/modal";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn, type VariantProps } from "@workspace/ui/lib/utils";
 
 export interface ModalButtonProps extends Omit<ButtonProps, "onClick"> {
   modalTitle: string;
@@ -18,6 +19,9 @@ export interface ModalButtonProps extends Omit<ButtonProps, "onClick"> {
   cancelTitle?: string;
   showX?: boolean;
   onConfirm?: () => unknown;
+  contentProps?: VariantProps<typeof modalVariants>;
+  cancelButtonProps?: Omit<ButtonProps, "onClick">;
+  titleUnderline?: boolean;
 }
 
 export const ModalButton: FC<ModalButtonProps> = ({
@@ -27,6 +31,9 @@ export const ModalButton: FC<ModalButtonProps> = ({
   cancelTitle = "Back",
   onConfirm,
   showX = false,
+  contentProps,
+  cancelButtonProps,
+  titleUnderline,
   ...props
 }) => {
   return (
@@ -34,12 +41,18 @@ export const ModalButton: FC<ModalButtonProps> = ({
       <ModalTrigger asChild>
         <Button className={cn("!px-5")} {...props} />
       </ModalTrigger>
-      <ModalContent showClose={showX}>
-        <ModalTitle>{modalTitle}</ModalTitle>
+      <ModalContent showClose={showX} {...contentProps}>
+        <ModalTitle
+          className={titleUnderline ? "border-b border-neutral-300 pb-4" : ""}
+        >
+          {modalTitle}
+        </ModalTitle>
         <p>{modalText}</p>
         <ModalFooter>
           <ModalClose asChild>
-            <Button variant="danger">{cancelTitle}</Button>
+            <Button variant="danger" {...cancelButtonProps}>
+              {cancelTitle}
+            </Button>
           </ModalClose>
           <ModalClose asChild>
             <Button onClick={onConfirm}>{confirmTitle}</Button>

@@ -35,6 +35,9 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
           confirmTitle={t("Common.submit")}
           modalText={t("ReviewPage.confirmationDescription")}
           modalTitle={t("ReviewPage.confirmationTitle")}
+          cancelButtonProps={{ variant: "secondary" }}
+          contentProps={{ size: "sm" }}
+          titleUnderline
         >
           {t("Common.submit")}
         </ModalButton>

@@ -40,7 +40,7 @@ export default async function Page({ params }: Props) {
         </Link>
       </Button>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-2">
         <h2 className="typo-h2">{data.generalDetails.applicationId}</h2>
         <p className="font-bold">{t("status")}</p>
         <ApplicationStatus status={data.generalDetails.status} />

@@ -289,7 +289,7 @@
   "ConfirmationsPage": {
     "title": "Confirmations",
     "form-title-declarations": "Group declaration",
-    "form-title-members": "Members confirmation",
+    "form-title-members": "Group confirmation",
     "confirmationDataForm": {
       "group-member": "We confirm we are members of this group",
       "declare-true-information": "Declare that the information provided herein is true to the best of our knowledge. We further authorize Uwezo Fund to verify the information given herein and make reference provided here in.",
@@ -308,7 +308,7 @@
   "ReviewPage": {
     "title": "Final review",
     "subTitle": "Review your data before submitting your application.",
-    "confirmationTitle": "Submit application",
+    "confirmationTitle": "Submit application?",
     "confirmationDescription": "Are you sure all the information in the application is correct and you want to submit?"
   },
   "MembersPage": {

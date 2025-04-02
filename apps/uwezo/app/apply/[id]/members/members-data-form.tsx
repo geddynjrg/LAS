@@ -98,14 +98,23 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             label={t("MembersPage.natureOfTheGroup")}
             required
             control={(props) => (
-              <ButtonGroup {...props} type="single">
-                <ButtonGroupItem value="youth">
+              <ButtonGroup {...props} type="single" className="flex flex-row">
+                <ButtonGroupItem
+                  value="youth"
+                  className="typo-body-small-bold grow px-1"
+                >
                   {t("MembersPage.youth")}
                 </ButtonGroupItem>
-                <ButtonGroupItem value="People with disabilities">
+                <ButtonGroupItem
+                  value="People with disabilities"
+                  className="typo-body-small-bold grow px-1"
+                >
                   {t("MembersPage.peopleWithDisabilities")}
                 </ButtonGroupItem>
-                <ButtonGroupItem value="Woman">
+                <ButtonGroupItem
+                  value="Woman"
+                  className="typo-body-small-bold grow px-1"
+                >
                   {t("MembersPage.women")}
                 </ButtonGroupItem>
               </ButtonGroup>

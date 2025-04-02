@@ -83,7 +83,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         </Button>
       </div>
 
-      <div className="mt-4 border-t border-neutral-400 pt-4">
+      <div className="mt-4 space-y-2 border-t border-neutral-400 pt-4">
         <p className="font-bold">{t("status.title")}</p>
         <ApplicationStatus status={status} />
       </div>
@@ -125,7 +125,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
                     variant="primary"
                     className="text-primary hover:cursor-pointer"
                   >
-                    <p className="mt-4 flex items-center">
+                    <p className="mt-4 flex items-center gap-1">
                       {t.rich("stepDescription.readMorePending", {
                         lineBreak: () => <br />,
                       })}

@@ -100,7 +100,7 @@ export const ButtonGroupItem: FC<ToggleGroupItemProps> = ({
           size: context.size || size,
           className,
         }),
-        "not-last:border-r-0 group flex-1 rounded-none first:rounded-l-full last:rounded-r-full",
+        "not-last:border-r-0 group h-full flex-1 rounded-none first:rounded-l-full last:rounded-r-full",
         variant === "secondary" && "bg-foreground",
         className,
       )}

@@ -12,7 +12,7 @@ export interface StepperProps {
 }
 
 export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
-  const wrapRef = useRef<HTMLOListElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   useMount(() => {
     handleScrollToActiveStep();
@@ -34,19 +34,21 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
   };
 
   return (
-    <ol
-      className={cn(
-        "bg-background scrollbar-width-none flex flex-row overflow-x-auto rounded-bl-sm rounded-tl-sm",
-        className,
-      )}
-      ref={wrapRef}
-    >
-      {steps.map((step, i) => (
-        <Step stepNumber={i + 1} activeStep={activeStep} key={i}>
-          {step}
-        </Step>
-      ))}
-    </ol>
+    <div ref={wrapRef} className="flex flex-row overflow-x-auto">
+      <ol
+        className={cn(
+          "bg-background scrollbar-width-none mr-[100px] flex flex-row rounded-bl-sm rounded-tl-sm",
+          className,
+        )}
+      >
+        {steps.map((step, i) => (
+          <Step stepNumber={i + 1} activeStep={activeStep} key={i}>
+            {step}
+          </Step>
+        ))}
+      </ol>
+      {/* <div className="h-full w-[100px] bg-red-500" /> */}
+    </div>
   );
 };
 

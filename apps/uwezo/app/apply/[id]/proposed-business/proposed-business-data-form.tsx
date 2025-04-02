@@ -306,7 +306,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             </Underline>
           </div>
 
-          <div className="border-t border-neutral-400">
+          <div className="overflow-hidden border-t border-neutral-400">
             <h2 className="typo-h5 py-4">
               {t(
                 "ApplicationDetailsPage.proposedBusiness.businessPerformance.netSurplus",

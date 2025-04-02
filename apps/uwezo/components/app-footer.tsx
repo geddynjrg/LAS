@@ -1,5 +1,4 @@
 import {
-  IconBrandFacebookFilled,
   IconBrandTwitterFilled,
   IconDeviceMobile,
   IconHomeFilled,
@@ -10,7 +9,6 @@ import Link from "next/link";
 import { Children, FC, ReactNode } from "react";
 
 import { Container } from "@workspace/ui/components/container";
-import { IconFacebook } from "@workspace/ui/components/icon/icon-facebook";
 import { IconFacebookInverted } from "@workspace/ui/components/icon/icon-facebook-inverted";
 import { cn } from "@workspace/ui/lib/utils";
 

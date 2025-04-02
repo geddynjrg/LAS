@@ -21,18 +21,21 @@ export default async function Page() {
 
         <p>{t("ApplyPage.DonePage.application-received-message")}</p>
 
-        <DataPair className={cn("w-full gap-2")}>
+        <DataPair className={cn("flex w-full flex-row gap-2")}>
           <Button
-            className={cn("grow-1", "w-full max-w-[27rem] px-3")}
+            className={cn("grow", "w-full max-w-[27rem] px-2")}
             variant="secondary"
             asChild
           >
-            <Link href="#" download="Application">
+            <Link href="#" download="Application" className="whitespace-nowrap">
               {t("ApplyPage.DonePage.download-application")}
             </Link>
           </Button>
           <Button
-            className={cn("grow-1", "w-full max-w-[27rem] px-3")}
+            className={cn(
+              "grow",
+              "w-full max-w-[27rem] whitespace-nowrap px-2",
+            )}
             variant="secondary"
           >
             {t("ApplyPage.DonePage.send-to-email")}
