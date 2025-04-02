@@ -5,7 +5,7 @@ import { IconFacebook } from "@workspace/ui/components/icon/icon-facebook";
 import { IconInstagram } from "@workspace/ui/components/icon/icon-instagram";
 import { IconTikTok } from "@workspace/ui/components/icon/icon-tiktok";
 import { IconX } from "@workspace/ui/components/icon/icon-x";
-import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
+import { cva, type VariantProps } from "@workspace/ui/lib/utils";
 
 export const socialMediaVariants = cva({
   variants: {
@@ -32,6 +32,7 @@ export const SocialMediaCard: FC<SocialMediaCardProps> = ({
 }) => {
   return (
     <div className="relative size-[312px]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl}
         alt="Students in a classroom"

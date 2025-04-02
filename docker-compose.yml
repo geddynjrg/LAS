@@ -18,7 +18,7 @@ services:
         - NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID}
     restart: unless-stopped
     ports:
-      - 3000:8080
+      - 8080
 
   uwezo:
     env_file: ./apps/uwezo/.env
