@@ -207,6 +207,7 @@ export const carouselControlVariants = cva({
     variant: {
       default: "border-foreground",
       white: "border-background",
+      uwezo: "border-neutral-500",
     },
   },
   defaultVariants: {
@@ -219,19 +220,21 @@ export interface CarouselControlsProps
   extends VariantProps<typeof carouselControlVariants> {
   className?: string;
   visibleDots?: number;
+  hideControls?: boolean;
 }
 
 export const CarouselControls: FC<CarouselControlsProps> = ({
   className,
   visibleDots,
   position,
+  hideControls = false,
   variant,
 }) => {
   return (
     <div className={cn(carouselControlVariants({ position }), className)}>
-      <CarouselPrevious variant={variant} />
+      {!hideControls && <CarouselPrevious variant={variant} />}
       <CarouselDots visibleDots={visibleDots} variant={variant} />
-      <CarouselNext variant={variant} />
+      {!hideControls && <CarouselNext variant={variant} />}
     </div>
   );
 };
@@ -241,6 +244,7 @@ export const carouselArrowsVariants = cva({
     variant: {
       default: "text-foreground",
       white: "text-primary-foreground",
+      uwezo: "text-neutral-500",
     },
   },
   defaultVariants: {
@@ -305,6 +309,8 @@ export const carouselDotsVariants = cva({
         "border-foreground data-[active=true]:bg-primary data-[active=true]:border-primary",
       white:
         "border-background data-[active=true]:bg-background data-[active=true]:border-background",
+      uwezo:
+        "data-[active=true]:bg-primary data-[active=true]:border-primary h-1.5 w-4 border-neutral-500 bg-neutral-500",
     },
   },
   defaultVariants: {
@@ -323,7 +329,12 @@ export const CarouselDots: FC<CarouselDotsProps> = ({
   const { api, selectedItem } = useCarousel();
 
   return (
-    <div className="flex flex-row items-center gap-3">
+    <div
+      className={cn(
+        "flex flex-row items-center gap-3",
+        variant === "uwezo" && "gap-1",
+      )}
+    >
       {api?.scrollSnapList().map((_, index) => {
         const totalSlides = api.scrollSnapList().length;
         const isActive = selectedItem === index;

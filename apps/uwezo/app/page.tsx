@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  IconFriends,
-  IconGraph,
-  IconMan,
-  IconStars,
-  IconWoman,
-} from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC } from "react";
@@ -20,6 +13,11 @@ import {
 } from "@workspace/ui/components/carousel";
 import { Container } from "@workspace/ui/components/container";
 import { Countup } from "@workspace/ui/components/countup";
+import { IconCash } from "@workspace/ui/components/icon/icon-cash";
+import { IconOkStar } from "@workspace/ui/components/icon/icon-ok-star";
+import { IconProfile } from "@workspace/ui/components/icon/icon-profile";
+import { IconStockGraph } from "@workspace/ui/components/icon/icon-stock-graph";
+import { IconUsers } from "@workspace/ui/components/icon/icon-users";
 import { LeadingSlash } from "@workspace/ui/components/leading-slash";
 import { Card } from "@workspace/ui/components/uwezo/card";
 import { MetricCard } from "@workspace/ui/components/uwezo/metric-card";
@@ -209,33 +207,33 @@ function AchievementsSection() {
           <MetricCard
             title={t("achievements.womenGroup")}
             count={50842}
-            icon={<IconWoman />}
+            icon={<IconProfile width={18} height={18} />}
           />
           <MetricCard
             title={t("achievements.youthGroup")}
             count={26409}
-            icon={<IconFriends />}
+            icon={<IconUsers width={18} height={18} />}
           />
           <MetricCard
             title={t("achievements.pwdGroup")}
             count={2023}
-            icon={<IconStars />}
+            icon={<IconOkStar width={18} height={18} />}
           />
         </div>
         <div className="space-y-5">
           <MetricCard
             title={t("achievements.female")}
             count={789277}
-            icon={<IconWoman />}
+            icon={<IconProfile width={18} height={18} />}
           />
           <MetricCard
             title={t("achievements.male")}
             count={337452}
-            icon={<IconMan />}
+            icon={<IconCash width={18} height={18} />}
           />
         </div>
         <div className="bg-theme-400 flex flex-col items-center justify-center self-start px-7 py-11">
-          <IconGraph className="text-primary" size={70} />
+          <IconStockGraph className="text-primary" width={70} height={70} />
           <h1 className="typo-h2 md:typo-h4">
             <Countup
               end={7230308489}
@@ -281,7 +279,7 @@ function NewsSection() {
             ))}
           </CarouselContent>
 
-          <CarouselControls />
+          <CarouselControls variant="uwezo" hideControls />
         </Carousel>
       </section>
     </Container>

@@ -19,6 +19,12 @@
       "invalid_union": "Tafadhali chagua chaguo sahihi"
     }
   },
+  "InfoPopover": {
+    "help": "Msaada",
+    "close": "Funga",
+    "title": "Unahitaji msaada?",
+    "faq": "Maswali yanayoulizwa mara kwa mara"
+  },
 
   "FileUploadInput": {
     "takePicture": "Piga picha",

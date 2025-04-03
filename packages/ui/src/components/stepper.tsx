@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type FC, type ReactNode } from "react";
 
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 import { useMount } from "@workspace/ui/hooks/use-mount";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -14,6 +15,8 @@ export interface StepperProps {
 export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
   const wrapRef = useRef<HTMLDivElement>(null);
 
+  const isMobile = useIsMobile();
+
   useMount(() => {
     handleScrollToActiveStep();
     window.addEventListener("resize", handleScrollToActiveStep, {
@@ -23,31 +26,40 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
 
   useEffect(() => {
     handleScrollToActiveStep();
-  }, [activeStep]);
+  });
 
   const handleScrollToActiveStep = () => {
-    wrapRef.current?.querySelector("[data-active=true]")?.scrollIntoView({
-      block: "nearest",
-      behavior: "instant",
-      inline: "start",
-    });
+    wrapRef.current
+      ?.querySelector(
+        isMobile ? "[data-active=true]" : "[data-before-active=true]",
+      )
+      ?.scrollIntoView({
+        block: "nearest",
+        behavior: "instant",
+        inline: "start",
+      });
   };
 
   return (
-    <div ref={wrapRef} className="flex flex-row overflow-x-auto">
-      <ol
-        className={cn(
-          "bg-background scrollbar-width-none mr-[100px] flex flex-row rounded-bl-sm rounded-tl-sm",
-          className,
-        )}
-      >
+    <div
+      ref={wrapRef}
+      className={cn(
+        "scrollbar-width-none flex flex-row overflow-x-auto",
+        activeStep === 1 && "rounded-bl-sm rounded-tl-sm",
+      )}
+    >
+      <ol className={cn("bg-background mr-[100vw] flex flex-row", className)}>
         {steps.map((step, i) => (
-          <Step stepNumber={i + 1} activeStep={activeStep} key={i}>
+          <Step
+            stepNumber={i + 1}
+            activeStep={activeStep}
+            lastStepNumber={steps.length}
+            key={i}
+          >
             {step}
           </Step>
         ))}
       </ol>
-      {/* <div className="h-full w-[100px] bg-red-500" /> */}
     </div>
   );
 };
@@ -55,12 +67,23 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
 interface StepProps {
   stepNumber: number;
   activeStep: number;
+  lastStepNumber: number;
   children: ReactNode;
 }
 
-const Step: FC<StepProps> = ({ stepNumber, activeStep, children }) => {
+const Step: FC<StepProps> = ({
+  stepNumber,
+  activeStep,
+  lastStepNumber,
+  children,
+}) => {
   return (
     <li
+      data-before-active={handleDataBeforeActive(
+        activeStep,
+        stepNumber,
+        lastStepNumber,
+      )}
       data-active={activeStep === stepNumber}
       className={cn(
         "group flex flex-row gap-2 whitespace-nowrap px-4 py-2 focus-visible:outline-none",
@@ -74,6 +97,22 @@ const Step: FC<StepProps> = ({ stepNumber, activeStep, children }) => {
       {children}
     </li>
   );
+};
+
+const handleDataBeforeActive = (
+  activeStep: number,
+  stepNumber: number,
+  lastStepNumber: number,
+) => {
+  if (activeStep === 1 && stepNumber === 1) {
+    return true;
+  }
+
+  if (activeStep === lastStepNumber && activeStep === stepNumber) {
+    return true;
+  }
+
+  return activeStep - 1 === stepNumber && activeStep !== lastStepNumber;
 };
 
 const StepNumber: FC<{ activeStep: number; stepNumber: number }> = ({

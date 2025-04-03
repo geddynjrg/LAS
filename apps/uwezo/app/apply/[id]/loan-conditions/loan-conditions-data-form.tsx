@@ -1,5 +1,6 @@
 "use client";
 
+import { IconCaretDownFilled, IconSearch } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
@@ -151,6 +152,9 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             required
             control={(props) => (
               <SearchInput
+                startDecorator={<IconSearch />}
+                endDecorator={<IconCaretDownFilled />}
+                placeholder={t("ApplicationDetailsPage.loan.selectBank")}
                 {...props}
                 options={[
                   { label: "bank 1", value: "bank 1" },

@@ -195,7 +195,8 @@
       "maximumLoan": "Maximum amount is 100 000 KSh",
       "bankName": "Group Bank name",
       "bankBranch": "Group Bank branch",
-      "accountNumber": "Bank Account number"
+      "accountNumber": "Bank Account number",
+      "selectBank": "Select bank"
     },
     "members": {
       "members": "Members",

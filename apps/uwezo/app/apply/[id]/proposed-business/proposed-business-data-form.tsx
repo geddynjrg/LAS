@@ -113,13 +113,13 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             )}
             required
             control={(props) => (
-              <ButtonGroup {...props} type="single">
-                <ButtonGroupItem value="Start-up">
+              <ButtonGroup {...props} type="single" className="flex flex-row">
+                <ButtonGroupItem value="Start-up" className="grow px-1">
                   {t(
                     "ApplicationDetailsPage.proposedBusiness.businessInfo.startup",
                   )}
                 </ButtonGroupItem>
-                <ButtonGroupItem value="Expansion">
+                <ButtonGroupItem value="Expansion" className="grow px-1">
                   {t(
                     "ApplicationDetailsPage.proposedBusiness.businessInfo.expansion",
                   )}

@@ -194,7 +194,8 @@
       "maximumLoan": "Kiwango cha juu ni 100,000 KSh",
       "bankName": "Jina la Benki ya Kikundi",
       "bankBranch": "Tawi la Benki ya Kikundi",
-      "accountNumber": "Nambari ya Akaunti ya Benki"
+      "accountNumber": "Nambari ya Akaunti ya Benki",
+      "selectBank": "Chagua benki"
     },
     "members": {
       "members": "Wanachama",
