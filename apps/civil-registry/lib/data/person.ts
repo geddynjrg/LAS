@@ -42,7 +42,7 @@ export interface Person {
   affidavit?: string;
 }
 
-export let persons: Person[] = [
+export const persons: Person[] = [
   {
     id: "1",
     firstName: "Mary",
@@ -165,7 +165,9 @@ export type BirthRegistrationStore = {
 };
 
 declare global {
+  // eslint-disable-next-line no-var
   var personsStore: Person[];
+  // eslint-disable-next-line no-var
   var birthRegistrationStore: BirthRegistrationStore;
 }
 
@@ -177,9 +179,8 @@ globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {
   informant: { id: generateUUID() } as Person,
 };
 
-export const personsStore: Person[] = globalThis.personsStore;
-export let birthRegistrationStore: BirthRegistrationStore =
-  globalThis.birthRegistrationStore;
+export const personsStore = globalThis.personsStore;
+export let birthRegistrationStore = globalThis.birthRegistrationStore;
 
 export function resetBirthRegistrationStore() {
   globalThis.birthRegistrationStore = {

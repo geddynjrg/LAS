@@ -37,7 +37,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
     [],
   );
 
-  const [state, formAction, isPending] = useForm(
+  const [state, formAction, _isPending] = useForm(
     guardianAction,
     guardianSchema,
     defaultValues,

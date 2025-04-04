@@ -20,16 +20,16 @@ export interface SignupFormProps {
 export const SignupForm: FC<SignupFormProps> = ({ redirectTo }) => {
   const t = useTranslations("SignUpPage");
   const { setSession } = useSession();
-  const router = useRouter();
+  const { replace } = useRouter();
   const [state, formAction, isPending] = useForm(signupAction, signupSchema);
 
   // update session after signup
   useEffect(() => {
     if (state.success) {
       setSession(true);
-      router.replace(redirectTo ?? "/dashboard");
+      replace(redirectTo ?? "/dashboard");
     }
-  }, [state.success]);
+  }, [redirectTo, replace, setSession, state.success]);
 
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">

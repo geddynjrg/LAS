@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as FormPrimitive from "@radix-ui/react-form";
 import {
   useFormatter,
@@ -13,6 +12,10 @@ import { InputGroup } from "@workspace/ui/components/input-group";
 import { labelVariants } from "@workspace/ui/components/label";
 import { cn } from "@workspace/ui/lib/utils";
 import type { FlattenObjectKeys } from "@workspace/ui/types";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type InputValues = Record<string, any>;
+type AnyFormFieldError = (string | z.ZodIssue)[] | FormFieldError;
 
 export const Form = FormPrimitive.Root;
 
@@ -31,7 +34,7 @@ export interface FormFieldState<T extends Record<string, unknown>> {
   errors?: {
     _errors?: string[]; // Global form-level errors
   } & {
-    [K in keyof T]?: (string | z.ZodIssue)[] | FormFieldError;
+    [K in keyof T]?: AnyFormFieldError;
   };
 }
 
@@ -51,7 +54,9 @@ export interface FieldProps<
   TInputs extends Record<string, unknown>,
   TName extends Path<TInputs>,
 > {
-  control: (props: FieldControlProps<TName, Path<TInputs>>) => ReactNode;
+  control:
+    | ((props: FieldControlProps<TName, Path<TInputs>>) => ReactNode)
+    | null;
   name: TName;
   state?: FormFieldState<TInputs>;
   label?: ReactNode;
@@ -63,97 +68,8 @@ export interface FieldProps<
   className?: string;
 }
 
-const getFormValue = <TInputs extends Record<string, any>>(
-  fieldName: string,
-  state?: { values?: Partial<TInputs> },
-): TInputs[keyof TInputs] | undefined => {
-  if (!state?.values) return undefined;
-
-  // First check for direct field value
-  let fieldValue = state.values[fieldName] as
-    | TInputs[keyof TInputs]
-    | undefined;
-
-  // Check if values contain a "children" structure
-  if (state.values.children) {
-    const parts = fieldName.split(".");
-    const fieldKey = parts.pop();
-    const index = parseInt(parts[1] ?? "0", 10);
-
-    if (!isNaN(index) && state.values.children[index]) {
-      fieldValue = state.values.children[index][fieldKey!] as
-        | TInputs[keyof TInputs]
-        | undefined;
-    }
-  }
-
-  const parts = fieldName.split(".");
-  const name = parts[0];
-  const fieldKey = parts.pop();
-  const index = parseInt(parts[1] ?? "0", 10);
-
-  if (
-    name !== undefined &&
-    typeof state.values[name] === "object" &&
-    state.values[name] !== null
-  ) {
-    if (!isNaN(index) && state.values[name][index]) {
-      if (
-        (fieldKey !== undefined && state.values[name][index][fieldKey]) ||
-        typeof state.values[name][index] === "object"
-      ) {
-        fieldValue = state.values[name][index][fieldKey!] as
-          | TInputs[keyof TInputs]
-          | undefined;
-      } else {
-        fieldValue = state.values[name] as TInputs[keyof TInputs] | undefined;
-      }
-    }
-  }
-
-  // Handle case where field itself has "children"
-  if (
-    fieldValue &&
-    typeof fieldValue === "object" &&
-    "children" in fieldValue
-  ) {
-    return (fieldValue as { children?: any }).children;
-  }
-
-  return fieldValue;
-};
-
-const getErrorMessage = <TInputs extends Record<string, any>>(
-  fieldName: string,
-  state: FormFieldState<TInputs> | undefined,
-): string | undefined | { errorMessage: string; name: string } => {
-  if (!state?.errors) return undefined;
-
-  // Split fieldName into path segments (e.g., "contacts.children.0.email" → ["contacts", "children", "0", "email"])
-  const pathParts = fieldName.split(".");
-  let errorEntry: any = state.errors;
-
-  // Traverse the nested error structure dynamically
-  for (const part of pathParts) {
-    if (!errorEntry || typeof errorEntry !== "object") return undefined;
-    errorEntry = errorEntry[part]; // Go deeper into the object
-  }
-
-  // Case 1: Return the first _errors entry as a string
-  if (Array.isArray(errorEntry?._errors) && errorEntry._errors.length > 0) {
-    return { errorMessage: errorEntry._errors[0], name: fieldName };
-  }
-
-  // Case 2: If errorEntry is an array (e.g., fieldErrors as an array), return the first entry
-  if (Array.isArray(errorEntry) && errorEntry.length > 0) {
-    return { errorMessage: errorEntry[0], name: fieldName };
-  }
-
-  return undefined;
-};
-
 export const Field = <
-  TInputs extends Record<string, any>,
+  TInputs extends InputValues,
   TName extends Path<TInputs>,
 >({
   state,
@@ -188,22 +104,26 @@ export const Field = <
           className={cn(labelVariants(), "mb-1 font-bold")}
         >
           {label}
-          {required && <span className="text-destructive">*</span>}
+          {required && editable && <span className="text-destructive">*</span>}
         </FormPrimitive.Label>
       )}
       {isVisible ? (
         editable ? (
           <FormPrimitive.Control asChild>
-            {control({
-              id,
-              name,
-              defaultValue: defaultValues,
-            })}
+            {control &&
+              control({
+                id,
+                name,
+                defaultValue: defaultValues,
+              })}
           </FormPrimitive.Control>
         ) : (
           <p>
             <input type="hidden" name={name} value={defaultValues} />
-            {isDate && defaultValues
+            {isDate &&
+            defaultValues &&
+            (typeof defaultValues === "string" ||
+              typeof defaultValues === "number")
               ? format.dateTime(new Date(defaultValues))
               : (defaultValues ?? "–")}
           </p>
@@ -230,28 +150,6 @@ export const Field = <
             })()}
           </FieldMessage>
         )}
-
-      {/* {errorMessage && (
-        <FieldMessage>
-          {typeof errorMessage === "string"
-            ? errorMessage
-            : (() => {
-                // Ensure errorMessage.message is a string before translation
-                const messageKey = errorMessage?.message;
-                if (
-                  typeof messageKey === "string" &&
-                  t.has(messageKey as FlattenObjectKeys<IntlMessages>)
-                ) {
-                  return t(
-                    messageKey as FlattenObjectKeys<IntlMessages>,
-                    errorMessage as unknown as TranslationValues,
-                  );
-                }
-
-                return messageKey; // Fallback to displaying raw message
-              })()}
-        </FieldMessage>
-      )} */}
 
       {typeof errorMessage === "string" && errorMessage && (
         <FieldMessage>
@@ -322,3 +220,80 @@ const FieldMessage: FC<{
     {...props}
   />
 );
+
+const getFormValue = <TInputs extends InputValues, TName extends keyof TInputs>(
+  fieldName: TName,
+  state?: { values?: FormFieldState<TInputs>["values"] },
+) => {
+  const pathParts =
+    typeof fieldName === "string" ? fieldName.split(".") : [fieldName];
+  const name = pathParts.shift();
+
+  if (!state?.values || !name) {
+    return undefined;
+  }
+
+  let value = state.values[name];
+
+  // Return value if we are at the end of the path
+  if (pathParts.length === 0) {
+    return value;
+  }
+
+  // If the value is an array, we need to return the value at the index
+  if (Array.isArray(value)) {
+    const indexStr = pathParts.shift();
+    const index = indexStr ? parseInt(indexStr.toString(), 10) : undefined;
+
+    if (typeof index !== "number" || isNaN(index)) {
+      return undefined;
+    }
+
+    value = value[index];
+  }
+
+  // If the value is an object, we need to return the value at the key
+  if (typeof value === "object" && value !== null) {
+    return getFormValue(pathParts.join("."), {
+      values: value,
+    });
+  }
+
+  return value;
+};
+
+const getErrorMessage = <TInputs extends InputValues, TName extends string>(
+  fieldName: TName,
+  state?: { errors?: FormFieldState<TInputs>["errors"] | undefined },
+) => {
+  if (!state?.errors) {
+    return undefined;
+  }
+
+  // Split fieldName into path segments (e.g., "contacts.children.0.email" → ["contacts", "children", "0", "email"])
+  const pathParts =
+    typeof fieldName === "string" ? fieldName.split(".") : [fieldName];
+
+  let errorEntry = state.errors;
+
+  // Traverse the nested error structure dynamically
+  for (const part of pathParts) {
+    if (!errorEntry || typeof errorEntry !== "object" || errorEntry === null) {
+      return undefined;
+    }
+
+    errorEntry = errorEntry[part] as typeof state.errors; // Go deeper into the object
+  }
+
+  // Case 1: Return the first _errors entry as a string
+  if (Array.isArray(errorEntry?._errors) && errorEntry._errors.length > 0) {
+    return { errorMessage: errorEntry._errors[0], name: fieldName };
+  }
+
+  // Case 2: If errorEntry is an array (e.g., fieldErrors as an array), return the first entry
+  if (Array.isArray(errorEntry) && errorEntry.length > 0) {
+    return { errorMessage: errorEntry[0], name: fieldName };
+  }
+
+  return undefined;
+};

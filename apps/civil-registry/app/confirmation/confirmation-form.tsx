@@ -7,7 +7,7 @@ import { IconCheck } from "@workspace/ui/components/icon-check";
 import { Loader } from "@workspace/ui/components/loader";
 
 import { FormWrap } from "@/app/add/form-wrap";
-import type { Person } from "@/lib/schema/person-schema";
+import type { Person } from "@/lib/data/person";
 import { saveForm } from "@/lib/services/birth-registration-service";
 
 export interface ConfirmationFormProps {

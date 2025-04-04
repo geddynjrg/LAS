@@ -1,6 +1,6 @@
 import { IconInfoSquareRounded } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useState, type FC, type ReactNode } from "react";
+import { type FC, type ReactNode } from "react";
 
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
@@ -8,24 +8,28 @@ import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field, Form } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm } from "@workspace/ui/hooks/use-form";
+import { useFormSubmitted } from "@workspace/ui/hooks/use-form-submitted";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { childAction } from "@/app/edit/[personId]/child/child-action";
 import { childSchema } from "@/app/edit/[personId]/child/child-schema";
 import type { Person } from "@/lib/data/person";
+import { getObjectDiff } from "@/lib/util/get-object-diff";
 
 interface ChildFormBlockProps {
   defaultValues: Person;
   disabled: boolean;
-  setRequirePayment: (value: boolean) => void;
-  handleIsEditing: (id: string) => void;
+  isEditing: boolean;
+  onEdit: () => void;
+  onSubmit: (changedFields: Partial<Person>) => void;
 }
 
 export const ChildFormBlock: FC<ChildFormBlockProps> = ({
   disabled,
   defaultValues,
-  setRequirePayment,
-  handleIsEditing,
+  isEditing,
+  onEdit,
+  onSubmit,
 }) => {
   const t = useTranslations();
   const sexDisplayFormat = {
@@ -33,8 +37,6 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
     F: t("DetailsPage.female"),
     I: t("DetailsPage.intersex"),
   };
-  const [person, setPerson] = useState<Person>(defaultValues);
-  const [toggleEdit, setToggleEdit] = useState<boolean>(false);
 
   const [state, action, isPending] = useForm(
     childAction,
@@ -42,43 +44,23 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
     defaultValues,
   );
 
-  useEffect(() => {
-    if (state.success) {
-      if (state.values) {
-        const newValues = state.values as Partial<Person>;
-        const changedFields: Partial<Person> = {};
-
-        Object.keys(newValues).forEach((key) => {
-          let personKey = key as keyof Person;
-          if (newValues[personKey] !== undefined) {
-            const newValue = newValues[personKey];
-
-            if (newValue !== undefined && newValue !== person[personKey]) {
-              // @ts-ignore
-              changedFields[personKey] = newValue as Person[keyof Person];
-            }
-          }
-        });
-
-        if (Object.keys(changedFields).length > 0) {
-          setPerson((prevPerson) => ({
-            ...prevPerson,
-            ...changedFields,
-          }));
-
-          setRequirePayment(true);
-        }
-      }
-      handleIsEditing("");
-      setToggleEdit(false);
+  useFormSubmitted(isPending, () => {
+    if (!state.success) {
+      return;
     }
-  }, [state]);
 
-  const [firstName] = useState<string>(defaultValues?.firstName ?? "");
-  const [lastName] = useState<string>(defaultValues?.lastName ?? "");
-  const [middleName] = useState<string>(defaultValues?.middleName ?? "");
+    const changedFields = getObjectDiff(defaultValues, state?.values);
 
-  const fullName = [firstName, middleName, lastName].filter(Boolean).join(" ");
+    onSubmit(changedFields);
+  });
+
+  const firstName = state.values?.firstName ?? "";
+  const middleName = state.values?.middleName ?? "";
+  const lastName = defaultValues.lastName ?? "";
+  const fullName = [firstName, middleName, lastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
 
   return (
     <Form className="space-y-6" action={action}>
@@ -92,21 +74,17 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
       <DataBlock
         title={t(`DetailsPage.title-child`)}
         disabled={disabled}
-        active={toggleEdit}
-        toggleEdit={() => {
-          handleIsEditing(toggleEdit ? "" : person.id);
-          setToggleEdit(!toggleEdit);
-
-          return null;
-        }}
+        active={isEditing}
+        isPending={isPending}
+        toggleEdit={onEdit}
       >
         <input
           type="hidden"
           name="natureOfBirth"
-          value={person?.natureOfBirth}
+          value={state.values?.natureOfBirth}
         />
 
-        {toggleEdit ? (
+        {isEditing ? (
           <>
             <Field
               state={state}
@@ -136,7 +114,7 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />
 
-            {fullName && fullName !== " " ? fullName : "–"}
+            {fullName ?? "–"}
           </DataNode>
         )}
 
@@ -155,8 +133,8 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           label={t("DetailsPage.sex")}
           variant={disabled ? "disabled" : "default"}
         >
-          <input type="hidden" name="sex" value={person.sex} />
-          {person.sex && sexDisplayFormat[person.sex]}
+          <input type="hidden" name="sex" value={state.values?.sex} />
+          {state.values?.sex && sexDisplayFormat[state.values.sex]}
         </DataNode>
 
         <EditMessage>{t("DetailsPage.change-sex-message")}</EditMessage>
@@ -169,7 +147,7 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           control={(props) => <Input {...props} endDecorator="kg" />}
         />
 
-        {person?.healthInstitution !== "OTHER" && (
+        {state.values?.healthInstitution !== "OTHER" && (
           <Field
             state={state}
             name="healthInstitution"
@@ -179,7 +157,7 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           />
         )}
 
-        {person?.healthInstitution === "OTHER" && (
+        {state.values?.healthInstitution === "OTHER" && (
           <>
             <Field
               state={state}

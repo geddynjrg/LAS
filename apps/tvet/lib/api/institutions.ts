@@ -9,8 +9,6 @@ export async function getInstitutions() {
     params: { query: { _format: "json" } },
   });
 
-  const data = res.data;
-
   return validate(res, schema);
 }
 

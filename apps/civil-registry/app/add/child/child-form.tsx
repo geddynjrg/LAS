@@ -94,7 +94,12 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
   };
 
   return (
-    <FormWrap action={formAction} cancelUrl="/" className="space-y-4">
+    <FormWrap
+      action={formAction}
+      isPending={isPending}
+      cancelUrl="/"
+      className="space-y-4"
+    >
       <>
         {children?.map((child, childIndex) => (
           <div key={childIndex}>

@@ -9,6 +9,12 @@ export const validationStatusSchema = z
   .enum(["alert", "success", "pending", "rejected"])
   .optional();
 
+export const personContactSchema = z.object({
+  phoneCode: z.string().trim().nonempty(),
+  phone: z.string().trim().nonempty(),
+  email: z.string().email().optional(),
+});
+
 const basePersonSchema = z.object({
   id: z.string(),
   firstName: z.string(),
@@ -27,15 +33,7 @@ const basePersonSchema = z.object({
   nationality: z.string().optional(),
   maritalStatus: z.string().optional(),
   education: z.string().optional(),
-  contacts: z
-    .array(
-      z.object({
-        phoneCode: z.string().nonempty(),
-        phone: z.string().nonempty(),
-        email: z.string().optional(),
-      }),
-    )
-    .min(1),
+  contacts: z.array(personContactSchema).min(1),
   healthInstitution: z.string().optional(),
   birthSublocation: z.string().optional(),
   birthSublocationDistrict: z.string().optional(),
@@ -44,8 +42,16 @@ const basePersonSchema = z.object({
   informantType: z.string().optional(),
 });
 
+export type Person = z.infer<typeof basePersonSchema> & {
+  father?: string | null | undefined;
+  mother?: string | null | undefined;
+  siblings?: Person[];
+  children?: Person[];
+  spouse?: Person;
+};
+
 // Schema with recursive relations
-export const personSchema: z.ZodType<any> = basePersonSchema.extend({
+export const personSchema: z.ZodType<Person> = basePersonSchema.extend({
   father: z
     .string()
     .optional()
@@ -195,24 +201,17 @@ export const personFormSchema = z.object({
     .optional()
     .nullable()
     .transform((val) => val ?? undefined),
-  contacts: z
-    .array(
-      z.object({
-        phoneCode: z.string().nonempty(),
-        phone: z.string().nonempty(),
-        email: z.string().optional(),
-      }),
-    )
-    .min(1),
+  contacts: z.array(personContactSchema).min(1),
 });
 
-export const fatherFormSchema: z.ZodType<any> = personFormSchema.extend({
+export const fatherFormSchema = personFormSchema.extend({
   affidavitFile: z
     .instanceof(File, { message: "File is required" })
     .refine((file) => file.size > 0, "File is required")
     .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
 });
-export const childFormSchema: z.ZodType<any> = personFormSchema.extend({
+
+export const childFormSchema = personFormSchema.extend({
   natureOfBirth: NatureOfBirthSchema,
   firstName: z.string().nonempty(),
   sex: SexTypeSchema,
@@ -230,17 +229,10 @@ export const childFormSchema: z.ZodType<any> = personFormSchema.extend({
     .nullable()
     .transform((val) => val ?? undefined),
   contacts: z
-    .array(
-      z.object({
-        phoneCode: z.string().optional(),
-        phone: z.string().optional(),
-        email: z.string().optional(),
-      }),
-    )
+    .array(personContactSchema)
     .optional()
     .nullable()
     .transform((val) => val ?? undefined),
 });
 
-export type Person = z.infer<typeof personSchema>;
 export type PersonForm = z.infer<typeof personFormSchema>;

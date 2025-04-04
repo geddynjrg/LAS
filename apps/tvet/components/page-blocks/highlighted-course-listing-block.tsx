@@ -12,8 +12,8 @@ import { cn } from "@workspace/ui/lib/utils";
 import { SearchCoursesForm } from "@/components/search-courses-form";
 import type { HighlightedCourseListingBlockType } from "@/lib/api/schema/block/highlighted-course-listing-block.schema";
 
-export interface HighlightedCourseListingBlockProps
-  extends HighlightedCourseListingBlockType {}
+export type HighlightedCourseListingBlockProps =
+  HighlightedCourseListingBlockType;
 
 export const HighlightedCourseListingBlock: FC<
   HighlightedCourseListingBlockProps

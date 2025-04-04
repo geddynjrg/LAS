@@ -7,7 +7,7 @@ export interface ApplicantPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ChildPage({}: ApplicantPageProps) {
+export default async function ChildPage(_props: ApplicantPageProps) {
   const child = await getFormPersonByType("child");
 
   const id =

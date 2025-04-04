@@ -14,6 +14,7 @@ export interface FormActionBarProps {
   nextLabel?: string;
   nextUrl?: string;
   hasBtnIcons?: boolean;
+  isPending?: boolean;
   submitType?: "disabled" | "hidden" | "active";
 }
 
@@ -26,12 +27,13 @@ export const FormActionBar: FC<FormActionBarProps> = ({
   nextLabel = "Next",
   nextUrl = null,
   hasBtnIcons = true,
+  isPending,
 }) => {
   return (
     <ActionBar className="mt-8">
       <Container className="flex flex-row items-center justify-between gap-4 max-md:[&>*]:flex-1">
         {cancelUrl && (
-          <Button variant="secondary" asChild>
+          <Button variant="secondary" asChild disabled={isPending}>
             <Link href={cancelUrl}>
               {hasBtnIcons && <IconArrowLeft />}
               {cancelLabel}
@@ -40,7 +42,7 @@ export const FormActionBar: FC<FormActionBarProps> = ({
         )}
 
         {prevUrl && (
-          <Button variant="secondary" asChild>
+          <Button variant="secondary" asChild disabled={isPending}>
             <Link href={prevUrl}>
               {hasBtnIcons && <IconArrowLeft />}
               {prevLabel}
@@ -49,13 +51,16 @@ export const FormActionBar: FC<FormActionBarProps> = ({
         )}
 
         {submitType !== "hidden" && (
-          <Button type="submit" disabled={submitType === "disabled"}>
+          <Button
+            type="submit"
+            disabled={submitType === "disabled" || isPending}
+          >
             {nextLabel}
             {hasBtnIcons && <IconArrowRight />}
           </Button>
         )}
         {nextUrl !== null && (
-          <Button variant="default" asChild>
+          <Button variant="default" asChild disabled={isPending}>
             <Link href={nextUrl}>
               {nextLabel}
               {hasBtnIcons && <IconArrowRight />}

@@ -21,7 +21,7 @@ export interface LoginFormProps {
 export const LoginForm: FC<LoginFormProps> = ({ redirectTo }) => {
   const t = useTranslations("LoginPage");
   const { setSession } = useSession();
-  const router = useRouter();
+  const { replace } = useRouter();
   const [state, formAction, isPending] = useForm(loginAction, loginSchema);
 
   // reset ui session
@@ -33,9 +33,9 @@ export const LoginForm: FC<LoginFormProps> = ({ redirectTo }) => {
   useEffect(() => {
     if (state.success) {
       setSession(true);
-      router.replace(redirectTo ?? "/dashboard");
+      replace(redirectTo ?? "/dashboard");
     }
-  }, [state.success]);
+  }, [redirectTo, replace, setSession, state.success]);
 
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">

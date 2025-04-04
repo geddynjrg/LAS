@@ -1,14 +1,11 @@
 import { IconDownload, IconMail, IconPhone } from "@tabler/icons-react";
+import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
 import { Underline } from "@workspace/ui/components/underline";
 import { cn } from "@workspace/ui/lib/utils";
-
-export interface SuccessPageProps {
-  params: Promise<{}>;
-}
 
 const MOCK_SPONSORSHIPS = [
   {
@@ -31,7 +28,7 @@ const MOCK_SPONSORSHIPS = [
   },
 ];
 
-export default async function SuccessPage({}: SuccessPageProps) {
+export default async function SuccessPage() {
   const sponsorships = MOCK_SPONSORSHIPS;
 
   return (
@@ -71,15 +68,15 @@ export default async function SuccessPage({}: SuccessPageProps) {
 
       <div className={cn("flex w-full max-w-[27rem] flex-col gap-4")}>
         <Button asChild>
-          <a href="/dashboard">View my applications</a>
+          <Link href="/dashboard">View my applications</Link>
         </Button>
         <Button variant="secondary" asChild>
-          <a href="#" download="Application">
+          <Link href="#" download="Application">
             Download my application
-          </a>
+          </Link>
         </Button>
         <Button variant="secondary" asChild>
-          <a href="/">Back to front page</a>
+          <Link href="/">Back to front page</Link>
         </Button>
       </div>
 

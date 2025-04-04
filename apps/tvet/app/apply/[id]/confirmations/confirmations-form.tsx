@@ -14,8 +14,6 @@ import {
   type ConfirmationsSchema,
 } from "@/app/apply/[id]/confirmations/confirmations-schema";
 
-const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
-
 export interface ConfirmationsFormProps {
   id: string;
   defaultValues?: Partial<ConfirmationsSchema>;
@@ -25,7 +23,7 @@ export const ConfirmationsForm: FC<ConfirmationsFormProps> = ({
   id,
   defaultValues,
 }) => {
-  const [state, formAction, isPending] = useForm(
+  const [state, formAction, _isPending] = useForm(
     confirmationsAction,
     confirmationsSchema,
     defaultValues,

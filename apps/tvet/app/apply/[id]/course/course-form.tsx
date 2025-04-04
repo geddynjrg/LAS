@@ -24,7 +24,7 @@ export interface CourseFormProps {
 }
 
 export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
-  const [state, formAction, isPending] = useForm(
+  const [state, formAction, _isPending] = useForm(
     courseAction,
     courseSchema,
     defaultValues,

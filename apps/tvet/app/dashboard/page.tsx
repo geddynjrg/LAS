@@ -10,14 +10,6 @@ import { cn } from "@workspace/ui/lib/utils";
 
 import { getProfile } from "@/lib/api/profile";
 
-export interface DashboardPageProps {
-  params: Promise<{}>;
-}
-
-export interface SuccessPageProps {
-  params: Promise<{}>;
-}
-
 type ApplicationStatus = "accepted" | "pending" | "rejected";
 
 type CourseType = {
@@ -80,7 +72,7 @@ const MOCK_COURSES: CourseType[] = [
   },
 ];
 
-export default async function DashboardPage({}: DashboardPageProps) {
+export default async function DashboardPage() {
   const courses = MOCK_COURSES;
   const userProfile = await getProfile();
 

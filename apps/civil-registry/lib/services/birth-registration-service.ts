@@ -20,7 +20,7 @@ export type BirthRegistrationQuery =
 
 export async function getFormPerson<T extends keyof BirthRegistrationStore>(
   type: T,
-): Promise<BirthRegistrationStore[T] | undefined> {
+) {
   return birthRegistrationStore[type];
 }
 
@@ -50,28 +50,12 @@ export async function createNewPerson(
 
   return person;
 }
-export async function searchPerson(query: string): Promise<Partial<Person>[]> {
-  const words = query.toLowerCase().split(/\s+/);
 
-  return nationalIdPeopleOptions.filter((p) =>
-    words.every(
-      (word) =>
-        (p.nationalId && p.nationalId.includes(word)) ||
-        (p.firstName && p.firstName.toLowerCase().includes(word)) ||
-        (p.lastName && p.lastName.toLowerCase().includes(word)) ||
-        (p.middleName && p.middleName.toLowerCase().includes(word)),
-    ),
-  );
-}
-
-export async function searchPersonBySex(
-  query: string,
-  sex: SexType,
-): Promise<Partial<Person>[]> {
+export async function searchPerson(query: string, sex?: SexType) {
   const words = query.toLowerCase().split(/\s+/);
 
   return nationalIdPeopleOptions
-    .filter((p) => p.sex === sex)
+    .filter((p) => (sex ? p.sex === sex : true))
     .filter((p) =>
       words.every(
         (word) =>

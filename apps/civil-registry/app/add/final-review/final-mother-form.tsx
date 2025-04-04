@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState, type FC } from "react";
+import { type FC } from "react";
 
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
@@ -18,34 +18,23 @@ import {
   type MotherSchema,
 } from "@/app/add/mother/mother-schema";
 import { educationOptions } from "@/lib/data/dummy-data";
-import type { Person } from "@/lib/schema/person-schema";
-import { nationalities } from "@/lib/util/nationalities";
 
 export interface FinalMotherFormProps {
-  defaultValues?: Partial<
-    MotherSchema & { father?: string | Person; mother?: string | Person }
-  >;
+  defaultValues?: Partial<MotherSchema>;
 }
 
 export const FinalMotherForm: FC<FinalMotherFormProps> = ({
   defaultValues,
 }) => {
   const t = useTranslations();
-  const defaultNationalId =
+  const nationalId =
     !defaultValues?.nationalId &&
     defaultValues?.firstName &&
     defaultValues?.lastName
       ? false
       : true;
+
   const [state] = useForm(motherAction, motherSchema, defaultValues);
-  const [natonalId, setNatonalId] = useState<boolean>(defaultNationalId);
-  const [nationalIdOptions, setNationalIdOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [placeOfBirthLocation, setPlaceOfBirthLocation] = useState<string>("");
 
   const fullName = [
     defaultValues?.firstName,
@@ -54,19 +43,6 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
   ]
     .filter(Boolean)
     .join(" ");
-  const nationalityOptions = nationalities.map((nationality) => ({
-    label: nationality,
-    value: nationality,
-  }));
-
-  const marriedOptions = [
-    { label: t("DetailsPage.married"), value: "Married" },
-    { label: t("DetailsPage.divorced"), value: "Divorced" },
-    { label: t("DetailsPage.single"), value: "Single" },
-    { label: t("DetailsPage.widowed"), value: "Widowed" },
-  ];
-
-  const handleSearch = (search?: string) => {};
 
   return (
     <DataBlock
@@ -75,19 +51,12 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
       active={undefined}
       toggleEdit={undefined}
     >
-      {natonalId && defaultValues?.nationalId && (
+      {nationalId && defaultValues?.nationalId && (
         <Field
           state={state}
           name="nationalId"
           label={t("DetailsPage.national-id")}
-          control={(props) => (
-            <SearchInput
-              {...props}
-              isLoading={isLoading}
-              onValueChange={handleSearch}
-              options={nationalIdOptions}
-            />
-          )}
+          control={(props) => <SearchInput {...props} />}
           editable={false}
         />
       )}
@@ -114,7 +83,7 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
         </DataNode>
       </>
 
-      {!natonalId && (
+      {!nationalId && (
         <Field
           state={state}
           name="passportNumber"
@@ -145,21 +114,14 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
         state={state}
         name="nationality"
         label={t("DetailsPage.nationality")}
-        control={(props) => (
-          <SearchInput {...props} options={nationalityOptions} />
-        )}
+        control={(props) => <SearchInput {...props} />}
         editable={false}
       />
 
       <Field
         state={state}
         control={(props) => (
-          <RadioGroup
-            {...props}
-            orientation="vertical"
-            size="md"
-            options={marriedOptions}
-          />
+          <RadioGroup {...props} orientation="vertical" size="md" />
         )}
         label={t("DetailsPage.marital-status")}
         name="maritalStatus"
@@ -217,23 +179,24 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
         editable={false}
       />
 
-      {placeOfBirthLocation === "OTHER" && (
-        <>
-          <Field
-            state={state}
-            name="birthSublocation"
-            label={t("DetailsPage.sublocation")}
-            control={(props) => <Input {...props} />}
-            editable={false}
-          />
-          <Field
-            state={state}
-            name="birthSublocationDistrict"
-            label={t("DetailsPage.district")}
-            control={(props) => <Input {...props} />}
-            editable={false}
-          />
-        </>
+      {state.values?.birthSublocation && (
+        <Field
+          state={state}
+          name="birthSublocation"
+          label={t("DetailsPage.sublocation")}
+          control={(props) => <Input {...props} />}
+          editable={false}
+        />
+      )}
+
+      {state.values?.birthSublocationDistrict && (
+        <Field
+          state={state}
+          name="birthSublocationDistrict"
+          label={t("DetailsPage.district")}
+          control={(props) => <Input {...props} />}
+          editable={false}
+        />
       )}
     </DataBlock>
   );

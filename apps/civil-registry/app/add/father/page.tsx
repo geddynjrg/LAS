@@ -6,7 +6,7 @@ export interface ApplicantPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function FatherPage({ params }: ApplicantPageProps) {
+export default async function FatherPage(_props: ApplicantPageProps) {
   // const { id } = await params;
   const person = await getFormPersonByType("father");
   const id = person?.id ?? generateUUID();

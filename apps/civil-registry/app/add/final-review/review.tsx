@@ -8,7 +8,7 @@ import { FinalFatherForm } from "@/app/add/final-review/final-father-form";
 import { FinalInformantForm } from "@/app/add/final-review/final-informant-form";
 import { FinalMotherForm } from "@/app/add/final-review/final-mother-form";
 import { FormWrap } from "@/app/add/form-wrap";
-import type { Person } from "@/lib/schema/person-schema";
+import type { Person } from "@/lib/data/person";
 
 export interface ReviewFormProps {
   child: Partial<Person>[];
@@ -32,12 +32,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({
       nextUrl="/confirmation"
       submitType="hidden"
     >
-      <DataBlock
-        title={t(`DetailsPage.title-final-review`)}
-        disabled={undefined}
-        active={undefined}
-        toggleEdit={undefined}
-      >
+      <DataBlock title={t(`DetailsPage.title-final-review`)}>
         <FinalChildForm defaultValues={child} />
         <FinalMotherForm defaultValues={mother} />
         <FinalFatherForm defaultValues={father} />

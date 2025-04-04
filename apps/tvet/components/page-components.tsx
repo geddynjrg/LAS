@@ -18,6 +18,7 @@ import { TextListBlock } from "@workspace/ui/components/tvet/blocks/text-list-bl
 import { TextWithGradientBlock } from "@workspace/ui/components/tvet/blocks/text-with-gradient-block";
 import { TrainingAreasBlock } from "@workspace/ui/components/tvet/blocks/training-areas-block";
 import { VocationalCentersBlock } from "@workspace/ui/components/tvet/blocks/vocational-centers-block";
+import { assertNever } from "@workspace/ui/lib/utils";
 
 import { HighlightedCourseListingBlock } from "@/components/page-blocks/highlighted-course-listing-block";
 import type { BlockType } from "@/lib/api/types";
@@ -99,7 +100,7 @@ export const PageComponents: FC<PageComponentsProps> = ({
         return <SimilarCoursesBlock {...component} key={key} />;
 
       default:
-        return <p> unknown {(component as any)?.block_type}</p>;
+        return assertNever(component);
     }
   });
 };

@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
 
-import { Container } from "@workspace/ui/components/container";
-
 export interface ApplyLayoutProps {
   children?: ReactNode;
 }

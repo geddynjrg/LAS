@@ -6,6 +6,10 @@ import type { z } from "zod";
 import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 import { zodErrorMap } from "@workspace/ui/lib/zod";
 
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
 export type FormAction<T extends Record<string, unknown>> = (
   prevState: FormActionResponse<T> | null,
   formData: FormData,
@@ -45,7 +49,7 @@ export function useForm<
 >(
   action: FormAction<TValues>,
   schema: TSchema,
-  defaultValues: Partial<TValues> = {},
+  defaultValues: DeepPartial<TValues> = {},
 ) {
   const formAction = useCallback<FormAction<TValues>>(
     (_prev, formData) => {
@@ -55,7 +59,6 @@ export function useForm<
       });
 
       if (!success) {
-        //const errors = error.flatten((issue) => issue);
         const errors = error.format();
 
         return {

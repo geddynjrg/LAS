@@ -1,24 +1,18 @@
 "use client";
 
-import { IconChevronLeft, IconPlus } from "@tabler/icons-react";
-import { useFormatter, useTranslations } from "next-intl";
-import React, { useCallback, useState, type FC } from "react";
+import { useTranslations } from "next-intl";
+import React, { useState, type FC } from "react";
 
 import {
   ButtonGroup,
   ButtonGroupItem,
 } from "@workspace/ui/components/button-group";
-import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
-import { DatePicker } from "@workspace/ui/components/date-picker";
-import { Field, FieldGroup } from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
+import { Field } from "@workspace/ui/components/form";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
-import { cn } from "@workspace/ui/lib/utils";
 
 import { FormWrap } from "@/app/add/form-wrap";
 import { informantAction } from "@/app/add/informant/informant-action";
@@ -26,15 +20,17 @@ import {
   informantSchema,
   type InformantSchema,
 } from "@/app/add/informant/informant-schema";
-import type { Person } from "@/lib/schema/person-schema";
-import { searchPerson } from "@/lib/services/birth-registration-service";
-import { nationalities } from "@/lib/util/nationalities";
+import { ContactFields } from "@/components/contact-fields";
+import { NationalIdFields } from "@/components/national-id-fields";
+import type { Person } from "@/lib/data/person";
+
+type InformantType = "Mother" | "Father" | "Other";
 
 export interface InformantFormProps {
   id: string;
   informant: Partial<InformantSchema>;
-  mother: Partial<Person> | undefined;
-  father: Partial<Person> | undefined;
+  mother: Person | undefined;
+  father: Person | undefined;
 }
 
 export const InformantForm: FC<InformantFormProps> = ({
@@ -44,95 +40,36 @@ export const InformantForm: FC<InformantFormProps> = ({
   father,
 }) => {
   const t = useTranslations();
-  const format = useFormatter();
-  const [defaultValues, setDefaultValues] =
-    useState<Partial<Person>>(informant);
-  const [formValues, setFormValues] = useState<Partial<Person>>(informant);
-  const [informantType, setInformantType] = useState<string>(
-    informant?.informantType ?? "Other",
-  );
+  const defaultValues = informant;
 
-  //  let defaultValues: Partial<InformantSchema> = informant as InformantSchema;
+  const [informantType, setInformantType] = useState<InformantType>(
+    (informant?.informantType as InformantType) ?? "Other",
+  );
 
   const [state, formAction, isPending] = useForm(
     informantAction,
     informantSchema,
     defaultValues,
   );
-  const defaultNationalId =
-    !defaultValues?.nationalId &&
-    defaultValues?.firstName &&
-    defaultValues?.lastName
-      ? false
-      : true;
-  const [natonalId, setNatonalId] = useState<boolean>(defaultNationalId);
-  const [nationalIdOptions, setNationalIdOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
 
-  const [contacts, setContacts] = useState(
-    informant?.contacts ?? [{ phoneCode: "", phone: "", email: "" }],
-  );
+  function getFullName() {
+    switch (informantType) {
+      case "Mother":
+        return [mother?.firstName, mother?.middleName, mother?.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
 
-  const addContact = () => {
-    setContacts([...contacts, { phoneCode: "", phone: "", email: "" }]);
-  };
+      case "Father":
+        return [father?.firstName, father?.middleName, father?.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [firstName, setFirstName] = useState<string>(
-    defaultValues?.firstName ?? "",
-  );
-  const [lastName, setLastName] = useState<string>(
-    defaultValues?.lastName ?? "",
-  );
-  const [middleName, setMiddleName] = useState<string>(
-    defaultValues?.middleName ?? "",
-  );
-  const [birthDate, setBirthDate] = useState<string>(defaultValues?.dob ?? "");
-  const [citizenship, setCitizenship] = useState<string>(
-    defaultValues?.citizenship ?? "–",
-  );
-  const [searchedPersonList, setSearchedPersonList] = useState<Person[]>([]);
-  const fullName = [firstName, middleName, lastName].filter(Boolean).join(" ");
-  const nationalityOptions = nationalities.map((nationality) => ({
-    label: nationality,
-    value: nationality,
-  }));
-  const [searchedText, setSearchedText] = useState<string>("");
-
-  const debouncedSearch = useDebouncedCallback(async (search?: string) => {
-    if (search === searchedText) {
-      return;
+      default:
+        return "";
     }
-    if (!search) {
-      setNationalIdOptions([]);
-      return;
-    }
-
-    setIsLoading(true);
-    setSearchedText(search);
-    const res = await searchPerson(search);
-
-    const options = res.map((person: Person) => ({
-      label: `${person.firstName} ${person.lastName} (${person.nationalId})`,
-      value: person.nationalId,
-    }));
-
-    setNationalIdOptions(options);
-    setIsLoading(false);
-    setSearchedPersonList(res);
-  }, 300);
-
-  const handleSearch = useCallback((value: string | undefined) => {
-    debouncedSearch(value);
-  }, []);
-
-  const getSearchedPersonByNationalId = (nationalId: string) => {
-    const person = searchedPersonList.find(
-      (person) => person.nationalId === nationalId,
-    );
-    return person;
-  };
+  }
 
   const informantOptions = [
     { label: t("DetailsPage.family-member"), value: "Family member" },
@@ -158,14 +95,20 @@ export const InformantForm: FC<InformantFormProps> = ({
   ];
 
   const informantTypeOptions = [
-    { label: t("DetailsPage.mother"), value: t("DetailsPage.mother") },
-    { label: t("DetailsPage.father"), value: t("DetailsPage.father") },
-    { label: t("DetailsPage.other"), value: t("DetailsPage.other") },
-  ];
+    { label: t("DetailsPage.mother"), value: "Mother" },
+    { label: t("DetailsPage.father"), value: "Father" },
+    { label: t("DetailsPage.other"), value: "Other" },
+  ] as const;
 
   return (
-    <FormWrap action={formAction} prevUrl="/add/father" className="space-y-4">
-      <input type="hidden" name="id" value={defaultValues?.id} />
+    <FormWrap
+      action={formAction}
+      isPending={isPending}
+      prevUrl="/add/father"
+      className="space-y-4"
+    >
+      <input type="hidden" name="id" value={id} />
+
       <DataBlock
         title={t(`DetailsPage.title-informant`)}
         disabled={undefined}
@@ -175,303 +118,109 @@ export const InformantForm: FC<InformantFormProps> = ({
         <>
           <ButtonGroup
             name="informantType"
-            onValueChange={(value) => {
-              if (value === "Other") {
-                setFormValues(defaultValues);
-                setInformantType("Other");
-              } else if (value === "Mother") {
-                setFormValues(mother ?? {});
-                setInformantType("Mother");
-              } else if (value === "Father") {
-                setFormValues(father ?? {});
-                setInformantType("Father");
-              }
-            }}
+            onValueChange={(value) => setInformantType(value as InformantType)}
             type="single"
             defaultValue={informantType}
           >
-            <React.Fragment key=".0">
-              {informantTypeOptions.map((option) => (
-                <ButtonGroupItem key={option.value} value={option.value}>
-                  {option.label}
-                </ButtonGroupItem>
-              ))}
-            </React.Fragment>
+            {informantTypeOptions.map((option) => (
+              <ButtonGroupItem key={option.value} value={option.value}>
+                {option.label}
+              </ButtonGroupItem>
+            ))}
           </ButtonGroup>
         </>
-        {informantType !== "Other" && (
-          <DataNode label={t("DetailsPage.name")} variant="default">
-            <input
-              type="hidden"
-              name="firstName"
-              value={formValues.firstName}
-            />
-            <input
-              type="hidden"
-              name="middleName"
-              value={formValues.middleName}
-            />
-            <input type="hidden" name="lastName" value={formValues.lastName} />
-            <input type="hidden" name="dob" value={formValues.dob} />
-            <input type="hidden" name="capacityOfInformant" value={"Other"} />
-            <input type="hidden" name="email" value={formValues.email} />
-            <input
-              type="hidden"
-              name="citizenship"
-              value={formValues.citizenship}
-            />
-            <input type="hidden" name="phone" value={formValues.phone} />
-            <input
-              type="hidden"
-              name="phoneCode"
-              value={formValues.phoneCode}
-            />
-            <input
-              type="hidden"
-              name="nationality"
-              value={formValues.nationality}
-            />
-            <input type="hidden" name="natureOfRelation" value={"Other"} />
 
-            {[formValues.firstName, formValues.middleName, formValues.lastName]
-              .filter(Boolean)
-              .join(" ")}
-          </DataNode>
-        )}
-        {informantType === "Other" && natonalId && (
-          <Field
-            state={state}
-            name="nationalId"
-            label={t("DetailsPage.national-id")}
-            control={(props) => (
-              <SearchInput
-                {...props}
-                isLoading={isLoading}
-                onValueChange={handleSearch}
-                options={nationalIdOptions}
-                onValueSelect={(value) => {
-                  const person = getSearchedPersonByNationalId(value);
-                  setFirstName(person?.firstName ?? "");
-                  setLastName(person?.lastName ?? "");
-                  setMiddleName(person?.middleName ?? "");
-                  setBirthDate(person?.dob ?? "");
-                  setCitizenship(person?.citizenship ?? "–");
-                }}
-              />
-            )}
-            required
-          />
-        )}
-        {informantType === "Other" && natonalId && (
-          <div className={cn("flex justify-center underline")}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setNatonalId(false);
-              }}
-            >
-              {t("DetailsPage.national-id-unknown")}
-            </a>
-          </div>
-        )}
-        {informantType === "Other" && !natonalId && (
-          <div className={cn("flex justify-center underline")}>
-            <a
-              href="#"
-              className="flex items-center gap-1"
-              onClick={(e) => {
-                e.preventDefault();
-                setNatonalId(true);
-              }}
-            >
-              <IconChevronLeft /> {t("DetailsPage.back-to-national-id-search")}
-            </a>
-          </div>
-        )}
+        {informantType === "Other" ? (
+          <>
+            <NationalIdFields searchSexFilter="M" state={state} />
 
-        <>
-          {informantType === "Other" && !natonalId && (
-            <>
-              <Field
-                state={state}
-                name="firstName"
-                label={t("DetailsPage.first-name")}
-                control={(props) => <Input {...props} />}
-                required
-              />
-
-              <Field
-                state={state}
-                name="middleName"
-                label={t("DetailsPage.middle-name")}
-                control={(props) => <Input {...props} />}
-              />
-
-              <Field
-                state={state}
-                name="lastName"
-                label={t("DetailsPage.lastname")}
-                control={(props) => <Input {...props} />}
-                required
-              />
-            </>
-          )}
-          {informantType === "Other" && natonalId && (
-            <DataNode label={t("DetailsPage.name")} variant="default">
-              <input type="hidden" name="firstName" value={firstName} />
-              <input type="hidden" name="middleName" value={middleName} />
-              <input type="hidden" name="lastName" value={lastName} />
-
-              {fullName && fullName !== " " ? fullName : "–"}
-            </DataNode>
-          )}
-        </>
-
-        {informantType === "Other" && !natonalId && (
-          <Field
-            state={state}
-            name="passportNumber"
-            label={t("DetailsPage.passport-number")}
-            control={(props) => <Input {...props} />}
-            required
-          />
-        )}
-
-        {informantType === "Other" && !natonalId && (
-          <Field
-            state={state}
-            name="dob"
-            isDate
-            label={t("DetailsPage.dob")}
-            editable={!natonalId}
-            control={(props) => <DatePicker {...props} />}
-            required={!natonalId}
-          />
-        )}
-
-        {informantType === "Other" && natonalId && (
-          <DataNode label={t("DetailsPage.dob")} variant="default">
-            <input type="hidden" name="dob" value={birthDate} />
-
-            {birthDate ? format.dateTime(new Date(birthDate)) : "–"}
-          </DataNode>
-        )}
-
-        {informantType === "Other" && !natonalId && (
-          <Field
-            state={state}
-            name="citizenship"
-            label={t("DetailsPage.citizenship")}
-            editable={!natonalId}
-            control={(props) => <Input {...props} />}
-            required={false}
-          />
-        )}
-
-        {informantType === "Other" && natonalId && (
-          <DataNode label={t("DetailsPage.citizenship")} variant="default">
-            <input type="hidden" name="citizenship" value={citizenship} />
-
-            {citizenship ?? "–"}
-          </DataNode>
-        )}
-        {informantType === "Other" && (
-          <Field
-            state={state}
-            name="nationality"
-            label={t("DetailsPage.nationality")}
-            control={(props) => (
-              <SearchInput {...props} options={nationalityOptions} />
-            )}
-            required
-          />
-        )}
-
-        {informantType === "Other" && (
-          <Field
-            state={state}
-            control={(props) => (
-              <RadioGroup
-                {...props}
-                orientation="vertical"
-                size="md"
-                options={informantOptions}
-              />
-            )}
-            label={t("DetailsPage.capacity-of-informant")}
-            name="capacityOfInformant"
-            required
-          />
-        )}
-
-        {informantType === "Other" && (
-          <Field
-            state={state}
-            name="natureOfRelation"
-            label={t("DetailsPage.nature-of-relation")}
-            control={(props) => (
-              <SearchInput {...props} options={relationOptions} />
-            )}
-            required
-          />
-        )}
-
-        <>
-          {informantType === "Other" &&
-            contacts.map((contact, index) => (
-              <div key={`contact-list-${index}`}>
-                <FieldGroup
-                  label={t("DetailsPage.phone")}
-                  required
-                  key={`phone-contact-${index}`}
-                >
-                  <>
-                    <Field
-                      key={`phoneCode-${index}`}
-                      state={state}
-                      name={`contacts.${index}.phoneCode`}
-                      className="max-w-40"
-                      required
-                      control={(props) => <CallingCodeSelect {...props} />}
-                    />
-                    <Field
-                      key={`phone-${index}`}
-                      state={state}
-                      name={`contacts.${index}.phone`}
-                      required
-                      control={(props) => <Input type="tel" {...props} />}
-                    />
-                  </>
-                </FieldGroup>
-                <Field
-                  key={`email-${index}`}
-                  state={state}
-                  name={`contacts.${index}.email`}
-                  label={t("DetailsPage.email")}
-                  control={(props) => <Input {...props} />}
-                  required={false}
+            <Field
+              state={state}
+              control={(props) => (
+                <RadioGroup
+                  {...props}
+                  orientation="vertical"
+                  size="md"
+                  options={informantOptions}
                 />
-              </div>
-            ))}
+              )}
+              label={t("DetailsPage.capacity-of-informant")}
+              name="capacityOfInformant"
+              required
+            />
 
-          {informantType === "Other" && (
-            <div className={cn("flex justify-center underline")}>
-              <a
-                href="#"
-                className="flex items-center gap-1"
-                onClick={(e) => {
-                  e.preventDefault();
-                  addContact();
-                }}
-              >
-                <IconPlus />
-                {t("DetailsPage.add-another-contact")}
-              </a>
-            </div>
-          )}
-        </>
+            <Field
+              state={state}
+              name="natureOfRelation"
+              label={t("DetailsPage.nature-of-relation")}
+              control={(props) => (
+                <SearchInput {...props} options={relationOptions} />
+              )}
+              required
+            />
+
+            <ContactFields state={state} />
+          </>
+        ) : (
+          <DataNode label={t("DetailsPage.name")} variant="default">
+            <PersonFields
+              informantType={informantType}
+              person={informantType === "Mother" ? mother : father}
+            />
+
+            {getFullName()}
+          </DataNode>
+        )}
       </DataBlock>
     </FormWrap>
+  );
+};
+
+const PersonFields: FC<{
+  informantType: InformantType;
+  person?: Person;
+}> = ({ informantType, person }) => {
+  const fields: {
+    [K in keyof Omit<InformantSchema, "id" | "informantType" | "contacts">]:
+      | InformantSchema[K]
+      | undefined;
+  } = {
+    firstName: person?.firstName,
+    middleName: person?.middleName,
+    lastName: person?.lastName,
+    nationalId: person?.nationalId,
+    citizenship: person?.citizenship,
+    passportNumber: person?.passportNumber,
+    dob: person?.dob,
+    nationality: person?.nationality,
+    capacityOfInformant: informantType === "Other" ? "Other" : "Parent",
+  };
+
+  return (
+    <>
+      {Object.entries(fields).map(([key, value]) => (
+        <input key={key} type="hidden" name={key} value={value} />
+      ))}
+
+      {person?.contacts?.map((contact, index) => (
+        <React.Fragment key={`contact-${index}`}>
+          <input
+            type="hidden"
+            name={`contacts.${index}.phoneCode`}
+            value={contact.phoneCode}
+          />
+          <input
+            type="hidden"
+            name={`contacts.${index}.phone`}
+            value={contact.phone}
+          />
+          <input
+            type="hidden"
+            name={`contacts.${index}.email`}
+            value={contact.email}
+          />
+        </React.Fragment>
+      ))}
+    </>
   );
 };

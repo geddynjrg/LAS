@@ -13,6 +13,7 @@ export interface DataBlockProps {
   disabled?: boolean;
   active?: boolean;
   toggleEdit?: () => void;
+  isPending?: boolean;
 }
 
 export const DataBlock: FC<DataBlockProps> = ({
@@ -22,6 +23,7 @@ export const DataBlock: FC<DataBlockProps> = ({
   disabled,
   active,
   toggleEdit,
+  isPending,
 }) => {
   const t = useTranslations();
   return (
@@ -68,7 +70,7 @@ export const DataBlock: FC<DataBlockProps> = ({
           <Button variant="secondary" onClick={toggleEdit}>
             Cancel <IconX />
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={isPending}>
             Confirm <IconCheck />
           </Button>
         </div>

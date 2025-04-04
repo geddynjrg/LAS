@@ -17,10 +17,6 @@ import { ChildFormBlock } from "@/app/edit/[personId]/child/child-form";
 import { FatherFormBlock } from "@/app/edit/[personId]/father/father-form";
 import { MotherFormBlock } from "@/app/edit/[personId]/mother/mother-form";
 import { PaymentBar } from "@/app/edit/[personId]/payment-bar/payment-bar";
-import {
-  PersonFormBlock,
-  PersonType,
-} from "@/app/edit/[personId]/person-block/person-form-block";
 import type { Person } from "@/lib/data/person";
 import { getFullName } from "@/lib/util/full-name";
 
@@ -30,14 +26,20 @@ interface ContentBlockProps {
 
 export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState("");
+  const [editablePersonId, setEditablePersonId] = useState<string | null>(null);
   const [requirePayment, setRequirePayment] = useState(false);
 
   const t = useTranslations();
 
-  const toggleEdit = (id: string) => {
-    setIsEditing(id === isEditing ? "" : id);
-  };
+  function toggleEdit(id: string | null) {
+    if (editablePersonId === id) {
+      setEditablePersonId(null);
+    } else {
+      setEditablePersonId(id);
+    }
+  }
+
+  const isAmending = editablePersonId !== null;
 
   return (
     <>
@@ -52,18 +54,25 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
           <ChildFormBlock
             key={"child-block"}
             defaultValues={person}
-            disabled={isEditing !== "" && isEditing !== person.id}
-            setRequirePayment={setRequirePayment}
-            handleIsEditing={toggleEdit}
+            disabled={isAmending && editablePersonId !== person.id}
+            isEditing={editablePersonId === person.id}
+            onEdit={() => toggleEdit(person.id)}
+            onSubmit={(changedValues) => {
+              toggleEdit(null);
+
+              setRequirePayment(Object.keys(changedValues).length > 0);
+            }}
           />
           {person.mother && (
             <MotherFormBlock
               key={"mother-block"}
               defaultValues={person.mother as Person}
               disabled={
-                isEditing !== "" && isEditing !== (person.mother as Person).id
+                isAmending && editablePersonId !== (person.mother as Person).id
               }
-              handleIsEditing={toggleEdit}
+              isEditing={editablePersonId === (person.mother as Person).id}
+              onEdit={() => toggleEdit((person.mother as Person).id)}
+              onSubmit={() => toggleEdit(null)}
             />
           )}
           {person.father && (
@@ -71,15 +80,17 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
               key={"father-block"}
               defaultValues={person.father as Person}
               disabled={
-                isEditing !== "" && isEditing !== (person.father as Person).id
+                isAmending && editablePersonId !== (person.father as Person).id
               }
-              handleIsEditing={toggleEdit}
+              isEditing={editablePersonId === (person.father as Person).id}
+              onEdit={() => toggleEdit((person.father as Person).id)}
+              onSubmit={() => toggleEdit(null)}
             />
           )}
         </div>
       </SectionWrap>
 
-      {isEditing == "" && requirePayment && (
+      {!isAmending && requirePayment && (
         <PaymentBar
           price={250}
           onSubmit={async () => {
@@ -89,7 +100,7 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
         />
       )}
 
-      {isEditing == "" && !requirePayment && (
+      {!isAmending && !requirePayment && (
         <ActionBar>
           <Button asChild variant="secondary">
             <a

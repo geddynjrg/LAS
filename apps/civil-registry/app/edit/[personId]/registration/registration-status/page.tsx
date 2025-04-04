@@ -10,16 +10,12 @@ import { IconCheck } from "@workspace/ui/components/icon-check";
 import { Loader } from "@workspace/ui/components/loader";
 import { cn } from "@workspace/ui/lib/utils";
 
-export interface RegistrationStatusPageProps {
-  params: Promise<{}>;
-}
-
 const MOCK_PERSON = {
   name: "Name Lastname",
   phone: "+254 343 234234",
 };
 
-export default function RegistrationStatusPage({}: RegistrationStatusPageProps) {
+export default function RegistrationStatusPage() {
   const t = useTranslations();
 
   const person = MOCK_PERSON;
@@ -85,6 +81,7 @@ const ConfirmedSection: FC<{ className?: string }> = ({ className }) => {
       className={cn(
         "flex flex-grow flex-col items-center justify-center gap-3",
         "text-center",
+        className,
       )}
     >
       <IconCheck className={cn("mb-5")} />

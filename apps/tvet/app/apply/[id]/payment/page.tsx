@@ -7,19 +7,15 @@ import { cn } from "@workspace/ui/lib/utils";
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 
-export interface PaymentPageProps {
-  params: Promise<{}>;
-}
-
-export default async function PaymentPage({}: PaymentPageProps) {
+export default async function PaymentPage() {
   return (
     <ApplyFormWrap prevUrl="confirmations" submitType="hidden">
       <ApplyFormSubtitle>Payment</ApplyFormSubtitle>
 
       <p>
-        An application fee is required to cover the administrative costs
-        involved in processing student applications. The application fee
-        is non-refundable. Be aware that without the payment of this fee, your
+        An application fee is required to cover the administrative costs
+        involved in processing student applications. The application fee is
+        non-refundable. Be aware that without the payment of this fee, your
         application will not be processed.
       </p>
 

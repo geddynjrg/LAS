@@ -50,7 +50,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
     [],
   );
 
-  const [state, formAction, isPending] = useForm(
+  const [state, formAction, _isPending] = useForm(
     applicantAction,
     applicantSchema,
     defaultValues,

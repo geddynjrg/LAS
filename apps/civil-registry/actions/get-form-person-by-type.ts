@@ -5,6 +5,6 @@ import { getFormPerson } from "@/lib/services/birth-registration-service";
 
 export async function getFormPersonByType<
   T extends keyof BirthRegistrationStore,
->(type: T): Promise<BirthRegistrationStore[T] | undefined> {
+>(type: T) {
   return getFormPerson(type);
 }

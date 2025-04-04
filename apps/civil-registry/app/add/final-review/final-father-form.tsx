@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import React, { useState, type FC } from "react";
+import { Fragment, type FC } from "react";
 
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
@@ -9,7 +9,6 @@ import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field, FieldGroup } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { useDebounce } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { fatherAction } from "@/app/add/father/father-action";
@@ -18,33 +17,23 @@ import {
   type FatherSchema,
 } from "@/app/add/father/father-schema";
 import { educationOptions } from "@/lib/data/dummy-data";
-import type { Person } from "@/lib/schema/person-schema";
-import { searchPersonBySex } from "@/lib/services/birth-registration-service";
-import { nationalities } from "@/lib/util/nationalities";
 
 export interface FinalFatherFormProps {
-  defaultValues?: Partial<
-    FatherSchema & { father?: string | Person; mother?: string | Person }
-  >;
+  defaultValues?: Partial<FatherSchema>;
 }
 
 export const FinalFatherForm: FC<FinalFatherFormProps> = ({
   defaultValues,
 }) => {
   const t = useTranslations();
-  const defaultNationalId =
+  const nationalId =
     !defaultValues?.nationalId &&
     defaultValues?.firstName &&
     defaultValues?.lastName
       ? false
       : true;
-  const [state] = useForm(fatherAction, fatherSchema, defaultValues);
-  const [natonalId, setNatonalId] = useState<boolean>(defaultNationalId);
-  const [nationalIdOptions, setNationalIdOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [state] = useForm(fatherAction, fatherSchema, defaultValues);
 
   const fullName = [
     defaultValues?.firstName,
@@ -53,12 +42,6 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
   ]
     .filter(Boolean)
     .join(" ");
-  const nationalityOptions = nationalities.map((nationality) => ({
-    label: nationality,
-    value: nationality,
-  }));
-
-  const handleSearch = (search?: string) => {};
 
   return (
     <DataBlock
@@ -67,19 +50,12 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
       active={undefined}
       toggleEdit={undefined}
     >
-      {natonalId && defaultValues?.nationalId && (
+      {nationalId && defaultValues?.nationalId && (
         <Field
           state={state}
           name="nationalId"
           label={t("DetailsPage.national-id")}
-          control={(props) => (
-            <SearchInput
-              {...props}
-              isLoading={isLoading}
-              onValueChange={handleSearch}
-              options={nationalIdOptions}
-            />
-          )}
+          control={(props) => <SearchInput {...props} />}
           editable={false}
         />
       )}
@@ -106,7 +82,7 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
         </DataNode>
       </>
 
-      {!natonalId && (
+      {!nationalId && (
         <Field
           state={state}
           name="passportNumber"
@@ -137,9 +113,7 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
         state={state}
         name="nationality"
         label={t("DetailsPage.nationality")}
-        control={(props) => (
-          <SearchInput {...props} options={nationalityOptions} />
-        )}
+        control={(props) => <SearchInput {...props} />}
         editable={false}
       />
 
@@ -154,7 +128,7 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
       />
 
       {defaultValues?.contacts?.map((contact, index) => (
-        <>
+        <Fragment key={index}>
           <FieldGroup label={t("DetailsPage.phone")}>
             <p>
               +{contact?.phoneCode} {contact?.phone}
@@ -166,7 +140,7 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
               <p>{contact?.email}</p>
             </FieldGroup>
           )}
-        </>
+        </Fragment>
       ))}
     </DataBlock>
   );

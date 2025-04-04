@@ -30,6 +30,7 @@ api.use({
 });
 
 export function validate<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TRes extends FetchResponse<any, any, any>,
   TSchema extends z.Schema,
 >(res: TRes, schema: TSchema) {

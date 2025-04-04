@@ -26,7 +26,7 @@ export interface MainPageProps {
 export default async function Page({ params }: MainPageProps) {
   const { id } = await params;
 
-  let personId = id ?? "1";
+  const personId = id ?? "1";
 
   const t = await getTranslations();
   const format = await getFormatter();

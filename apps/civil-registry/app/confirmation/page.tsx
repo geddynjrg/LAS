@@ -11,7 +11,7 @@ export interface ApplicantPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ConfirmationPage({ params }: ApplicantPageProps) {
+export default async function ConfirmationPage() {
   // const { id } = await params;
   const t = await getTranslations();
   const person = await getFormPerson("mother");

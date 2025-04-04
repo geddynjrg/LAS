@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import React, { useState, type FC } from "react";
+import { Fragment, type FC } from "react";
 
 import {
   ButtonGroup,
@@ -13,7 +13,6 @@ import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field, FieldGroup } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { informantAction } from "@/app/add/informant/informant-action";
@@ -21,33 +20,23 @@ import {
   informantSchema,
   type InformantSchema,
 } from "@/app/add/informant/informant-schema";
-import type { Person } from "@/lib/schema/person-schema";
-import { searchPerson } from "@/lib/services/birth-registration-service";
 import { nationalities } from "@/lib/util/nationalities";
 
 export interface FinalInformantFormProps {
-  defaultValues?: Partial<
-    InformantSchema & { father?: string | Person; mother?: string | Person }
-  >;
+  defaultValues?: Partial<InformantSchema>;
 }
 
 export const FinalInformantForm: FC<FinalInformantFormProps> = ({
   defaultValues,
 }) => {
   const t = useTranslations();
-  const defaultNationalId =
+  const nationalId =
     !defaultValues?.nationalId &&
     defaultValues?.firstName &&
     defaultValues?.lastName
       ? false
       : true;
   const [state] = useForm(informantAction, informantSchema, defaultValues);
-  const [natonalId, setNatonalId] = useState<boolean>(defaultNationalId);
-  const [nationalIdOptions, setNationalIdOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const fullName = [
     defaultValues?.firstName,
@@ -60,8 +49,6 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
     label: nationality,
     value: nationality,
   }));
-
-  const handleSearch = (search?: string) => {};
 
   const informantTypeOptions = [
     { label: t("DetailsPage.mother"), value: t("DetailsPage.mother") },
@@ -84,28 +71,21 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
           defaultValue={defaultValues?.informantType}
           disabled
         >
-          <React.Fragment key=".0">
+          <Fragment key=".0">
             {informantTypeOptions.map((option) => (
               <ButtonGroupItem key={option.value} value={option.value}>
                 {option.label}
               </ButtonGroupItem>
             ))}
-          </React.Fragment>
+          </Fragment>
         </ButtonGroup>
       </>
-      {natonalId && defaultValues?.nationalId && (
+      {nationalId && defaultValues?.nationalId && (
         <Field
           state={state}
           name="nationalId"
           label={t("DetailsPage.national-id")}
-          control={(props) => (
-            <SearchInput
-              {...props}
-              isLoading={isLoading}
-              onValueChange={handleSearch}
-              options={nationalIdOptions}
-            />
-          )}
+          control={(props) => <SearchInput {...props} />}
           editable={false}
         />
       )}
@@ -132,7 +112,7 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
         </DataNode>
       </>
 
-      {!natonalId && (
+      {!nationalId && (
         <Field
           state={state}
           name="passportNumber"
@@ -178,7 +158,7 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
       </FieldGroup>
 
       {defaultValues?.contacts?.map((contact, index) => (
-        <>
+        <Fragment key={index}>
           <FieldGroup label={t("DetailsPage.phone")}>
             <p>
               +{contact?.phoneCode} {contact?.phone}
@@ -190,7 +170,7 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
               <p>{contact?.email}</p>
             </FieldGroup>
           )}
-        </>
+        </Fragment>
       ))}
     </DataBlock>
   );

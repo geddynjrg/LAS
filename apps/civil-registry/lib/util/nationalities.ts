@@ -193,3 +193,8 @@ export const nationalities = [
   "Zambian",
   "Zimbabwean",
 ] as const;
+
+export const nationalityOptions = nationalities.map((nationality) => ({
+  label: nationality,
+  value: nationality,
+}));
