@@ -24,28 +24,30 @@ export interface ContactFieldsProps {
   state: FormFieldState<{
     contacts: ContactFieldContact[];
   }>;
+  defaultValues?: Partial<ContactFieldContact>[];
   editable?: boolean;
   hasEmail?: boolean;
 }
 
 export const ContactFields: FC<ContactFieldsProps> = ({
   state,
+  defaultValues,
   editable = true,
   hasEmail = true,
 }) => {
   const t = useTranslations("DetailsPage");
-  const defaultValues = state.values?.contacts ?? [
+  const defaultState = state.values?.contacts ?? [
     { phoneCode: "", phone: "", email: "" },
   ];
 
-  const [contacts, setContacts] = useState(defaultValues);
+  const [contacts, setContacts] = useState(defaultState);
 
   const addContact = () => {
     setContacts((value) => [...value, { phoneCode: "", phone: "", email: "" }]);
   };
 
   if (!editable) {
-    return defaultValues.map((contact, index) => (
+    return defaultState.map((contact, index) => (
       <div key={`phone-contact-${index}`}>
         <input
           type="hidden"
@@ -70,6 +72,7 @@ export const ContactFields: FC<ContactFieldsProps> = ({
           label={t("phone")}
           key={`phone-${index}-${contact.phoneCode}-${contact.phone}`}
           required={editable}
+          isHighlighted={isValueChanged(defaultValues, contact, index)}
         >
           +{contact?.phoneCode} {contact?.phone}
         </FieldGroup>
@@ -122,3 +125,26 @@ export const ContactFields: FC<ContactFieldsProps> = ({
     </>
   );
 };
+
+function isValueChanged<T extends ContactFieldContact>(
+  defaultValues: Partial<T>[] | undefined | null,
+  currentValue: T | undefined | null,
+  index: number,
+) {
+  if (!defaultValues) {
+    return false;
+  }
+
+  const defaultCode = defaultValues[index]?.phoneCode ?? "";
+  const defaultPhone = defaultValues[index]?.phone ?? "";
+  const defaultEmail = defaultValues[index]?.email ?? "";
+  const currentCode = currentValue?.phoneCode ?? "";
+  const currentPhone = currentValue?.phone ?? "";
+  const currentEmail = currentValue?.email ?? "";
+
+  return (
+    defaultCode !== currentCode ||
+    defaultPhone !== currentPhone ||
+    defaultEmail !== currentEmail
+  );
+}

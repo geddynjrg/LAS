@@ -128,6 +128,10 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
           state={state}
           name="nationality"
           label={t("DetailsPage.nationality")}
+          isHighlighted={isValueChanged(
+            state.values?.nationality,
+            defaultValues.nationality,
+          )}
           editable={isEditing}
           control={(props) => (
             <SearchInput {...props} options={nationalityOptions} />
@@ -146,6 +150,10 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
             />
           )}
           editable={isEditing}
+          isHighlighted={isValueChanged(
+            state.values?.maritalStatus,
+            defaultValues.maritalStatus,
+          )}
           label={t("DetailsPage.marital-status")}
           name="maritalStatus"
           required={isEditing}
@@ -155,6 +163,10 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
           state={state}
           name="education"
           editable={isEditing}
+          isHighlighted={isValueChanged(
+            state.values?.education,
+            defaultValues.education,
+          )}
           label={t("DetailsPage.education")}
           control={(props) => (
             <SearchInput {...props} options={educationOptions} />
@@ -166,12 +178,28 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
           state={state}
           name="fatherName"
           editable={isEditing}
+          isHighlighted={isValueChanged(
+            state.values?.fatherName,
+            defaultValues.fatherName,
+          )}
           label={t("DetailsPage.fathers-name")}
           control={(props) => <Input {...props} />}
         />
 
-        <ContactFields state={state} editable={isEditing} hasEmail={false} />
+        <ContactFields
+          state={state}
+          defaultValues={defaultValues.contacts}
+          editable={isEditing}
+          hasEmail={false}
+        />
       </DataBlock>
     </Form>
   );
 };
+
+function isValueChanged<T extends string>(
+  defaultValue: T | undefined | null,
+  currentValue: T | undefined | null,
+) {
+  return (defaultValue ?? "") !== (currentValue ?? "");
+}

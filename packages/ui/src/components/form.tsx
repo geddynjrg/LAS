@@ -61,6 +61,7 @@ export interface FieldProps<
   required?: boolean;
   editable?: boolean;
   isVisible?: boolean;
+  isHighlighted?: boolean;
   isDate?: boolean;
   className?: string;
 }
@@ -77,6 +78,7 @@ export const Field = <
   required,
   editable = true,
   isVisible = true,
+  isHighlighted,
   isDate = false,
   className,
 }: FieldProps<TInputs, TName>) => {
@@ -98,7 +100,11 @@ export const Field = <
       {label && (
         <FormPrimitive.Label
           htmlFor={id}
-          className={cn(labelVariants(), "mb-1 font-bold")}
+          className={cn(
+            labelVariants(),
+            "mb-1 font-bold",
+            isHighlighted && !editable && "text-yellow-500",
+          )}
         >
           {label}
           {required && editable && <span className="text-destructive">*</span>}
@@ -115,7 +121,7 @@ export const Field = <
               })}
           </FormPrimitive.Control>
         ) : (
-          <p>
+          <p className={cn(isHighlighted && "text-yellow-500")}>
             <input type="hidden" name={name} value={defaultValues} />
             {isDate &&
             defaultValues &&
@@ -154,6 +160,7 @@ export const Field = <
 export interface FieldGroupProps {
   label?: ReactNode;
   description?: ReactNode;
+  isHighlighted?: boolean;
   required?: boolean;
   className?: string;
   children?: ReactNode;
@@ -162,11 +169,14 @@ export interface FieldGroupProps {
 export const FieldGroup: FC<FieldGroupProps> = ({
   label,
   description,
+  isHighlighted,
   required,
   className,
   children,
 }) => (
-  <div className={cn("space-y-1", className)}>
+  <div
+    className={cn("space-y-1", isHighlighted && "text-yellow-500", className)}
+  >
     {label && (
       <div className={cn(labelVariants(), "mb-2 font-bold")}>
         {label}

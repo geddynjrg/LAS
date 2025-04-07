@@ -54,9 +54,9 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
     onSubmit(changedFields);
   });
 
-  const firstName = state.values?.firstName ?? "";
-  const middleName = state.values?.middleName ?? "";
-  const lastName = defaultValues.lastName ?? "";
+  const firstName = state.values?.firstName;
+  const middleName = state.values?.middleName;
+  const lastName = defaultValues.lastName;
   const fullName = [firstName, middleName, lastName]
     .filter(Boolean)
     .join(" ")
@@ -109,6 +109,9 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           <DataNode
             label={t("DetailsPage.name")}
             variant={disabled ? "disabled" : "default"}
+            className={
+              isNameChanged(state, defaultValues) ? "text-yellow-500" : ""
+            }
           >
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
@@ -193,3 +196,17 @@ const EditMessage: FC<{ children: ReactNode }> = ({ children }) => (
     {children}
   </div>
 );
+
+function isNameChanged(
+  state: {
+    values?: { firstName?: string; middleName?: string };
+  },
+  defaultValues: { firstName?: string; middleName?: string },
+) {
+  // Check if any of the name fields have changed
+  // Use nullish coalescing operator to handle undefined values
+  return (
+    (state?.values?.firstName ?? "") !== (defaultValues.firstName ?? "") ||
+    (state?.values?.middleName ?? "") !== (defaultValues.middleName ?? "")
+  );
+}
