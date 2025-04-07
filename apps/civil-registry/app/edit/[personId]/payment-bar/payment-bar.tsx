@@ -18,9 +18,9 @@ import { ModalButton } from "@workspace/ui/components/modal-button";
 import { cn } from "@workspace/ui/lib/utils";
 
 export const PaymentBar: FC<{
-  onSubmit: () => void;
+  onConfirm: () => void;
   price: number;
-}> = ({ price, onSubmit }) => {
+}> = ({ price, onConfirm }) => {
   const t = useTranslations();
   const [viewDetails, setViewDetails] = useState(false);
 
@@ -79,7 +79,7 @@ export const PaymentBar: FC<{
             </Link>
           </Button>
           <ModalButton
-            onConfirm={onSubmit}
+            onConfirm={onConfirm}
             modalTitle={t("DetailsPage.confirm-amendments-title")}
             modalText={t("DetailsPage.confirm-amendments-text")}
           >

@@ -29,7 +29,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({
       prevUrl="/add/informant"
       className="space-y-4"
       nextLabel="Send for confirmation"
-      nextUrl="/confirmation"
+      nextUrl="/add/confirmation"
       submitType="hidden"
     >
       <DataBlock title={t(`DetailsPage.title-final-review`)}>

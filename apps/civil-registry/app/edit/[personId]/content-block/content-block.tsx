@@ -30,6 +30,9 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
   const [editablePersonId, setEditablePersonId] = useState<string | null>(null);
   const [requirePayment, setRequirePayment] = useState(false);
 
+  const father = person.father as Person;
+  const mother = person.mother as Person;
+
   const t = useTranslations();
 
   function toggleEdit(id: string | null) {
@@ -65,23 +68,19 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
           />
           {person.mother && (
             <MotherFormBlock
-              defaultValues={person.mother as Person}
-              disabled={
-                isAmending && editablePersonId !== (person.mother as Person).id
-              }
-              isEditing={editablePersonId === (person.mother as Person).id}
-              onEdit={() => toggleEdit((person.mother as Person).id)}
+              defaultValues={mother}
+              disabled={isAmending && editablePersonId !== mother.id}
+              isEditing={editablePersonId === mother.id}
+              onEdit={() => toggleEdit(mother.id)}
               onSubmit={() => toggleEdit(null)}
             />
           )}
           {person.father && (
             <FatherFormBlock
-              defaultValues={person.father as Person}
-              disabled={
-                isAmending && editablePersonId !== (person.father as Person).id
-              }
-              isEditing={editablePersonId === (person.father as Person).id}
-              onEdit={() => toggleEdit((person.father as Person).id)}
+              defaultValues={father}
+              disabled={isAmending && editablePersonId !== father.id}
+              isEditing={editablePersonId === father.id}
+              onEdit={() => toggleEdit(father.id)}
               onSubmit={() => toggleEdit(null)}
             />
           )}
@@ -91,7 +90,7 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
       {!isAmending && requirePayment && (
         <PaymentBar
           price={250}
-          onSubmit={async () => {
+          onConfirm={async () => {
             await updatePersonStatusById(person?.id ?? "", "pending");
             return router.push(`${person.id}/payment`);
           }}

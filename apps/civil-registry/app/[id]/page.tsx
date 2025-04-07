@@ -26,11 +26,13 @@ export interface MainPageProps {
 export default async function Page({ params }: MainPageProps) {
   const { id } = await params;
 
-  const personId = id ?? "1";
-
   const t = await getTranslations();
   const format = await getFormatter();
-  const person = await getPersonById(personId);
+  const person = await getPersonById(id);
+
+  if (!person) {
+    throw new Error("Person not found");
+  }
 
   return (
     <SectionWrap hasTopPadding hasBottomPadding className="space-y-8">

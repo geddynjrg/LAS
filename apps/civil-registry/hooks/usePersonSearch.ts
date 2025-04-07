@@ -6,7 +6,7 @@ import type { Person, SexType } from "@/lib/data/person";
 import { searchPerson } from "@/lib/services/birth-registration-service";
 
 export function usePersonSearch(sex?: SexType) {
-  const [searchedText, setSearchedText] = useState<string>("");
+  const [searchedText, setSearchedText] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState<{ label: string; value: string }[]>(
     [],
@@ -39,6 +39,10 @@ export function usePersonSearch(sex?: SexType) {
   }, 300);
 
   const onValueChange = (value: string | undefined) => {
+    if (!value || value === searchedText) {
+      return;
+    }
+
     debouncedSearch(value);
   };
 

@@ -7,15 +7,10 @@ export interface DetailsPageProps {
 
 export default async function DetailsPage({ params }: DetailsPageProps) {
   const { personId } = await params;
-
-  if (!personId) {
-    return <p>Error: person Id is missing</p>;
-  }
-
   const person = await getPersonById(personId);
 
   if (!person) {
-    return <p>Error: person not found</p>;
+    throw new Error("Person not found");
   }
 
   return <ContentBlock person={person} />;

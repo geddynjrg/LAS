@@ -52,10 +52,8 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
     state.values?.citizenship ?? "–",
   );
 
-  const fullName = [firstName, middleName, lastName]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
+  const fullName =
+    [firstName, middleName, lastName].filter(Boolean).join(" ").trim() || "–";
 
   return (
     <>
@@ -112,7 +110,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />
 
-            {fullName ?? "–"}
+            {fullName}
           </DataNode>
           <DataNode label={t("dob")} variant="default">
             <input type="hidden" name="dob" value={birthDate} />
