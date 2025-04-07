@@ -7,10 +7,12 @@ import {
   IconChevronUp,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useState, type FC } from "react";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
+import { Currency } from "@workspace/ui/components/currency";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { ModalButton } from "@workspace/ui/components/modal-button";
 import { cn } from "@workspace/ui/lib/utils";
@@ -43,22 +45,28 @@ export const PaymentBar: FC<{
         <div>
           <div className={cn("flex flex-grow items-center justify-between")}>
             <div>{t("DetailsPage.amendment-cost-label")}</div>
-            <div className={cn("typo-h5")}>{price} KSh</div>
+            <div className={cn("typo-h5")}>
+              <Currency
+                amount={price}
+                currency="KES"
+                minimumFractionDigits={0}
+              />
+            </div>
           </div>
 
           {viewDetails && (
             <>
               <DataPair className={cn("text-sm")}>
                 <div>Child's name change</div>
-                <div className={cn("font-bold")}>250 KSh</div>
+                <Currency className="font-bold" amount={250} currency="KES" />
               </DataPair>
               <DataPair className={cn("text-sm")}>
                 <div>Child's name change</div>
-                <div className={cn("font-bold")}>250 KSh</div>
+                <Currency className="font-bold" amount={250} currency="KES" />
               </DataPair>
               <DataPair className={cn("text-sm")}>
                 <div>Child's name change</div>
-                <div className={cn("font-bold")}>250 KSh</div>
+                <Currency className="font-bold" amount={250} currency="KES" />
               </DataPair>
             </>
           )}
@@ -66,9 +74,9 @@ export const PaymentBar: FC<{
 
         <div className={cn("flex flex-grow justify-between")}>
           <Button asChild variant="secondary">
-            <a href="/" className={cn("!px-5")}>
+            <Link href="/" className={cn("!px-5")}>
               <IconArrowLeft /> {t("DetailsPage.back")}
-            </a>
+            </Link>
           </Button>
           <ModalButton
             onConfirm={onSubmit}

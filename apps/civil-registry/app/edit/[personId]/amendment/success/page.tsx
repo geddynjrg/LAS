@@ -1,8 +1,5 @@
-"use client";
-
 import { IconMail, IconPhone } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { use, useEffect, useState } from "react";
+import { getTranslations } from "next-intl/server";
 
 import { BackButton } from "@workspace/ui/components/civil-registry/back-button";
 import {
@@ -13,31 +10,21 @@ import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wra
 import { cn } from "@workspace/ui/lib/utils";
 
 import { getPersonById } from "@/actions/get-person-by-id";
-import type { Person } from "@/lib/data/person";
 
 export interface SuccessPageProps {
   params: Promise<{ personId: string }>;
 }
 
-export default function AmendmentSuccessPage({ params }: SuccessPageProps) {
-  const { personId } = use(params);
+export default async function AmendmentSuccessPage({
+  params,
+}: SuccessPageProps) {
+  const { personId } = await params;
+  const t = await getTranslations();
+  const person = await getPersonById(personId);
 
-  const [person, setPerson] = useState<Person | null | undefined>(null);
-
-  useEffect(() => {
-    if (!personId) {
-      return;
-    }
-
-    async function getPerson() {
-      const data = await getPersonById(personId);
-      setPerson(data);
-    }
-
-    getPerson();
-  }, [personId]);
-
-  const t = useTranslations();
+  if (!person) {
+    throw new Error("Person not found");
+  }
 
   return (
     <SectionWrap hasTopPadding hasBottomPadding className={cn("space-y-6")}>

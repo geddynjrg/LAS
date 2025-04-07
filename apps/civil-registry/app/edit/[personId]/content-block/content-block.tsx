@@ -2,6 +2,7 @@
 
 import { IconArrowLeft, IconCheck } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
 
@@ -52,7 +53,6 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
 
         <div className={cn("space-y-12")}>
           <ChildFormBlock
-            key={"child-block"}
             defaultValues={person}
             disabled={isAmending && editablePersonId !== person.id}
             isEditing={editablePersonId === person.id}
@@ -65,7 +65,6 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
           />
           {person.mother && (
             <MotherFormBlock
-              key={"mother-block"}
               defaultValues={person.mother as Person}
               disabled={
                 isAmending && editablePersonId !== (person.mother as Person).id
@@ -77,7 +76,6 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
           )}
           {person.father && (
             <FatherFormBlock
-              key={"father-block"}
               defaultValues={person.father as Person}
               disabled={
                 isAmending && editablePersonId !== (person.father as Person).id
@@ -103,12 +101,12 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
       {!isAmending && !requirePayment && (
         <ActionBar>
           <Button asChild variant="secondary">
-            <a
+            <Link
               href={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
               className={cn("!px-5")}
             >
               <IconArrowLeft /> {t("DetailsPage.back")}
-            </a>
+            </Link>
           </Button>
           <ModalButton
             modalTitle="Confirm registration?"

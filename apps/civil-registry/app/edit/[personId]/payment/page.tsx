@@ -1,17 +1,14 @@
-"use client";
-
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { BackButton } from "@workspace/ui/components/civil-registry/back-button";
 import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
+import { Currency } from "@workspace/ui/components/currency";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { getPersonById } from "@/actions/get-person-by-id";
-import type { Person } from "@/lib/data/person";
 
 export interface PaymentPageProps {
   params: Promise<{ personId: string }>;
@@ -31,29 +28,17 @@ const MOCK_PURCHASES: {
   },
 ];
 
-export default function PaymentPage({ params }: PaymentPageProps) {
-  const { personId } = use(params);
+export default async function PaymentPage({ params }: PaymentPageProps) {
+  const { personId } = await params;
+  const t = await getTranslations();
 
-  const router = useRouter();
-  const t = useTranslations();
-
+  const person = await getPersonById(personId);
   const purchases = MOCK_PURCHASES;
-  const [person, setPerson] = useState<Person | null | undefined>(null);
-
   const total = purchases.reduce((acc, cur) => acc + cur.price, 0);
 
-  useEffect(() => {
-    if (!personId) {
-      router.push("/");
-    }
-
-    async function getPerson() {
-      const data = await getPersonById(personId);
-      setPerson(data);
-    }
-
-    getPerson();
-  }, [personId]);
+  if (!person) {
+    throw new Error("Person not found");
+  }
 
   return (
     <SectionWrap className={cn("space-y-6")} hasTopPadding hasBottomPadding>
@@ -86,9 +71,12 @@ export default function PaymentPage({ params }: PaymentPageProps) {
               <div style={{ wordBreak: "break-word" }}>
                 {t(`PaymentPage.${purchase.title}`)}
               </div>
-              <div className={cn("text-nowrap font-bold")}>
-                {purchase.price} KSh
-              </div>
+
+              <Currency
+                className="text-nowrap font-bold"
+                amount={purchase.price}
+                currency="KES"
+              />
             </DataPair>
           ))}
         </div>
@@ -102,7 +90,7 @@ export default function PaymentPage({ params }: PaymentPageProps) {
           )}
         >
           <div>{t("Common.total")}</div>
-          <div className={cn("font-bold")}>{total} KSh</div>
+          <Currency className="font-bold" amount={total} currency="KES" />
         </DataPair>
       </div>
 
@@ -112,23 +100,14 @@ export default function PaymentPage({ params }: PaymentPageProps) {
       </h3>
 
       <div className={cn("flex flex-col gap-4")}>
-        <Button
-          className={cn("w-full max-w-[23rem]")}
-          onClick={() => router.push(`amendment/success`)}
-        >
-          Payment option 1
+        <Button className={cn("w-full max-w-[23rem]")} asChild>
+          <Link href="amendment/success">Payment option 1</Link>
         </Button>
-        <Button
-          className={cn("w-full max-w-[23rem]")}
-          onClick={() => router.push(`amendment/success`)}
-        >
-          Payment option 2
+        <Button className={cn("w-full max-w-[23rem]")} asChild>
+          <Link href="amendment/success">Payment option 2</Link>
         </Button>
-        <Button
-          className={cn("w-full max-w-[23rem]")}
-          onClick={() => router.push(`amendment/success`)}
-        >
-          Payment option 3
+        <Button className={cn("w-full max-w-[23rem]")} asChild>
+          <Link href="amendment/success">Payment option 3</Link>
         </Button>
       </div>
     </SectionWrap>

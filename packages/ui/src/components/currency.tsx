@@ -4,7 +4,7 @@ import { cn } from "@workspace/ui/lib/utils";
 
 interface CurrencyProps extends Intl.NumberFormatOptions {
   amount: number;
-  currency: string;
+  currency: "KES";
   className?: string;
 }
 
