@@ -64,7 +64,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       maxSize={maxSize}
       disabled={disabled}
     >
-      <DropzoneInput name={name} capture={hasImageType} />
+      <DropzoneInput name={name} capture={hasImageType && isCameraEnabled} />
 
       <div className="flex items-center justify-center gap-4">
         {hasImageType && (
