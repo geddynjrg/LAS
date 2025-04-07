@@ -59,14 +59,12 @@ export function useForm<
       });
 
       if (!success) {
-        const errors = error.format();
+        const errors = error.flatten((e) => e);
 
         return {
           success,
-          errors,
-          message: Array.isArray(errors._errors)
-            ? errors._errors.join(", ")
-            : "",
+          errors: errors.fieldErrors,
+          message: errors?.formErrors.map((e) => e.message).join(", "),
           values,
         };
       }

@@ -17,7 +17,6 @@ import type { FlattenObjectKeys } from "@workspace/ui/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type InputValues = Record<string, any>;
-type AnyFormFieldError = (string | z.ZodIssue)[] | FormFieldError;
 
 export const Form = FormPrimitive.Root;
 
@@ -33,11 +32,7 @@ export type Path<T> = T extends object
 
 export interface FormFieldState<T extends Record<string, unknown>> {
   values?: Partial<T>;
-  errors?: {
-    _errors?: string[]; // Global form-level errors
-  } & {
-    [K in keyof T]?: AnyFormFieldError;
-  };
+  errors?: { [K in keyof T]?: (string | z.ZodIssue)[] };
 }
 
 export interface FormFieldError {
@@ -134,36 +129,16 @@ export const Field = <
         <input type="hidden" name={name} value={defaultValues} />
       )}
 
-      {typeof errorMessage === "object" &&
-        typeof errorMessage?.errorMessage === "string" && (
-          <FieldMessage>
-            {(() => {
-              const messageKey = errorMessage.errorMessage;
-              if (
-                typeof messageKey === "string" &&
-                t.has(messageKey as FlattenObjectKeys<IntlMessages>)
-              ) {
-                return t(
-                  messageKey as FlattenObjectKeys<IntlMessages>,
-                  errorMessage as unknown as TranslationValues,
-                );
-              }
-              return messageKey; // Fallback to displaying raw message
-            })()}
-          </FieldMessage>
-        )}
-
-      {typeof errorMessage === "string" && errorMessage && (
+      {errorMessage && (
         <FieldMessage>
-          {typeof errorMessage === "string" &&
-          t.has(errorMessage as FlattenObjectKeys<IntlMessages>)
+          {typeof errorMessage === "string"
             ? errorMessage
-            : t.has(errorMessage as FlattenObjectKeys<IntlMessages>)
+            : t.has(errorMessage?.message as FlattenObjectKeys<IntlMessages>)
               ? t(
-                  errorMessage as FlattenObjectKeys<IntlMessages>,
+                  errorMessage?.message as FlattenObjectKeys<IntlMessages>,
                   errorMessage as unknown as TranslationValues,
                 )
-              : errorMessage}
+              : errorMessage?.message}
         </FieldMessage>
       )}
 
@@ -264,38 +239,36 @@ const getFormValue = <TInputs extends InputValues, TName extends keyof TInputs>(
   return value;
 };
 
-const getErrorMessage = <TInputs extends InputValues, TName extends string>(
+const getErrorMessage = <
+  TInputs extends InputValues,
+  TName extends keyof TInputs,
+>(
   fieldName: TName,
   state?: { errors?: FormFieldState<TInputs>["errors"] | undefined },
 ) => {
-  if (!state?.errors) {
+  const pathParts = (
+    typeof fieldName === "string" ? fieldName.split(".") : [fieldName]
+  ) as TName[];
+  const name = pathParts.shift();
+
+  if (!state?.errors || !name) {
     return undefined;
   }
 
-  // Split fieldName into path segments (e.g., "contacts.children.0.email" → ["contacts", "children", "0", "email"])
-  const pathParts =
-    typeof fieldName === "string" ? fieldName.split(".") : [fieldName];
+  const rootError = state.errors[name];
 
-  let errorEntry = state.errors;
+  // check if is nested error
+  if (Array.isArray(rootError)) {
+    const childError = rootError.find((e) => {
+      if (typeof e === "string") {
+        return false;
+      }
 
-  // Traverse the nested error structure dynamically
-  for (const part of pathParts) {
-    if (!errorEntry || typeof errorEntry !== "object" || errorEntry === null) {
-      return undefined;
-    }
+      return e.path.join(".") === fieldName;
+    });
 
-    errorEntry = errorEntry[part] as typeof state.errors; // Go deeper into the object
+    return childError;
   }
 
-  // Case 1: Return the first _errors entry as a string
-  if (Array.isArray(errorEntry?._errors) && errorEntry._errors.length > 0) {
-    return { errorMessage: errorEntry._errors[0], name: fieldName };
-  }
-
-  // Case 2: If errorEntry is an array (e.g., fieldErrors as an array), return the first entry
-  if (Array.isArray(errorEntry) && errorEntry.length > 0) {
-    return { errorMessage: errorEntry[0], name: fieldName };
-  }
-
-  return undefined;
+  return rootError as string | z.ZodIssue | undefined;
 };
