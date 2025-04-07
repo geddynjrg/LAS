@@ -45,7 +45,7 @@ export default async function RootLayout({
             <Providers>
               <AppHeader />
               <AppSidebar locale={locale} />
-              <SidebarInset>
+              <SidebarInset className="bg-gradient-to-b from-[hsl(0,0%,97%)] to-[hsl(310,50%,97%)]">
                 <Suspense
                   fallback={
                     <div className="flex flex-1 items-center justify-center">
