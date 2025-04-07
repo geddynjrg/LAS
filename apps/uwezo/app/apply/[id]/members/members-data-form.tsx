@@ -270,13 +270,11 @@ export const MembersDataForm: FC<MembersDataProps> = ({
 
       <input type="hidden" name="redirectTo" value={nextUrl} />
 
-      <div className="mt-auto">
-        <ApplyFormActionBar
-          disabled={isPending}
-          nextUrl={nextUrl}
-          prevUrl={prevUrl}
-        />
-      </div>
+      <ApplyFormActionBar
+        disabled={isPending}
+        nextUrl={nextUrl}
+        prevUrl={prevUrl}
+      />
     </Form>
   );
 };
