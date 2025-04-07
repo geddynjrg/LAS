@@ -1,33 +1,66 @@
 import { z } from "zod";
 
-export const loanConditionsDataSchema = z.object({
-  purposeOfLoan: z.preprocess(
-    (v) =>
-      Array.isArray(v)
-        ? v
-        : typeof v === "string"
-          ? v.split(",").filter(Boolean)
-          : [],
-    z.array(z.string()).min(1),
-  ),
-  loanType: z.string().nonempty(),
-  loanAmount: z
-    .string()
-    .nonempty()
-    .transform((value) => value.replace(/[\s,]+/g, ""))
-    .pipe(
-      z
-        .string()
-        .regex(/^\d+(\.\d+)?$/, "Must be a valid number") // Ensures only numbers
-        .transform((val) => Number(val)) // Convert string to number
-        .refine((num) => num <= 100000, {
-          message: "Value must not exceed 100000",
-        }),
+import { loanTypeValues } from "@/lib/constants";
+
+export const loanConditionsDataSchema = z
+  .object({
+    purposeOfLoan: z.preprocess(
+      (v) =>
+        Array.isArray(v)
+          ? v
+          : typeof v === "string"
+            ? v.split(",").filter(Boolean)
+            : [],
+      z.array(z.string()).min(1),
     ),
-  repaymentPeriod: z.coerce.number().min(1).max(12),
-  bankName: z.string().nonempty(),
-  bankBranch: z.string().nonempty(),
-  accountNumber: z.string().nonempty(),
-});
+    loanType: z.string().nonempty(),
+    loanAmount: z
+      .string()
+      .nonempty()
+      .transform((value) => value.replace(/[\s,]+/g, ""))
+      .pipe(
+        z
+          .string()
+          .regex(/^-?\d+(\.\d+)?$/, "Common.mustBeValidNumber") // ensures only numbers
+          .transform((val) => Number(val))
+          .refine(
+            (val) => val > 0,
+            "ApplicationDetailsPage.loan.invalidLoanAmount",
+          ),
+      ),
+    repaymentPeriod: z.coerce.number().min(1).max(12),
+    bankName: z.string().nonempty(),
+    bankBranch: z.string().nonempty(),
+    accountNumber: z.string().nonempty(),
+  })
+  .superRefine((data, ctx) => {
+    const loanType = data.loanType;
+
+    switch (loanType) {
+      case loanTypeValues.Endeleza.title:
+        if (data.loanAmount > loanTypeValues.Endeleza.maxLoanAmount) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["loanAmount"],
+            message: "ApplicationDetailsPage.loan.maximumLoan",
+            params: { count: loanTypeValues.Endeleza.maxLoanAmount },
+          });
+        }
+
+        break;
+      case loanTypeValues.Wezesha.title:
+        if (data.loanAmount > loanTypeValues.Wezesha.maxLoanAmount) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["loanAmount"],
+            message: "ApplicationDetailsPage.loan.maximumLoan",
+            params: { count: loanTypeValues.Wezesha.maxLoanAmount },
+          });
+        }
+        break;
+      default:
+        return;
+    }
+  });
 
 export type LoanConditionsData = z.infer<typeof loanConditionsDataSchema>;

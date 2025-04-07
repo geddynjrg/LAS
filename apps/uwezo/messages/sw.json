@@ -26,7 +26,10 @@
     "edit": "Hariri",
     "cancel": "Ghairi",
     "confirm": "Thibitisha",
-    "youCanAddMultipleFiles": "Unaweza kuongeza faili nyingi"
+    "youCanAddMultipleFiles": "Unaweza kuongeza faili nyingi",
+    "mustBeValidNumber": "Lazima iwe nambari halali",
+    "pleaseAgreeToTheTerms": "Tafadhali kubali masharti",
+    "fileExceedsMaxSize": "Faili inazidi ukubwa wa juu zaidi"
   },
 
   "Footer": {
@@ -79,7 +82,7 @@
     "backToFrontPage": "Rudi kwenye ukurasa wa mbele",
     "needToKnowBefore": "Unachohitaji kujua kabla ya kuomba",
     "description": "Katika mchakato wa maombi utaombwa kutoa nyaraka na kuthibitisha kwamba wanachama wote wa kikundi wanakubaliana na ombi la mkopo.",
-    "validGroupSectionTitle": "Vitambulisho vya kitaifa vya wanachama wa kikundi",
+    "validGroupSectionTitle": "Kitambulisho halali cha wanachama",
     "exampleOfNationalId": "Mfano wa kitambulisho cha kitaifa",
     "documentsRequired": "Nyaraka zinazohitajika katika maombi:",
     "example": "Mfano",
@@ -94,9 +97,8 @@
     },
     "kindlyProvideAllRelatedToYourGroup": "Tafadhali toa yote yanayohusiana na kikundi chako",
     "moreInfoAboutCredit": "Maelezo zaidi kuhusu nyaraka za historia ya mkopo",
-    "nationalIdSectionTitle": "Vitambulisho vya kitaifa vya wanachama wa kikundi",
     "exampleId": "Mfano wa kitambulisho cha kitaifa",
-    "membersMustBeInformed": "Wanachama lazima wafahamishwe kuhusu maombi na wataombwa <bold>kutoa idhini yao kupitia huduma ya SMS</bold>",
+    "membersMustBeInformed": "Mwombaji lazima atoe nakala za vitambulisho vya wanachama na orodha ya wanachama",
     "beginFillingForm": "Anza kujaza fomu",
     "DonePage": {
       "title": "Asante kwa maombi yako!",
@@ -191,11 +193,12 @@
       "bankAccountNumber": "Nambari ya akaunti ya benki",
       "LoanDescription": "Wezesha ni kwa wakopaji wa mara ya kwanza. Kiwango cha mkopo ni kati ya 50,000 KSh - 100,000 KSh. Kipindi cha juu cha marejesho ni miezi 24.",
       "Interest": "Mkopo una riba ya 1%.",
-      "maximumLoan": "Kiwango cha juu ni 100,000 KSh",
+      "maximumLoan": "Kiasi cha juu zaidi ni {count} KSh",
       "bankName": "Jina la Benki ya Kikundi",
       "bankBranch": "Tawi la Benki ya Kikundi",
       "accountNumber": "Nambari ya Akaunti ya Benki",
-      "selectBank": "Chagua benki"
+      "selectBank": "Chagua benki",
+      "invalidLoanAmount": "Kiasi cha mkopo si sahihi"
     },
     "members": {
       "members": "Wanachama",

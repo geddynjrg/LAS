@@ -11,13 +11,13 @@ export const groupDataSchema = z
       .instanceof(File)
       .refine(
         (file) => file.size <= MAX_FILE_SIZE,
-        "File exceed max file size",
+        "Common.fileExceedsMaxSize",
       ),
     listOfMembersOnCertificate: z
       .instanceof(File)
       .refine(
         (file) => file.size <= MAX_FILE_SIZE,
-        "File exceed max file size",
+        "Common.fileExceedsMaxSize",
       ),
 
     groupPurpose: z.preprocess(
@@ -53,26 +53,26 @@ export const groupDataSchema = z
 
     tableBankingExperience: z
       .string()
-      .regex(/^\d+$/, "Must be a number")
+      .regex(/^\d+$/, "Common.mustBeValidNumber")
       .transform((val) => Number(val))
       .nullable()
       .optional(),
     tableBankingShareContribution: z
       .string()
-      .regex(/^\d+$/, "Must be a number")
+      .regex(/^\d+$/, "Common.mustBeValidNumber")
       .transform((val) => Number(val))
       .nullable()
       .optional(),
     tableBankingTotalLoanedOut: z
       .string()
-      .regex(/^\d+$/, "Must be a number")
+      .regex(/^\d+$/, "Common.mustBeValidNumber")
       .nullable()
       .transform((val) => Number(val))
 
       .optional(),
     tableBankingTotalRevolvingFund: z
       .string()
-      .regex(/^\d+$/, "Must be a number")
+      .regex(/^\d+$/, "Common.mustBeValidNumber")
       .transform((val) => Number(val))
       .nullable()
       .optional(),
@@ -83,7 +83,7 @@ export const groupDataSchema = z
       .instanceof(File)
       .refine(
         (file) => file.size <= MAX_FILE_SIZE,
-        "File exceed max file size",
+        "Common.fileExceedsMaxSize",
       ),
     countyOfOperation: z.string().nonempty(),
     constituency: z.string().nonempty(),

@@ -2,7 +2,7 @@
 
 import { IconCaretDownFilled, IconSearch } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import type { FC } from "react";
+import { useState, type FC } from "react";
 
 import {
   ButtonGroup,
@@ -37,6 +37,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
   loanConditionsData,
 }) => {
   const t = useTranslations();
+
   const [state, formAction, isPending] = useForm(
     action,
     loanConditionsDataSchema,
@@ -50,6 +51,33 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
       repaymentPeriod: loanConditionsData?.repaymentPeriod,
     },
   );
+
+  const [selectedType, setSelectedType] = useState<
+    keyof typeof loanTypes | undefined
+  >(state.values?.loanType as keyof typeof loanTypes);
+
+  const loanTypes = {
+    Endeleza: {
+      title: "Endeleza",
+      maxLoanAmount: "100 000",
+      content: {
+        title: t("ApplicationDetailsPage.loan.LoanDescription"),
+        underText: t("ApplicationDetailsPage.loan.Interest"),
+      },
+    },
+    Wezesha: {
+      title: "Wezesha",
+      maxLoanAmount: "100 000",
+      content: {
+        title: t("ApplicationDetailsPage.loan.LoanDescription"),
+        underText: t("ApplicationDetailsPage.loan.Interest"),
+      },
+    },
+  };
+
+  const maxAmount = selectedType
+    ? loanTypes[selectedType]?.maxLoanAmount
+    : undefined;
 
   const prevUrl = `/apply/${id}/members`;
   const nextUrl = `/apply/${id}/proposed-business`;
@@ -93,27 +121,51 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             label={t("ApplicationDetailsPage.loan.loanType")}
             required
             control={(props) => (
-              <ButtonGroup {...props} type="single">
-                <ButtonGroupItem value="Wezesha">Wezesha</ButtonGroupItem>
-                <ButtonGroupItem value="Endeleza">Endeleza</ButtonGroupItem>
+              <ButtonGroup
+                {...props}
+                type="single"
+                onValueChange={(val) =>
+                  setSelectedType(val as keyof typeof loanTypes)
+                }
+              >
+                <ButtonGroupItem value={loanTypes.Wezesha.title}>
+                  {loanTypes.Wezesha.title}
+                </ButtonGroupItem>
+                <ButtonGroupItem value={loanTypes.Endeleza.title}>
+                  {loanTypes.Endeleza.title}
+                </ButtonGroupItem>
               </ButtonGroup>
             )}
           />
 
-          <Card variant="blue" radius="sm">
-            <p>{t("ApplicationDetailsPage.loan.LoanDescription")}</p>
-            <br />
-            <p className="font-bold">
-              {t("ApplicationDetailsPage.loan.Interest")}
-            </p>
-          </Card>
+          {selectedType === loanTypes.Wezesha.title && (
+            <Card variant="blue" radius="sm">
+              <p>{loanTypes.Endeleza.content.title}</p>
+              <br />
+              <p className="font-bold">{loanTypes.Wezesha.content.underText}</p>
+            </Card>
+          )}
+
+          {selectedType === loanTypes.Endeleza.title && (
+            <Card variant="blue" radius="sm">
+              <p>{loanTypes.Endeleza.content.title}</p>
+              <br />
+              <p className="font-bold">{loanTypes.Wezesha.content.underText}</p>
+            </Card>
+          )}
 
           <Field
             state={state}
             name="loanAmount"
             label={t("ApplicationDetailsPage.loan.loanAmount")}
             required
-            description={t("ApplicationDetailsPage.loan.maximumLoan")}
+            description={
+              maxAmount
+                ? t("ApplicationDetailsPage.loan.maximumLoan", {
+                    count: maxAmount,
+                  })
+                : ""
+            }
             control={(props) => (
               <Input
                 {...props}
@@ -132,7 +184,9 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
               <Slider
                 startDecorator={t("Common.monthCount", { count: 1 })}
                 endDecorator={t("Common.monthCount", { count: 12 })}
-                thumbLabel={(value) => t("Common.monthCount", { count: value })}
+                thumbLabel={(value) =>
+                  value ? t("Common.monthCount", { count: value }) : undefined
+                }
                 {...props}
                 min={1}
                 max={12}

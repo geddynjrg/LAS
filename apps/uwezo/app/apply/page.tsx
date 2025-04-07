@@ -48,7 +48,7 @@ export default function Page() {
             <p className="typo-body-medium mb-3">{t("example")}</p>
             <Image
               className="md:border md:border-neutral-300 md:shadow-lg"
-              src={"/images/cert-example.jpg"}
+              src={"/images/sample-certificate.png"}
               alt="cert example"
               width={300}
               height={200}
@@ -139,11 +139,7 @@ export default function Page() {
               height={200}
             />
           </div>
-          <p className="typo-body-medium px-4">
-            {t.rich("membersMustBeInformed", {
-              bold: (chunks) => <span className="font-bold">{chunks}</span>,
-            })}
-          </p>
+          <p className="typo-body-medium px-4">{t("membersMustBeInformed")}</p>
         </ApplyContentContainer>
       </Container>
       <ActionBar>

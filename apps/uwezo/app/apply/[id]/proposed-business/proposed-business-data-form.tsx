@@ -314,7 +314,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             </h2>
             <Currency
               amount={surplusDeficit}
-              currency="KSh"
+              currency="KES"
               signDisplay="always"
             />
           </div>

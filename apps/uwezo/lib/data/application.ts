@@ -34,6 +34,7 @@ export interface GeneralDetails {
   applicationId: string;
   status: Status;
   user: string; // currently user email
+  applicationProgress?: number;
 }
 
 export interface GroupData {
@@ -141,6 +142,7 @@ export async function createApplication() {
     applicationId: createApplicationId(),
     status: "UNSUBMITTED",
     user: session.user.email,
+    applicationProgress: 1,
   };
   dummyApplicationsTest.push({ generalDetails });
 
@@ -165,8 +167,15 @@ async function getApplication(id: string) {
 export async function updateApplicationGroupData(id: string, data: GroupData) {
   const { application, applicationIndex } = await getApplication(id);
 
+  const currentProgress = application.generalDetails.applicationProgress;
+
   const newApplicationData: ApplicationData = {
     ...application,
+    generalDetails: {
+      ...application.generalDetails,
+      applicationProgress:
+        currentProgress && currentProgress > 2 ? currentProgress : 2,
+    },
     groupData: {
       background: {
         ...data.background,
@@ -205,8 +214,15 @@ export async function updateApplicationMembersData(
 ) {
   const { application, applicationIndex } = await getApplication(id);
 
+  const currentProgress = application.generalDetails.applicationProgress;
+
   const newApplicationData: ApplicationData = {
     ...application,
+    generalDetails: {
+      ...application.generalDetails,
+      applicationProgress:
+        currentProgress && currentProgress > 3 ? currentProgress : 3,
+    },
     members: data,
   };
 
@@ -222,8 +238,15 @@ export async function updateApplicationLoanConditionsData(
 ) {
   const { application, applicationIndex } = await getApplication(id);
 
+  const currentProgress = application.generalDetails.applicationProgress;
+
   const newApplicationData: ApplicationData = {
     ...application,
+    generalDetails: {
+      ...application.generalDetails,
+      applicationProgress:
+        currentProgress && currentProgress > 4 ? currentProgress : 4,
+    },
     loanConditions: data,
   };
 
@@ -239,8 +262,15 @@ export async function updateApplicationProposedBusinessData(
 ) {
   const { application, applicationIndex } = await getApplication(id);
 
+  const currentProgress = application.generalDetails.applicationProgress;
+
   const newApplicationData: ApplicationData = {
     ...application,
+    generalDetails: {
+      ...application.generalDetails,
+      applicationProgress:
+        currentProgress && currentProgress > 5 ? currentProgress : 5,
+    },
     proposedBusiness: data,
   };
 
@@ -256,8 +286,15 @@ export async function updateApplicationDeclarationsData(
 ) {
   const { application, applicationIndex } = await getApplication(id);
 
+  const currentProgress = application.generalDetails.applicationProgress;
+
   const newApplicationData: ApplicationData = {
     ...application,
+    generalDetails: {
+      ...application.generalDetails,
+      applicationProgress:
+        currentProgress && currentProgress > 6 ? currentProgress : 6,
+    },
     confirmations: {
       declarations: data,
     },
@@ -308,6 +345,7 @@ export async function updateApplicationStatus(id: string) {
     generalDetails: {
       ...application.generalDetails,
       status: "PENDING",
+      applicationProgress: 7,
     },
   };
 

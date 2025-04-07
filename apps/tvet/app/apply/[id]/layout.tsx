@@ -1,17 +1,12 @@
 import { ReactNode } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import type { Step } from "@workspace/ui/components/stepper";
 
 import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
 import { Authenticated } from "@/components/authenticated";
 
-export interface ApplyStep {
-  index: number;
-  title: string;
-  path: string;
-}
-
-const steps: ApplyStep[] = [
+const steps: Step[] = [
   { index: 1, title: "Applicant", path: "/applicant" },
   { index: 2, title: "Guardian", path: "/guardian" },
   { index: 3, title: "Course", path: "/course" },

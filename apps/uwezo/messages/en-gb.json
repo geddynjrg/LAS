@@ -26,7 +26,10 @@
     "edit": "Edit",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "youCanAddMultipleFiles": "You can add multiple files"
+    "youCanAddMultipleFiles": "You can add multiple files",
+    "mustBeValidNumber": "Must be a valid number",
+    "pleaseAgreeToTheTerms": "Please agree to the terms",
+    "fileExceedsMaxSize": "File exceeds max size"
   },
 
   "Footer": {
@@ -79,7 +82,7 @@
     "backToFrontPage": "Back to front page",
     "needToKnowBefore": "What you need to know before applying",
     "description": "In the application process you will be asked to provide documents and to confirm that all group members agree to the loan application.",
-    "validGroupSectionTitle": "Group members’ national IDs",
+    "validGroupSectionTitle": "Valid members ID",
     "exampleOfNationalId": "Example of national ID",
     "documentsRequired": "Documents required in the application:",
     "example": "Example",
@@ -97,7 +100,7 @@
     "Female": "More information about the credit history documents",
     "nationalIdSectionTitle": "Group members national IDs",
     "exampleId": "Example of national ID",
-    "membersMustBeInformed": "Members must be informed of the application and will be asked to <bold>give their consent through SMS service</bold>",
+    "membersMustBeInformed": "Applicant must provide copies of IDs of members and a list of members",
     "beginFillingForm": "Begin filling the form",
     "DonePage": {
       "title": "Thank you for your application!",
@@ -192,11 +195,12 @@
       "bankAccountNumber": "Bank account number",
       "LoanDescription": "Wezesha is for first time borrowers. Loan amount range is 50 000 KSh - 100 000 KSh. Maximum repayment period is 24 months.",
       "Interest": "The loan has a 1% interest rate.",
-      "maximumLoan": "Maximum amount is 100 000 KSh",
+      "maximumLoan": "Maximum amount is {count} KSh",
       "bankName": "Group Bank name",
       "bankBranch": "Group Bank branch",
       "accountNumber": "Bank Account number",
-      "selectBank": "Select bank"
+      "selectBank": "Select bank",
+      "invalidLoanAmount": "Invalid loan amount"
     },
     "members": {
       "members": "Members",

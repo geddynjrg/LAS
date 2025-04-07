@@ -5,25 +5,25 @@ export const confirmationDataSchema = z.object({
     (val) => val ?? null,
     z
       .union([z.literal("on"), z.null()])
-      .refine((v) => v === "on", { message: "Please agree to the terms" }),
+      .refine((v) => v === "on", { message: "Common.pleaseAgreeToTheTerms" }),
   ),
   correctInformationConfirm: z.preprocess(
     (val) => val ?? null,
     z
       .union([z.literal("on"), z.null()])
-      .refine((v) => v === "on", { message: "Please agree to the terms" }),
+      .refine((v) => v === "on", { message: "Common.pleaseAgreeToTheTerms" }),
   ),
   liabilityConfirm: z.preprocess(
     (val) => val ?? null,
     z
       .union([z.literal("on"), z.null()])
-      .refine((v) => v === "on", { message: "Please agree to the terms" }),
+      .refine((v) => v === "on", { message: "Common.pleaseAgreeToTheTerms" }),
   ),
   fundsEligibleConfirm: z.preprocess(
     (val) => val ?? null,
     z
       .union([z.literal("on"), z.null()])
-      .refine((v) => v === "on", { message: "Please agree to the terms" }),
+      .refine((v) => v === "on", { message: "Common.pleaseAgreeToTheTerms" }),
   ),
 });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, type FC, type ReactNode } from "react";
 
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
@@ -7,12 +8,26 @@ import { useMount } from "@workspace/ui/hooks/use-mount";
 import { cn } from "@workspace/ui/lib/utils";
 
 export interface StepperProps {
-  steps: string[];
+  steps: Step[];
   activeStep: number;
   className?: string;
+  progress?: number;
+  baseUrl?: string;
 }
 
-export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
+export interface Step {
+  index: number;
+  title: string;
+  path: string;
+}
+
+export const Stepper: FC<StepperProps> = ({
+  steps,
+  activeStep,
+  className,
+  baseUrl,
+  progress,
+}) => {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   const isMobile = useIsMobile();
@@ -51,12 +66,14 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
       <ol className={cn("bg-background mr-[100vw] flex flex-row", className)}>
         {steps.map((step, i) => (
           <Step
-            stepNumber={i + 1}
+            step={step}
             activeStep={activeStep}
             lastStepNumber={steps.length}
             key={i}
+            progress={progress}
+            baseUrl={baseUrl}
           >
-            {step}
+            {step.title}
           </Step>
         ))}
       </ol>
@@ -65,35 +82,53 @@ export const Stepper: FC<StepperProps> = ({ steps, activeStep, className }) => {
 };
 
 interface StepProps {
-  stepNumber: number;
+  step: Step;
   activeStep: number;
   lastStepNumber: number;
+  progress?: number;
+  baseUrl?: string;
   children: ReactNode;
 }
 
 const Step: FC<StepProps> = ({
-  stepNumber,
+  step,
   activeStep,
   lastStepNumber,
+  progress,
+  baseUrl,
   children,
 }) => {
+  const router = useRouter();
+
   return (
     <li
       data-before-active={handleDataBeforeActive(
         activeStep,
-        stepNumber,
+        step.index,
         lastStepNumber,
       )}
-      data-active={activeStep === stepNumber}
+      data-active={activeStep === step.index}
       className={cn(
-        "group flex flex-row gap-2 whitespace-nowrap px-4 py-2 focus-visible:outline-none",
-        activeStep > stepNumber &&
+        "group flex select-none flex-row gap-2 whitespace-nowrap px-4 py-2 focus-visible:outline-none",
+        activeStep > step.index &&
           "text-stepper-foreground bg-stepper hover:bg-stepper-hover active:bg-stepper-active focus-visible:ring-ring focus-visible:scale-y-85 focus:outline-none focus-visible:scale-x-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-        activeStep === stepNumber &&
+        activeStep === step.index &&
           "bg-primary text-primary-foreground clip-arrow-right pr-8 font-bold",
       )}
+      onClick={() => {
+        // allow stepper navigation if baseUrl and progress is present. Allows navigation back to previous steps and to currently in progress step
+        if (
+          baseUrl &&
+          progress &&
+          step.index <= progress &&
+          activeStep !== step.index
+        ) {
+          // Send to step path
+          router.push(`${baseUrl}/${step.path}`);
+        }
+      }}
     >
-      <StepNumber stepNumber={stepNumber} activeStep={activeStep} />
+      <StepNumber stepNumber={step.index} activeStep={activeStep} />
       {children}
     </li>
   );

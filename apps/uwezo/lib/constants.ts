@@ -1,8 +1,8 @@
-import type { ApplyStep } from "@/app/apply/[id]/layout";
+import type { Step } from "@workspace/ui/components/stepper";
 
 export const MAX_FILE_SIZE = 1e6;
 
-export const steps: ApplyStep[] = [
+export const steps: Step[] = [
   { index: 1, title: "Group data", path: "/group-data" },
   { index: 2, title: "Group members", path: "/members" },
   { index: 3, title: "Loan conditions", path: "/loan-conditions" },
@@ -10,3 +10,14 @@ export const steps: ApplyStep[] = [
   { index: 5, title: "Confirmations", path: "/confirmations" },
   { index: 6, title: "Final review", path: "/review" },
 ];
+
+export const loanTypeValues = {
+  Endeleza: {
+    title: "Endeleza",
+    maxLoanAmount: 1000000,
+  },
+  Wezesha: {
+    title: "Wezesha",
+    maxLoanAmount: 100000,
+  },
+};

@@ -46,6 +46,7 @@
     "Dagoretti",
     "Dandora",
     "Embla",
+    "Endeleza",
     "Greenlight",
     "Harambee",
     "Kahawa",
@@ -60,7 +61,8 @@
     "Roysambu",
     "sbdocs",
     "tabler",
-    "Uwezo"
+    "Uwezo",
+    "Wezesha"
   ],
   "workbench.colorCustomizations": {
     "gitlens.trailingLineForegroundColor": "#555555"

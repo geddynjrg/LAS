@@ -4,15 +4,19 @@ import { usePathname } from "next/navigation";
 import type { FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
-import { Stepper } from "@workspace/ui/components/stepper";
-
-import type { ApplyStep } from "@/app/apply/[id]/layout";
+import { Stepper, type Step } from "@workspace/ui/components/stepper";
 
 export interface ApplyFormStepperProps {
-  steps: ApplyStep[];
+  steps: Step[];
+  applicationProgress: number;
+  baseUrl: string;
 }
 
-export const ApplyFormStepper: FC<ApplyFormStepperProps> = ({ steps }) => {
+export const ApplyFormStepper: FC<ApplyFormStepperProps> = ({
+  steps,
+  applicationProgress,
+  baseUrl,
+}) => {
   const pathname = usePathname();
 
   const activeStep = steps.find((step) => pathname.includes(step.path))?.index;
@@ -25,7 +29,9 @@ export const ApplyFormStepper: FC<ApplyFormStepperProps> = ({ steps }) => {
     <Container className="mt-7">
       <Stepper
         activeStep={activeStep}
-        steps={steps.map((step) => step.title)}
+        steps={steps}
+        progress={applicationProgress}
+        baseUrl={baseUrl}
       />
     </Container>
   );

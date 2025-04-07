@@ -2,14 +2,10 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import type { Step } from "@workspace/ui/components/stepper";
 
 import { FormStepper } from "@/app/add/form-stepper";
 
-export interface Step {
-  index: number;
-  title: string;
-  path: string;
-}
 const steps: Step[] = [
   { index: 1, title: "Child", path: "/child" },
   { index: 2, title: "Mother", path: "/mother" },

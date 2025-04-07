@@ -14,37 +14,37 @@ export const proposedBusinessDataSchema = z.object({
   yearsInBusiness: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Must be a number")
+    .regex(/^\d+$/, "Common.mustBeValidNumber")
     .transform((val) => Number(val)),
 
   averageIncome: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Must be a number")
+    .regex(/^\d+$/, "Common.mustBeValidNumber")
     .transform((val) => Number(val)),
 
   costOfGoods: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Must be a number")
+    .regex(/^\d+$/, "Common.mustBeValidNumber")
     .transform((val) => Number(val)),
 
   rentForBusiness: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Must be a number")
+    .regex(/^\d+$/, "Common.mustBeValidNumber")
     .transform((val) => Number(val)),
 
   salaries: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Must be a number")
+    .regex(/^\d+$/, "Common.mustBeValidNumber")
     .transform((val) => Number(val)),
 
   transportForBusinessStock: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Must be a number")
+    .regex(/^\d+$/, "Common.mustBeValidNumber")
     .transform((val) => Number(val)),
 });
 
