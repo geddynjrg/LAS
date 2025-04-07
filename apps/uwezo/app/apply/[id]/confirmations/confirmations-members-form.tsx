@@ -245,13 +245,11 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       {/* TODO: Currently pass empty list to server, one day if needed to only sent to accepted users then pass on users id in the list */}
       <input type="hidden" name="membersConfirmation" value={"[]"} />
 
-      <div className={cn("mt-auto")}>
-        <ApplyFormActionBar
-          disabled={isPending || !confirmationSent || isBelowConfirmThreshold}
-          nextUrl={nextUrl}
-          onBack={onBack}
-        />
-      </div>
+      <ApplyFormActionBar
+        disabled={isPending || !confirmationSent || isBelowConfirmThreshold}
+        nextUrl={nextUrl}
+        onBack={onBack}
+      />
     </Form>
   );
 };

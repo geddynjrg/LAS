@@ -136,7 +136,9 @@ export const Field = <
             : t.has(errorMessage?.message as FlattenObjectKeys<IntlMessages>)
               ? t(
                   errorMessage?.message as FlattenObjectKeys<IntlMessages>,
-                  errorMessage as unknown as TranslationValues,
+                  "params" in errorMessage
+                    ? errorMessage.params
+                    : (errorMessage as unknown as TranslationValues),
                 )
               : errorMessage?.message}
         </FieldMessage>

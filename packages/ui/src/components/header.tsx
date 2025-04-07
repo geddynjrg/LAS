@@ -20,7 +20,7 @@ export const Header: FC<HeaderProps> = ({
   return (
     <header
       className={cn(
-        "h-(--header-height,4.5rem) left-0 right-0 top-0 z-10 flex items-center px-4 shadow-md",
+        "h-(--header-height,4.5rem) left-0 right-0 top-0 z-20 flex items-center px-4 shadow-md",
         isFloating === true
           ? "bg-header-foreground/50 text-header !right-(--removed-body-scroll-bar-size,0) fixed backdrop-blur-sm"
           : "bg-header text-header-foreground sticky",
