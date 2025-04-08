@@ -12,7 +12,7 @@ import type { z } from "zod";
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
 import { InputGroup } from "@workspace/ui/components/input-group";
 import { labelVariants } from "@workspace/ui/components/label";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn, isValueChanged } from "@workspace/ui/lib/utils";
 import type { FlattenObjectKeys } from "@workspace/ui/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,7 +30,7 @@ export type Path<T> = T extends object
     }[keyof T]
   : never;
 
-export interface FormFieldState<T extends Record<string, unknown>> {
+export interface FormFieldState<T extends object> {
   values?: Partial<T>;
   errors?: { [K in keyof T]?: (string | z.ZodIssue)[] };
 }
@@ -56,12 +56,12 @@ export interface FieldProps<
     | null;
   name: TName;
   state?: FormFieldState<TInputs>;
+  defaultValues?: Partial<TInputs>;
   label?: ReactNode;
   description?: ReactNode;
   required?: boolean;
   editable?: boolean;
   isVisible?: boolean;
-  isHighlighted?: boolean;
   isDate?: boolean;
   className?: string;
 }
@@ -70,15 +70,15 @@ export const Field = <
   TInputs extends InputValues,
   TName extends Path<TInputs>,
 >({
-  state,
   name,
+  state,
+  defaultValues,
   label,
   description,
   control,
   required,
   editable = true,
   isVisible = true,
-  isHighlighted,
   isDate = false,
   className,
 }: FieldProps<TInputs, TName>) => {
@@ -89,7 +89,9 @@ export const Field = <
   const descId = description ? `${id}-message` : undefined;
 
   const errorMessage = getErrorMessage(name, state);
-  const defaultValues = getFormValue(name, state);
+  const fieldValues = getFormValue(name, state);
+  const isChanged =
+    !editable && isValueChanged(name, state?.values, defaultValues);
 
   return (
     <FormPrimitive.Field
@@ -103,7 +105,7 @@ export const Field = <
           className={cn(
             labelVariants(),
             "mb-1 font-bold",
-            isHighlighted && !editable && "text-yellow-500",
+            isChanged && "text-yellow-500",
           )}
         >
           {label}
@@ -117,22 +119,21 @@ export const Field = <
               control({
                 id,
                 name,
-                defaultValue: defaultValues,
+                defaultValue: fieldValues,
               })}
           </FormPrimitive.Control>
         ) : (
-          <p className={cn(isHighlighted && "text-yellow-500")}>
-            <input type="hidden" name={name} value={defaultValues} />
+          <p className={cn(isChanged && "text-yellow-500")}>
+            <input type="hidden" name={name} value={fieldValues} />
             {isDate &&
-            defaultValues &&
-            (typeof defaultValues === "string" ||
-              typeof defaultValues === "number")
-              ? format.dateTime(new Date(defaultValues))
-              : (defaultValues ?? "–")}
+            fieldValues &&
+            (typeof fieldValues === "string" || typeof fieldValues === "number")
+              ? format.dateTime(new Date(fieldValues))
+              : fieldValues || "–"}
           </p>
         )
       ) : (
-        <input type="hidden" name={name} value={defaultValues} />
+        <input type="hidden" name={name} value={fieldValues} />
       )}
 
       {errorMessage && (

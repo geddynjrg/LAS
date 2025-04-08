@@ -3,7 +3,8 @@
     "menu": "Menu",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "total": "Total"
+    "total": "Total",
+    "maxFileSize": "Max file size {size}"
   },
   "DashboardPage": {
     "title": "My relations",

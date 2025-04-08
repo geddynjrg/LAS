@@ -102,3 +102,21 @@ export function getFormZodDataValues<T extends z.Schema>(
 
   return values as Partial<z.infer<T>>;
 }
+
+export function isValueChanged<T extends Partial<object>>(
+  field: keyof T,
+  newValues?: T,
+  oldValues?: T,
+) {
+  // If defaultValues is not provided, then we cannot determine if the value has changed
+  if (!oldValues || !(field in oldValues)) {
+    return false;
+  }
+
+  // Get the value from the state and defaultValues
+  // Use nullish coalescing operator to handle undefined values
+  const currentValue = newValues?.[field] ?? "";
+  const defaultValue = oldValues[field] ?? "";
+
+  return currentValue !== defaultValue;
+}

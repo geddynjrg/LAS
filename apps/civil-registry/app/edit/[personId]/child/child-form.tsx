@@ -9,7 +9,7 @@ import { Field, Form } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm } from "@workspace/ui/hooks/use-form";
 import { useFormSubmitted } from "@workspace/ui/hooks/use-form-submitted";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn, isValueChanged } from "@workspace/ui/lib/utils";
 
 import { childAction } from "@/app/edit/[personId]/child/child-action";
 import { childSchema } from "@/app/edit/[personId]/child/child-schema";
@@ -62,6 +62,10 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
     .join(" ")
     .trim();
 
+  const isNameChanged =
+    isValueChanged("firstName", state.values, defaultValues) ||
+    isValueChanged("middleName", state.values, defaultValues);
+
   return (
     <Form className="space-y-6" action={action}>
       <Field
@@ -109,9 +113,7 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           <DataNode
             label={t("DetailsPage.name")}
             variant={disabled ? "disabled" : "default"}
-            className={
-              isNameChanged(state, defaultValues) ? "text-yellow-500" : ""
-            }
+            isHighlighted={isNameChanged}
           >
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
@@ -196,17 +198,3 @@ const EditMessage: FC<{ children: ReactNode }> = ({ children }) => (
     {children}
   </div>
 );
-
-function isNameChanged(
-  state: {
-    values?: { firstName?: string; middleName?: string };
-  },
-  defaultValues: { firstName?: string; middleName?: string },
-) {
-  // Check if any of the name fields have changed
-  // Use nullish coalescing operator to handle undefined values
-  return (
-    (state?.values?.firstName ?? "") !== (defaultValues.firstName ?? "") ||
-    (state?.values?.middleName ?? "") !== (defaultValues.middleName ?? "")
-  );
-}

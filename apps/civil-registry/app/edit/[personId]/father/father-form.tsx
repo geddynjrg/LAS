@@ -77,11 +77,13 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
         <NationalIdFields
           searchSexFilter="M"
           state={state}
+          defaultValues={defaultValues}
           editable={isEditing}
         />
 
         <Field
           state={state}
+          defaultValues={defaultValues}
           name="education"
           editable={isEditing}
           label={t("DetailsPage.education")}
@@ -91,7 +93,12 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
           required={isEditing}
         />
 
-        <ContactFields state={state} editable={isEditing} hasEmail={false} />
+        <ContactFields
+          state={state}
+          defaultValues={defaultValues.contacts}
+          editable={isEditing}
+          hasEmail={false}
+        />
 
         {isEditing && (
           <>
@@ -108,7 +115,9 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
               name="affidavitFile"
               label={t("DetailsPage.affidavit")}
               required
-              description={`Max file size ${formatBytes(MAX_FILE_SIZE)}`}
+              description={t("Common.maxFileSize", {
+                size: formatBytes(MAX_FILE_SIZE),
+              })}
               control={(props) => (
                 <FileUploadInput
                   accept={{

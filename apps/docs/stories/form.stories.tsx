@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { z } from "zod";
 
 import { Alert } from "@workspace/ui/components/alert";
+import { Button } from "@workspace/ui/components/button";
 import {
   ButtonGroup,
   ButtonGroupItem,
@@ -214,6 +216,62 @@ export const Primary: Story = {
             </Alert>
           </CollapsibleContent>
         </Collapsible>
+      </Form>
+    );
+  },
+};
+
+export const ToggleEditMode: Story = {
+  render: (_props) => {
+    const defaultValues = {
+      firstName: "John",
+      lastName: "Doe",
+    };
+
+    const [isEditing, setIsEditing] = useState(false);
+
+    const [state, action, _isPending] = useForm(
+      (_prev, formData) => {
+        setIsEditing(false);
+
+        return { values: Object.fromEntries(formData.entries()) };
+      },
+      z.object({
+        firstName: z.string().min(3).max(10),
+        lastName: z.string().min(3).max(10),
+      }),
+      defaultValues,
+    );
+
+    return (
+      <Form className="space-y-6" action={action}>
+        <Field
+          state={state}
+          defaultValues={defaultValues}
+          editable={isEditing}
+          name="firstName"
+          label="First Name"
+          control={(props) => <Input {...props} />}
+        />
+        <Field
+          state={state}
+          defaultValues={defaultValues}
+          editable={isEditing}
+          name="lastName"
+          label="Last Name"
+          control={(props) => <Input {...props} />}
+        />
+
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setIsEditing((v) => !v)}
+          >
+            {isEditing ? "Cancel" : "Edit"}
+          </Button>
+          <SubmitButton disabled={!isEditing}>Submit</SubmitButton>
+        </div>
       </Form>
     );
   },

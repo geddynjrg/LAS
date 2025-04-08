@@ -9,31 +9,35 @@ import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field, type FormFieldState } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
+import { isValueChanged } from "@workspace/ui/lib/utils";
 
 import { UnderlineButton } from "@/components/underline-button";
 import { usePersonSearch } from "@/hooks/usePersonSearch";
 import type { SexType } from "@/lib/data/person";
 import { nationalityOptions } from "@/lib/util/nationalities";
 
+interface NationalIdFieldValues {
+  nationalId: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  dob: string;
+  citizenship: string;
+  passportNumber: string;
+  nationality: string;
+}
+
 export interface NationalIdFieldProps {
   searchSexFilter?: SexType;
-
-  state: FormFieldState<{
-    nationalId: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    dob: string;
-    citizenship: string;
-    passportNumber: string;
-    nationality: string;
-  }>;
+  state: FormFieldState<NationalIdFieldValues>;
+  defaultValues?: Partial<NationalIdFieldValues>;
   editable?: boolean;
 }
 
 export const NationalIdFields: FC<NationalIdFieldProps> = ({
   searchSexFilter,
   state,
+  defaultValues,
   editable = true,
 }) => {
   const t = useTranslations("DetailsPage");
@@ -45,21 +49,30 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
   );
 
   const [firstName, setFirstName] = useState(state.values?.firstName ?? "");
-  const [lastName, setLastName] = useState(state.values?.lastName ?? "");
   const [middleName, setMiddleName] = useState(state.values?.middleName ?? "");
-  const [birthDate, setBirthDate] = useState(state.values?.dob ?? "");
+  const [lastName, setLastName] = useState(state.values?.lastName ?? "");
+  const [dob, setDob] = useState(state.values?.dob ?? "");
   const [citizenship, setCitizenship] = useState(
     state.values?.citizenship ?? "–",
   );
 
-  const fullName =
-    [firstName, middleName, lastName].filter(Boolean).join(" ").trim() || "–";
+  const fullName = [firstName, middleName, lastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  const isNameChanged =
+    !editable &&
+    (isValueChanged("firstName", state.values, defaultValues) ||
+      isValueChanged("middleName", state.values, defaultValues) ||
+      isValueChanged("lastName", state.values, defaultValues));
 
   return (
     <>
       {hasNationalId ? (
         <Field
           state={state}
+          defaultValues={defaultValues}
           name="nationalId"
           label={t("national-id")}
           editable={editable}
@@ -75,7 +88,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
                 setFirstName(person?.firstName ?? "");
                 setLastName(person?.lastName ?? "");
                 setMiddleName(person?.middleName ?? "");
-                setBirthDate(person?.dob ?? "");
+                setDob(person?.dob ?? "");
                 setCitizenship(person?.citizenship ?? "–");
               }}
             />
@@ -105,29 +118,41 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
 
       {hasNationalId ? (
         <>
-          <DataNode label={t("name")} variant="default">
+          <DataNode label={t("name")} isHighlighted={isNameChanged}>
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />
 
-            {fullName}
+            {fullName || "–"}
           </DataNode>
-          <DataNode label={t("dob")} variant="default">
-            <input type="hidden" name="dob" value={birthDate} />
+          <DataNode
+            label={t("dob")}
+            isHighlighted={
+              !editable && isValueChanged("dob", { dob }, defaultValues)
+            }
+          >
+            <input type="hidden" name="dob" value={dob} />
 
-            {birthDate ? format.dateTime(new Date(birthDate)) : "–"}
+            {dob ? format.dateTime(new Date(dob)) : "–"}
           </DataNode>
 
-          <DataNode label={t("dob")} variant="default">
+          <DataNode
+            label={t("citizenship")}
+            isHighlighted={
+              !editable &&
+              isValueChanged("citizenship", { citizenship }, defaultValues)
+            }
+          >
             <input type="hidden" name="citizenship" value={citizenship} />
 
-            {citizenship ?? "–"}
+            {citizenship || "–"}
           </DataNode>
         </>
       ) : (
         <>
           <Field
             state={state}
+            defaultValues={defaultValues}
             name="firstName"
             label={t("first-name")}
             control={(props) => <Input {...props} />}
@@ -137,6 +162,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
 
           <Field
             state={state}
+            defaultValues={defaultValues}
             name="middleName"
             label={t("middle-name")}
             control={(props) => <Input {...props} />}
@@ -145,6 +171,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
 
           <Field
             state={state}
+            defaultValues={defaultValues}
             name="lastName"
             label={t("lastname")}
             control={(props) => <Input {...props} />}
@@ -154,6 +181,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
 
           <Field
             state={state}
+            defaultValues={defaultValues}
             name="passportNumber"
             label={t("passport-number")}
             control={(props) => <Input {...props} />}
@@ -162,6 +190,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
           />
           <Field
             state={state}
+            defaultValues={defaultValues}
             name="dob"
             isDate
             label={t("dob")}
@@ -171,6 +200,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
 
           <Field
             state={state}
+            defaultValues={defaultValues}
             name="citizenship"
             label={t("citizenship")}
             editable={editable}
@@ -181,6 +211,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
 
       <Field
         state={state}
+        defaultValues={defaultValues}
         name="nationality"
         label={t("nationality")}
         editable={editable}

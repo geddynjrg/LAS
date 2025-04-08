@@ -135,6 +135,10 @@ function isValueChanged<T extends ContactFieldContact>(
     return false;
   }
 
+  if (index >= defaultValues.length) {
+    return true;
+  }
+
   const defaultCode = defaultValues[index]?.phoneCode ?? "";
   const defaultPhone = defaultValues[index]?.phone ?? "";
   const defaultEmail = defaultValues[index]?.email ?? "";

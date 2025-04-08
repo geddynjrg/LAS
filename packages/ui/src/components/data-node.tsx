@@ -25,6 +25,7 @@ export interface DataNodeProps extends VariantProps<typeof dataNodeVariants> {
   children?: ReactNode;
   orientation?: "vertical" | "horizontal";
   required?: boolean;
+  isHighlighted?: boolean;
   className?: string;
 }
 
@@ -34,9 +35,16 @@ export const DataNode: FC<DataNodeProps> = ({
   variant,
   orientation,
   required,
+  isHighlighted,
   className,
 }) => (
-  <div className={cn(dataNodeVariants({ variant, orientation }), className)}>
+  <div
+    className={cn(
+      dataNodeVariants({ variant, orientation }),
+      isHighlighted && "text-yellow-500",
+      className,
+    )}
+  >
     <div className="font-bold">
       {label}
       {required && <span className="text-destructive">*</span>}
