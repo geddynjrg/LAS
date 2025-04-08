@@ -40,7 +40,6 @@ export const Stepper: FC<StepperProps> = ({
   });
 
   useEffect(() => {
-    console.log("effect");
     handleScrollToActiveStep();
   });
 

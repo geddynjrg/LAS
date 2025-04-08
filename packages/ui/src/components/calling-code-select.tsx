@@ -33,7 +33,8 @@ export const CallingCodeSelect: FC<CallingCodeSelectProps> = ({
   );
 
   const [value, setValue] = useState(
-    options.find((item) => item.callingCode === defaultValue)?.value,
+    // find default value in options or fallback to KE
+    options.find((item) => item.callingCode === defaultValue)?.value ?? "KE",
   );
 
   const selectedOption = useMemo(

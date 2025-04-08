@@ -1,9 +1,10 @@
 "use client";
 
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState, type FC } from "react";
 
+import { Button } from "@workspace/ui/components/button";
 import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import {
   Field,
@@ -11,6 +12,7 @@ import {
   type FormFieldState,
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
+import { cn } from "@workspace/ui/lib/utils";
 
 import { UnderlineButton } from "@/components/underline-button";
 
@@ -36,18 +38,23 @@ export const ContactFields: FC<ContactFieldsProps> = ({
   hasEmail = true,
 }) => {
   const t = useTranslations("DetailsPage");
-  const defaultState = state.values?.contacts ?? [
-    { phoneCode: "", phone: "", email: "" },
-  ];
+  const defaultState = state.values?.contacts?.map(
+    (_contact, index) => index,
+  ) ?? [0];
 
-  const [contacts, setContacts] = useState(defaultState);
+  const [contactIds, setContactIds] = useState(defaultState);
 
   const addContact = () => {
-    setContacts((value) => [...value, { phoneCode: "", phone: "", email: "" }]);
+    setContactIds((value) => [...value, value.at(-1)! + 1]);
   };
 
+  const removeContact = (index: number) => {
+    setContactIds((prev) => prev.filter((id) => id !== index));
+  };
+
+
   if (!editable) {
-    return defaultState.map((contact, index) => (
+    return state.values?.contacts?.map((contact, index) => (
       <div key={`phone-contact-${index}`}>
         <input
           type="hidden"
@@ -59,7 +66,6 @@ export const ContactFields: FC<ContactFieldsProps> = ({
           name={`contacts.${index}.phone`}
           value={contact?.phone}
         />
-
         {contact.email && (
           <input
             type="hidden"
@@ -67,7 +73,6 @@ export const ContactFields: FC<ContactFieldsProps> = ({
             value={contact.email}
           />
         )}
-
         <FieldGroup
           label={t("phone")}
           key={`phone-${index}-${contact.phoneCode}-${contact.phone}`}
@@ -76,7 +81,6 @@ export const ContactFields: FC<ContactFieldsProps> = ({
         >
           +{contact?.phoneCode} {contact?.phone}
         </FieldGroup>
-
         {contact.email && (
           <FieldGroup label={t("email")} className="mt-2">
             {contact.email}
@@ -88,8 +92,14 @@ export const ContactFields: FC<ContactFieldsProps> = ({
 
   return (
     <>
-      {contacts.map((_contact, index) => (
-        <div key={`phone-contact-${index}`}>
+      {contactIds.map((id, index) => (
+        <div
+          key={`phone-contact-${id}`}
+          className={cn(
+            "relative",
+            id > 0 && "border-t border-neutral-400 pt-4",
+          )}
+        >
           <FieldGroup label={t("phone")} required>
             <Field
               state={state}
@@ -105,7 +115,6 @@ export const ContactFields: FC<ContactFieldsProps> = ({
               control={(props) => <Input type="tel" {...props} />}
             />
           </FieldGroup>
-
           {hasEmail && (
             <Field
               className="mt-4"
@@ -114,6 +123,17 @@ export const ContactFields: FC<ContactFieldsProps> = ({
               label={t("email")}
               control={(props) => <Input {...props} />}
             />
+          )}
+
+          {id > 0 && (
+            <Button
+              variant="ghost"
+              type="button"
+              className="z-1 absolute right-0 top-2 px-1 py-0"
+              onClick={() => removeContact(id)}
+            >
+              <IconX size={18} />
+            </Button>
           )}
         </div>
       ))}
