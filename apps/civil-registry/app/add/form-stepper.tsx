@@ -8,9 +8,10 @@ import { Stepper, type Step } from "@workspace/ui/components/stepper";
 
 export interface FormStepperProps {
   steps: Step[];
+  progress: number;
 }
 
-export const FormStepper: FC<FormStepperProps> = ({ steps }) => {
+export const FormStepper: FC<FormStepperProps> = ({ steps, progress }) => {
   const pathname = usePathname();
 
   const activeStep = steps.find((step) => pathname.includes(step.path))?.index;
@@ -21,7 +22,12 @@ export const FormStepper: FC<FormStepperProps> = ({ steps }) => {
 
   return (
     <Container className="mt-7 pr-0">
-      <Stepper activeStep={activeStep} steps={steps} />
+      <Stepper
+        activeStep={activeStep}
+        steps={steps}
+        baseUrl="/add"
+        progress={progress}
+      />
     </Container>
   );
 };

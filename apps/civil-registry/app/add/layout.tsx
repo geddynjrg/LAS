@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { Container } from "@workspace/ui/components/container";
 import type { Step } from "@workspace/ui/components/stepper";
 
+import { getFormPersonByType } from "@/actions/get-form-person-by-type";
 import { FormStepper } from "@/app/add/form-stepper";
 
 const steps: Step[] = [
@@ -19,6 +20,7 @@ export interface LayoutProps {
 }
 
 export default async function IdLayout({ children }: LayoutProps) {
+  const progress = await getFormProgress();
   const t = await getTranslations();
   const format = await getFormatter();
 
@@ -40,9 +42,36 @@ export default async function IdLayout({ children }: LayoutProps) {
         <h2 className="typo-h2">{t("DetailsPage.birth-notification")}</h2>
       </Container>
 
-      <FormStepper steps={steps} />
+      <FormStepper key={progress} steps={steps} progress={progress} />
 
       {children}
     </>
   );
+}
+
+async function getFormProgress() {
+  const mother = await getFormPersonByType("mother");
+  const father = await getFormPersonByType("father");
+  const informant = await getFormPersonByType("informant");
+  const child = await getFormPersonByType("child");
+
+  // check if person has national id and determine progress
+  if (informant.nationalId) {
+    return 5;
+  }
+
+  if (father.nationalId) {
+    return 4;
+  }
+
+  if (mother.nationalId) {
+    return 3;
+  }
+
+  // child does not have nationalId in form
+  if (child[0]?.natureOfBirth) {
+    return 2;
+  }
+
+  return 1;
 }
