@@ -74,7 +74,7 @@ export interface Member {
   gender?: GenderType;
   type?: MemberType;
   phoneNumber?: string;
-  photoOfId?: string;
+  photoOfId?: File;
   disability?: {
     certificateOfDisability: string;
     pwdNumber?: string;

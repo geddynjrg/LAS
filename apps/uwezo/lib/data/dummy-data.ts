@@ -182,18 +182,13 @@ export const dummyApplications: ApplicationData[] = [
         }),
       },
       background: {
-        purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
-        keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
+        purposeOfTheGroup: ["Welfare issues"],
+        keyActivitiesOfTheGroup: ["Value chain"],
         groupCreditHistory: new File(["Sample content"], "sample.txt", {
           type: "text/plain",
         }),
-        valueChain: ["Poultry", "Vegetables"],
-        tableBanking: {
-          tableBankingExperience: 3,
-          tableBankingShareContribution: 50000,
-          tableBankingTotalLoanedOut: 150000,
-          tableBankingTotalRevolvingFund: 200000,
-        },
+        valueChain: ["Blue economy", "Cotton and textiles"],
+        tableBanking: {},
       },
       location: {
         countyOfOperation: "Nakuru",
@@ -204,7 +199,7 @@ export const dummyApplications: ApplicationData[] = [
       },
     },
     members: {
-      natureOfTheGroup: "Mixed",
+      natureOfTheGroup: "youth",
       members: [
         {
           fullname: "John Doe",
@@ -212,7 +207,9 @@ export const dummyApplications: ApplicationData[] = [
           gender: "Male",
           type: "Chairman",
           phoneNumber: "0712345678",
-          photoOfId: "john_doe_id.jpg",
+          photoOfId: new File(["Sample content"], "sample.txt", {
+            type: "text/plain",
+          }),
           disability: {
             certificateOfDisability: "",
             pwdNumber: undefined,
@@ -221,17 +218,17 @@ export const dummyApplications: ApplicationData[] = [
       ],
     },
     loanConditions: {
-      purposeOfLoan: ["Business Expansion"],
-      loanType: "Group Loan",
-      loanAmount: 250000,
+      purposeOfLoan: ["Table banking"],
+      loanType: "Wezesha",
+      loanAmount: 10000,
       repaymentPeriod: 12,
       bankName: "Equity Bank",
       bankBranch: "Nakuru",
       accountNumber: "0123456789",
     },
     proposedBusiness: {
-      natureOfBusiness: "Farming",
-      businessType: ["Poultry", "Horticulture"],
+      natureOfBusiness: "Start-up",
+      businessType: ["Agriculture"],
       yearsInBusiness: 5,
       averageIncome: 80000,
       costOfGoods: 30000,
@@ -261,12 +258,12 @@ export const dummyApplications: ApplicationData[] = [
         }),
       },
       background: {
-        purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
-        keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
+        purposeOfTheGroup: ["Other"],
+        keyActivitiesOfTheGroup: ["Table banking"],
         groupCreditHistory: new File(["Sample content"], "sample.txt", {
           type: "text/plain",
         }),
-        valueChain: ["Poultry", "Vegetables"],
+        valueChain: [],
         tableBanking: {
           tableBankingExperience: 3,
           tableBankingShareContribution: 50000,
@@ -283,7 +280,7 @@ export const dummyApplications: ApplicationData[] = [
       },
     },
     members: {
-      natureOfTheGroup: "Mixed",
+      natureOfTheGroup: "People with disabilities",
       members: [
         {
           fullname: "John Doe",
@@ -291,7 +288,9 @@ export const dummyApplications: ApplicationData[] = [
           gender: "Male",
           type: "Chairman",
           phoneNumber: "0712345678",
-          photoOfId: "john_doe_id.jpg",
+          photoOfId: new File(["Sample content"], "sample.txt", {
+            type: "text/plain",
+          }),
           disability: {
             certificateOfDisability: "",
             pwdNumber: undefined,
@@ -300,17 +299,17 @@ export const dummyApplications: ApplicationData[] = [
       ],
     },
     loanConditions: {
-      purposeOfLoan: ["Business Expansion"],
-      loanType: "Group Loan",
-      loanAmount: 250000,
+      purposeOfLoan: ["Common group project"],
+      loanType: "Endeleza",
+      loanAmount: 30000,
       repaymentPeriod: 12,
       bankName: "Equity Bank",
       bankBranch: "Nakuru",
       accountNumber: "0123456789",
     },
     proposedBusiness: {
-      natureOfBusiness: "Farming",
-      businessType: ["Poultry", "Horticulture"],
+      natureOfBusiness: "Start-up",
+      businessType: ["Trade"],
       yearsInBusiness: 5,
       averageIncome: 80000,
       costOfGoods: 30000,
@@ -340,12 +339,12 @@ export const dummyApplications: ApplicationData[] = [
         }),
       },
       background: {
-        purposeOfTheGroup: ["Agribusiness", "Community Empowerment"],
-        keyActivitiesOfTheGroup: ["Poultry farming", "Vegetable farming"],
+        purposeOfTheGroup: ["Income generating activities"],
+        keyActivitiesOfTheGroup: ["Table banking"],
         groupCreditHistory: new File(["Sample content"], "sample.txt", {
           type: "text/plain",
         }),
-        valueChain: ["Poultry", "Vegetables"],
+        valueChain: [],
         tableBanking: {
           tableBankingExperience: 3,
           tableBankingShareContribution: 50000,
@@ -362,7 +361,7 @@ export const dummyApplications: ApplicationData[] = [
       },
     },
     members: {
-      natureOfTheGroup: "Mixed",
+      natureOfTheGroup: "Woman",
       members: [
         {
           fullname: "John Doe",
@@ -370,7 +369,9 @@ export const dummyApplications: ApplicationData[] = [
           gender: "Male",
           type: "Chairman",
           phoneNumber: "0712345678",
-          photoOfId: "john_doe_id.jpg",
+          photoOfId: new File(["Sample content"], "sample.txt", {
+            type: "text/plain",
+          }),
           disability: {
             certificateOfDisability: "",
             pwdNumber: undefined,
@@ -379,17 +380,17 @@ export const dummyApplications: ApplicationData[] = [
       ],
     },
     loanConditions: {
-      purposeOfLoan: ["Business Expansion"],
-      loanType: "Group Loan",
-      loanAmount: 250000,
+      purposeOfLoan: ["Table banking"],
+      loanType: "Wezesha",
+      loanAmount: 99000,
       repaymentPeriod: 12,
       bankName: "Equity Bank",
       bankBranch: "Nakuru",
       accountNumber: "0123456789",
     },
     proposedBusiness: {
-      natureOfBusiness: "Farming",
-      businessType: ["Poultry", "Horticulture"],
+      natureOfBusiness: "Expansion",
+      businessType: ["Manufacturing"],
       yearsInBusiness: 5,
       averageIncome: 80000,
       costOfGoods: 30000,
@@ -405,18 +406,24 @@ export const dummyMembers: Omit<Member, "type" | "phoneNumber">[] = [
     fullname: "John Doe",
     nationalIdCode: "12345678",
     gender: "Male",
-    photoOfId: "https://example.com/photo-id-john.jpg",
+    photoOfId: new File(["Sample content"], "sample.txt", {
+      type: "text/plain",
+    }),
   },
   {
     fullname: "Jane Wanjiku",
     nationalIdCode: "87654321",
     gender: "Female",
-    photoOfId: "https://example.com/photo-id-jane.jpg",
+    photoOfId: new File(["Sample content"], "sample.txt", {
+      type: "text/plain",
+    }),
   },
   {
     fullname: "Ali Mohamed",
     nationalIdCode: "11223344",
     gender: "Male",
-    photoOfId: "https://example.com/photo-id-ali.jpg",
+    photoOfId: new File(["Sample content"], "sample.txt", {
+      type: "text/plain",
+    }),
   },
 ];
