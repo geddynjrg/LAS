@@ -3,6 +3,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
 const withBundleAnalyzer = bundleAnalyzer({
+  // eslint-disable-next-line turbo/no-undeclared-env-vars, no-undef
   enabled: process.env.ANALYZE === "true",
 });
 

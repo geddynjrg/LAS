@@ -103,5 +103,8 @@
   },
   "CourseBlock": {
     "viewAll": "View all"
+  },
+  "ContactBlock": {
+    "applyNow": "Apply now"
   }
 }

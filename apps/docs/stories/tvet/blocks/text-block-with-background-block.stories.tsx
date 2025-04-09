@@ -6,26 +6,19 @@ const meta = {
   component: TextBlockWithBackgroundBlock,
   args: {
     block_type: "text_block_with_background",
-    title: "Title",
-    block_text: {
-      value: "Description",
-      format: "full_html",
-      processed: "<p>Description</p>",
-    },
-    link: [],
+    items: [
+      {
+        title: "Title",
+        description: {
+          value: "Description",
+          format: "full_html",
+          processed: "<p>Description</p>",
+        },
+      },
+    ],
   },
   argTypes: {
-    title: {
-      control: {
-        type: "text",
-      },
-    },
-    block_text: {
-      control: {
-        type: "object",
-      },
-    },
-    link: {
+    items: {
       control: {
         type: "object",
       },
@@ -36,12 +29,6 @@ const meta = {
         type: "number",
         max: 3,
         min: 1,
-      },
-    },
-    button_type: {
-      control: {
-        type: "select",
-        options: ["apply_now", undefined],
       },
     },
   },

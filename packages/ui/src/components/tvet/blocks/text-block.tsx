@@ -8,8 +8,8 @@ import { cn } from "@workspace/ui/lib/utils";
 export interface TextBlockProps {
   className?: string;
   block_type: "text_block";
-  title?: string;
-  description: {
+  title?: string | null;
+  description?: {
     value: string | null;
     format: string | null;
     processed: string | null;

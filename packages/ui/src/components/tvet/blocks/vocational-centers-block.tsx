@@ -77,7 +77,7 @@ export const VocationalCentersBlock: FC<VocationalCentersBlockProps> = ({
         </div>
       </section>
 
-      <section className="map relative box-border min-h-[550px] w-full md:my-8 md:pl-4">
+      <section className="map relative box-border min-h-[550px] w-full md:my-8">
         <LocationMap institutes={institutions} />
       </section>
     </Container>

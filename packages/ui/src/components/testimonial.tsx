@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { FC } from "react";
 
 export interface TestimonialProps {
-  title: string;
+  title?: string;
   imageUrl?: string;
   imageAlt?: string;
   children?: React.ReactNode;
@@ -32,7 +32,7 @@ export const Testimonial: FC<TestimonialProps> = ({
         </div>
       )}
       <div className="z-2 gap-2.5 text-center">
-        <h2 className="typo-h6">{title}</h2>
+        {title && <h2 className="typo-h6">{title}</h2>}
         {children}
       </div>
       <IconQuote className="text-primary absolute left-0 top-0" size={58} />

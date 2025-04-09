@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import { Pagination } from "@workspace/ui/components/pagination";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card";
@@ -33,14 +34,23 @@ export interface AvailableSponsorshipsProps {
       size: number;
     };
   }[];
+  pagination?: {
+    current_page: number;
+    page_size: number;
+    total_items: number;
+    total_pages: number;
+    has_next_page: boolean;
+    has_previous_page: boolean;
+  };
 }
 
 export const AvailableSponsorshipsBlock: FC<AvailableSponsorshipsProps> = ({
   sponsorships,
+  pagination,
 }) => {
   const t = useTranslations("AvailableSponsorshipsBlock");
   return (
-    <section className={cn("py-10")}>
+    <section className={cn("py-10")} id="sponsorships">
       <Container className="flex flex-col gap-4 px-4">
         <Heading type="h3">{t("availableSponsorships")}</Heading>
         {sponsorships.map((sponsorship, key) => (
@@ -52,6 +62,12 @@ export const AvailableSponsorshipsBlock: FC<AvailableSponsorshipsProps> = ({
             websiteHref={sponsorship.link.at(0)?.url ?? ""}
           />
         ))}
+        {pagination && pagination.total_pages > 1 && (
+          <Pagination
+            pageCount={Math.round(pagination?.total_pages ?? 0)}
+            navigationId="sponsorships"
+          />
+        )}
       </Container>
     </section>
   );

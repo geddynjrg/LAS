@@ -4,850 +4,2999 @@
  */
 
 export interface paths {
-  "/api/v1/courses": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/node/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get node by ID
+         * @description Retrieves a specific node by its ID.
+         */
+        get: operations["tvet_rest.node_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** TVET Course List Resource */
-    get: operations["course_list_resource:GET"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/node/{node}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resolve content by path alias
+         * @description Resolves a path alias to its corresponding content.
+         */
+        get: operations["tvet_rest.resolve_content"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Get a Content */
-    get: operations["entity:node:GET"];
-    put?: never;
-    post?: never;
-    /** Delete a Content */
-    delete: operations["entity:node:DELETE"];
-    options?: never;
-    head?: never;
-    /** Patch a Content */
-    patch: operations["entity:node:PATCH"];
-    trace?: never;
-  };
-  "/node": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List and search courses
+         * @description Retrieves a list of courses with optional filtering and search.
+         */
+        get: operations["tvet_rest.courses_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Post a Content */
-    post: operations["entity:node:POST"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/institutions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * User Login
+         * @description Authenticate a user and generate access tokens.
+         */
+        post: operations["tvet_rest.user_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** TVET Institutions Resource */
-    get: operations["institutions_resource:GET"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/node/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/token/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh
+         * @description Refresh expired access tokens using a refresh token.
+         */
+        post: operations["tvet_rest.token_refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** TVET Node Resource */
-    get: operations["tvet_node_resource:GET"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/resolve": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/password/reset-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * User Reset Password Request
+         * @description Request a password reset link. A one-time login URL will be sent to the email address if it exists in the system.
+         */
+        post: operations["tvet_rest.password_reset_request"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** TVET Path Resource */
-    get: operations["tvet_path_resource:GET"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/api/v1/user/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset password
+         * @description Reset password using the reset link parameters. Password must be at least 8 characters and contain uppercase, lowercase, number, and special character.
+         */
+        post: operations["tvet_rest.password_reset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user profile
+         * @description Returns detailed information about the authenticated user.
+         */
+        get: operations["tvet_rest.user_profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/institutions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List institutions
+         * @description Retrieves a list of institutions.
+         */
+        get: operations["tvet_rest.institutions_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * User Logout
+         * @description Logs out the current user by invalidating all their tokens.
+         */
+        post: operations["tvet_rest.user_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /**
-     * node Schema
-     * @description Describes the payload for 'node' entities.
-     */
-    node: {
-      /** ID */
-      nid?: {
-        /** Integer value */
-        value: number;
-      }[];
-      /** UUID */
-      uuid?: {
-        /** Text value */
-        value: string;
-      }[];
-      /** Revision ID */
-      vid?: {
-        /** Integer value */
-        value: number;
-      }[];
-      /** Language */
-      langcode?: {
-        /** Language code */
-        value: string;
-      }[];
-      /** Content type */
-      type: {
-        /** Content type ID */
-        target_id: string;
-      }[];
-      /**
-       * Revision create time
-       * @description The time that the current revision was created.
-       */
-      revision_timestamp?: {
+    schemas: {
+        NodeCourse: {
+            /** @example 123 */
+            id: number;
+            /** @example course */
+            type: string;
+            /** @example 550e8400-e29b-41d4-a716-446655440000 */
+            uuid: string;
+            /** @example Example Node Title */
+            title: string;
+            language: {
+                /** @example en-gb */
+                code?: string;
+                /** @example English, British */
+                name?: string;
+                /** @example ltr */
+                direction?: string;
+            };
+            /** @example https://example.com/node/123 */
+            url: string;
+            /** @example /example-node */
+            path_alias: string;
+            content: {
+                /**
+                 * @description Application fee
+                 * @example 3.14
+                 */
+                application_fee?: number;
+                /** @description Apply Till */
+                apply_till?: string[];
+                /**
+                 * @description Course fee
+                 * @example 3.14
+                 */
+                course_fee?: number;
+                /**
+                 * @description Duration
+                 * @example 42
+                 */
+                duration?: number;
+                /**
+                 * @description Education level
+                 * @example [
+                 *       "Term name 1",
+                 *       "Term name 2"
+                 *     ]
+                 */
+                education_level?: unknown[];
+                /**
+                 * @description Group size
+                 * @example 42
+                 */
+                group_size?: number;
+                /**
+                 * @description Image
+                 * @example [
+                 *       {
+                 *         "id": 123,
+                 *         "type": "media",
+                 *         "bundle": "image",
+                 *         "name": "Example media",
+                 *         "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                 *         "url": "https://example.com/sites/default/files/media.jpg",
+                 *         "mime_type": "image/jpeg",
+                 *         "size": 102400,
+                 *         "alt": "Alternative text",
+                 *         "title": "Media title"
+                 *       }
+                 *     ]
+                 */
+                image?: unknown[];
+                /**
+                 * @description Institution
+                 * @example [
+                 *       {
+                 *         "id": 123,
+                 *         "type": "page",
+                 *         "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                 *         "title": "Referenced Node",
+                 *         "path_alias": "/referenced-node"
+                 *       }
+                 *     ]
+                 */
+                institution?: unknown[];
+                page_components?: (components["schemas"]["ParagraphCourse_data"] | components["schemas"]["ParagraphContact"] | components["schemas"]["ParagraphTestimonials"] | components["schemas"]["ParagraphAvailable_sponsorships"] | components["schemas"]["ParagraphText_list"] | components["schemas"]["ParagraphText_block_with_background"] | components["schemas"]["ParagraphSimilar_courses"])[];
+                /** @description Start on */
+                start_on?: string[];
+                /**
+                 * @description Tags
+                 * @example [
+                 *       "Term name 1",
+                 *       "Term name 2"
+                 *     ]
+                 */
+                tags?: unknown[];
+                /**
+                 * @description Test booking fee
+                 * @example 3.14
+                 */
+                test_booking_fee?: number;
+            };
+        };
+        NodeInstitution: {
+            /** @example 123 */
+            id: number;
+            /** @example institution */
+            type: string;
+            /** @example 550e8400-e29b-41d4-a716-446655440000 */
+            uuid: string;
+            /** @example Example Node Title */
+            title: string;
+            language: {
+                /** @example en-gb */
+                code?: string;
+                /** @example English, British */
+                name?: string;
+                /** @example ltr */
+                direction?: string;
+            };
+            /** @example https://example.com/node/123 */
+            url: string;
+            /** @example /example-node */
+            path_alias: string;
+            content: {
+                /** @description Address */
+                address?: {
+                    /** @example US */
+                    country_code?: string;
+                    /** @example CA */
+                    administrative_area?: string;
+                    /** @example San Francisco */
+                    locality?: string;
+                    /** @example  */
+                    dependent_locality?: string;
+                    /** @example 94107 */
+                    postal_code?: string;
+                    /** @example 123 Main St */
+                    address_line?: string;
+                    /** @example Example Company */
+                    organization?: string;
+                };
+                /** @description Body */
+                body?: {
+                    /** @example <p>Example formatted text content</p> */
+                    value?: string;
+                    /** @example full_html */
+                    format?: string;
+                    /** @example <p>Example formatted text content</p> */
+                    processed?: string;
+                };
+                /** @description Text */
+                contact_text?: {
+                    /** @example <p>Example formatted text content</p> */
+                    value?: string;
+                    /** @example full_html */
+                    format?: string;
+                    /** @example <p>Example formatted text content</p> */
+                    processed?: string;
+                };
+                /**
+                 * @description Email
+                 * @example example@example.com
+                 */
+                email?: string;
+                /**
+                 * @description Image
+                 * @example [
+                 *       {
+                 *         "id": 123,
+                 *         "type": "media",
+                 *         "bundle": "image",
+                 *         "name": "Example media",
+                 *         "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                 *         "url": "https://example.com/sites/default/files/media.jpg",
+                 *         "mime_type": "image/jpeg",
+                 *         "size": 102400,
+                 *         "alt": "Alternative text",
+                 *         "title": "Media title"
+                 *       }
+                 *     ]
+                 */
+                image?: unknown[];
+                /** @description Location */
+                location?: {
+                    /**
+                     * Format: float
+                     * @example 37.7749
+                     */
+                    latitude?: number;
+                    /**
+                     * Format: float
+                     * @example -122.4194
+                     */
+                    longitude?: number;
+                };
+                page_components?: (components["schemas"]["ParagraphGallery"] | components["schemas"]["ParagraphLocation"] | components["schemas"]["ParagraphContact"] | components["schemas"]["ParagraphMedia"] | components["schemas"]["ParagraphCourses"] | components["schemas"]["ParagraphSocial_block"] | components["schemas"]["ParagraphText_block_with_gradient"])[];
+                /**
+                 * @description Phone
+                 * @example +1234567890
+                 */
+                phone?: string;
+            };
+        };
+        NodeLanding: {
+            /** @example 123 */
+            id: number;
+            /** @example landing */
+            type: string;
+            /** @example 550e8400-e29b-41d4-a716-446655440000 */
+            uuid: string;
+            /** @example Example Node Title */
+            title: string;
+            language: {
+                /** @example en-gb */
+                code?: string;
+                /** @example English, British */
+                name?: string;
+                /** @example ltr */
+                direction?: string;
+            };
+            /** @example https://example.com/node/123 */
+            url: string;
+            /** @example /example-node */
+            path_alias: string;
+            content: {
+                /** @description Body */
+                body?: {
+                    /** @example <p>Example formatted text content</p> */
+                    value?: string;
+                    /** @example full_html */
+                    format?: string;
+                    /** @example <p>Example formatted text content</p> */
+                    processed?: string;
+                };
+                /**
+                 * @description Image
+                 * @example [
+                 *       {
+                 *         "id": 123,
+                 *         "type": "media",
+                 *         "bundle": "image",
+                 *         "name": "Example media",
+                 *         "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                 *         "url": "https://example.com/sites/default/files/media.jpg",
+                 *         "mime_type": "image/jpeg",
+                 *         "size": 102400,
+                 *         "alt": "Alternative text",
+                 *         "title": "Media title"
+                 *       }
+                 *     ]
+                 */
+                image?: unknown[];
+                page_components?: (components["schemas"]["ParagraphFeature_section"] | components["schemas"]["ParagraphVocational_centres"] | components["schemas"]["ParagraphApplication"] | components["schemas"]["ParagraphAvailable_sponsorships"] | components["schemas"]["ParagraphText_list"] | components["schemas"]["ParagraphSection_heading"] | components["schemas"]["ParagraphHighlighted_course_listing"] | components["schemas"]["ParagraphText_block_with_background"] | components["schemas"]["ParagraphTraining_areas"])[];
+            };
+        };
         /**
-         * Timestamp value
-         * Format: utc-millisec
+         * Course Data Mapper
+         * @description Paragraph of type course_data
+         * @example {
+         *       "block_type": "course_data",
+         *       "title": "Course Details Overview",
+         *       "description": {
+         *         "value": "<p>Detailed description of the course content and structure.</p>",
+         *         "format": "full_html",
+         *         "processed": "<p>Detailed description of the course content and structure.</p>"
+         *       },
+         *       "training_format": {
+         *         "value": "Combination of lectures, labs, and practical sessions.",
+         *         "format": "plain_text",
+         *         "processed": "<p>Combination of lectures, labs, and practical sessions.</p>"
+         *       },
+         *       "minimum_entry_requirements": {
+         *         "value": "KCSE C+ or equivalent.",
+         *         "format": "plain_text",
+         *         "processed": "<p>KCSE C+ or equivalent.</p>"
+         *       },
+         *       "equipment_available_at_ins": {
+         *         "value": "Computer labs, specialized tools, workshop access.",
+         *         "format": "plain_text",
+         *         "processed": "<p>Computer labs, specialized tools, workshop access.</p>"
+         *       },
+         *       "course_fee": 50000,
+         *       "group_size": 30,
+         *       "test_booking_fee": 1500,
+         *       "application_fee": 1000
+         *     }
          */
-        value: number;
-      }[];
-      /**
-       * Revision user
-       * @description The user ID of the author of the current revision.
-       */
-      revision_uid?: {
-        /** User ID */
-        target_id: number;
-      }[];
-      /**
-       * Revision log message
-       * @description Briefly describe the changes you have made.
-       */
-      revision_log?: {
-        /** Text value */
-        value: string;
-      }[];
-      /** Published */
-      status?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /**
-       * Authored by
-       * @description The username of the content author.
-       */
-      uid?: {
-        /** User ID */
-        target_id: number;
-      }[];
-      /** Title */
-      title: {
-        /** Text value */
-        value: string;
-      }[];
-      /**
-       * Authored on
-       * @description The date and time that the content was created.
-       */
-      created?: {
+        ParagraphCourse_data: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphCourse_data";
+            /** @example Course Details Overview */
+            title?: string;
+            description?: {
+                /** @example <p>Detailed description of the course content and structure.</p> */
+                value?: string;
+                /** @example full_html */
+                format?: string;
+                /** @example <p>Detailed description of the course content and structure.</p> */
+                processed?: string;
+            };
+            training_format?: {
+                /** @example Combination of lectures, labs, and practical sessions. */
+                value?: string;
+                /** @example plain_text */
+                format?: string;
+                /** @example <p>Combination of lectures, labs, and practical sessions.</p> */
+                processed?: string;
+            };
+            minimum_entry_requirements?: {
+                /** @example KCSE C+ or equivalent. */
+                value?: string;
+                /** @example plain_text */
+                format?: string;
+                /** @example <p>KCSE C+ or equivalent.</p> */
+                processed?: string;
+            };
+            equipment_available_at_ins?: {
+                /** @example Computer labs, specialized tools, workshop access. */
+                value?: string;
+                /** @example plain_text */
+                format?: string;
+                /** @example <p>Computer labs, specialized tools, workshop access.</p> */
+                processed?: string;
+            };
+            /** @example 50000 */
+            course_fee?: number;
+            /** @example 30 */
+            group_size?: number;
+            /** @example 1500 */
+            test_booking_fee?: number;
+            /** @example 1000 */
+            application_fee?: number;
+        };
         /**
-         * Timestamp value
-         * Format: utc-millisec
+         * Gallery Mapper
+         * @description Paragraph of type gallery
+         * @example {
+         *       "block_type": "gallery",
+         *       "title": "Photo Gallery",
+         *       "description": {
+         *         "value": "<p>A collection of images showcasing our facilities and students.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>A collection of images showcasing our facilities and students.</p>"
+         *       },
+         *       "images": [
+         *         {
+         *           "id": "101",
+         *           "type": "media",
+         *           "bundle": "image",
+         *           "name": "workshop_1.jpg",
+         *           "uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+         *           "url": "https://example.com/sites/default/files/workshop_1.jpg",
+         *           "mime_type": "image/jpeg",
+         *           "size": 123456,
+         *           "alt": "Photo of Workshop 1",
+         *           "title": "",
+         *           "width": "1024",
+         *           "height": "768"
+         *         },
+         *         {
+         *           "id": "102",
+         *           "type": "media",
+         *           "bundle": "image",
+         *           "name": "student_group.png",
+         *           "uuid": "a5670e02-b2c3-d479-f47a-c10b58cc4372",
+         *           "url": "https://example.com/sites/default/files/student_group.png",
+         *           "mime_type": "image/png",
+         *           "size": 234567,
+         *           "alt": "Group photo of students",
+         *           "title": "",
+         *           "width": "800",
+         *           "height": "600"
+         *         }
+         *       ]
+         *     }
          */
-        value: number;
-      }[];
-      /**
-       * Changed
-       * @description The time that the node was last edited.
-       */
-      changed?: {
+        ParagraphGallery: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphGallery";
+            /** @example Photo Gallery */
+            title?: string;
+            description?: {
+                /** @example <p>A collection of images showcasing our facilities and students.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>A collection of images showcasing our facilities and students.</p> */
+                processed?: string;
+            };
+            images?: {
+                /** @example 101 */
+                id?: string;
+                /** @example media */
+                type?: string;
+                /** @example image */
+                bundle?: string;
+                /** @example workshop_1.jpg */
+                name?: string;
+                /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
+                uuid?: string;
+                /** @example https://example.com/sites/default/files/workshop_1.jpg */
+                url?: string;
+                /** @example image/jpeg */
+                mime_type?: string;
+                /** @example 123456 */
+                size?: number;
+                /** @example Photo of Workshop 1 */
+                alt?: string;
+                /** @example  */
+                title?: string;
+                /** @example 1024 */
+                width?: string;
+                /** @example 768 */
+                height?: string;
+            }[];
+        };
         /**
-         * Timestamp value
-         * Format: utc-millisec
+         * Location Mapper
+         * @description Paragraph of type location
+         * @example {
+         *       "block_type": "location",
+         *       "hint": "Look for the building with the blue roof.",
+         *       "image": [
+         *         {
+         *           "id": "201",
+         *           "type": "media",
+         *           "bundle": "image",
+         *           "name": "location_photo.jpg",
+         *           "uuid": "d0e8c1b0-58a9-4e72-a568-1f02b3c4d580",
+         *           "url": "https://example.com/sites/default/files/location_photo.jpg",
+         *           "mime_type": "image/jpeg",
+         *           "size": 345678,
+         *           "alt": "Photo of the location",
+         *           "title": "",
+         *           "width": "1200",
+         *           "height": "800"
+         *         }
+         *       ],
+         *       "show_map": true,
+         *       "show_directions": true,
+         *       "address": {
+         *         "country_code": "KE",
+         *         "administrative_area": "Nairobi",
+         *         "locality": "Nairobi City",
+         *         "dependent_locality": null,
+         *         "postal_code": "00100",
+         *         "address_line": "123 Mfangano St",
+         *         "organization": "Example Institution"
+         *       },
+         *       "location": {
+         *         "latitude": -1.286389,
+         *         "longitude": 36.817223
+         *       }
+         *     }
          */
-        value: number;
-      }[];
-      /** Promoted to front page */
-      promote?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /** Sticky at top of lists */
-      sticky?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /**
-       * Default translation
-       * @description A flag indicating whether this is the default translation.
-       */
-      default_langcode?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /**
-       * Default revision
-       * @description A flag indicating whether this was a default revision when it was saved.
-       */
-      revision_default?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /**
-       * Revision translation affected
-       * @description Indicates if the last edit of a translation belongs to current revision.
-       */
-      revision_translation_affected?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /** URL alias */
-      path?: {
-        /** Path alias */
-        alias?: string;
-        /** Path id */
-        pid?: number;
-        /** Language Code */
-        langcode?: string;
+        ParagraphLocation: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphLocation";
+            /** @example Look for the building with the blue roof. */
+            hint?: string;
+            image?: {
+                /** @example 201 */
+                id?: string;
+                /** @example media */
+                type?: string;
+                /** @example image */
+                bundle?: string;
+                /** @example location_photo.jpg */
+                name?: string;
+                /** @example d0e8c1b0-58a9-4e72-a568-1f02b3c4d580 */
+                uuid?: string;
+                /** @example https://example.com/sites/default/files/location_photo.jpg */
+                url?: string;
+                /** @example image/jpeg */
+                mime_type?: string;
+                /** @example 345678 */
+                size?: number;
+                /** @example Photo of the location */
+                alt?: string;
+                /** @example  */
+                title?: string;
+                /** @example 1200 */
+                width?: string;
+                /** @example 800 */
+                height?: string;
+            }[];
+            /** @example true */
+            show_map?: boolean;
+            /** @example true */
+            show_directions?: boolean;
+            address?: {
+                /** @example KE */
+                country_code?: string;
+                /** @example Nairobi */
+                administrative_area?: string;
+                /** @example Nairobi City */
+                locality?: string;
+                /** @example null */
+                dependent_locality?: string;
+                /** @example 00100 */
+                postal_code?: string;
+                /** @example 123 Mfangano St */
+                address_line?: string;
+                /** @example Example Institution */
+                organization?: string;
+            };
+            location?: {
+                /** @example -1.286389 */
+                latitude?: number;
+                /** @example 36.817223 */
+                longitude?: number;
+            };
+        };
         /**
-         * Pathauto state
-         * @description Whether an automated alias should be created or not.
+         * Contact Mapper
+         * @description Paragraph of type contact
+         * @example {
+         *       "block_type": "contact",
+         *       "title": "Do you have questions?",
+         *       "description": "Get in contact with us and we'll help you get the answers you need.",
+         *       "phone": "+254 700 123 456",
+         *       "email": "info@institution.example.com",
+         *       "apply_button": true
+         *     }
          */
-        pathauto?: number;
-      }[];
-      /**
-       * Menu link
-       * @description Computed menu link for the node (only available during node saving).
-       */
-      menu_link?: {
-        /** Custom menu link ID */
-        target_id: number;
-      }[];
-      /**
-       * Translation source
-       * @description The source language from which this translation was created.
-       */
-      content_translation_source?: {
-        /** Language code */
-        value: string;
-      }[];
-      /**
-       * Translation outdated
-       * @description A boolean indicating whether this translation needs to be updated.
-       */
-      content_translation_outdated?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
+        ParagraphContact: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphContact";
+            /** @example Do you have questions? */
+            title?: string;
+            /** @example Get in contact with us and we'll help you get the answers you need. */
+            description?: string;
+            /** @example +254 700 123 456 */
+            phone?: string;
+            /** @example info@institution.example.com */
+            email?: string;
+            /** @example true */
+            apply_button?: boolean;
+        };
+        /**
+         * Media Mapper
+         * @description Paragraph of type media
+         * @example {
+         *       "block_type": "media",
+         *       "title": "Instructional Video",
+         *       "description": {
+         *         "value": "<p>Watch this video to learn more about the process.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>Watch this video to learn more about the process.</p>"
+         *       },
+         *       "media": [
+         *         {
+         *           "id": "601",
+         *           "type": "media",
+         *           "bundle": "remote_video",
+         *           "name": "Example YouTube Video",
+         *           "uuid": "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
+         *           "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+         *           "mime_type": null,
+         *           "size": null
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphMedia: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphMedia";
+            /** @example Instructional Video */
+            title?: string;
+            description?: {
+                /** @example <p>Watch this video to learn more about the process.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>Watch this video to learn more about the process.</p> */
+                processed?: string;
+            };
+            media?: {
+                /** @example 601 */
+                id?: string;
+                /** @example media */
+                type?: string;
+                /** @example remote_video */
+                bundle?: string;
+                /** @example Example YouTube Video */
+                name?: string;
+                /** @example e5f6a7b8-c9d0-1234-5678-90abcdef1234 */
+                uuid?: string;
+                /** @example https://www.youtube.com/watch?v=dQw4w9WgXcQ */
+                url?: string;
+                /** @example null */
+                mime_type?: string;
+                /** @example null */
+                size?: string;
+            }[];
+        };
+        /**
+         * Feature Section Mapper
+         * @description Paragraph of type feature_section
+         * @example {
+         *       "block_type": "feature_section",
+         *       "title": "Core Program Features",
+         *       "description": {
+         *         "value": "<p>Discover the key components of our program.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>Discover the key components of our program.</p>"
+         *       },
+         *       "type": "icons",
+         *       "features": [
+         *         {
+         *           "block_type": "feature",
+         *           "feature": "State-of-the-Art Facilities",
+         *           "short_description": {
+         *             "value": "Learn in modern workshops and labs.",
+         *             "format": "plain_text",
+         *             "processed": "<p>Learn in modern workshops and labs.</p>"
+         *           }
+         *         },
+         *         {
+         *           "block_type": "feature",
+         *           "feature": "Expert Instructors",
+         *           "short_description": {
+         *             "value": "Guidance from industry professionals.",
+         *             "format": "plain_text",
+         *             "processed": "<p>Guidance from industry professionals.</p>"
+         *           }
+         *         },
+         *         {
+         *           "block_type": "feature",
+         *           "feature": "Job Placement Support",
+         *           "short_description": {
+         *             "value": "Assistance in starting your career.",
+         *             "format": "plain_text",
+         *             "processed": "<p>Assistance in starting your career.</p>"
+         *           }
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphFeature_section: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphFeature_section";
+            /** @example Core Program Features */
+            title?: string;
+            description?: {
+                /** @example <p>Discover the key components of our program.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>Discover the key components of our program.</p> */
+                processed?: string;
+            };
+            /** @example icons */
+            type?: string;
+            features?: {
+                /** @example feature */
+                block_type?: string;
+                /** @example State-of-the-Art Facilities */
+                feature?: string;
+                short_description?: {
+                    /** @example Learn in modern workshops and labs. */
+                    value?: string;
+                    /** @example plain_text */
+                    format?: string;
+                    /** @example <p>Learn in modern workshops and labs.</p> */
+                    processed?: string;
+                };
+            }[];
+        };
+        /**
+         * Vocational Centres Mapper
+         * @description Paragraph of type vocational_centres
+         * @example {
+         *       "block_type": "vocational_centres",
+         *       "title": "Find a Vocational Centre Near You",
+         *       "description": {
+         *         "value": "<p>Explore our network of vocational training centres across the region.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>Explore our network of vocational training centres across the region.</p>"
+         *       },
+         *       "image": [
+         *         {
+         *           "id": "301",
+         *           "type": "media",
+         *           "bundle": "image",
+         *           "name": "centres_map.png",
+         *           "uuid": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+         *           "url": "https://example.com/sites/default/files/centres_map.png",
+         *           "mime_type": "image/png",
+         *           "size": 456789,
+         *           "alt": "Map showing centre locations",
+         *           "title": "",
+         *           "width": "900",
+         *           "height": "600"
+         *         }
+         *       ],
+         *       "link": [
+         *         {
+         *           "title": "View All Centres",
+         *           "url": "/institutions",
+         *           "options": []
+         *         }
+         *       ],
+         *       "institutions": [
+         *         {
+         *           "id": "12",
+         *           "title": "Nairobi Vocational Training Centre",
+         *           "address": {
+         *             "country_code": "KE",
+         *             "administrative_area": "Nairobi",
+         *             "locality": "Nairobi City",
+         *             "dependent_locality": null,
+         *             "postal_code": "00100",
+         *             "address_line": "456 Uhuru Highway",
+         *             "organization": "Nairobi VTC"
+         *           },
+         *           "location": {
+         *             "latitude": -1.2921,
+         *             "longitude": 36.8219
+         *           },
+         *           "url": "https://example.com/node/12",
+         *           "path_alias": "/institutions/nairobi-vtc"
+         *         },
+         *         {
+         *           "id": "15",
+         *           "title": "Mombasa Technical Institute",
+         *           "address": {
+         *             "country_code": "KE",
+         *             "administrative_area": "Mombasa",
+         *             "locality": "Mombasa City",
+         *             "dependent_locality": null,
+         *             "postal_code": "80100",
+         *             "address_line": "789 Digo Road",
+         *             "organization": "Mombasa TI"
+         *           },
+         *           "location": {
+         *             "latitude": -4.0435,
+         *             "longitude": 39.6682
+         *           },
+         *           "url": "https://example.com/node/15",
+         *           "path_alias": "/institutions/mombasa-ti"
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphVocational_centres: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphVocational_centres";
+            /** @example Find a Vocational Centre Near You */
+            title?: string;
+            description?: {
+                /** @example <p>Explore our network of vocational training centres across the region.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>Explore our network of vocational training centres across the region.</p> */
+                processed?: string;
+            };
+            image?: {
+                /** @example 301 */
+                id?: string;
+                /** @example media */
+                type?: string;
+                /** @example image */
+                bundle?: string;
+                /** @example centres_map.png */
+                name?: string;
+                /** @example a1b2c3d4-e5f6-7890-1234-567890abcdef */
+                uuid?: string;
+                /** @example https://example.com/sites/default/files/centres_map.png */
+                url?: string;
+                /** @example image/png */
+                mime_type?: string;
+                /** @example 456789 */
+                size?: number;
+                /** @example Map showing centre locations */
+                alt?: string;
+                /** @example  */
+                title?: string;
+                /** @example 900 */
+                width?: string;
+                /** @example 600 */
+                height?: string;
+            }[];
+            link?: {
+                /** @example View All Centres */
+                title?: string;
+                /** @example /institutions */
+                url?: string;
+                options?: Record<string, never>;
+            }[];
+            institutions?: {
+                /** @example 12 */
+                id?: string;
+                /** @example Nairobi Vocational Training Centre */
+                title?: string;
+                address?: {
+                    /** @example KE */
+                    country_code?: string;
+                    /** @example Nairobi */
+                    administrative_area?: string;
+                    /** @example Nairobi City */
+                    locality?: string;
+                    /** @example null */
+                    dependent_locality?: string;
+                    /** @example 00100 */
+                    postal_code?: string;
+                    /** @example 456 Uhuru Highway */
+                    address_line?: string;
+                    /** @example Nairobi VTC */
+                    organization?: string;
+                };
+                location?: {
+                    /** @example -1.2921 */
+                    latitude?: number;
+                    /** @example 36.8219 */
+                    longitude?: number;
+                };
+                /** @example https://example.com/node/12 */
+                url?: string;
+                /** @example /institutions/nairobi-vtc */
+                path_alias?: string;
+            }[];
+        };
+        /**
+         * Testimonials Mapper
+         * @description Paragraph of type testimonials
+         * @example {
+         *       "block_type": "testimonials",
+         *       "title": "What Our Students Say",
+         *       "testimonials": [
+         *         {
+         *           "block_type": "testimonial",
+         *           "name": "Jane Doe",
+         *           "short_description": {
+         *             "value": "This program was truly transformative. Highly recommended!",
+         *             "format": "plain_text",
+         *             "processed": "<p>This program was truly transformative. Highly recommended!</p>"
+         *           },
+         *           "image": [
+         *             {
+         *               "id": "501",
+         *               "type": "media",
+         *               "bundle": "image",
+         *               "name": "jane_doe.jpg",
+         *               "uuid": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+         *               "url": "https://example.com/sites/default/files/jane_doe.jpg",
+         *               "mime_type": "image/jpeg",
+         *               "size": 123456,
+         *               "alt": "Photo of Jane Doe",
+         *               "title": "",
+         *               "width": "300",
+         *               "height": "300"
+         *             }
+         *           ]
+         *         },
+         *         {
+         *           "block_type": "testimonial",
+         *           "name": "John Smith",
+         *           "short_description": {
+         *             "value": "The practical skills I learned here were invaluable for my career.",
+         *             "format": "plain_text",
+         *             "processed": "<p>The practical skills I learned here were invaluable for my career.</p>"
+         *           },
+         *           "image": [
+         *             {
+         *               "id": "502",
+         *               "type": "media",
+         *               "bundle": "image",
+         *               "name": "john_smith.png",
+         *               "uuid": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+         *               "url": "https://example.com/sites/default/files/john_smith.png",
+         *               "mime_type": "image/png",
+         *               "size": 98765,
+         *               "alt": "Photo of John Smith",
+         *               "title": "",
+         *               "width": "300",
+         *               "height": "300"
+         *             }
+         *           ]
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphTestimonials: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphTestimonials";
+            /** @example What Our Students Say */
+            title?: string;
+            testimonials?: {
+                /** @example testimonial */
+                block_type?: string;
+                /** @example Jane Doe */
+                name?: string;
+                short_description?: {
+                    /** @example This program was truly transformative. Highly recommended! */
+                    value?: string;
+                    /** @example plain_text */
+                    format?: string;
+                    /** @example <p>This program was truly transformative. Highly recommended!</p> */
+                    processed?: string;
+                };
+                image?: {
+                    /** @example 501 */
+                    id?: string;
+                    /** @example media */
+                    type?: string;
+                    /** @example image */
+                    bundle?: string;
+                    /** @example jane_doe.jpg */
+                    name?: string;
+                    /** @example c3d4e5f6-a7b8-9012-3456-7890abcdef12 */
+                    uuid?: string;
+                    /** @example https://example.com/sites/default/files/jane_doe.jpg */
+                    url?: string;
+                    /** @example image/jpeg */
+                    mime_type?: string;
+                    /** @example 123456 */
+                    size?: number;
+                    /** @example Photo of Jane Doe */
+                    alt?: string;
+                    /** @example  */
+                    title?: string;
+                    /** @example 300 */
+                    width?: string;
+                    /** @example 300 */
+                    height?: string;
+                }[];
+            }[];
+        };
+        /**
+         * Courses Mapper
+         * @description Paragraph of type courses
+         * @example {
+         *       "block_type": "courses",
+         *       "title": "Available Courses",
+         *       "short_description": {
+         *         "value": "<p>Browse the courses offered at this institution.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>Browse the courses offered at this institution.</p>"
+         *       },
+         *       "courses": [
+         *         {
+         *           "id": "13",
+         *           "title": "Cosmetology (Hairdressing and Beauty) Training",
+         *           "tags": [
+         *             "Beauty",
+         *             "Hairdressing",
+         *             "Cosmetology"
+         *           ],
+         *           "application_fee": 250,
+         *           "course_fee": 5000,
+         *           "apply_till": [
+         *             "2025-03-03T12:00:00+00:00"
+         *           ],
+         *           "start_on": [
+         *             "2025-03-30T12:00:00+00:00"
+         *           ],
+         *           "institution": [
+         *             {
+         *               "id": "12",
+         *               "type": "institution",
+         *               "bundle": "institution",
+         *               "label": "Old Mathari Vocational Training Centre",
+         *               "uuid": "12061900-d187-440f-bfcb-04b32ad7aac3",
+         *               "url": "https://example.com/node/12",
+         *               "path_alias": "/node/12"
+         *             }
+         *           ],
+         *           "url": "https://example.com/node/13",
+         *           "path_alias": "/node/13"
+         *         },
+         *         {
+         *           "id": "17",
+         *           "title": "Electrical Installation (TEST)",
+         *           "tags": [
+         *             "Electrical",
+         *             "Engineering"
+         *           ],
+         *           "application_fee": 500,
+         *           "course_fee": 10000,
+         *           "apply_till": [
+         *             "2025-03-17T12:00:00+00:00"
+         *           ],
+         *           "start_on": [
+         *             "2025-04-05T12:00:00+00:00"
+         *           ],
+         *           "institution": [
+         *             {
+         *               "id": "15",
+         *               "type": "institution",
+         *               "bundle": "institution",
+         *               "label": "Lorem Ipsum Vocational Training Centre (TEST)",
+         *               "uuid": "74b37258-baa6-4ab9-bc1a-b2dc7405e946",
+         *               "url": "https://example.com/node/15",
+         *               "path_alias": "/node/15"
+         *             }
+         *           ],
+         *           "url": "https://example.com/node/17",
+         *           "path_alias": "/node/17"
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphCourses: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphCourses";
+            /** @example Available Courses */
+            title?: string;
+            short_description?: {
+                /** @example <p>Browse the courses offered at this institution.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>Browse the courses offered at this institution.</p> */
+                processed?: string;
+            };
+            courses?: {
+                /** @example 13 */
+                id?: string;
+                /** @example Cosmetology (Hairdressing and Beauty) Training */
+                title?: string;
+                tags?: string[];
+                /** @example 250 */
+                application_fee?: number;
+                /** @example 5000 */
+                course_fee?: number;
+                apply_till?: string[];
+                start_on?: string[];
+                institution?: {
+                    /** @example 12 */
+                    id?: string;
+                    /** @example institution */
+                    type?: string;
+                    /** @example institution */
+                    bundle?: string;
+                    /** @example Old Mathari Vocational Training Centre */
+                    label?: string;
+                    /** @example 12061900-d187-440f-bfcb-04b32ad7aac3 */
+                    uuid?: string;
+                    /** @example https://example.com/node/12 */
+                    url?: string;
+                    /** @example /node/12 */
+                    path_alias?: string;
+                }[];
+                /** @example https://example.com/node/13 */
+                url?: string;
+                /** @example /node/13 */
+                path_alias?: string;
+            }[];
+        };
+        /**
+         * Application Mapper
+         * @description Paragraph of type application
+         * @example {
+         *       "block_type": "application",
+         *       "title": "How to Apply",
+         *       "description": {
+         *         "value": "<p>Follow these steps to submit your application.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>Follow these steps to submit your application.</p>"
+         *       },
+         *       "checkpoints": [
+         *         "Complete the online form.",
+         *         "Upload required documents.",
+         *         "Pay the application fee.",
+         *         "Submit your application."
+         *       ]
+         *     }
+         */
+        ParagraphApplication: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphApplication";
+            /** @example How to Apply */
+            title?: string;
+            description?: {
+                /** @example <p>Follow these steps to submit your application.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>Follow these steps to submit your application.</p> */
+                processed?: string;
+            };
+            checkpoints?: string[];
+        };
+        /**
+         * Available Sponsorships Mapper
+         * @description Paragraph of type available_sponsorships
+         * @example {
+         *       "block_type": "available_sponsorships",
+         *       "pagination": {
+         *         "current_page": 1,
+         *         "page_size": 10,
+         *         "total_items": 5,
+         *         "total_pages": 1,
+         *         "has_next_page": false,
+         *         "has_previous_page": false,
+         *         "next_page_url": null,
+         *         "previous_page_url": null,
+         *         "first_page_url": "/api/v1/node/13?page=1&per_page=10",
+         *         "last_page_url": "/api/v1/node/13?page=1&per_page=10"
+         *       },
+         *       "sponsorships": [
+         *         {
+         *           "id": "3",
+         *           "title": "Example Sponsorship Foundation",
+         *           "description": {
+         *             "value": "<p>Details about the Example Sponsorship Foundation.</p>",
+         *             "format": "basic_html",
+         *             "processed": "<p>Details about the Example Sponsorship Foundation.</p>"
+         *           },
+         *           "application_form": [
+         *             {
+         *               "id": "7",
+         *               "type": "media",
+         *               "bundle": "document",
+         *               "name": "sponsorship_form.pdf",
+         *               "uuid": "8572db0a-6f41-4401-8d8c-a33dc8973f89",
+         *               "url": "https://example.com/sites/default/files/sponsorship_form.pdf",
+         *               "mime_type": "application/pdf",
+         *               "size": 51505
+         *             }
+         *           ],
+         *           "link": [
+         *             {
+         *               "title": "Visit Foundation Website",
+         *               "url": "https://foundation.example.com",
+         *               "options": []
+         *             }
+         *           ]
+         *         },
+         *         {
+         *           "id": "10",
+         *           "title": "Another Bursary Fund",
+         *           "description": {
+         *             "value": "<p>Information about the Another Bursary Fund.</p>",
+         *             "format": "basic_html",
+         *             "processed": "<p>Information about the Another Bursary Fund.</p>"
+         *           },
+         *           "application_form": null,
+         *           "link": []
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphAvailable_sponsorships: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphAvailable_sponsorships";
+            pagination?: {
+                /** @example 1 */
+                current_page?: number;
+                /** @example 10 */
+                page_size?: number;
+                /** @example 5 */
+                total_items?: number;
+                /** @example 1 */
+                total_pages?: number;
+                /** @example false */
+                has_next_page?: boolean;
+                /** @example false */
+                has_previous_page?: boolean;
+                /** @example null */
+                next_page_url?: string;
+                /** @example null */
+                previous_page_url?: string;
+                /** @example /api/v1/node/13?page=1&per_page=10 */
+                first_page_url?: string;
+                /** @example /api/v1/node/13?page=1&per_page=10 */
+                last_page_url?: string;
+            };
+            sponsorships?: {
+                /** @example 3 */
+                id?: string;
+                /** @example Example Sponsorship Foundation */
+                title?: string;
+                description?: {
+                    /** @example <p>Details about the Example Sponsorship Foundation.</p> */
+                    value?: string;
+                    /** @example basic_html */
+                    format?: string;
+                    /** @example <p>Details about the Example Sponsorship Foundation.</p> */
+                    processed?: string;
+                };
+                application_form?: {
+                    /** @example 7 */
+                    id?: string;
+                    /** @example media */
+                    type?: string;
+                    /** @example document */
+                    bundle?: string;
+                    /** @example sponsorship_form.pdf */
+                    name?: string;
+                    /** @example 8572db0a-6f41-4401-8d8c-a33dc8973f89 */
+                    uuid?: string;
+                    /** @example https://example.com/sites/default/files/sponsorship_form.pdf */
+                    url?: string;
+                    /** @example application/pdf */
+                    mime_type?: string;
+                    /** @example 51505 */
+                    size?: number;
+                }[];
+                link?: {
+                    /** @example Visit Foundation Website */
+                    title?: string;
+                    /** @example https://foundation.example.com */
+                    url?: string;
+                    options?: Record<string, never>;
+                }[];
+            }[];
+        };
+        /**
+         * Testimonial Mapper
+         * @description Paragraph of type testimonial
+         * @example {
+         *       "block_type": "testimonial",
+         *       "name": "Jane Doe",
+         *       "short_description": {
+         *         "value": "This program was truly transformative. Highly recommended!",
+         *         "format": "plain_text",
+         *         "processed": "<p>This program was truly transformative. Highly recommended!</p>"
+         *       },
+         *       "image": [
+         *         {
+         *           "id": "501",
+         *           "type": "media",
+         *           "bundle": "image",
+         *           "name": "jane_doe.jpg",
+         *           "uuid": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+         *           "url": "https://example.com/sites/default/files/jane_doe.jpg",
+         *           "mime_type": "image/jpeg",
+         *           "size": 123456,
+         *           "alt": "Photo of Jane Doe",
+         *           "title": "",
+         *           "width": "300",
+         *           "height": "300"
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphTestimonial: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphTestimonial";
+            /** @example Jane Doe */
+            name?: string;
+            short_description?: {
+                /** @example This program was truly transformative. Highly recommended! */
+                value?: string;
+                /** @example plain_text */
+                format?: string;
+                /** @example <p>This program was truly transformative. Highly recommended!</p> */
+                processed?: string;
+            };
+            image?: {
+                /** @example 501 */
+                id?: string;
+                /** @example media */
+                type?: string;
+                /** @example image */
+                bundle?: string;
+                /** @example jane_doe.jpg */
+                name?: string;
+                /** @example c3d4e5f6-a7b8-9012-3456-7890abcdef12 */
+                uuid?: string;
+                /** @example https://example.com/sites/default/files/jane_doe.jpg */
+                url?: string;
+                /** @example image/jpeg */
+                mime_type?: string;
+                /** @example 123456 */
+                size?: number;
+                /** @example Photo of Jane Doe */
+                alt?: string;
+                /** @example  */
+                title?: string;
+                /** @example 300 */
+                width?: string;
+                /** @example 300 */
+                height?: string;
+            }[];
+        };
+        /**
+         * Social Block Mapper
+         * @description Paragraph of type social_block
+         * @example {
+         *       "block_type": "social_block",
+         *       "social_links": [
+         *         {
+         *           "platform": "facebook",
+         *           "account": "examplePage",
+         *           "url": "https://facebook.com/examplePage",
+         *           "icon": "fab fa-facebook"
+         *         },
+         *         {
+         *           "platform": "twitter",
+         *           "account": "@exampleUser",
+         *           "url": "https://twitter.com/exampleUser",
+         *           "icon": "fab fa-twitter"
+         *         },
+         *         {
+         *           "platform": "linkedin",
+         *           "account": "exampleProfile",
+         *           "url": "https://linkedin.com/in/exampleProfile",
+         *           "icon": "fab fa-linkedin"
+         *         },
+         *         {
+         *           "platform": "whatsapp",
+         *           "account": "+254712345678",
+         *           "url": "https://wa.me/254712345678",
+         *           "icon": "fab fa-whatsapp"
+         *         },
+         *         {
+         *           "platform": "website",
+         *           "account": "https://example.com",
+         *           "url": "https://example.com",
+         *           "icon": "fas fa-link"
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphSocial_block: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphSocial_block";
+            social_links?: {
+                /** @example facebook */
+                platform?: string;
+                /** @example examplePage */
+                account?: string;
+                /** @example https://facebook.com/examplePage */
+                url?: string;
+                /** @example fab fa-facebook */
+                icon?: string;
+            }[];
+        };
+        /**
+         * Text List Mapper
+         * @description Paragraph of type text_list
+         * @example {
+         *       "block_type": "text_list",
+         *       "title": "Key Features",
+         *       "short_description": {
+         *         "value": "Here are the main benefits of this course.",
+         *         "format": "plain_text",
+         *         "processed": "<p>Here are the main benefits of this course.</p>"
+         *       },
+         *       "type": "benefits",
+         *       "items": [
+         *         "Hands-on practical experience.",
+         *         "Industry-recognized certification.",
+         *         "Experienced instructors.",
+         *         "Career placement assistance."
+         *       ]
+         *     }
+         */
+        ParagraphText_list: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphText_list";
+            /** @example Key Features */
+            title?: string;
+            short_description?: {
+                /** @example Here are the main benefits of this course. */
+                value?: string;
+                /** @example plain_text */
+                format?: string;
+                /** @example <p>Here are the main benefits of this course.</p> */
+                processed?: string;
+            };
+            /** @example benefits */
+            type?: string;
+            items?: string[];
+        };
+        /**
+         * Section Heading Mapper
+         * @description Paragraph of type section_heading
+         * @example {
+         *       "block_type": "section_heading",
+         *       "title": "Main Section Heading",
+         *       "description": {
+         *         "value": "<p>Optional introductory text for this section.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>Optional introductory text for this section.</p>"
+         *       },
+         *       "image": [
+         *         {
+         *           "id": "401",
+         *           "type": "media",
+         *           "bundle": "image",
+         *           "name": "section_banner.jpg",
+         *           "uuid": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+         *           "url": "https://example.com/sites/default/files/section_banner.jpg",
+         *           "mime_type": "image/jpeg",
+         *           "size": 567890,
+         *           "alt": "Banner image for the section",
+         *           "title": "",
+         *           "width": "1600",
+         *           "height": "400"
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphSection_heading: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphSection_heading";
+            /** @example Main Section Heading */
+            title?: string;
+            description?: {
+                /** @example <p>Optional introductory text for this section.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>Optional introductory text for this section.</p> */
+                processed?: string;
+            };
+            image?: {
+                /** @example 401 */
+                id?: string;
+                /** @example media */
+                type?: string;
+                /** @example image */
+                bundle?: string;
+                /** @example section_banner.jpg */
+                name?: string;
+                /** @example b2c3d4e5-f6a7-8901-2345-67890abcdef1 */
+                uuid?: string;
+                /** @example https://example.com/sites/default/files/section_banner.jpg */
+                url?: string;
+                /** @example image/jpeg */
+                mime_type?: string;
+                /** @example 567890 */
+                size?: number;
+                /** @example Banner image for the section */
+                alt?: string;
+                /** @example  */
+                title?: string;
+                /** @example 1600 */
+                width?: string;
+                /** @example 400 */
+                height?: string;
+            }[];
+        };
+        /**
+         * Highlighted Course Listing Mapper
+         * @description Paragraph of type highlighted_course_listing
+         * @example {
+         *       "block_type": "highlighted_course_listing",
+         *       "title": "Featured Courses",
+         *       "description": {
+         *         "value": "<p>Check out some of our most popular and highly-rated courses.</p>",
+         *         "format": "basic_html",
+         *         "processed": "<p>Check out some of our most popular and highly-rated courses.</p>"
+         *       },
+         *       "courses": [
+         *         {
+         *           "id": "35",
+         *           "title": "Advanced Web Development Bootcamp",
+         *           "tags": [
+         *             "Web Development",
+         *             "Programming",
+         *             "Advanced"
+         *           ],
+         *           "application_fee": 2500,
+         *           "course_fee": 150000,
+         *           "apply_till": [
+         *             "2025-05-31T12:00:00+00:00"
+         *           ],
+         *           "start_on": [
+         *             "2025-07-01T12:00:00+00:00"
+         *           ],
+         *           "institution": [
+         *             {
+         *               "id": "15",
+         *               "type": "institution",
+         *               "bundle": "institution",
+         *               "label": "Example Vocational Training Centre",
+         *               "uuid": "74b37258-baa6-4ab9-bc1a-b2dc7405e946",
+         *               "url": "https://example.com/node/15",
+         *               "path_alias": "/institution/example-vtc"
+         *             }
+         *           ],
+         *           "url": "https://example.com/node/35",
+         *           "path_alias": "/courses/advanced-web-bootcamp"
+         *         },
+         *         {
+         *           "id": "40",
+         *           "title": "Digital Marketing Masterclass",
+         *           "tags": [
+         *             "Marketing",
+         *             "Digital",
+         *             "Business"
+         *           ],
+         *           "application_fee": 1000,
+         *           "course_fee": 75000,
+         *           "apply_till": [
+         *             "2025-06-15T12:00:00+00:00"
+         *           ],
+         *           "start_on": [
+         *             "2025-07-15T12:00:00+00:00"
+         *           ],
+         *           "institution": [
+         *             {
+         *               "id": "12",
+         *               "type": "institution",
+         *               "bundle": "institution",
+         *               "label": "Nairobi Vocational Training Centre",
+         *               "uuid": "12061900-d187-440f-bfcb-04b32ad7aac3",
+         *               "url": "https://example.com/node/12",
+         *               "path_alias": "/institutions/nairobi-vtc"
+         *             }
+         *           ],
+         *           "url": "https://example.com/node/40",
+         *           "path_alias": "/courses/digital-marketing-masterclass"
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphHighlighted_course_listing: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphHighlighted_course_listing";
+            /** @example Featured Courses */
+            title?: string;
+            description?: {
+                /** @example <p>Check out some of our most popular and highly-rated courses.</p> */
+                value?: string;
+                /** @example basic_html */
+                format?: string;
+                /** @example <p>Check out some of our most popular and highly-rated courses.</p> */
+                processed?: string;
+            };
+            courses?: {
+                /** @example 35 */
+                id?: string;
+                /** @example Advanced Web Development Bootcamp */
+                title?: string;
+                tags?: string[];
+                /** @example 2500 */
+                application_fee?: number;
+                /** @example 150000 */
+                course_fee?: number;
+                apply_till?: string[];
+                start_on?: string[];
+                institution?: {
+                    /** @example 15 */
+                    id?: string;
+                    /** @example institution */
+                    type?: string;
+                    /** @example institution */
+                    bundle?: string;
+                    /** @example Example Vocational Training Centre */
+                    label?: string;
+                    /** @example 74b37258-baa6-4ab9-bc1a-b2dc7405e946 */
+                    uuid?: string;
+                    /** @example https://example.com/node/15 */
+                    url?: string;
+                    /** @example /institution/example-vtc */
+                    path_alias?: string;
+                }[];
+                /** @example https://example.com/node/35 */
+                url?: string;
+                /** @example /courses/advanced-web-bootcamp */
+                path_alias?: string;
+            }[];
+        };
+        /**
+         * Text Block with Gradient Mapper
+         * @description Paragraph of type text_block_with_gradient
+         * @example {
+         *       "block_type": "text_block_with_gradient",
+         *       "title": "Highlight Section Title",
+         *       "block_text": {
+         *         "value": "<p>This text block has a gradient background, making it stand out.</p>",
+         *         "format": "full_html",
+         *         "processed": "<p>This text block has a gradient background, making it stand out.</p>"
+         *       },
+         *       "type": "highlight"
+         *     }
+         */
+        ParagraphText_block_with_gradient: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphText_block_with_gradient";
+            /** @example Highlight Section Title */
+            title?: string;
+            block_text?: {
+                /** @example <p>This text block has a gradient background, making it stand out.</p> */
+                value?: string;
+                /** @example full_html */
+                format?: string;
+                /** @example <p>This text block has a gradient background, making it stand out.</p> */
+                processed?: string;
+            };
+            /** @example highlight */
+            type?: string;
+        };
+        /**
+         * Text Block with Background Mapper
+         * @description Paragraph of type text_block_with_background
+         * @example {
+         *       "block_type": "text_block_with_background",
+         *       "items": [
+         *         {
+         *           "title": "Item Title 1",
+         *           "description": {
+         *             "value": "<p>Description for item 1.</p>",
+         *             "format": "basic_html",
+         *             "processed": "<p>Description for item 1.</p>"
+         *           }
+         *         },
+         *         {
+         *           "title": "Item Title 2",
+         *           "description": {
+         *             "value": "<p>Description for item 2 with <em>emphasis</em>.</p>",
+         *             "format": "full_html",
+         *             "processed": "<p>Description for item 2 with <em>emphasis</em>.</p>"
+         *           }
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphText_block_with_background: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphText_block_with_background";
+            items?: {
+                /** @example Item Title 1 */
+                title?: string;
+                description?: {
+                    /** @example <p>Description for item 1.</p> */
+                    value?: string;
+                    /** @example basic_html */
+                    format?: string;
+                    /** @example <p>Description for item 1.</p> */
+                    processed?: string;
+                };
+            }[];
+        };
+        /**
+         * Feature Mapper
+         * @description Paragraph of type feature
+         * @example {
+         *       "block_type": "feature",
+         *       "feature": "State-of-the-Art Facilities",
+         *       "short_description": {
+         *         "value": "Learn in modern workshops and labs equipped with the latest technology.",
+         *         "format": "plain_text",
+         *         "processed": "<p>Learn in modern workshops and labs equipped with the latest technology.</p>"
+         *       }
+         *     }
+         */
+        ParagraphFeature: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphFeature";
+            /** @example State-of-the-Art Facilities */
+            feature?: string;
+            short_description?: {
+                /** @example Learn in modern workshops and labs equipped with the latest technology. */
+                value?: string;
+                /** @example plain_text */
+                format?: string;
+                /** @example <p>Learn in modern workshops and labs equipped with the latest technology.</p> */
+                processed?: string;
+            };
+        };
+        /**
+         * Training Areas Mapper
+         * @description Paragraph of type training_areas
+         * @example {
+         *       "block_type": "training_areas",
+         *       "areas": [
+         *         {
+         *           "id": "42",
+         *           "name": "Engineering",
+         *           "course_count": 15
+         *         },
+         *         {
+         *           "id": "55",
+         *           "name": "Information Technology",
+         *           "course_count": 12
+         *         },
+         *         {
+         *           "id": "30",
+         *           "name": "Business Management",
+         *           "course_count": 10
+         *         },
+         *         {
+         *           "id": "61",
+         *           "name": "Hospitality",
+         *           "course_count": 8
+         *         },
+         *         {
+         *           "id": "25",
+         *           "name": "Construction",
+         *           "course_count": 7
+         *         },
+         *         {
+         *           "id": "73",
+         *           "name": "Beauty and Cosmetology",
+         *           "course_count": 5
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphTraining_areas: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphTraining_areas";
+            areas?: {
+                /** @example 42 */
+                id?: string;
+                /** @example Engineering */
+                name?: string;
+                /** @example 15 */
+                course_count?: number;
+            }[];
+        };
+        /**
+         * Similar Courses Mapper
+         * @description Paragraph of type similar_courses
+         * @example {
+         *       "block_type": "similar_courses",
+         *       "title": "Similar Courses You Might Like",
+         *       "short_description": {
+         *         "value": "Explore other courses related to the topics discussed here.",
+         *         "format": "plain_text",
+         *         "processed": "<p>Explore other courses related to the topics discussed here.</p>"
+         *       },
+         *       "courses": [
+         *         {
+         *           "id": "21",
+         *           "title": "Related Construction Course",
+         *           "tags": [
+         *             "Construction",
+         *             "Engineering"
+         *           ],
+         *           "application_fee": 2000,
+         *           "course_fee": 8000,
+         *           "apply_till": [
+         *             "2025-06-30T12:00:00+00:00"
+         *           ],
+         *           "start_on": [
+         *             "2025-08-01T12:00:00+00:00"
+         *           ],
+         *           "institution": [
+         *             {
+         *               "id": "15",
+         *               "type": "institution",
+         *               "bundle": "institution",
+         *               "label": "Example Vocational Training Centre",
+         *               "uuid": "74b37258-baa6-4ab9-bc1a-b2dc7405e946",
+         *               "url": "https://example.com/node/15",
+         *               "path_alias": "/institution/example-vtc"
+         *             }
+         *           ],
+         *           "url": "https://example.com/node/21",
+         *           "path_alias": "/courses/related-construction"
+         *         },
+         *         {
+         *           "id": "19",
+         *           "title": "Related ICT Course",
+         *           "tags": [
+         *             "ICT",
+         *             "Networking"
+         *           ],
+         *           "application_fee": 1500,
+         *           "course_fee": 12000,
+         *           "apply_till": [
+         *             "2025-07-15T12:00:00+00:00"
+         *           ],
+         *           "start_on": [
+         *             "2025-09-01T12:00:00+00:00"
+         *           ],
+         *           "institution": [
+         *             {
+         *               "id": "15",
+         *               "type": "institution",
+         *               "bundle": "institution",
+         *               "label": "Example Vocational Training Centre",
+         *               "uuid": "74b37258-baa6-4ab9-bc1a-b2dc7405e946",
+         *               "url": "https://example.com/node/15",
+         *               "path_alias": "/institution/example-vtc"
+         *             }
+         *           ],
+         *           "url": "https://example.com/node/19",
+         *           "path_alias": "/courses/related-ict"
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphSimilar_courses: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphSimilar_courses";
+            /** @example Similar Courses You Might Like */
+            title?: string;
+            short_description?: {
+                /** @example Explore other courses related to the topics discussed here. */
+                value?: string;
+                /** @example plain_text */
+                format?: string;
+                /** @example <p>Explore other courses related to the topics discussed here.</p> */
+                processed?: string;
+            };
+            courses?: {
+                /** @example 21 */
+                id?: string;
+                /** @example Related Construction Course */
+                title?: string;
+                tags?: string[];
+                /** @example 2000 */
+                application_fee?: number;
+                /** @example 8000 */
+                course_fee?: number;
+                apply_till?: string[];
+                start_on?: string[];
+                institution?: {
+                    /** @example 15 */
+                    id?: string;
+                    /** @example institution */
+                    type?: string;
+                    /** @example institution */
+                    bundle?: string;
+                    /** @example Example Vocational Training Centre */
+                    label?: string;
+                    /** @example 74b37258-baa6-4ab9-bc1a-b2dc7405e946 */
+                    uuid?: string;
+                    /** @example https://example.com/node/15 */
+                    url?: string;
+                    /** @example /institution/example-vtc */
+                    path_alias?: string;
+                }[];
+                /** @example https://example.com/node/21 */
+                url?: string;
+                /** @example /courses/related-construction */
+                path_alias?: string;
+            }[];
+        };
+        ZodParagraphTypes: components["schemas"]["ParagraphCourse_data"] | components["schemas"]["ParagraphGallery"] | components["schemas"]["ParagraphLocation"] | components["schemas"]["ParagraphContact"] | components["schemas"]["ParagraphMedia"] | components["schemas"]["ParagraphFeature_section"] | components["schemas"]["ParagraphVocational_centres"] | components["schemas"]["ParagraphTestimonials"] | components["schemas"]["ParagraphCourses"] | components["schemas"]["ParagraphApplication"] | components["schemas"]["ParagraphAvailable_sponsorships"] | components["schemas"]["ParagraphTestimonial"] | components["schemas"]["ParagraphSocial_block"] | components["schemas"]["ParagraphText_list"] | components["schemas"]["ParagraphSection_heading"] | components["schemas"]["ParagraphHighlighted_course_listing"] | components["schemas"]["ParagraphText_block_with_gradient"] | components["schemas"]["ParagraphText_block_with_background"] | components["schemas"]["ParagraphFeature"] | components["schemas"]["ParagraphTraining_areas"] | components["schemas"]["ParagraphSimilar_courses"];
     };
-    "node:course": {
-      type: "node:course";
-    } & (Omit<components["schemas"]["node"], "type"> & {
-      /** Application fee */
-      field_application_fee?: Record<string, never>[];
-      /** Apply Till */
-      field_apply_till?: {
-        /**
-         * Date value
-         * Format: date
-         */
-        value: string;
-      }[];
-      /** Course fee */
-      field_course_fee?: Record<string, never>[];
-      /** Duration */
-      field_duration?: {
-        /** Integer value */
-        value: number;
-      }[];
-      /** Education level */
-      field_education_level?: {
-        /** Taxonomy term ID */
-        target_id: number;
-      }[];
-      /** Group size */
-      field_group_size?: {
-        /** Integer value */
-        value: number;
-      }[];
-      /** Image */
-      field_image?: {
-        /** Media ID */
-        target_id: number;
-      }[];
-      /** Institution */
-      field_institution?: {
-        /** Content ID */
-        target_id: number;
-      }[];
-      /** Page components */
-      field_page_components?: {
-        /** Paragraph ID */
-        target_id: number;
-        /** Paragraph revision ID */
-        target_revision_id: number;
-      }[];
-      /** Start on */
-      field_start_on?: {
-        /**
-         * Date value
-         * Format: date
-         */
-        value: string;
-      }[];
-      /** Tags */
-      field_tags?: {
-        /** Taxonomy term ID */
-        target_id: number;
-      }[];
-      /** Test booking fee */
-      field_test_booking_fee?: Record<string, never>[];
-    });
-    "node:institution": {
-      type: "node:institution";
-    } & (Omit<components["schemas"]["node"], "type"> & {
-      /** Promoted to front page */
-      promote?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /** Address */
-      field_address?: {
-        /** The language code */
-        langcode?: string;
-        /** The two-letter country code */
-        country_code?: string;
-        /** The top-level administrative subdivision of the country */
-        administrative_area?: string;
-        /** The locality (i.e. city) */
-        locality?: string;
-        /** The dependent locality (i.e. neighbourhood) */
-        dependent_locality?: string;
-        /** The postal code */
-        postal_code?: string;
-        /** The sorting code */
-        sorting_code?: string;
-        /** The first line of the address block */
-        address_line1?: string;
-        /** The second line of the address block */
-        address_line2?: string;
-        /** The third line of the address block */
-        address_line3?: string;
-        /** The organization */
-        organization?: string;
-        /** The given name */
-        given_name?: string;
-        /** The additional name */
-        additional_name?: string;
-        /** The family name */
-        family_name?: string;
-      }[];
-      /** Body */
-      field_body?: {
-        /** Text */
-        value: string;
-        /** Text format */
-        format?: string;
-      }[];
-      /** Text */
-      field_contact_text?: {
-        /** Text */
-        value: string;
-        /** Text format */
-        format?: string;
-      }[];
-      /** Email */
-      field_email?: {
-        /**
-         * Email
-         * Format: email
-         */
-        value: string;
-      }[];
-      /** Image */
-      field_image?: {
-        /** Media ID */
-        target_id: number;
-      }[];
-      /** Location */
-      field_location?: {
-        /** Geometry */
-        value?: string;
-        /** Geometry Type */
-        geo_type?: string;
-        /** Geohash */
-        geohash?: string;
-        /** LatLong Pair */
-        latlon?: string;
-      }[];
-      /** Page components */
-      field_page_components?: {
-        /** Paragraph ID */
-        target_id: number;
-        /** Paragraph revision ID */
-        target_revision_id: number;
-      }[];
-      /** Phone */
-      field_phone?: {
-        /** Telephone number */
-        value: string;
-      }[];
-    });
-    "node:landing": {
-      type: "node:landing";
-    } & (Omit<components["schemas"]["node"], "type"> & {
-      /** Promoted to front page */
-      promote?: {
-        /** Boolean value */
-        value: boolean;
-      }[];
-      /** Body */
-      field_body?: {
-        /** Text */
-        value: string;
-        /** Text format */
-        format?: string;
-      }[];
-      /** Image */
-      field_image?: {
-        /** Media ID */
-        target_id: number;
-      }[];
-      /** Page components */
-      field_page_components?: {
-        /** Paragraph ID */
-        target_id: number;
-        /** Paragraph revision ID */
-        target_revision_id: number;
-      }[];
-    });
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  "course_list_resource:GET": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "tvet_rest.node_get": {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Language": string;
+            };
+            path: {
+                /** @description The node ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Node retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["NodeCourse"] | components["schemas"]["NodeInstitution"] | components["schemas"]["NodeLanding"];
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1744189526
+                             */
+                            timestamp: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version: string;
+                            language: {
+                                /**
+                                 * @description Current language code
+                                 * @example en
+                                 */
+                                current?: string;
+                                /**
+                                 * @description Default language code
+                                 * @example en
+                                 */
+                                default?: string;
+                                /** @description Available language translations */
+                                available?: {
+                                    [key: string]: {
+                                        /** @example en */
+                                        langcode?: string;
+                                        /** @example English */
+                                        name?: string;
+                                        /** @example https://example.com/node/1 */
+                                        url?: string;
+                                        /** @example /about-us */
+                                        path?: string;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+            /** @description Node not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    "tvet_rest.resolve_content": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The path alias to resolve */
+                "X-Path": string;
+                "X-Language": string;
+            };
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            /** @description Content resolved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["NodeCourse"] | components["schemas"]["NodeInstitution"] | components["schemas"]["NodeLanding"];
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1744189526
+                             */
+                            timestamp: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version: string;
+                            language: {
+                                /**
+                                 * @description Current language code
+                                 * @example en
+                                 */
+                                current?: string;
+                                /**
+                                 * @description Default language code
+                                 * @example en
+                                 */
+                                default?: string;
+                                /** @description Available language translations */
+                                available?: {
+                                    [key: string]: {
+                                        /** @example en */
+                                        langcode?: string;
+                                        /** @example English */
+                                        name?: string;
+                                        /** @example https://example.com/node/1 */
+                                        url?: string;
+                                        /** @example /about-us */
+                                        path?: string;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+            /** @description Content not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
-        };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
     };
-  };
-  "entity:node:GET": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path: {
-        /** @description The nid,id, of the node. */
-        node: string;
-      };
-      cookie?: never;
+    "tvet_rest.courses_list": {
+        parameters: {
+            query?: {
+                /** @description Search term to filter courses */
+                search?: string;
+                /** @description Minimum course fee */
+                min_fee?: number;
+                /** @description Maximum course fee */
+                max_fee?: number;
+                /** @description Minimum course duration in months */
+                min_duration?: number;
+                /** @description Maximum course duration in months */
+                max_duration?: number;
+                /** @description Filter by education level */
+                education_level?: string;
+                /** @description Filter by institution ID */
+                institution?: string;
+                /** @description Filter by tag */
+                tag?: string;
+                /** @description Page number for pagination */
+                page?: number;
+                /** @description Number of items per page */
+                limit?: number;
+                /** @description Field to sort by */
+                sort?: "title" | "created" | "changed" | "fee" | "duration";
+                /** @description Sort direction */
+                direction?: "asc" | "desc";
+            };
+            header: {
+                "X-Language": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Courses retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /** @example course_list */
+                            type?: string;
+                            courses?: components["schemas"]["NodeCourse"][];
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1744189526
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                            pagination?: {
+                                /**
+                                 * @description Total number of items
+                                 * @example 3
+                                 */
+                                total?: number;
+                                /**
+                                 * @description Current page number (0-based)
+                                 * @example 0
+                                 */
+                                page?: number;
+                                /**
+                                 * @description Number of items per page
+                                 * @example 20
+                                 */
+                                limit?: number;
+                                /**
+                                 * @description Total number of pages
+                                 * @example 1
+                                 */
+                                pages?: number;
+                            };
+                            filters?: {
+                                /**
+                                 * @description Search term used to filter results
+                                 * @example null
+                                 */
+                                search?: string | null;
+                                /**
+                                 * @description Minimum course fee filter
+                                 * @example null
+                                 */
+                                min_fee?: number | null;
+                                /**
+                                 * @description Maximum course fee filter
+                                 * @example null
+                                 */
+                                max_fee?: number | null;
+                                /**
+                                 * @description Minimum course duration filter
+                                 * @example null
+                                 */
+                                min_duration?: number | null;
+                                /**
+                                 * @description Maximum course duration filter
+                                 * @example null
+                                 */
+                                max_duration?: number | null;
+                                /**
+                                 * @description Education level taxonomy term ID filter
+                                 * @example null
+                                 */
+                                education_level?: number | null;
+                                /**
+                                 * @description Institution node ID filter
+                                 * @example null
+                                 */
+                                institution?: number | null;
+                                /**
+                                 * @description Tags taxonomy term ID filter
+                                 * @example null
+                                 */
+                                tags?: number | null;
+                            };
+                            sort?: {
+                                /**
+                                 * @description Field used for sorting
+                                 * @example created
+                                 */
+                                field?: string;
+                                /**
+                                 * @description Sort direction (ASC or DESC)
+                                 * @example DESC
+                                 * @enum {string}
+                                 */
+                                direction?: "ASC" | "DESC";
+                            };
+                            language?: {
+                                /**
+                                 * @description Current language code
+                                 * @example en-gb
+                                 */
+                                current?: string;
+                                /**
+                                 * @description Default language code
+                                 * @example en-gb
+                                 */
+                                default?: string;
+                                /**
+                                 * @description Available language translations
+                                 * @example {
+                                 *       "en-gb": {
+                                 *         "langcode": "en-gb",
+                                 *         "name": "English, British",
+                                 *         "direction": "ltr"
+                                 *       },
+                                 *       "sw": {
+                                 *         "langcode": "sw",
+                                 *         "name": "Swahili",
+                                 *         "direction": "ltr"
+                                 *       }
+                                 *     }
+                                 */
+                                available?: {
+                                    [key: string]: {
+                                        /** @example en-gb */
+                                        langcode?: string;
+                                        /** @example English, British */
+                                        name?: string;
+                                        /** @example ltr */
+                                        direction?: string;
+                                    };
+                                };
+                            };
+                            /** @description Available filter options for the resource */
+                            filter_options?: {
+                                /**
+                                 * @description Available education levels for filtering
+                                 * @example [
+                                 *       {
+                                 *         "id": 1,
+                                 *         "label": "Certificate"
+                                 *       },
+                                 *       {
+                                 *         "id": 2,
+                                 *         "label": "Diploma"
+                                 *       }
+                                 *     ]
+                                 */
+                                education_levels?: {
+                                    /** @description Education level taxonomy term ID */
+                                    id?: number;
+                                    /** @description Education level name */
+                                    label?: string;
+                                }[];
+                                /**
+                                 * @description Available institutions for filtering
+                                 * @example [
+                                 *       {
+                                 *         "id": 1,
+                                 *         "name": "Technical University of Kenya",
+                                 *         "path_alias": "/institution/technical-university-kenya"
+                                 *       }
+                                 *     ]
+                                 */
+                                institutions?: {
+                                    /** @description Institution node ID */
+                                    id?: number;
+                                    /** @description Institution name */
+                                    name?: string;
+                                    /** @description URL path alias for the institution */
+                                    path_alias?: string;
+                                }[];
+                                /**
+                                 * @description Available tags for filtering
+                                 * @example [
+                                 *       {
+                                 *         "id": 1,
+                                 *         "name": "Engineering",
+                                 *         "weight": 0
+                                 *       }
+                                 *     ]
+                                 */
+                                tags?: {
+                                    /** @description Tag taxonomy term ID */
+                                    id?: number;
+                                    /** @description Tag name */
+                                    name?: string;
+                                    /** @description Tag weight for sorting */
+                                    weight?: number;
+                                }[];
+                            };
+                        };
+                    };
+                };
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    "tvet_rest.user_login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": components["schemas"]["node"];
+        requestBody: {
+            content: {
+                /** @example {
+                 *       "email": "user@example.com",
+                 *       "password": "password123"
+                 *     } */
+                "application/json": {
+                    /**
+                     * Format: email
+                     * @example user@example.com
+                     */
+                    email: string;
+                    /** @example password123 */
+                    password: string;
+                };
+            };
         };
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description Login successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            access_token?: string;
+                            refresh_token?: string;
+                            expires_in?: number;
+                            token_type?: string;
+                        };
+                        meta?: {
+                            timestamp?: number;
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid credentials */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
-        };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
     };
-  };
-  "entity:node:DELETE": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path: {
-        /** @description The nid,id, of the node. */
-        node: string;
-      };
-      cookie?: never;
+    "tvet_rest.token_refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /** @example {
+                 *       "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                 *     } */
+                "application/json": {
+                    /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... */
+                    refresh_token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Token refresh successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            access_token?: string;
+                            refresh_token?: string;
+                            expires_in?: number;
+                            token_type?: string;
+                        };
+                        meta?: {
+                            timestamp?: number;
+                            version?: string;
+                        };
+                    };
+                    example: unknown;
+                };
+            };
+            /** @description Invalid or expired refresh token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description Entity deleted */
-      204: {
-        headers: {
-          [name: string]: unknown;
+    "tvet_rest.password_reset_request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                /** @example {
+                 *       "email": "user@example.com"
+                 *     } */
+                "application/json": {
+                    /**
+                     * Format: email
+                     * @example user@example.com
+                     */
+                    email: string;
+                };
+            };
         };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
+        responses: {
+            /** @description Password reset request successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            message?: string;
+                        };
+                        meta?: {
+                            timestamp?: number;
+                            version?: string;
+                        };
+                    };
+                };
+            };
         };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
     };
-  };
-  "entity:node:PATCH": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path: {
-        /** @description The nid,id, of the node. */
-        node: string;
-      };
-      cookie?: never;
+    "tvet_rest.password_reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /** @example {
+                 *       "uid": "123",
+                 *       "timestamp": "1234567890",
+                 *       "hash": "abc123...",
+                 *       "new_password": "NewSecurePassword123!"
+                 *     } */
+                "application/json": {
+                    /** @example 123 */
+                    uid: string;
+                    /** @example 1234567890 */
+                    timestamp: string;
+                    /** @example abc123... */
+                    hash: string;
+                    /** @example NewSecurePassword123! */
+                    new_password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Password reset successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            message?: string;
+                        };
+                        meta?: {
+                            timestamp?: number;
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request data or password doesn't meet requirements */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid or expired reset link */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    /** @description The Content object */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["node"];
-      };
+    "tvet_rest.user_profile": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Bearer token for authentication */
+                Authorization: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            /**
+                             * @description User ID
+                             * @example 1
+                             */
+                            uid: number;
+                            /**
+                             * Format: email
+                             * @description User email address
+                             * @example user@example.com
+                             */
+                            email: string;
+                            /**
+                             * @description User display name
+                             * @example John Doe
+                             */
+                            name: string;
+                            /**
+                             * @description User roles
+                             * @example [
+                             *       "authenticated",
+                             *       "editor"
+                             *     ]
+                             */
+                            roles: string[];
+                            /**
+                             * Format: date-time
+                             * @description User creation timestamp
+                             * @example 2023-01-15T12:00:00+00:00
+                             */
+                            created: string;
+                            /**
+                             * Format: date-time
+                             * @description User last access timestamp
+                             * @example 2023-08-26T15:30:45+00:00
+                             */
+                            last_access: string;
+                        };
+                        meta: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1621234567
+                             */
+                            timestamp: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version: string;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized - No authentication token provided or invalid token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Authentication error: Invalid or expired JWT token. */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example User not found. */
+                        message?: string;
+                    };
+                };
+            };
+        };
     };
-    responses: {
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
+    "tvet_rest.institutions_list": {
+        parameters: {
+            query?: {
+                /** @description Filter institutions by title */
+                search?: string;
+                /** @description Field to sort by */
+                sort?: string;
+                /** @description Sort direction */
+                direction?: "ASC" | "DESC";
+                /** @description Page number (0-based) */
+                page?: number;
+                /** @description Number of items per page (max 50) */
+                limit?: number;
+            };
+            header: {
+                /** @description The language code for the response content */
+                "X-Language": string;
+            };
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
+        requestBody?: never;
+        responses: {
+            /** @description Institutions retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /** @example institution_list */
+                            type?: string;
+                            institutions?: components["schemas"]["NodeInstitution"][];
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1744189526
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                            pagination?: {
+                                /**
+                                 * @description Total number of items
+                                 * @example 3
+                                 */
+                                total?: number;
+                                /**
+                                 * @description Current page number (0-based)
+                                 * @example 0
+                                 */
+                                page?: number;
+                                /**
+                                 * @description Number of items per page
+                                 * @example 20
+                                 */
+                                limit?: number;
+                                /**
+                                 * @description Total number of pages
+                                 * @example 1
+                                 */
+                                pages?: number;
+                            };
+                            filters?: {
+                                /**
+                                 * @description Search term used to filter results
+                                 * @example null
+                                 */
+                                search?: string | null;
+                            };
+                            sort?: {
+                                /**
+                                 * @description Field used for sorting
+                                 * @example title
+                                 */
+                                field?: string;
+                                /**
+                                 * @description Sort direction (ASC or DESC)
+                                 * @example ASC
+                                 * @enum {string}
+                                 */
+                                direction?: "ASC" | "DESC";
+                            };
+                            path?: {
+                                /**
+                                 * @description The originally requested path
+                                 * @example /api/v1/institutions
+                                 */
+                                requested?: string;
+                                /**
+                                 * @description The internal path used for processing
+                                 * @example /api/v1/institutions
+                                 */
+                                internal?: string;
+                                /**
+                                 * @description Whether the path was successfully resolved
+                                 * @example true
+                                 */
+                                resolved?: boolean;
+                            };
+                            language?: {
+                                /**
+                                 * @description Current language code
+                                 * @example en-gb
+                                 */
+                                current?: string;
+                                /**
+                                 * @description Default language code
+                                 * @example en-gb
+                                 */
+                                default?: string;
+                                /**
+                                 * @description Available language translations
+                                 * @example {
+                                 *       "en-gb": {
+                                 *         "langcode": "en-gb",
+                                 *         "name": "English, British",
+                                 *         "direction": "ltr"
+                                 *       },
+                                 *       "sw": {
+                                 *         "langcode": "sw",
+                                 *         "name": "Swahili",
+                                 *         "direction": "ltr"
+                                 *       }
+                                 *     }
+                                 */
+                                available?: {
+                                    [key: string]: {
+                                        /** @example en-gb */
+                                        langcode?: string;
+                                        /** @example English, British */
+                                        name?: string;
+                                        /** @example ltr */
+                                        direction?: string;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+            /** @description Institutions not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
     };
-  };
-  "entity:node:POST": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "tvet_rest.user_logout": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Bearer token for authentication */
+                Authorization: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User logged out successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /** @example Successfully logged out */
+                            message?: string;
+                            /** @example 1 */
+                            removed_tokens?: number;
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1621234567
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized - No authentication token provided or invalid token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Authentication error: Invalid or expired JWT token. */
+                        message?: string;
+                    };
+                };
+            };
+        };
     };
-    /** @description The Content object */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["node"];
-      };
-    };
-    responses: {
-      /** @description Entity created */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["node"];
-        };
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
-        };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
-    };
-  };
-  "institutions_resource:GET": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
-        };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
-    };
-  };
-  "tvet_node_resource:GET": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
-        };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
-    };
-  };
-  "tvet_path_resource:GET": {
-    parameters: {
-      query: {
-        /** @description Request format */
-        _format: "json";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Bad data */
-            error?: string;
-          };
-        };
-      };
-      /** @description Internal server error. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Internal server error. */
-            message?: string;
-          };
-        };
-      };
-    };
-  };
 }

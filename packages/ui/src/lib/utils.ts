@@ -15,7 +15,13 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Asserts that a value is never reached. Useful for exhaustiveness checks.
  */
-export function assertNever(value: never): never {
+export function assertNever(value: never, noThrow?: boolean): never {
+  if (noThrow) {
+    console.error(
+      `Unhandled discriminated union member: ${JSON.stringify(value)}`,
+    );
+    return null as never;
+  }
   throw new Error(
     `Unhandled discriminated union member: ${JSON.stringify(value)}`,
   );
