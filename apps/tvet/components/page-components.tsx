@@ -2,6 +2,7 @@ import type { FC } from "react";
 
 import { ApplicationBlock } from "@workspace/ui/components/tvet/blocks/application-block";
 import { AvailableSponsorshipsBlock } from "@workspace/ui/components/tvet/blocks/available-sponsorships-block";
+import { ContactBlock } from "@workspace/ui/components/tvet/blocks/contact-block";
 import { CourseDataBlock } from "@workspace/ui/components/tvet/blocks/course-data-block";
 import { CoursesBlock } from "@workspace/ui/components/tvet/blocks/courses-block";
 import { FeatureSectionBlock } from "@workspace/ui/components/tvet/blocks/feature-section-block";
@@ -99,8 +100,11 @@ export const PageComponents: FC<PageComponentsProps> = ({
       case "similar_courses":
         return <SimilarCoursesBlock {...component} key={key} />;
 
+      case "contact":
+        return <ContactBlock {...component} key={key} />;
+
       default:
-        return assertNever(component);
+        return assertNever(component, true);
     }
   });
 };

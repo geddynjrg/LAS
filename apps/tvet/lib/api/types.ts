@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { ApplicationBlockSchema } from "@/lib/api/schema/block/application-block.schema";
 import { AvailableSponsorshipsBlockSchema } from "@/lib/api/schema/block/available-sponsorships-block.schema";
+import { ContactBlockSchema } from "@/lib/api/schema/block/contact-block.schema";
 import { CoursesBlockSchema } from "@/lib/api/schema/block/course-block.schema";
 import { CourseDataBlockSchema } from "@/lib/api/schema/block/course-data-block.schema";
 import { FeaturesBlockSchema } from "@/lib/api/schema/block/features-block.schema";
@@ -22,24 +23,25 @@ import { VocationalCentresBlockSchema } from "@/lib/api/schema/block/vocational-
 
 export const BlockSchema = z.discriminatedUnion("block_type", [
   ApplicationBlockSchema,
-  SectionHeadingBlockSchema,
-  FeaturesBlockSchema,
-  TextBlockSchema,
-  VocationalCentresBlockSchema,
-  HighlightedCourseListingBlockSchema,
-  TrainingAreasBlockSchema,
-  TextBlockWithBackgroundBlockSchema,
-  MediaBlockSchema,
-  CoursesBlockSchema,
-  GalleryBlockSchema,
-  TextBlockWithGradientBlockSchema,
-  LocationBlockSchema,
-  SocialBlockSchema,
+  AvailableSponsorshipsBlockSchema,
+  ContactBlockSchema,
   CourseDataBlockSchema,
+  CoursesBlockSchema,
+  FeaturesBlockSchema,
+  GalleryBlockSchema,
+  HighlightedCourseListingBlockSchema,
+  MediaBlockSchema,
+  LocationBlockSchema,
+  VocationalCentresBlockSchema,
+  SectionHeadingBlockSchema,
+  SimilarCoursesBlockSchema,
+  SocialBlockSchema,
+  TextBlockWithBackgroundBlockSchema,
+  TextBlockWithGradientBlockSchema,
   TextListBlockSchema,
   TestimonialsBlockSchema,
-  AvailableSponsorshipsBlockSchema,
-  SimilarCoursesBlockSchema,
+  TextBlockSchema,
+  TrainingAreasBlockSchema,
 ]);
 
 export type BlockType = z.infer<typeof BlockSchema>;

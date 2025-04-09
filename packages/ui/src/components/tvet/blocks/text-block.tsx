@@ -9,7 +9,7 @@ export interface TextBlockProps {
   className?: string;
   block_type: "text_block";
   title?: string;
-  description: {
+  description?: {
     value: string | null;
     format: string | null;
     processed: string | null;
