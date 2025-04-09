@@ -34,7 +34,7 @@ export const SearchCoursesForm: FC<SearchCoursesFormProps> = ({
         name="search"
         placeholder={placeholder}
         endDecorator={
-          <Button type="submit" variant="ghost" size="sm">
+          <Button type="submit" variant="ghost" size="sm" aria-label="search">
             <IconSearch />
           </Button>
         }

@@ -1,4 +1,5 @@
 import { IconVideo } from "@tabler/icons-react";
+import Image from "next/image";
 import type { FC } from "react";
 
 import { IconFacebook } from "@workspace/ui/components/icon/icon-facebook";
@@ -32,11 +33,11 @@ export const SocialMediaCard: FC<SocialMediaCardProps> = ({
 }) => {
   return (
     <div className="relative size-[312px]">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={imageUrl}
         alt="Students in a classroom"
         className="h-full w-full object-cover object-center"
+        fill
       />
       <div className="absolute bottom-4 left-4">
         {source == "tiktok" && <IconTikTok className="size-8" />}

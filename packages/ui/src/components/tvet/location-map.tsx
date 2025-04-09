@@ -152,6 +152,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
             onClick={() => setZoom((zoom ?? 9) + 1)}
             className="size-8 p-0"
             size="md"
+            aria-label={t("zoomIn")}
           >
             <IconPlus />
           </Button>
@@ -159,6 +160,7 @@ export const LocationMap: FC<LocationMapProps> = ({ location, institutes }) => {
             onClick={() => setZoom((zoom ?? 9) - 1)}
             className="size-8 p-0"
             size="md"
+            aria-label={t("zoomOut")}
           >
             <IconMinus />
           </Button>

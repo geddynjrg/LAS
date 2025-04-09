@@ -2,7 +2,8 @@
   "ApplyCard": {
     "applyBy": "Apply by",
     "fee": "Fee",
-    "startsOn": "Starts on"
+    "startsOn": "Starts on",
+    "buttonLabel": "go to course"
   },
 
   "Form": {
@@ -65,7 +66,9 @@
     "viewMore": "View more",
     "location": "Location",
     "address": "Address",
-    "ourGates": "Our gates"
+    "ourGates": "Our gates",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   },
   "AvailableSponsorshipsBlock": {
     "availableSponsorships": "Available sponsorships"

@@ -1,4 +1,5 @@
 import { IconQuote, IconUserFilled } from "@tabler/icons-react";
+import Image from "next/image";
 import type { FC } from "react";
 
 export interface TestimonialProps {
@@ -17,10 +18,12 @@ export const Testimonial: FC<TestimonialProps> = ({
   return (
     <article className="bg-theme-100 px-5.5 relative mt-10 flex w-auto max-w-[360px] flex-col items-center gap-4 rounded-2xl pb-9 pt-14">
       {imageUrl && (
-        <img
+        <Image
           src={imageUrl}
-          alt={imageAlt}
+          alt={imageAlt ?? "Person's image"}
           className="bg-theme-100 absolute -top-9 left-1/2 h-20 w-20 -translate-x-1/2 rounded-full object-cover"
+          width={80}
+          height={80}
         />
       )}
       {!imageUrl && (
