@@ -33,9 +33,9 @@ export const TextWithGradientBlock: FC<TextWithGradientBlockProps> = ({
           <GradientCornerCard
             key={index}
             color={
-              gradientCornerCardVariants.variants.color[index % 3] || "blue"
+              gradientCornerCardVariants.variants.color[index % 2] || "blue"
             }
-            gradient={gradientCornerCardVariants.variants.gradient[index % 3]}
+            gradient={gradientCornerCardVariants.variants.gradient[index % 2]}
           >
             <DescriptionBlock {...description} />
           </GradientCornerCard>

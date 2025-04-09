@@ -35,40 +35,19 @@ export const PageComponents: FC<PageComponentsProps> = ({
   return page_components.map((component, index) => {
     const key = component.block_type + index;
 
+    console.log("component", component.block_type);
     switch (component.block_type) {
       case "application":
         return <ApplicationBlock {...component} key={key} />;
 
-      case "section_heading":
-        return <SectionHeaderBlock {...component} key={key} />;
+      case "available_sponsorships":
+        return <AvailableSponsorshipsBlock {...component} key={key} />;
 
-      case "feature_section":
-        return <FeatureSectionBlock {...component} key={key} />;
+      case "contact":
+        return <ContactBlock {...component} key={key} />;
 
-      case "vocational_centres":
-        return <VocationalCentersBlock {...component} key={key} />;
-
-      case "text_block":
-        return <TextBlock {...component} key={key} />;
-
-      case "highlighted_course_listing":
-        return <HighlightedCourseListingBlock {...component} key={key} />;
-
-      case "training_areas":
-        return <TrainingAreasBlock {...component} key={key} />;
-
-      case "text_block_with_background":
-        return (
-          <TextBlockWithBackgroundBlock
-            {...component}
-            index={index}
-            key={key}
-            className={index < page_components.length - 1 ? "pb-4" : undefined}
-          />
-        );
-
-      case "media":
-        return <MediaBlock {...component} key={key} />;
+      case "course_data":
+        return <CourseDataBlock {...component} key={key} />;
 
       case "courses":
         return <CoursesBlock {...component} key={key} />;
@@ -76,32 +55,53 @@ export const PageComponents: FC<PageComponentsProps> = ({
       case "gallery":
         return <GalleryBlock {...component} key={key} />;
 
-      case "text_block_with_gradient":
-        return <TextWithGradientBlock {...component} key={key} />;
+      case "feature_section":
+        return <FeatureSectionBlock {...component} key={key} />;
+
+      case "highlighted_course_listing":
+        return <HighlightedCourseListingBlock {...component} key={key} />;
+
+      case "media":
+        return <MediaBlock {...component} key={key} />;
 
       case "location":
         return <LocationBlock {...component} key={key} />;
 
-      case "social_block":
-        return <SocialBlock {...component} key={key} />;
+      case "vocational_centres":
+        return <VocationalCentersBlock {...component} key={key} />;
 
-      case "course_data":
-        return <CourseDataBlock {...component} key={key} />;
-
-      case "text_list":
-        return <TextListBlock {...component} key={key} />;
-
-      case "testimonials":
-        return <TestimonialsBlock {...component} key={key} />;
-
-      case "available_sponsorships":
-        return <AvailableSponsorshipsBlock {...component} key={key} />;
+      case "section_heading":
+        return <SectionHeaderBlock {...component} key={key} />;
 
       case "similar_courses":
         return <SimilarCoursesBlock {...component} key={key} />;
 
-      case "contact":
-        return <ContactBlock {...component} key={key} />;
+      case "social_block":
+        return <SocialBlock {...component} key={key} />;
+
+      case "testimonials":
+        return <TestimonialsBlock {...component} key={key} />;
+
+      case "text_list":
+        return <TextListBlock {...component} key={key} />;
+
+      case "text_block":
+        return <TextBlock {...component} key={key} />;
+
+      case "text_block_with_gradient":
+        return <TextWithGradientBlock {...component} key={key} />;
+
+      case "text_block_with_background":
+        return (
+          <TextBlockWithBackgroundBlock
+            {...component}
+            key={key}
+            className={index < page_components.length - 1 ? "pb-4" : undefined}
+          />
+        );
+
+      case "training_areas":
+        return <TrainingAreasBlock {...component} key={key} />;
 
       default:
         return assertNever(component, true);

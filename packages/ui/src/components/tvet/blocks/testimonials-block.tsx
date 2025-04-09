@@ -17,7 +17,7 @@ export interface TestimonialsBlockProps {
   block_type: "testimonials";
   testimonials: {
     block_type: "testimonial";
-    name: string;
+    name?: string;
     image?: {
       title: string;
       type: string;
@@ -32,7 +32,7 @@ export interface TestimonialsBlockProps {
       width: string;
       height: string;
     }[];
-    short_description: {
+    short_description?: {
       value: string | null;
       format: string | null;
       processed: string | null;
@@ -56,8 +56,8 @@ export const TestimonialsBlock: FC<TestimonialsBlockProps> = ({
               <CarouselItem key={`testimonial-${key}`}>
                 <Testimonial
                   title={testimonial.name}
-                  imageUrl={testimonial.image?.at(0)?.url ?? ""}
-                  imageAlt={testimonial.image?.at(0)?.alt ?? ""}
+                  imageUrl={testimonial.image?.at(0)?.url}
+                  imageAlt={testimonial.image?.at(0)?.alt}
                 >
                   <DescriptionBlock {...testimonial.short_description} />
                 </Testimonial>

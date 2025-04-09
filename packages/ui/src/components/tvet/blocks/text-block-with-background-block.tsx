@@ -16,7 +16,6 @@ import { cn } from "@workspace/ui/lib/utils";
 
 export interface TextBlockWithBackgroundBlockProps {
   className?: string;
-  index?: number;
   block_type: "text_block_with_background";
   items: {
     title?: string;
@@ -30,24 +29,22 @@ export interface TextBlockWithBackgroundBlockProps {
 
 export const TextBlockWithBackgroundBlock: FC<
   TextBlockWithBackgroundBlockProps
-> = ({ items, className, index }) => {
+> = ({ items, className }) => {
   return (
     <section className={cn("bg-neutral-100", className)}>
-      <Container className="max-lg:px-0 lg:py-8">
-        {items.map(({ title, description }, id) => (
-          <RoundedCornerSection key={id}>
+      <Container className="flex flex-col gap-6 max-lg:px-0 lg:py-8">
+        {items.map(({ title, description }, index) => (
+          <RoundedCornerSection key={index}>
             <RoundedCornerSectionHeader asChild variant="rounded">
               <GradientCornerCard
                 color={
                   (index &&
-                    gradientCornerCardVariants.variants.color[
-                      (index + 1) % 3
-                    ]) ||
+                    gradientCornerCardVariants.variants.color[index % 2]) ||
                   "blue"
                 }
                 gradient={
                   index
-                    ? gradientCornerCardVariants.variants.gradient[index % 3]
+                    ? gradientCornerCardVariants.variants.gradient[index % 2]
                     : undefined
                 }
               >

@@ -12,6 +12,7 @@ export interface PaginationProps {
     | ReactElement<PaginationItemProps>
     | ReactElement<PaginationItemProps>[];
   pageCount: number;
+  navigationId?: string;
   className?: string;
   disabled?: boolean;
   createPageURL?: (pageNumber: number) => string;
@@ -27,10 +28,10 @@ export const Pagination: FC<PaginationProps> = ({
   pageCount,
   disabled,
   createPageURL,
+  navigationId,
 }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const currentPage = Number(searchParams.get("page") ?? 1);
 
   // // retain exiting search parameters
@@ -39,7 +40,8 @@ export const Pagination: FC<PaginationProps> = ({
     ((pageNumber: number | string) => {
       const params = new URLSearchParams(searchParams);
       params.set("page", pageNumber.toString());
-      return `${pathname}?${params.toString()}`;
+
+      return `${pathname}?${params.toString()}${navigationId ? `#${navigationId}` : ""}`;
     });
 
   const paginatedPages = getPageRange(
@@ -98,8 +100,8 @@ export const PaginationItem: FC<PaginationItemProps> = ({
   children,
 }) => (
   <li>
-    <a
-      href={href}
+    <Link
+      href={href ?? "#"}
       aria-current={isActive ? "page" : undefined}
       className={cn(
         "active:text-neutral-1000 inline-flex h-8 w-8 select-none items-center justify-center rounded-sm font-bold text-neutral-700 hover:text-neutral-600 focus:border-2 focus:border-blue-400",
@@ -110,7 +112,7 @@ export const PaginationItem: FC<PaginationItemProps> = ({
       )}
     >
       {children}
-    </a>
+    </Link>
   </li>
 );
 
