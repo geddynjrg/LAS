@@ -36,6 +36,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       lang={locale}
       suppressHydrationWarning
       className={`${dmSans.variable} font-sans`}
+      title="TVET"
     >
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
         <SessionProvider initialSession={session ? true : null}>

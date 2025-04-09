@@ -38,6 +38,7 @@ export const InfoPopover: FC<InfoPopoverProps> = ({
             "z-20 h-[2.5rem] rounded-br-none rounded-tr-none pl-6 pr-3",
             floating && "fixed right-0 top-[9.6875rem]",
           )}
+          aria-label={t("help")}
         >
           {t("help")}
           <IconHelpCircle />

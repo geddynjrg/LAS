@@ -27,7 +27,7 @@ export interface SectionHeaderBlockProps {
     alt: string;
     width: string;
     height: string;
-  };
+  }[];
 }
 
 export const SectionHeaderBlock: FC<SectionHeaderBlockProps> = ({
@@ -41,8 +41,8 @@ export const SectionHeaderBlock: FC<SectionHeaderBlockProps> = ({
       <SectionHeader
         title={title}
         image={{
-          url: image?.url,
-          alt: image?.alt,
+          url: image?.at(0)?.url,
+          alt: image?.at(0)?.alt,
         }}
         // subtitle="Looking for a path to success?"
       >

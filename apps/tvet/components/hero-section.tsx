@@ -27,9 +27,10 @@ export const HeroSection: FC<HeroSectionProps> = ({
           <Image
             fill
             priority
-            className="object-cover"
+            className="object-cover object-center"
             src={backgroundUrl}
             alt={backgroundAlt}
+            sizes="100vw"
           />
         )}
         <div className="h-29 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-black/0" />

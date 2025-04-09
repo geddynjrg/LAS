@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { FC, ReactNode } from "react";
 
 import { RoundedCornerCard } from "@workspace/ui/components/tvet/rounded-corner-card";
@@ -23,14 +24,20 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
   className,
   image,
 }) => {
+  console.log("image", image);
   return (
     <RoundedCornerSection className={className}>
-      <RoundedCornerSectionHeader variant="rounded" className="!pb-0">
+      <RoundedCornerSectionHeader
+        variant="rounded"
+        className="aspect-video !pb-0"
+      >
         {image?.url && (
-          <img
+          <Image
+            fill
+            sizes="(max-size: 1024px) 100vw, 50vw"
             src={image.url}
-            alt={image.alt}
-            className="min-h-full min-w-full object-cover max-lg:aspect-video"
+            alt={image.alt ?? "section-header"}
+            className="object-cover object-center"
           />
         )}
         <div id="overlay" className="z-1 absolute inset-0 bg-[#253628]/40" />

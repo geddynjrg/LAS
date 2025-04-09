@@ -100,7 +100,7 @@ export const ApplyCard: FC<ApplyCardProps> = ({
           size="md"
           className="size-8 bg-neutral-100 px-0"
         >
-          <Link href={href}>
+          <Link href={href} aria-label={t("buttonLabel")}>
             <IconArrowRight />
           </Link>
         </Button>

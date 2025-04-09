@@ -1,9 +1,6 @@
+import dynamic from "next/dynamic";
 import type { FC } from "react";
 
-import CoursePageNode from "@/components/page-nodes/course-node";
-import GenericPageNode from "@/components/page-nodes/generic-node";
-import InstitutionPageNode from "@/components/page-nodes/institute-node";
-import LandingPageNode from "@/components/page-nodes/landing-node";
 import type { CourseNodeType } from "@/lib/api/schema/node/course-node.schema";
 import type { GenericNodeType } from "@/lib/api/schema/node/generic-node.schema";
 import type { InstitutionNodeType } from "@/lib/api/schema/node/institution-node.schema";
@@ -14,6 +11,31 @@ export interface PageComponentsProps {
   node: NodeType;
 }
 
+const DynamicLandingPageNode = dynamic(
+  () => import("@/components/page-nodes/landing-node"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+const DynamicCoursePageNode = dynamic(
+  () => import("@/components/page-nodes/course-node"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+const DynamicInstitutionPageNode = dynamic(
+  () => import("@/components/page-nodes/institute-node"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+const DynamicGenericPageNode = dynamic(
+  () => import("@/components/page-nodes/generic-node"),
+  {
+    loading: () => <p>Loading...</p>,
+  },
+);
+
 export const PageNode: FC<PageComponentsProps> = ({ node }) => {
   if (!node.data) {
     throw new Error("No content");
@@ -21,15 +43,15 @@ export const PageNode: FC<PageComponentsProps> = ({ node }) => {
 
   switch (node.data.type) {
     case "institution":
-      return <InstitutionPageNode {...(node as InstitutionNodeType)} />;
+      return <DynamicInstitutionPageNode {...(node as InstitutionNodeType)} />;
 
     case "course":
-      return <CoursePageNode {...(node as CourseNodeType)} />;
+      return <DynamicCoursePageNode {...(node as CourseNodeType)} />;
 
     case "landing":
-      return <LandingPageNode {...(node as LandingNodeType)} />;
+      return <DynamicLandingPageNode {...(node as LandingNodeType)} />;
 
     default:
-      return <GenericPageNode {...(node as GenericNodeType)} />;
+      return <DynamicGenericPageNode {...(node as GenericNodeType)} />;
   }
 };

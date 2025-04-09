@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { FC } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
@@ -38,11 +39,12 @@ const MediaItem: FC<{ media: Media }> = ({ media }) => {
   switch (media.type) {
     case "image":
       return (
-        <img
+        <Image
+          fill
           src={media.url}
           alt={media.alt}
-          width={media.width}
-          height={media.height}
+          width={Number(media.width)}
+          height={Number(media.height)}
           className="w-full rounded-xl"
         />
       );

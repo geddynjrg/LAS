@@ -2,7 +2,8 @@
   "ApplyCard": {
     "applyBy": "Omba kabla ya",
     "fee": "Ada",
-    "startsOn": "Kuanza tarehe"
+    "startsOn": "Kuanza tarehe",
+    "buttonLabel": "nenda kwenye kozi"
   },
 
   "Form": {
@@ -43,5 +44,59 @@
     "description": "Tafadhali jaribu kujaribu upya ukurasa.",
     "reload": "Pakia tena",
     "home": "Nenda kwenye ukurasa wa nyumbani"
+  },
+
+  "TrainingAreaBlock": {
+    "title": "Maeneo ya mafunzo",
+    "coursesAvailable": "{count, plural, =1 {# kozi inapatikana} other {# kozi zinapatikana}}."
+  },
+
+  "HighlightedCourseListingBlock": {
+    "title": "Omba sasa",
+    "searchTitle": "Tafuta kozi",
+    "linkTitle": "Tazama zote"
+  },
+  "LocationMap": {
+    "getDirections": "Pata maelekezo",
+    "viewMore": "Tazama zaidi",
+    "location": "Mahali",
+    "address": "Anwani",
+    "ourGates": "Malango yetu",
+    "zoomIn": "kuvuta ndani",
+    "zoomOut": "kuvuta nje"
+  },
+  "AvailableSponsorshipsBlock": {
+    "availableSponsorships": "Udhamini unaopatikana"
+  },
+  "CourseDataBlock": {
+    "applyNow": "Omba sasa",
+    "fees": "ada",
+    "trainingFormat": "Mfumo wa mafunzo",
+    "groupSize": "Ukubwa wa kikundi",
+    "minimumEntryRequirements": "Mahitaji ya chini ya kuingia",
+    "equipmentAvailableAtInstitution": "Vifaa vinavyopatikana katika taasisi",
+    "duration": "Muda",
+    "courseFee": "ada ya kozi",
+    "applicationFee": "ada ya maombi",
+    "testBookingFee": "ada ya uhakiki"
+  },
+  "SimilarCoursesBlock": {
+    "similarCourses": "Kozi zinazofanana"
+  },
+  "SocialBlock": {
+    "followUs": "Fuata sisi!"
+  },
+  "TestimonialsBlock": {
+    "testimonials": "Ushuhuda"
+  },
+  "VocationalCentersBlock": {
+    "nairobiVocationalCenters": "Vituo vya Ufundi vya Nairobi"
+  },
+  "InstituteContactInfo": {
+    "doYouHaveQuestions": "Je, una maswali?",
+    "getInContact": "Wasiliana nasi na tutakusaidia kupata majibu unayohitaji."
+  },
+  "CourseBlock": {
+    "viewAll": "Tazama zote"
   }
 }

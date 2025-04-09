@@ -16,7 +16,7 @@ export const AppHeader: FC = () => {
     <Header
       isFloating
       startDecorator={
-        <Link href="/">
+        <Link href="/" title="home" aria-label="home">
           <Logo className="h-full" />
         </Link>
       }
