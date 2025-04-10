@@ -1,7 +1,7 @@
 "use server";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
   confirmationDataSchema,
@@ -13,7 +13,7 @@ export const confirmationDataAction: FormAction<ConfirmationData> = async (
   _prev,
   formData,
 ) => {
-  const values = getFormDataValues(formData, confirmationDataSchema);
+  const values = getFormZodDataValues(formData, confirmationDataSchema);
   const id = formData.get("id")?.toString();
 
   const { success, data, error } = confirmationDataSchema.safeParse(values);
