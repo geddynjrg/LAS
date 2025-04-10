@@ -5,9 +5,7 @@ import { z } from "zod";
 import { api, validate } from "@/lib/api/utils";
 
 export async function getInstitutions() {
-  const res = await api.GET("/api/v1/institutions", {
-    params: { query: { _format: "json" } },
-  });
+  const res = await api.GET("/api/v1/institutions");
 
   return validate(res, schema);
 }

@@ -100,6 +100,14 @@ to run a specific app run the following command at the root of the repository:
 pnpm --filter civil-registry run start
 ```
 
+## Updating TVET API schema
+
+Whenever Api changes, you should also update the API schema typings
+
+```bash
+pnpm --filter tvet run schema
+```
+
 ### Common issues
 
 #### `Error: EPERM: operation not permitted ... ` in windows

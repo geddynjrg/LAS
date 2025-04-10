@@ -3,7 +3,7 @@ import { z } from "zod";
 import { api, validate } from "@/lib/api/utils";
 
 export async function login(data: { username: string; password: string }) {
-  const res = await api.POST("/api/v1/user/login" as any, {
+  const res = await api.POST("/api/v1/user/login", {
     body: {
       username: data.username,
       password: data.password,

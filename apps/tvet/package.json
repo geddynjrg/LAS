@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "check-types": "tsc --noEmit",
-    "schema": "openapi-typescript ./lib/api/schema/schema.yaml -o ./lib/api/schema/schema.d.ts"
+    "schema": "openapi-typescript https://tvet-api-qa.fusion.adm.ee/api/docs/json -o ./lib/api/schema/schema.d.ts"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.31.0",

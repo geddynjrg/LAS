@@ -3,7 +3,7 @@ import { z } from "zod";
 import { api, validate } from "@/lib/api/utils";
 
 export async function passwordResetRequest(data: { email: string }) {
-  const res = await api.POST("/api/v1/user/password/reset-request" as any, {
+  const res = await api.POST("/api/v1/user/password/reset-request", {
     body: {
       email: data.email,
     },
