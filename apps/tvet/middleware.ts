@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, userAgent, type NextRequest } from "next/server";
 
 import { updateSession } from "@/lib/session";
 
@@ -11,8 +11,12 @@ const loggedOutRedirect = "/login";
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
+  const { device } = userAgent(request);
+  const deviceType = device.type === "mobile" ? "mobile" : "desktop";
+
   // Add new request headers
   requestHeaders.set("x-path", request.nextUrl.pathname);
+  requestHeaders.set("x-device-type", deviceType);
 
   const path = request.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((r) => path.startsWith(r));
