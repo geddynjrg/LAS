@@ -3,7 +3,7 @@ import { z } from "zod";
 import { api, validate } from "@/lib/api/utils";
 
 export async function getProfile() {
-  const res = await api.GET("/api/v1/user/profile" as any, {});
+  const res = await api.GET("/api/v1/user/profile");
   return validate(res, schema);
 }
 

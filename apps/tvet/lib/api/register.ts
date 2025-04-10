@@ -7,7 +7,7 @@ export async function register(data: {
   email: string;
   password: string;
 }) {
-  const res = await api.POST("/api/v1/user/register" as any, {
+  const res = await api.POST("/api/v1/user/register", {
     body: {
       name: [{ value: data.username }],
       mail: [{ value: data.email }],

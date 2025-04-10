@@ -8,7 +8,7 @@ export async function passwordReset(data: {
   hash: string;
   password: string;
 }) {
-  const res = await api.POST("/api/v1/user/password/reset" as any, {
+  const res = await api.POST("/api/v1/user/password/reset", {
     body: {
       uid: data.uid,
       timestamp: data.timeStamp,
