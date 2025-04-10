@@ -12,7 +12,7 @@ export const ActionBar: FC<ActionBarProps> = ({ children, className }) => {
   return (
     <div
       className={cn(
-        "sticky bottom-0 left-0 w-full",
+        "sticky bottom-0 left-0 z-10 w-full",
         "-mx-(--app-container-side-padding) py-5",
         "bg-background shadow-[var(--box-shadow-elevation-03)]",
         className,

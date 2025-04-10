@@ -13,13 +13,13 @@ import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { guardianAction } from "@/app/apply/[id]/guardian/guardian-action";
 import {
+  FILE_ACCEPT,
   guardianRoles,
   guardianSchema,
+  MAX_FILE_SIZE,
   type GuardianSchema,
 } from "@/app/apply/[id]/guardian/guardian-schema";
 import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
-
-const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
 export interface GuardianFormProps {
   id: string;
@@ -81,10 +81,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
               required
               control={(props) => (
                 <FileUploadInput
-                  accept={{
-                    "image/*": [".jpg", ".png"],
-                    "application/pdf": [".pdf"],
-                  }}
+                  accept={FILE_ACCEPT}
                   maxSize={MAX_FILE_SIZE}
                   {...props}
                 />
@@ -146,10 +143,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
               required
               control={(props) => (
                 <FileUploadInput
-                  accept={{
-                    "image/*": [".jpg", ".png"],
-                    "application/pdf": [".pdf"],
-                  }}
+                  accept={FILE_ACCEPT}
                   maxSize={MAX_FILE_SIZE}
                   {...props}
                 />

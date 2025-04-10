@@ -1,5 +1,7 @@
 "use server";
 
+import type { ValidFile } from "@workspace/ui/lib/zod";
+
 import { auth } from "@/lib/auth";
 import { dummyApplications } from "@/lib/data/dummy-data";
 import { createApplicationId } from "@/lib/util";
@@ -42,13 +44,13 @@ export interface GroupData {
     groupName: string;
     groupRegistrationNumber: string;
     dateFormed: Date;
-    groupRegistrationCertificate: File;
-    listOfMembersOnCertificate: File;
+    groupRegistrationCertificate: ValidFile;
+    listOfMembersOnCertificate: ValidFile;
   };
   background: {
     purposeOfTheGroup: string[];
     keyActivitiesOfTheGroup: string[];
-    groupCreditHistory: File;
+    groupCreditHistory: ValidFile;
     other?: string | null;
     valueChain?: string[] | null;
     tableBanking?: {
@@ -169,7 +171,7 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
 
   const currentProgress = application.generalDetails.applicationProgress;
 
-  const newApplicationData: ApplicationData = {
+  const newApplicationData = {
     ...application,
     generalDetails: {
       ...application.generalDetails,
@@ -177,30 +179,40 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
         currentProgress && currentProgress > 2 ? currentProgress : 2,
     },
     groupData: {
+      ...application.groupData,
       background: {
+        ...application.groupData?.background,
         ...data.background,
-        groupCreditHistory:
-          data.background.groupCreditHistory.size === 0 &&
-          application.groupData?.background.groupCreditHistory
-            ? application.groupData?.background.groupCreditHistory
-            : data.background.groupCreditHistory,
       },
-      location: { ...data.location },
+      location: {
+        ...application.groupData?.location,
+        ...data.location,
+      },
       basics: {
+        ...application.groupData?.basics,
         ...data.basics,
-        groupRegistrationCertificate:
-          data.basics.groupRegistrationCertificate.size === 0 &&
-          application.groupData?.basics.groupRegistrationCertificate
-            ? application.groupData?.basics.groupRegistrationCertificate
-            : data.basics.groupRegistrationCertificate,
-        listOfMembersOnCertificate:
-          application.groupData?.basics.listOfMembersOnCertificate &&
-          data.basics.listOfMembersOnCertificate.size === 0
-            ? application.groupData?.basics.listOfMembersOnCertificate
-            : data.basics.listOfMembersOnCertificate,
       },
     },
-  };
+  } satisfies ApplicationData;
+
+  // save files
+  if (data.background.groupCreditHistory instanceof File) {
+    newApplicationData.groupData.background.groupCreditHistory = saveFile(
+      data.background.groupCreditHistory,
+    );
+  }
+
+  if (data.basics.groupRegistrationCertificate instanceof File) {
+    newApplicationData.groupData.basics.groupRegistrationCertificate = saveFile(
+      data.basics.groupRegistrationCertificate,
+    );
+  }
+
+  if (data.basics.listOfMembersOnCertificate instanceof File) {
+    newApplicationData.groupData.basics.listOfMembersOnCertificate = saveFile(
+      data.basics.listOfMembersOnCertificate,
+    );
+  }
 
   // update application data
   dummyApplicationsTest[applicationIndex] = newApplicationData;
@@ -353,4 +365,17 @@ export async function updateApplicationStatus(id: string) {
   dummyApplicationsTest[applicationIndex] = newApplicationData;
 
   return Promise.resolve(newApplicationData.generalDetails);
+}
+
+function saveFile(file: File) {
+  console.log("save file", file);
+  // TODO: if we want to store real files, we need to upload them to a server
+  const fileObject: ValidFile = {
+    id: `${file.name}-${URL.createObjectURL(file)}`,
+    name: file.name,
+    type: file.type,
+    url: URL.createObjectURL(file),
+  };
+
+  return fileObject;
 }

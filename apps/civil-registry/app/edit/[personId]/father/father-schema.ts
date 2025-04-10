@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-import { MAX_FILE_SIZE } from "@/lib/constants";
+import { validFile } from "@workspace/ui/lib/zod";
+
+import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 
 export const SexTypeEnum = z.enum(["M", "F", "I"]);
 
@@ -19,10 +21,7 @@ export const fatherSchema = z.object({
   citizenship: z.string().nonempty(),
   nationality: z.string().nonempty(),
   education: z.string().nonempty(),
-  affidavitFile: z
-    .instanceof(File, { message: "File is required" })
-    .refine((file) => file.size > 0, "File is required")
-    .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
+  affidavitFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   contacts: z
     .array(
       z.object({

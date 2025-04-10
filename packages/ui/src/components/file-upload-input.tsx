@@ -3,17 +3,11 @@
 import { IconCamera } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState, type FC } from "react";
-import type {
-  Accept,
-  ErrorCode,
-  FileError,
-  FileWithPath,
-} from "react-dropzone";
+import type { Accept, ErrorCode, FileError } from "react-dropzone";
 
 import { Attachment } from "@workspace/ui/components/attachment";
 import {
   Dropzone,
-  DropzoneAccepted,
   DropzoneDragAccepted,
   DropzoneDragDefault,
   DropzoneDragRejected,
@@ -24,13 +18,17 @@ import {
 } from "@workspace/ui/components/dropzone";
 import { cn } from "@workspace/ui/lib/utils";
 
+type ServerFile = { id: string; name: string; type: string; url: string };
+
+export type FileUploadInputValue = File | ServerFile | string;
+
 export interface FileUploadInputProps {
   accept: Accept;
   maxSize: number;
   name?: string;
-  multiple?: boolean;
+  // multiple?: boolean;
   disabled?: boolean;
-  defaultValue?: File | File[] | undefined | string;
+  defaultValue?: FileUploadInputValue;
   attachmentBgInverted?: boolean;
 }
 
@@ -38,23 +36,50 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   accept,
   maxSize,
   name,
-  multiple,
+  // multiple,
   disabled,
   defaultValue,
   attachmentBgInverted = false,
 }) => {
+  const multiple = false;
+
   const t = useTranslations("FileUploadInput");
 
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [resetCount, setResetCount] = useState(0);
+  const [files, setFiles] = useState<FileUploadInputValue[] | null>(
+    defaultValue ? [defaultValue] : null,
+  );
 
   const hasImageType = "image/*" in accept;
+
+  const serverFile = files?.find(
+    (file) => !(file instanceof File) && typeof file === "object",
+  ) as ServerFile | undefined;
 
   // "capture" prop works only for image/* MIME type. Exclude other MIME types when picture button is pressed.
   const acceptWithCamera =
     isCameraEnabled && hasImageType
       ? ({ "image/*": accept["image/*"] } as Accept)
       : accept;
+
+  function handleDelete(index: number) {
+    setFiles((prevFiles) => {
+      if (!prevFiles) {
+        return null;
+      }
+
+      const newFiles = [...prevFiles];
+      newFiles.splice(index, 1);
+
+      return newFiles.length ? newFiles : null;
+    });
+  }
+
+  function handleReset() {
+    setFiles(null);
+    setResetCount((prev) => prev + 1);
+  }
 
   return (
     <Dropzone
@@ -63,8 +88,26 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       multiple={multiple}
       maxSize={maxSize}
       disabled={disabled}
+      onDrop={setFiles}
     >
-      <DropzoneInput name={name} capture={hasImageType && isCameraEnabled} />
+      <DropzoneInput
+        name={
+          serverFile || !files?.length
+            ? undefined
+            : name /* prevent submitting empty files to formData */
+        }
+        capture={hasImageType && isCameraEnabled}
+        value={files === null ? null : files?.filter(isValidFile)}
+      />
+
+      {serverFile && (
+        <>
+          <input type="hidden" name={`${name}.id`} value={serverFile.id} />
+          <input type="hidden" name={`${name}.name`} value={serverFile.name} />
+          <input type="hidden" name={`${name}.type`} value={serverFile.type} />
+          <input type="hidden" name={`${name}.url`} value={serverFile.url} />
+        </>
+      )}
 
       <div className="flex items-center justify-center gap-4">
         {hasImageType && (
@@ -94,26 +137,22 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         </DropzoneZone>
       </div>
 
-      <DropzoneAccepted>
-        {(files) => (
-          <ul className="mt-4 space-y-2">
-            {getValues(files, resetCount, defaultValue).map((file, index) => (
-              <Attachment
-                key={index}
-                className={cn(
-                  "shadow",
-                  attachmentBgInverted && "bg-site-background",
-                )}
-                onDelete={() => {
-                  setResetCount((prev) => prev + 1);
-                }}
-              >
-                {file.name}
-              </Attachment>
-            ))}
-          </ul>
-        )}
-      </DropzoneAccepted>
+      {files && (
+        <ul className="mt-4 space-y-2">
+          {files.map((file, index) => (
+            <Attachment
+              key={index}
+              className={cn(
+                "shadow",
+                attachmentBgInverted && "bg-site-background",
+              )}
+              onDelete={() => handleDelete(index)}
+            >
+              {getFileName(file)}
+            </Attachment>
+          ))}
+        </ul>
+      )}
 
       <DropzoneRejected>
         {(files) =>
@@ -124,9 +163,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
                   key={file.file.name}
                   className="shadow"
                   error={getTranslatedError(file.errors, t)}
-                  onDelete={() => {
-                    setResetCount((prev) => prev + 1);
-                  }}
+                  onDelete={handleReset}
                 >
                   {file.file.name}
                 </Attachment>
@@ -139,32 +176,20 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   );
 };
 
-function getValues(
-  files: readonly FileWithPath[],
-  resetCount: number,
-  defaultValue?: File | File[] | string,
-) {
-  if (files.length) {
-    return files;
+function getFileName(file: FileUploadInputValue) {
+  if (typeof file === "string") {
+    return file;
   }
 
-  if (resetCount > 0) {
-    return [];
+  if (isValidFile(file)) {
+    return file.name;
   }
 
-  if (typeof defaultValue === "string") {
-    return [{ name: defaultValue }];
+  if (typeof file === "object" && file !== null) {
+    return file.name;
   }
 
-  if (Array.isArray(defaultValue)) {
-    return defaultValue;
-  }
-
-  if (!defaultValue) {
-    return [];
-  }
-
-  return [defaultValue];
+  return "";
 }
 
 function getTranslatedError(
@@ -174,4 +199,13 @@ function getTranslatedError(
   return errors
     .map((error) => t(`errors.${error.code as ErrorCode}`))
     .join(", ");
+}
+
+function isValidFile(file: unknown): file is File {
+  if (file instanceof File) {
+    // check if file actually exists, assigning zero byte files to file input can crash browser
+    return file.size > 0;
+  }
+
+  return false;
 }

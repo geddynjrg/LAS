@@ -41,7 +41,7 @@ import {
   membersDataSchema,
   type MembersData,
 } from "@/app/apply/[id]/members/members-data-schema";
-import { MAX_FILE_SIZE } from "@/lib/constants";
+import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 import {
   MembersData as ApplicationMembersData,
   type GenderType,
@@ -475,17 +475,14 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       />
 
       <Field
-        name="photo"
+        state={state}
+        name="photoOfId"
         label={t("MembersPage.photoOfMemberId")}
         required
         control={(props) => (
           <FileUploadInput
-            accept={{
-              "image/*": [".jpg", ".png"],
-              "application/pdf": [".pdf"],
-            }}
+            accept={FILE_ACCEPT}
             maxSize={MAX_FILE_SIZE}
-            attachmentBgInverted
             {...props}
             /* TODO: On value change might be needed here */
           />
@@ -519,12 +516,8 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             required
             control={(props) => (
               <FileUploadInput
-                accept={{
-                  "image/*": [".jpg", ".png"],
-                  "application/pdf": [".pdf"],
-                }}
+                accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
-                attachmentBgInverted
                 {...props}
               />
             )}

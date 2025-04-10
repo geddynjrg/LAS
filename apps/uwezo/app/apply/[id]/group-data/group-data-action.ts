@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
   groupDataSchema,
@@ -15,7 +15,7 @@ export const groupDataAction: FormAction<GroupData> = async (
   _prev,
   formData,
 ) => {
-  const values = getFormDataValues(formData, groupDataSchema);
+  const values = getFormZodDataValues(formData, groupDataSchema);
   const redirectTo = formData.get("redirectTo")?.toString();
   const id = formData.get("id")?.toString();
 
@@ -43,22 +43,13 @@ export const groupDataAction: FormAction<GroupData> = async (
       groupName: data.groupName,
       groupRegistrationNumber: data.groupRegistrationNumber,
       dateFormed: data.dateFormed,
-      groupRegistrationCertificate: {
-        name: data.groupRegistrationCertificate.name,
-        size: data.groupRegistrationCertificate.size,
-      } as File,
-      listOfMembersOnCertificate: {
-        name: data.listOfMembersOnCertificate.name,
-        size: data.listOfMembersOnCertificate.size,
-      } as File,
+      groupRegistrationCertificate: data.groupRegistrationCertificate,
+      listOfMembersOnCertificate: data.listOfMembersOnCertificate,
     },
     background: {
       purposeOfTheGroup: data.groupPurpose,
       keyActivitiesOfTheGroup: data.groupActivities,
-      groupCreditHistory: {
-        size: data.groupCreditHistory.size,
-        name: data.groupCreditHistory.name,
-      } as File,
+      groupCreditHistory: data.groupCreditHistory,
       valueChain: data.valueChain,
       other: data.other,
       tableBanking: {

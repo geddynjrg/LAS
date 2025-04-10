@@ -13,7 +13,7 @@ import { courseAction } from "@/app/apply/[id]/course/course-action";
 import {
   courseSchema,
   dummyInstitutes,
-  FILE_TYPE,
+  FILE_ACCEPT,
   MAX_FILE_SIZE,
   type CourseSchema,
 } from "@/app/apply/[id]/course/course-schema";
@@ -94,7 +94,7 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
         required
         control={(props) => (
           <FileUploadInput
-            accept={FILE_TYPE}
+            accept={FILE_ACCEPT}
             maxSize={MAX_FILE_SIZE}
             {...props}
           />
@@ -108,7 +108,7 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
         required
         control={(props) => (
           <FileUploadInput
-            accept={FILE_TYPE}
+            accept={FILE_ACCEPT}
             maxSize={MAX_FILE_SIZE}
             {...props}
           />

@@ -23,13 +23,13 @@ import {
   dummyCounties,
   dummyDisabilities,
   dummyDisabilityLevels,
+  FILE_ACCEPT,
+  MAX_FILE_SIZE,
   type ApplicantSchema,
 } from "@/app/apply/[id]/applicant/applicant-schema";
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
-
-const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
 export interface ApplicantFormProps {
   id: string;
@@ -97,10 +97,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
               required
               control={(props) => (
                 <FileUploadInput
-                  accept={{
-                    "image/*": [".jpg", ".png"],
-                    "application/pdf": [".pdf"],
-                  }}
+                  accept={FILE_ACCEPT}
                   maxSize={MAX_FILE_SIZE}
                   {...props}
                 />
@@ -160,10 +157,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
           required
           control={(props) => (
             <FileUploadInput
-              accept={{
-                "image/*": [".jpg", ".png"],
-                "application/pdf": [".pdf"],
-              }}
+              accept={FILE_ACCEPT}
               maxSize={MAX_FILE_SIZE}
               {...props}
             />

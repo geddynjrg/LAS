@@ -3,10 +3,7 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import {
-  getFormDataValues,
-  getFormZodDataValues,
-} from "@workspace/ui/lib/utils";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
   courseSchema,
@@ -26,7 +23,7 @@ export const courseAction: FormAction<CourseSchema> = async (
     return {
       success,
       errors: error.flatten().fieldErrors,
-      values: getFormDataValues(formData, courseSchema),
+      values,
     };
   }
 

@@ -1,5 +1,7 @@
 "use server";
 
+import type { ValidFile } from "@workspace/ui/lib/zod";
+
 import { Person, personsStore, type ValidationStatus } from "../data/person";
 
 // Get all persons
@@ -138,7 +140,19 @@ export async function updatePerson(
         delete updatedData.mother;
       }
     }
+
+    for (const key in updatedData) {
+      const value = updatedData[key as keyof Person];
+
+      // convert file to object
+      if (value instanceof File) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        updatedData[key as keyof Person] = saveFile(value) as any;
+      }
+    }
+
     personsStore[index] = { ...personsStore[index], ...updatedData };
+
     return personsStore[index];
   } else {
     return null;
@@ -168,4 +182,16 @@ export async function updatePersonStatus(
   } else {
     return null;
   }
+}
+
+function saveFile(file: File) {
+  // TODO: if we want to store real files, we need to upload them to a server
+  const fileObject: ValidFile = {
+    id: `${file.name}-${URL.createObjectURL(file)}`,
+    name: file.name,
+    type: file.type,
+    url: URL.createObjectURL(file),
+  };
+
+  return fileObject;
 }

@@ -3,11 +3,16 @@
 import { IconBan, IconFileCheck, IconPaperclip } from "@tabler/icons-react";
 import {
   createContext,
+  useCallback,
   useContext,
+  useEffect,
+  useRef,
   type FC,
   type MouseEvent,
   type ReactNode,
+  type RefObject,
 } from "react";
+import { useFormStatus } from "react-dom";
 import {
   FileRejection,
   FileWithPath,
@@ -16,9 +21,10 @@ import {
   type DropzoneState,
 } from "react-dropzone";
 
-import { cn, cva } from "@workspace/ui/lib/utils";
+import mergeRefs, { cn, cva } from "@workspace/ui/lib/utils";
 
-export type DropzoneContextProps = DropzoneState & DropzoneOptions;
+export type DropzoneContextProps = DropzoneState &
+  DropzoneOptions & { ref?: RefObject<HTMLInputElement> };
 
 const DropzoneContext = createContext<DropzoneContextProps>(
   {} as DropzoneContextProps,
@@ -198,14 +204,72 @@ export const DropzoneUploadIcon: FC<DropzoneUploadIconProps> = ({
 export const DropzoneInput: FC<{
   name?: string;
   capture?: boolean | "user" | "environment";
+  value?: File[] | null;
   className?: string;
-}> = ({ name, className, ...props }) => {
+}> = ({ name, className, value, ...props }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const { getInputProps, disabled } = useDropzoneContext();
+  const inputProps = getInputProps({ disabled, name, ...props });
+
+  const updateFileInputValue = useCallback((files: File[] | null) => {
+    if (!inputRef.current) {
+      return;
+    }
+
+    inputRef.current.files = createFileList(files);
+  }, []);
+
+  // Update file input value when value prop changes
+  useEffect(() => {
+    if (value === undefined) {
+      return;
+    }
+
+    updateFileInputValue(value);
+  }, [updateFileInputValue, value]);
+
+  // File input resets itself when form is submitted.
+  // This is a workaround for keeping the file input value
+  useWasSubmitted(() => {
+    if (value === undefined) {
+      return;
+    }
+    updateFileInputValue(value);
+  });
 
   return (
     <input
-      {...getInputProps({ disabled, name, ...props })}
+      {...inputProps}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={mergeRefs(inputRef, (inputProps as any)?.ref)}
       className={className}
     />
   );
 };
+
+/**
+ * A hook that runs a callback function when the form is submitted.
+ */
+function useWasSubmitted(cb: () => void) {
+  const { pending } = useFormStatus();
+  const prevPending = useRef(pending);
+
+  useEffect(() => {
+    if (prevPending && !pending) {
+      cb();
+    }
+  }, [pending, prevPending, cb]);
+}
+
+/**
+ * Creates a FileList from an array of File objects.
+ * This is useful for setting the files property of an input element.
+ * @see https://stackoverflow.com/a/68182158/1068446
+ */
+function createFileList(files: File[] | null | undefined) {
+  const dataTransfer = new DataTransfer();
+  files?.forEach((file) => dataTransfer.items.add(file));
+
+  return dataTransfer.files;
+}

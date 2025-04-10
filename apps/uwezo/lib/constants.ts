@@ -2,7 +2,7 @@ import type { Step } from "@workspace/ui/components/stepper";
 
 export const MAX_FILE_SIZE = 1e6;
 
-export const FILE_TYPE = {
+export const FILE_ACCEPT = {
   "image/*": [".jpg", ".jpeg", ".png"],
   "application/pdf": [".pdf"],
 };

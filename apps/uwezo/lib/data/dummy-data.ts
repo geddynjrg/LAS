@@ -172,21 +172,28 @@ export const dummyApplications: ApplicationData[] = [
         groupName: "Sunrise Farmers Group",
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
-        groupRegistrationCertificate: new File(
-          ["Sample content"],
-          "sample.txt",
-          { type: "text/plain" },
-        ),
-        listOfMembersOnCertificate: new File(["Sample content"], "sample.txt", {
-          type: "text/plain",
-        }),
+        groupRegistrationCertificate: {
+          id: "sample-file-7",
+          name: "sample-7.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
+        listOfMembersOnCertificate: {
+          id: "sample-file-8",
+          name: "sample-8.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
       },
       background: {
         purposeOfTheGroup: ["Welfare issues"],
         keyActivitiesOfTheGroup: ["Value chain"],
-        groupCreditHistory: new File(["Sample content"], "sample.txt", {
-          type: "text/plain",
-        }),
+        groupCreditHistory: {
+          id: "sample-file-9",
+          name: "sample-9.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
         valueChain: ["Blue economy", "Cotton and textiles"],
         tableBanking: {},
       },
@@ -248,21 +255,28 @@ export const dummyApplications: ApplicationData[] = [
         groupName: "In review Group",
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
-        groupRegistrationCertificate: new File(
-          ["Sample content"],
-          "sample.txt",
-          { type: "text/plain" },
-        ),
-        listOfMembersOnCertificate: new File(["Sample content"], "sample.txt", {
-          type: "text/plain",
-        }),
+        groupRegistrationCertificate: {
+          id: "sample-file-1",
+          name: "sample.jpg",
+          type: "applicatiojpg/pdf",
+          url: "/images/cert-example.jpg",
+        },
+        listOfMembersOnCertificate: {
+          id: "sample-file-2",
+          name: "sample-2.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
       },
       background: {
         purposeOfTheGroup: ["Other"],
         keyActivitiesOfTheGroup: ["Table banking"],
-        groupCreditHistory: new File(["Sample content"], "sample.txt", {
-          type: "text/plain",
-        }),
+        groupCreditHistory: {
+          id: "sample-file-3",
+          name: "sample-3.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
         valueChain: [],
         tableBanking: {
           tableBankingExperience: 3,
@@ -329,21 +343,28 @@ export const dummyApplications: ApplicationData[] = [
         groupName: "test name Group",
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
-        groupRegistrationCertificate: new File(
-          ["Sample content"],
-          "sample.txt",
-          { type: "text/plain" },
-        ),
-        listOfMembersOnCertificate: new File(["Sample content"], "sample.txt", {
-          type: "text/plain",
-        }),
+        groupRegistrationCertificate: {
+          id: "sample-file-4",
+          name: "sample-4.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
+        listOfMembersOnCertificate: {
+          id: "sample-file-5",
+          name: "sample-5.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
       },
       background: {
         purposeOfTheGroup: ["Income generating activities"],
         keyActivitiesOfTheGroup: ["Table banking"],
-        groupCreditHistory: new File(["Sample content"], "sample.txt", {
-          type: "text/plain",
-        }),
+        groupCreditHistory: {
+          id: "sample-file-6",
+          name: "sample-6.jpg",
+          type: "application/jpg",
+          url: "/images/cert-example.jpg",
+        },
         valueChain: [],
         tableBanking: {
           tableBankingExperience: 3,

@@ -93,7 +93,7 @@ export const zodKeys = <T extends z.ZodTypeAny>(schema: T): string[] => {
 };
 
 export function validFile(accept: Accept, fileSize: number) {
-  return (
+  return z.union([
     z
       .instanceof(File)
       // check if file exists
@@ -107,9 +107,17 @@ export function validFile(accept: Accept, fileSize: number) {
       .refine(
         (file) => expandMimeTypes(accept).includes(file.type),
         getIntlKey("invalid"),
-      )
-  );
+      ),
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      type: z.string(),
+      url: z.string(),
+    }),
+  ]);
 }
+
+export type ValidFile = z.infer<ReturnType<typeof validFile>>;
 
 function getIntlKey<T extends z.ZodIssueBase>(
   key: keyof IntlMessages["Form"]["errors"],
@@ -119,13 +127,15 @@ function getIntlKey<T extends z.ZodIssueBase>(
 }
 
 function expandMimeTypes(accept: Accept) {
-  return Object.entries(accept).flatMap(([key, value]) => {
+  const mimeTypes = Object.entries(accept).flatMap(([key, value]) => {
     if (key.includes("/*")) {
       const mimeType = key.split("/")[0];
 
       return value.map((v) => `${mimeType}/${v.replace(".", "")}`);
     }
 
-    return value;
+    return key;
   });
+
+  return mimeTypes;
 }

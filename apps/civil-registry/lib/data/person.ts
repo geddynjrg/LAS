@@ -1,3 +1,5 @@
+import type { ValidFile } from "@workspace/ui/lib/zod";
+
 import { generateUUID } from "@/lib/data/dummy-data";
 
 export type ValidationStatus = "alert" | "success" | "pending";
@@ -39,7 +41,7 @@ export interface Person {
   capacityOfInformant?: string;
   informantType?: string;
   contacts?: { phoneCode: string; phone: string; email?: string }[];
-  affidavit?: string;
+  affidavitFile?: ValidFile;
 }
 
 export const persons: Person[] = [

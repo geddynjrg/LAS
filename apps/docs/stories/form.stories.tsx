@@ -33,7 +33,12 @@ import { Textarea } from "@workspace/ui/components/textarea";
 import { Underline } from "@workspace/ui/components/underline";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { formatBytes, getFormDataValues } from "@workspace/ui/lib/utils";
+import { validFile } from "@workspace/ui/lib/zod";
 
+const FILE_ACCEPT = {
+  "image/*": [".jpg", ".png"],
+  "application/pdf": [".pdf"],
+};
 const MAX_FILE_SIZE = 1e6; // 1 MB
 
 const meta = {
@@ -193,10 +198,7 @@ export const Primary: Story = {
           required
           control={(props) => (
             <FileUploadInput
-              accept={{
-                "image/*": [".jpg", ".png"],
-                "application/pdf": [".pdf"],
-              }}
+              accept={FILE_ACCEPT}
               maxSize={MAX_FILE_SIZE}
               {...props}
             />
@@ -304,9 +306,7 @@ const schema = z.object({
     z.array(z.string()).min(1),
   ),
   slider: z.coerce.number().min(1).max(12),
-  upload: z
-    .instanceof(File)
-    .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
+  upload: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
 });
 
 const formAction: FormAction<z.infer<typeof schema>> = async (

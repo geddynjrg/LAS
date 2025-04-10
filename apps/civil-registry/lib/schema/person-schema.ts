@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-import { MAX_FILE_SIZE } from "@/lib/constants";
+import { validFile } from "@workspace/ui/lib/zod";
+
+import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 
 // import type { Person } from "@/lib/data/persons";
 export const SexTypeSchema = z.enum(["M", "F", "I"]);
@@ -196,19 +198,12 @@ export const personFormSchema = z.object({
     .optional()
     .nullable()
     .transform((val) => val ?? undefined),
-  affidavitFile: z
-    .instanceof(File)
-    .optional()
-    .nullable()
-    .transform((val) => val ?? undefined),
+  affidavitFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
   contacts: z.array(personContactSchema).min(1),
 });
 
 export const fatherFormSchema = personFormSchema.extend({
-  affidavitFile: z
-    .instanceof(File, { message: "File is required" })
-    .refine((file) => file.size > 0, "File is required")
-    .refine((file) => file.size <= MAX_FILE_SIZE, "File exceed max file size"),
+  affidavitFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
 });
 
 export const childFormSchema = personFormSchema.extend({

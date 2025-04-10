@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+import { validFile } from "@workspace/ui/lib/zod";
+
+export const FILE_ACCEPT = {
+  "image/*": [".jpg", ".png"],
+  "application/pdf": [".pdf"],
+};
+export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
+
 const sex = z.enum(["male", "female", "intersex"]);
 const idType = z.enum(["national-id", "birth-certificate", "alien-id"]);
 const phone = z.object({
@@ -26,7 +34,7 @@ export const applicantSchema = z.object({
 
   // idType === "birth-certificate"
   birthCertificateNumber: z.string().optional(),
-  birthCertificateFile: z.instanceof(File).optional(),
+  birthCertificateFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
 
   // idType === "alien-id"
   alienId: z.string().optional(),
@@ -35,7 +43,7 @@ export const applicantSchema = z.object({
   // personWithDisabilities === "on"
   natureOfDisability: z.string().optional(),
   disabilityCardNumber: z.string().optional(),
-  disabilityCardPicture: z.instanceof(File).optional(),
+  disabilityCardPicture: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
   disabilityLevel: z.string().optional(),
   disabilityDescription: z.string().optional(),
 });

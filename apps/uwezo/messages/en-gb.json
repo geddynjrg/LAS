@@ -28,8 +28,7 @@
     "confirm": "Confirm",
     "youCanAddMultipleFiles": "You can add multiple files",
     "mustBeValidNumber": "Must be a valid number",
-    "pleaseAgreeToTheTerms": "Please agree to the terms",
-    "fileExceedsMaxSize": "File exceeds max size"
+    "pleaseAgreeToTheTerms": "Please agree to the terms"
   },
 
   "Footer": {

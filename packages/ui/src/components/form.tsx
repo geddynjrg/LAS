@@ -6,6 +6,7 @@ import {
   useTranslations,
   type TranslationValues,
 } from "next-intl";
+import NextForm from "next/form";
 import { useId, type FC, type ReactNode } from "react";
 import type { z } from "zod";
 
@@ -18,7 +19,18 @@ import type { FlattenObjectKeys } from "@workspace/ui/types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type InputValues = Record<string, any>;
 
-export const Form = FormPrimitive.Root;
+export const Form: FC<FormPrimitive.FormProps> = ({
+  children,
+  action,
+  ...props
+}) =>
+  action ? (
+    <FormPrimitive.Root {...props} asChild>
+      <NextForm action={action}>{children}</NextForm>
+    </FormPrimitive.Root>
+  ) : (
+    <FormPrimitive.Root {...props}>{children}</FormPrimitive.Root>
+  );
 
 export type Path<T> = T extends object
   ? {

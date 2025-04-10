@@ -1,24 +1,16 @@
 import { z } from "zod";
 
-import { MAX_FILE_SIZE } from "@/lib/constants";
+import { validFile } from "@workspace/ui/lib/zod";
+
+import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 
 export const groupDataSchema = z
   .object({
     groupName: z.string().nonempty(),
     groupRegistrationNumber: z.string().nonempty(),
     dateFormed: z.coerce.date(),
-    groupRegistrationCertificate: z
-      .instanceof(File)
-      .refine(
-        (file) => file.size <= MAX_FILE_SIZE,
-        "Common.fileExceedsMaxSize",
-      ),
-    listOfMembersOnCertificate: z
-      .instanceof(File)
-      .refine(
-        (file) => file.size <= MAX_FILE_SIZE,
-        "Common.fileExceedsMaxSize",
-      ),
+    groupRegistrationCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
+    listOfMembersOnCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
 
     groupPurpose: z.preprocess(
       (v) =>
@@ -79,12 +71,7 @@ export const groupDataSchema = z
 
     other: z.string().nullable().optional(),
 
-    groupCreditHistory: z
-      .instanceof(File)
-      .refine(
-        (file) => file.size <= MAX_FILE_SIZE,
-        "Common.fileExceedsMaxSize",
-      ),
+    groupCreditHistory: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
     countyOfOperation: z.string().nonempty(),
     constituency: z.string().nonempty(),
     ward: z.string().nonempty(),

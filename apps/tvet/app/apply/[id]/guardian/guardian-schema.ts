@@ -1,11 +1,19 @@
 import { z } from "zod";
 
+import { validFile } from "@workspace/ui/lib/zod";
+
 const guardianRole = z.enum(["parent", "grandparent", "relative", "other"]);
 const idType = z.enum(["national-id", "birth-certificate", "alien-id"]);
 const phone = z.object({
   callingCode: z.string().nonempty(),
   phone: z.string().nonempty(),
 });
+
+export const FILE_ACCEPT = {
+  "image/*": [".jpg", ".png"],
+  "application/pdf": [".pdf"],
+};
+export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
 export const guardianSchema = z.object({
   firstName: z.string().nonempty(),
@@ -21,7 +29,10 @@ export const guardianSchema = z.object({
 
   // guardianRole === "grandparent"
   grandparentBirthCertificateNumber: z.string().optional(),
-  grandparentBirthCertificateFile: z.instanceof(File).optional(),
+  grandparentBirthCertificateFile: validFile(
+    FILE_ACCEPT,
+    MAX_FILE_SIZE,
+  ).optional(),
 
   // guardianRole === "relative"
   relativeAlienId: z.string().optional(),
@@ -32,7 +43,7 @@ export const guardianSchema = z.object({
 
   // idType === "birth-certificate"
   birthCertificateNumber: z.string().optional(),
-  birthCertificateFile: z.instanceof(File).optional(),
+  birthCertificateFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
 
   // idType === "alien-id"
   alienId: z.string().optional(),
@@ -41,7 +52,7 @@ export const guardianSchema = z.object({
   // personWithDisabilities === "on"
   natureOfDisability: z.string().optional(),
   disabilityCardNumber: z.string().optional(),
-  disabilityCardPicture: z.instanceof(File).optional(),
+  disabilityCardPicture: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
   disabilityLevel: z.string().optional(),
   disabilityDescription: z.string().optional(),
 });

@@ -21,7 +21,7 @@ import {
   groupDataSchema,
   type GroupData,
 } from "@/app/apply/[id]/group-data/group-data-schema";
-import { MAX_FILE_SIZE } from "@/lib/constants";
+import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 import { GroupData as ApplicationGroupData } from "@/lib/data/application";
 import { dummyCounty } from "@/lib/data/dummy-data";
 
@@ -124,10 +124,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             required
             control={(props) => (
               <FileUploadInput
-                accept={{
-                  "image/*": [".jpg", ".png"],
-                  "application/pdf": [".pdf"],
-                }}
+                accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
                 attachmentBgInverted
                 {...props}
@@ -144,10 +141,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             required
             control={(props) => (
               <FileUploadInput
-                accept={{
-                  "image/*": [".jpg", ".png"],
-                  "application/pdf": [".pdf"],
-                }}
+                accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
                 attachmentBgInverted
                 {...props}

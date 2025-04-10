@@ -15,7 +15,7 @@ import { fatherAction } from "@/app/edit/[personId]/father/father-action";
 import { fatherSchema } from "@/app/edit/[personId]/father/father-schema";
 import { ContactFields } from "@/components/contact-fields";
 import { NationalIdFields } from "@/components/national-id-fields";
-import { MAX_FILE_SIZE } from "@/lib/constants";
+import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 import { educationOptions } from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/data/person";
 import { getObjectDiff } from "@/lib/util/get-object-diff";
@@ -120,10 +120,7 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
               })}
               control={(props) => (
                 <FileUploadInput
-                  accept={{
-                    "image/*": [".jpg", ".png"],
-                    "application/pdf": [".pdf"],
-                  }}
+                  accept={FILE_ACCEPT}
                   maxSize={MAX_FILE_SIZE}
                   {...props}
                 />

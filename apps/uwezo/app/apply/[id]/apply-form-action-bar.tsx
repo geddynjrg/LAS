@@ -35,7 +35,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
     steps.find((step) => pathName.includes(step.path))?.index ?? 1;
 
   return (
-    <ActionBar className={cn("z-10 mt-8", className)}>
+    <ActionBar className={cn("mt-8", className)}>
       <div className="mx-auto flex flex-row items-center gap-4">
         <Button variant="secondary" asChild onClick={onBack} type="button">
           {onBack && !prevUrl ? (

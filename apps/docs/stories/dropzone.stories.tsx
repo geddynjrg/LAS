@@ -6,6 +6,7 @@ import {
   DropzoneDragAccepted,
   DropzoneDragDefault,
   DropzoneDragRejected,
+  DropzoneInput,
   DropzoneRejected,
   DropzoneUploadIcon,
   DropzoneZone,
@@ -34,7 +35,9 @@ export const Primary = {
           maxSize={MAX_FILE_SIZE}
         >
           <DropzoneZone className="flex items-center justify-center gap-2">
+            <DropzoneInput />
             <DropzoneUploadIcon />
+
             <DropzoneDragAccepted>
               <p>Drop files here</p>
             </DropzoneDragAccepted>
