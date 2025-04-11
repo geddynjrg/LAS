@@ -3,7 +3,7 @@
 import { IconFilterDown, IconFilterUp, IconSearch } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, type FC } from "react";
+import { useMemo, useState, type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
@@ -54,30 +54,36 @@ export const CourseFilter: FC<CourseFilterProps> = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [resetCount, setResetCount] = useState(0);
 
-  const defaultValues: CoursesTableDataQueryParams = {
-    search: searchParams.get("search" satisfies FilterKey) ?? undefined,
-    max_fee: searchParams.get("max_fee" satisfies FilterKey)
-      ? Number(searchParams.get("max_fee" satisfies FilterKey))
-      : undefined,
-    max_duration: searchParams.get("max_duration" satisfies FilterKey)
-      ? Number(searchParams.get("max_duration" satisfies FilterKey))
-      : undefined,
-    education_level:
-      searchParams.getAll("education_level" satisfies FilterKey) ?? undefined,
-    institution:
-      searchParams.get("institution" satisfies FilterKey) ?? undefined,
-    tags: searchParams.getAll("tags" satisfies FilterKey) ?? undefined,
-  };
+  const state = useMemo(
+    () => ({
+      values: {
+        search: searchParams.get("search" satisfies FilterKey) ?? undefined,
+        max_fee: searchParams.get("max_fee" satisfies FilterKey)
+          ? Number(searchParams.get("max_fee" satisfies FilterKey))
+          : undefined,
+        max_duration: searchParams.get("max_duration" satisfies FilterKey)
+          ? Number(searchParams.get("max_duration" satisfies FilterKey))
+          : undefined,
+        education_level:
+          searchParams.getAll("education_level" satisfies FilterKey) ??
+          undefined,
+        institution:
+          searchParams.get("institution" satisfies FilterKey) ?? undefined,
+        tags: searchParams.getAll("tags" satisfies FilterKey) ?? undefined,
+      } satisfies CoursesTableDataQueryParams,
+    }),
+    [searchParams],
+  );
 
-  const hasSelectedFilters = Object.values(defaultValues).some((value) =>
+  const hasSelectedFilters = Object.values(state.values).some((value) =>
     Array.isArray(value)
       ? value.length > 0
       : value !== undefined && value !== null && value !== "",
   );
 
   const [isOpen, setIsOpen] = useState(hasSelectedFilters);
-  const [resetCount, setResetCount] = useState(0);
 
   const handleFilterChange = useDebouncedCallback(
     (name: FilterKey, value: string | string[]) => {
@@ -101,10 +107,21 @@ export const CourseFilter: FC<CourseFilterProps> = ({
     300,
   );
 
+  const handleReset = () => {
+    router.replace(`${pathname}`);
+    setResetCount((v) => v + 1);
+  };
+
+  // since we use uncontrolled inputs without server action, we need to set the key for each input to force a re-render
+  const getFieldKey = (name: keyof typeof state.values) => {
+    return `${resetCount}-${state.values[name]}`;
+  };
+
   return (
-    <Container key={resetCount}>
+    <Container>
       <Form onSubmit={(e) => e.preventDefault()}>
         <Field
+          state={state}
           name="search"
           label={t("search")}
           control={(props) => (
@@ -112,7 +129,6 @@ export const CourseFilter: FC<CourseFilterProps> = ({
               {...props}
               endDecorator={<IconSearch />}
               placeholder={t("search")}
-              defaultValue={defaultValues.search}
               onValueChange={(value) => {
                 handleFilterChange("search", value);
               }}
@@ -134,27 +150,22 @@ export const CourseFilter: FC<CourseFilterProps> = ({
               <h2 className="typo-h5">{t("filterTitle")}</h2>
               <Button
                 variant="ghost"
+                type="reset"
                 size="sm"
-                onClick={() => {
-                  router.replace(`${pathname}`);
-
-                  // TODO: Fix this once we have controlled fields
-                  window.setTimeout(() => {
-                    setResetCount((prev) => prev + 1);
-                  }, 300);
-                }}
+                onClick={handleReset}
               >
                 {t("reset")}
               </Button>
             </div>
 
             <Field
+              state={state}
               name="max_fee"
               label={t("maxFee")}
               control={(props) => (
                 <Slider
                   {...props}
-                  defaultValue={defaultValues.max_fee}
+                  key={getFieldKey(props.name)}
                   min={MINIMUM_FEE}
                   max={MAXIMUM_FEE}
                   step={100}
@@ -180,12 +191,13 @@ export const CourseFilter: FC<CourseFilterProps> = ({
             />
 
             <Field
+              state={state}
               name="max_duration"
               label={t("duration")}
               control={(props) => (
                 <Slider
                   {...props}
-                  defaultValue={defaultValues.max_duration}
+                  key={getFieldKey(props.name)}
                   min={MINIMUM_DURATION}
                   max={MAXIMUM_DURATION}
                   startDecorator={t("months", { month: MINIMUM_DURATION })}
@@ -199,14 +211,15 @@ export const CourseFilter: FC<CourseFilterProps> = ({
 
             {educationLevels.length > 0 && (
               <Field
+                state={state}
                 name="education_level"
                 label={t("educationLevel")}
                 control={(props) => (
                   <CheckboxGroup
+                    {...props}
+                    key={getFieldKey(props.name)}
                     orientation="horizontal"
                     size="sm"
-                    {...props}
-                    defaultValue={defaultValues.education_level}
                     options={educationLevels.map((level) => ({
                       label: level.label,
                       value: level.id,
@@ -221,14 +234,15 @@ export const CourseFilter: FC<CourseFilterProps> = ({
 
             {tags.length > 0 && (
               <Field
+                state={state}
                 name="tags"
                 label={t("tags")}
                 control={(props) => (
                   <CheckboxGroup
+                    {...props}
+                    key={getFieldKey(props.name)}
                     orientation="horizontal"
                     size="sm"
-                    {...props}
-                    defaultValue={defaultValues.tags}
                     options={tags.map((tag) => ({
                       label: tag.name,
                       value: tag.id,
@@ -243,12 +257,13 @@ export const CourseFilter: FC<CourseFilterProps> = ({
 
             {institutions.length > 0 && (
               <Field
+                state={state}
                 name="institution"
                 label={t("location")}
                 control={(props) => (
                   <Select
                     {...props}
-                    defaultValue={defaultValues.institution}
+                    key={getFieldKey(props.name)}
                     placeholder={t("locationPlaceholder")}
                     options={institutions.map((institution) => ({
                       value: institution.id,

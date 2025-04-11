@@ -1,61 +1,9 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
 import { z } from "zod";
 
 import { api, validate } from "@/lib/api/utils";
-
-/**
- * Get courses table data
- * @returns {Promise<z.infer<typeof schema>>}
- *
- * * @param {CoursesTableDataQuery} params
- * @typedef CoursesTableDataQuery
- * @property {string} [search] Search in title and body
- * @property {number} [min_fee] Minimum course fee (KSh)
- * @property {number} [max_fee] Maximum course fee (KSh)
- * @property {number} [min_duration] Minimum duration in months
- * @property {number} [max_duration] Maximum duration in months
- * @property {string} [education_level] Required education level (none, KCSE, Education 3, Education 4)
- * @property {number} [institution] Institution ID to filter by
- * @property {number} [page] Page number (0-based, default: 0)
- * @property {number} [limit] Items per page (1-50, default: 12)
- * @property {string} [sort] Sort field (created, title)
- * @property {string} [direction] Sort direction (ASC, DESC)
- *
- * @returns {Promise<z.infer<typeof schema>>}
- * @example
- * {
- *    "total": 200,
- *    "page": 0,
- *    "limit": 12,
- *    "pages": 17,
- *    "courses": [
- *       {
- *          "id": 123,
- *          "title": "Course Title",
- *          "tags": [
- *             {
- *                "id": 1,
- *                "name": "Tag Name"
- *             }
- *          ],
- *          "application_fee": "1000",
- *          "course_fee": "5000",
- *          "apply_till": "2024-12-31",
- *          "start_on": "2024-01-01",
- *          "institution": {
- *             "id": 456,
- *             "title": "Institution Name",
- *             "url": "/institution/name"
- *          },
- *          "duration": "6",
- *          "education_level": "none",
- *          "url": "/node/123",
- *          "path_alias": "/course/course-title"
- *       }
- *    ]
- * }
- */
 
 export interface CoursesTableDataQueryParams {
   search?: string;
@@ -63,32 +11,34 @@ export interface CoursesTableDataQueryParams {
   max_fee?: number;
   min_duration?: number;
   max_duration?: number;
-  education_level?: string[];
+  education_level?: string | string[];
   institution?: string;
   page?: number;
   limit?: number;
-  sort?: string;
+  sort?: "title" | "created" | "changed" | "fee" | "duration";
   tags?: string[];
-  direction?: "ASC" | "DESC";
+  direction?: "asc" | "desc";
 }
 
-export async function getCoursesTableData(params: CoursesTableDataQueryParams) {
+export async function getCoursesList(params: CoursesTableDataQueryParams) {
   const res = await api.GET("/api/v1/courses", {
     params: {
+      header: {
+        "X-Language": await getLocale(),
+      },
       query: {
-        _format: "json",
         search: params.search,
         min_fee: params.min_fee,
         max_fee: params.max_fee,
         min_duration: params.min_duration,
         max_duration: params.max_duration,
-        education_level: params.education_level,
+        education_level: params.education_level as any as string, // TODO: wait for the backend to fix this
         institution: params.institution,
         page: params.page,
         limit: params.limit,
         sort: params.sort,
         direction: params.direction,
-        tags: params.tags,
+        tag: params.tags as any as string, // TODO: wait for the backend to fix this
       },
     },
   });

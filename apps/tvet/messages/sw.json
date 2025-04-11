@@ -3,7 +3,10 @@
     "menu": "Menyu",
     "closeMenu": "Funga menyu",
     "apply": "Omba",
-    "viewAll": "Tazama zote"
+    "viewAll": "Tazama zote",
+    "myProfile": "Profaili yangu",
+    "myApplications": "Maombi yangu",
+    "signOut": "Toka"
   },
 
   "FrontPage": {

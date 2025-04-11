@@ -1,5 +1,8 @@
 "use server";
 
+import { getLocale } from "next-intl/server";
+import { headers } from "next/headers";
+
 import { NodeSchema } from "@/lib/api/schema/node/node-types";
 import { api, validate } from "@/lib/api/utils";
 
@@ -9,8 +12,14 @@ interface NodeParams {
 }
 
 export async function getNode(params: NodeParams) {
+  const headersList = await headers();
+
   const res = await api.GET("/api/v1/resolve", {
     params: {
+      header: {
+        "X-Language": await getLocale(),
+        "X-Path": headersList.get("X-Path") || "",
+      },
       query: { page: params?.page, per_page: params?.perPage } as any,
     },
   });

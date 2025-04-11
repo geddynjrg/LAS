@@ -24,7 +24,6 @@ export const SectionHeader: FC<SectionHeaderProps> = ({
   className,
   image,
 }) => {
-  console.log("image", image);
   return (
     <RoundedCornerSection className={className}>
       <RoundedCornerSectionHeader

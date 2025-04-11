@@ -7,7 +7,7 @@ import { Heading } from "@workspace/ui/components/tvet/heading";
 import { CoursesDataTable } from "@/app/courses/course-data-table";
 import { CourseFilter } from "@/app/courses/course-filter";
 import {
-  getCoursesTableData,
+  getCoursesList,
   type CoursesTableDataQueryParams,
 } from "@/lib/api/courses";
 
@@ -20,7 +20,7 @@ export default async function CoursesPage(props: PageProps) {
   const searchParams = await props.searchParams;
   const t = await getTranslations("CoursesPage");
 
-  const { data, meta } = await getCoursesTableData(searchParams);
+  const { data, meta } = await getCoursesList(searchParams);
 
   return (
     <>
