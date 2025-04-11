@@ -38,7 +38,7 @@ export async function getCoursesList(params: CoursesTableDataQueryParams) {
         limit: params.limit,
         sort: params.sort,
         direction: params.direction,
-        tag: params.tags as any as string, // TODO: wait for the backend to fix this
+        tags: params.tags as any as string, // TODO: wait for the backend to fix this
       },
     },
   });
