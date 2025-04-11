@@ -7,14 +7,6 @@ import type { Step } from "@workspace/ui/components/stepper";
 import { getFormPersonByType } from "@/actions/get-form-person-by-type";
 import { FormStepper } from "@/app/add/form-stepper";
 
-const steps: Step[] = [
-  { index: 1, title: "Child", path: "/child" },
-  { index: 2, title: "Mother", path: "/mother" },
-  { index: 3, title: "Father", path: "/father" },
-  { index: 4, title: "Informant", path: "/informant" },
-  { index: 5, title: "Final review", path: "/final-review" },
-];
-
 export interface LayoutProps {
   children?: ReactNode;
 }
@@ -30,6 +22,14 @@ export default async function IdLayout({ children }: LayoutProps) {
     month: "2-digit",
     day: "2-digit",
   });
+
+  const steps: Step[] = [
+    { index: 1, title: t("Stepper.Child"), path: "/child" },
+    { index: 2, title: t("Stepper.Mother"), path: "/mother" },
+    { index: 3, title: t("Stepper.Father"), path: "/father" },
+    { index: 4, title: t("Stepper.Informant"), path: "/informant" },
+    { index: 5, title: t("Stepper.FinalReview"), path: "/final-review" },
+  ];
 
   return (
     <>

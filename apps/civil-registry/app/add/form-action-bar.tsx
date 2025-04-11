@@ -1,4 +1,5 @@
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC } from "react";
 
@@ -22,13 +23,15 @@ export const FormActionBar: FC<FormActionBarProps> = ({
   cancelUrl,
   prevUrl,
   submitType,
-  prevLabel = "Back",
-  cancelLabel = "Cancel",
-  nextLabel = "Next",
+  prevLabel,
+  cancelLabel,
+  nextLabel,
   nextUrl = null,
   hasBtnIcons = true,
   isPending,
 }) => {
+  const t = useTranslations("Common");
+
   return (
     <ActionBar className="mt-8">
       <Container className="flex flex-row items-center justify-between gap-4 max-md:[&>*]:flex-1">
@@ -36,7 +39,7 @@ export const FormActionBar: FC<FormActionBarProps> = ({
           <Button variant="secondary" asChild disabled={isPending}>
             <Link href={cancelUrl}>
               {hasBtnIcons && <IconArrowLeft />}
-              {cancelLabel}
+              {cancelLabel ?? t("cancel")}
             </Link>
           </Button>
         )}
@@ -45,7 +48,7 @@ export const FormActionBar: FC<FormActionBarProps> = ({
           <Button variant="secondary" asChild disabled={isPending}>
             <Link href={prevUrl}>
               {hasBtnIcons && <IconArrowLeft />}
-              {prevLabel}
+              {prevLabel ?? t("back")}
             </Link>
           </Button>
         )}
@@ -55,14 +58,14 @@ export const FormActionBar: FC<FormActionBarProps> = ({
             type="submit"
             disabled={submitType === "disabled" || isPending}
           >
-            {nextLabel}
+            {nextLabel ?? t("next")}
             {hasBtnIcons && <IconArrowRight />}
           </Button>
         )}
         {nextUrl !== null && (
           <Button variant="default" asChild disabled={isPending}>
             <Link href={nextUrl}>
-              {nextLabel}
+              {nextLabel ?? t("next")}
               {hasBtnIcons && <IconArrowRight />}
             </Link>
           </Button>

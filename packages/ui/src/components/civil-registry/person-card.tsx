@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import { Alert } from "@workspace/ui/components/alert";
@@ -23,6 +24,7 @@ export interface PersonCardProps extends CardProps {
 }
 
 export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
+  const t = useTranslations("PersonCard");
   const { name, sex, age, dob, validationStatus } = person ?? {};
 
   return (
@@ -45,9 +47,9 @@ export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
           "md:gap-0 md:self-auto",
         )}
       >
-        <DataNode label="Sex">{sex}</DataNode>
-        <DataNode label="Age">{age}</DataNode>
-        <DataNode label="Date of birth">{dob}</DataNode>
+        <DataNode label={t("sex")}>{sex}</DataNode>
+        <DataNode label={t("age")}>{age}</DataNode>
+        <DataNode label={t("dob")}>{dob}</DataNode>
       </DataPair>
     </Card>
   );

@@ -33,16 +33,14 @@ export const ConfirmationForm: FC<ConfirmationFormProps> = ({
     <FormWrap
       prevUrl="/"
       className="flex h-screen flex-col justify-center space-y-4"
-      prevLabel="Close form"
+      prevLabel={t("Common.closeForm")}
       submitType="hidden"
       hasBtnIcons={false}
     >
       <div className="flex flex-1 flex-col items-center justify-center">
         <div className="max-w-xs text-center">
           <IconCheck className="m-auto mb-10" />
-          <p className="typo-h3">
-            Birth notification successfully confirmed and submitted
-          </p>
+          <p className="typo-h3">{t("ConfirmationForm.successMessage")}</p>
         </div>
       </div>
     </FormWrap>
@@ -50,14 +48,16 @@ export const ConfirmationForm: FC<ConfirmationFormProps> = ({
     <FormWrap
       prevUrl="/add/final-review"
       className="flex h-screen flex-col justify-center space-y-4"
-      prevLabel="Cancel"
+      prevLabel={t("Common.cancel")}
       submitType="hidden"
       hasBtnIcons={false}
     >
       <div className="flex flex-1 flex-col items-center justify-center">
         <div className="max-w-xs text-center">
           <Loader animation="subtle" size={130} className="m-auto mb-10" />
-          <p className="typo-h3">Waiting for confirmation from</p>
+          <p className="typo-h3">
+            {t("ConfirmationForm.waitingForConfirmation")}
+          </p>
           <p className="typo-h5">
             {defaultValues.firstName} {defaultValues.lastName}
           </p>

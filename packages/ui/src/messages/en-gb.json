@@ -43,7 +43,10 @@
   },
 
   "Buttons": {
-    "amend": "Amend"
+    "confirm": "Confirm",
+    "back": "Back",
+    "amend": "Amend",
+    "backToDashboard": "Back to dashboard"
   },
   "InfoPopover": {
     "help": "Help",
@@ -106,5 +109,10 @@
   },
   "ContactBlock": {
     "applyNow": "Apply now"
+  },
+  "PersonCard": {
+    "sex": "Sex",
+    "age": "Age",
+    "dob": "Date of birth"
   }
 }
