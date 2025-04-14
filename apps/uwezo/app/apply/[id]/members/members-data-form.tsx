@@ -174,6 +174,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
           {displayNewMemberForm && (
             <EditMemberFormFields
               onSuccess={(member) => {
+                console.log(member);
                 setMembers([...members, member]);
                 setDisplayNewMemberForm(false);
               }}
@@ -346,7 +347,12 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       existingMember?.disability?.certificateOfDisability,
     pwdNumber: existingMember?.disability?.pwdNumber,
   });
-  const [withDisability, setWithDisability] = useState(false);
+  const [withDisability, setWithDisability] = useState(
+    existingMember?.disability?.certificateOfDisability ||
+      existingMember?.disability?.pwdNumber
+      ? true
+      : false,
+  );
   const [member, setMember] = useState<Partial<Member> | undefined>(
     existingMember,
   );

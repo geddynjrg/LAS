@@ -18,14 +18,14 @@ export const AppFooter: FC = () => {
   return (
     <footer className="bg-primary text-primary-foreground">
       <Container className="flex basis-1/3 flex-col pt-8 md:flex-row md:justify-center md:gap-8">
-        <FooterNavGroup title={t("relatedAgencies")}>
+        {/* <FooterNavGroup title={t("relatedAgencies")}>
           <FooterNavItem href="/#">Hustler Fund</FooterNavItem>
           <FooterNavItem href="/#">Youth Fund</FooterNavItem>
           <FooterNavItem href="/#">New KCC</FooterNavItem>
           <FooterNavItem href="/#" hasBorder={false}>
             Women Fund
           </FooterNavItem>
-        </FooterNavGroup>
+        </FooterNavGroup> */}
         <FooterNavGroup title={t("usefulLinks")}>
           <FooterNavItem href="/#">Staff Mail</FooterNavItem>
           <FooterNavItem href="/#">MyGov</FooterNavItem>

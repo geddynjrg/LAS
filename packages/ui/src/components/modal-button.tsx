@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
@@ -27,8 +28,8 @@ export interface ModalButtonProps extends Omit<ButtonProps, "onClick"> {
 export const ModalButton: FC<ModalButtonProps> = ({
   modalTitle,
   modalText,
-  confirmTitle = "Confirm",
-  cancelTitle = "Back",
+  confirmTitle,
+  cancelTitle,
   onConfirm,
   showX = false,
   contentProps,
@@ -36,6 +37,7 @@ export const ModalButton: FC<ModalButtonProps> = ({
   titleUnderline,
   ...props
 }) => {
+  const t = useTranslations();
   return (
     <Modal>
       <ModalTrigger asChild>
@@ -51,11 +53,13 @@ export const ModalButton: FC<ModalButtonProps> = ({
         <ModalFooter>
           <ModalClose asChild>
             <Button variant="danger" {...cancelButtonProps}>
-              {cancelTitle}
+              {cancelTitle ?? t("Buttons.back")}
             </Button>
           </ModalClose>
           <ModalClose asChild>
-            <Button onClick={onConfirm}>{confirmTitle}</Button>
+            <Button onClick={onConfirm}>
+              {confirmTitle ?? t("Buttons.confirm")}
+            </Button>
           </ModalClose>
         </ModalFooter>
       </ModalContent>

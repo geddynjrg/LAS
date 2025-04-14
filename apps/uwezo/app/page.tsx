@@ -88,11 +88,11 @@ export default function Page() {
         </Container>
       </div>
 
-      <DescriptionSection />
+      {/* <DescriptionSection />
 
       <AchievementsSection />
 
-      <NewsSection />
+      <NewsSection /> */}
     </>
   );
 }

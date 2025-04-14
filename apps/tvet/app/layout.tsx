@@ -3,6 +3,7 @@ import "@workspace/ui/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { DM_Sans } from "next/font/google";
+import { headers } from "next/headers";
 import { Suspense, type ReactNode } from "react";
 
 import { SidebarInset } from "@workspace/ui/components/sidebar";
@@ -26,16 +27,22 @@ export interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const locale = (await getLocale()) as Locale;
-  const messages = await getMessages();
-  const institutions = await getInstitutions();
-  const session = await getSession();
+  const [headersList, locale, messages, institutions, session] =
+    await Promise.all([
+      headers(),
+      getLocale(),
+      getMessages(),
+      getInstitutions(),
+      getSession(),
+    ]);
+
+  const deviceType = headersList.get("x-device-type");
 
   return (
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${dmSans.variable} font-sans`}
+      className={`${dmSans.variable} font-sans device-type-${deviceType}`}
       title="TVET"
     >
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
@@ -44,7 +51,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <Providers>
               <AppHeader />
               <AppSidebar
-                locale={locale}
+                locale={locale as Locale}
                 institutions={institutions.data?.institutions}
               />
               <SidebarInset className="min-h-svh">

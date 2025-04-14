@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
   loanConditionsDataSchema,
@@ -15,7 +15,7 @@ export const loanConditionsAction: FormAction<LoanConditionsData> = async (
   _prev,
   formData,
 ) => {
-  const values = getFormDataValues(formData, loanConditionsDataSchema);
+  const values = getFormZodDataValues(formData, loanConditionsDataSchema);
   const redirectTo = formData.get("redirectTo")?.toString();
   const id = formData.get("id")?.toString();
 

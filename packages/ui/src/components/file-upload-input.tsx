@@ -115,13 +115,13 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
             {/* picture */}
             <DropzoneZone
               onMouseDown={() => setIsCameraEnabled(true)}
-              className="flex flex-1 items-center justify-center gap-2"
+              className="flex flex-1 items-center justify-center gap-2 [.device-type-desktop_&]:hidden"
             >
               <IconCamera className="size-5 text-neutral-500" />
               {t("takePicture")}
             </DropzoneZone>
 
-            <span>{t("or")}</span>
+            <span className="[.device-type-desktop_&]:hidden">{t("or")}</span>
           </>
         )}
 

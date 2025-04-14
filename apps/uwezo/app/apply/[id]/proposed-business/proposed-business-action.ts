@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormDataValues } from "@workspace/ui/lib/utils";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
   proposedBusinessDataSchema,
@@ -15,7 +15,7 @@ export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
   _prev,
   formData,
 ) => {
-  const values = getFormDataValues(formData, proposedBusinessDataSchema);
+  const values = getFormZodDataValues(formData, proposedBusinessDataSchema);
   const redirectTo = formData.get("redirectTo")?.toString();
   const id = formData.get("id")?.toString();
 

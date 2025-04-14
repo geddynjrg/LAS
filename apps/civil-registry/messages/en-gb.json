@@ -2,9 +2,12 @@
   "Common": {
     "menu": "Menu",
     "cancel": "Cancel",
+    "back": "Back",
     "confirm": "Confirm",
+    "next": "Next",
     "total": "Total",
-    "maxFileSize": "Max file size {size}"
+    "maxFileSize": "Max file size {size}",
+    "closeForm": "Close form"
   },
   "DashboardPage": {
     "title": "My relations",
@@ -172,5 +175,22 @@
   "BirthRegistrationPage": {
     "next-button": "Next",
     "back-button": "Back"
+  },
+
+  "ConfirmRegistration": {
+    "title": "Confirm registration",
+    "content": "Are you sure all the details of the birth registration are correct? You have the option to amend."
+  },
+
+  "Stepper": {
+    "Child": "Child",
+    "Mother": "Mother",
+    "Father": "Father",
+    "Informant": "Informant",
+    "FinalReview": "Final Review"
+  },
+  "ConfirmationForm": {
+    "successMessage": "Birth notification successfully confirmed and submitted",
+    "waitingForConfirmation": "Waiting for confirmation"
   }
 }

@@ -26,7 +26,7 @@ export const signupAction: FormAction<SignupSchema> = async (
   }
 
   try {
-    const res = await register(data);
+    await register(data);
   } catch (error) {
     console.warn("Error during signup:", error);
 

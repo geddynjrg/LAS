@@ -5,6 +5,8 @@ import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { DM_Sans } from "next/font/google";
+import { headers } from "next/headers";
+import { userAgent } from "next/server";
 import { Suspense, type ReactNode } from "react";
 
 import { Loader } from "@workspace/ui/components/loader";
@@ -32,12 +34,13 @@ export default async function RootLayout({
 }: RootLayoutProps) {
   const locale = (await getLocale()) as Locale;
   const messages = await getMessages();
+  const headersList = await headers();
 
   return (
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${dmSans.variable} font-sans`}
+      className={`${dmSans.variable} font-sans device-type-${getDeviceType(headersList)}`}
     >
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
         <NextIntlClientProvider messages={messages}>
@@ -63,4 +66,10 @@ export default async function RootLayout({
       </body>
     </html>
   );
+}
+
+function getDeviceType(headers: Headers) {
+  const { device } = userAgent({ headers });
+
+  return device.type === "mobile" ? "mobile" : "desktop";
 }

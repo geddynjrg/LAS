@@ -224,6 +224,126 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/{application_id}/payment-proof": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Upload payment proof for an application
+     * @description Uploads payment proof and updates payment reference for an application.
+     */
+    post: operations["tvet_application_payment_proof"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/{application_id}/payment-info-pdf": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Download payment information as PDF
+     * @description Returns a PDF document with payment information for the application.
+     */
+    get: operations["tvet_application_payment_info_pdf"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create a new application
+     * @description Creates a new application with the provided data.
+     */
+    post: operations["tvet_application_create"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/{application_id}/payment-info": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get payment information for an application
+     * @description Returns payment information including bank details for a specific application.
+     */
+    get: operations["tvet_application_payment_info"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/my-applications": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a list of applications for the authenticated user
+     * @description Returns all applications owned by the currently authenticated user.
+     */
+    get: operations["tvet_my_applications"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/{application_id}/status": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get application status information
+     * @description Returns the status information for a specific application.
+     */
+    get: operations["tvet_application_status"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -236,7 +356,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1744275263
+         * @example 1744369419
          */
         timestamp: number;
         /**
@@ -345,6 +465,614 @@ export interface components {
        * @example Bearer
        */
       token_type: string;
+    };
+    PaymentProofRequest: {
+      payment_proof: {
+        /**
+         * @description Base64 encoded file content
+         * @example data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...
+         */
+        data: string;
+        /**
+         * @description Original filename with extension
+         * @example payment_receipt.jpg
+         */
+        filename: string;
+      };
+      /**
+       * @description Reference number or transaction ID for the payment
+       * @example MPESA-ABCDEF123456
+       */
+      payment_reference: string;
+    };
+    PaymentProofRequestMultipart: {
+      /**
+       * Format: binary
+       * @description Payment proof file (PDF, JPG, PNG)
+       */
+      payment_proof: string;
+      /**
+       * @description Reference number or transaction ID for the payment
+       * @example MPESA-ABCDEF123456
+       */
+      payment_reference: string;
+    };
+    PaymentProofResponse: {
+      /**
+       * @description Whether the request was successful
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description A descriptive message about the result
+       * @example Payment proof updated successfully.
+       */
+      message?: string;
+      data?: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id?: string;
+        /**
+         * @description The updated payment status
+         * @example proof_uploaded
+         * @enum {string}
+         */
+        payment_status?: "proof_uploaded";
+      };
+      meta?: {
+        /**
+         * @description The timestamp when the response was generated
+         * @example 1622563200
+         */
+        timestamp?: number;
+        /**
+         * @description The API version
+         * @example v1
+         */
+        version?: string;
+      };
+    };
+    ApplicationCreateRequest: {
+      /**
+       * @description First name of the applicant
+       * @example John
+       */
+      applicant_first_name: string;
+      /**
+       * @description Middle name of the applicant (optional)
+       * @example James
+       */
+      applicant_middle_name?: string;
+      /**
+       * @description Surname of the applicant
+       * @example Doe
+       */
+      applicant_surname: string;
+      /**
+       * @description Gender of the applicant
+       * @example male
+       * @enum {string}
+       */
+      applicant_sex: "male" | "female" | "intersex";
+      /**
+       * Format: date
+       * @description Date of birth in YYYY-MM-DD format
+       * @example 1995-05-15
+       */
+      applicant_date_of_birth: string;
+      /**
+       * @description Type of identification document
+       * @example national_id
+       * @enum {string}
+       */
+      applicant_id_type:
+        | "national_id"
+        | "passport"
+        | "alien_card"
+        | "birth_certificate"
+        | "alien_id";
+      /**
+       * @description ID number of the applicant
+       * @example 12345678
+       */
+      applicant_id_number: string;
+      /**
+       * @description Phone number of the applicant
+       * @example +254712345678
+       */
+      applicant_phone_number: string;
+      /**
+       * Format: email
+       * @description Email address of the applicant
+       * @example john.doe@example.com
+       */
+      applicant_email: string;
+      /**
+       * @description County where the applicant resides
+       * @example Nairobi
+       */
+      applicant_county: string;
+      /**
+       * @description Subcounty where the applicant resides
+       * @example Nairobi
+       */
+      applicant_subcounty: string;
+      /**
+       * @description Ward where the applicant resides
+       * @example Kibera
+       */
+      applicant_ward: string;
+      /**
+       * @description Whether the applicant has a disability
+       * @example false
+       */
+      applicant_disability?: boolean;
+      /**
+       * @description Nature of disability (required if applicant_disability is true)
+       * @example Physical disability
+       * @enum {string}
+       */
+      disability_nature?:
+        | "visual"
+        | "hearing"
+        | "physical"
+        | "cognitive"
+        | "multiple"
+        | "mental"
+        | "speech"
+        | "other";
+      /**
+       * @description Level of disability (required if applicant_disability is true)
+       * @example mild
+       * @enum {string}
+       */
+      disability_level?: "mild" | "moderate" | "severe" | "profound";
+      /**
+       * @description Disability card number (required if applicant_disability is true)
+       * @example DC-12345
+       */
+      disability_card_number?: string;
+      /**
+       * @description Special requirements for disability (optional)
+       * @example Wheelchair accessible facilities
+       */
+      disability_requirements?: string;
+      /**
+       * @description Role of the guardian
+       * @example parent
+       * @enum {string}
+       */
+      guardian_role?: "parent" | "grandparent" | "relative" | "other";
+      /**
+       * @description First name of the guardian
+       * @example Jane
+       */
+      guardian_first_name?: string;
+      /**
+       * @description Middle name of the guardian (optional)
+       * @example Marie
+       */
+      guardian_middle_name?: string;
+      /**
+       * @description Surname of the guardian
+       * @example Doe
+       */
+      guardian_surname?: string;
+      /**
+       * @description Phone number of the guardian
+       * @example +254723456789
+       */
+      guardian_phone_number?: string;
+      /**
+       * Format: email
+       * @description Email address of the guardian
+       * @example jane.doe@example.com
+       */
+      guardian_email?: string;
+      /**
+       * @description Type of identification document for guardian
+       * @example national_id
+       * @enum {string}
+       */
+      guardian_id_type?: "national_id" | "birth_certificate" | "alien_id";
+      /**
+       * @description ID number of the guardian
+       * @example 87654321
+       */
+      guardian_id_number?: string;
+      /**
+       * @description ID of the institution
+       * @example 42
+       */
+      institution: number;
+      /**
+       * @description ID of the course
+       * @example 123
+       */
+      course: number;
+      /**
+       * @description Preferred intake period
+       * @example January 2024
+       */
+      preferred_intake_period: string;
+      /**
+       * @description Highest education level achieved
+       * @example secondary
+       * @enum {string}
+       */
+      highest_education_level:
+        | "primary"
+        | "secondary"
+        | "diploma"
+        | "degree"
+        | "masters"
+        | "phd";
+      /**
+       * @description Confirmation that personal information is accurate
+       * @example true
+       */
+      confirm_personal_information: boolean;
+      /**
+       * @description Confirmation that eligibility requirements are met
+       * @example true
+       */
+      confirm_eligibility: boolean;
+      highest_education_certificate: {
+        /**
+         * @description Base64 encoded file content
+         * @example data:application/pdf;base64,JVBERi0xLjMKJcTl8uXr...
+         */
+        data: string;
+        /**
+         * @description Original filename with extension
+         * @example kcse_certificate.pdf
+         */
+        filename: string;
+      };
+      other_certificate?: {
+        /**
+         * @description Base64 encoded file content
+         * @example data:application/pdf;base64,JVBERi0xLjMKJcTl8uXr...
+         */
+        data?: string;
+        /**
+         * @description Original filename with extension
+         * @example diploma_certificate.pdf
+         */
+        filename?: string;
+      };
+    };
+    ApplicationCreateRequestMultipart: components["schemas"]["ApplicationCreateRequest"] & {
+      /**
+       * Format: binary
+       * @description Education certificate file (PDF, JPG, PNG)
+       */
+      highest_education_certificate?: string;
+      /**
+       * Format: binary
+       * @description Other relevant certificate file (PDF, JPG, PNG)
+       */
+      other_certificate?: string;
+      /**
+       * Format: binary
+       * @description Disability card image (if applicable)
+       */
+      disability_card_picture?: string;
+    };
+    ApplicationCreateResponse: {
+      /**
+       * @description Whether the request was successful
+       * @example true
+       */
+      success?: boolean;
+      /**
+       * @description A descriptive message about the result
+       * @example Application submitted successfully.
+       */
+      message?: string;
+      data?: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id?: string;
+        /**
+         * @description The internal ID of the created application
+         * @example 123
+         */
+        id?: number;
+        _links?: {
+          self?: {
+            /** @example /api/v1/application/APP-20230601-ABC12/status */
+            href?: string;
+          };
+          payment_info?: {
+            /** @example /api/v1/application/APP-20230601-ABC12/payment-info */
+            href?: string;
+          };
+          payment_info_pdf?: {
+            /** @example /api/v1/application/APP-20230601-ABC12/payment-info-pdf */
+            href?: string;
+          };
+        };
+      };
+      meta?: {
+        /**
+         * @description The timestamp when the response was generated
+         * @example 1622563200
+         */
+        timestamp?: number;
+        /**
+         * @description The API version
+         * @example v1
+         */
+        version?: string;
+      };
+    };
+    ErrorResponse: {
+      /**
+       * @description Always false for error responses
+       * @example false
+       */
+      success?: boolean;
+      /**
+       * @description Error message describing what went wrong
+       * @example Missing required field: applicant_first_name
+       */
+      message?: string;
+      meta?: {
+        /**
+         * @description The timestamp when the error occurred
+         * @example 1622563200
+         */
+        timestamp?: number;
+        /**
+         * @description The API version
+         * @example v1
+         */
+        version?: string;
+      };
+    };
+    PaymentInfoResponse: {
+      /**
+       * @description Whether the request was successful
+       * @example true
+       */
+      success?: boolean;
+      data?: {
+        /**
+         * @description The name of the institution
+         * @example TVET College of Technology
+         */
+        institution?: string;
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id?: string;
+        /**
+         * @description The application fee amount
+         * @example 250
+         */
+        application_fee?: number;
+        /**
+         * @description The name of the bank
+         * @example Kenya Commercial Bank
+         */
+        bank_name?: string;
+        /**
+         * @description The name of the bank account
+         * @example TVET College of Technology
+         */
+        account_name?: string;
+        /**
+         * @description The bank account number
+         * @example 1234567890
+         */
+        account_number?: string;
+        /**
+         * @description The bank branch name
+         * @example Nairobi Main Branch
+         */
+        branch_name?: string;
+        /**
+         * @description The bank branch code
+         * @example 001
+         */
+        branch_code?: string;
+        /**
+         * @description The SWIFT/BIC code for international transfers
+         * @example KCBLKENX
+         */
+        swift_code?: string;
+        /**
+         * @description Payment instructions
+         * @example Please include your application ID as payment reference.
+         */
+        instructions?: string;
+        /**
+         * @description The current payment status
+         * @example unpaid
+         * @enum {string}
+         */
+        payment_status?:
+          | "unpaid"
+          | "pending"
+          | "proof_uploaded"
+          | "paid"
+          | "rejected";
+        /**
+         * @description The payment reference provided by the applicant
+         * @example MPESA-ABCDEF123456
+         */
+        payment_reference?: string;
+        /**
+         * @description URL to the payment proof document
+         * @example https://example.com/files/payment-proof.jpg
+         */
+        payment_proof_url?: string;
+        /**
+         * @description URL to download the payment information PDF
+         * @example https://example.com/api/v1/application/APP-20230601-ABC12/payment-info-pdf
+         */
+        pdf_url?: string;
+      };
+      meta?: {
+        /**
+         * @description The timestamp when the response was generated
+         * @example 1622563200
+         */
+        timestamp?: number;
+        /**
+         * @description The API version
+         * @example v1
+         */
+        version?: string;
+      };
+    };
+    MyApplicationsResponse: {
+      data?: {
+        /**
+         * @description The application internal ID
+         * @example 123
+         */
+        id?: number;
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id?: string;
+        /**
+         * @description The name of the applicant
+         * @example John Doe
+         */
+        applicant_name?: string;
+        /**
+         * @description The current status of the application
+         * @example completed
+         * @enum {string}
+         */
+        application_status?:
+          | "created"
+          | "completed"
+          | "reviewing"
+          | "accepted"
+          | "rejected"
+          | "pending"
+          | "confirmed";
+        /**
+         * @description The current payment status
+         * @example pending
+         * @enum {string}
+         */
+        payment_status?:
+          | "unpaid"
+          | "pending"
+          | "proof_uploaded"
+          | "paid"
+          | "rejected";
+        /**
+         * @description The institution name
+         * @example TVET College of Technology
+         */
+        institution?: string;
+        /**
+         * @description The course name
+         * @example Computer Science
+         */
+        course?: string;
+        /**
+         * @description The timestamp when the application was created (ISO 8601)
+         * @example 2023-06-01T12:00:00+00:00
+         */
+        created?: string;
+        /**
+         * @description The timestamp when the application was last updated (ISO 8601)
+         * @example 2023-06-05T15:30:00+00:00
+         */
+        changed?: string;
+        _links?: {
+          self?: {
+            /** @example /api/v1/application/APP-20230601-ABC12/status */
+            href?: string;
+          };
+          payment_info?: {
+            /** @example /api/v1/application/APP-20230601-ABC12/payment-info */
+            href?: string;
+          };
+          payment_info_pdf?: {
+            /** @example /api/v1/application/APP-20230601-ABC12/payment-info-pdf */
+            href?: string;
+          };
+        };
+      }[];
+      meta?: {
+        /**
+         * @description The number of applications returned
+         * @example 5
+         */
+        count?: number;
+        /**
+         * @description The timestamp when the response was generated
+         * @example 1622563200
+         */
+        timestamp?: number;
+      };
+    };
+    ApplicationStatusResponse: {
+      /**
+       * @description Whether the request was successful
+       * @example true
+       */
+      success?: boolean;
+      data?: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id?: string;
+        /**
+         * @description The active status of the application
+         * @example active
+         * @enum {string}
+         */
+        status?: "active" | "inactive";
+        /**
+         * @description The payment status of the application
+         * @example pending
+         * @enum {string}
+         */
+        payment_status?:
+          | "unpaid"
+          | "pending"
+          | "proof_uploaded"
+          | "paid"
+          | "rejected";
+        /**
+         * @description The date and time when the application was created
+         * @example 2023-06-01 12:00:00
+         */
+        created?: string;
+        /**
+         * @description The date and time when the application was last updated
+         * @example 2023-06-05 15:30:00
+         */
+        updated?: string;
+      };
+      meta?: {
+        /**
+         * @description The timestamp when the response was generated
+         * @example 1622563200
+         */
+        timestamp?: number;
+        /**
+         * @description The API version
+         * @example v1
+         */
+        version?: string;
+      };
     };
     NodeCourse: {
       /** @example 123 */
@@ -2374,7 +3102,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp: number;
               /**
@@ -2423,7 +3151,7 @@ export interface operations {
   "tvet_rest.resolve_content": {
     parameters: {
       query?: never;
-      header?: {
+      header: {
         /** @description The path alias to resolve */
         "X-Path": string;
         "X-Language": string;
@@ -2447,7 +3175,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp: number;
               /**
@@ -2544,7 +3272,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -2614,7 +3342,7 @@ export interface operations {
         /** @description Number of items per page */
         limit?: number;
       };
-      header?: {
+      header: {
         "X-Language": string;
       };
       path?: never;
@@ -2635,7 +3363,7 @@ export interface operations {
               institutions?: components["schemas"]["NodeInstitution"][];
             };
             meta?: {
-              /** @example 1744275263 */
+              /** @example 1744369419 */
               timestamp?: number;
               /** @example v1 */
               version?: string;
@@ -2684,7 +3412,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -2739,7 +3467,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -2829,7 +3557,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -2886,7 +3614,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -2953,7 +3681,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -3021,7 +3749,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -3090,7 +3818,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1744275263
+               * @example 1744369419
                */
               timestamp?: number;
               /**
@@ -3112,6 +3840,263 @@ export interface operations {
             /** @example Authentication error: Invalid or expired JWT token. */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  tvet_application_payment_proof: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-Language": string;
+      };
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PaymentProofRequest"];
+        "multipart/form-data": components["schemas"]["PaymentProofRequestMultipart"];
+      };
+    };
+    responses: {
+      /** @description Payment proof updated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentProofResponse"];
+        };
+      };
+      /** @description Bad request - Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized - Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_application_payment_info_pdf: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Payment information PDF */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/pdf": string;
+        };
+      };
+      /** @description Application, institution, or bank information not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_application_create: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-Language": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ApplicationCreateRequest"];
+        "multipart/form-data": components["schemas"]["ApplicationCreateRequestMultipart"];
+      };
+    };
+    responses: {
+      /** @description Application created successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApplicationCreateResponse"];
+        };
+      };
+      /** @description Bad request - Invalid input */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized - Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_application_payment_info: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-Language": string;
+      };
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Payment information retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PaymentInfoResponse"];
+        };
+      };
+      /** @description Application or payment information not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_my_applications: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-Language": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Applications retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MyApplicationsResponse"];
+        };
+      };
+      /** @description Unauthorized - Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  tvet_application_status: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-Language": string;
+      };
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Application status retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApplicationStatusResponse"];
+        };
+      };
+      /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
     };

@@ -108,8 +108,8 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
             </Link>
           </Button>
           <ModalButton
-            modalTitle="Confirm registration?"
-            modalText="Are you sure all the details of the birth registration are correct? You have the option to amend."
+            modalTitle={t("ConfirmRegistration.title")}
+            modalText={t("ConfirmRegistration.content")}
             onConfirm={async () => {
               await updatePersonStatusById(person?.id ?? "", "success");
               return router.push(`${person.id}/success`);

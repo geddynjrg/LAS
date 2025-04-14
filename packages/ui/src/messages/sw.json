@@ -46,6 +46,13 @@
     "home": "Nenda kwenye ukurasa wa nyumbani"
   },
 
+  "Buttons": {
+    "confirm": "Thibitisha",
+    "back": "Rudi",
+    "amend": "Badilisha",
+    "backToDashboard": "Rudi kwenye dashibodi"
+  },
+
   "TrainingAreaBlock": {
     "title": "Maeneo ya mafunzo",
     "coursesAvailable": "{count, plural, =1 {# kozi inapatikana} other {# kozi zinapatikana}}."
@@ -98,5 +105,10 @@
   },
   "CourseBlock": {
     "viewAll": "Tazama zote"
+  },
+  "PersonCard": {
+    "sex": "Jinsia",
+    "age": "Umri",
+    "dob": "Tarehe ya kuzaliwa"
   }
 }
