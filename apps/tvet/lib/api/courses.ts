@@ -67,9 +67,9 @@ export interface CoursesTableDataQueryParams {
   institution?: string;
   page?: number;
   limit?: number;
-  sort?: string;
+  sort?: "title" | "created" | "changed" | "fee" | "duration";
   tags?: string[];
-  direction?: "ASC" | "DESC";
+  direction?: "asc" | "desc";
 }
 
 export async function getCoursesTableData(params: CoursesTableDataQueryParams) {
@@ -82,6 +82,7 @@ export async function getCoursesTableData(params: CoursesTableDataQueryParams) {
         max_fee: params.max_fee,
         min_duration: params.min_duration,
         max_duration: params.max_duration,
+        // @ts-expect-error - its an API issue (expects comma separated values)
         education_level: params.education_level,
         institution: params.institution,
         page: params.page,
