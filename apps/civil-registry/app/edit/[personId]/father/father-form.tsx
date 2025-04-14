@@ -3,9 +3,12 @@ import { type FC } from "react";
 
 import { Alert } from "@workspace/ui/components/alert";
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
+import { DataNode } from "@workspace/ui/components/data-node";
+import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Divider } from "@workspace/ui/components/divider";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import { Field, FieldGroup, Form } from "@workspace/ui/components/form";
+import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { useForm } from "@workspace/ui/hooks/use-form";
 import { useFormSubmitted } from "@workspace/ui/hooks/use-form-submitted";
@@ -19,6 +22,7 @@ import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 import { educationOptions } from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/data/person";
 import { getObjectDiff } from "@/lib/util/get-object-diff";
+import { nationalities } from "@/lib/util/nationalities";
 
 interface FatherFormBlockProps {
   defaultValues: Person;
@@ -42,6 +46,20 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
     fatherSchema,
     defaultValues,
   );
+
+  const nationalityOptions = nationalities.map((nationality) => ({
+    label: nationality,
+    value: nationality,
+  }));
+
+  const firstName = defaultValues?.firstName ?? "";
+  const lastName = defaultValues?.lastName ?? "";
+  const middleName = defaultValues?.middleName ?? "";
+
+  const fullName = [firstName, middleName, lastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
 
   useFormSubmitted(isPending, () => {
     if (!state.success) {
@@ -73,13 +91,66 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
             {t("DetailsPage.affidavit-required-text")}
           </Alert>
         )}
+        {isEditing && (
+          <NationalIdFields
+            searchSexFilter="M"
+            state={state}
+            defaultValues={defaultValues}
+            editable={isEditing}
+          />
+        )}
 
-        <NationalIdFields
-          searchSexFilter="M"
-          state={state}
-          defaultValues={defaultValues}
-          editable={isEditing}
-        />
+        {!isEditing && (
+          <>
+            <DataNode
+              label={t("DetailsPage.name")}
+              variant={disabled ? "disabled" : "default"}
+            >
+              <input type="hidden" name="firstName" value={firstName} />
+              <input type="hidden" name="middleName" value={middleName} />
+              <input type="hidden" name="lastName" value={lastName} />
+
+              {fullName ?? "–"}
+            </DataNode>
+            <Field
+              state={state}
+              editable={false}
+              name="nationalId"
+              label={t("DetailsPage.national-id")}
+              control={(props) => <Input {...props} />}
+            />
+
+            <Field
+              state={state}
+              name="dob"
+              isDate
+              editable={false}
+              label={t("DetailsPage.dob")}
+              control={(props) => <DatePicker {...props} />}
+            />
+
+            <input type="hidden" name="sex" value={state.values?.sex} />
+            <Field
+              state={state}
+              name="citizenship"
+              label={t("DetailsPage.citizenship")}
+              editable={false}
+              control={(props) => <Input {...props} />}
+            />
+
+            <Field
+              state={state}
+              defaultValues={defaultValues}
+              name="nationality"
+              label={t("DetailsPage.nationality")}
+              editable={isEditing}
+              control={(props) => (
+                <SearchInput {...props} options={nationalityOptions} />
+              )}
+              required={isEditing}
+            />
+          </>
+        )}
 
         <Field
           state={state}
@@ -92,14 +163,12 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
           )}
           required={isEditing}
         />
-
         <ContactFields
           state={state}
           defaultValues={defaultValues.contacts}
           editable={isEditing}
           hasEmail={false}
         />
-
         {isEditing && (
           <>
             <Divider />
@@ -139,7 +208,6 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
             </div>
           </>
         )}
-
         {!isEditing && state.values?.affidavit && (
           <FieldGroup label={t("DetailsPage.affidavit")}>
             <p>{state.values?.affidavit}</p>

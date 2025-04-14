@@ -115,7 +115,7 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
               return router.push(`${person.id}/success`);
             }}
           >
-            {t("DetailsPage.confirm-registration?")} <IconCheck />
+            {t("DetailsPage.confirm-registration")} <IconCheck />
           </ModalButton>
         </ActionBar>
       )}

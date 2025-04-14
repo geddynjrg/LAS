@@ -88,13 +88,6 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
         active={isEditing}
         toggleEdit={onEdit}
       >
-        <Field
-          state={state}
-          editable={false}
-          name="nationalId"
-          label={t("DetailsPage.national-id")}
-          control={(props) => <Input {...props} />}
-        />
         <DataNode
           label={t("DetailsPage.name")}
           variant={disabled ? "disabled" : "default"}
@@ -105,6 +98,13 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
 
           {fullName ?? "–"}
         </DataNode>
+        <Field
+          state={state}
+          editable={false}
+          name="nationalId"
+          label={t("DetailsPage.national-id")}
+          control={(props) => <Input {...props} />}
+        />
 
         <Field
           state={state}

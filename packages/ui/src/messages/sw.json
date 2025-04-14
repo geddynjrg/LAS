@@ -109,6 +109,8 @@
   "PersonCard": {
     "sex": "Jinsia",
     "age": "Umri",
-    "dob": "Tarehe ya kuzaliwa"
+    "dob": "Tarehe ya kuzaliwa",
+    "ageYears": "{count , plural, =1 {# mwaka} other {# miaka}}",
+    "ageMonths": "{count , plural, =1 {# mwezi} other {# miezi}}"
   }
 }

@@ -113,6 +113,8 @@
   "PersonCard": {
     "sex": "Sex",
     "age": "Age",
-    "dob": "Date of birth"
+    "dob": "Date of birth",
+    "ageYears": "{count , plural, =1 {# year} other {# years}}",
+    "ageMonths": "{count , plural, =1 {# month} other {# months}}"
   }
 }

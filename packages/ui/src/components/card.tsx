@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { FC, ReactNode } from "react";
 
 import { cn, cva, type VariantProps } from "@workspace/ui/lib/utils";
@@ -79,7 +80,8 @@ const ValidationNote: FC<ValidationNoteProps> = ({ variant, label }) => (
 );
 
 export const PersonCardLink: FC<{ children: ReactNode }> = ({ children }) => (
-  <a
+  <Link
+    href={"#"}
     className={cn(
       "typo-link",
       "flex items-center gap-1",
@@ -87,7 +89,7 @@ export const PersonCardLink: FC<{ children: ReactNode }> = ({ children }) => (
     )}
   >
     {children}
-  </a>
+  </Link>
 );
 
 export const PersonCardFooterWrap: FC<{ children: ReactNode }> = ({

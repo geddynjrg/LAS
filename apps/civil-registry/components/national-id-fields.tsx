@@ -98,7 +98,6 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
       ) : (
         <input type="hidden" name="nationalId" value="" />
       )}
-
       {editable &&
         (hasNationalId ? (
           <UnderlineButton
@@ -115,7 +114,6 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             <IconChevronLeft /> {t("back-to-national-id-search")}
           </UnderlineButton>
         ))}
-
       {hasNationalId ? (
         <>
           <DataNode label={t("name")} isHighlighted={isNameChanged}>
@@ -208,7 +206,6 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
           />
         </>
       )}
-
       <Field
         state={state}
         defaultValues={defaultValues}

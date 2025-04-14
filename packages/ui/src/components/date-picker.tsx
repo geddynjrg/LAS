@@ -2,7 +2,7 @@
 
 import { IconCalendarMonth } from "@tabler/icons-react";
 import { useFormatter } from "next-intl";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import { Calendar } from "@workspace/ui/components/calendar";
 import { inputVariants } from "@workspace/ui/components/input";
@@ -20,6 +20,7 @@ export interface DatePickerProps extends VariantProps<typeof inputVariants> {
   defaultValue?: Date | string;
   invalid?: boolean;
   disabled?: boolean;
+  onValueChange?: (value: Date | undefined) => void;
 }
 
 export const DatePicker: FC<DatePickerProps> = ({
@@ -28,12 +29,19 @@ export const DatePicker: FC<DatePickerProps> = ({
   defaultValue,
   invalid,
   disabled,
+  onValueChange,
   ...props
 }) => {
   const format = useFormatter();
   const [date, setDate] = useState<Date | undefined>(
     defaultValue ? new Date(defaultValue) : undefined,
   );
+
+  useEffect(() => {
+    if (onValueChange) {
+      onValueChange(date);
+    }
+  }, [date, onValueChange]);
 
   return (
     <Popover>

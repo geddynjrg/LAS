@@ -1,11 +1,24 @@
-export function getAgeByDoB(
-  dob: string,
-  autoFormat: boolean = false,
-): string | null {
-  if (!dob) return null;
+import { useTranslations } from "next-intl";
+import type { FC, ReactNode } from "react";
+
+export interface PersonAgeProps {
+  dob?: string;
+  autoFormat?: boolean;
+  children?: ReactNode;
+}
+
+export const PersonAge: FC<PersonAgeProps> = ({ dob, autoFormat }) => {
+  const t = useTranslations("PersonCard");
+
+  if (!dob) {
+    return "N/A";
+  }
 
   const birthDate = new Date(dob);
-  if (isNaN(birthDate.getTime())) return null; // Invalid date check
+  // Invalid date check
+  if (isNaN(birthDate.getTime())) {
+    return "N/A";
+  }
 
   const today = new Date();
   let ageYears = today.getFullYear() - birthDate.getFullYear();
@@ -27,11 +40,11 @@ export function getAgeByDoB(
 
   if (autoFormat) {
     if (ageYears > 0) {
-      return `${ageYears} ${ageYears === 1 ? "year" : "years"}`;
+      return t("ageYears", { count: ageYears });
     } else {
-      return `${ageMonths} ${ageMonths === 1 ? "month" : "months"}`;
+      return t("ageMonths", { count: ageMonths });
     }
   }
 
   return ageYears.toString();
-}
+};

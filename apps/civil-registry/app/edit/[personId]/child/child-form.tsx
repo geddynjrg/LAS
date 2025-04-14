@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { type FC, type ReactNode } from "react";
 
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
+import { PersonAge } from "@workspace/ui/components/civil-registry/person-age";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field, Form } from "@workspace/ui/components/form";
@@ -77,6 +78,7 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
       />
       <DataBlock
         title={t(`DetailsPage.title-child`)}
+        description={t("DetailsPage.description")}
         disabled={disabled}
         active={isEditing}
         isPending={isPending}
@@ -87,7 +89,6 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           name="natureOfBirth"
           value={state.values?.natureOfBirth}
         />
-
         {isEditing ? (
           <>
             <Field
@@ -122,7 +123,6 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
             {fullName ?? "–"}
           </DataNode>
         )}
-
         <Field
           state={state}
           name="dob"
@@ -131,8 +131,13 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           label={t("DetailsPage.dob")}
           control={(props) => <DatePicker {...props} />}
         />
-
         <EditMessage>{t("DetailsPage.change-dob-message")}</EditMessage>
+
+        {!isEditing && (
+          <DataNode label={t("DetailsPage.age")}>
+            <PersonAge dob={state.values?.dob} autoFormat />
+          </DataNode>
+        )}
 
         <DataNode
           label={t("DetailsPage.sex")}
@@ -141,9 +146,7 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           <input type="hidden" name="sex" value={state.values?.sex} />
           {state.values?.sex && sexDisplayFormat[state.values.sex]}
         </DataNode>
-
         <EditMessage>{t("DetailsPage.change-sex-message")}</EditMessage>
-
         <Field
           state={state}
           name="weightOnBirth"
@@ -151,17 +154,15 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           label={t("DetailsPage.birth-weight")}
           control={(props) => <Input {...props} endDecorator="kg" />}
         />
-
         {state.values?.healthInstitution !== "OTHER" && (
           <Field
             state={state}
             name="healthInstitution"
             editable={false}
-            label={t("DetailsPage.health-institution")}
+            label={t("DetailsPage.place-of-birth")}
             control={(props) => <Input {...props} />}
           />
         )}
-
         {state.values?.healthInstitution === "OTHER" && (
           <>
             <Field

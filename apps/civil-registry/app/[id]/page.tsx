@@ -16,7 +16,6 @@ import { cn } from "@workspace/ui/lib/utils";
 
 import { getPersonById } from "@/actions/get-person-by-id";
 import type { Person, ValidationStatus } from "@/lib/data/person";
-import { getAgeByDoB } from "@/lib/util/age";
 import { getFullName } from "@/lib/util/full-name";
 
 export interface MainPageProps {
@@ -69,8 +68,10 @@ export default async function Page({ params }: MainPageProps) {
                   ...child,
                   id: child?.id ?? "",
                   name: getFullName(child),
-                  dob: child.dob ? format.dateTime(new Date(child.dob)) : "N/A",
-                  age: child.dob ? getAgeByDoB(child.dob, true) : "N/A",
+                  dobFormatted: child.dob
+                    ? format.dateTime(new Date(child.dob))
+                    : "N/A",
+                  dob: child.dob ? child.dob : "N/A",
                 }}
                 statusLabel={t(
                   "Components.person-card.certificate-unavailable",
@@ -101,8 +102,10 @@ export default async function Page({ params }: MainPageProps) {
                   ...child,
                   id: child?.id ?? "",
                   name: getFullName(child),
-                  dob: child.dob ? format.dateTime(new Date(child.dob)) : "N/A",
-                  age: child.dob ? getAgeByDoB(child.dob, true) : "N/A",
+                  dobFormatted: child.dob
+                    ? format.dateTime(new Date(child.dob))
+                    : "N/A",
+                  dob: child.dob ? child.dob : "N/A",
                 }}
                 variant="warning"
                 statusLabel={t("Components.person-card.amendments-processed")}
@@ -131,19 +134,21 @@ export default async function Page({ params }: MainPageProps) {
                   ...child,
                   id: child?.id ?? "",
                   name: getFullName(child),
-                  dob: child.dob ? format.dateTime(new Date(child.dob)) : "N/A",
-                  age: child.dob ? getAgeByDoB(child.dob, true) : "N/A",
+                  dobFormatted: child.dob
+                    ? format.dateTime(new Date(child.dob))
+                    : "N/A",
+                  dob: child.dob ? child.dob : "N/A",
                 }}
                 variant="success"
                 statusLabel={t("Components.person-card.certificate-available")}
                 footer={
                   <PersonCardFooterWrap>
                     <PersonCardLink>
-                      <IconPrinter />
+                      <IconId />
                       {t("Components.person-card.view-certificate")}
                     </PersonCardLink>
                     <PersonCardLink>
-                      <IconId />
+                      <IconPrinter />
                       {t("Components.person-card.issuance")}
                     </PersonCardLink>
                   </PersonCardFooterWrap>

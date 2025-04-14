@@ -89,10 +89,6 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
     ]);
   };
 
-  const removeChild = (id: string) => {
-    setChildren((_prev) => _prev.filter((child) => child.id !== id));
-  };
-
   return (
     <FormWrap
       action={formAction}

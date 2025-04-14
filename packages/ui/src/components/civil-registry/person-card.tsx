@@ -3,6 +3,7 @@ import type { FC } from "react";
 
 import { Alert } from "@workspace/ui/components/alert";
 import { Card, type CardProps } from "@workspace/ui/components/card";
+import { PersonAge } from "@workspace/ui/components/civil-registry/person-age";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { cn } from "@workspace/ui/lib/utils";
@@ -14,7 +15,7 @@ export type PersonType = {
   id: string;
   name: string;
   dob: string;
-  age: string | null;
+  dobFormatted: string;
   sex?: SexType | null | undefined;
   validationStatus?: ValidationStatus;
 };
@@ -25,7 +26,7 @@ export interface PersonCardProps extends CardProps {
 
 export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
   const t = useTranslations("PersonCard");
-  const { name, sex, age, dob, validationStatus } = person ?? {};
+  const { name, sex, dob, dobFormatted, validationStatus } = person ?? {};
 
   return (
     <Card title={name} {...props}>
@@ -47,10 +48,28 @@ export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
           "md:gap-0 md:self-auto",
         )}
       >
-        <DataNode label={t("sex")}>{sex}</DataNode>
-        <DataNode label={t("age")}>{age}</DataNode>
-        <DataNode label={t("dob")}>{dob}</DataNode>
+        <DataNode label={t("sex")}>
+          <PersonSex sex={sex} />
+        </DataNode>
+        <DataNode label={t("age")}>
+          <PersonAge dob={dob} autoFormat />
+        </DataNode>
+        <DataNode label={t("dob")}>{dobFormatted}</DataNode>
       </DataPair>
     </Card>
   );
 };
+
+function PersonSex({ sex }: { sex: SexType | null | undefined }) {
+  const t = useTranslations("DetailsPage");
+  switch (sex) {
+    case "M":
+      return t("male");
+    case "F":
+      return t("female");
+    case "I":
+      return t("intersex");
+    default:
+      return "-";
+  }
+}
