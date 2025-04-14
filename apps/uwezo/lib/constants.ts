@@ -19,7 +19,7 @@ export const steps: Step[] = [
 export const loanTypeValues = {
   Endeleza: {
     title: "Endeleza",
-    maxLoanAmount: 1000000,
+    maxLoanAmount: 500000,
   },
   Wezesha: {
     title: "Wezesha",

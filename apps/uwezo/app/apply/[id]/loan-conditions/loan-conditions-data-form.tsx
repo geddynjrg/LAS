@@ -59,9 +59,9 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
   const loanTypes = {
     Endeleza: {
       title: "Endeleza",
-      maxLoanAmount: "100 000",
+      maxLoanAmount: "500 000",
       content: {
-        title: t("ApplicationDetailsPage.loan.LoanDescription"),
+        title: t("ApplicationDetailsPage.loan.LoanDescriptionEndeleza"),
         underText: t("ApplicationDetailsPage.loan.Interest"),
       },
     },
@@ -69,7 +69,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
       title: "Wezesha",
       maxLoanAmount: "100 000",
       content: {
-        title: t("ApplicationDetailsPage.loan.LoanDescription"),
+        title: t("ApplicationDetailsPage.loan.LoanDescriptionWezesha"),
         underText: t("ApplicationDetailsPage.loan.Interest"),
       },
     },
@@ -140,7 +140,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
 
           {selectedType === loanTypes.Wezesha.title && (
             <Card variant="blue" radius="sm">
-              <p>{loanTypes.Endeleza.content.title}</p>
+              <p>{loanTypes.Wezesha.content.title}</p>
               <br />
               <p className="font-bold">{loanTypes.Wezesha.content.underText}</p>
             </Card>
