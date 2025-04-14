@@ -1,5 +1,6 @@
 import { IconMail, IconPhone } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -7,8 +8,6 @@ import { Container } from "@workspace/ui/components/container";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 import { Underline } from "@workspace/ui/components/underline";
 import { cn } from "@workspace/ui/lib/utils";
-
-import Link from "../../../../../../apps/docs/mocks/link";
 
 export interface ContactBlockProps {
   className?: string;

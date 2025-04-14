@@ -9,6 +9,7 @@ import { Heading } from "@workspace/ui/components/tvet/heading";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { getProfile } from "@/lib/api/profile";
+import { getUserApplications } from "@/lib/api/user-applications";
 
 type ApplicationStatus = "accepted" | "pending" | "rejected";
 
@@ -75,6 +76,9 @@ const MOCK_COURSES: CourseType[] = [
 export default async function DashboardPage() {
   const courses = MOCK_COURSES;
   const userProfile = await getProfile();
+  const userApplications = await getUserApplications();
+
+  console.log("userApplications", userApplications);
 
   return (
     <SectionWrap hasBottomPadding>
@@ -87,6 +91,32 @@ export default async function DashboardPage() {
             No open applications
           </h5>
         )}
+
+        {userApplications &&
+          userApplications.data.map((application) => (
+            <CardWrap key={application.id}>
+              <Card
+                className={cn("border-primary")}
+                title={application.course}
+                caption={application.institution}
+                statusLabel={application.application_status}
+                variant={
+                  application.application_status === "accepted"
+                    ? "success"
+                    : application.application_status === "rejected"
+                      ? "danger"
+                      : "warning"
+                }
+              >
+                <DataPair className={cn("justify-around")}>
+                  {/* <DataNode label="Intake">{application.intake}</DataNode>
+                  <DataNode label="Duration">{application.duration}</DataNode> */}
+                </DataPair>
+
+                <Button>View next steps</Button>
+              </Card>
+            </CardWrap>
+          ))}
 
         {/* accepted applications */}
         {getApplicationsByStatus(courses, "accepted") && (

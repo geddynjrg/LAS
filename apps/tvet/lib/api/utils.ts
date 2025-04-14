@@ -12,14 +12,15 @@ export const api = createClient<paths>({
 
 api.use({
   async onRequest({ request }) {
-    const [headersList, locale, session] = await Promise.all([
-      headers(),
-      getLocale(),
-      getSession(),
-    ]);
+    const [headersList, session] = await Promise.all([headers(), getSession()]);
 
-    request.headers.set("x-path", headersList.get("x-path") || "");
-    request.headers.set("x-language", locale || "");
+    if (!request.headers.has("X-Path")) {
+      request.headers.set("X-Path", headersList.get("x-path") || "");
+    }
+
+    if (!request.headers.has("X-Language")) {
+      request.headers.set("X-Language", (await getLocale()) || "");
+    }
 
     if (session) {
       request.headers.set("authorization", `Bearer ${session}`);
