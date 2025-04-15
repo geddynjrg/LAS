@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useMemo, useState, type FC } from "react";
 
 import {
@@ -40,6 +41,8 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
   id,
   defaultValues,
 }) => {
+  const t = useTranslations("ApplicantForm");
+
   const nationalIdTypes = useMemo(
     () =>
       [
@@ -73,7 +76,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
             <Field
               state={state}
               name="nationalId"
-              label="National ID"
+              label={t("nationalId")}
               required
               control={(props) => <Input {...props} />}
             />
@@ -86,14 +89,14 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
             <Field
               state={state}
               name="birthCertificateNumber"
-              label="Birth Certificate Number"
+              label={t("birthCertificateNumber")}
               required
               control={(props) => <Input {...props} />}
             />
             <Field
               state={state}
               name="birthCertificateFile"
-              label="Birth Certificate"
+              label={t("birthCertificateFile")}
               required
               control={(props) => (
                 <FileUploadInput
@@ -112,7 +115,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
             <Field
               state={state}
               name="alienId"
-              label="Alien ID"
+              label={t("alienId")}
               required
               control={(props) => <Input {...props} />}
             />
@@ -120,7 +123,9 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
             <Field
               state={state}
               name="alienIdIsRefugee"
-              control={(props) => <Checkbox {...props}>I am refugee</Checkbox>}
+              control={(props) => (
+                <Checkbox {...props}>{t("isRefugee")}</Checkbox>
+              )}
             />
           </>
         );
@@ -137,7 +142,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         <Field
           state={state}
           name="natureOfDisability"
-          label="Nature of disability"
+          label={t("natureOfDisability")}
           required
           control={(props) => <Select options={dummyDisabilities} {...props} />}
         />
@@ -145,7 +150,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         <Field
           state={state}
           name="disabilityCardNumber"
-          label="Disability Card Number"
+          label={t("disabilityCardNumber")}
           required
           control={(props) => <Input {...props} />}
         />
@@ -153,7 +158,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         <Field
           state={state}
           name="disabilityCardPicture"
-          label="Disability Card Picture"
+          label={t("disabilityCardPicture")}
           required
           control={(props) => (
             <FileUploadInput
@@ -167,7 +172,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         <Field
           state={state}
           name="disabilityLevel"
-          label="Level of disability"
+          label={t("disabilityLevel")}
           required
           control={(props) => (
             <Select options={dummyDisabilityLevels} {...props} />
@@ -177,7 +182,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         <Field
           state={state}
           name="disabilityDescription"
-          label="Description of requirements (learning aids, medication, etc.)"
+          label={t("disabilityDescription")}
           required
           control={(props) => <Textarea {...props} />}
         />
@@ -191,13 +196,13 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       cancelUrl="/dashboard"
       className="space-y-4"
     >
-      <ApplyFormSubtitle>Applicant info</ApplyFormSubtitle>
+      <ApplyFormSubtitle>{t("appicantInfo")}</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
 
       <Field
         state={state}
         name="firstName"
-        label="First Name"
+        label={t("firstName")}
         required
         control={(props) => <Input {...props} />}
       />
@@ -205,14 +210,14 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       <Field
         state={state}
         name="middleName"
-        label="Middle Name"
+        label={t("middleName")}
         control={(props) => <Input {...props} />}
       />
 
       <Field
         state={state}
         name="surname"
-        label="Surname"
+        label={t("surname")}
         required
         control={(props) => <Input {...props} />}
       />
@@ -220,13 +225,13 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       <Field
         state={state}
         name="sex"
-        label="Sex"
+        label={t("sex")}
         required
         control={(props) => (
           <ButtonGroup {...props} type="single">
-            <ButtonGroupItem value="male">Male</ButtonGroupItem>
-            <ButtonGroupItem value="female">Female</ButtonGroupItem>
-            <ButtonGroupItem value="intersex">Intersex</ButtonGroupItem>
+            <ButtonGroupItem value="male">{t("male")}</ButtonGroupItem>
+            <ButtonGroupItem value="female">{t("female")}</ButtonGroupItem>
+            <ButtonGroupItem value="intersex">{t("intersex")}</ButtonGroupItem>
           </ButtonGroup>
         )}
       />
@@ -234,7 +239,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       <Field
         state={state}
         name="dateOfBirth"
-        label="Date of birth"
+        label={t("dateOfBirth")}
         required
         control={(props) => <DatePicker {...props} />}
       />
@@ -242,7 +247,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       <Field
         state={state}
         name="idType"
-        label="Which form of ID do you have?"
+        label={t("idType")}
         required
         control={(props) => (
           <RadioGroup
@@ -260,7 +265,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       <Field
         state={state}
         name="email"
-        label="Email"
+        label={t("email")}
         control={(props) => <Input type="email" {...props} />}
       />
 
@@ -269,14 +274,14 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         name="personWithDisabilities"
         control={(props) => (
           <Checkbox {...props} onValueChange={setIsPersonWithDisabilities}>
-            Person with disabilities
+            {t("personWithDisabilities")}
           </Checkbox>
         )}
       />
 
       <DisabilitiesFields />
 
-      <ApplyFormSubtitle className="mt-8">Address</ApplyFormSubtitle>
+      <ApplyFormSubtitle className="mt-8">{t("address")}</ApplyFormSubtitle>
 
       <Field
         state={state}
@@ -287,7 +292,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
           <SearchInput
             {...props}
             onValueChange={setChosenCounty}
-            placeholder="Choose or search"
+            placeholder={t("chooseOrSearch")}
             options={dummyCounties.map((county) => ({
               label: county.name,
               value: county.name,
@@ -299,12 +304,12 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       <Field
         state={state}
         name="subCounty"
-        label="Subcounty"
+        label={t("subCounty")}
         required
         control={(props) => (
           <SearchInput
             {...props}
-            placeholder="Choose or search"
+            placeholder={t("chooseOrSearch")}
             options={dummyCounties
               .find((county) => county.name === chosenCounty)
               ?.constituencies.map((c) => ({
@@ -318,9 +323,9 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       <Field
         state={state}
         name="ward"
-        label={"Ward"}
+        label={t("ward")}
         required
-        control={(props) => <Input placeholder="Enter ward" {...props} />}
+        control={(props) => <Input placeholder={t("enterWard")} {...props} />}
       />
     </ApplyFormWrap>
   );

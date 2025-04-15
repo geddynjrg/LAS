@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
@@ -8,51 +9,36 @@ import {
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
 
-export default function ApplyPage() {
+export default async function ApplyPage() {
+  const t = await getTranslations("ApplyPage");
   return (
     <div className="flex flex-1 flex-col">
       <Container className="max-w-[500px] flex-1">
-        <h2 className="typo-h2">Before you start</h2>
-        <p className="mt-4">
-          Here are some things you should know before starting the application
-          process
-        </p>
+        <h2 className="typo-h2">{t("title")}</h2>
+        <p className="mt-4">{t("description")}</p>
         <NumberedList
           variant="bulletNumbers"
           bulletAlignment="top"
           className="mx-auto mt-8"
         >
           <NumberedListItem>
-            <p className="typo-h6">
-              Here are some things you should know before starting the
-              application process
-            </p>
-            <p className="mt-2">
-              This fee doesn’t guarantee admittance, it’s for processing your
-              application
-            </p>
+            <p className="typo-h6">{t("1Heading")}</p>
+            <p className="mt-2">{t("1Description")}</p>
           </NumberedListItem>
           <NumberedListItem>
-            <p className="typo-h6">You will need some form of ID</p>
-            <p className="mt-2">
-              You will need to upload a picture of either your National ID,
-              Birth Certificate or Alien ID
-            </p>
+            <p className="typo-h6">{t("2Heading")}</p>
+            <p className="mt-2">{t("2Description")}</p>
           </NumberedListItem>
           <NumberedListItem>
-            <p className="typo-h6">If you don’t have any form of ID</p>
-            <p className="mt-2">
-              You will need to contact the institution directly and discuss
-              options for applying. The institution contact are on the
-              institution page
-            </p>
+            <p className="typo-h6">{t("3Heading")}</p>
+            <p className="mt-2">{t("3Description")}</p>
           </NumberedListItem>
         </NumberedList>
       </Container>
 
       <ActionBar>
         <Button className="px-22 mx-auto" asChild>
-          <Link href="/apply/1/applicant">Understood</Link>
+          <Link href="/apply/1/applicant">{t("undertood")}</Link>
         </Button>
       </ActionBar>
     </div>

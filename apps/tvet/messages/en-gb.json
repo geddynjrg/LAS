@@ -76,7 +76,6 @@
     "description": "Enter your e-mail address to reset your password.",
     "email": "E-mail",
     "reset": "Reset",
-    "backTo": "Back to",
     "success": "Reset email sent"
   },
 
@@ -94,5 +93,53 @@
     "learnMore": "Learn more",
     "doYouHaveAnyQuestions": "Do you have any questions?",
     "getInTouch": "Get in contact with us and we’ll help you get the answers you need."
+  },
+
+  "ApplyPage": {
+    "title": "Before you start",
+    "description": "Here are some things you should know before starting the application process",
+    "1Heading": "Applying requires a one time fee of 250 KSh",
+    "1Description": "This fee doesn’t guarantee admittance, it’s for processing your application",
+    "2Heading": "You will need some form of ID",
+    "2Description": "You will need to upload a picture of either your National ID, Birth Certificate or Alien ID",
+    "3Heading": "If you don’t have any form of ID",
+    "3Description": "You will need to contact the institution directly and discuss options for applying. The institution contact are on the institution page",
+    "undertood": "Understood"
+  },
+
+  "PhoneNumbersField": {
+    "phoneNumber": "Phone number",
+    "addAnotherPhoneNumber": "Add another phone number"
+  },
+
+  "ApplicantForm": {
+    "nationalId": "National ID",
+    "birthCertificateNumber": "Birth certificate number",
+    "birthCertificateFile": "Birth Certificate",
+    "alienId": "Alien ID",
+    "isRefugee": "I am a refugee",
+    "natureOfDisability": "Nature of disability",
+    "disabilityCardNumber": "Disability card number",
+    "disabilityCardPicture": "Disability Card Picture",
+    "disabilityLevel": "Disability level",
+    "disabilityDescription": "Description of requirements (learning aids, medication, etc.)",
+    "appicantInfo": "Applicant info",
+    "firstName": "First name",
+    "middleName": "Middle name",
+    "surname": "Surname",
+    "sex": "Sex",
+    "male": "Male",
+    "female": "Female",
+    "intersex": "Intersex",
+    "dateOfBirth": "Date of birth",
+    "idType": "Which form of ID do you have?",
+    "email": "Email",
+    "personWithDisabilities": "Person with disabilities",
+    "address": "Address",
+    "county": "County",
+    "subCounty": "Subcounty",
+    "chooseOrSearch": "Choose or search",
+    "ward": "Ward",
+    "enterWard": "Enter ward"
   }
 }
