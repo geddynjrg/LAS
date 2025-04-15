@@ -125,7 +125,8 @@
     "steps-required": "Steps required",
     "affidavit-edit-message": "How do I obtain an affidavit?",
     "affidavit-required-text": "To change the father’s information you need to provide an affidavit. Please attach the document at the end of the following form.",
-    "steps-required-text": "Explanation if steps needed to change father information in birth registration."
+    "steps-required-text": "Explanation if steps needed to change father information in birth registration.",
+    "name-change-description": "The name of the child can be changed up to two years after birth."
   },
   "SuccessPage": {
     "title": "Thank you for validating your child’s birth registration data!",

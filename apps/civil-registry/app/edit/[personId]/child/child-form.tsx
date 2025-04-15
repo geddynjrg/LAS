@@ -105,9 +105,11 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
               name="middleName"
               editable={true}
               label={t("DetailsPage.middle-name")}
+              description={t("DetailsPage.name-change-description")}
               control={(props) => <Input {...props} />}
             />
 
+            <DataNode label={t("DetailsPage.lastname")}>{lastName}</DataNode>
             <input type="hidden" name="lastName" value={lastName} />
           </>
         ) : (

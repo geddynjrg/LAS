@@ -29,6 +29,7 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
   const router = useRouter();
   const [editablePersonId, setEditablePersonId] = useState<string | null>(null);
   const [requirePayment, setRequirePayment] = useState(false);
+  const [editedPersonName, setEditedPersonName] = useState<string | null>(null);
 
   const father = person.father as Person;
   const mother = person.mother as Person;
@@ -52,7 +53,9 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
           url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
         />
 
-        <h2 className={cn("typo-h2")}>{person && getFullName(person)}</h2>
+        <h2 className={cn("typo-h2")}>
+          {editedPersonName ?? (person && getFullName(person))}
+        </h2>
 
         <div className={cn("space-y-12")}>
           <ChildFormBlock
@@ -61,6 +64,21 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
             isEditing={editablePersonId === person.id}
             onEdit={() => toggleEdit(person.id)}
             onSubmit={(changedValues) => {
+              if (
+                "firstName" in changedValues ||
+                "middleName" in changedValues ||
+                "lastName" in changedValues
+              ) {
+                const name = [
+                  changedValues.firstName ?? person.firstName,
+                  changedValues.middleName ?? person.middleName,
+                  changedValues.lastName ?? person.lastName,
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+
+                setEditedPersonName(name);
+              }
               toggleEdit(null);
 
               setRequirePayment(Object.keys(changedValues).length > 0);

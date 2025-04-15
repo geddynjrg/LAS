@@ -125,7 +125,8 @@
     "steps-required": "Hatua zinazohitajika",
     "affidavit-edit-message": "Ninawezaje kupata kiapo?",
     "affidavit-required-text": "Kubadilisha taarifa za baba unahitaji kutoa kiapo. Tafadhali ambatisha hati hiyo mwishoni mwa fomu ifuatayo.",
-    "steps-required-text": "Maelezo ya hatua zinazohitajika kubadilisha taarifa za baba kwenye usajili wa kuzaliwa."
+    "steps-required-text": "Maelezo ya hatua zinazohitajika kubadilisha taarifa za baba kwenye usajili wa kuzaliwa.",
+    "name-change-description": "Jina la mtoto linaweza kubadilishwa hadi miaka miwili baada ya kuzaliwa."
   },
   "SuccessPage": {
     "title": "Asante kwa kuthibitisha data ya usajili wa kuzaliwa kwa mtoto wako!",
