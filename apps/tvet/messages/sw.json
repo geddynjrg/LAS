@@ -4,6 +4,7 @@
     "closeMenu": "Funga menyu",
     "apply": "Omba",
     "viewAll": "Tazama zote",
+    "availableSponsorships": "Udhamini unaopatikana",
     "myProfile": "Profaili yangu",
     "myApplications": "Maombi yangu",
     "signOut": "Toka"
@@ -26,6 +27,7 @@
     "duration": "Muda",
     "months": "{month, plural, =1 {# mwezi} other {# miezi}}",
     "educationLevel": "Elimu inayohitajika awali",
+    "tags": "Maeneo ya Mafunzo",
     "location": "Mahali",
     "locationPlaceholder": "- Chagua VTC -",
     "openFilter": "Fungua kichujio",
@@ -60,6 +62,7 @@
   "SignUpPage": {
     "title": "Unda Akaunti",
     "description": "Jaza maelezo hapa chini ili kuunda akaunti yako.",
+    "username": "Jina la mtumiaji",
     "email": "Barua pepe",
     "password": "Nenosiri",
     "passwordConfirm": "Thibitisha nenosiri",
@@ -68,16 +71,22 @@
     "login": "Ingia"
   },
 
+  "ResetRequestPage": {
+    "title": "Weka upya Nenosiri",
+    "description": "Ingiza anwani yako ya barua pepe ili kuweka upya nenosiri lako.",
+    "email": "Barua pepe",
+    "reset": "Weka upya",
+    "success": "Barua pepe ya kuweka upya imetumwa"
+  },
+
   "ResetPage": {
     "title": "Weka Upya Nenosiri",
     "description": "Ingiza anwani yako ya barua pepe ili kuweka upya nenosiri lako.",
-    "email": "Barua pepe",
-    "alreadyHaveAccount": "Tayari una akaunti?",
-    "login": "Ingia",
-    "reset": "Weka upya",
-    "backTo": "Rudi kwa",
-    "success": "Barua pepe ya kuweka upya imetumwa",
-    "successDescription": "Barua pepe imetumwa kwa anwani yako ya barua pepe na maelekezo ya jinsi ya kuweka upya nenosiri lako."
+    "password": "Nenosiri Jipya",
+    "passwordConfirm": "Thibitisha Nenosiri Jipya",
+    "change": "Badilisha",
+    "success": "Nenosiri limebadilishwa.",
+    "login": "Nenda kwenye Ingia"
   },
 
   "InstitutionPage": {
@@ -86,14 +95,15 @@
     "getInTouch": "Wasiliana nasi na tutakusaidia kupata majibu unayohitaji."
   },
 
-  "TrainingAreaBlock": {
-    "title": "Maeneo ya Mafunzo",
-    "coursesAvailable": "{count, plural, =1 {# kozi inapatikana} other {# kozi zinapatikana}}."
-  },
-
-  "HighlightedCourseListingBlock": {
-    "title": "Omba sasa",
-    "searchTitle": "Tafuta kozi",
-    "linkTitle": "Tazama zote"
+  "ApplyPage": {
+    "title": "Kabla hujaanza",
+    "description": "Hapa kuna mambo unapaswa kujua kabla ya kuanza mchakato wa maombi",
+    "1Heading": "Kuomba kunahitaji ada ya mara moja ya 250 KSh",
+    "1Description": "Ada hii haihakikishi kuingia, ni kwa ajili ya kuchakata maombi yako",
+    "2Heading": "Utahitaji aina fulani ya kitambulisho",
+    "2Description": "Utahitaji kupakia picha ya kitambulisho chako cha kitaifa, cheti cha kuzaliwa au kitambulisho cha wageni",
+    "3Heading": "Ikiwa huna aina yoyote ya kitambulisho",
+    "3Description": "Utahitaji kuwasiliana moja kwa moja na taasisi na kujadili chaguzi za kuomba. Mawasiliano ya taasisi yako yapo kwenye ukurasa wa taasisi",
+    "undertood": "Nimeelewa"
   }
 }
