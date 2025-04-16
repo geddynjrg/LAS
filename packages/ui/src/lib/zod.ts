@@ -48,6 +48,14 @@ export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
       return getIntlKey("invalid_date", issue);
     }
 
+    case "invalid_enum_value": {
+      if (issue.received === "") {
+        return getIntlKey("required");
+      }
+
+      return { message: ctx.defaultError };
+    }
+
     default:
       return { message: ctx.defaultError };
   }
@@ -109,10 +117,9 @@ export function validFile(accept: Accept, fileSize: number) {
         getIntlKey("invalid"),
       ),
     z.object({
-      id: z.string(),
-      name: z.string(),
-      type: z.string(),
-      url: z.string(),
+      fid: z.number(),
+      filename: z.string(),
+      url: z.string().optional(),
     }),
   ]);
 }

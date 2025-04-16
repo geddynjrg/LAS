@@ -18,7 +18,7 @@ import {
 } from "@workspace/ui/components/dropzone";
 import { cn } from "@workspace/ui/lib/utils";
 
-type ServerFile = { id: string; name: string; type: string; url: string };
+type ServerFile = { fid: string; filename: string; url: string };
 
 export type FileUploadInputValue = File | ServerFile | string;
 
@@ -84,8 +84,6 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
     setResetCount((prev) => prev + 1);
   }
 
-  console.log("props", props);
-
   return (
     <Dropzone
       key={resetCount}
@@ -110,9 +108,12 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
 
       {serverFile && (
         <>
-          <input type="hidden" name={`${name}.id`} value={serverFile.id} />
-          <input type="hidden" name={`${name}.name`} value={serverFile.name} />
-          <input type="hidden" name={`${name}.type`} value={serverFile.type} />
+          <input type="hidden" name={`${name}.fid`} value={serverFile.fid} />
+          <input
+            type="hidden"
+            name={`${name}.filename`}
+            value={serverFile.filename}
+          />
           <input type="hidden" name={`${name}.url`} value={serverFile.url} />
         </>
       )}
@@ -158,6 +159,9 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
                 "shadow",
                 attachmentBgInverted && "bg-site-background",
               )}
+              url={
+                typeof file === "object" && "url" in file ? file.url : undefined
+              }
               onDelete={() => handleDelete(index)}
             >
               {getFileName(file)}
@@ -198,7 +202,7 @@ function getFileName(file: FileUploadInputValue) {
   }
 
   if (typeof file === "object" && file !== null) {
-    return file.name;
+    return file.filename;
   }
 
   return "";

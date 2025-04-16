@@ -6,6 +6,7 @@ import { cn } from "@workspace/ui/lib/utils";
 
 export interface AttachmentProps {
   error?: string;
+  url?: string;
   onDelete?: (e: MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   children?: ReactNode;
@@ -13,6 +14,7 @@ export interface AttachmentProps {
 
 export const Attachment: FC<AttachmentProps> = ({
   error,
+  url,
   onDelete,
   className,
   children,
@@ -30,7 +32,13 @@ export const Attachment: FC<AttachmentProps> = ({
           {error && (
             <IconExclamationCircleFilled className="text-destructive" />
           )}
-          <div>{children}</div>
+          {url && !url.startsWith("blob") ? (
+            <a href={url} target="_blank" rel="noreferrer">
+              {children}
+            </a>
+          ) : (
+            <div>{children}</div>
+          )}
         </div>
 
         {onDelete && (

@@ -151,3 +151,26 @@ export default function mergeRefs<T>(
     }
   };
 }
+
+export async function fileToBase64(
+  file: File,
+): Promise<{ data: string; filename: string }> {
+  const arrayBuffer = await file.arrayBuffer();
+  const base64String = btoa(
+    String.fromCharCode(...new Uint8Array(arrayBuffer)),
+  );
+
+  return {
+    data: `data:${file.type};base64,${base64String}`,
+    filename: file.name,
+  };
+}
+
+export async function prepareFileForUpload<T>(file: T) {
+  if (file instanceof File) {
+    return fileToBase64(file);
+  }
+
+  // return file as Exclude<T, File>; // TODO: fix this type once api is fixed
+  return file as unknown as { data: string; filename: any };
+}

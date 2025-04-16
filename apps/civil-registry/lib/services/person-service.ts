@@ -187,9 +187,8 @@ export async function updatePersonStatus(
 function saveFile(file: File) {
   // TODO: if we want to store real files, we need to upload them to a server
   const fileObject: ValidFile = {
-    id: `${file.name}-${URL.createObjectURL(file)}`,
-    name: file.name,
-    type: file.type,
+    fid: Date.now() + Math.random(),
+    filename: file.name,
     url: URL.createObjectURL(file),
   };
 

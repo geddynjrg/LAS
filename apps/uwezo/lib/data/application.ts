@@ -76,7 +76,7 @@ export interface Member {
   gender?: GenderType;
   type?: MemberType;
   phoneNumber?: string;
-  photoOfId?: File;
+  photoOfId?: ValidFile;
   disability?: {
     certificateOfDisability: string;
     pwdNumber?: string;
@@ -371,9 +371,8 @@ function saveFile(file: File) {
   console.log("save file", file);
   // TODO: if we want to store real files, we need to upload them to a server
   const fileObject: ValidFile = {
-    id: `${file.name}-${URL.createObjectURL(file)}`,
-    name: file.name,
-    type: file.type,
+    fid: `${file.name}-${URL.createObjectURL(file)}`,
+    filename: file.name,
     url: URL.createObjectURL(file),
   };
 
