@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion";
 import { DataNode } from "@workspace/ui/components/data-node";
+import type { ValidFile } from "@workspace/ui/lib/zod";
 
 import type { GroupData } from "@/lib/data/application";
 
@@ -48,10 +49,10 @@ export const ApplicationReviewGroupData: FC<{
                 <DataNode
                   label={t("groupData.basicInfo.groupRegistrationCert")}
                 >
-                  {groupData.basics.groupRegistrationCertificate.name}
+                  {getFileName(groupData.basics.groupRegistrationCertificate)}
                 </DataNode>
                 <DataNode label={t("groupData.basicInfo.listOfMembersOnCert")}>
-                  {groupData.basics.listOfMembersOnCertificate.name}
+                  {getFileName(groupData.basics.listOfMembersOnCertificate)}
                 </DataNode>
               </div>
             </AccordionContent>
@@ -105,7 +106,7 @@ export const ApplicationReviewGroupData: FC<{
                   {groupData.background.keyActivitiesOfTheGroup}
                 </DataNode>
                 <DataNode label={t("groupData.groupBackground.creditHistory")}>
-                  {groupData.background.groupCreditHistory.name}
+                  {getFileName(groupData.background.groupCreditHistory)}
                 </DataNode>
               </div>
             </AccordionContent>
@@ -115,3 +116,11 @@ export const ApplicationReviewGroupData: FC<{
     </div>
   );
 };
+
+function getFileName(file: ValidFile) {
+  if (file instanceof File) {
+    return file.name;
+  }
+
+  return file.filename;
+}

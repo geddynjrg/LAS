@@ -11,6 +11,7 @@ import {
 
 export interface ApplyFormWrapProps extends ApplyFormActionBarProps {
   action?: ComponentProps<typeof Form>["action"];
+  isPending?: boolean;
   className?: string;
   children?: ReactNode;
 }
@@ -19,12 +20,17 @@ export const ApplyFormWrap: FC<ApplyFormWrapProps> = ({
   className,
   children,
   action,
+  isPending,
+  submitType,
   ...props
 }) => {
   return (
     <Form className="flex flex-1 flex-col" action={action}>
       <Container className={cn("mt-4 flex-1", className)}>{children}</Container>
-      <ApplyFormActionBar {...props} />
+      <ApplyFormActionBar
+        {...props}
+        submitType={isPending ? "disabled" : submitType}
+      />
     </Form>
   );
 };

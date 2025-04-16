@@ -25,7 +25,7 @@ import { setUserLocale } from "@/lib/locale";
 
 export interface AppSidebarProps {
   locale: Locale;
-  institutions?: { id: string; title: string; path_alias: string }[];
+  institutions?: { id: string | number; title: string; path_alias: string }[];
 }
 
 export const AppSidebar: FC<AppSidebarProps> = ({

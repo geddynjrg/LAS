@@ -18,7 +18,7 @@ export interface PhoneNumbersFieldProps {
 export const PhoneNumbersField: FC<PhoneNumbersFieldProps> = ({ state }) => {
   const t = useTranslations("PhoneNumbersField");
   const [phonesCount, setPhonesCount] = useState(
-    (state.values?.phones?.length ?? 0) + 1,
+    Math.max(state.values?.phones?.length ?? 0, 1),
   );
 
   return Array.from({ length: phonesCount }).map((_, i) => (

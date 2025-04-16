@@ -32,13 +32,13 @@ export async function getCoursesList(params: CoursesTableDataQueryParams) {
         max_fee: params.max_fee,
         min_duration: params.min_duration,
         max_duration: params.max_duration,
-        education_level: params.education_level as any as string, // TODO: wait for the backend to fix this
+        education_level: params.education_level,
         institution: params.institution,
         page: params.page,
         limit: params.limit,
         sort: params.sort,
         direction: params.direction,
-        tags: params.tags as any as string, // TODO: wait for the backend to fix this
+        tags: params.tags,
       },
     },
   });
@@ -98,7 +98,7 @@ const schema = z.object({
         min_duration: z.number().nullable(),
         max_duration: z.number().nullable(),
         education_level: z.string().nullable(),
-        institution: z.number().nullable(),
+        institution: z.string().nullable(),
       }),
       sort: z.object({
         field: z.string(),

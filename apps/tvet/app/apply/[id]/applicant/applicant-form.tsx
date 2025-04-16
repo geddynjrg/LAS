@@ -1,33 +1,27 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMemo, useState, type FC } from "react";
+import { useState, type FC } from "react";
 
+import { Alert } from "@workspace/ui/components/alert";
 import {
   ButtonGroup,
   ButtonGroupItem,
 } from "@workspace/ui/components/button-group";
-import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DatePicker } from "@workspace/ui/components/date-picker";
-import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import { Field } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { SearchInput } from "@workspace/ui/components/search-input";
-import { Select } from "@workspace/ui/components/select";
-import { Textarea } from "@workspace/ui/components/textarea";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { applicantAction } from "@/app/apply/[id]/applicant/applicant-action";
 import {
   applicantSchema,
   dummyCounties,
-  dummyDisabilities,
-  dummyDisabilityLevels,
-  FILE_ACCEPT,
-  MAX_FILE_SIZE,
   type ApplicantSchema,
 } from "@/app/apply/[id]/applicant/applicant-schema";
+import { DisabilitiesFields } from "@/app/apply/[id]/applicant/disabilities-fields";
+import { IdTypeFields } from "@/app/apply/[id]/applicant/id-type-fields";
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
@@ -43,165 +37,33 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
 }) => {
   const t = useTranslations("ApplicantForm");
 
-  const nationalIdTypes = useMemo(
-    () =>
-      [
-        { label: "National ID", value: "national-id" },
-        { label: "Birth certificate", value: "birth-certificate" },
-        { label: "Alien ID", value: "alien-id" },
-      ] as const,
-    [],
-  );
-
-  const [state, formAction, _isPending] = useForm(
+  const [state, formAction, isPending] = useForm(
     applicantAction,
     applicantSchema,
     defaultValues,
   );
 
-  const [chosenNationalIdType, setChosenNationalIdType] =
-    useState<(typeof nationalIdTypes)[number]["value"]>();
-
-  const [isPersonWithDisabilities, setIsPersonWithDisabilities] = useState(
-    state.values?.personWithDisabilities === "on",
+  const [chosenCounty, setChosenCounty] = useState(
+    state.values?.applicant_county,
   );
-
-  const [chosenCounty, setChosenCounty] = useState(state.values?.county);
-
-  const IdTypeFields = () => {
-    switch (chosenNationalIdType) {
-      case "national-id":
-        return (
-          <>
-            <Field
-              state={state}
-              name="nationalId"
-              label={t("nationalId")}
-              required
-              control={(props) => <Input {...props} />}
-            />
-          </>
-        );
-
-      case "birth-certificate":
-        return (
-          <>
-            <Field
-              state={state}
-              name="birthCertificateNumber"
-              label={t("birthCertificateNumber")}
-              required
-              control={(props) => <Input {...props} />}
-            />
-            <Field
-              state={state}
-              name="birthCertificateFile"
-              label={t("birthCertificateFile")}
-              required
-              control={(props) => (
-                <FileUploadInput
-                  accept={FILE_ACCEPT}
-                  maxSize={MAX_FILE_SIZE}
-                  {...props}
-                />
-              )}
-            />
-          </>
-        );
-
-      case "alien-id":
-        return (
-          <>
-            <Field
-              state={state}
-              name="alienId"
-              label={t("alienId")}
-              required
-              control={(props) => <Input {...props} />}
-            />
-
-            <Field
-              state={state}
-              name="alienIdIsRefugee"
-              control={(props) => (
-                <Checkbox {...props}>{t("isRefugee")}</Checkbox>
-              )}
-            />
-          </>
-        );
-    }
-  };
-
-  const DisabilitiesFields = () => {
-    if (!isPersonWithDisabilities) {
-      return null;
-    }
-
-    return (
-      <>
-        <Field
-          state={state}
-          name="natureOfDisability"
-          label={t("natureOfDisability")}
-          required
-          control={(props) => <Select options={dummyDisabilities} {...props} />}
-        />
-
-        <Field
-          state={state}
-          name="disabilityCardNumber"
-          label={t("disabilityCardNumber")}
-          required
-          control={(props) => <Input {...props} />}
-        />
-
-        <Field
-          state={state}
-          name="disabilityCardPicture"
-          label={t("disabilityCardPicture")}
-          required
-          control={(props) => (
-            <FileUploadInput
-              accept={FILE_ACCEPT}
-              maxSize={MAX_FILE_SIZE}
-              {...props}
-            />
-          )}
-        />
-
-        <Field
-          state={state}
-          name="disabilityLevel"
-          label={t("disabilityLevel")}
-          required
-          control={(props) => (
-            <Select options={dummyDisabilityLevels} {...props} />
-          )}
-        />
-
-        <Field
-          state={state}
-          name="disabilityDescription"
-          label={t("disabilityDescription")}
-          required
-          control={(props) => <Textarea {...props} />}
-        />
-      </>
-    );
-  };
 
   return (
     <ApplyFormWrap
       action={formAction}
+      isPending={isPending}
       cancelUrl="/dashboard"
       className="space-y-4"
     >
-      <ApplyFormSubtitle>{t("appicantInfo")}</ApplyFormSubtitle>
+      <ApplyFormSubtitle>{t("applicantInfo")}</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
+
+      {!state.success && state.message && (
+        <Alert variant="error">{state.message}</Alert>
+      )}
 
       <Field
         state={state}
-        name="firstName"
+        name="applicant_first_name"
         label={t("firstName")}
         required
         control={(props) => <Input {...props} />}
@@ -209,14 +71,14 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
 
       <Field
         state={state}
-        name="middleName"
+        name="applicant_middle_name"
         label={t("middleName")}
         control={(props) => <Input {...props} />}
       />
 
       <Field
         state={state}
-        name="surname"
+        name="applicant_surname"
         label={t("surname")}
         required
         control={(props) => <Input {...props} />}
@@ -224,7 +86,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
 
       <Field
         state={state}
-        name="sex"
+        name="applicant_sex"
         label={t("sex")}
         required
         control={(props) => (
@@ -238,54 +100,30 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
 
       <Field
         state={state}
-        name="dateOfBirth"
+        name="applicant_date_of_birth"
         label={t("dateOfBirth")}
         required
-        control={(props) => <DatePicker {...props} />}
+        control={(props) => <DatePicker format="YYYY-MM-DD" {...props} />}
       />
 
-      <Field
-        state={state}
-        name="idType"
-        label={t("idType")}
-        required
-        control={(props) => (
-          <RadioGroup
-            {...props}
-            onValueChange={setChosenNationalIdType}
-            options={nationalIdTypes}
-          />
-        )}
-      />
-
-      <IdTypeFields />
+      <IdTypeFields state={state} />
 
       <PhoneNumbersField state={state} />
 
       <Field
         state={state}
-        name="email"
+        name="applicant_email"
         label={t("email")}
         control={(props) => <Input type="email" {...props} />}
       />
 
-      <Field
-        state={state}
-        name="personWithDisabilities"
-        control={(props) => (
-          <Checkbox {...props} onValueChange={setIsPersonWithDisabilities}>
-            {t("personWithDisabilities")}
-          </Checkbox>
-        )}
-      />
-
-      <DisabilitiesFields />
+      <DisabilitiesFields state={state} />
 
       <ApplyFormSubtitle className="mt-8">{t("address")}</ApplyFormSubtitle>
 
       <Field
         state={state}
-        name="county"
+        name="applicant_county"
         label="County"
         required
         control={(props) => (
@@ -303,7 +141,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
 
       <Field
         state={state}
-        name="subCounty"
+        name="applicant_subcounty"
         label={t("subCounty")}
         required
         control={(props) => (
@@ -322,7 +160,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
 
       <Field
         state={state}
-        name="ward"
+        name="applicant_ward"
         label={t("ward")}
         required
         control={(props) => <Input placeholder={t("enterWard")} {...props} />}

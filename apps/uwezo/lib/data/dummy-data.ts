@@ -173,12 +173,12 @@ export const dummyApplications: ApplicationData[] = [
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
         groupRegistrationCertificate: {
-          fid: "sample-file-7",
+          fid: 7,
           filename: "sample-7.jpg",
           url: "/images/cert-example.jpg",
         },
         listOfMembersOnCertificate: {
-          fid: "sample-file-8",
+          fid: 8,
           filename: "sample-8.jpg",
           url: "/images/cert-example.jpg",
         },
@@ -187,7 +187,7 @@ export const dummyApplications: ApplicationData[] = [
         purposeOfTheGroup: ["Welfare issues"],
         keyActivitiesOfTheGroup: ["Value chain"],
         groupCreditHistory: {
-          fid: "sample-file-9",
+          fid: 9,
           filename: "sample-9.jpg",
           url: "/images/cert-example.jpg",
         },
@@ -253,12 +253,12 @@ export const dummyApplications: ApplicationData[] = [
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
         groupRegistrationCertificate: {
-          fid: "sample-file-1",
+          fid: 1,
           filename: "sample.jpg",
           url: "/images/cert-example.jpg",
         },
         listOfMembersOnCertificate: {
-          fid: "sample-file-2",
+          fid: 2,
           filename: "sample-2.jpg",
           url: "/images/cert-example.jpg",
         },
@@ -267,7 +267,7 @@ export const dummyApplications: ApplicationData[] = [
         purposeOfTheGroup: ["Other"],
         keyActivitiesOfTheGroup: ["Table banking"],
         groupCreditHistory: {
-          fid: "sample-file-3",
+          fid: 3,
           filename: "sample-3.jpg",
           url: "/images/cert-example.jpg",
         },
@@ -338,12 +338,12 @@ export const dummyApplications: ApplicationData[] = [
         groupRegistrationNumber: "REG-2024-001",
         dateFormed: new Date("2022-05-10"),
         groupRegistrationCertificate: {
-          fid: "sample-file-4",
+          fid: 4,
           filename: "sample-4.jpg",
           url: "/images/cert-example.jpg",
         },
         listOfMembersOnCertificate: {
-          fid: "sample-file-5",
+          fid: 5,
           filename: "sample-5.jpg",
           url: "/images/cert-example.jpg",
         },
@@ -352,7 +352,7 @@ export const dummyApplications: ApplicationData[] = [
         purposeOfTheGroup: ["Income generating activities"],
         keyActivitiesOfTheGroup: ["Table banking"],
         groupCreditHistory: {
-          fid: "sample-file-6",
+          fid: 6,
           filename: "sample-6.jpg",
           url: "/images/cert-example.jpg",
         },
@@ -382,7 +382,7 @@ export const dummyApplications: ApplicationData[] = [
           type: "Chairman",
           phoneNumber: "0712345678",
           photoOfId: {
-            fid: "sample-file-7",
+            fid: 7,
             filename: "sample-7.jpg",
             url: "/images/cert-example.jpg",
           },

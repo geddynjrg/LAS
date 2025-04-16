@@ -8,62 +8,76 @@ export const FILE_ACCEPT = {
 };
 export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
-const sex = z.enum(["male", "female", "intersex"]);
-const idType = z.enum(["national-id", "birth-certificate", "alien-id"]);
+export const sex = z.enum(["male", "female", "intersex"]);
+
+export const idType = z.enum(["national_id", "birth_certificate", "alien_id"]);
+export type IdType = z.infer<typeof idType>;
+
+export const disabilityNature = z.enum([
+  "visual",
+  "hearing",
+  "physical",
+  "cognitive",
+  "multiple",
+  "mental",
+  "speech",
+  "other",
+]);
+
+export const disabilityLevel = z.enum([
+  "mild",
+  "moderate",
+  "severe",
+  "profound",
+]);
+
 const phone = z.object({
   callingCode: z.string().nonempty(),
   phone: z.string().nonempty(),
 });
 
-export const applicantSchema = z.object({
-  firstName: z.string().nonempty(),
-  middleName: z.string().optional(),
-  surname: z.string().min(1),
-  sex: sex,
-  dateOfBirth: z.coerce.date(),
-  idType: idType,
-  phones: z.array(phone),
-  email: z.union([z.literal(""), z.string().email()]),
-  personWithDisabilities: z.union([z.literal("on"), z.undefined()]),
-  county: z.string().nonempty(),
-  subCounty: z.string().nonempty(),
-  ward: z.string().nonempty(),
+export const applicantSchema = z
+  .object({
+    applicant_first_name: z.string().min(1),
+    applicant_middle_name: z.string().optional(),
+    applicant_surname: z.string().min(1),
+    applicant_sex: sex,
+    applicant_date_of_birth: z.string().trim().date(),
+    applicant_id_type: idType,
 
-  // idType === "national-id"
-  nationalId: z.string().optional(),
+    // applicant_phone_number: z.string().trim().nonempty(),
+    phones: z.array(phone),
 
-  // idType === "birth-certificate"
-  birthCertificateNumber: z.string().optional(),
-  birthCertificateFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
+    applicant_email: z.union([z.literal(""), z.string().email().optional()]),
+    applicant_county: z.string().trim().nonempty(),
+    applicant_subcounty: z.string().trim().nonempty(),
+    applicant_ward: z.string().trim().nonempty(),
+    applicant_disability: z.preprocess((value) => value === "on", z.boolean()),
 
-  // idType === "alien-id"
-  alienId: z.string().optional(),
-  alienIdIsRefugee: z.union([z.literal("on"), z.undefined()]),
+    // idType === "national-id"
+    applicant_id_number: z.string().trim().optional(),
 
-  // personWithDisabilities === "on"
-  natureOfDisability: z.string().optional(),
-  disabilityCardNumber: z.string().optional(),
-  disabilityCardPicture: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
-  disabilityLevel: z.string().optional(),
-  disabilityDescription: z.string().optional(),
-});
+    // idType === "birth-certificate"
+    birthCertificateNumber: z.string().optional(),
+    birthCertificateFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
+
+    // idType === "alien-id"
+    alienId: z.string().optional(),
+    alienIdIsRefugee: z.preprocess((value) => value === "on", z.boolean()),
+
+    // applicant_disability === true
+    disability_nature: disabilityNature.optional(),
+    disability_card_number: z.string().optional(),
+    disability_card_picture: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
+    disability_level: disabilityLevel.optional(),
+    disability_requirements: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    validateApplicantIdType(data, ctx);
+    validateApplicantDisabilities(data, ctx);
+  });
 
 export type ApplicantSchema = z.infer<typeof applicantSchema>;
-
-export const dummyDisabilities = [
-  { label: "Hearing", value: "hearing" },
-  { label: "Visual", value: "visual" },
-  { label: "Physical", value: "physical" },
-  { label: "Mental", value: "mental" },
-  { label: "Speech", value: "speech" },
-  { label: "Other", value: "other" },
-];
-
-export const dummyDisabilityLevels = [
-  { label: "Low", value: "low" },
-  { label: "Medium", value: "medium" },
-  { label: "High", value: "high" },
-];
 
 export const dummyCounties = [
   {
@@ -224,3 +238,88 @@ export const dummyCounties = [
     ],
   },
 ];
+
+function validateApplicantIdType(data: ApplicantSchema, ctx: z.RefinementCtx) {
+  switch (data.applicant_id_type) {
+    case "national_id": {
+      if ((data.applicant_id_number?.trim()?.length ?? 0) < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          type: "string",
+          minimum: 1,
+          inclusive: true,
+          path: ["applicant_id_number"],
+        });
+      }
+
+      break;
+    }
+
+    case "birth_certificate": {
+      if ((data.birthCertificateNumber?.trim()?.length ?? 0) < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          type: "string",
+          minimum: 1,
+          inclusive: true,
+          path: ["birthCertificateNumber"],
+        });
+      }
+
+      if (!data.birthCertificateFile) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          type: "string",
+          minimum: 1,
+          inclusive: true,
+          path: ["birthCertificateFile"],
+        });
+      }
+
+      break;
+    }
+
+    case "alien_id": {
+      if ((data.alienId?.trim()?.length ?? 0) < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.too_small,
+          type: "string",
+          minimum: 1,
+          inclusive: true,
+          path: ["alienId"],
+        });
+      }
+
+      break;
+    }
+  }
+}
+
+function validateApplicantDisabilities(
+  data: ApplicantSchema,
+  ctx: z.RefinementCtx,
+) {
+  if (!data.applicant_disability) {
+    return;
+  }
+
+  if ((data.disability_card_number?.trim()?.length ?? 0) < 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.too_small,
+      type: "string",
+      minimum: 1,
+      inclusive: true,
+      path: ["disability_card_number"],
+    });
+  }
+
+  if (!data.disability_card_picture) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.too_small,
+      type: "string",
+      minimum: 1,
+      inclusive: true,
+      path: ["disability_card_picture"],
+    });
+  }
+}

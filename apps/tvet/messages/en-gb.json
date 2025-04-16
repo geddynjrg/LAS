@@ -10,6 +10,30 @@
     "signOut": "Sign out"
   },
 
+  "NationalIdType": {
+    "national_id": "National ID",
+    "birth_certificate": "Birth Certificate",
+    "alien_id": "Alien ID"
+  },
+
+  "DisabilityNature": {
+    "visual": "Visual",
+    "hearing": "Hearing",
+    "physical": "Physical",
+    "cognitive": "Cognitive",
+    "multiple": "Multiple",
+    "mental": "Mental",
+    "speech": "Speech",
+    "other": "Other"
+  },
+
+  "DisabilityLevel": {
+    "mild": "Mild",
+    "moderate": "Moderate",
+    "severe": "Severe",
+    "profound": "Profound"
+  },
+
   "FrontPage": {
     "title": "<light>Where did i get</light> so skilled?",
     "description": " At TVETs we put focus on practical skills - up to 90% of training is through practice. Programs are designed around occupational standards, curriculas are developed with strong integration with businesses.",
@@ -104,7 +128,13 @@
     "2Description": "You will need to upload a picture of either your National ID, Birth Certificate or Alien ID",
     "3Heading": "If you don’t have any form of ID",
     "3Description": "You will need to contact the institution directly and discuss options for applying. The institution contact are on the institution page",
-    "undertood": "Understood"
+    "understood": "Understood"
+  },
+
+  "NotFoundPage": {
+    "title": "Page not found",
+    "description": "Sorry, the page you are looking for does not exist.",
+    "goToHome": "Go to home page"
   },
 
   "PhoneNumbersField": {
@@ -123,7 +153,7 @@
     "disabilityCardPicture": "Disability Card Picture",
     "disabilityLevel": "Disability level",
     "disabilityDescription": "Description of requirements (learning aids, medication, etc.)",
-    "appicantInfo": "Applicant info",
+    "applicantInfo": "Applicant info",
     "firstName": "First name",
     "middleName": "Middle name",
     "surname": "Surname",

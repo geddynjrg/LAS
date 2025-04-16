@@ -1,4 +1,9 @@
+import { notFound, redirect } from "next/navigation";
+
+import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
+import { ApplyFormTitle } from "@/app/apply/[id]/apply-form-title";
 import { GuardianForm } from "@/app/apply/[id]/guardian/guardian-form";
+import { getApplicationProgress } from "@/lib/api/application";
 
 export interface GuardianPageProps {
   params: Promise<{ id: string }>;
@@ -6,6 +11,31 @@ export interface GuardianPageProps {
 
 export default async function GuardianPage({ params }: GuardianPageProps) {
   const { id } = await params;
+  const application = await getApplicationProgress({ id });
 
-  return <GuardianForm id={id} defaultValues={{}} />;
+  if (!application) {
+    notFound();
+  }
+
+  if (!application?.available_steps?.includes("guardian")) {
+    redirect(`/apply/${id}/course/`);
+  }
+
+  console.log("GuardianPage", application);
+
+  return (
+    <>
+      <ApplyFormTitle label="Waithaka Vocational Training Centre">
+        Electrical installation training
+      </ApplyFormTitle>
+
+      <ApplyFormStepper activeStep={2} />
+
+      <GuardianForm
+        id={id}
+        // @ts-ignore TODO: wait for API fix
+        defaultValues={application.steps_data?.guardian || {}}
+      />
+    </>
+  );
 }

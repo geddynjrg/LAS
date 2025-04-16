@@ -10,6 +10,30 @@
     "signOut": "Toka"
   },
 
+  "NationalIdType": {
+    "national_id": "Kitambulisho cha kitaifa",
+    "birth_certificate": "Cheti cha kuzaliwa",
+    "alien_id": "Kitambulisho cha kigeni"
+  },
+
+  "DisabilityNature": {
+    "visual": "Kuona",
+    "hearing": "Kusikia",
+    "physical": "Kimwili",
+    "cognitive": "Kifahamu",
+    "multiple": "Mchanganyiko",
+    "mental": "Kiakili",
+    "speech": "Matamshi",
+    "other": "Nyingine"
+  },
+
+  "DisabilityLevel": {
+    "mild": "Kidogo",
+    "moderate": "Kati",
+    "severe": "Mbaya",
+    "profound": "Mbaya Sana"
+  },
+
   "FrontPage": {
     "title": "<light>Nilipata wapi</light> ujuzi huu?",
     "description": "Katika TVETs tunazingatia ujuzi wa vitendo - hadi 90% ya mafunzo ni kupitia mazoezi. Programu zimeundwa kulingana na viwango vya kazi, mitaala imeendelezwa kwa ushirikiano mkubwa na biashara.",
@@ -104,6 +128,12 @@
     "2Description": "Utahitaji kupakia picha ya kitambulisho chako cha kitaifa, cheti cha kuzaliwa au kitambulisho cha wageni",
     "3Heading": "Ikiwa huna aina yoyote ya kitambulisho",
     "3Description": "Utahitaji kuwasiliana moja kwa moja na taasisi na kujadili chaguzi za kuomba. Mawasiliano ya taasisi yako yapo kwenye ukurasa wa taasisi",
-    "undertood": "Nimeelewa"
+    "understood": "Nimeelewa"
+  },
+
+  "NotFoundPage": {
+    "title": "Ukurasa haujapatikana",
+    "description": "Samahani, ukurasa unaotafuta haupo.",
+    "goToHome": "Nenda kwenye ukurasa wa nyumbani"
   }
 }

@@ -6,7 +6,7 @@ import { Container } from "@workspace/ui/components/container";
 import { Underline } from "@workspace/ui/components/underline";
 
 export interface AppFooterProps {
-  institutions?: { id: string; title: string; path_alias: string }[];
+  institutions?: { id: string | number; title: string; path_alias: string }[];
 }
 
 export const AppFooter: FC<AppFooterProps> = ({ institutions }) => {

@@ -1,29 +1,38 @@
 "use client";
 
-import { useState, type FC } from "react";
+import { useState, useTransition, type FC } from "react";
 
+import { Combobox } from "@workspace/ui/components/combobox";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import { Field } from "@workspace/ui/components/form";
 import { Select } from "@workspace/ui/components/select";
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
+import { useMount } from "@workspace/ui/hooks/use-mount";
 
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { courseAction } from "@/app/apply/[id]/course/course-action";
 import {
   courseSchema,
-  dummyInstitutes,
+  dummyIntakePeriods,
   FILE_ACCEPT,
   MAX_FILE_SIZE,
   type CourseSchema,
 } from "@/app/apply/[id]/course/course-schema";
+import { getCoursesList } from "@/lib/api/courses";
 
 export interface CourseFormProps {
   id: string;
+  institutions?: { id: string | number; title: string }[];
   defaultValues?: Partial<CourseSchema>;
 }
 
-export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
+export const CourseForm: FC<CourseFormProps> = ({
+  id,
+  institutions,
+  defaultValues,
+}) => {
   const [state, formAction, _isPending] = useForm(
     courseAction,
     courseSchema,
@@ -31,18 +40,28 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
   );
 
   const [selectedInstitute, setSelectedInstitute] = useState(
-    state.values?.institute,
+    state.values?.institution,
   );
 
-  const [selectedCourse, setSelectedCourse] = useState(state.values?.course);
+  const [courses, searchCourses, isPending] = useSearchCourses();
+  const [selectedCourse, setSelectedCourse] = useState<string>();
 
-  const courses = dummyInstitutes.find(
-    (institute) => institute.value === selectedInstitute,
-  )?.courses;
+  const intakePeriods =
+    courses.find((course) => course.value === selectedCourse)?.intakePeriods ??
+    [];
 
-  const intakePeriods = courses?.find(
-    (course) => course.value === selectedCourse,
-  )?.intakePeriods;
+  useMount(() => {
+    if (selectedInstitute) {
+      searchCourses(selectedInstitute);
+    }
+  });
+
+  function handleInstitutionChange(value: string) {
+    setSelectedInstitute(value);
+    setSelectedCourse(undefined);
+
+    searchCourses(value, undefined);
+  }
 
   return (
     <ApplyFormWrap action={formAction} prevUrl="guardian" className="space-y-4">
@@ -51,13 +70,16 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
 
       <Field
         state={state}
-        name="institute"
+        name="institution"
         label="Choose the institution"
         required
         control={(props) => (
-          <Select
-            options={dummyInstitutes}
-            onValueChange={setSelectedInstitute}
+          <Combobox
+            options={institutions?.map((institution) => ({
+              label: institution.title,
+              value: institution.id.toString(),
+            }))}
+            onValueChange={handleInstitutionChange}
             {...props}
           />
         )}
@@ -69,7 +91,9 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
         label="Choose the course"
         required
         control={(props) => (
-          <Select
+          <Combobox
+            loading={isPending}
+            disabled={courses.length === 0}
             options={courses}
             onValueChange={setSelectedCourse}
             {...props}
@@ -79,17 +103,23 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
 
       <Field
         state={state}
-        name="intakePeriod"
+        name="preferred_intake_period"
         label="Preferred intake period"
         required
-        control={(props) => <Select options={intakePeriods} {...props} />}
+        control={(props) => (
+          <Select
+            options={intakePeriods}
+            disabled={intakePeriods.length === 0}
+            {...props}
+          />
+        )}
       />
 
       <ApplyFormSubtitle className="mt-8">Required documents</ApplyFormSubtitle>
 
       <Field
         state={state}
-        name="highestQualificationCertificate"
+        name="highest_education_certificate"
         label="Highest education level certificate"
         required
         control={(props) => (
@@ -103,7 +133,7 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
 
       <Field
         state={state}
-        name="otherCertificate"
+        name="other_certificate"
         label="Other certificate"
         required
         control={(props) => (
@@ -117,3 +147,33 @@ export const CourseForm: FC<CourseFormProps> = ({ id, defaultValues }) => {
     </ApplyFormWrap>
   );
 };
+
+function useSearchCourses() {
+  const [isPending, startTransition] = useTransition();
+
+  const [courses, setCourses] = useState<
+    {
+      label: string;
+      value: string;
+      intakePeriods: { label: string; value: string }[];
+    }[]
+  >([]);
+
+  const searchCourses = useDebouncedCallback(
+    (institution: string, search?: string) => {
+      startTransition(async () => {
+        const res = await getCoursesList({ institution, search });
+
+        setCourses(
+          res?.data?.courses?.map((course) => ({
+            label: course.title,
+            value: course.id.toString(),
+            intakePeriods: dummyIntakePeriods,
+          })) ?? [],
+        );
+      });
+    },
+  );
+
+  return [courses, searchCourses, isPending] as const;
+}

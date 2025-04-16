@@ -38,7 +38,7 @@ export default async function ApplyPage() {
 
       <ActionBar>
         <Button className="px-22 mx-auto" asChild>
-          <Link href="/apply/1/applicant">{t("undertood")}</Link>
+          <Link href="/apply/new/applicant">{t("understood")}</Link>
         </Button>
       </ActionBar>
     </div>

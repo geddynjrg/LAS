@@ -117,7 +117,7 @@ export function validFile(accept: Accept, fileSize: number) {
         getIntlKey("invalid"),
       ),
     z.object({
-      fid: z.number(),
+      fid: z.coerce.number(),
       filename: z.string(),
       url: z.string().optional(),
     }),

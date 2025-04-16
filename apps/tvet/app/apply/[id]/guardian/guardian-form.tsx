@@ -184,7 +184,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
 
       <Field
         state={state}
-        name="firstName"
+        name="guardian_first_name"
         label="First Name"
         required
         control={(props) => <Input {...props} />}
@@ -192,14 +192,14 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
 
       <Field
         state={state}
-        name="middleName"
+        name="guardian_middle_name"
         label="Middle Name"
         control={(props) => <Input {...props} />}
       />
 
       <Field
         state={state}
-        name="surname"
+        name="guardian_surname"
         label="Surname"
         required
         control={(props) => <Input {...props} />}
@@ -207,7 +207,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
 
       <Field
         state={state}
-        name="guardianRole"
+        name="guardian_role"
         label="Role of the guardian"
         required
         control={(props) => (

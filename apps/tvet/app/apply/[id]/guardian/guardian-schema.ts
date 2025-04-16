@@ -16,10 +16,10 @@ export const FILE_ACCEPT = {
 export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
 export const guardianSchema = z.object({
-  firstName: z.string().nonempty(),
-  middleName: z.string().optional(),
-  surname: z.string().min(1),
-  guardianRole: guardianRole,
+  guardian_first_name: z.string().trim().min(1),
+  guardian_middle_name: z.string().trim().optional(),
+  guardian_surname: z.string().trim().min(1),
+  guardian_role: guardianRole,
   idType: idType,
   phones: z.array(phone),
   email: z.union([z.literal(""), z.string().email()]),

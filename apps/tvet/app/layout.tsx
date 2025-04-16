@@ -52,11 +52,11 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <AppHeader />
               <AppSidebar
                 locale={locale as Locale}
-                institutions={institutions.data?.institutions}
+                institutions={institutions}
               />
               <SidebarInset className="min-h-svh">
                 <Suspense fallback={<p>loading</p>}>{children}</Suspense>
-                <AppFooter institutions={institutions.data?.institutions} />
+                <AppFooter institutions={institutions} />
               </SidebarInset>
             </Providers>
           </NextIntlClientProvider>

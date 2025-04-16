@@ -371,7 +371,7 @@ function saveFile(file: File) {
   console.log("save file", file);
   // TODO: if we want to store real files, we need to upload them to a server
   const fileObject: ValidFile = {
-    fid: `${file.name}-${URL.createObjectURL(file)}`,
+    fid: Date.now() + Math.random(),
     filename: file.name,
     url: URL.createObjectURL(file),
   };
