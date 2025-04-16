@@ -46,6 +46,12 @@
     "home": "Nenda kwenye ukurasa wa nyumbani"
   },
 
+  "Combobox": {
+    "placeholder": "- Chagua chaguo -",
+    "searchPlaceholder": "Tafuta...",
+    "noResults": "Hakuna matokeo yaliyopatikana"
+  },
+
   "Buttons": {
     "confirm": "Thibitisha",
     "back": "Rudi",

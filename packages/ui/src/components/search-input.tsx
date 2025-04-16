@@ -1,7 +1,7 @@
 "use client";
 
 import * as Popover from "@radix-ui/react-popover";
-import { IconSearch } from "@tabler/icons-react";
+import { IconLoader, IconSearch } from "@tabler/icons-react";
 import { Command as CommandPrimitive } from "cmdk";
 import { useEffect, useState, type FC } from "react";
 
@@ -63,7 +63,10 @@ export const SearchInput: FC<SearchInputProps> = ({
             disabled={disabled}
             onValueChange={setSearch}
           >
-            <Input endDecorator={<IconSearch />} {...props} />
+            <Input
+              endDecorator={isLoading ? <IconLoader /> : <IconSearch />}
+              {...props}
+            />
           </CommandPrimitive.Input>
         </Popover.Trigger>
         {!isOpen && <CommandList aria-hidden="true" className="hidden" />}
@@ -71,7 +74,7 @@ export const SearchInput: FC<SearchInputProps> = ({
           asChild
           align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
-          className="w-(--radix-popover-trigger-width) z-20 shadow-md"
+          className="w-(--radix-popover-trigger-width) z-20 mt-1 rounded-md border shadow-md"
         >
           <CommandList>
             {isLoading ? (

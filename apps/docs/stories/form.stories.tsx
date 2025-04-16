@@ -16,6 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@workspace/ui/components/collapsible";
+import { Combobox } from "@workspace/ui/components/combobox";
 import { DatePicker } from "@workspace/ui/components/date-picker";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import {
@@ -100,6 +101,15 @@ export const Primary: Story = {
           required
           control={(props) => <SearchInput {...props} options={mockOptions} />}
           description="This is a description for the search input field"
+        />
+
+        <Field
+          state={state}
+          name="combobox"
+          label="Combobox Input label"
+          required
+          control={(props) => <Combobox {...props} options={mockOptions} />}
+          description="This is a description for the combobox input field"
         />
 
         <FieldGroup
@@ -291,6 +301,7 @@ const schema = z.object({
       .refine((v) => v === "on", { message: "Please agree to the terms" }),
   ),
   search: z.string().nonempty(),
+  combobox: z.string().nonempty(),
   callingCode: z.string().nonempty(),
   phone: z.string().nonempty(),
   date: z.coerce.date(),

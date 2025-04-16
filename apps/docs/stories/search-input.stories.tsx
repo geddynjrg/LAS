@@ -29,7 +29,7 @@ export const Async = {
     );
     const [isLoading, setIsLoading] = useState(false);
 
-    async function handleSearch(search: string) {
+    async function handleSearch(search: string | undefined) {
       setIsLoading(true);
       setOptions(await dummyFetchSuggestions(search));
       setIsLoading(false);
@@ -68,7 +68,7 @@ export const WithForm = {
   ),
 } satisfies Story;
 
-async function dummyFetchSuggestions(search: string) {
+async function dummyFetchSuggestions(search: string | undefined) {
   const options = Array.from({ length: 5 }, (_, i) => ({
     value: `option-${i + 1}- ${search}`,
     label: `Option ${i + 1}: ${search}`,

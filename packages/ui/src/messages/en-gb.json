@@ -42,6 +42,12 @@
     "home": "Go to home"
   },
 
+  "Combobox": {
+    "placeholder": "- Select option -",
+    "searchPlaceholder": "Search...",
+    "noResults": "No results found"
+  },
+
   "Buttons": {
     "confirm": "Confirm",
     "back": "Back",

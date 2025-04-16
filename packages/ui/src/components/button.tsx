@@ -48,6 +48,7 @@ export interface ButtonProps extends VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   type?: "button" | "submit" | "reset";
+  role?: string;
   active?: boolean;
   disabled?: boolean;
   tabIndex?: number;

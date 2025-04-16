@@ -1,5 +1,5 @@
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { IconCaretDown, IconCheck } from "@tabler/icons-react";
+import { IconCaretDown, IconCheck, IconLoader } from "@tabler/icons-react";
 import { cva, type VariantProps } from "cva-extended";
 import { useMemo, type ComponentProps, type FC, type ReactNode } from "react";
 
@@ -36,6 +36,7 @@ export interface SelectProps<T extends string>
   selectedLabel?: ReactNode;
   invalid?: boolean;
   disabled?: boolean;
+  loading?: boolean;
   onValueChange?: (value: T) => void;
 }
 
@@ -44,6 +45,7 @@ export const Select = <T extends string>({
   placeholder,
   size,
   invalid,
+  loading,
   selectedLabel,
   className,
   ...props
@@ -62,6 +64,7 @@ export const Select = <T extends string>({
     <SelectPrimitive.Root data-invalid={invalid} {...props}>
       <SelectTrigger
         size={size}
+        loading={loading}
         className={cn(invalid && "border-destructive", className)}
       >
         {selectedLabel ? (
@@ -82,15 +85,15 @@ export const Select = <T extends string>({
 };
 
 const SelectTrigger: FC<
-  { className?: string; children: ReactNode } & VariantProps<
+  { loading?: boolean; className?: string; children: ReactNode } & VariantProps<
     typeof selectVariants
   >
-> = ({ size, className, children }) => (
+> = ({ size, loading, className, children }) => (
   <SelectPrimitive.Trigger className={cn(selectVariants({ size }), className)}>
     {children}
 
     <SelectPrimitive.Icon asChild>
-      <Caret dir="down" />
+      {loading ? <IconLoader /> : <Caret dir="down" />}
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 );

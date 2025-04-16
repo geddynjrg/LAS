@@ -7,15 +7,7 @@ import {
   type TranslationValues,
 } from "next-intl";
 import NextForm from "next/form";
-import {
-  forwardRef,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type FC,
-  type ReactNode,
-} from "react";
+import { useId, type FC, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import type { z } from "zod";
 
@@ -33,21 +25,8 @@ export const Form: FC<FormPrimitive.FormProps> = ({
   action,
   ...props
 }) => {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    console.log("form", ref.current);
-  }, []);
-
   return action ? (
-    <FormPrimitive.Root
-      {...props}
-      asChild
-      ref={ref}
-      onClearServerErrors={() => {
-        console.log("clear");
-      }}
-    >
+    <FormPrimitive.Root {...props} asChild>
       <NextForm action={action}>{children}</NextForm>
     </FormPrimitive.Root>
   ) : (
