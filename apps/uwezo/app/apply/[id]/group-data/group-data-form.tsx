@@ -293,6 +293,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   <Input
                     defaultValue={props.defaultValue?.toString()}
                     type="number"
+                    {...props}
                   />
                 )}
               />
@@ -307,6 +308,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   <Input
                     defaultValue={props.defaultValue?.toString()}
                     type="number"
+                    {...props}
                   />
                 )}
               />
@@ -322,6 +324,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                     defaultValue={props.defaultValue?.toString()}
                     type="number"
                     endDecorator="KSh"
+                    {...props}
                   />
                 )}
               />
@@ -337,6 +340,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                     defaultValue={props.defaultValue?.toString()}
                     type="number"
                     endDecorator="KSh"
+                    {...props}
                   />
                 )}
               />

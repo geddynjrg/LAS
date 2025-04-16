@@ -7,7 +7,16 @@ import {
   type TranslationValues,
 } from "next-intl";
 import NextForm from "next/form";
-import { useId, type FC, type ReactNode } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FC,
+  type ReactNode,
+} from "react";
+import { useFormStatus } from "react-dom";
 import type { z } from "zod";
 
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
@@ -23,15 +32,28 @@ export const Form: FC<FormPrimitive.FormProps> = ({
   children,
   action,
   ...props
-}) =>
-  action ? (
-    <FormPrimitive.Root {...props} asChild>
+}) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    console.log("form", ref.current);
+  }, []);
+
+  return action ? (
+    <FormPrimitive.Root
+      {...props}
+      asChild
+      ref={ref}
+      onClearServerErrors={() => {
+        console.log("clear");
+      }}
+    >
       <NextForm action={action}>{children}</NextForm>
     </FormPrimitive.Root>
   ) : (
     <FormPrimitive.Root {...props}>{children}</FormPrimitive.Root>
   );
-
+};
 export type Path<T> = T extends object
   ? {
       [K in keyof T]: T[K] extends Array<infer U>
@@ -105,11 +127,14 @@ export const Field = <
   const isChanged =
     !editable && isValueChanged(name, state?.values, defaultValues);
 
+  const status = useFormStatus();
+  const isSubmitting = status.pending;
+
   return (
     <FormPrimitive.Field
       name={name}
       className={cn(className, "flex w-full flex-col gap-1")}
-      serverInvalid={!!errorMessage}
+      serverInvalid={isSubmitting ? undefined : !!errorMessage}
     >
       {label && (
         <FormPrimitive.Label
@@ -126,7 +151,7 @@ export const Field = <
       )}
       {isVisible ? (
         editable ? (
-          <FormPrimitive.Control asChild>
+          <FormPrimitive.Control asChild name={name}>
             {control &&
               control({
                 id,
@@ -149,7 +174,9 @@ export const Field = <
       )}
 
       {errorMessage && (
-        <FieldMessage>
+        <FormPrimitive.Message
+          className={cn("text-destructive typo-body-small", className)}
+        >
           {typeof errorMessage === "string"
             ? errorMessage
             : t.has(errorMessage?.message as FlattenObjectKeys<IntlMessages>)
@@ -160,7 +187,7 @@ export const Field = <
                     : (errorMessage as unknown as TranslationValues),
                 )
               : errorMessage?.message}
-        </FieldMessage>
+        </FormPrimitive.Message>
       )}
 
       {description && (
@@ -210,17 +237,6 @@ export const SubmitButton: FC<ButtonProps> = (props) => (
 
 const FieldDescription: FC<{ id?: string; children?: ReactNode }> = (props) => (
   <p className="typo-body-small text-border" {...props} />
-);
-
-const FieldMessage: FC<{
-  match?: FormPrimitive.FormMessageProps["match"];
-  className?: string;
-  children?: ReactNode;
-}> = ({ className, ...props }) => (
-  <FormPrimitive.Message
-    className={cn("text-destructive typo-body-small", className)}
-    {...props}
-  />
 );
 
 const getFormValue = <TInputs extends InputValues, TName extends keyof TInputs>(

@@ -46,6 +46,7 @@ export const CheckboxGroup = <T extends string>({
   size,
   className,
   onValueChange,
+  ...props
 }: CheckboxGroupProps<T>) => {
   const [value, setValue] = useState<T[]>(
     Array.isArray(valueProp)
@@ -75,7 +76,7 @@ export const CheckboxGroup = <T extends string>({
 
   return (
     <div className={cn(checkboxGroupVariants({ orientation, className }))}>
-      <input type="hidden" name={name} value={value?.join(",")} />
+      <input type="hidden" name={name} value={value?.join(",")} {...props} />
 
       {options?.map((option) => (
         <Checkbox

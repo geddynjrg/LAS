@@ -30,6 +30,8 @@ export interface FileUploadInputProps {
   disabled?: boolean;
   defaultValue?: FileUploadInputValue;
   attachmentBgInverted?: boolean;
+  "aria-invalid"?: boolean;
+  "data-invalid"?: boolean;
 }
 
 export const FileUploadInput: FC<FileUploadInputProps> = ({
@@ -40,6 +42,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   disabled,
   defaultValue,
   attachmentBgInverted = false,
+  ...props
 }) => {
   const multiple = false;
 
@@ -81,6 +84,8 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
     setResetCount((prev) => prev + 1);
   }
 
+  console.log("props", props);
+
   return (
     <Dropzone
       key={resetCount}
@@ -98,6 +103,9 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         }
         capture={hasImageType && isCameraEnabled}
         value={files === null ? null : files?.filter(isValidFile)}
+        aria-invalid={props["aria-invalid"]}
+        data-invalid={props["data-invalid"]}
+        // {...props}
       />
 
       {serverFile && (
