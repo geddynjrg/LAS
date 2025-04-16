@@ -75,8 +75,15 @@ export const CheckboxGroup = <T extends string>({
   }
 
   return (
-    <div className={cn(checkboxGroupVariants({ orientation, className }))}>
-      <input type="hidden" name={name} value={value?.join(",")} {...props} />
+    <fieldset
+      className={cn(
+        checkboxGroupVariants({ orientation, className }),
+        "focus-visible-ring",
+      )}
+      tabIndex={0}
+      {...props}
+    >
+      <input type="hidden" name={name} value={value?.join(",")} />
 
       {options?.map((option) => (
         <Checkbox
@@ -88,6 +95,6 @@ export const CheckboxGroup = <T extends string>({
           {option.label}
         </Checkbox>
       ))}
-    </div>
+    </fieldset>
   );
 };

@@ -103,8 +103,8 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         }
         capture={hasImageType && isCameraEnabled}
         value={files === null ? null : files?.filter(isValidFile)}
-        aria-invalid={props["aria-invalid"]}
-        data-invalid={props["data-invalid"]}
+        // aria-invalid={props["aria-invalid"]}
+        // data-invalid={props["data-invalid"]}
         // {...props}
       />
 
@@ -117,7 +117,11 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         </>
       )}
 
-      <div className="flex items-center justify-center gap-4">
+      <fieldset
+        className="stagnation flex items-center justify-center gap-4"
+        aria-invalid={props["aria-invalid"]}
+        data-invalid={props["data-invalid"]}
+      >
         {hasImageType && (
           <>
             {/* picture */}
@@ -143,7 +147,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
           <DropzoneDragRejected>{t("chooseFile")}</DropzoneDragRejected>
           <DropzoneDragDefault>{t("chooseFile")}</DropzoneDragDefault>
         </DropzoneZone>
-      </div>
+      </fieldset>
 
       {files && (
         <ul className="mt-4 space-y-2">
