@@ -19,12 +19,12 @@ export const InstitutionNodeSchema = z.object({
     content: z.object({
       address: z.object({
         country_code: z.string(),
-        administrative_area: z.null(),
+        administrative_area: z.string().nullable(),
         locality: z.string(),
-        dependent_locality: z.null(),
+        dependent_locality: z.string().nullable(),
         postal_code: z.string(),
         address_line: z.string(),
-        organization: z.null(),
+        organization: z.string().nullable(),
       }),
       body: z.object({
         value: z.string().nullable(),

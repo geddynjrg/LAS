@@ -28,7 +28,6 @@ export interface MediaBlockProps {
 export const MediaBlock: FC<MediaBlockProps> = ({ media, className }) => {
   if (!media) return null;
 
-  console.log({ media: media, is: Array.isArray(media) });
   return (
     <Container className={cn("bg-neutral-200 px-4 py-12", className)}>
       {Array.isArray(media) ? (
@@ -53,6 +52,7 @@ const MediaItem: FC<{ media: Media }> = ({ media }) => {
           src={media.url}
           alt={media.alt}
           className="rounded-xl"
+          sizes="100vw"
           style={{
             objectFit: "cover",
             aspectRatio: `${media.width}/${media.height}`,
@@ -66,6 +66,7 @@ const MediaItem: FC<{ media: Media }> = ({ media }) => {
           src={media.url}
           alt={media.alt}
           className="rounded-xl"
+          sizes="100vw"
           style={{
             objectFit: "cover",
             aspectRatio: `${media.width}/${media.height}`,

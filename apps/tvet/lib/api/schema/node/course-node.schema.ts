@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ImageSchema } from "@/lib/api/schema/image-file.schema";
+import { SingleImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
 export const CourseNodeSchema = z.object({
@@ -18,11 +18,11 @@ export const CourseNodeSchema = z.object({
       url: z.string(),
       path_alias: z.string(),
       content: z.object({
-        application_fee: z.number().nullable(),
-        apply_till: z.array(z.string()),
-        course_fee: z.number().nullable(),
-        duration: z.number().nullable(),
-        education_level: z.array(z.any()),
+        application_fee: z.number().optional().nullable(),
+        apply_till: z.array(z.string()).optional(),
+        course_fee: z.number().optional().nullable(),
+        duration: z.number().optional().nullable(),
+        education_level: z.array(z.any()).optional(),
         body: z
           .object({
             value: z.string().nullable(),
@@ -30,7 +30,7 @@ export const CourseNodeSchema = z.object({
             processed: z.string().nullable(),
           })
           .optional(),
-        image: z.array(ImageSchema),
+        image: SingleImageSchema,
         tags: z.array(z.string()),
         institution: z.object({
           id: z.string(),
