@@ -4,9 +4,9 @@ import type { FC } from "react";
 
 import { Header } from "@workspace/ui/components/header";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
+import { Logo } from "@workspace/ui/components/tvet/logo";
 
 import { AppHeaderApplyButton } from "@/components/app-header-apply-button";
-import { Logo } from "@/components/logo";
 import { ProfileMenu } from "@/components/profile-menu";
 
 export const AppHeader: FC = () => {

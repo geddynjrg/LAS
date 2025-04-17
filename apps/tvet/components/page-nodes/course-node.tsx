@@ -3,12 +3,12 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
+import { ScrollTo } from "@workspace/ui/components/scroll-to";
 import { Tag } from "@workspace/ui/components/tag";
+import { HeroSection } from "@workspace/ui/components/tvet/hero-section";
 import { Underline } from "@workspace/ui/components/underline";
 
-import { HeroSection } from "@/components/hero-section";
 import { PageComponents } from "@/components/page-components";
-import { ScrollTo } from "@/components/scroll-to";
 import type { CourseNodeType } from "@/lib/api/schema/node/course-node.schema";
 
 export default async function CoursePageNode(pageData: CourseNodeType) {

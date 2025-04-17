@@ -3,12 +3,12 @@ import Link from "next/link";
 import type { FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
+import { Logo } from "@workspace/ui/components/civil-registry/logo";
 import { Header } from "@workspace/ui/components/header";
 import { IconAccessibility } from "@workspace/ui/components/icon/icon-accessibility";
 import { SidebarTrigger } from "@workspace/ui/components/sidebar";
 
 import { LocaleSelect } from "@/components/locale-select";
-import { Logo } from "@/components/logo";
 import { type Locale } from "@/i18n/config";
 
 export interface AppHeaderProps {

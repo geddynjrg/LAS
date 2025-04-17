@@ -171,5 +171,11 @@
     "chooseOrSearch": "Choose or search",
     "ward": "Ward",
     "enterWard": "Enter ward"
+  },
+
+  "DashboardPage": {
+    "title": "My Applications",
+    "startApplying": "Start applying now",
+    "noApplications": "You have no applications yet"
   }
 }

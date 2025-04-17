@@ -7,13 +7,31 @@ import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { ApplyCard } from "@workspace/ui/components/tvet/apply-card";
 import { Heading } from "@workspace/ui/components/tvet/heading";
+import { SearchCoursesForm } from "@workspace/ui/components/tvet/search-courses-form";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { SearchCoursesForm } from "@/components/search-courses-form";
-import type { HighlightedCourseListingBlockType } from "@/lib/api/schema/block/highlighted-course-listing-block.schema";
+export interface HighlightedCourseListingBlockProps {
+  block_type: "highlighted_course_listing";
 
-export type HighlightedCourseListingBlockProps =
-  HighlightedCourseListingBlockType;
+  courses: {
+    id: string;
+    title: string;
+    tags: string[];
+    application_fee: number | null;
+    course_fee: number | null;
+    apply_till: string[];
+    start_on: string[];
+    institution: {
+      id: string;
+      type: string;
+      uuid: string;
+      title: string;
+      path_alias: string;
+    };
+    url: string;
+    path_alias: string;
+  }[];
+}
 
 export const HighlightedCourseListingBlock: FC<
   HighlightedCourseListingBlockProps

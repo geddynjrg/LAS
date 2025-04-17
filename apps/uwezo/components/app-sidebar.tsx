@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import { FlagSelect } from "@workspace/ui/components/flag-select";
+import { NavLink } from "@workspace/ui/components/nav-link";
 import {
   Sidebar,
   SidebarContent,
@@ -10,7 +11,6 @@ import {
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
 
-import { NavLink } from "@/components/nav-link";
 import { locales, type Locale } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
 

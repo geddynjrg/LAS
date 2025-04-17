@@ -1,6 +1,8 @@
 import dynamic from "next/dynamic";
 import type { FC } from "react";
 
+import { Skeleton } from "@workspace/ui/components/skeleton";
+
 import type { CourseNodeType } from "@/lib/api/schema/node/course-node.schema";
 import type { GenericNodeType } from "@/lib/api/schema/node/generic-node.schema";
 import type { InstitutionNodeType } from "@/lib/api/schema/node/institution-node.schema";
@@ -14,25 +16,25 @@ export interface PageComponentsProps {
 const DynamicLandingPageNode = dynamic(
   () => import("@/components/page-nodes/landing-node"),
   {
-    loading: () => <p>Loading...</p>,
+    loading: () => <NodeSkeleton />,
   },
 );
 const DynamicCoursePageNode = dynamic(
   () => import("@/components/page-nodes/course-node"),
   {
-    loading: () => <p>Loading...</p>,
+    loading: () => <NodeSkeleton />,
   },
 );
 const DynamicInstitutionPageNode = dynamic(
   () => import("@/components/page-nodes/institute-node"),
   {
-    loading: () => <p>Loading...</p>,
+    loading: () => <NodeSkeleton />,
   },
 );
 const DynamicGenericPageNode = dynamic(
   () => import("@/components/page-nodes/generic-node"),
   {
-    loading: () => <p>Loading...</p>,
+    loading: () => <NodeSkeleton />,
   },
 );
 
@@ -54,4 +56,16 @@ export const PageNode: FC<PageComponentsProps> = ({ node }) => {
     default:
       return <DynamicGenericPageNode {...(node as GenericNodeType)} />;
   }
+};
+
+export const NodeSkeleton: FC = () => {
+  return (
+    <div className="flex flex-col space-y-3">
+      <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gray-500" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px] bg-gray-500" />
+        <Skeleton className="h-4 w-[200px] bg-gray-500" />
+      </div>
+    </div>
+  );
 };

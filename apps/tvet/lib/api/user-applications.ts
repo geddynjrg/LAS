@@ -19,7 +19,7 @@ const schema = z.object({
     z.object({
       id: z.string(),
       application_id: z.string(),
-      application_status: z.string(), // created, completed, reviewing, accepted, rejected, pending, confirmed
+      application_status: z.string(), // created, completed, reviewing, accepted, rejected, pending, confirmed, draft
       payment_status: z.string(), // unpaid, pending, proof_uploaded, paid, rejected
       institution: z.string(),
       course: z.string(),

@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import type { FC } from "react";
 
+import { NavLink } from "@workspace/ui/components/nav-link";
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +16,6 @@ import {
 
 import { findFemaleWithChildren } from "@/lib/services/person-service";
 import { getFullName } from "@/lib/util/full-name";
-import { NavLink } from "./nav-link";
 
 export const AppSidebar: FC = async () => {
   const t = await getTranslations();

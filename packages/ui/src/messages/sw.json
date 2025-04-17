@@ -118,5 +118,10 @@
     "dob": "Tarehe ya kuzaliwa",
     "ageYears": "{count , plural, =1 {# mwaka} other {# miaka}}",
     "ageMonths": "{count , plural, =1 {# mwezi} other {# miezi}}"
+  },
+  "ApplicationStatusCard": {
+    "viewRejectionReason": "Tazama sababu ya kukataliwa",
+    "viewNextSteps": "Tazama hatua zinazofuata",
+    "viewApplication": "Tazama maombi"
   }
 }

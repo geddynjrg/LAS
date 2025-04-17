@@ -2,11 +2,11 @@ import { IconChevronDown } from "@tabler/icons-react";
 import { getTranslations } from "next-intl/server";
 
 import { Button } from "@workspace/ui/components/button";
+import { ScrollTo } from "@workspace/ui/components/scroll-to";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { HeroSection } from "@workspace/ui/components/tvet/hero-section";
 
-import { HeroSection } from "@/components/hero-section";
 import { PageComponents } from "@/components/page-components";
-import { ScrollTo } from "@/components/scroll-to";
 import type { InstitutionNodeType } from "@/lib/api/schema/node/institution-node.schema";
 
 export default async function InstitutionPageNode(

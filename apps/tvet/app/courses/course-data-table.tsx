@@ -8,6 +8,7 @@ import { Fragment, useState, type FC, type ReactNode } from "react";
 
 import { Currency } from "@workspace/ui/components/currency";
 import { Select } from "@workspace/ui/components/select";
+import { SortIndicator } from "@workspace/ui/components/sort-indicator";
 import {
   Table,
   TableBody,
@@ -21,7 +22,6 @@ import { Tag } from "@workspace/ui/components/tag";
 import { Underline } from "@workspace/ui/components/underline";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { SortIndicator } from "@/components/sort-indicator";
 import type { CourseType } from "@/lib/api/courses";
 
 export interface CoursesTableProps {

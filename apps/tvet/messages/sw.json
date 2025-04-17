@@ -128,9 +128,15 @@
     "2Description": "Utahitaji kupakia picha ya kitambulisho chako cha kitaifa, cheti cha kuzaliwa au kitambulisho cha wageni",
     "3Heading": "Ikiwa huna aina yoyote ya kitambulisho",
     "3Description": "Utahitaji kuwasiliana moja kwa moja na taasisi na kujadili chaguzi za kuomba. Mawasiliano ya taasisi yako yapo kwenye ukurasa wa taasisi",
-    "understood": "Nimeelewa"
+    "undertood": "Nimeelewa"
   },
 
+  "DashboardPage": {
+    "title": "Maombi yangu",
+    "startApplying": "Anza kuomba sasa",
+    "noApplications": "Huna maombi bado"
+  },
+  
   "NotFoundPage": {
     "title": "Ukurasa haujapatikana",
     "description": "Samahani, ukurasa unaotafuta haupo.",

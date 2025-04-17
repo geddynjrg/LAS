@@ -7,6 +7,7 @@ import { CourseDataBlock } from "@workspace/ui/components/tvet/blocks/course-dat
 import { CoursesBlock } from "@workspace/ui/components/tvet/blocks/courses-block";
 import { FeatureSectionBlock } from "@workspace/ui/components/tvet/blocks/feature-section-block";
 import { GalleryBlock } from "@workspace/ui/components/tvet/blocks/gallery-block";
+import { HighlightedCourseListingBlock } from "@workspace/ui/components/tvet/blocks/highlighted-course-listing-block";
 import { LocationBlock } from "@workspace/ui/components/tvet/blocks/location-block";
 import { MediaBlock } from "@workspace/ui/components/tvet/blocks/media-image-block";
 import { SectionHeaderBlock } from "@workspace/ui/components/tvet/blocks/section-header-block";
@@ -21,7 +22,6 @@ import { TrainingAreasBlock } from "@workspace/ui/components/tvet/blocks/trainin
 import { VocationalCentersBlock } from "@workspace/ui/components/tvet/blocks/vocational-centers-block";
 import { assertNever } from "@workspace/ui/lib/utils";
 
-import { HighlightedCourseListingBlock } from "@/components/page-blocks/highlighted-course-listing-block";
 import type { BlockType } from "@/lib/api/types";
 
 export interface PageComponentsProps {

@@ -1,6 +1,6 @@
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { HeroSection } from "@workspace/ui/components/tvet/hero-section";
 
-import { HeroSection } from "@/components/hero-section";
 import { PageComponents } from "@/components/page-components";
 import type { LandingNodeType } from "@/lib/api/schema/node/landing-node.schema";
 

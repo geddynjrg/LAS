@@ -31,7 +31,7 @@ export const Async = {
 
     async function handleSearch(search: string | undefined) {
       setIsLoading(true);
-      setOptions(await dummyFetchSuggestions(search));
+      setOptions(await dummyFetchSuggestions(search ?? ""));
       setIsLoading(false);
     }
 

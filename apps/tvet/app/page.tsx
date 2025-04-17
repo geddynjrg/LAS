@@ -3,11 +3,11 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
+import { ScrollTo } from "@workspace/ui/components/scroll-to";
 import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
+import { HeroSection } from "@workspace/ui/components/tvet/hero-section";
 
-import { HeroSection } from "@/components/hero-section";
 import { PageComponents } from "@/components/page-components";
-import { ScrollTo } from "@/components/scroll-to";
 import { getLanding } from "@/lib/api/landing";
 
 export default async function Page() {
