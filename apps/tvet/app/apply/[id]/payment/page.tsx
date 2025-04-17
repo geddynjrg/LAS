@@ -12,9 +12,7 @@ import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 export default async function PaymentPage() {
   return (
     <>
-      <ApplyFormTitle label="Waithaka Vocational Training Centre">
-        Electrical installation training
-      </ApplyFormTitle>
+      <ApplyFormTitle />
 
       <ApplyFormStepper activeStep={5} />
 

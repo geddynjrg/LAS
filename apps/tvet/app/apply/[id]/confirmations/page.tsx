@@ -23,12 +23,11 @@ export default async function ConfirmationsPage({
   console.log("application", application);
 
   const defaultValues = application.steps_data?.confirmation || {};
+  const courseId = application?.steps_data?.course?.course;
 
   return (
     <>
-      <ApplyFormTitle label="Waithaka Vocational Training Centre">
-        Electrical installation training
-      </ApplyFormTitle>
+      <ApplyFormTitle courseId={courseId} />
 
       <ApplyFormStepper activeStep={4} />
 

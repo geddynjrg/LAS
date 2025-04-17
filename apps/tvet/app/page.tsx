@@ -42,6 +42,7 @@ export default async function Page() {
 
       <section id="content">
         <PageComponents
+          node_id={frontPage.data.id}
           page_components={frontPage.data?.content?.page_components ?? []}
         />
       </section>

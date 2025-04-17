@@ -23,11 +23,11 @@ export default async function GuardianPage({ params }: GuardianPageProps) {
 
   console.log("GuardianPage", application);
 
+  const courseId = application?.steps_data?.course?.course;
+
   return (
     <>
-      <ApplyFormTitle label="Waithaka Vocational Training Centre">
-        Electrical installation training
-      </ApplyFormTitle>
+      <ApplyFormTitle courseId={courseId} />
 
       <ApplyFormStepper activeStep={2} />
 

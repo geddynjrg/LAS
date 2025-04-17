@@ -19,6 +19,7 @@ export default async function LandingPageNode(pageData: LandingNodeType) {
 
       <section id="content">
         <PageComponents
+          node_id={pageData.data.id}
           page_components={pageData.data?.content.page_components ?? []}
         />
       </section>

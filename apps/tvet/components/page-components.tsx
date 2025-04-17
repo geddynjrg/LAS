@@ -25,17 +25,17 @@ import { assertNever } from "@workspace/ui/lib/utils";
 import type { BlockType } from "@/lib/api/types";
 
 export interface PageComponentsProps {
-  applicationBlockId?: string;
+  node_id?: string;
   page_components?: BlockType[];
 }
 
 export const PageComponents: FC<PageComponentsProps> = ({
+  node_id,
   page_components = [],
 }) => {
   return page_components.map((component, index) => {
     const key = component.block_type + index;
 
-    console.log("component", component.block_type);
     switch (component.block_type) {
       case "application":
         return <ApplicationBlock {...component} key={key} />;
@@ -47,7 +47,7 @@ export const PageComponents: FC<PageComponentsProps> = ({
         return <ContactBlock {...component} key={key} />;
 
       case "course_data":
-        return <CourseDataBlock {...component} key={key} />;
+        return <CourseDataBlock id={node_id} {...component} key={key} />;
 
       case "courses":
         return <CoursesBlock {...component} key={key} />;

@@ -9,7 +9,17 @@ import {
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
 
-export default async function ApplyPage() {
+export interface ApplyPageProps {
+  searchParams: Promise<{ course?: string }>;
+}
+
+export default async function ApplyPage({ searchParams }: ApplyPageProps) {
+  const { course } = await searchParams;
+
+  const nextPageLink = course
+    ? `/apply/new/applicant?course=${course}`
+    : "/apply/new/applicant";
+
   const t = await getTranslations("ApplyPage");
   return (
     <div className="flex flex-1 flex-col">
@@ -38,7 +48,7 @@ export default async function ApplyPage() {
 
       <ActionBar>
         <Button className="px-22 mx-auto" asChild>
-          <Link href="/apply/new/applicant">{t("understood")}</Link>
+          <Link href={nextPageLink}>{t("understood")}</Link>
         </Button>
       </ActionBar>
     </div>

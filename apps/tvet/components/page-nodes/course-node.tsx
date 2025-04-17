@@ -52,6 +52,7 @@ export default async function CoursePageNode(pageData: CourseNodeType) {
 
       <section id="content">
         <PageComponents
+          node_id={pageData.data?.id}
           page_components={pageData.data?.content.page_components ?? []}
         />
       </section>

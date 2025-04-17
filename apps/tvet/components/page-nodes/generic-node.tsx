@@ -33,6 +33,7 @@ export default async function GenericPageNode(pageData: GenericNodeType) {
 
       <section id="content">
         <PageComponents
+          node_id={pageData.data?.id}
           page_components={pageData.data?.content.page_components ?? []}
         />
       </section>

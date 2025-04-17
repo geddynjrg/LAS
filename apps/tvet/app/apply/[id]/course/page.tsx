@@ -24,13 +24,12 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   console.log("application", application);
 
+  const courseId = application?.steps_data?.course?.course;
   const defaultValues = application.steps_data?.course || {};
 
   return (
     <>
-      <ApplyFormTitle label="Waithaka Vocational Training Centre">
-        Electrical installation training
-      </ApplyFormTitle>
+      <ApplyFormTitle courseId={courseId} />
 
       <ApplyFormStepper activeStep={3} />
 

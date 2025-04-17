@@ -9,6 +9,7 @@ import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/descripti
 import { cn } from "@workspace/ui/lib/utils";
 
 export interface CourseDataBlockProps {
+  id?: string;
   className?: string;
   block_type: "course_data";
   description: {
@@ -45,6 +46,7 @@ export interface CourseDataBlockProps {
 }
 
 export const CourseDataBlock: FC<CourseDataBlockProps> = ({
+  id,
   className,
   description,
   duration,
@@ -55,8 +57,11 @@ export const CourseDataBlock: FC<CourseDataBlockProps> = ({
   minimum_entry_requirements,
   training_format,
   equipment_available_at_ins,
+  ...props
 }) => {
   const t = useTranslations("CourseDataBlock");
+
+  console.log("p", props);
 
   return (
     <section>
@@ -128,7 +133,7 @@ export const CourseDataBlock: FC<CourseDataBlockProps> = ({
         <div className="app-container px-4">
           <div className="flex items-center px-4">
             <Button className="md:max-w-3xs mx-auto mt-4 w-full" asChild>
-              <Link href="/apply">{t("applyNow")}</Link>
+              <Link href={`/apply?course=${id}`}>{t("applyNow")}</Link>
             </Button>
           </div>
         </div>

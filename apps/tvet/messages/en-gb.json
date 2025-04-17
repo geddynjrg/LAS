@@ -143,6 +143,7 @@
   },
 
   "ApplicantForm": {
+    "title": "Application form",
     "nationalId": "National ID",
     "birthCertificateNumber": "Birth certificate number",
     "birthCertificateFile": "Birth Certificate",

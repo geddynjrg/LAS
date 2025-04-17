@@ -5,28 +5,31 @@ import { getApplicationProgress } from "@/lib/api/application";
 
 export interface ApplicantPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ course?: string }>;
 }
 
-export default async function ApplicantPage({ params }: ApplicantPageProps) {
+export default async function ApplicantPage({
+  params,
+  searchParams,
+}: ApplicantPageProps) {
   const { id } = await params;
+  const { course } = await searchParams;
 
-  const defaultValues =
-    id === "new"
-      ? {}
-      : (await getApplicationProgress({ id }))?.steps_data?.applicant || {};
+  const application =
+    id === "new" ? undefined : await getApplicationProgress({ id });
 
-  console.log({ defaultValues });
+  const courseId = application?.steps_data?.course?.course || course;
+  const defaultValues = application?.steps_data?.applicant || {};
 
   return (
     <>
-      <ApplyFormTitle label="Waithaka Vocational Training Centre">
-        Electrical installation training
-      </ApplyFormTitle>
+      <ApplyFormTitle courseId={courseId} />
 
       <ApplyFormStepper activeStep={1} />
 
       <ApplicantForm
         id={id}
+        courrseId={course}
         // @ts-ignore TODO: wait for API fix
         defaultValues={{
           ...defaultValues,
