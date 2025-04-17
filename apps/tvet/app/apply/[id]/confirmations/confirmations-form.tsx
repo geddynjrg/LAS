@@ -36,7 +36,7 @@ export const ConfirmationsForm: FC<ConfirmationsFormProps> = ({
 
       <Field
         state={state}
-        name="confirmPersonalInformation"
+        name="confirm_personal_information"
         control={(props) => (
           <Checkbox {...props}>
             I confirm that the personal information provided in this application
@@ -48,7 +48,7 @@ export const ConfirmationsForm: FC<ConfirmationsFormProps> = ({
       />
       <Field
         state={state}
-        name="confirmEligibilityRequirements"
+        name="confirm_eligibility"
         control={(props) => (
           <Checkbox {...props}>
             I confirm that I meet the eligibility requirements for the chosen

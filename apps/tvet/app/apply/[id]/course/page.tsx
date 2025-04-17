@@ -37,7 +37,6 @@ export default async function CoursePage({ params }: CoursePageProps) {
       <CourseForm
         id={id}
         institutions={institutions}
-        // @ts-ignore TODO: wait for API fix
         defaultValues={defaultValues}
       />
     </>

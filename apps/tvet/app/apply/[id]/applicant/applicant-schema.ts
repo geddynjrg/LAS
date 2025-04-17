@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { validFile } from "@workspace/ui/lib/zod";
+import { checkbox, validFile } from "@workspace/ui/lib/zod";
 
 export const FILE_ACCEPT = {
   "image/*": [".jpg", ".png"],
@@ -52,7 +52,7 @@ export const applicantSchema = z
     applicant_county: z.string().trim().nonempty(),
     applicant_subcounty: z.string().trim().nonempty(),
     applicant_ward: z.string().trim().nonempty(),
-    applicant_disability: z.preprocess((value) => value === "on", z.boolean()),
+    applicant_disability: checkbox(),
 
     // idType === "national-id"
     applicant_id_number: z.string().trim().optional(),
@@ -63,7 +63,7 @@ export const applicantSchema = z
 
     // idType === "alien-id"
     alienId: z.string().optional(),
-    alienIdIsRefugee: z.preprocess((value) => value === "on", z.boolean()),
+    alienIdIsRefugee: checkbox(),
 
     // applicant_disability === true
     disability_nature: disabilityNature.optional(),

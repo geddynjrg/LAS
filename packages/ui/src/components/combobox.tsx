@@ -72,9 +72,10 @@ export const Combobox: FC<ComboboxProps> = ({
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    const newValue = currentValue === value ? "" : currentValue;
+                    setValue(newValue);
                     setOpen(false);
-                    onValueChange?.(value);
+                    onValueChange?.(newValue);
                   }}
                 >
                   <IconCheck

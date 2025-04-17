@@ -100,6 +100,15 @@ export const zodKeys = <T extends z.ZodTypeAny>(schema: T): string[] => {
   return Array.from(paths);
 };
 
+export function checkbox(required = false) {
+  return z.preprocess(
+    (value) => value === "on",
+    required
+      ? z.literal(true, { errorMap: () => getIntlKey("required") })
+      : z.boolean(),
+  );
+}
+
 export function validFile(accept: Accept, fileSize: number) {
   return z.union([
     z

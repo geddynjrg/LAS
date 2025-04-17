@@ -9,6 +9,7 @@ import { Select } from "@workspace/ui/components/select";
 import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounce";
 import { useForm } from "@workspace/ui/hooks/use-form";
 import { useMount } from "@workspace/ui/hooks/use-mount";
+import type { DeepPartial } from "@workspace/ui/types";
 
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
@@ -25,7 +26,7 @@ import { getCoursesList } from "@/lib/api/courses";
 export interface CourseFormProps {
   id: string;
   institutions?: { id: string | number; title: string }[];
-  defaultValues?: Partial<CourseSchema>;
+  defaultValues?: DeepPartial<CourseSchema>;
 }
 
 export const CourseForm: FC<CourseFormProps> = ({
@@ -33,7 +34,7 @@ export const CourseForm: FC<CourseFormProps> = ({
   institutions,
   defaultValues,
 }) => {
-  const [state, formAction, _isPending] = useForm(
+  const [state, formAction, isPending] = useForm(
     courseAction,
     courseSchema,
     defaultValues,
@@ -43,7 +44,7 @@ export const CourseForm: FC<CourseFormProps> = ({
     state.values?.institution,
   );
 
-  const [courses, searchCourses, isPending] = useSearchCourses();
+  const [courses, searchCourses, isSearchingCourses] = useSearchCourses();
   const [selectedCourse, setSelectedCourse] = useState<string>();
 
   const intakePeriods =
@@ -64,7 +65,12 @@ export const CourseForm: FC<CourseFormProps> = ({
   }
 
   return (
-    <ApplyFormWrap action={formAction} prevUrl="guardian" className="space-y-4">
+    <ApplyFormWrap
+      action={formAction}
+      isPending={isPending}
+      prevUrl="guardian"
+      className="space-y-4"
+    >
       <ApplyFormSubtitle>Course</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
 
@@ -92,7 +98,7 @@ export const CourseForm: FC<CourseFormProps> = ({
         required
         control={(props) => (
           <Combobox
-            loading={isPending}
+            loading={isSearchingCourses}
             disabled={courses.length === 0}
             options={courses}
             onValueChange={setSelectedCourse}
