@@ -5,6 +5,26 @@ import { Logo } from "@workspace/ui/components/tvet/logo";
 const meta = {
   component: Logo,
   title: "TVET/Logo",
+  args: {
+    height: 120,
+  },
+  argTypes: {
+    height: {
+      type: "number",
+      description: "Height of the logo",
+      control: { type: "number" },
+    },
+    width: {
+      type: "number",
+      description: "Width of the logo",
+      control: { type: "number" },
+    },
+    className: {
+      type: "string",
+      description: "Class name for the logo",
+      control: { type: "text" },
+    },
+  },
 } satisfies Meta<typeof Logo>;
 
 export default meta;

@@ -11,6 +11,7 @@ import { SidebarInset } from "@workspace/ui/components/sidebar";
 import { AppFooter } from "@/components/app-footer";
 import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
+import { NodeSkeleton } from "@/components/page-nodes";
 import { Providers } from "@/components/providers";
 import { SessionProvider } from "@/hooks/useSession";
 import { type Locale } from "@/i18n/config";
@@ -55,7 +56,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                 institutions={institutions}
               />
               <SidebarInset className="min-h-svh">
-                <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+                <Suspense fallback={<NodeSkeleton />}>{children}</Suspense>
                 <AppFooter institutions={institutions} />
               </SidebarInset>
             </Providers>

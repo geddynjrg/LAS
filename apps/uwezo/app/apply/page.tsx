@@ -14,8 +14,7 @@ import {
 } from "@workspace/ui/components/carousel";
 import { Container } from "@workspace/ui/components/container";
 import { Underline } from "@workspace/ui/components/underline";
-
-import { ApplySideLogo } from "@/components/apply-side-logo";
+import { ApplySideLogo } from "@workspace/ui/components/uwezo/apply-side-logo";
 
 export default function Page() {
   const t = useTranslations("ApplyPage");

@@ -20,11 +20,10 @@ import { IconStockGraph } from "@workspace/ui/components/icon/icon-stock-graph";
 import { IconUsers } from "@workspace/ui/components/icon/icon-users";
 import { LeadingSlash } from "@workspace/ui/components/leading-slash";
 import { Card } from "@workspace/ui/components/uwezo/card";
+import { HeroSection } from "@workspace/ui/components/uwezo/hero-section";
 import { MetricCard } from "@workspace/ui/components/uwezo/metric-card";
 import { NewsItem } from "@workspace/ui/components/uwezo/news-item";
 import { cn } from "@workspace/ui/lib/utils";
-
-import { HeroSection } from "@/components/hero-section";
 
 const NEWS_ITEMS: {
   date: Date;
