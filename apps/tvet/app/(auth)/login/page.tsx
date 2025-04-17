@@ -1,15 +1,11 @@
 import { redirect } from "next/navigation";
 
 export interface LoginPageProps {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; callbackSearch?: string }>;
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const callbackUrl = (await searchParams).callbackUrl;
+  const params = await searchParams;
 
-  if (callbackUrl) {
-    redirect(`/login/username?callbackUrl=${encodeURIComponent(callbackUrl)}`);
-  }
-
-  redirect("/login/username");
+  redirect(`/login/username?${new URLSearchParams(params).toString()}`);
 }

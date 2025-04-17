@@ -1,27 +1,28 @@
 import { LoginForm } from "@/app/(auth)/login/username/login-form";
 
+interface SearchParams {
+  callbackUrl: string | undefined;
+  callbackSearch: string | undefined;
+}
+
 export interface LoginPageProps {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { callbackUrl } = await searchParams;
+  const params = await searchParams;
 
-  return (
-    <>
-      <LoginForm redirectTo={callbackUrl} />
-      {/* 
-      <Underline
-        variant="primary"
-        asChild
-        className="text-primary mx-auto mt-4"
-      >
-        <Link
-          href={`/login/username?callbackUrl=${encodeURIComponent(callbackUrl ?? "/dashboard")}`}
-        >
-          {t("usePhoneInstead")}
-        </Link>
-      </Underline> */}
-    </>
-  );
+  return <LoginForm redirectTo={createCallbackUrl(params)} />;
+}
+
+function createCallbackUrl({ callbackUrl, callbackSearch }: SearchParams) {
+  if (!callbackUrl) {
+    return undefined;
+  }
+
+  if (!callbackSearch) {
+    return callbackUrl;
+  }
+
+  return `${callbackUrl}?${new URLSearchParams(callbackSearch).toString()}`;
 }
