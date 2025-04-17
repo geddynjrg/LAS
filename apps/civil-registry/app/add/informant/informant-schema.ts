@@ -14,6 +14,7 @@ export const informantSchema = z
     nationality: z.string().nonempty(),
     capacityOfInformant: z.string().nonempty(),
     natureOfRelation: z.string().optional(),
+    isPredefinedId: z.string().optional(),
     contacts: z
       .array(
         z.object({
@@ -26,17 +27,38 @@ export const informantSchema = z
   })
   .superRefine((data, ctx) => {
     if (data.informantType === "Other") {
-      const isNationalIdEmpty =
-        !data.nationalId || data.nationalId.trim() === "";
-      const isPassportEmpty =
-        !data.passportNumber || data.passportNumber.trim() === "";
+      const requiresNationalId = data.isPredefinedId === "true";
 
-      if (isNationalIdEmpty && isPassportEmpty) {
+      if (requiresNationalId && !data.nationalId) {
         ctx.addIssue({
           code: "custom",
           message: "National ID is required.",
           path: ["nationalId"],
         });
+      }
+
+      if (!requiresNationalId) {
+        if (!data.firstName) {
+          ctx.addIssue({
+            code: "custom",
+            message: "FormErrorMessages.firstNameRequired",
+            path: ["firstName"],
+          });
+        }
+        if (!data.lastName) {
+          ctx.addIssue({
+            code: "custom",
+            message: "FormErrorMessages.lastNameRequired",
+            path: ["lastName"],
+          });
+        }
+        if (!data.passportNumber) {
+          ctx.addIssue({
+            code: "custom",
+            message: "FormErrorMessages.passportNumberRequired",
+            path: ["passportNumber"],
+          });
+        }
       }
 
       if (!data.contacts || data.contacts.length === 0) {

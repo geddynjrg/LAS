@@ -1,5 +1,6 @@
 "use client";
 
+import { IconCaretDownFilled } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
 
@@ -133,7 +134,11 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
         name="education"
         label={t("DetailsPage.education")}
         control={(props) => (
-          <SearchInput {...props} options={educationOptions} />
+          <SearchInput
+            {...props}
+            options={educationOptions}
+            endDecorator={<IconCaretDownFilled />}
+          />
         )}
         editable={false}
       />

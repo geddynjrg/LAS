@@ -80,6 +80,7 @@ export interface ToggleGroupItemProps
   value: string;
   asChild?: boolean;
   className?: string;
+  enableIcon?: boolean;
   children: ReactNode;
 }
 
@@ -88,6 +89,7 @@ export const ButtonGroupItem: FC<ToggleGroupItemProps> = ({
   children,
   variant,
   size,
+  enableIcon = true,
   ...props
 }) => {
   const context = useContext(ButtonGroupContext);
@@ -106,7 +108,9 @@ export const ButtonGroupItem: FC<ToggleGroupItemProps> = ({
       )}
       {...props}
     >
-      <IconCheck className="hidden group-data-[state=on]:inline" />
+      {enableIcon && (
+        <IconCheck className="hidden group-data-[state=on]:inline" />
+      )}
       {children}
     </ToggleGroupPrimitive.Item>
   );

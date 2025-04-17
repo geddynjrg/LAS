@@ -1,3 +1,4 @@
+import { IconCaretDownFilled } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { type FC } from "react";
 
@@ -160,7 +161,11 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
           editable={isEditing}
           label={t("DetailsPage.education")}
           control={(props) => (
-            <SearchInput {...props} options={educationOptions} />
+            <SearchInput
+              {...props}
+              options={educationOptions}
+              endDecorator={<IconCaretDownFilled />}
+            />
           )}
           required={isEditing}
         />

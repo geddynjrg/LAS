@@ -1,6 +1,6 @@
 "use client";
 
-import { IconChevronLeft } from "@tabler/icons-react";
+import { IconCaretDownFilled, IconChevronLeft } from "@tabler/icons-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState, type FC } from "react";
 
@@ -25,6 +25,7 @@ interface NationalIdFieldValues {
   citizenship: string;
   passportNumber: string;
   nationality: string;
+  isPredefinedId: string;
 }
 
 export interface NationalIdFieldProps {
@@ -40,7 +41,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
   defaultValues,
   editable = true,
 }) => {
-  const t = useTranslations("DetailsPage");
+  const t = useTranslations();
   const format = useFormatter();
   const personSearch = usePersonSearch(searchSexFilter);
 
@@ -74,13 +75,24 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
           state={state}
           defaultValues={defaultValues}
           name="nationalId"
-          label={t("national-id")}
+          label={t("DetailsPage.national-id")}
           editable={editable}
           control={(props) => (
             <SearchInput
               {...props}
+              placeholder={t("FormPlaceholders.searchForNationalId")}
               isLoading={personSearch.isLoading}
-              onValueChange={personSearch.onValueChange}
+              onValueChange={(value) => {
+                if (value === "") {
+                  // reset values if field is cleared
+                  setFirstName("");
+                  setLastName("");
+                  setMiddleName("");
+                  setDob("");
+                  setCitizenship("–");
+                }
+                personSearch.onValueChange(value);
+              }}
               options={personSearch.options}
               onValueSelect={(value) => {
                 const person = personSearch.findByNationalId(value);
@@ -98,25 +110,45 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
       ) : (
         <input type="hidden" name="nationalId" value="" />
       )}
-      {editable &&
-        (hasNationalId ? (
-          <UnderlineButton
-            className="mx-auto"
-            onClick={() => setHasNationalId(false)}
-          >
-            {t("national-id-unknown")}
-          </UnderlineButton>
-        ) : (
-          <UnderlineButton
-            className="mx-auto"
-            onClick={() => setHasNationalId(true)}
-          >
-            <IconChevronLeft /> {t("back-to-national-id-search")}
-          </UnderlineButton>
-        ))}
+
+      {editable && (
+        <Field
+          state={state}
+          name="isPredefinedId"
+          defaultValues={defaultValues}
+          className="mx-auto"
+          control={(props) => {
+            return (
+              <div className="mx-auto">
+                <input
+                  {...props}
+                  type="hidden"
+                  value={hasNationalId ? "true" : "false"}
+                />
+                {hasNationalId ? (
+                  <UnderlineButton
+                    className="mx-auto"
+                    onClick={() => setHasNationalId(false)}
+                  >
+                    {t("DetailsPage.national-id-unknown")}
+                  </UnderlineButton>
+                ) : (
+                  <UnderlineButton
+                    className="mx-auto"
+                    onClick={() => setHasNationalId(true)}
+                  >
+                    <IconChevronLeft />{" "}
+                    {t("DetailsPage.back-to-national-id-search")}
+                  </UnderlineButton>
+                )}
+              </div>
+            );
+          }}
+        />
+      )}
       {hasNationalId ? (
         <>
-          <DataNode label={t("name")} isHighlighted={isNameChanged}>
+          <DataNode label={t("DetailsPage.name")} isHighlighted={isNameChanged}>
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />
@@ -124,7 +156,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             {fullName || "–"}
           </DataNode>
           <DataNode
-            label={t("dob")}
+            label={t("DetailsPage.dob")}
             isHighlighted={
               !editable && isValueChanged("dob", { dob }, defaultValues)
             }
@@ -135,7 +167,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
           </DataNode>
 
           <DataNode
-            label={t("citizenship")}
+            label={t("DetailsPage.citizenship")}
             isHighlighted={
               !editable &&
               isValueChanged("citizenship", { citizenship }, defaultValues)
@@ -152,7 +184,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             state={state}
             defaultValues={defaultValues}
             name="firstName"
-            label={t("first-name")}
+            label={t("DetailsPage.first-name")}
             control={(props) => <Input {...props} />}
             editable={editable}
             required
@@ -162,7 +194,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             state={state}
             defaultValues={defaultValues}
             name="middleName"
-            label={t("middle-name")}
+            label={t("DetailsPage.middle-name")}
             control={(props) => <Input {...props} />}
             editable={editable}
           />
@@ -171,7 +203,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             state={state}
             defaultValues={defaultValues}
             name="lastName"
-            label={t("lastname")}
+            label={t("DetailsPage.last-name")}
             control={(props) => <Input {...props} />}
             editable={editable}
             required
@@ -181,7 +213,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             state={state}
             defaultValues={defaultValues}
             name="passportNumber"
-            label={t("passport-number")}
+            label={t("DetailsPage.passport-number")}
             control={(props) => <Input {...props} />}
             editable={editable}
             required
@@ -191,7 +223,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             defaultValues={defaultValues}
             name="dob"
             isDate
-            label={t("dob")}
+            label={t("DetailsPage.dob")}
             editable={editable}
             control={(props) => <DatePicker {...props} />}
           />
@@ -200,9 +232,16 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             state={state}
             defaultValues={defaultValues}
             name="citizenship"
-            label={t("citizenship")}
+            label={t("DetailsPage.citizenship")}
             editable={editable}
-            control={(props) => <Input {...props} />}
+            control={(props) => (
+              <SearchInput
+                {...props}
+                placeholder={t("FormPlaceholders.select")}
+                options={nationalityOptions}
+                endDecorator={<IconCaretDownFilled />}
+              />
+            )}
           />
         </>
       )}
@@ -210,10 +249,15 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
         state={state}
         defaultValues={defaultValues}
         name="nationality"
-        label={t("nationality")}
+        label={t("DetailsPage.nationality")}
         editable={editable}
         control={(props) => (
-          <SearchInput {...props} options={nationalityOptions} />
+          <SearchInput
+            {...props}
+            placeholder={t("FormPlaceholders.select")}
+            options={nationalityOptions}
+            endDecorator={<IconCaretDownFilled />}
+          />
         )}
         required
       />

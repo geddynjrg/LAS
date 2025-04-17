@@ -52,7 +52,6 @@ export const ContactFields: FC<ContactFieldsProps> = ({
     setContactIds((prev) => prev.filter((id) => id !== index));
   };
 
-
   if (!editable) {
     return state.values?.contacts?.map((contact, index) => (
       <div key={`phone-contact-${index}`}>
@@ -112,7 +111,9 @@ export const ContactFields: FC<ContactFieldsProps> = ({
               state={state}
               name={`contacts.${index}.phone`}
               required
-              control={(props) => <Input type="tel" {...props} />}
+              control={(props) => (
+                <Input type="tel" {...props} placeholder="000 000000" />
+              )}
             />
           </FieldGroup>
           {hasEmail && (
@@ -121,7 +122,9 @@ export const ContactFields: FC<ContactFieldsProps> = ({
               state={state}
               name={`contacts.${index}.email`}
               label={t("email")}
-              control={(props) => <Input {...props} />}
+              control={(props) => (
+                <Input {...props} placeholder="email@email.com" />
+              )}
             />
           )}
 

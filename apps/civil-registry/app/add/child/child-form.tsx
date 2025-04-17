@@ -90,12 +90,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
   };
 
   return (
-    <FormWrap
-      action={formAction}
-      isPending={isPending}
-      cancelUrl="/"
-      className="space-y-4"
-    >
+    <FormWrap action={formAction} isPending={isPending} className="space-y-4">
       <>
         {children?.map((child, childIndex) => (
           <div key={childIndex}>
@@ -118,6 +113,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
                       options={natureOfBirthOptions}
                       orientation="horizontal"
                       size="md"
+                      color="civilRegistry"
                     />
                   );
                 }}
@@ -137,6 +133,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
 
               <Field
                 state={state}
+                description={t("Common.optional")}
                 name={`children.${childIndex}.middleName`}
                 label={t("DetailsPage.middle-name")}
                 control={(props) => <Input {...props} />}
@@ -162,10 +159,16 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
                   onValueChange={() => {}}
                   type="single"
                   defaultValue={defaultValues?.[childIndex]?.sex}
+                  className="flex flex-row"
                 >
                   <React.Fragment key=".0">
                     {sexOptions.map((option) => (
-                      <ButtonGroupItem key={option.value} value={option.value}>
+                      <ButtonGroupItem
+                        key={option.value}
+                        value={option.value}
+                        enableIcon={false}
+                        className="grow px-1"
+                      >
                         {option.label}
                       </ButtonGroupItem>
                     ))}

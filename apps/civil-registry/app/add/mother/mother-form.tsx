@@ -1,5 +1,6 @@
 "use client";
 
+import { IconCaretDownFilled } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState, type FC } from "react";
 
@@ -83,7 +84,12 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
           name="education"
           label={t("DetailsPage.education")}
           control={(props) => (
-            <SearchInput {...props} options={educationOptions} />
+            <SearchInput
+              {...props}
+              options={educationOptions}
+              placeholder={t("FormPlaceholders.select")}
+              endDecorator={<IconCaretDownFilled />}
+            />
           )}
           required={false}
         />
@@ -92,7 +98,9 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
           state={state}
           name="fatherName"
           label={t("DetailsPage.fathers-name")}
-          control={(props) => <Input {...props} />}
+          control={(props) => (
+            <Input {...props} placeholder={t("FormPlaceholders.insertName")} />
+          )}
           required={false}
         />
 

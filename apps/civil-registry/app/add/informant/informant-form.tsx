@@ -154,7 +154,11 @@ export const InformantForm: FC<InformantFormProps> = ({
               name="natureOfRelation"
               label={t("DetailsPage.nature-of-relation")}
               control={(props) => (
-                <SearchInput {...props} options={relationOptions} />
+                <SearchInput
+                  {...props}
+                  options={relationOptions}
+                  placeholder={t("FormPlaceholders.select")}
+                />
               )}
               required
             />

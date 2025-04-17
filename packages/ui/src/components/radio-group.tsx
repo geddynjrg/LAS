@@ -24,6 +24,8 @@ export const radioGroupVariants = cva({
   },
 });
 
+type ColorVariant = "primary" | "civilRegistry";
+
 export interface RadioOption<T extends string = string>
   extends VariantProps<typeof radioGroupVariants> {
   label: ReactNode;
@@ -40,6 +42,7 @@ export interface RadioGroupProps<T extends string = string>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onValueChange?: (value: any) => void;
   className?: string;
+  color?: ColorVariant;
   children?: ReactNode;
 }
 
@@ -48,6 +51,7 @@ export const RadioGroup = <T extends string>({
   orientation = "vertical",
   size = "md",
   className,
+  color = "primary",
   ...props
 }: RadioGroupProps<T>) => {
   const defaultId = useId();
@@ -66,6 +70,7 @@ export const RadioGroup = <T extends string>({
           id={`${id}-${value}`}
           value={value}
           size={size}
+          color={color}
           {...option}
         />
       ))}
@@ -77,8 +82,9 @@ const RadioGroupItem: FC<
   RadioOption & {
     id: string;
     size: VariantProps<typeof radioGroupVariants>["size"];
+    color: ColorVariant;
   }
-> = ({ id, label, size, ...props }) => {
+> = ({ id, label, size, color, ...props }) => {
   return (
     <div className="flex items-center space-x-2">
       <RadioGroupPrimitive.Item
@@ -86,10 +92,12 @@ const RadioGroupItem: FC<
         className={cn(
           "border-foreground text-primary focus-visible-ring rounded-full border",
           "disabled:cursor-not-allowed disabled:opacity-50",
-          "data-[state=checked]:border-primary",
           size === "sm" && "size-4",
           size === "md" && "size-6",
           size === "lg" && "size-8",
+          color === "primary" && "data-[state=checked]:border-primary",
+          color === "civilRegistry" &&
+            "border-border data-[state=checked]:border-radio-secondary text-radio-secondary",
         )}
         {...props}
       >
@@ -100,6 +108,7 @@ const RadioGroupItem: FC<
               size === "sm" && "size-3",
               size === "md" && "size-5",
               size === "lg" && "size-7",
+              color === "civilRegistry" && "fill-radio-secondary",
             )}
           />
         </RadioGroupPrimitive.Indicator>

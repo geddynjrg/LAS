@@ -7,7 +7,8 @@
     "next": "Next",
     "total": "Total",
     "maxFileSize": "Max file size {size}",
-    "closeForm": "Close form"
+    "closeForm": "Close form",
+    "optional": "Optional"
   },
   "DashboardPage": {
     "title": "My relations",
@@ -58,7 +59,8 @@
     "female": "Female",
     "male": "Male",
     "intersex": "Intersex",
-    "lastname": "Surename",
+    "surename": "Surename",
+    "last-name": "Last name",
     "dob": "Date of birth",
     "age": "Age",
     "sex": "Sex",
@@ -193,5 +195,15 @@
   "ConfirmationForm": {
     "successMessage": "Birth notification successfully confirmed and submitted",
     "waitingForConfirmation": "Waiting for confirmation"
+  },
+  "FormPlaceholders": {
+    "searchForNationalId": "Search for a name of ID",
+    "select": "Select",
+    "insertName": "Insert name"
+  },
+  "FormErrorMessages": {
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "passportNumberRequired": "Passport/Alien card number is required"
   }
 }

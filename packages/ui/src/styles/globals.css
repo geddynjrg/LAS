@@ -100,6 +100,9 @@
   --color-sidebar-active: var(--color-primary);
   --color-sidebar-active-foreground: var(--color-primary-foreground);
 
+  /* Radio Group */
+  --color-radio-secondary: hsl(0, 0%, 0%);
+
   /* green */
   --color-green-100: hsl(140, 48%, 94%);
   --color-green-200: hsl(143, 49%, 75%);
@@ -266,6 +269,9 @@
     --color-stepper-active-foreground: hsl(0, 0%, 100%);
     --color-stepper-focus: hsl(180, 16%, 93%);
     --color-stepper-focus-foreground: hsl(184, 94%, 6%);
+
+    /* Radio Group */
+    --color-radio-secondary: hsl(309, 64%, 17%);
   }
 }
 

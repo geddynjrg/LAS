@@ -6,8 +6,9 @@
     "total": "Jumla",
     "next": "Ifuatayo",
     "back": "Rudi",
-    "maxFileSize": "Ukubwa wa faili wa juu zaidi {size}",
-    "closeForm": "Funga fomu"
+    "maxFileSize": "Ukubwa wa juu zaidi wa faili {size}",
+    "closeForm": "Funga fomu",
+    "optional": "Hiari"
   },
   "DashboardPage": {
     "title": "Mahusiano yangu",
@@ -58,7 +59,8 @@
     "female": "Mwanamke",
     "male": "Mwanaume",
     "intersex": "Jinsia mbili",
-    "lastname": "Jina la ukoo",
+    "surename": "Jina la ukoo",
+    "last-name": "Jina la ukoo",
     "dob": "Tarehe ya kuzaliwa",
     "age": "Umri",
     "sex": "Jinsia",
@@ -193,5 +195,15 @@
   "ConfirmationForm": {
     "successMessage": "Arifa ya kuzaliwa imethibitishwa na kuwasilishwa kwa mafanikio",
     "waitingForConfirmation": "Inasubiri uthibitisho"
+  },
+  "FormPlaceholders": {
+    "searchForNationalId": "Tafuta jina au Kitambulisho",
+    "select": "Chagua",
+    "insertName": "Weka jina"
+  },
+  "FormErrorMessages": {
+    "firstNameRequired": "Jina la kwanza linahitajika",
+    "lastNameRequired": "Jina la ukoo linahitajika",
+    "passportNumberRequired": "Nambari ya Pasipoti/Kadi ya Mgeni inahitajika"
   }
 }
