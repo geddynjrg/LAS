@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { FC } from "react";
 
+import { Container } from "@workspace/ui/components/container";
 import { cn } from "@workspace/ui/lib/utils";
 
 interface Media {
@@ -21,17 +22,25 @@ interface Media {
 export interface MediaBlockProps {
   className?: string;
   block_type: "media";
-  media?: Media;
+  media?: Media[] | Media;
 }
 
 export const MediaBlock: FC<MediaBlockProps> = ({ media, className }) => {
   if (!media) return null;
+
+  console.log({ media: media, is: Array.isArray(media) });
   return (
-    <section
-      className={cn("app-container bg-neutral-200 px-4 py-12", className)}
-    >
-      <MediaItem media={media} />
-    </section>
+    <Container className={cn("bg-neutral-200 px-4 py-12", className)}>
+      {Array.isArray(media) ? (
+        <div className="relative flex aspect-video w-full">
+          {media.map((item) => (
+            <MediaItem key={item.id} media={item} />
+          ))}
+        </div>
+      ) : (
+        <MediaItem media={media} />
+      )}
+    </Container>
   );
 };
 
@@ -43,11 +52,27 @@ const MediaItem: FC<{ media: Media }> = ({ media }) => {
           fill
           src={media.url}
           alt={media.alt}
-          width={Number(media.width)}
-          height={Number(media.height)}
-          className="w-full rounded-xl"
+          className="rounded-xl"
+          style={{
+            objectFit: "cover",
+            aspectRatio: `${media.width}/${media.height}`,
+          }}
         />
       );
+    case "media":
+      return (
+        <Image
+          fill
+          src={media.url}
+          alt={media.alt}
+          className="rounded-xl"
+          style={{
+            objectFit: "cover",
+            aspectRatio: `${media.width}/${media.height}`,
+          }}
+        />
+      );
+
     case "video":
       return (
         <video controls className="w-full rounded-xl" muted>
