@@ -70,8 +70,5 @@
     "gitlens.trailingLineForegroundColor": "#555555"
   },
   "search.useGlobalIgnoreFiles": false,
-  "yaml.schemas": {
-    "file:///c%3A/Users/jaanu/.vscode/extensions/atlassian.atlascode-3.4.12/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml",
-    "https://www.artillery.io/schema.json": []
-  }
+
 }

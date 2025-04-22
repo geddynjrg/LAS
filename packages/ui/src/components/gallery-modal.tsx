@@ -37,7 +37,7 @@ export interface GalleryModalImage {
 
 export interface GalleryModal extends PropsWithChildren {
   title: string;
-  images: GalleryModalImage[];
+  images: Array<GalleryModalImage | undefined>;
 }
 
 export const GalleryModal: FC<GalleryModal> = ({ images, title, children }) => {
@@ -71,8 +71,8 @@ export const GalleryModal: FC<GalleryModal> = ({ images, title, children }) => {
                     <div className="h-full w-full">
                       <img
                         className="m-auto h-full object-contain"
-                        src={image.url}
-                        alt={image.alt}
+                        src={image?.url}
+                        alt={image?.alt}
                         onClick={(e) => {
                           // prevent closing the modal when clicking on the image
                           e.stopPropagation();

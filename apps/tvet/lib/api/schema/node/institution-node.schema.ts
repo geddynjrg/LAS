@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { SingleImageSchema } from "@/lib/api/schema/image-file.schema";
+import { ImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
 export const InstitutionNodeSchema = z.object({
@@ -40,7 +40,7 @@ export const InstitutionNodeSchema = z.object({
         latitude: z.number(),
         longitude: z.number(),
       }),
-      image: SingleImageSchema,
+      image: z.union([z.array(ImageSchema), ImageSchema]),
       page_components: z.array(BlockSchema),
     }),
   }),

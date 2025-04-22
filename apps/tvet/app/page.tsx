@@ -12,14 +12,20 @@ import { getLanding } from "@/lib/api/landing";
 
 export default async function Page() {
   const t = await getTranslations("FrontPage");
-  const frontPage = await getLanding();
+  const pageData = await getLanding();
+
+  const heroImage = Array.isArray(pageData?.data?.content?.image)
+    ? pageData?.data?.content?.image.length > 0
+      ? pageData?.data?.content?.image[0]
+      : undefined
+    : pageData?.data?.content?.image;
 
   return (
     <div className="flex flex-1 flex-col">
       <HeroSection
-        title={frontPage.data.title}
-        backgroundUrl={frontPage.data.content.image?.url}
-        backgroundAlt={frontPage.data.content.image?.alt}
+        title={pageData.data.title}
+        backgroundUrl={heroImage?.url}
+        backgroundAlt={heroImage?.alt}
         actions={
           <>
             <ScrollTo targetId="content">
@@ -37,13 +43,13 @@ export default async function Page() {
           </>
         }
       >
-        <DescriptionBlock {...frontPage.data.content.body} />
+        <DescriptionBlock {...pageData.data.content.body} />
       </HeroSection>
 
       <section id="content">
         <PageComponents
-          node_id={frontPage.data.id}
-          page_components={frontPage.data?.content?.page_components ?? []}
+          node_id={pageData.data.id}
+          page_components={pageData.data?.content?.page_components ?? []}
         />
       </section>
     </div>

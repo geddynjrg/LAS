@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { SingleImageSchema } from "@/lib/api/schema/image-file.schema";
+import { ImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
 export const CourseNodeSchema = z.object({
@@ -30,7 +30,7 @@ export const CourseNodeSchema = z.object({
             processed: z.string().nullable(),
           })
           .optional(),
-        image: SingleImageSchema,
+        image: z.union([z.array(ImageSchema), ImageSchema]),
         tags: z.array(z.string()),
         institution: z.object({
           id: z.string(),

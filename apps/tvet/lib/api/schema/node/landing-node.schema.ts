@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { SingleImageSchema } from "@/lib/api/schema/image-file.schema";
+import { ImageSchema } from "@/lib/api/schema/image-file.schema";
 import { BlockSchema } from "@/lib/api/types";
 
 export const LandingNodeSchema = z.object({
@@ -8,7 +8,7 @@ export const LandingNodeSchema = z.object({
     id: z.string(),
     type: z.literal("landing"),
     uuid: z.string(),
-    title: z.string(),
+    title: z.string().optional(),
     language: z.object({
       code: z.string(),
       name: z.string(),
@@ -24,7 +24,7 @@ export const LandingNodeSchema = z.object({
           processed: z.string(),
         })
         .optional(),
-      image: SingleImageSchema,
+      image: z.union([z.array(ImageSchema), ImageSchema]),
       page_components: z.array(BlockSchema),
     }),
   }),

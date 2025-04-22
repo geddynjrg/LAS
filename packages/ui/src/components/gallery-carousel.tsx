@@ -21,7 +21,7 @@ export interface ImagesInfoProps {
 export interface LightboxModalProps {
   children?: ReactNode;
   className?: string;
-  images: Array<ImagesInfoProps>;
+  images: Array<ImagesInfoProps | undefined>;
 }
 
 export const GalleryCarousel: FC<LightboxModalProps> = ({
@@ -38,12 +38,14 @@ export const GalleryCarousel: FC<LightboxModalProps> = ({
               className="relative box-border hover:cursor-pointer"
             >
               <GalleryModalTrigger index={index} asChild>
-                <Image
-                  src={image.url}
-                  alt={image.alt}
-                  className="h-full w-full object-cover object-center"
-                  fill
-                />
+                {image && (
+                  <Image
+                    src={image.url}
+                    alt={image.alt}
+                    className="h-full w-full object-cover object-center"
+                    fill
+                  />
+                )}
               </GalleryModalTrigger>
             </CarouselItem>
           ))}

@@ -6,7 +6,6 @@ import { DescriptionSchema } from "@/lib/api/schema/description.schema";
 export const TextBlockWithBackgroundBlockSchema = AbstractBlockSchema.extend({
   block_type: z.literal("text_block_with_background"),
 
-  title: z.string(),
   items: z.array(
     z.object({
       title: z.string().optional(),

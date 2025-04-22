@@ -12,13 +12,19 @@ import type { GenericNodeType } from "@/lib/api/schema/node/generic-node.schema"
 export default async function GenericPageNode(pageData: GenericNodeType) {
   const t = await getTranslations("InstitutionPage");
 
+  const heroImage = Array.isArray(pageData?.data?.content?.image)
+    ? pageData?.data?.content?.image.length > 0
+      ? pageData?.data?.content?.image[0]
+      : undefined
+    : pageData?.data?.content?.image;
+
   return (
     <div className="flex flex-1 flex-col">
       {pageData.data?.title && pageData.data?.content.body && (
         <HeroSection
           title={pageData.data.title}
-          backgroundUrl={pageData.data?.content?.image?.url}
-          backgroundAlt={pageData.data?.content?.image?.alt}
+          backgroundUrl={heroImage?.url}
+          backgroundAlt={heroImage?.alt}
           actions={
             <ScrollTo targetId="content">
               <Button variant="secondary">

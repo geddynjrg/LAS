@@ -18,7 +18,7 @@ export interface GalleryBlockProps {
     format: string | null;
     processed: string | null;
   };
-  images: {
+  images: Array<{
     title: string;
     type: string;
     id: string;
@@ -31,7 +31,7 @@ export interface GalleryBlockProps {
     alt: string;
     width: string;
     height: string;
-  }[];
+  }>;
 }
 
 export const GalleryBlock: FC<GalleryBlockProps> = ({
