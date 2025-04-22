@@ -24,6 +24,8 @@ export type ButtonGroupProps = VariantProps<typeof buttonGroupVariants> & {
   disabled?: boolean;
   className?: string;
   children: ReactNode;
+  "aria-invalid"?: boolean;
+  "data-invalid"?: boolean;
 } & (
     | {
         type: "single";
@@ -67,9 +69,15 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({
         }}
         {...props}
       >
-        <ButtonGroupContext.Provider value={{ variant, size }}>
-          {children}
-        </ButtonGroupContext.Provider>
+        <fieldset
+          name={name}
+          aria-invalid={props["aria-invalid"]}
+          data-invalid={props["data-invalid"]}
+        >
+          <ButtonGroupContext.Provider value={{ variant, size }}>
+            {children}
+          </ButtonGroupContext.Provider>
+        </fieldset>
       </ToggleGroupPrimitive.Root>
     </>
   );
