@@ -73,6 +73,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({
           name={name}
           aria-invalid={props["aria-invalid"]}
           data-invalid={props["data-invalid"]}
+		  className={cn("flex items-center justify-center w-full")}
         >
           <ButtonGroupContext.Provider value={{ variant, size }}>
             {children}

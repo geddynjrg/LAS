@@ -159,7 +159,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
                   onValueChange={() => {}}
                   type="single"
                   defaultValue={defaultValues?.[childIndex]?.sex}
-                  className="flex flex-row"
+                  className="flex justify-start gap-2 w-full"
                 >
                   <React.Fragment key=".0">
                     {sexOptions.map((option) => (
@@ -167,7 +167,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
                         key={option.value}
                         value={option.value}
                         enableIcon={false}
-                        className="grow px-1"
+                        className="flex-1 px-[10px] text-center"
                       >
                         {option.label}
                       </ButtonGroupItem>
@@ -256,6 +256,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
             </DataBlock>
           </div>
         ))}
+		<div className="flex justify-center">
         <Button
           type="button"
           variant="secondary"
@@ -263,7 +264,7 @@ export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
           onClick={addChild}
         >
           <IconPlus /> {t("DetailsPage.add-another-child")}
-        </Button>
+        </Button></div>
       </>
     </FormWrap>
   );

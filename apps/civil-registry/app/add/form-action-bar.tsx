@@ -34,7 +34,7 @@ export const FormActionBar: FC<FormActionBarProps> = ({
 
   return (
     <ActionBar className="mt-8">
-      <Container className="flex flex-row items-center justify-between gap-4 max-md:[&>*]:flex-1">
+      <Container className="flex flex-row items-center justify-between gap-2 max-md:[&>*]:flex-1">
         {cancelUrl && (
           <Button variant="secondary" asChild disabled={isPending}>
             <Link href={cancelUrl}>
@@ -63,7 +63,7 @@ export const FormActionBar: FC<FormActionBarProps> = ({
           </Button>
         )}
         {nextUrl !== null && (
-          <Button variant="default" asChild disabled={isPending}>
+          <Button variant="default" asChild disabled={isPending} className="whitespace-nowrap">
             <Link href={nextUrl}>
               {nextLabel ?? t("next")}
               {hasBtnIcons && <IconArrowRight />}
