@@ -8,7 +8,7 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, type FC, type ReactNode } from "react";
+import { useState, type FC, type ReactNode } from "react";
 
 import {
   Command,

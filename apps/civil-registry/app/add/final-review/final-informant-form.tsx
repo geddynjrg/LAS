@@ -3,10 +3,6 @@
 import { useTranslations } from "next-intl";
 import { Fragment, type FC } from "react";
 
-import {
-  ButtonGroup,
-  ButtonGroupItem,
-} from "@workspace/ui/components/button-group";
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DatePicker } from "@workspace/ui/components/date-picker";
@@ -50,12 +46,6 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
     value: nationality,
   }));
 
-  const informantTypeOptions = [
-    { label: t("DetailsPage.mother"), value: t("DetailsPage.mother") },
-    { label: t("DetailsPage.father"), value: t("DetailsPage.father") },
-    { label: t("DetailsPage.other"), value: t("DetailsPage.other") },
-  ];
-
   return (
     <DataBlock
       title={t(`DetailsPage.title-informant`)}
@@ -63,33 +53,6 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
       active={undefined}
       toggleEdit={undefined}
     >
-      <>
-        <ButtonGroup
-          name="informantType"
-          onValueChange={() => {}}
-          type="single"
-          defaultValue={defaultValues?.informantType}
-          disabled
-        >
-          <Fragment key=".0">
-            {informantTypeOptions.map((option) => (
-              <ButtonGroupItem key={option.value} value={option.value}>
-                {option.label}
-              </ButtonGroupItem>
-            ))}
-          </Fragment>
-        </ButtonGroup>
-      </>
-      {nationalId && defaultValues?.nationalId && (
-        <Field
-          state={state}
-          name="nationalId"
-          label={t("DetailsPage.national-id")}
-          control={(props) => <SearchInput {...props} />}
-          editable={false}
-        />
-      )}
-
       <>
         <DataNode label={t("DetailsPage.name")} variant="default">
           <input
@@ -111,6 +74,16 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
           {fullName && fullName !== " " ? fullName : "–"}
         </DataNode>
       </>
+
+      {nationalId && defaultValues?.nationalId && (
+        <Field
+          state={state}
+          name="nationalId"
+          label={t("DetailsPage.national-id")}
+          control={(props) => <SearchInput {...props} />}
+          editable={false}
+        />
+      )}
 
       {!nationalId && (
         <Field
@@ -154,7 +127,7 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
       </FieldGroup>
 
       <FieldGroup label={t("DetailsPage.nature-of-relation")}>
-        <p>{defaultValues?.natureOfRelation}</p>
+        <p>{defaultValues?.natureOfRelation ?? "–"}</p>
       </FieldGroup>
 
       {defaultValues?.contacts?.map((contact, index) => (

@@ -58,13 +58,18 @@ export const ConfirmationForm: FC<ConfirmationFormProps> = ({
           <p className="typo-h3">
             {t("ConfirmationForm.waitingForConfirmation")}
           </p>
-          <p className="typo-h5">
-            {defaultValues.firstName} {defaultValues.lastName}
-          </p>
-          <p className="text-xl">
-            +{defaultValues?.contacts?.[0]?.phoneCode}{" "}
-            {defaultValues?.contacts?.[0]?.phone}
-          </p>
+          {defaultValues.firstName && defaultValues.lastName && (
+            <p className="typo-h5">
+              {defaultValues.firstName} {defaultValues.lastName}
+            </p>
+          )}
+          {defaultValues?.contacts?.[0]?.phoneCode &&
+            defaultValues?.contacts?.[0]?.phone && (
+              <p className="text-xl">
+                +{defaultValues?.contacts?.[0]?.phoneCode}{" "}
+                {defaultValues?.contacts?.[0]?.phone}
+              </p>
+            )}
         </div>
       </div>
     </FormWrap>

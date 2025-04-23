@@ -52,16 +52,6 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
       active={undefined}
       toggleEdit={undefined}
     >
-      {nationalId && defaultValues?.nationalId && (
-        <Field
-          state={state}
-          name="nationalId"
-          label={t("DetailsPage.national-id")}
-          control={(props) => <SearchInput {...props} />}
-          editable={false}
-        />
-      )}
-
       <>
         <DataNode label={t("DetailsPage.name")} variant="default">
           <input
@@ -83,6 +73,16 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
           {fullName && fullName !== " " ? fullName : "–"}
         </DataNode>
       </>
+
+      {nationalId && defaultValues?.nationalId && (
+        <Field
+          state={state}
+          name="nationalId"
+          label={t("DetailsPage.national-id")}
+          control={(props) => <SearchInput {...props} />}
+          editable={false}
+        />
+      )}
 
       {!nationalId && (
         <Field
@@ -152,57 +152,12 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
       />
 
       {defaultValues?.contacts?.map((contact, index) => (
-        <>
-          <FieldGroup label={t("DetailsPage.phone")}>
-            <p>
-              +{contact?.phoneCode} {contact?.phone}
-            </p>
-          </FieldGroup>
-
-          <Field
-            state={state}
-            name={`contacts.${index}.email`}
-            label={t("DetailsPage.email")}
-            control={(props) => <Input {...props} />}
-            editable={false}
-          />
-        </>
+        <FieldGroup label={t("DetailsPage.phone")} key={index}>
+          <p>
+            +{contact?.phoneCode} {contact?.phone}
+          </p>
+        </FieldGroup>
       ))}
-      <p className="typo-h5 mt-5">{t("DetailsPage.usual-residence")}</p>
-      <Field
-        state={state}
-        name="residenceSublocation"
-        label={t("DetailsPage.sublocation")}
-        control={(props) => <Input {...props} />}
-        editable={false}
-      />
-      <Field
-        state={state}
-        name="residenceDistrict"
-        label={t("DetailsPage.district")}
-        control={(props) => <Input {...props} />}
-        editable={false}
-      />
-
-      {state.values?.birthSublocation && (
-        <Field
-          state={state}
-          name="birthSublocation"
-          label={t("DetailsPage.sublocation")}
-          control={(props) => <Input {...props} />}
-          editable={false}
-        />
-      )}
-
-      {state.values?.birthSublocationDistrict && (
-        <Field
-          state={state}
-          name="birthSublocationDistrict"
-          label={t("DetailsPage.district")}
-          control={(props) => <Input {...props} />}
-          editable={false}
-        />
-      )}
     </DataBlock>
   );
 };
