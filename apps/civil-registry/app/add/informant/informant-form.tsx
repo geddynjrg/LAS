@@ -123,7 +123,11 @@ export const InformantForm: FC<InformantFormProps> = ({
             defaultValue={informantType}
           >
             {informantTypeOptions.map((option) => (
-              <ButtonGroupItem key={option.value} value={option.value}>
+              <ButtonGroupItem
+                key={option.value}
+                value={option.value}
+                enableIcon={false}
+              >
                 {option.label}
               </ButtonGroupItem>
             ))}
@@ -132,7 +136,11 @@ export const InformantForm: FC<InformantFormProps> = ({
 
         {informantType === "Other" ? (
           <>
-            <NationalIdFields searchSexFilter="M" state={state} />
+            <NationalIdFields
+              searchSexFilter="M"
+              state={state}
+              nameWithDescriptions
+            />
 
             <Field
               state={state}

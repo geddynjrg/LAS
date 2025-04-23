@@ -5,6 +5,8 @@ import type { FC, ReactNode } from "react";
 
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
 
+import { PersonNationalIdStatusProvider } from "@/hooks/usePersonNationalIdStatus";
+
 export interface ProvidersProps {
   children: ReactNode;
 }
@@ -17,7 +19,11 @@ export const Providers: FC<ProvidersProps> = ({ children }) => {
       enableSystem
       disableTransitionOnChange
     >
-      <SidebarProvider>{children}</SidebarProvider>
+      <SidebarProvider>
+        <PersonNationalIdStatusProvider>
+          {children}
+        </PersonNationalIdStatusProvider>
+      </SidebarProvider>
     </NextThemesProvider>
   );
 };

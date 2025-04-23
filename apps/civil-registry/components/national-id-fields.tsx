@@ -2,7 +2,7 @@
 
 import { IconCaretDownFilled, IconChevronLeft } from "@tabler/icons-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DatePicker } from "@workspace/ui/components/date-picker";
@@ -12,6 +12,7 @@ import { SearchInput } from "@workspace/ui/components/search-input";
 import { isValueChanged } from "@workspace/ui/lib/utils";
 
 import { UnderlineButton } from "@/components/underline-button";
+import { usePersonNationalIdStatus } from "@/hooks/usePersonNationalIdStatus";
 import { usePersonSearch } from "@/hooks/usePersonSearch";
 import type { SexType } from "@/lib/data/person";
 import { nationalityOptions } from "@/lib/util/nationalities";
@@ -33,6 +34,7 @@ export interface NationalIdFieldProps {
   state: FormFieldState<NationalIdFieldValues>;
   defaultValues?: Partial<NationalIdFieldValues>;
   editable?: boolean;
+  nameWithDescriptions?: boolean;
 }
 
 export const NationalIdFields: FC<NationalIdFieldProps> = ({
@@ -40,10 +42,12 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
   state,
   defaultValues,
   editable = true,
+  nameWithDescriptions = false,
 }) => {
   const t = useTranslations();
   const format = useFormatter();
   const personSearch = usePersonSearch(searchSexFilter);
+  const { setIsNationalIdUnknown } = usePersonNationalIdStatus();
 
   const [hasNationalId, setHasNationalId] = useState(
     state.values?.nationalId !== "",
@@ -67,6 +71,10 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
     (isValueChanged("firstName", state.values, defaultValues) ||
       isValueChanged("middleName", state.values, defaultValues) ||
       isValueChanged("lastName", state.values, defaultValues));
+
+  useEffect(() => {
+    setIsNationalIdUnknown(!hasNationalId);
+  }, [hasNationalId, setIsNationalIdUnknown]);
 
   return (
     <>
@@ -148,7 +156,14 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
       )}
       {hasNationalId ? (
         <>
-          <DataNode label={t("DetailsPage.name")} isHighlighted={isNameChanged}>
+          <DataNode
+            label={
+              nameWithDescriptions
+                ? t("DetailsPage.nameWithDescription")
+                : t("DetailsPage.name")
+            }
+            isHighlighted={isNameChanged}
+          >
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />

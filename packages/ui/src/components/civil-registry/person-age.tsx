@@ -25,6 +25,11 @@ export const PersonAge: FC<PersonAgeProps> = ({ dob, autoFormat }) => {
   const monthDiff = today.getMonth() - birthDate.getMonth();
   const dayDiff = today.getDate() - birthDate.getDate();
 
+  // in cases birth date is in future
+  if (today < birthDate) {
+    return "N/A";
+  }
+
   // Adjust if birthday hasn't occurred yet this year
   if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
     ageYears--;
