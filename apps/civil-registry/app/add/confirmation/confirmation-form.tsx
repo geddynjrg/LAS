@@ -38,7 +38,7 @@ export const ConfirmationForm: FC<ConfirmationFormProps> = ({
       hasBtnIcons={false}
     >
       <div className="flex flex-1 flex-col items-center justify-center">
-        <div className="max-w-xs text-center">
+        <div className="max-w-sm text-center">
           <IconCheck className="m-auto mb-10" />
           <p className="typo-h3">{t("ConfirmationForm.successMessage")}</p>
         </div>

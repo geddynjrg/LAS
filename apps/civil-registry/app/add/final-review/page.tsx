@@ -11,8 +11,6 @@ export default async function Page() {
     return null;
   }
 
-  console.log({ child });
-
   return (
     <ReviewForm
       child={child}
