@@ -34,7 +34,7 @@ export const FormActionBar: FC<FormActionBarProps> = ({
 
   return (
     <ActionBar className="mt-8">
-      <div className="flex flex-row items-center justify-between gap-2 max-md:[&>*]:flex-1">
+      <div className="flex w-full flex-row items-center justify-between gap-2 max-md:[&>*]:flex-1">
         {cancelUrl && (
           <Button variant="secondary" asChild disabled={isPending}>
             <Link href={cancelUrl}>

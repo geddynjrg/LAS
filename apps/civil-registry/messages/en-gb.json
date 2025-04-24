@@ -5,6 +5,7 @@
     "back": "Back",
     "confirm": "Confirm",
     "next": "Next",
+    "sendForConfirmation": "Send for confirmation",
     "total": "Total",
     "maxFileSize": "Max file size {size}",
     "closeForm": "Close form",

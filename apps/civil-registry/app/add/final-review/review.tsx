@@ -28,14 +28,16 @@ export const ReviewForm: FC<ReviewFormProps> = ({
     <FormWrap
       prevUrl="/add/informant"
       className="space-y-4"
-      nextLabel="Send for confirmation"
+      nextLabel={t("Common.sendForConfirmation")}
       nextUrl="/add/confirmation"
       submitType="hidden"
     >
       <DataBlock title={t(`DetailsPage.title-final-review`)}>
         <FinalChildForm defaultValues={child} />
         <FinalMotherForm defaultValues={mother} />
-        {mother.maritalStatus === 'Married' && <FinalFatherForm defaultValues={father} />}
+        {mother.maritalStatus === "Married" && (
+          <FinalFatherForm defaultValues={father} />
+        )}
         <FinalInformantForm defaultValues={informant} />
       </DataBlock>
     </FormWrap>
