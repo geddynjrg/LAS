@@ -14,7 +14,7 @@ export interface FormStepperProps {
 export const FormStepper: FC<FormStepperProps> = ({ steps, progress }) => {
   const pathname = usePathname();
 
-  const activeStep = steps.find((step) => pathname.includes(step.path))?.index;
+  const activeStep = steps.find((step) => step?.path && pathname.includes(step?.path))?.index;
 
   if (!activeStep) {
     return null;

@@ -35,7 +35,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({
       <DataBlock title={t(`DetailsPage.title-final-review`)}>
         <FinalChildForm defaultValues={child} />
         <FinalMotherForm defaultValues={mother} />
-        <FinalFatherForm defaultValues={father} />
+        {mother.maritalStatus === 'Married' && <FinalFatherForm defaultValues={father} />}
         <FinalInformantForm defaultValues={informant} />
       </DataBlock>
     </FormWrap>

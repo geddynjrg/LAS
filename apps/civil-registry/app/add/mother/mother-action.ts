@@ -9,7 +9,7 @@ import {
   motherSchema,
   type MotherSchema,
 } from "@/app/add/mother/mother-schema";
-import { createNewPerson } from "@/lib/services/birth-registration-service";
+import { editPerson } from "@/lib/services/birth-registration-service";
 
 export const motherAction: FormAction<MotherSchema> = async (
   _prev,
@@ -26,7 +26,11 @@ export const motherAction: FormAction<MotherSchema> = async (
       values,
     };
   }
-  createNewPerson("mother", data);
-
-  redirect(`/add/father`);
+  editPerson("mother", data);
+  if (values.maritalStatus === 'Married') {
+  	redirect(`/add/father`);
+  } else {
+	editPerson("father", undefined);
+	redirect(`/add/informant`);
+  }
 };

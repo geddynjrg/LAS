@@ -13,7 +13,7 @@ import {
   type MultiChildSchema,
 } from "@/app/add/child/child-schema";
 import type { Person } from "@/lib/data/person";
-import { createNewPerson } from "@/lib/services/birth-registration-service";
+import { editPerson } from "@/lib/services/birth-registration-service";
 
 export const childAction: FormAction<MultiChildSchema> = async (
   _prev,
@@ -32,7 +32,7 @@ export const childAction: FormAction<MultiChildSchema> = async (
     };
   }
 
-  data.children.forEach((child) => createNewPerson("child", child as Person));
+  data.children.forEach((child) => editPerson("child", child as Person));
 
   redirect(`/add/mother`);
 };

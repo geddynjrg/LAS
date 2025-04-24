@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { nationalIdPeopleOptions } from "@/lib/data/dummy-data";
+import { generateUUID, nationalIdPeopleOptions } from "@/lib/data/dummy-data";
 import { createPerson } from "@/lib/services/person-service";
 import {
   birthRegistrationStore,
@@ -24,31 +24,39 @@ export async function getFormPerson<T extends keyof BirthRegistrationStore>(
   return birthRegistrationStore[type];
 }
 
-export async function createNewPerson(
+export async function editPerson(
   type: BirthRegistrationQuery,
-  person: Person,
-): Promise<Person> {
-  if (type === "child") {
-    const childArray = birthRegistrationStore[type];
+  person?: Person,
+): Promise<Person | undefined> {
+	if (!person) {
+		if (type === "child") {
+			birthRegistrationStore[type] = [{ id: generateUUID() }] as Person[];
+		} else {
+			birthRegistrationStore[type] = { id: generateUUID() } as Person;
+		}
+	} else {
+		if (type === "child") {
+			const childArray = birthRegistrationStore[type];
 
-    const existingIndex = childArray.findIndex((p) => p.id === person.id);
+			const existingIndex = childArray.findIndex((p) => p.id === person.id);
 
-    if (existingIndex !== -1) {
-      childArray[existingIndex] = {
-        ...childArray[existingIndex],
-        ...person,
-      };
-    } else {
-      birthRegistrationStore[type] = [...childArray, person];
-    }
-  } else {
-    birthRegistrationStore[type] = {
-      ...birthRegistrationStore[type],
-      ...person,
-    };
-  }
+			if (existingIndex !== -1) {
+			childArray[existingIndex] = {
+				...childArray[existingIndex],
+				...person,
+			};
+			} else {
+			birthRegistrationStore[type] = [...childArray, person];
+			}
+		} else {
+			birthRegistrationStore[type] = {
+			...birthRegistrationStore[type],
+			...person,
+			};
+		}
+	}
 
-  return person;
+  	return person;
 }
 
 export async function searchPerson(query: string, sex?: SexType) {

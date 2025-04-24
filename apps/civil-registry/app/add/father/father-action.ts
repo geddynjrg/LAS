@@ -9,7 +9,7 @@ import {
   fatherSchema,
   type FatherSchema,
 } from "@/app/add/father/father-schema";
-import { createNewPerson } from "@/lib/services/birth-registration-service";
+import { editPerson } from "@/lib/services/birth-registration-service";
 
 export const fatherAction: FormAction<FatherSchema> = async (
   _prev,
@@ -26,7 +26,7 @@ export const fatherAction: FormAction<FatherSchema> = async (
       values,
     };
   }
-  createNewPerson("father", data);
+  editPerson("father", data);
 
   redirect(`/add/informant`);
 };

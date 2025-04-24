@@ -9,7 +9,7 @@ import {
   informantSchema,
   type InformantSchema,
 } from "@/app/add/informant/informant-schema";
-import { createNewPerson } from "@/lib/services/birth-registration-service";
+import { editPerson } from "@/lib/services/birth-registration-service";
 
 export const informantAction: FormAction<InformantSchema> = async (
   _prev,
@@ -26,7 +26,7 @@ export const informantAction: FormAction<InformantSchema> = async (
       values,
     };
   }
-  createNewPerson("informant", data);
+  editPerson("informant", data);
 
   redirect(`/add/final-review`);
 };

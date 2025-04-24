@@ -100,11 +100,17 @@ export const InformantForm: FC<InformantFormProps> = ({
     { label: t("DetailsPage.other"), value: "Other" },
   ] as const;
 
+  let prevUrl = '/add/father';
+
+  if (mother?.maritalStatus !== 'Married') {
+	prevUrl = '/add/mother';
+  }
+
   return (
     <FormWrap
       action={formAction}
       isPending={isPending}
-      prevUrl="/add/father"
+      prevUrl={prevUrl}
       className="space-y-4"
     >
       <input type="hidden" name="id" value={id} />
@@ -122,15 +128,20 @@ export const InformantForm: FC<InformantFormProps> = ({
             type="single"
             defaultValue={informantType}
           >
-            {informantTypeOptions.map((option) => (
-              <ButtonGroupItem
-                key={option.value}
-                value={option.value}
-                enableIcon={false}
-              >
+            {informantTypeOptions.map((option) => {
+				if (mother?.maritalStatus !== 'Married' && option.value === 'Father') {
+					return null;
+				}
+
+				return (
+					<ButtonGroupItem
+						key={option.value}
+						value={option.value}
+						enableIcon={false}
+					>
                 {option.label}
               </ButtonGroupItem>
-            ))}
+            )})}
           </ButtonGroup>
         </>
 

@@ -19,8 +19,6 @@ export const FinalChildForm: FC<FinalChildFormProps> = ({ defaultValues }) => {
   const t = useTranslations();
   const format = useFormatter();
 
-  console.log(defaultValues);
-
   const sexDisplayFormat = {
     M: t("DetailsPage.male"),
     F: t("DetailsPage.female"),
