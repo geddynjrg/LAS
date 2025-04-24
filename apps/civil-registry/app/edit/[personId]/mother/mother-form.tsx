@@ -24,6 +24,7 @@ interface MotherFormBlockProps {
   defaultValues: Person;
   disabled: boolean;
   isEditing?: boolean;
+  setIsMotherMarried: (isMarried: boolean) => void;
   onEdit: () => void;
   onSubmit: (changedFields: Partial<Person>) => void;
 }
@@ -34,6 +35,7 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
   isEditing,
   onEdit,
   onSubmit,
+  setIsMotherMarried,
 }) => {
   const t = useTranslations();
 
@@ -49,6 +51,8 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
     }
 
     const changedFields = getObjectDiff(defaultValues, state?.values);
+
+    setIsMotherMarried(changedFields.maritalStatus === "Married");
 
     onSubmit(changedFields);
   });

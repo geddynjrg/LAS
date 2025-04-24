@@ -29,6 +29,11 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
   const router = useRouter();
   const [editablePersonId, setEditablePersonId] = useState<string | null>(null);
   const [requirePayment, setRequirePayment] = useState(false);
+  const [isMotherMarried, setIsMotherMarried] = useState(
+    typeof person.mother !== "string"
+      ? person.mother?.maritalStatus === "Married"
+      : false,
+  );
   const [editedPersonName, setEditedPersonName] = useState<string | null>(null);
 
   const father = person.father as Person;
@@ -91,9 +96,10 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
               isEditing={editablePersonId === mother.id}
               onEdit={() => toggleEdit(mother.id)}
               onSubmit={() => toggleEdit(null)}
+              setIsMotherMarried={setIsMotherMarried}
             />
           )}
-          {person.father && (
+          {isMotherMarried && person.father && (
             <FatherFormBlock
               defaultValues={father}
               disabled={isAmending && editablePersonId !== father.id}
