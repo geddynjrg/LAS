@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { getFormPersonByType } from "@/actions/get-form-person-by-type";
 import { InformantForm } from "@/app/add/informant/informant-form";
 import { generateUUID } from "@/lib/data/dummy-data";
@@ -12,6 +14,10 @@ export default async function FatherPage(_props: ApplicantPageProps) {
   const mother = await getFormPersonByType("mother");
   const father = await getFormPersonByType("father");
   const personId = informant?.id ?? generateUUID();
+
+  if (!mother?.firstName) {
+    redirect("/add");
+  }
 
   return (
     <InformantForm

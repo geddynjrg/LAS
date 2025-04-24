@@ -32,7 +32,11 @@ export const childAction: FormAction<MultiChildSchema> = async (
     };
   }
 
-  data.children.forEach((child) => editPerson("child", child as Person));
+  // data.children.forEach((child) => editPerson("child", child as Person));
+
+  for (const child of data.children) {
+    await editPerson("child", child as Person);
+  }
 
   redirect(`/add/mother`);
 };

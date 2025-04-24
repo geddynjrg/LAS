@@ -26,7 +26,7 @@ export const informantAction: FormAction<InformantSchema> = async (
       values,
     };
   }
-  editPerson("informant", data);
+  await editPerson("informant", data);
 
   redirect(`/add/final-review`);
 };

@@ -184,7 +184,7 @@ globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {
 export const personsStore = globalThis.personsStore;
 export let birthRegistrationStore = globalThis.birthRegistrationStore;
 
-export function resetBirthRegistrationStore() {
+export async function resetBirthRegistrationStore() {
   globalThis.birthRegistrationStore = {
     child: [{ id: generateUUID() }] as Person[],
     mother: { id: generateUUID() } as Person,

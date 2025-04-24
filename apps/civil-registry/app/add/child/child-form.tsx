@@ -29,11 +29,10 @@ import { generateUUID, healthInstitutionsOptions } from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/data/person";
 
 export interface ChildFormProps {
-  id: string;
   defaultValues: Partial<Person>[];
 }
 
-export const ChildForm: FC<ChildFormProps> = ({ id, defaultValues }) => {
+export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
   const t = useTranslations();
   const [state, formAction, isPending] = useForm<
     typeof multiChildSchema,

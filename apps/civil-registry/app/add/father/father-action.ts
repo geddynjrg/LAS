@@ -26,7 +26,7 @@ export const fatherAction: FormAction<FatherSchema> = async (
       values,
     };
   }
-  editPerson("father", data);
+  await editPerson("father", data);
 
   redirect(`/add/informant`);
 };

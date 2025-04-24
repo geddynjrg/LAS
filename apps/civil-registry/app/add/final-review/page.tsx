@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { getFormPersonByType } from "@/actions/get-form-person-by-type";
 import { ReviewForm } from "@/app/add/final-review/review";
 
@@ -9,6 +11,10 @@ export default async function Page() {
 
   if (!child || !mother || !father || !informant) {
     return null;
+  }
+
+  if (!mother?.firstName) {
+    redirect("/add");
   }
 
   return (

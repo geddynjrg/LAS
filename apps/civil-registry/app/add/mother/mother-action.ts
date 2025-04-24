@@ -26,11 +26,11 @@ export const motherAction: FormAction<MotherSchema> = async (
       values,
     };
   }
-  editPerson("mother", data);
-  if (values.maritalStatus === 'Married') {
-  	redirect(`/add/father`);
+  await editPerson("mother", data);
+  if (values.maritalStatus === "Married") {
+    redirect(`/add/father`);
   } else {
-	editPerson("father", undefined);
-	redirect(`/add/informant`);
+    await editPerson("father", undefined);
+    redirect(`/add/informant`);
   }
 };
