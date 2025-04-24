@@ -32,7 +32,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   const t = useTranslations();
 
   const activeStep =
-    steps.find((step) => pathName.includes(step.path))?.index ?? 1;
+    steps.find((step) => pathName.includes(step.path ?? ""))?.index ?? 1;
 
   return (
     <ActionBar className={cn("mt-8", className)}>

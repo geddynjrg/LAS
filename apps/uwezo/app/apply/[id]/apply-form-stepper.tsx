@@ -19,7 +19,9 @@ export const ApplyFormStepper: FC<ApplyFormStepperProps> = ({
 }) => {
   const pathname = usePathname();
 
-  const activeStep = steps.find((step) => pathname.includes(step.path))?.index;
+  const activeStep = steps.find((step) =>
+    pathname.includes(step.path ?? ""),
+  )?.index;
 
   if (!activeStep) {
     return null;
