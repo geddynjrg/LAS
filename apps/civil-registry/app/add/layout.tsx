@@ -12,6 +12,7 @@ export default async function IdLayout({ children }: LayoutProps) {
   const progress = await getFormProgress();
   const format = await getFormatter();
   const mother = await getFormPersonByType("mother");
+  const father = await getFormPersonByType("father");
 
   const id = "#134345345";
   const today = format.dateTime(new Date(), {
@@ -21,7 +22,13 @@ export default async function IdLayout({ children }: LayoutProps) {
   });
 
   return (
-    <IdLayoutWrapper progress={progress} mother={mother} id={id} today={today}>
+    <IdLayoutWrapper
+      progress={progress}
+      mother={mother}
+      father={father}
+      id={id}
+      today={today}
+    >
       {children}
     </IdLayoutWrapper>
   );
@@ -38,7 +45,10 @@ async function getFormProgress() {
     return 5;
   }
 
-  if (father.firstName || mother?.maritalStatus !== 'Married') {
+  if (
+    father.firstName ||
+    (mother?.maritalStatus !== "Married" && mother?.firstName)
+  ) {
     return 4;
   }
 
