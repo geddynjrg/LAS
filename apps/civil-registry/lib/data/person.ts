@@ -175,10 +175,10 @@ declare global {
 
 globalThis.personsStore = globalThis.personsStore || persons;
 globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {
-  child: [{ id: generateUUID() }] as Person[],
-  mother: { id: generateUUID() } as Person,
-  father: { id: generateUUID() } as Person,
-  informant: { id: generateUUID() } as Person,
+  child: [] as Person[],
+  mother: {} as Person,
+  father: {} as Person,
+  informant: {} as Person,
 };
 
 export const personsStore = globalThis.personsStore;
@@ -186,10 +186,10 @@ export let birthRegistrationStore = globalThis.birthRegistrationStore;
 
 export async function resetBirthRegistrationStore() {
   globalThis.birthRegistrationStore = {
-    child: [{ id: generateUUID() }] as Person[],
-    mother: { id: generateUUID() } as Person,
-    father: { id: generateUUID() } as Person,
-    informant: { id: generateUUID() } as Person,
+    child: [] as Person[],
+    mother: {} as Person,
+    father: {} as Person,
+    informant: {} as Person,
   };
 
   birthRegistrationStore = globalThis.birthRegistrationStore;

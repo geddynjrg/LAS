@@ -2,7 +2,7 @@
 
 import { IconPlus, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import React, { useState, type FC } from "react";
+import React, { useEffect, useState, type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -40,8 +40,32 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
   >(childAction, multiChildSchema, {
     children: defaultValues,
   } as MultiChildSchema);
-
   const [children, setChildren] = useState<Partial<Person>[]>(defaultValues);
+
+  const addChild = (disablePrevious: boolean) => {
+    const newChild = {
+      id: generateUUID(),
+      firstName: undefined,
+      middleName: undefined,
+      natureOfBirth: undefined,
+      dob: undefined,
+      sex: undefined,
+      weightOnBirth: undefined,
+      healthInstitution: undefined,
+      birthSublocation: undefined,
+      birthSublocationDistrict: undefined,
+    } as Partial<Person>;
+
+    setChildren((_prev) =>
+      disablePrevious ? [newChild] : [..._prev, newChild],
+    );
+  };
+
+  useEffect(() => {
+    if (defaultValues.length === 0) {
+      addChild(true);
+    }
+  }, [defaultValues]);
 
   type DataVariant = "default" | "disabled";
   const variant: DataVariant = "default";
@@ -68,25 +92,6 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
       {} as Record<number, string>,
     ),
   );
-
-  const addChild = () => {
-    const newId = generateUUID();
-    setChildren((_prev) => [
-      ..._prev,
-      {
-        id: newId,
-        firstName: undefined,
-        middleName: undefined,
-        natureOfBirth: undefined,
-        dob: undefined,
-        sex: undefined,
-        weightOnBirth: undefined,
-        healthInstitution: undefined,
-        birthSublocation: undefined,
-        birthSublocationDistrict: undefined,
-      } as Partial<Person>,
-    ]);
-  };
 
   const removeChild = (id: string | undefined) => {
     if (!id) {
@@ -277,7 +282,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
           type="button"
           variant="secondary"
           size="default"
-          onClick={addChild}
+          onClick={() => addChild(false)}
         >
           <IconPlus /> {t("DetailsPage.add-another-child")}
         </Button>

@@ -30,9 +30,9 @@ export async function editPerson(
 ): Promise<Person | undefined> {
   if (!person) {
     if (type === "child") {
-      birthRegistrationStore[type] = [{ id: generateUUID() }] as Person[];
+      birthRegistrationStore[type] = [] as Person[];
     } else {
-      birthRegistrationStore[type] = { id: generateUUID() } as Person;
+      birthRegistrationStore[type] = {} as Person;
     }
   } else {
     if (type === "child") {
@@ -46,9 +46,19 @@ export async function editPerson(
           ...person,
         };
       } else {
-        birthRegistrationStore[type] = [...childArray, person];
+        birthRegistrationStore[type] = [
+          ...childArray,
+          {
+            ...person,
+            id: generateUUID(),
+          },
+        ];
       }
     } else {
+      if (!person.id) {
+        person.id = generateUUID();
+      }
+
       birthRegistrationStore[type] = {
         ...birthRegistrationStore[type],
         ...person,

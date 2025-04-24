@@ -18,7 +18,7 @@ export const ConfirmationForm: FC<ConfirmationFormProps> = ({
   defaultValues,
 }) => {
   const t = useTranslations();
-  const [confirmed, setConfirmed] = useState(false);
+  const [confirmed, setConfirmed] = useState(!defaultValues?.id ? true : false);
 
   useEffect(() => {
     const timer = setTimeout(async () => {

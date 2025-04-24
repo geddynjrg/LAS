@@ -4,7 +4,7 @@ import { IconArrowLeft, IconCheck } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FC } from "react";
+import { use, useEffect, useState, type FC } from "react";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
@@ -18,6 +18,7 @@ import { ChildFormBlock } from "@/app/edit/[personId]/child/child-form";
 import { FatherFormBlock } from "@/app/edit/[personId]/father/father-form";
 import { MotherFormBlock } from "@/app/edit/[personId]/mother/mother-form";
 import { PaymentBar } from "@/app/edit/[personId]/payment-bar/payment-bar";
+import { generateUUID } from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/data/person";
 import { getFullName } from "@/lib/util/full-name";
 
@@ -35,8 +36,11 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
       : false,
   );
   const [editedPersonName, setEditedPersonName] = useState<string | null>(null);
+  const [fatherData, setFatherData] = useState<Person | undefined>(
+    person.father as Person,
+  );
 
-  const father = person.father as Person;
+  // const father = person.father as Person;
   const mother = person.mother as Person;
 
   const t = useTranslations();
@@ -48,6 +52,15 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
       setEditablePersonId(id);
     }
   }
+
+  useEffect(() => {
+    if (!fatherData?.id) {
+      setFatherData({
+        id: generateUUID(),
+        sex: "M",
+      });
+    }
+  }, [fatherData]);
 
   const isAmending = editablePersonId !== null;
 
@@ -99,12 +112,12 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
               setIsMotherMarried={setIsMotherMarried}
             />
           )}
-          {isMotherMarried && person.father && (
+          {isMotherMarried && fatherData && (
             <FatherFormBlock
-              defaultValues={father}
-              disabled={isAmending && editablePersonId !== father.id}
-              isEditing={editablePersonId === father.id}
-              onEdit={() => toggleEdit(father.id)}
+              defaultValues={fatherData}
+              disabled={isAmending && editablePersonId !== fatherData?.id}
+              isEditing={editablePersonId === fatherData?.id}
+              onEdit={() => toggleEdit(fatherData?.id)}
               onSubmit={() => toggleEdit(null)}
             />
           )}
