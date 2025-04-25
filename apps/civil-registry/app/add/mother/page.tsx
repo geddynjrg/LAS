@@ -9,12 +9,11 @@ export interface ApplicantPageProps {
 }
 
 export default async function MotherPage(_props: ApplicantPageProps) {
-  // const { id } = await params;
   const person = await getFormPersonByType("mother");
   const child = await getFormPersonByType("child");
   const id = person?.id ?? generateUUID();
 
-  if (!child[0]?.natureOfBirth) {
+  if (child.length === 0) {
     redirect("/add");
   }
 
