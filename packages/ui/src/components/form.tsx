@@ -4,6 +4,7 @@ import * as FormPrimitive from "@radix-ui/react-form";
 import {
   useFormatter,
   useTranslations,
+  type Messages,
   type TranslationValues,
 } from "next-intl";
 import NextForm from "next/form";
@@ -158,9 +159,9 @@ export const Field = <
         >
           {typeof errorMessage === "string"
             ? errorMessage
-            : t.has(errorMessage?.message as FlattenObjectKeys<IntlMessages>)
+            : t.has(errorMessage?.message as FlattenObjectKeys<Messages>)
               ? t(
-                  errorMessage?.message as FlattenObjectKeys<IntlMessages>,
+                  errorMessage?.message as FlattenObjectKeys<Messages>,
                   "params" in errorMessage
                     ? errorMessage.params
                     : (errorMessage as unknown as TranslationValues),

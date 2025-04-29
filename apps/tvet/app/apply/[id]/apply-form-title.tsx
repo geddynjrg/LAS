@@ -6,11 +6,22 @@ import { Container } from "@workspace/ui/components/container";
 import { getCourseNodeById } from "@/lib/api/node";
 
 export interface ApplyFormTitleProps {
+  application?: {
+    steps_data?: {
+      course?: {
+        course?: string;
+      };
+    };
+  };
   courseId?: string;
 }
 
-export const ApplyFormTitle: FC<ApplyFormTitleProps> = async ({ courseId }) => {
+export const ApplyFormTitle: FC<ApplyFormTitleProps> = async ({
+  application,
+}) => {
   const t = await getTranslations("ApplicantForm");
+
+  const courseId = application?.steps_data?.course?.course;
 
   const courseNode = courseId
     ? (await getCourseNodeById(courseId))?.data

@@ -12,7 +12,8 @@ import {
   applicantSchema,
   type ApplicantSchema,
 } from "@/app/apply/[id]/applicant/applicant-schema";
-import { createApplication, updateApplication } from "@/lib/api/application";
+import { updateApplication } from "@/lib/api/application";
+import { formatPhoneNumber } from "@/lib/phone";
 
 export const applicantAction: FormAction<ApplicantSchema> = async (
   _prev,
@@ -29,7 +30,6 @@ export const applicantAction: FormAction<ApplicantSchema> = async (
       values,
     };
   }
-
   const { error, data, success } = applicantSchema.safeParse(values);
 
   if (!success) {
@@ -40,36 +40,21 @@ export const applicantAction: FormAction<ApplicantSchema> = async (
     };
   }
 
-  const res =
-    id === "new"
-      ? await createApplication({
-          ...data,
-          step_type: "applicant",
-          disability_card_picture: await prepareFileForUpload(
-            data.disability_card_picture,
-          ),
+  const res = await updateApplication(id, {
+    ...data,
+    step_type: "applicant",
+    disability_card_picture: await prepareFileForUpload(
+      data.disability_card_picture,
+    ),
 
-          // TODO: fix once api is updated
-          applicant_phone_number: values.phones?.[0]
-            ? Object.values(values.phones[0]).join("")
-            : "",
-          applicant_id_number: data.applicant_id_number ?? "",
-          applicant_email: data.applicant_email ?? "",
-        })
-      : await updateApplication(id, {
-          ...data,
-          step_type: "applicant",
-          disability_card_picture: await prepareFileForUpload(
-            data.disability_card_picture,
-          ),
+    // @ts-ignore wait for the API fix
+    birth_certificate_file: await prepareFileForUpload(
+      data.birth_certificate_file,
+    ),
 
-          // TODO: fix once api is updated
-          applicant_phone_number: values.phones?.[0]
-            ? Object.values(values.phones[0]).join("")
-            : "",
-          applicant_id_number: data.applicant_id_number ?? "",
-          applicant_email: data.applicant_email ?? "",
-        });
+    // TODO: fix once api is updated
+    applicant_phone_number: values.phones?.map(formatPhoneNumber) ?? [],
+  });
 
   if (res.error) {
     console.warn("createApplication error", res.error);
@@ -82,10 +67,7 @@ export const applicantAction: FormAction<ApplicantSchema> = async (
     };
   }
 
-  console.log(
-    id === "new" ? "createApplication response" : "updateApplication response",
-    res,
-  );
+  console.log("save application response", res);
 
   redirect(`/apply/${res?.data?.application_id}/guardian`);
 };

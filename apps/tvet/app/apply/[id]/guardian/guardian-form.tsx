@@ -23,10 +23,15 @@ import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
 
 export interface GuardianFormProps {
   id: string;
+  prevStep?: string;
   defaultValues?: Partial<GuardianSchema>;
 }
 
-export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
+export const GuardianForm: FC<GuardianFormProps> = ({
+  id,
+  prevStep,
+  defaultValues,
+}) => {
   const nationalIdTypes = useMemo(
     () =>
       [
@@ -43,73 +48,8 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
     defaultValues,
   );
 
-  const [guardianRole, setGuardianRole] =
-    useState<(typeof guardianRoles)[number]["value"]>();
-
   const [chosenNationalIdType, setChosenNationalIdType] =
     useState<(typeof nationalIdTypes)[number]["value"]>();
-
-  const GuardianRoleFields = () => {
-    switch (guardianRole) {
-      case "parent":
-        return (
-          <>
-            <Field
-              state={state}
-              name="parentNationalId"
-              label="National ID"
-              required
-              control={(props) => <Input {...props} />}
-            />
-          </>
-        );
-
-      case "grandparent":
-        return (
-          <>
-            <Field
-              state={state}
-              name="grandparentBirthCertificateNumber"
-              label="Birth Certificate Number"
-              required
-              control={(props) => <Input {...props} />}
-            />
-            <Field
-              state={state}
-              name="grandparentBirthCertificateFile"
-              label="Birth Certificate"
-              required
-              control={(props) => (
-                <FileUploadInput
-                  accept={FILE_ACCEPT}
-                  maxSize={MAX_FILE_SIZE}
-                  {...props}
-                />
-              )}
-            />
-          </>
-        );
-
-      case "relative":
-        return (
-          <>
-            <Field
-              state={state}
-              name="relativeAlienId"
-              label="Alien ID"
-              required
-              control={(props) => <Input {...props} />}
-            />
-
-            <Field
-              state={state}
-              name="relativeAlienIdIsRefugee"
-              control={(props) => <Checkbox {...props}>I am refugee</Checkbox>}
-            />
-          </>
-        );
-    }
-  };
 
   const IdTypeFields = () => {
     switch (chosenNationalIdType) {
@@ -174,11 +114,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
   };
 
   return (
-    <ApplyFormWrap
-      action={formAction}
-      prevUrl="applicant"
-      className="space-y-4"
-    >
+    <ApplyFormWrap action={formAction} prevUrl={prevStep} className="space-y-4">
       <ApplyFormSubtitle>Parent / guardian info</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
 
@@ -210,16 +146,8 @@ export const GuardianForm: FC<GuardianFormProps> = ({ id, defaultValues }) => {
         name="guardian_role"
         label="Role of the guardian"
         required
-        control={(props) => (
-          <RadioGroup
-            {...props}
-            onValueChange={setGuardianRole}
-            options={guardianRoles}
-          />
-        )}
+        control={(props) => <RadioGroup {...props} options={guardianRoles} />}
       />
-
-      <GuardianRoleFields />
 
       <Field
         state={state}

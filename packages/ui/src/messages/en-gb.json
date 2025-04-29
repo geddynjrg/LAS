@@ -54,12 +54,14 @@
     "amend": "Amend",
     "backToDashboard": "Back to dashboard"
   },
+
   "InfoPopover": {
     "help": "Help",
     "close": "Close",
     "title": "Do you need help?",
     "faq": "Frequently asked questions"
   },
+
   "TrainingAreaBlock": {
     "title": "Training areas",
     "coursesAvailable": "{count, plural, =1 {# course available}  other {# courses available}}."
@@ -70,6 +72,7 @@
     "searchTitle": "Search for courses",
     "linkTitle": "View all"
   },
+
   "LocationMap": {
     "getDirections": "Get Directions",
     "viewMore": "View more",
@@ -79,9 +82,11 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out"
   },
+
   "AvailableSponsorshipsBlock": {
     "availableSponsorships": "Available sponsorships"
   },
+
   "CourseDataBlock": {
     "applyNow": "Apply now",
     "fees": "Fees",
@@ -94,35 +99,42 @@
     "applicationFee": "Application fee",
     "testBookingFee": "Test booking fee"
   },
+
   "SimilarCoursesBlock": {
     "similarCourses": "Similar courses"
   },
+
   "SocialBlock": {
     "followUs": "Follow us!"
   },
+
   "TestimonialsBlock": {
     "testimonials": "Testimonials"
   },
+
   "VocationalCentersBlock": {
     "nairobiVocationalCenters": "Nairobi Vocational Centres"
   },
-  "InstituteContactInfo": {
-    "doYouHaveQuestions": "Do you have questions?",
-    "getInContact": "Get in contact with us and we’ll help you get the answers you need."
-  },
+
   "CourseBlock": {
     "viewAll": "View all"
   },
+
   "ContactBlock": {
     "applyNow": "Apply now"
   },
+
   "PersonCard": {
     "sex": "Sex",
     "age": "Age",
     "dob": "Date of birth",
     "ageYears": "{count , plural, =1 {# year} other {# years}}",
-    "ageMonths": "{count , plural, =1 {# month} other {# months}}"
+    "ageMonths": "{count , plural, =1 {# month} other {# months}}",
+    "male": "Male",
+    "female": "Female",
+    "intersex": "Intersex"
   },
+
   "ApplicationStatusCard": {
     "viewRejectionReason": "View reason for rejection",
     "viewNextSteps": "View next steps",

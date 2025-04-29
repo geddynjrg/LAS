@@ -137,9 +137,23 @@
     "goToHome": "Go to home page"
   },
 
+  "DashboardPage": {
+    "title": "My Applications",
+    "startApplying": "Start applying now",
+    "noApplications": "You have no applications yet"
+  },
+
   "PhoneNumbersField": {
     "phoneNumber": "Phone number",
     "addAnotherPhoneNumber": "Add another phone number"
+  },
+
+  "ApplicantFormSteps": {
+    "applicant": "Applicant",
+    "guardian": "Guardian",
+    "course": "Course",
+    "confirmation": "Confirmation",
+    "payment": "Payment"
   },
 
   "ApplicantForm": {
@@ -172,11 +186,5 @@
     "chooseOrSearch": "Choose or search",
     "ward": "Ward",
     "enterWard": "Enter ward"
-  },
-
-  "DashboardPage": {
-    "title": "My Applications",
-    "startApplying": "Start applying now",
-    "noApplications": "You have no applications yet"
   }
 }
