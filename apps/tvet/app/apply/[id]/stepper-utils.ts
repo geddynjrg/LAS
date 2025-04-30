@@ -61,9 +61,9 @@ export function ensureStepAvailable(
 }
 
 export function getAvailableSteps(application?: ApplicationStepsInfo) {
-  return Object.entries(application?.step_links ?? [])
-    .filter(([_step, data]) => data?.available || data?.completed)
-    .map(([step]) => step) as ApplicationStep[];
+  return Object.entries(application?.step_links ?? []).map(
+    ([step]) => step,
+  ) as ApplicationStep[];
 }
 
 export function getPrevStep(

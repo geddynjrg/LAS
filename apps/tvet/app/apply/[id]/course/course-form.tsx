@@ -47,7 +47,7 @@ export const CourseForm: FC<CourseFormProps> = ({
   );
 
   const [courses, searchCourses, isSearchingCourses] = useSearchCourses();
-  const [selectedCourse, setSelectedCourse] = useState<string>();
+  const [selectedCourse, setSelectedCourse] = useState(state.values?.course);
 
   const intakePeriods =
     courses.find((course) => course.value === selectedCourse)?.intakePeriods ??

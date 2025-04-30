@@ -9,6 +9,8 @@ import { SponsorshipCard } from "@workspace/ui/components/tvet/sponsorship-card"
 import { cn } from "@workspace/ui/lib/utils";
 
 export interface AvailableSponsorshipsProps {
+  showHeading?: boolean;
+  className?: string;
   block_type: "available_sponsorships";
   sponsorships: {
     title: string;
@@ -45,14 +47,18 @@ export interface AvailableSponsorshipsProps {
 }
 
 export const AvailableSponsorshipsBlock: FC<AvailableSponsorshipsProps> = ({
+  showHeading = true,
+  className,
   sponsorships,
   pagination,
 }) => {
   const t = useTranslations("AvailableSponsorshipsBlock");
   return (
-    <section className={cn("py-10")} id="sponsorships">
-      <Container className="flex flex-col gap-4 px-4">
-        <Heading type="h3">{t("availableSponsorships")}</Heading>
+    <section className={cn("px-4 py-10", className)} id="sponsorships">
+      <Container className="flex flex-col gap-4">
+        {showHeading && (
+          <Heading type="h3">{t("availableSponsorships")}</Heading>
+        )}
         {sponsorships.map((sponsorship, key) => (
           <SponsorshipCard
             key={`sponsorship-${key}`}

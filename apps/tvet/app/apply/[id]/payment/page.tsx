@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { Button } from "@workspace/ui/components/button";
+import { Currency } from "@workspace/ui/components/currency";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -8,6 +7,7 @@ import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormTitle } from "@/app/apply/[id]/apply-form-title";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
+import { paymentAction } from "@/app/apply/[id]/payment/payment-action";
 import {
   ensureStepAvailable,
   getPrevStep,
@@ -27,15 +27,19 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
 
   ensureStepAvailable(STEP_NAME, application);
 
+  const defaultValues = application?.steps_data?.payment;
+
   return (
     <>
       <ApplyFormTitle application={application} />
       <ApplyFormStepper activeStep={STEP_NAME} application={application} />
 
       <ApplyFormWrap
+        action={paymentAction}
         prevUrl={getPrevStep(STEP_NAME, application)}
         submitType="hidden"
       >
+        <input type="hidden" name="application_id" value={id} />
         <ApplyFormSubtitle>Payment</ApplyFormSubtitle>
 
         <p>
@@ -45,24 +49,28 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
           application will not be processed.
         </p>
 
-        <DataPair
-          className={cn(
-            "text-xl font-bold text-neutral-600",
-            "mt-5 pt-5",
-            "border-t border-solid border-neutral-400",
-          )}
-        >
-          <div>Cost</div>
-          <div className={cn("text-neutral-800")}>250KSh</div>
-        </DataPair>
+        {defaultValues?.payment_amount && (
+          <DataPair
+            className={cn(
+              "text-xl font-bold text-neutral-600",
+              "mt-5 pt-5",
+              "border-t border-solid border-neutral-400",
+            )}
+          >
+            Cost
+            <div className={cn("text-neutral-800")}>
+              <Currency amount={defaultValues.payment_amount} currency="KES" />
+            </div>
+          </DataPair>
+        )}
 
-        <div className={cn("flex flex-col items-center gap-4", "mt-8")}>
-          <Button className={cn("w-full max-w-[27rem]")} asChild>
-            <Link href="../success">Pay using M-Pesa</Link>
+        <div className="mx-auto mt-8 flex max-w-[27rem] flex-col items-stretch gap-4">
+          <Button type="submit" name="payment_method" value="m_pesa" disabled>
+            Pay using M-Pesa
           </Button>
 
-          <Button className={cn("w-full max-w-[27rem]")} asChild>
-            <Link href="../success">Pay using M-Pesa</Link>
+          <Button type="submit" name="payment_method" value="pay_later">
+            Pay Later
           </Button>
         </div>
       </ApplyFormWrap>

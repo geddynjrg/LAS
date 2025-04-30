@@ -9,13 +9,13 @@ import { getApplicationProgress } from "@/lib/api/application";
 
 const STEP_NAME = "confirmation" satisfies ApplicationStep;
 
-export interface ConfirmationsPageProps {
+export interface ConfirmationPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ConfirmationsPage({
+export default async function ConfirmationPage({
   params,
-}: ConfirmationsPageProps) {
+}: ConfirmationPageProps) {
   const { id } = await params;
 
   const application = await getApplicationProgress({ id });
