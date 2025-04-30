@@ -8,24 +8,24 @@ import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
-import { confirmationsAction } from "@/app/apply/[id]/confirmations/confirmations-action";
+import { confirmationAction } from "@/app/apply/[id]/confirmation/confirmation-action";
 import {
-  confirmationsSchema,
-  type ConfirmationsSchema,
-} from "@/app/apply/[id]/confirmations/confirmations-schema";
+  confirmationSchema,
+  type ConfirmationSchema,
+} from "@/app/apply/[id]/confirmation/confirmation-schema";
 
-export interface ConfirmationsFormProps {
+export interface ConfirmationFormProps {
   id: string;
-  defaultValues?: Partial<ConfirmationsSchema>;
+  defaultValues?: Partial<ConfirmationSchema>;
 }
 
-export const ConfirmationsForm: FC<ConfirmationsFormProps> = ({
+export const ConfirmationForm: FC<ConfirmationFormProps> = ({
   id,
   defaultValues,
 }) => {
   const [state, formAction, _isPending] = useForm(
-    confirmationsAction,
-    confirmationsSchema,
+    confirmationAction,
+    confirmationSchema,
     defaultValues,
   );
 

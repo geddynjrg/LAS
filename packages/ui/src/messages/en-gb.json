@@ -117,6 +117,10 @@
     "nairobiVocationalCenters": "Nairobi Vocational Centres"
   },
 
+  "TextListBlock": {
+    "toApplyYouNeed": "To apply, you need:"
+  },
+
   "InstituteContactInfo": {
     "doYouHaveQuestions": "Do you have questions?",
     "getInContact": "Get in contact with us and we’ll help you get the answers you need."
@@ -134,13 +138,19 @@
     "sex": "Sex",
     "age": "Age",
     "dob": "Date of birth",
+    "male": "Male",
+    "female": "Female",
+    "intersex": "Intersex",
     "birthRegistrationRequiresValidation": "Birth registration requires validation",
     "amendmentsNeedToBeProcessed": "Amendments need to be processed before a birth certificate can be issued"
   },
 
   "PersonAge": {
     "ageYears": "{count , plural, =1 {# year} other {# years}}",
-    "ageMonths": "{count , plural, =1 {# month} other {# months}}"
+    "ageMonths": "{count , plural, =1 {# month} other {# months}}",
+    "male": "Male",
+    "female": "Female",
+    "intersex": "Intersex"
   },
 
   "ApplicationStatusCard": {

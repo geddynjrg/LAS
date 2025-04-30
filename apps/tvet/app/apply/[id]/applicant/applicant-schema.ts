@@ -48,22 +48,22 @@ export const applicantSchema = z
     // applicant_phone_number: z.string().trim().nonempty(),
     phones: z.array(phone),
 
-    applicant_email: z.union([z.literal(""), z.string().email().optional()]),
+    applicant_email: z.union([z.literal(""), z.string().email()]),
     applicant_county: z.string().trim().nonempty(),
     applicant_subcounty: z.string().trim().nonempty(),
     applicant_ward: z.string().trim().nonempty(),
     applicant_disability: checkbox(),
 
-    // idType === "national-id"
+    // idType === "national_id"
     applicant_id_number: z.string().trim().optional(),
 
-    // idType === "birth-certificate"
-    birthCertificateNumber: z.string().optional(),
-    birthCertificateFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
+    // idType === "birth_certificate"
+    birth_certificate_number: z.string().optional(),
+    birth_certificate_file: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
 
-    // idType === "alien-id"
-    alienId: z.string().optional(),
-    alienIdIsRefugee: checkbox(),
+    // idType === "alien_id"
+    alien_id_number: z.string().optional(),
+    is_refugee: checkbox(),
 
     // applicant_disability === true
     disability_nature: disabilityNature.optional(),
@@ -256,23 +256,23 @@ function validateApplicantIdType(data: ApplicantSchema, ctx: z.RefinementCtx) {
     }
 
     case "birth_certificate": {
-      if ((data.birthCertificateNumber?.trim()?.length ?? 0) < 1) {
+      if ((data.birth_certificate_number?.trim()?.length ?? 0) < 1) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
           type: "string",
           minimum: 1,
           inclusive: true,
-          path: ["birthCertificateNumber"],
+          path: ["birth_certificate_number"],
         });
       }
 
-      if (!data.birthCertificateFile) {
+      if (!data.birth_certificate_file) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
           type: "string",
           minimum: 1,
           inclusive: true,
-          path: ["birthCertificateFile"],
+          path: ["birth_certificate_file"],
         });
       }
 
@@ -280,13 +280,13 @@ function validateApplicantIdType(data: ApplicantSchema, ctx: z.RefinementCtx) {
     }
 
     case "alien_id": {
-      if ((data.alienId?.trim()?.length ?? 0) < 1) {
+      if ((data.alien_id_number?.trim()?.length ?? 0) < 1) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
           type: "string",
           minimum: 1,
           inclusive: true,
-          path: ["alienId"],
+          path: ["alien_id_number"],
         });
       }
 

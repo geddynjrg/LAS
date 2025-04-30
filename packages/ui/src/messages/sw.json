@@ -138,13 +138,19 @@
     "sex": "Jinsia",
     "age": "Umri",
     "dob": "Tarehe ya kuzaliwa",
+    "male": "Mwanaume",
+    "female": "Mwanamke",
+    "intersex": "Jinsia mbili",
     "birthRegistrationRequiresValidation": "Usajili wa kuzaliwa unahitaji uthibitisho",
     "amendmentsNeedToBeProcessed": "Marekebisho yanahitaji kushughulikiwa kabla ya cheti cha kuzaliwa kutolewa"
   },
 
   "PersonAge": {
     "ageYears": "{count , plural, =1 {# mwaka} other {# miaka}}",
-    "ageMonths": "{count , plural, =1 {# mwezi} other {# miezi}}"
+    "ageMonths": "{count , plural, =1 {# mwezi} other {# miezi}}",
+    "male": "Mwanaume",
+    "female": "Mwanamke",
+    "intersex": "Jinsia mbili"
   },
 
   "ApplicationStatusCard": {

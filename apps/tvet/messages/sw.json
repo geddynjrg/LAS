@@ -131,15 +131,28 @@
     "undertood": "Nimeelewa"
   },
 
+  "NotFoundPage": {
+    "title": "Ukurasa haujapatikana",
+    "description": "Samahani, ukurasa unaotafuta haupo.",
+    "goToHome": "Nenda kwenye ukurasa wa nyumbani"
+  },
+
   "DashboardPage": {
     "title": "Maombi yangu",
     "startApplying": "Anza kuomba sasa",
     "noApplications": "Huna maombi bado"
   },
-  
-  "NotFoundPage": {
-    "title": "Ukurasa haujapatikana",
-    "description": "Samahani, ukurasa unaotafuta haupo.",
-    "goToHome": "Nenda kwenye ukurasa wa nyumbani"
+
+  "PhoneNumbersField": {
+    "phoneNumber": "Nambari ya simu",
+    "addAnotherPhoneNumber": "Ongeza nambari nyingine ya simu"
+  },
+
+  "ApplicantFormSteps": {
+    "applicant": "Mwombaji",
+    "guardian": "Mlezi",
+    "course": "Kozi",
+    "confirmation": "Uthibitisho",
+    "payment": "Malipo"
   }
 }

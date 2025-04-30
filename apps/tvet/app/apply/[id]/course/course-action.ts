@@ -64,5 +64,5 @@ export const courseAction: FormAction<CourseSchema> = async (
     };
   }
 
-  redirect(`/apply/${id}/confirmations`);
+  redirect(`/apply/${id}/confirmation`);
 };

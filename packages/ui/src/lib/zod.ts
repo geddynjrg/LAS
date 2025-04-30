@@ -1,3 +1,4 @@
+import type { Messages } from "next-intl";
 import type { Accept } from "react-dropzone";
 import { z } from "zod";
 
@@ -127,7 +128,7 @@ export function validFile(accept: Accept, fileSize: number) {
       ),
     z.object({
       fid: z.coerce.number(),
-      filename: z.string(),
+      filename: z.string().optional(),
       url: z.string().optional(),
     }),
   ]);
@@ -136,7 +137,7 @@ export function validFile(accept: Accept, fileSize: number) {
 export type ValidFile = z.infer<ReturnType<typeof validFile>>;
 
 function getIntlKey<T extends z.ZodIssueBase>(
-  key: keyof IntlMessages["Form"]["errors"],
+  key: keyof Messages["Form"]["errors"],
   params?: T,
 ): { message: string; params?: T } {
   return { message: `Form.errors.${String(key)}`, params };

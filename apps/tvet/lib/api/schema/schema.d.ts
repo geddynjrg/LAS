@@ -264,26 +264,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/application/step/{step_name}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create a new application step
-         * @description Creates a new application step with the provided data. The first step submission will create a new application entity.
-         */
-        post: operations["tvet_application_step_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/application/{application_id}/step/{step_name}": {
         parameters: {
             query?: never;
@@ -298,7 +278,7 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Update an existing application step
+         * Update an application
          * @description Updates an existing application with data for the specified step.
          */
         patch: operations["tvet_application_step_update"];
@@ -335,7 +315,7 @@ export interface paths {
         put?: never;
         /**
          * Create a new application
-         * @description Creates a new application with the provided data.
+         * @description Creates a new application with the provided data. If course_id is provided, the application will be pre-filled with course and institution information. If no data is provided, an empty application will be created.
          */
         post: operations["tvet_application_create"];
         delete?: never;
@@ -414,7 +394,7 @@ export interface components {
             meta: {
                 /**
                  * @description Unix timestamp of when the response was generated
-                 * @example 1744622989
+                 * @example 1745926553
                  */
                 timestamp: number;
                 /**
@@ -592,6 +572,37 @@ export interface components {
                 version?: string;
             };
         };
+        NationalIdSchema: {
+            /**
+             * @description National ID number
+             * @example 12345678
+             */
+            applicant_id_number: string;
+        };
+        BirthCertificateSchema: {
+            /**
+             * @description Birth Certificate Number
+             * @example BC98765432
+             */
+            birth_certificate_number: string;
+            /**
+             * Format: binary
+             * @description Birth Certificate file upload
+             */
+            birth_certificate_file: string;
+        };
+        AlienIdSchema: {
+            /**
+             * @description Alien ID Number
+             * @example ALN123456
+             */
+            alien_id_number: string;
+            /**
+             * @description Whether the applicant is a refugee
+             * @example false
+             */
+            is_refugee?: boolean;
+        };
         /**
          * Applicant Step Request
          * @description Schema for submitting applicant personal information
@@ -625,21 +636,19 @@ export interface components {
              */
             applicant_date_of_birth: string;
             /**
-             * @description Type of identification document
+             * @description Type of ID document. Each type requires different fields as defined in the schemas below.
              * @example national_id
              * @enum {string}
              */
-            applicant_id_type: "national_id" | "passport" | "alien_card" | "birth_certificate" | "alien_id";
+            applicant_id_type: "national_id" | "birth_certificate" | "alien_id";
             /**
-             * @description ID number or passport number
-             * @example 12345678
+             * @description Phone numbers of the applicant
+             * @example [
+             *       "254712345678",
+             *       "254723456789"
+             *     ]
              */
-            applicant_id_number: string;
-            /**
-             * @description Phone number of the applicant
-             * @example 254712345678
-             */
-            applicant_phone_number: string;
+            applicant_phone_number: string[];
             /**
              * Format: email
              * @description Email address of the applicant
@@ -694,12 +703,18 @@ export interface components {
                  * @description Base64 encoded file content
                  * @example data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD...
                  */
-                data?: string;
+                data: string;
                 /**
                  * @description Original filename with extension
                  * @example disability_card.jpg
                  */
-                filename?: string;
+                filename: string;
+            } | {
+                /**
+                 * @description File ID of an existing file
+                 * @example 42
+                 */
+                fid: number;
             };
             /**
              * @description The type of step being submitted
@@ -802,6 +817,12 @@ export interface components {
                  * @example certificate.pdf
                  */
                 filename: string;
+            } | {
+                /**
+                 * @description File ID of an existing file
+                 * @example 43
+                 */
+                fid: number;
             };
             /** @description Additional certificates or supporting documents (optional) */
             other_certificate?: {
@@ -809,12 +830,18 @@ export interface components {
                  * @description Base64 encoded file content
                  * @example data:application/pdf;base64,JVBERi0xLjYNJeL...
                  */
-                data?: string;
+                data: string;
                 /**
                  * @description Original filename with extension
                  * @example additional_certificate.pdf
                  */
-                filename?: string;
+                filename: string;
+            } | {
+                /**
+                 * @description File ID of an existing file
+                 * @example 44
+                 */
+                fid: number;
             };
             /**
              * @description The type of step being submitted
@@ -873,6 +900,25 @@ export interface components {
              * @example mpesa
              */
             payment_method?: string;
+            /** @description Payment proof file (optional) */
+            payment_proof?: {
+                /**
+                 * @description Base64 encoded file content
+                 * @example data:application/pdf;base64,JVBERi0xLjYNJeL...
+                 */
+                data: string;
+                /**
+                 * @description Original filename with extension
+                 * @example payment_receipt.jpg
+                 */
+                filename: string;
+            } | {
+                /**
+                 * @description File ID of an existing file
+                 * @example 45
+                 */
+                fid: number;
+            };
             /**
              * @description The type of step being submitted
              * @default payment
@@ -1138,10 +1184,13 @@ export interface components {
                          */
                         applicant_id_number?: string;
                         /**
-                         * @description Phone number of the applicant
-                         * @example 254712345678
+                         * @description Phone numbers of the applicant
+                         * @example [
+                         *       "254712345678",
+                         *       "254723456789"
+                         *     ]
                          */
-                        applicant_phone_number?: string;
+                        applicant_phone_number?: string[];
                         /**
                          * Format: email
                          * @description Email address of the applicant
@@ -1193,20 +1242,21 @@ export interface components {
                         /** @description A scanned image or photo of the disability card (present when applicant_disability is true) */
                         disability_card_picture?: {
                             /**
-                             * @description File ID
-                             * @example 42
+                             * @description Base64 encoded file content
+                             * @example data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD...
                              */
-                            fid?: number;
+                            data: string;
                             /**
-                             * @description Original filename
+                             * @description Original filename with extension
                              * @example disability_card.jpg
                              */
-                            filename?: string;
+                            filename: string;
+                        } | {
                             /**
-                             * @description URL to access the file
-                             * @example https://example.com/sites/default/files/disability_card.jpg
+                             * @description File ID of an existing file
+                             * @example 42
                              */
-                            url?: string;
+                            fid: number;
                         };
                     };
                     /** @description Guardian step data (only included if completed) */
@@ -1448,7 +1498,7 @@ export interface components {
              * @description First name of the applicant
              * @example John
              */
-            applicant_first_name: string;
+            applicant_first_name?: string;
             /**
              * @description Middle name of the applicant (optional)
              * @example James
@@ -1458,56 +1508,56 @@ export interface components {
              * @description Surname of the applicant
              * @example Doe
              */
-            applicant_surname: string;
+            applicant_surname?: string;
             /**
              * @description Gender of the applicant
              * @example male
              * @enum {string}
              */
-            applicant_sex: "male" | "female" | "intersex";
+            applicant_sex?: "male" | "female" | "intersex";
             /**
              * Format: date
              * @description Date of birth in YYYY-MM-DD format
              * @example 1995-05-15
              */
-            applicant_date_of_birth: string;
+            applicant_date_of_birth?: string;
             /**
              * @description Type of identification document
              * @example national_id
              * @enum {string}
              */
-            applicant_id_type: "national_id" | "passport" | "alien_card" | "birth_certificate" | "alien_id";
+            applicant_id_type?: "national_id" | "passport" | "alien_card" | "birth_certificate" | "alien_id";
             /**
              * @description ID number of the applicant
              * @example 12345678
              */
-            applicant_id_number: string;
+            applicant_id_number?: string;
             /**
              * @description Phone number of the applicant
              * @example +254712345678
              */
-            applicant_phone_number: string;
+            applicant_phone_number?: string;
             /**
              * Format: email
              * @description Email address of the applicant
              * @example john.doe@example.com
              */
-            applicant_email: string;
+            applicant_email?: string;
             /**
              * @description County where the applicant resides
              * @example Nairobi
              */
-            applicant_county: string;
+            applicant_county?: string;
             /**
              * @description Subcounty where the applicant resides
              * @example Nairobi
              */
-            applicant_subcounty: string;
+            applicant_subcounty?: string;
             /**
              * @description Ward where the applicant resides
              * @example Kibera
              */
-            applicant_ward: string;
+            applicant_ward?: string;
             /**
              * @description Whether the applicant has a disability. When set to true, all disability fields become required.
              * @example false
@@ -1582,25 +1632,25 @@ export interface components {
              * @description ID of the institution
              * @example 42
              */
-            institution: number;
+            institution?: number;
             /**
              * @description ID of the course
              * @example 123
              */
-            course: number;
+            course?: number;
             /**
              * @description Preferred intake period
              * @example January 2024
              */
-            preferred_intake_period: string;
+            preferred_intake_period?: string;
             /**
              * @description Highest education level achieved
              * @example secondary
              * @enum {string}
              */
-            highest_education_level: "primary" | "secondary" | "diploma" | "degree" | "masters" | "phd";
+            highest_education_level?: "primary" | "secondary" | "diploma" | "degree" | "masters" | "phd";
             /** @description Education certificate document (required for Course step) */
-            highest_education_certificate: {
+            highest_education_certificate?: {
                 /**
                  * @description Base64 encoded file content
                  * @example data:application/pdf;base64,JVBERi0xLjMKJcTl8uXr...
@@ -1629,12 +1679,12 @@ export interface components {
              * @description Confirmation that personal information is accurate
              * @example true
              */
-            confirm_personal_information: boolean;
+            confirm_personal_information?: boolean;
             /**
              * @description Confirmation that eligibility requirements are met
              * @example true
              */
-            confirm_eligibility: boolean;
+            confirm_eligibility?: boolean;
         };
         ApplicationCreateRequestMultipart: components["schemas"]["ApplicationCreateRequest"] & {
             /**
@@ -1680,12 +1730,8 @@ export interface components {
                         /** @example /api/v1/application/APP-20230601-ABC12/status */
                         href?: string;
                     };
-                    payment_info?: {
-                        /** @example /api/v1/application/APP-20230601-ABC12/payment-info */
-                        href?: string;
-                    };
-                    payment_info_pdf?: {
-                        /** @example /api/v1/application/APP-20230601-ABC12/payment-info-pdf */
+                    next_step?: {
+                        /** @example /api/v1/application/APP-20230601-ABC12/step/applicant */
                         href?: string;
                     };
                 };
@@ -3895,7 +3941,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp: number;
                             /**
@@ -3965,7 +4011,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp: number;
                             /**
@@ -4062,7 +4108,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4153,7 +4199,7 @@ export interface operations {
                             institutions?: components["schemas"]["NodeInstitution"][];
                         };
                         meta?: {
-                            /** @example 1744622989 */
+                            /** @example 1745926553 */
                             timestamp?: number;
                             /** @example v1 */
                             version?: string;
@@ -4202,7 +4248,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4257,7 +4303,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4347,7 +4393,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4404,7 +4450,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4471,7 +4517,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4539,7 +4585,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4608,7 +4654,7 @@ export interface operations {
                         meta?: {
                             /**
                              * @description Unix timestamp of when the response was generated
-                             * @example 1744622989
+                             * @example 1745926553
                              */
                             timestamp?: number;
                             /**
@@ -4736,60 +4782,6 @@ export interface operations {
             };
         };
     };
-    tvet_application_step_create: {
-        parameters: {
-            query?: never;
-            header: {
-                "X-Language": string;
-            };
-            path: {
-                /** @description The step name (applicant, guardian, course, confirmation, payment) */
-                step_name: "applicant" | "guardian" | "course" | "confirmation" | "payment";
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ApplicationStepRequest"];
-            };
-        };
-        responses: {
-            /** @description Application step created successfully */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApplicationStepResponse"];
-                };
-            };
-            /** @description Bad request - Invalid input */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Unauthorized - Authentication required */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
     tvet_application_step_update: {
         parameters: {
             query?: never;
@@ -4907,17 +4899,19 @@ export interface operations {
     };
     tvet_application_create: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Optional course ID to pre-fill the application with course and institution information. */
+                course_id?: number;
+            };
             header: {
                 "X-Language": string;
             };
             path?: never;
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
-                "application/json": components["schemas"]["ApplicationCreateRequest"];
-                "multipart/form-data": components["schemas"]["ApplicationCreateRequestMultipart"];
+                "*/*"?: never;
             };
         };
         responses: {
@@ -4945,6 +4939,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Course or institution not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
             };
             /** @description Server error */
             500: {

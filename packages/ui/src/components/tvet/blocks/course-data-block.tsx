@@ -57,11 +57,8 @@ export const CourseDataBlock: FC<CourseDataBlockProps> = ({
   minimum_entry_requirements,
   training_format,
   equipment_available_at_ins,
-  ...props
 }) => {
   const t = useTranslations("CourseDataBlock");
-
-  console.log("p", props);
 
   return (
     <section>

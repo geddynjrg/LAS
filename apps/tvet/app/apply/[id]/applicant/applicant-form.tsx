@@ -114,6 +114,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         state={state}
         name="applicant_email"
         label={t("email")}
+        required
         control={(props) => <Input type="email" {...props} />}
       />
 

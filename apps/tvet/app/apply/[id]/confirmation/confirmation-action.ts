@@ -6,17 +6,17 @@ import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
-  confirmationsSchema,
-  type ConfirmationsSchema,
-} from "@/app/apply/[id]/confirmations/confirmations-schema";
+  confirmationSchema,
+  type ConfirmationSchema,
+} from "@/app/apply/[id]/confirmation/confirmation-schema";
 import { updateApplication } from "@/lib/api/application";
 
-export const confirmationsAction: FormAction<ConfirmationsSchema> = async (
+export const confirmationAction: FormAction<ConfirmationSchema> = async (
   _prev,
   formData,
 ) => {
   const id = formData.get("id")?.toString();
-  const values = getFormZodDataValues(formData, confirmationsSchema);
+  const values = getFormZodDataValues(formData, confirmationSchema);
 
   if (!id) {
     return {
@@ -27,7 +27,7 @@ export const confirmationsAction: FormAction<ConfirmationsSchema> = async (
     };
   }
 
-  const { error, data, success } = confirmationsSchema.safeParse(values);
+  const { error, data, success } = confirmationSchema.safeParse(values);
 
   if (!success) {
     return {

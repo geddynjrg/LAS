@@ -14,6 +14,10 @@ api.use({
   async onRequest({ request }) {
     const [headersList, session] = await Promise.all([headers(), getSession()]);
 
+    if (!request.headers.has("Content-Type")) {
+      request.headers.set("Content-Type", "application/json");
+    }
+
     if (!request.headers.has("X-Path")) {
       request.headers.set("X-Path", headersList.get("x-path") || "");
     }

@@ -1,9 +1,14 @@
-import { notFound, redirect } from "next/navigation";
-
 import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
 import { ApplyFormTitle } from "@/app/apply/[id]/apply-form-title";
 import { GuardianForm } from "@/app/apply/[id]/guardian/guardian-form";
+import {
+  ensureStepAvailable,
+  getPrevStep,
+  type ApplicationStep,
+} from "@/app/apply/[id]/stepper-utils";
 import { getApplicationProgress } from "@/lib/api/application";
+
+const STEP_NAME = "guardian" satisfies ApplicationStep;
 
 export interface GuardianPageProps {
   params: Promise<{ id: string }>;
@@ -13,28 +18,20 @@ export default async function GuardianPage({ params }: GuardianPageProps) {
   const { id } = await params;
   const application = await getApplicationProgress({ id });
 
-  if (!application) {
-    notFound();
-  }
+  ensureStepAvailable(STEP_NAME, application);
 
-  if (!application?.available_steps?.includes("guardian")) {
-    redirect(`/apply/${id}/course/`);
-  }
-
-  console.log("GuardianPage", application);
-
-  const courseId = application?.steps_data?.course?.course;
+  const defaultValues = application?.steps_data?.applicant || {};
 
   return (
     <>
-      <ApplyFormTitle courseId={courseId} />
-
-      <ApplyFormStepper activeStep={2} />
+      <ApplyFormTitle application={application} />
+      <ApplyFormStepper activeStep={STEP_NAME} application={application} />
 
       <GuardianForm
         id={id}
-        // @ts-ignore TODO: wait for API fix
-        defaultValues={application.steps_data?.guardian || {}}
+        // @ts-ignore wait for the API fix
+        defaultValues={defaultValues}
+        prevStep={getPrevStep(STEP_NAME, application)}
       />
     </>
   );

@@ -1,3 +1,4 @@
+import type { Messages } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
@@ -17,7 +18,7 @@ export interface PaymentPageProps {
 const MOCK_PURCHASES: {
   id: string;
   type: string;
-  title: keyof IntlMessages["PaymentPage"];
+  title: keyof Messages["PaymentPage"];
   price: number;
 }[] = [
   {

@@ -1,10 +1,15 @@
-import { notFound } from "next/navigation";
-
 import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
 import { ApplyFormTitle } from "@/app/apply/[id]/apply-form-title";
 import { CourseForm } from "@/app/apply/[id]/course/course-form";
+import {
+  ensureStepAvailable,
+  getPrevStep,
+  type ApplicationStep,
+} from "@/app/apply/[id]/stepper-utils";
 import { getApplicationProgress } from "@/lib/api/application";
 import { getInstitutions } from "@/lib/api/institutions";
+
+const STEP_NAME = "course" satisfies ApplicationStep;
 
 export interface CoursePageProps {
   params: Promise<{ id: string }>;
@@ -18,25 +23,20 @@ export default async function CoursePage({ params }: CoursePageProps) {
     getApplicationProgress({ id }),
   ]);
 
-  if (!application) {
-    notFound();
-  }
+  ensureStepAvailable(STEP_NAME, application);
 
-  console.log("application", application);
-
-  const courseId = application?.steps_data?.course?.course;
-  const defaultValues = application.steps_data?.course || {};
+  const defaultValues = application?.steps_data?.course || {};
 
   return (
     <>
-      <ApplyFormTitle courseId={courseId} />
-
-      <ApplyFormStepper activeStep={3} />
+      <ApplyFormTitle application={application} />
+      <ApplyFormStepper activeStep={STEP_NAME} application={application} />
 
       <CourseForm
         id={id}
         institutions={institutions}
         defaultValues={defaultValues}
+        prevStep={getPrevStep(STEP_NAME, application)}
       />
     </>
   );

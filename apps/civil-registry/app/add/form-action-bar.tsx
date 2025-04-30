@@ -5,7 +5,7 @@ import type { FC } from "react";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
-import { Container } from "@workspace/ui/components/container";
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface FormActionBarProps {
   cancelUrl?: string;
@@ -34,7 +34,12 @@ export const FormActionBar: FC<FormActionBarProps> = ({
 
   return (
     <ActionBar className="mt-8">
-      <div className="flex w-full flex-row items-center justify-between gap-2 max-md:[&>*]:flex-1">
+      <div
+        className={cn(
+          "flex w-full flex-row items-center justify-between gap-2 max-md:[&>*]:flex-1",
+          !cancelUrl && !prevUrl && "justify-end",
+        )}
+      >
         {cancelUrl && (
           <Button variant="secondary" asChild disabled={isPending}>
             <Link href={cancelUrl}>

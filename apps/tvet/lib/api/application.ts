@@ -16,15 +16,12 @@ export async function getApplicationProgress(data: { id: string }) {
   return res.data?.data;
 }
 
-export async function createApplication(
-  data: components["schemas"]["ApplicantStepRequest"],
-) {
-  const res = await api.POST("/api/v1/application/step/{step_name}", {
+export async function createApplication(data: { course_id?: number }) {
+  const res = await api.POST("/api/v1/application", {
     params: {
       header: { "X-Language": await getLocale() },
-      path: { step_name: "applicant" },
+      query: data,
     },
-    body: data,
   });
 
   if (res.error) {
@@ -45,6 +42,11 @@ export async function createApplication(
 export async function updateApplication(
   id: string,
   data: components["schemas"]["ApplicationStepRequest"],
+  // & (
+  //     | components["schemas"]["NationalIdSchema"]
+  //     | components["schemas"]["BirthCertificateSchema"]
+  //     | components["schemas"]["AlienIdSchema"]
+  //   ),
 ) {
   const res = await api.PATCH(
     "/api/v1/application/{application_id}/step/{step_name}",

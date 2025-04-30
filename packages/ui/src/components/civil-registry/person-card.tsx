@@ -60,7 +60,8 @@ export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
 };
 
 function PersonSex({ sex }: { sex: SexType | null | undefined }) {
-  const t = useTranslations("DetailsPage");
+  const t = useTranslations("PersonCard");
+
   switch (sex) {
     case "M":
       return t("male");

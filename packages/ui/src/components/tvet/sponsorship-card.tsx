@@ -20,7 +20,7 @@ export const SponsorshipCard: FC<SponsorshipCardProps> = ({
   applicationFormHref,
   websiteHref,
 }) => {
-  const t = useTranslations("PersonCard");
+  const t = useTranslations("SponsorshipCard");
 
   return (
     <div className={cn("flex flex-col gap-4")}>

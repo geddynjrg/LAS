@@ -25,6 +25,7 @@ import { getCoursesList } from "@/lib/api/courses";
 
 export interface CourseFormProps {
   id: string;
+  prevStep?: string;
   institutions?: { id: string | number; title: string }[];
   defaultValues?: DeepPartial<CourseSchema>;
 }
@@ -33,6 +34,7 @@ export const CourseForm: FC<CourseFormProps> = ({
   id,
   institutions,
   defaultValues,
+  prevStep,
 }) => {
   const [state, formAction, isPending] = useForm(
     courseAction,
@@ -68,7 +70,7 @@ export const CourseForm: FC<CourseFormProps> = ({
     <ApplyFormWrap
       action={formAction}
       isPending={isPending}
-      prevUrl="guardian"
+      prevUrl={prevStep}
       className="space-y-4"
     >
       <ApplyFormSubtitle>Course</ApplyFormSubtitle>

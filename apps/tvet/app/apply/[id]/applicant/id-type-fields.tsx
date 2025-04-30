@@ -23,10 +23,10 @@ export interface IdTypeFieldsProps {
       ApplicantSchema,
       | "applicant_id_type"
       | "applicant_id_number"
-      | "birthCertificateNumber"
-      | "birthCertificateFile"
-      | "alienId"
-      | "alienIdIsRefugee"
+      | "birth_certificate_number"
+      | "birth_certificate_file"
+      | "alien_id_number"
+      | "is_refugee"
     >
   >;
 }
@@ -92,14 +92,14 @@ const FieldsByIdType: FC<{
         <>
           <Field
             state={state}
-            name="birthCertificateNumber"
+            name="birth_certificate_number"
             label={t("ApplicantForm.birthCertificateNumber")}
             required
             control={(props) => <Input {...props} />}
           />
           <Field
             state={state}
-            name="birthCertificateFile"
+            name="birth_certificate_file"
             label={t("ApplicantForm.birthCertificateFile")}
             required
             control={(props) => (
@@ -118,7 +118,7 @@ const FieldsByIdType: FC<{
         <>
           <Field
             state={state}
-            name="alienId"
+            name="alien_id_number"
             label={t("ApplicantForm.alienId")}
             required
             control={(props) => <Input {...props} />}
@@ -126,7 +126,7 @@ const FieldsByIdType: FC<{
 
           <Field
             state={state}
-            name="alienIdIsRefugee"
+            name="is_refugee"
             control={(props) => (
               <Checkbox {...props}>{t("ApplicantForm.isRefugee")}</Checkbox>
             )}

@@ -1,24 +1,39 @@
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import Form from "next/form";
+import { redirect } from "next/navigation";
 
 import { ActionBar } from "@workspace/ui/components/action-bar";
-import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import {
   NumberedList,
   NumberedListItem,
 } from "@workspace/ui/components/numbered-list";
 
+import { ApplyForm } from "@/app/apply/apply-form";
+import { createApplication } from "@/lib/api/application";
+
 export interface ApplyPageProps {
   searchParams: Promise<{ course?: string }>;
 }
 
+const applyAction = async (formData: FormData) => {
+  "use server";
+  const course_id = formData.get("course_id")?.toString();
+
+  const course = await createApplication({
+    course_id: course_id ? Number(course_id) : undefined,
+  });
+
+  if (course.error) {
+    console.warn("createApplication error", course.error);
+    throw new Error(course.error.message);
+  }
+
+  throw redirect(`/apply/${course.data?.application_id}/applicant`);
+};
+
 export default async function ApplyPage({ searchParams }: ApplyPageProps) {
   const { course } = await searchParams;
-
-  const nextPageLink = course
-    ? `/apply/new/applicant?course=${course}`
-    : "/apply/new/applicant";
 
   const t = await getTranslations("ApplyPage");
   return (
@@ -47,9 +62,9 @@ export default async function ApplyPage({ searchParams }: ApplyPageProps) {
       </Container>
 
       <ActionBar>
-        <Button className="px-22 mx-auto" asChild>
-          <Link href={nextPageLink}>{t("understood")}</Link>
-        </Button>
+        <Form action={applyAction} className="flex flex-1 items-center">
+          <ApplyForm course={course} />
+        </Form>
       </ActionBar>
     </div>
   );
