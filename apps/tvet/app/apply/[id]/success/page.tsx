@@ -24,8 +24,6 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
     notFound();
   }
 
-  console.log("SUCCESS application", application);
-
   const courseId = application.steps_data?.course?.course;
 
   const course = courseId ? await getCourseNodeById(courseId) : null;
@@ -36,8 +34,6 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
   const contact = course?.data?.content.page_components.find(
     (component) => component.block_type === "contact",
   );
-
-  console.log("course", course, contact);
 
   return (
     <Container className="space-y-7">
@@ -88,9 +84,9 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
           <Link href="/dashboard">View my applications</Link>
         </Button>
         <Button variant="secondary" asChild>
-          <Link href="#" download="Application">
+          <a href="payment-info-pdf" target="_blank" rel="noopener noreferrer">
             Download my application
-          </Link>
+          </a>
         </Button>
         <Button variant="secondary" asChild>
           <Link href="/">Back to front page</Link>
