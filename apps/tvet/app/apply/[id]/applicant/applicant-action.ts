@@ -53,7 +53,8 @@ export const applicantAction: FormAction<ApplicantSchema> = async (
     ),
 
     // TODO: fix once api is updated
-    applicant_phone_number: values.phones?.map(formatPhoneNumber) ?? [],
+    applicant_phone_number:
+      values.phones?.filter((p) => !!p.phone).map(formatPhoneNumber) ?? [],
   });
 
   if (res.error) {

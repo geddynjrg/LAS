@@ -1,7 +1,8 @@
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState, type FC } from "react";
 
+import { Button } from "@workspace/ui/components/button";
 import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
 import {
   Field,
@@ -17,19 +18,23 @@ export interface PhoneNumbersFieldProps {
 
 export const PhoneNumbersField: FC<PhoneNumbersFieldProps> = ({ state }) => {
   const t = useTranslations("PhoneNumbersField");
-  const [phonesCount, setPhonesCount] = useState(
-    Math.max(state.values?.phones?.length ?? 0, 1),
+  const [phonesIds, setPhonesIds] = useState(
+    Array.from(Array(Math.max(state.values?.phones?.length ?? 0, 1)).keys()),
   );
 
-  return Array.from({ length: phonesCount }).map((_, i) => (
+  return phonesIds.map((id, index) => (
     <FieldGroup
-      key={`phones-${i}`}
-      label={t("phoneNumber")}
-      required={i === 0}
+      key={`phones-${id}`}
+      className="relative"
+      label={id === 0 ? t("phoneNumber") : undefined}
+      required={id === 0}
       description={
-        i === phonesCount - 1 ? (
-          <Underline asChild className="typo-body-medium cursor-pointer">
-            <button type="button" onClick={() => setPhonesCount((v) => v + 1)}>
+        index === phonesIds.length - 1 ? (
+          <Underline asChild className="typo-body-medium mt-4 cursor-pointer">
+            <button
+              type="button"
+              onClick={() => setPhonesIds((v) => [...v, v.at(-1)! + 1])}
+            >
               <IconPlus className="mr-1" /> {t("addAnotherPhoneNumber")}
             </button>
           </Underline>
@@ -38,16 +43,33 @@ export const PhoneNumbersField: FC<PhoneNumbersFieldProps> = ({ state }) => {
     >
       <Field
         state={state}
-        name={`phones.${i}.callingCode`}
+        name={`phones.${index}.callingCode`}
         className="max-w-40"
         required
         control={(props) => <CallingCodeSelect {...props} />}
       />
       <Field
         state={state}
-        name={`phones.${i}.phone`}
+        name={`phones.${index}.phone`}
         required
-        control={(props) => <Input type="tel" {...props} />}
+        control={(props) => (
+          <Input
+            type="tel"
+            endDecorator={
+              index > 0 ? (
+                <Button
+                  variant="ghost"
+                  type="button"
+                  size="xs"
+                  onClick={() => setPhonesIds((v) => v.filter((i) => i !== id))}
+                >
+                  <IconX size={18} />
+                </Button>
+              ) : undefined
+            }
+            {...props}
+          />
+        )}
       />
     </FieldGroup>
   ));
