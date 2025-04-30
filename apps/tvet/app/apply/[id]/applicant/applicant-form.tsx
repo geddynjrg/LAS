@@ -21,9 +21,9 @@ import {
   type ApplicantSchema,
 } from "@/app/apply/[id]/applicant/applicant-schema";
 import { DisabilitiesFields } from "@/app/apply/[id]/applicant/disabilities-fields";
-import { IdTypeFields } from "@/app/apply/[id]/applicant/id-type-fields";
 import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
+import { IdTypeFields } from "@/app/apply/[id]/id-type-fields";
 import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
 
 export interface ApplicantFormProps {

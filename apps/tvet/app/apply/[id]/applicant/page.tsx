@@ -1,7 +1,7 @@
 import { ApplicantForm } from "@/app/apply/[id]/applicant/applicant-form";
-import type { IdType } from "@/app/apply/[id]/applicant/applicant-schema";
 import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
 import { ApplyFormTitle } from "@/app/apply/[id]/apply-form-title";
+import type { IdType } from "@/app/apply/[id]/id-type-schema";
 import {
   ensureStepAvailable,
   type ApplicationStep,
@@ -22,7 +22,7 @@ export default async function ApplicantPage({ params }: ApplicantPageProps) {
 
   ensureStepAvailable(STEP_NAME, application);
 
-  const defaultValues = application?.steps_data?.applicant || {};
+  const defaultValues = application?.steps_data?.applicant;
 
   return (
     <>
@@ -31,12 +31,21 @@ export default async function ApplicantPage({ params }: ApplicantPageProps) {
 
       <ApplicantForm
         id={id}
-        // @ts-ignore wait for the API fix
         defaultValues={{
           ...defaultValues,
-          // TODO: wait for the api fix
-          applicant_id_type: defaultValues.applicant_id_type as IdType,
-          phones: defaultValues.applicant_phone_number?.map(parsePhoneNumber),
+
+          // id type fields
+          id_type: defaultValues?.applicant_id_type as IdType,
+          id_number: defaultValues?.applicant_id_number,
+          birth_certificate_number: defaultValues?.birth_certificate_number,
+          // @ts-ignore missing type from API
+          birth_certificate_file: defaultValues?.birth_certificate_file,
+          // @ts-ignore missing type from API
+          alien_id_number: defaultValues?.alien_id_number,
+          // @ts-ignore missing type from API
+          is_refugee: defaultValues?.is_refugee,
+
+          phones: defaultValues?.applicant_phone_number?.map(parsePhoneNumber),
         }}
       />
     </>

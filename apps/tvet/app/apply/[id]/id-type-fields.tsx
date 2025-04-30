@@ -13,22 +13,12 @@ import {
   FILE_ACCEPT,
   idType,
   MAX_FILE_SIZE,
-  type ApplicantSchema,
   type IdType,
-} from "@/app/apply/[id]/applicant/applicant-schema";
+  type IdTypeSchema,
+} from "@/app/apply/[id]/id-type-schema";
 
 export interface IdTypeFieldsProps {
-  state: FormFieldState<
-    Pick<
-      ApplicantSchema,
-      | "applicant_id_type"
-      | "applicant_id_number"
-      | "birth_certificate_number"
-      | "birth_certificate_file"
-      | "alien_id_number"
-      | "is_refugee"
-    >
-  >;
+  state: FormFieldState<IdTypeSchema>;
 }
 
 export const IdTypeFields: FC<IdTypeFieldsProps> = ({ state }) => {
@@ -40,14 +30,14 @@ export const IdTypeFields: FC<IdTypeFieldsProps> = ({ state }) => {
   }));
 
   const [chosenNationalIdType, setChosenNationalIdType] = useState(
-    state.values?.applicant_id_type,
+    state.values?.id_type,
   );
 
   return (
     <>
       <Field
         state={state}
-        name="applicant_id_type"
+        name="id_type"
         label={t("ApplicantForm.idType")}
         required
         control={(props) => (
@@ -79,7 +69,7 @@ const FieldsByIdType: FC<{
         <>
           <Field
             state={state}
-            name="applicant_id_number"
+            name="id_number"
             label={t("ApplicantForm.nationalId")}
             required
             control={(props) => <Input {...props} />}

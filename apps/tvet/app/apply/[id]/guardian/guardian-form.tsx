@@ -1,9 +1,7 @@
 "use client";
 
-import { useMemo, useState, type FC } from "react";
+import { type FC } from "react";
 
-import { Checkbox } from "@workspace/ui/components/checkbox";
-import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import { Field } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { RadioGroup } from "@workspace/ui/components/radio-group";
@@ -13,12 +11,11 @@ import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { guardianAction } from "@/app/apply/[id]/guardian/guardian-action";
 import {
-  FILE_ACCEPT,
   guardianRoles,
   guardianSchema,
-  MAX_FILE_SIZE,
   type GuardianSchema,
 } from "@/app/apply/[id]/guardian/guardian-schema";
+import { IdTypeFields } from "@/app/apply/[id]/id-type-fields";
 import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
 
 export interface GuardianFormProps {
@@ -32,86 +29,11 @@ export const GuardianForm: FC<GuardianFormProps> = ({
   prevStep,
   defaultValues,
 }) => {
-  const nationalIdTypes = useMemo(
-    () =>
-      [
-        { label: "National ID", value: "national-id" },
-        { label: "Birth certificate", value: "birth-certificate" },
-        { label: "Alien ID", value: "alien-id" },
-      ] as const,
-    [],
-  );
-
   const [state, formAction, _isPending] = useForm(
     guardianAction,
     guardianSchema,
     defaultValues,
   );
-
-  const [chosenNationalIdType, setChosenNationalIdType] =
-    useState<(typeof nationalIdTypes)[number]["value"]>();
-
-  const IdTypeFields = () => {
-    switch (chosenNationalIdType) {
-      case "national-id":
-        return (
-          <>
-            <Field
-              state={state}
-              name="nationalId"
-              label="National ID"
-              required
-              control={(props) => <Input {...props} />}
-            />
-          </>
-        );
-
-      case "birth-certificate":
-        return (
-          <>
-            <Field
-              state={state}
-              name="birthCertificateNumber"
-              label="Birth Certificate Number"
-              required
-              control={(props) => <Input {...props} />}
-            />
-            <Field
-              state={state}
-              name="birthCertificateFile"
-              label="Birth Certificate"
-              required
-              control={(props) => (
-                <FileUploadInput
-                  accept={FILE_ACCEPT}
-                  maxSize={MAX_FILE_SIZE}
-                  {...props}
-                />
-              )}
-            />
-          </>
-        );
-
-      case "alien-id":
-        return (
-          <>
-            <Field
-              state={state}
-              name="alienId"
-              label="Alien ID"
-              required
-              control={(props) => <Input {...props} />}
-            />
-
-            <Field
-              state={state}
-              name="alienIdIsRefugee"
-              control={(props) => <Checkbox {...props}>I am refugee</Checkbox>}
-            />
-          </>
-        );
-    }
-  };
 
   return (
     <ApplyFormWrap action={formAction} prevUrl={prevStep} className="space-y-4">
@@ -149,27 +71,13 @@ export const GuardianForm: FC<GuardianFormProps> = ({
         control={(props) => <RadioGroup {...props} options={guardianRoles} />}
       />
 
-      <Field
-        state={state}
-        name="idType"
-        label="Which form of ID do you have?"
-        required
-        control={(props) => (
-          <RadioGroup
-            {...props}
-            onValueChange={setChosenNationalIdType}
-            options={nationalIdTypes}
-          />
-        )}
-      />
-
-      <IdTypeFields />
+      <IdTypeFields state={state} />
 
       <PhoneNumbersField state={state} />
 
       <Field
         state={state}
-        name="email"
+        name="guardian_email"
         label="Email"
         control={(props) => <Input type="email" {...props} />}
       />

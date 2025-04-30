@@ -41,12 +41,15 @@ export async function createApplication(data: { course_id?: number }) {
 
 export async function updateApplication(
   id: string,
-  data: components["schemas"]["ApplicationStepRequest"],
-  // & (
-  //     | components["schemas"]["NationalIdSchema"]
-  //     | components["schemas"]["BirthCertificateSchema"]
-  //     | components["schemas"]["AlienIdSchema"]
-  //   ),
+  data: components["schemas"]["ApplicationStepRequest"] &
+    (
+      | Partial<components["schemas"]["NationalIdSchema"]>
+      | Partial<components["schemas"]["GuardianNationalIdSchema"]>
+      | Partial<components["schemas"]["BirthCertificateSchema"]>
+      | Partial<components["schemas"]["GuardianBirthCertificateSchema"]>
+      | Partial<components["schemas"]["GuardianAlienIdSchema"]>
+      | Partial<components["schemas"]["AlienIdSchema"]>
+    ),
 ) {
   const res = await api.PATCH(
     "/api/v1/application/{application_id}/step/{step_name}",

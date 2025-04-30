@@ -2,6 +2,11 @@ import { z } from "zod";
 
 import { checkbox, validFile } from "@workspace/ui/lib/zod";
 
+import {
+  idTypeSChema,
+  validateApplicantIdType,
+} from "@/app/apply/[id]/id-type-schema";
+
 export const FILE_ACCEPT = {
   "image/*": [".jpg", ".png"],
   "application/pdf": [".pdf"],
@@ -9,9 +14,6 @@ export const FILE_ACCEPT = {
 export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 
 export const sex = z.enum(["male", "female", "intersex"]);
-
-export const idType = z.enum(["national_id", "birth_certificate", "alien_id"]);
-export type IdType = z.infer<typeof idType>;
 
 export const disabilityNature = z.enum([
   "visual",
@@ -36,34 +38,19 @@ const phone = z.object({
   phone: z.string().nonempty(),
 });
 
-export const applicantSchema = z
-  .object({
+export const applicantSchema = idTypeSChema
+  .extend({
     applicant_first_name: z.string().min(1),
     applicant_middle_name: z.string().optional(),
     applicant_surname: z.string().min(1),
     applicant_sex: sex,
     applicant_date_of_birth: z.string().trim().date(),
-    applicant_id_type: idType,
-
-    // applicant_phone_number: z.string().trim().nonempty(),
-    phones: z.array(phone),
-
     applicant_email: z.union([z.literal(""), z.string().email()]),
     applicant_county: z.string().trim().nonempty(),
     applicant_subcounty: z.string().trim().nonempty(),
     applicant_ward: z.string().trim().nonempty(),
+    phones: z.array(phone),
     applicant_disability: checkbox(),
-
-    // idType === "national_id"
-    applicant_id_number: z.string().trim().optional(),
-
-    // idType === "birth_certificate"
-    birth_certificate_number: z.string().optional(),
-    birth_certificate_file: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
-
-    // idType === "alien_id"
-    alien_id_number: z.string().optional(),
-    is_refugee: checkbox(),
 
     // applicant_disability === true
     disability_nature: disabilityNature.optional(),
@@ -238,62 +225,6 @@ export const dummyCounties = [
     ],
   },
 ];
-
-function validateApplicantIdType(data: ApplicantSchema, ctx: z.RefinementCtx) {
-  switch (data.applicant_id_type) {
-    case "national_id": {
-      if ((data.applicant_id_number?.trim()?.length ?? 0) < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.too_small,
-          type: "string",
-          minimum: 1,
-          inclusive: true,
-          path: ["applicant_id_number"],
-        });
-      }
-
-      break;
-    }
-
-    case "birth_certificate": {
-      if ((data.birth_certificate_number?.trim()?.length ?? 0) < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.too_small,
-          type: "string",
-          minimum: 1,
-          inclusive: true,
-          path: ["birth_certificate_number"],
-        });
-      }
-
-      if (!data.birth_certificate_file) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.too_small,
-          type: "string",
-          minimum: 1,
-          inclusive: true,
-          path: ["birth_certificate_file"],
-        });
-      }
-
-      break;
-    }
-
-    case "alien_id": {
-      if ((data.alien_id_number?.trim()?.length ?? 0) < 1) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.too_small,
-          type: "string",
-          minimum: 1,
-          inclusive: true,
-          path: ["alien_id_number"],
-        });
-      }
-
-      break;
-    }
-  }
-}
 
 function validateApplicantDisabilities(
   data: ApplicantSchema,

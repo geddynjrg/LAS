@@ -46,19 +46,22 @@ export const applicantAction: FormAction<ApplicantSchema> = async (
     disability_card_picture: await prepareFileForUpload(
       data.disability_card_picture,
     ),
+    applicant_phone_number:
+      values.phones?.filter((p) => !!p.phone).map(formatPhoneNumber) ?? [],
 
-    // @ts-ignore wait for the API fix
+    // id type fields
+    applicant_id_type: data.id_type,
+    applicant_id_number: data.id_number,
+    birth_certificate_number: data.birth_certificate_number,
     birth_certificate_file: await prepareFileForUpload(
       data.birth_certificate_file,
     ),
-
-    // TODO: fix once api is updated
-    applicant_phone_number:
-      values.phones?.filter((p) => !!p.phone).map(formatPhoneNumber) ?? [],
+    alien_id_number: data.alien_id_number,
+    is_refugee: data.is_refugee,
   });
 
   if (res.error) {
-    console.warn("createApplication error", res.error);
+    console.warn("applicantAction error", res.error);
 
     return {
       success: false,
@@ -68,7 +71,5 @@ export const applicantAction: FormAction<ApplicantSchema> = async (
     };
   }
 
-  console.log("save application response", res);
-
-  redirect(`/apply/${res?.data?.application_id}/guardian`);
+  redirect(`/apply/${id}/guardian`);
 };
