@@ -1,4 +1,5 @@
 import { IconDownload, IconHandFinger, IconSend } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
@@ -32,6 +33,8 @@ export const TextListBlock: FC<TextListBlockProps> = ({
   items,
   className,
 }) => {
+  const t = useTranslations("TextListBlock");
+
   if (type === "how_to_apply_to_sponsorships") {
     return (
       <Container className={cn("mt-4 flex flex-col gap-6 py-8", className)}>
@@ -39,7 +42,7 @@ export const TextListBlock: FC<TextListBlockProps> = ({
         <hr />
 
         <section>
-          <h3 className="typo-h5">To apply, you need:</h3>
+          <h3 className="typo-h5">{t("toApplyYouNeed")}</h3>
           <NumberedList className="my-4" variant="numbers">
             {items?.map((checkpoint, index) => (
               <NumberedListItem

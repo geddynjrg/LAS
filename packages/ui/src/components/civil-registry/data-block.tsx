@@ -68,10 +68,10 @@ export const DataBlock: FC<DataBlockProps> = ({
           )}
         >
           <Button variant="secondary" onClick={toggleEdit}>
-            Cancel <IconX />
+            {t("Buttons.cancel")} <IconX />
           </Button>
           <Button type="submit" disabled={isPending} className="tracking-wide">
-            Confirm <IconCheck />
+            {t("Buttons.confirm")} <IconCheck />
           </Button>
         </div>
       )}

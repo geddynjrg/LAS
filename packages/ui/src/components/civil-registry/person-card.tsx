@@ -31,14 +31,13 @@ export const PersonCard: FC<PersonCardProps> = ({ person, ...props }) => {
   return (
     <Card title={name} {...props}>
       {validationStatus === "alert" && (
-        <Alert variant="warning">Birth registration requires validation</Alert>
+        <Alert variant="warning">
+          {t("birthRegistrationRequiresValidation")}
+        </Alert>
       )}
 
       {validationStatus === "pending" && (
-        <Alert variant="warning">
-          Amendments need to be processed before a birth certificate can be
-          issued
-        </Alert>
+        <Alert variant="warning">{t("amendmentsNeedToBeProcessed")}</Alert>
       )}
 
       <DataPair

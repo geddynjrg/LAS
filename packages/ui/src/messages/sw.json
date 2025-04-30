@@ -17,9 +17,12 @@
       "invalid_date": "Tarehe batili",
       "number_too_small": "Thamani lazima iwe angalau {minimum}",
       "number_too_large": "Thamani lazima iwe zaidi ya {maximum}",
-      "invalid_union": "Tafadhali chagua chaguo sahihi"
+      "invalid_union": "Tafadhali chagua chaguo sahihi",
+      "file_too_large": "Ukubwa wa faili ni mkubwa mno",
+      "password_mismatch": "Nywila hazifanani"
     }
   },
+
   "InfoPopover": {
     "help": "Msaada",
     "close": "Funga",
@@ -56,7 +59,8 @@
     "confirm": "Thibitisha",
     "back": "Rudi",
     "amend": "Badilisha",
-    "backToDashboard": "Rudi kwenye dashibodi"
+    "backToDashboard": "Rudi kwenye dashibodi",
+    "cancel": "Ghairi"
   },
 
   "TrainingAreaBlock": {
@@ -69,6 +73,7 @@
     "searchTitle": "Tafuta kozi",
     "linkTitle": "Tazama zote"
   },
+
   "LocationMap": {
     "getDirections": "Pata maelekezo",
     "viewMore": "Tazama zaidi",
@@ -78,9 +83,11 @@
     "zoomIn": "kuvuta ndani",
     "zoomOut": "kuvuta nje"
   },
+
   "AvailableSponsorshipsBlock": {
     "availableSponsorships": "Udhamini unaopatikana"
   },
+
   "CourseDataBlock": {
     "applyNow": "Omba sasa",
     "fees": "ada",
@@ -93,35 +100,61 @@
     "applicationFee": "ada ya maombi",
     "testBookingFee": "ada ya uhakiki"
   },
+
   "SimilarCoursesBlock": {
     "similarCourses": "Kozi zinazofanana"
   },
+
   "SocialBlock": {
     "followUs": "Fuata sisi!"
   },
+
   "TestimonialsBlock": {
     "testimonials": "Ushuhuda"
   },
+
   "VocationalCentersBlock": {
     "nairobiVocationalCenters": "Vituo vya Ufundi vya Nairobi"
   },
+
+  "TextListBlock": {
+    "toApplyYouNeed": "Ili kuomba, unahitaji:"
+  },
+
   "InstituteContactInfo": {
     "doYouHaveQuestions": "Je, una maswali?",
     "getInContact": "Wasiliana nasi na tutakusaidia kupata majibu unayohitaji."
   },
+
   "CourseBlock": {
     "viewAll": "Tazama zote"
   },
+
+  "ContactBlock": {
+    "applyNow": "Omba sasa"
+  },
+
   "PersonCard": {
     "sex": "Jinsia",
     "age": "Umri",
     "dob": "Tarehe ya kuzaliwa",
+    "birthRegistrationRequiresValidation": "Usajili wa kuzaliwa unahitaji uthibitisho",
+    "amendmentsNeedToBeProcessed": "Marekebisho yanahitaji kushughulikiwa kabla ya cheti cha kuzaliwa kutolewa"
+  },
+
+  "PersonAge": {
     "ageYears": "{count , plural, =1 {# mwaka} other {# miaka}}",
     "ageMonths": "{count , plural, =1 {# mwezi} other {# miezi}}"
   },
+
   "ApplicationStatusCard": {
     "viewRejectionReason": "Tazama sababu ya kukataliwa",
     "viewNextSteps": "Tazama hatua zinazofuata",
     "viewApplication": "Tazama maombi"
+  },
+
+  "SponsorshipCard": {
+    "downloadApplicationForm": "Pakua fomu ya maombi",
+    "readMoreOnWebsite": "Soma zaidi kwenye tovuti"
   }
 }

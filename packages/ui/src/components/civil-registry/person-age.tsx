@@ -8,7 +8,7 @@ export interface PersonAgeProps {
 }
 
 export const PersonAge: FC<PersonAgeProps> = ({ dob, autoFormat }) => {
-  const t = useTranslations("PersonCard");
+  const t = useTranslations("PersonAge");
 
   if (!dob) {
     return "N/A";

@@ -1,4 +1,5 @@
 import { IconDownload, IconWindowMaximize } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, PropsWithChildren, ReactNode } from "react";
 
@@ -19,6 +20,8 @@ export const SponsorshipCard: FC<SponsorshipCardProps> = ({
   applicationFormHref,
   websiteHref,
 }) => {
+  const t = useTranslations("PersonCard");
+
   return (
     <div className={cn("flex flex-col gap-4")}>
       <div className="flex flex-col gap-3 rounded-2xl bg-neutral-100 px-4 py-6 shadow-[var(--box-shadow-elevation-02)]">
@@ -27,7 +30,7 @@ export const SponsorshipCard: FC<SponsorshipCardProps> = ({
         {applicationFormHref && (
           <Underline asChild>
             <Link href={applicationFormHref}>
-              Download application form
+              {t("downloadApplicationForm")}
               <IconDownload className="ml-2" />
             </Link>
           </Underline>
@@ -35,7 +38,7 @@ export const SponsorshipCard: FC<SponsorshipCardProps> = ({
         {websiteHref && (
           <Underline asChild>
             <Link href={websiteHref}>
-              Read more on website
+              {t("readMoreOnWebsite")}
               <IconWindowMaximize className="ml-2" />
             </Link>
           </Underline>
