@@ -1,26 +1,19 @@
 "use client";
 
-import { IconDownload, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, type FC, type ReactNode } from "react";
 
+import { Alert } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { Divider } from "@workspace/ui/components/divider";
-import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
-import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
-import { Underline } from "@workspace/ui/components/underline";
 import { cn } from "@workspace/ui/lib/utils";
 
-export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
-
-export const FILE_ACCEPT = {
-  "image/*": [".jpg", ".jpeg", ".png"],
-  "application/pdf": [".pdf"],
-};
+import { UploadPaymentProofForm } from "@/app/dashboard/application-card/upload-payment-proof-form";
 
 export type ApplicationStatus =
   | "draft"
@@ -40,7 +33,7 @@ export type ApplicationPaymentStatus =
   | "paid"
   | "rejected";
 
-export interface ApplicationStatusCardProps {
+export interface ApplicationCardProps {
   id?: number;
   application_id?: string;
   application_status?: ApplicationStatus;
@@ -56,9 +49,13 @@ enum CardType {
   warning = "warning",
 }
 
-export const ApplicationStatusCard: FC<ApplicationStatusCardProps> = (
-  props,
-) => {
+export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
+  const search = useSearchParams();
+
+  const successUploadId = search.get("payment_proof_success");
+
+  const isUploadSuccess = successUploadId === props.application_id;
+
   const t = useTranslations("ApplicationStatusCard");
 
   const type = getCardType(props);
@@ -84,12 +81,18 @@ export const ApplicationStatusCard: FC<ApplicationStatusCardProps> = (
         </DataPair>
       </div>
 
+      {isUploadSuccess && (
+        <Alert variant="success" className="mb-4">
+          Payment proof uploaded successfully
+        </Alert>
+      )}
+
       <ApplicationActions {...props} />
     </Card>
   );
 };
 
-const ApplicationActions: FC<ApplicationStatusCardProps> = (props) => {
+const ApplicationActions: FC<ApplicationCardProps> = (props) => {
   switch (props.application_status) {
     case "draft":
       return (
@@ -124,6 +127,7 @@ const PaymentActions: FC<{ application_id?: string }> = ({
 }) => {
   const search = useSearchParams();
   const highlightedApplicationId = search.get("pay_later_id");
+
   const isHighlighted = highlightedApplicationId === application_id;
   const [isPaymentProofFormVisible, setIsPaymentProofFormVisible] =
     useState(isHighlighted);
@@ -136,50 +140,11 @@ const PaymentActions: FC<{ application_id?: string }> = ({
 
       <Divider>or</Divider>
       {isPaymentProofFormVisible ? (
-        <Form
-          className={cn(
-            "relative space-y-4 rounded border border-yellow-500 bg-yellow-100 p-4",
-            isHighlighted && "repeat-[4] animate-pulse duration-500",
-          )}
-        >
-          <Button
-            variant="ghost"
-            size="xs"
-            className="absolute right-1 top-1"
-            onClick={() => setIsPaymentProofFormVisible(false)}
-          >
-            <IconX />
-          </Button>
-          <p>
-            Please complete the transfer and upload proof of payment, such as a
-            receipt or screenshot.
-          </p>
-          <Underline asChild>
-            <a
-              href={`/apply/${application_id}/payment-info-pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <IconDownload className="mr-2" /> Download payment instructions
-            </a>
-          </Underline>
-
-          <Field
-            name="upload"
-            label="Proof of payment"
-            required
-            control={(props) => (
-              <FileUploadInput
-                accept={FILE_ACCEPT}
-                maxSize={MAX_FILE_SIZE}
-                {...props}
-              />
-            )}
-          />
-          <SubmitButton className="w-full">
-            Upload proof of payment
-          </SubmitButton>
-        </Form>
+        <UploadPaymentProofForm
+          isHighlighted={isHighlighted}
+          onClose={() => setIsPaymentProofFormVisible(false)}
+          application_id={application_id || ""}
+        />
       ) : (
         <Button
           className="w-full"
@@ -223,7 +188,7 @@ const DescriptionActions: FC<{ label?: string; children: ReactNode }> = ({
   );
 };
 
-function getCardType(application: ApplicationStatusCardProps) {
+function getCardType(application: ApplicationCardProps) {
   switch (application.application_status) {
     case "accepted":
       return CardType.success;
@@ -234,7 +199,7 @@ function getCardType(application: ApplicationStatusCardProps) {
   }
 }
 
-function getStatusText(application: ApplicationStatusCardProps) {
+function getStatusText(application: ApplicationCardProps) {
   if (application.application_status === "submitted") {
     return application.payment_status;
   }

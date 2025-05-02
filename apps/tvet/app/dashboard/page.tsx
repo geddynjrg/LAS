@@ -3,9 +3,9 @@ import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
-import { ApplicationStatusCard } from "@workspace/ui/components/tvet/application-status-card";
 import { Heading } from "@workspace/ui/components/tvet/heading";
 
+import { ApplicationCard } from "@/app/dashboard/application-card/application-card";
 import { getProfile } from "@/lib/api/profile";
 import { getUserApplications } from "@/lib/api/user-applications";
 
@@ -24,11 +24,9 @@ export default async function DashboardPage() {
       <Heading type="h2">{t("title")}</Heading>
 
       <div className="mt-7 grid gap-5 md:grid-cols-2">
-        {userApplications
-          .sort((application) => (isAwaitingForPayment(application) ? -1 : 1))
-          .map((application) => (
-            <ApplicationStatusCard key={application.id} {...application} />
-          ))}
+        {userApplications.map((application) => (
+          <ApplicationCard key={application.id} {...application} />
+        ))}
       </div>
 
       {userApplications.length === 0 && (

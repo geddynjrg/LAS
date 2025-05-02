@@ -21,3 +21,22 @@ export async function getPaymentInfoPdf(path: { application_id: string }) {
     { params: { path }, parseAs: "blob" },
   );
 }
+
+export async function uploadPaymentProof(data: {
+  application_id: string;
+  payment_proof: {
+    data: string;
+    filename: string;
+  };
+}) {
+  return api.POST("/api/v1/application/{application_id}/payment-proof", {
+    params: {
+      header: { "X-Language": await getLocale() },
+      path: { application_id: data.application_id },
+    },
+    body: {
+      payment_proof: data.payment_proof,
+      payment_reference: "?????",
+    },
+  });
+}

@@ -37,6 +37,7 @@ export default async function ApplicantPage({ params }: ApplicantPageProps) {
           // id type fields
           id_type: defaultValues?.applicant_id_type as IdType,
           id_number: defaultValues?.applicant_id_number,
+          // @ts-ignore missing type from API
           birth_certificate_number: defaultValues?.birth_certificate_number,
           // @ts-ignore missing type from API
           birth_certificate_file: defaultValues?.birth_certificate_file,
