@@ -21,7 +21,7 @@
     "@radix-ui/react-slider": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-toggle-group": "^1.1.2",
-    "@tabler/icons-react": "^3.30.0",
+    "@tabler/icons-react": "^3.17.0",
     "@vis.gl/react-google-maps": "^1.5.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

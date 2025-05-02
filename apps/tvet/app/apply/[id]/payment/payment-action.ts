@@ -10,5 +10,5 @@ export async function paymentAction(formData: FormData) {
     throw new Error("Missing id or payment method");
   }
 
-  redirect(`/apply/${id}/success`);
+  redirect(`/dashboard?pay_later_id=${id}`);
 }

@@ -23,12 +23,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary = {} satisfies Story;
 
-export const Multiple = {
-  args: {
-    multiple: true,
-  },
-} satisfies Story;
-
 export const FilesOnly = {
   args: {
     accept: {

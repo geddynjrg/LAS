@@ -36,7 +36,7 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
   );
 
   return (
-    <Container className="space-y-7">
+    <Container className="mb-8 space-y-7">
       <h2 className="typo-h2">Thank you for applying!</h2>
 
       <div className="space-y-5">
@@ -93,45 +93,24 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
         </Button>
       </div>
 
-      <h3
-        className={cn(
-          "typo-h3",
-          "mt-12 border-b border-solid border-neutral-400 pb-3",
-        )}
-      >
-        Available sponsorships for your course
-      </h3>
-
       {sponsorships && (
-        <AvailableSponsorshipsBlock
-          showHeading={false}
-          className="p-0"
-          {...sponsorships}
-        />
-      )}
-
-      <div className={cn("flex flex-col gap-5")}>
-        {/* {sponsorships.map((sponsorship) => (
-          <Card
+        <>
+          <h3
             className={cn(
-              "border-none shadow-[var(--box-shadow-elevation-02)]",
+              "typo-h3",
+              "mt-12 border-b border-solid border-neutral-400 pb-3",
             )}
-            key={sponsorship.id}
-            variant="success"
-            title={<div className={cn("text-left")}>{sponsorship.name}</div>}
-            caption={
-              <div className={cn("text-left")}>{sponsorship.description}</div>
-            }
           >
-            <Underline asChild>
-              <a className={cn("flex items-center gap-1")} href="#">
-                <IconDownload />
-                Download application form
-              </a>
-            </Underline>
-          </Card>
-        ))} */}
-      </div>
+            Available sponsorships for your course
+          </h3>
+
+          <AvailableSponsorshipsBlock
+            showHeading={false}
+            className="p-0"
+            {...sponsorships}
+          />
+        </>
+      )}
     </Container>
   );
 }

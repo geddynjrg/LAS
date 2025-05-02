@@ -22,10 +22,10 @@ export async function GET(
   });
 
   response.headers.append("Content-Type", "application/pdf");
-  response.headers.append(
-    "Content-disposition",
-    `attachment; filename=${id}.pdf`,
-  );
+  // response.headers.append(
+  //   "Content-disposition",
+  //   `attachment; filename=${id}.pdf`,
+  // );
 
   return response;
 }

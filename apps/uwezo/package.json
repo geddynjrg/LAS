@@ -11,7 +11,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@tabler/icons-react": "^3.31.0",
+    "@tabler/icons-react": "^3.17.0",
     "@workspace/ui": "workspace:*",
     "nanoid": "^5.1.5",
     "next": "15.3.1",
