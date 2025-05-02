@@ -1,4 +1,4 @@
-import { customAlphabet } from "@workspace/ui/components/nanoid";
+import { customAlphabet } from "nanoid";
 
 export const createApplicationId = () => {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
