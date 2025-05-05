@@ -52,6 +52,7 @@
     "Kahawa",
     "Kangemi",
     "Kiwanja",
+    "M-Pesa",
     "Mabatini",
     "Makadara",
     "Maringo",
@@ -69,6 +70,5 @@
   "workbench.colorCustomizations": {
     "gitlens.trailingLineForegroundColor": "#555555"
   },
-  "search.useGlobalIgnoreFiles": false,
-
+  "search.useGlobalIgnoreFiles": false
 }

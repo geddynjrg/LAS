@@ -58,7 +58,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({
       <input
         type="hidden"
         name={name}
-        value={Array.isArray(value) ? value.join(",") : value}
+        value={Array.isArray(value) ? value.join(",") : value || ""}
       />
       <ToggleGroupPrimitive.Root
         className={cn("flex items-center justify-center", className)}
@@ -73,7 +73,7 @@ export const ButtonGroup: FC<ButtonGroupProps> = ({
           name={name}
           aria-invalid={props["aria-invalid"]}
           data-invalid={props["data-invalid"]}
-		  className={cn("flex items-center justify-center w-full")}
+          className={cn("flex w-full items-center justify-center")}
         >
           <ButtonGroupContext.Provider value={{ variant, size }}>
             {children}

@@ -6,6 +6,8 @@ import { z } from "zod";
  * Map zod errors to translation keys
  */
 export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
+  console.log("Zod error", issue);
+  console.log("Zod ctx", ctx);
   switch (issue.code) {
     case "custom": {
       return issue.message
@@ -42,6 +44,10 @@ export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
     }
 
     case "invalid_union": {
+      if (!ctx.data) {
+        return getIntlKey("required");
+      }
+
       return getIntlKey("invalid_union", issue);
     }
 

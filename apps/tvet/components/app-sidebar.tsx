@@ -32,7 +32,7 @@ export const AppSidebar: FC<AppSidebarProps> = ({
   locale,
   institutions = [],
 }) => {
-  const t = useTranslations("Common");
+  const t = useTranslations("Menu");
 
   return (
     <Sidebar title={t("menu")} closeTitle={t("closeMenu")}>
@@ -49,12 +49,12 @@ export const AppSidebar: FC<AppSidebarProps> = ({
           <SidebarMenuItem asChild>
             <NavLink href="/">
               <IconHome />
-              Front page
+              {t("home")}
             </NavLink>
           </SidebarMenuItem>
 
           {institutions.length > 0 && (
-            <SidebarSubmenu title="Institutions" icon={<IconBuilding />}>
+            <SidebarSubmenu title={t("institutions")} icon={<IconBuilding />}>
               {institutions.map((institution) => (
                 <SidebarMenuItem key={institution.id} asChild>
                   <NavLink href={institution.path_alias}>
@@ -68,28 +68,28 @@ export const AppSidebar: FC<AppSidebarProps> = ({
           <SidebarMenuItem asChild>
             <NavLink href="/courses">
               <IconBooks />
-              Courses
+              {t("courses")}
             </NavLink>
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
             <NavLink href="/sponsorships">
               <IconClipboardText />
-              Sponsorships
+              {t("sponsorships")}
             </NavLink>
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
             <NavLink href="/apply">
               <IconChecklist />
-              Apply now
+              {t("apply")}
             </NavLink>
           </SidebarMenuItem>
 
           <SidebarMenuItem asChild>
             <NavLink href="/contact">
               <IconPhone />
-              Contact
+              {t("contact")}
             </NavLink>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -11,7 +11,7 @@ export const ApplyForm: FC<{
 }> = ({ course }) => {
   const { pending } = useFormStatus();
 
-  const t = useTranslations("ApplyPage");
+  const t = useTranslations("Common");
 
   return (
     <>

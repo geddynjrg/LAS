@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { type FC } from "react";
 
 import { Field } from "@workspace/ui/components/form";
@@ -11,7 +12,7 @@ import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { guardianAction } from "@/app/apply/[id]/guardian/guardian-action";
 import {
-  guardianRoles,
+  guardianRole,
   guardianSchema,
   type GuardianSchema,
 } from "@/app/apply/[id]/guardian/guardian-schema";
@@ -29,21 +30,34 @@ export const GuardianForm: FC<GuardianFormProps> = ({
   prevStep,
   defaultValues,
 }) => {
-  const [state, formAction, _isPending] = useForm(
+  const t = useTranslations("ApplyForm");
+  const tGuardian = useTranslations("GuardianRole");
+
+  const [state, formAction, isPending] = useForm(
     guardianAction,
     guardianSchema,
     defaultValues,
   );
 
+  const guardianRoles = Object.values(guardianRole.Values).map((value) => ({
+    label: tGuardian(value),
+    value,
+  }));
+
   return (
-    <ApplyFormWrap action={formAction} prevUrl={prevStep} className="space-y-4">
-      <ApplyFormSubtitle>Parent / guardian info</ApplyFormSubtitle>
+    <ApplyFormWrap
+      action={formAction}
+      prevUrl={prevStep}
+      isPending={isPending}
+      className="space-y-4"
+    >
+      <ApplyFormSubtitle>{t("guardianTitle")}</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
 
       <Field
         state={state}
         name="guardian_first_name"
-        label="First Name"
+        label={t("firstName")}
         required
         control={(props) => <Input {...props} />}
       />
@@ -51,14 +65,14 @@ export const GuardianForm: FC<GuardianFormProps> = ({
       <Field
         state={state}
         name="guardian_middle_name"
-        label="Middle Name"
+        label={t("middleName")}
         control={(props) => <Input {...props} />}
       />
 
       <Field
         state={state}
         name="guardian_surname"
-        label="Surname"
+        label={t("surname")}
         required
         control={(props) => <Input {...props} />}
       />
@@ -66,7 +80,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({
       <Field
         state={state}
         name="guardian_role"
-        label="Role of the guardian"
+        label={t("guardianRole")}
         required
         control={(props) => <RadioGroup {...props} options={guardianRoles} />}
       />
@@ -78,7 +92,7 @@ export const GuardianForm: FC<GuardianFormProps> = ({
       <Field
         state={state}
         name="guardian_email"
-        label="Email"
+        label={t("email")}
         control={(props) => <Input type="email" {...props} />}
       />
     </ApplyFormWrap>

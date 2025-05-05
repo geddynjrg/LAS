@@ -38,7 +38,7 @@ export const IdTypeFields: FC<IdTypeFieldsProps> = ({ state }) => {
       <Field
         state={state}
         name="id_type"
-        label={t("ApplicantForm.idType")}
+        label={t("ApplyForm.idType")}
         required
         control={(props) => (
           <RadioGroup
@@ -70,7 +70,7 @@ const FieldsByIdType: FC<{
           <Field
             state={state}
             name="id_number"
-            label={t("ApplicantForm.nationalId")}
+            label={t("ApplyForm.nationalId")}
             required
             control={(props) => <Input {...props} />}
           />
@@ -83,14 +83,14 @@ const FieldsByIdType: FC<{
           <Field
             state={state}
             name="birth_certificate_number"
-            label={t("ApplicantForm.birthCertificateNumber")}
+            label={t("ApplyForm.birthCertificateNumber")}
             required
             control={(props) => <Input {...props} />}
           />
           <Field
             state={state}
             name="birth_certificate_file"
-            label={t("ApplicantForm.birthCertificateFile")}
+            label={t("ApplyForm.birthCertificateFile")}
             required
             control={(props) => (
               <FileUploadInput
@@ -109,7 +109,7 @@ const FieldsByIdType: FC<{
           <Field
             state={state}
             name="alien_id_number"
-            label={t("ApplicantForm.alienId")}
+            label={t("ApplyForm.alienId")}
             required
             control={(props) => <Input {...props} />}
           />
@@ -118,7 +118,7 @@ const FieldsByIdType: FC<{
             state={state}
             name="is_refugee"
             control={(props) => (
-              <Checkbox {...props}>{t("ApplicantForm.isRefugee")}</Checkbox>
+              <Checkbox {...props}>{t("ApplyForm.isRefugee")}</Checkbox>
             )}
           />
         </>

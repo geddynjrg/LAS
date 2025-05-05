@@ -16,7 +16,7 @@ export interface PopoverProps {
   title?: string;
   className?: string;
   withArrow?: boolean;
-  withCloseButton?: boolean;
+  closeButton?: "default" | "sm" | "none";
   sideOffset?: number;
   side?: "top" | "right" | "bottom" | "left";
   asChild?: boolean;
@@ -29,7 +29,7 @@ export const PopoverContent: React.FC<PopoverProps> = ({
   title,
   className,
   withArrow = true,
-  withCloseButton = true,
+  closeButton = "default",
   children,
   ...props
 }) => (
@@ -51,9 +51,9 @@ export const PopoverContent: React.FC<PopoverProps> = ({
       )}
 
       {/* Close button to handle in popover closing */}
-      {withCloseButton && (
+      {closeButton !== "none" && (
         <PopoverPrimitive.Close asChild className="absolute right-0 top-0">
-          <Button variant="ghost">
+          <Button variant="ghost" size={closeButton}>
             <IconX className="text-neutral-500" />
           </Button>
         </PopoverPrimitive.Close>

@@ -1,4 +1,5 @@
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC } from "react";
 
@@ -17,6 +18,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   prevUrl,
   submitType,
 }) => {
+  const t = useTranslations("Common");
   return (
     <ActionBar className="mt-8">
       <Container className="flex flex-row items-center justify-between gap-4 max-md:[&>*]:flex-1">
@@ -24,7 +26,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
           <Button variant="secondary" asChild>
             <Link href={cancelUrl}>
               <IconArrowLeft />
-              Cancel
+              {t("cancel")}
             </Link>
           </Button>
         )}
@@ -33,14 +35,14 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
           <Button variant="secondary" asChild>
             <Link href={prevUrl}>
               <IconArrowLeft />
-              Back
+              {t("back")}
             </Link>
           </Button>
         )}
 
         {submitType !== "hidden" && (
           <Button type="submit" disabled={submitType === "disabled"}>
-            Next
+            {t("next")}
             <IconArrowRight />
           </Button>
         )}

@@ -19,7 +19,7 @@ export interface ApplyFormTitleProps {
 export const ApplyFormTitle: FC<ApplyFormTitleProps> = async ({
   application,
 }) => {
-  const t = await getTranslations("ApplicantForm");
+  const t = await getTranslations("ApplyForm");
 
   const courseId = application?.steps_data?.course?.course;
 

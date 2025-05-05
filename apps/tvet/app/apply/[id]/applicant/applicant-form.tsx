@@ -8,10 +8,10 @@ import {
   ButtonGroup,
   ButtonGroupItem,
 } from "@workspace/ui/components/button-group";
+import { Combobox } from "@workspace/ui/components/combobox";
 import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import { SearchInput } from "@workspace/ui/components/search-input";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { applicantAction } from "@/app/apply/[id]/applicant/applicant-action";
@@ -35,7 +35,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
   id,
   defaultValues,
 }) => {
-  const t = useTranslations("ApplicantForm");
+  const t = useTranslations("ApplyForm");
 
   const [state, formAction, isPending] = useForm(
     applicantAction,
@@ -54,7 +54,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
       cancelUrl="/dashboard"
       className="space-y-4"
     >
-      <ApplyFormSubtitle>{t("applicantInfo")}</ApplyFormSubtitle>
+      <ApplyFormSubtitle>{t("applicantTitle")}</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
 
       {!state.success && state.message && (
@@ -128,7 +128,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         label="County"
         required
         control={(props) => (
-          <SearchInput
+          <Combobox
             {...props}
             onValueChange={setChosenCounty}
             placeholder={t("chooseOrSearch")}
@@ -146,8 +146,9 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         label={t("subCounty")}
         required
         control={(props) => (
-          <SearchInput
+          <Combobox
             {...props}
+            disabled={!chosenCounty}
             placeholder={t("chooseOrSearch")}
             options={dummyCounties
               .find((county) => county.name === chosenCounty)
@@ -164,7 +165,13 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         name="applicant_ward"
         label={t("ward")}
         required
-        control={(props) => <Input placeholder={t("enterWard")} {...props} />}
+        control={(props) => (
+          <Input
+            placeholder={t("enterWard")}
+            disabled={!chosenCounty}
+            {...props}
+          />
+        )}
       />
     </ApplyFormWrap>
   );

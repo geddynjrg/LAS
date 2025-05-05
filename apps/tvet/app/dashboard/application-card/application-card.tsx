@@ -33,6 +33,12 @@ export type ApplicationPaymentStatus =
   | "paid"
   | "rejected";
 
+enum CardType {
+  success = "success",
+  danger = "danger",
+  warning = "warning",
+}
+
 export interface ApplicationCardProps {
   id?: number;
   application_id?: string;
@@ -43,22 +49,29 @@ export interface ApplicationCardProps {
   className?: string;
 }
 
-enum CardType {
-  success = "success",
-  danger = "danger",
-  warning = "warning",
-}
-
 export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
+  const t = useTranslations("ApplicationCard");
   const search = useSearchParams();
 
   const successUploadId = search.get("payment_proof_success");
-
   const isUploadSuccess = successUploadId === props.application_id;
 
-  const t = useTranslations("ApplicationStatusCard");
-
   const type = getCardType(props);
+
+  function getStatusText(application: ApplicationCardProps) {
+    if (!application.application_status) {
+      return "";
+    }
+
+    if (
+      application.application_status === "submitted" &&
+      application.payment_status
+    ) {
+      return t(`payment_status_${application.payment_status}`);
+    }
+
+    return t(`status_${application.application_status}`);
+  }
 
   return (
     <Card
@@ -67,7 +80,7 @@ export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
         type === CardType.success && "border-primary",
         props.className,
       )}
-      title={props.course}
+      title={props.course || t("title")}
       caption={props.institution}
       statusLabel={getStatusText(props)}
       variant={type}
@@ -75,7 +88,7 @@ export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
       <div className="flex-1">
         <DataPair className={cn("justify-around")}>
           {/* 
-           <DataNode label="Intake">{application.intake}</DataNode>
+            <DataNode label="Intake">{application.intake}</DataNode>
             <DataNode label="Duration">{application.duration}</DataNode> 
           */}
         </DataPair>
@@ -83,7 +96,7 @@ export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
 
       {isUploadSuccess && (
         <Alert variant="success" className="mb-4">
-          Payment proof uploaded successfully
+          {t("proofUploadSuccess")}
         </Alert>
       )}
 
@@ -93,12 +106,14 @@ export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
 };
 
 const ApplicationActions: FC<ApplicationCardProps> = (props) => {
+  const t = useTranslations("ApplicationCard");
+
   switch (props.application_status) {
     case "draft":
       return (
         <Button asChild>
           <Link href={`/apply/${props.application_id}/applicant`}>
-            Edit application
+            {t("edit")}
           </Link>
         </Button>
       );
@@ -108,7 +123,7 @@ const ApplicationActions: FC<ApplicationCardProps> = (props) => {
 
     case "rejected":
       return (
-        <DescriptionActions label="View reason for rejection">
+        <DescriptionActions label={t("viewRejectReason")}>
           TODO: Reject reason here
         </DescriptionActions>
       );
@@ -125,6 +140,8 @@ const ApplicationActions: FC<ApplicationCardProps> = (props) => {
 const PaymentActions: FC<{ application_id?: string }> = ({
   application_id,
 }) => {
+  const t = useTranslations("ApplicationCard");
+  const tCommon = useTranslations("Common");
   const search = useSearchParams();
   const highlightedApplicationId = search.get("pay_later_id");
 
@@ -135,10 +152,10 @@ const PaymentActions: FC<{ application_id?: string }> = ({
   return (
     <>
       <Button className="w-full" asChild disabled>
-        <Link href="#">Pay using M-Pesa</Link>
+        <Link href="#">{t("pay", { method: "M-Pesa" })}</Link>
       </Button>
 
-      <Divider>or</Divider>
+      <Divider>{tCommon("or")}</Divider>
       {isPaymentProofFormVisible ? (
         <UploadPaymentProofForm
           isHighlighted={isHighlighted}
@@ -150,7 +167,7 @@ const PaymentActions: FC<{ application_id?: string }> = ({
           className="w-full"
           onClick={() => setIsPaymentProofFormVisible(true)}
         >
-          Upload proof of payment
+          {t("uploadProof")}
         </Button>
       )}
     </>
@@ -161,14 +178,16 @@ const DescriptionActions: FC<{ label?: string; children: ReactNode }> = ({
   label,
   children,
 }) => {
+  const t = useTranslations("ApplicationCard");
   const [isDescriptionsVisible, setIsDescriptionsVisible] = useState(false);
+
   return (
     <>
       <Button
         className="w-full"
         onClick={() => setIsDescriptionsVisible((v) => !v)}
       >
-        {label || "View next steps"}
+        {label || t("viewNextSteps")}
       </Button>
 
       {isDescriptionsVisible && (
@@ -197,12 +216,4 @@ function getCardType(application: ApplicationCardProps) {
     default:
       return CardType.warning;
   }
-}
-
-function getStatusText(application: ApplicationCardProps) {
-  if (application.application_status === "submitted") {
-    return application.payment_status;
-  }
-
-  return application.application_status;
 }

@@ -153,12 +153,6 @@
     "intersex": "Intersex"
   },
 
-  "ApplicationStatusCard": {
-    "viewRejectionReason": "View reason for rejection",
-    "viewNextSteps": "View next steps",
-    "viewApplication": "View application"
-  },
-
   "SponsorshipCard": {
     "downloadApplicationForm": "Download application form",
     "readMoreOnWebsite": "Read more on website"

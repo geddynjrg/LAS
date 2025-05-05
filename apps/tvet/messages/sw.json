@@ -1,13 +1,28 @@
 {
   "Common": {
-    "menu": "Menyu",
-    "closeMenu": "Funga menyu",
     "apply": "Omba",
     "viewAll": "Tazama zote",
     "availableSponsorships": "Udhamini unaopatikana",
     "myProfile": "Profaili yangu",
     "myApplications": "Maombi yangu",
-    "signOut": "Toka"
+    "signOut": "Toka",
+    "or": "au",
+    "cancel": "Ghairi",
+    "back": "Rudi",
+    "next": "Ifuatayo",
+    "understood": "Nimeelewa"
+  },
+
+  "Menu": {
+    "menu": "Menyu",
+    "closeMenu": "Funga menyu",
+    "navigate": "Elekeza",
+    "home": "Ukurasa wa mbele",
+    "institutions": "Taasisi",
+    "courses": "Kozi",
+    "sponsorships": "Udhamini",
+    "apply": "Omba sasa!",
+    "contact": "Mawasiliano"
   },
 
   "NationalIdType": {
@@ -32,6 +47,13 @@
     "moderate": "Kati",
     "severe": "Mbaya",
     "profound": "Mbaya Sana"
+  },
+
+  "GuardianRole": {
+    "parent": "Mzazi",
+    "grandparent": "Babu/Nyanya",
+    "relative": "Ndugu",
+    "other": "Nyingine"
   },
 
   "FrontPage": {
@@ -65,7 +87,7 @@
     "testBookingFee": "Ada ya uhifadhi wa mtihani",
     "requiredEducation": "Elimu inayohitajika",
     "goToCourse": "Nenda kwenye ukurasa wa kozi",
-    "paginationResults": "Inaonyesha {{amount}} ya {{total}} matokeo"
+    "paginationResults": "Inaonyesha {amount} ya {total} matokeo"
   },
 
   "LoginPage": {
@@ -139,8 +161,18 @@
 
   "DashboardPage": {
     "title": "Maombi yangu",
-    "startApplying": "Anza kuomba sasa",
+    "applyNow": "Omba sasa",
     "noApplications": "Huna maombi bado"
+  },
+
+  "ApplySuccessPage": {
+    "title": "Asante kwa kuomba!",
+    "description": "Unapaswa kupokea uthibitisho kwenye simu yako kwamba ombi lako limewasilishwa kwa mafanikio.<br /><br />Ombi lako limepelekwa kwa {institution} na linashughulikiwa, na utajulishwa kupitia SMS kuhusu hatua zinazofuata.",
+    "contacts": "Mawasiliano ya {institution}",
+    "viewApplications": "Tazama maombi yangu",
+    "downloadApplication": "Pakua ombi langu",
+    "frontPage": "Rudi kwenye ukurasa wa mbele",
+    "sponsorshipsTitle": "Udhamini unaopatikana kwa kozi yako"
   },
 
   "PhoneNumbersField": {
@@ -148,11 +180,84 @@
     "addAnotherPhoneNumber": "Ongeza nambari nyingine ya simu"
   },
 
-  "ApplicantFormSteps": {
+  "ApplicationCard": {
+    "title": "Fomu ya Maombi",
+    "status_draft": "Rasimu",
+    "status_submitted": "Imewasilishwa",
+    "status_payment_pending": "Malipo yanangoja",
+    "status_paid": "Imelipwa",
+    "status_reviewing": "Inakaguliwa",
+    "status_accepted": "Imekubaliwa",
+    "status_rejected": "Imekataliwa",
+    "status_pending": "Inasubiri",
+    "status_confirmed": "Imethibitishwa",
+    "payment_status_unpaid": "Haijalipwa",
+    "payment_status_pending": "Malipo yanangoja",
+    "payment_status_proof_uploaded": "Ushahidi wa malipo umepakiwa",
+    "payment_status_paid": "Imelipwa",
+    "payment_status_rejected": "Imekataliwa",
+    "uploadProof": "Pakia ushahidi wa malipo",
+    "proofUploadSuccess": "Ushahidi wa malipo umepakiwa kwa mafanikio",
+    "edit": "Hariri maombi",
+    "viewNextSteps": "Tazama hatua zinazofuata",
+    "viewRejectReason": "Tazama sababu ya kukataliwa",
+    "pay": "Lipa kwa kutumia {method}"
+  },
+
+  "ApplyFormSteps": {
     "applicant": "Mwombaji",
-    "guardian": "Mlezi",
+    "guardian": "Mzazi/Mlezi",
     "course": "Kozi",
     "confirmation": "Uthibitisho",
     "payment": "Malipo"
+  },
+
+  "ApplyForm": {
+    "title": "Fomu ya Maombi",
+    "applicantTitle": "Maelezo ya Mwombaji",
+    "guardianTitle": "Maelezo ya Mzazi/Mlezi",
+    "courseTitle": "Maelezo ya Kozi",
+    "confirmationTitle": "Uthibitisho",
+    "paymentTitle": "Malipo",
+    "firstName": "Jina la Kwanza",
+    "middleName": "Jina la Kati",
+    "surname": "Jina la Mwisho",
+    "sex": "Jinsia",
+    "male": "Mwanaume",
+    "female": "Mwanamke",
+    "intersex": "Jinsia Mchanganyiko",
+    "dateOfBirth": "Tarehe ya Kuzaliwa",
+    "email": "Barua Pepe",
+    "nationalId": "Kitambulisho cha Kitaifa",
+    "birthCertificateNumber": "Nambari ya Cheti cha Kuzaliwa",
+    "birthCertificateFile": "Cheti cha Kuzaliwa",
+    "alienId": "Kitambulisho cha Kigeni",
+    "isRefugee": "Mimi ni Mkimbizi",
+    "natureOfDisability": "Aina ya Ulemavu",
+    "disabilityCardNumber": "Nambari ya Kadi ya Ulemavu",
+    "disabilityCardPicture": "Picha ya Kadi ya Ulemavu",
+    "disabilityLevel": "Kiwango cha Ulemavu",
+    "disabilityDescription": "Maelezo ya mahitaji (vifaa vya kujifunzia, dawa, n.k.)",
+    "idType": "Una aina gani ya kitambulisho?",
+    "personWithDisabilities": "Mtu mwenye ulemavu",
+    "address": "Anwani",
+    "county": "Kaunti",
+    "subCounty": "Kaunti Ndogo",
+    "chooseOrSearch": "Chagua au tafuta",
+    "ward": "Wadi",
+    "enterWard": "Ingiza wadi",
+    "guardianRole": "Jukumu la mlezi",
+    "chooseInstitution": "Chagua taasisi",
+    "chooseCourse": "Chagua kozi",
+    "preferredIntakePeriod": "Kipindi kinachopendelewa cha kujiunga",
+    "requiredDocuments": "Nyaraka zinazohitajika",
+    "highestEducationCertificate": "Cheti cha kiwango cha juu zaidi cha elimu",
+    "otherCertificates": "Cheti kingine",
+    "confirmPersonalInformation": "Nathibitisha kuwa taarifa za kibinafsi zilizotolewa katika ombi hili ni sahihi na kamili kwa kadri ya ufahamu wangu. Ninaelewa kuwa data hii itatumika kwa madhumuni ya maombi yangu, kujiunga, na mawasiliano zaidi kuhusu masomo yangu.",
+    "confirmEligibility": "Nathibitisha kuwa ninakidhi mahitaji ya kustahiki kwa kozi niliyopendekeza na nitatoa nyaraka zote muhimu za kuunga mkono kama itakavyohitajika. Ninakubali kuwa kushindwa kufanya hivyo kunaweza kusababisha kukataliwa kwa ombi langu au kucheleweshwa kwa usindikaji.",
+    "paymentDescription": " Ada ya maombi inahitajika ili kufidia gharama za kiutawala zinazohusiana na usindikaji wa maombi ya wanafunzi. Ada ya maombi haiwezi kurejeshwa. Fahamu kuwa bila malipo ya ada hii, ombi lako halitasindikwa.",
+    "cost": "Gharama",
+    "payUsing": "Lipa kwa kutumia {method}",
+    "payLater": "Lipa baadaye"
   }
 }

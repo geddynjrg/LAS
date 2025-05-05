@@ -153,12 +153,6 @@
     "intersex": "Jinsia mbili"
   },
 
-  "ApplicationStatusCard": {
-    "viewRejectionReason": "Tazama sababu ya kukataliwa",
-    "viewNextSteps": "Tazama hatua zinazofuata",
-    "viewApplication": "Tazama maombi"
-  },
-
   "SponsorshipCard": {
     "downloadApplicationForm": "Pakua fomu ya maombi",
     "readMoreOnWebsite": "Soma zaidi kwenye tovuti"

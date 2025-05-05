@@ -19,7 +19,7 @@ export const ApplyFormStepper: FC<ApplyFormStepperProps> = async ({
   application,
   activeStep,
 }) => {
-  const t = await getTranslations("ApplicantFormSteps");
+  const t = await getTranslations("ApplyFormSteps");
 
   const steps: Step[] = ALL_STEPS.map((path, index) => ({
     index: index + 1,

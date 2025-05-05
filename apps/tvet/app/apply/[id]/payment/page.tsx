@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { Button } from "@workspace/ui/components/button";
 import { Currency } from "@workspace/ui/components/currency";
 import { DataPair } from "@workspace/ui/components/data-pair";
@@ -22,6 +24,7 @@ export interface PaymentPageProps {
 }
 
 export default async function PaymentPage({ params }: PaymentPageProps) {
+  const t = await getTranslations("ApplyForm");
   const { id } = await params;
   const application = await getApplicationProgress({ id });
 
@@ -40,14 +43,9 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
         submitType="hidden"
       >
         <input type="hidden" name="application_id" value={id} />
-        <ApplyFormSubtitle>Payment</ApplyFormSubtitle>
+        <ApplyFormSubtitle>{t("paymentTitle")}</ApplyFormSubtitle>
 
-        <p>
-          An application fee is required to cover the administrative costs
-          involved in processing student applications. The application fee is
-          non-refundable. Be aware that without the payment of this fee, your
-          application will not be processed.
-        </p>
+        <p>{t("paymentDescription")}</p>
 
         {defaultValues?.payment_amount && (
           <DataPair
@@ -57,7 +55,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
               "border-t border-solid border-neutral-400",
             )}
           >
-            Cost
+            {t("cost")}
             <div className={cn("text-neutral-800")}>
               <Currency amount={defaultValues.payment_amount} currency="KES" />
             </div>
@@ -66,11 +64,11 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
 
         <div className="mx-auto mt-8 flex max-w-[27rem] flex-col items-stretch gap-4">
           <Button type="submit" name="payment_method" value="m_pesa" disabled>
-            Pay using M-Pesa
+            {t("payUsing", { method: "M-Pesa" })}
           </Button>
 
           <Button type="submit" name="payment_method" value="pay_later">
-            Pay Later
+            {t("payLater")}
           </Button>
         </div>
       </ApplyFormWrap>

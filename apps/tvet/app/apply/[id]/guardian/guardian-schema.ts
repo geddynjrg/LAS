@@ -32,10 +32,3 @@ export const guardianSchema = idTypeSChema
   });
 
 export type GuardianSchema = z.infer<typeof guardianSchema>;
-
-export const guardianRoles = [
-  { label: "Parent", value: "parent" },
-  { label: "Grandparent", value: "grandparent" },
-  { label: "Relative", value: "relative" },
-  { label: "Other", value: "other" },
-];

@@ -278,6 +278,8 @@ const getErrorMessage = <
 
   const rootError = state.errors[name];
 
+  console.log("rootError", state.errors);
+
   // check if is nested error
   if (Array.isArray(rootError)) {
     const childError = rootError.find((e) => {

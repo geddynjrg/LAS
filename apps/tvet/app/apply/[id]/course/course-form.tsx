@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useTransition, type FC } from "react";
 
 import { Combobox } from "@workspace/ui/components/combobox";
@@ -36,6 +37,7 @@ export const CourseForm: FC<CourseFormProps> = ({
   defaultValues,
   prevStep,
 }) => {
+  const t = useTranslations("ApplyForm");
   const [state, formAction, isPending] = useForm(
     courseAction,
     courseSchema,
@@ -73,13 +75,13 @@ export const CourseForm: FC<CourseFormProps> = ({
       prevUrl={prevStep}
       className="space-y-4"
     >
-      <ApplyFormSubtitle>Course</ApplyFormSubtitle>
+      <ApplyFormSubtitle>{t("courseTitle")}</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
 
       <Field
         state={state}
         name="institution"
-        label="Choose the institution"
+        label={t("chooseInstitution")}
         required
         control={(props) => (
           <Combobox
@@ -96,7 +98,7 @@ export const CourseForm: FC<CourseFormProps> = ({
       <Field
         state={state}
         name="course"
-        label="Choose the course"
+        label={t("chooseCourse")}
         required
         control={(props) => (
           <Combobox
@@ -112,7 +114,7 @@ export const CourseForm: FC<CourseFormProps> = ({
       <Field
         state={state}
         name="preferred_intake_period"
-        label="Preferred intake period"
+        label={t("preferredIntakePeriod")}
         required
         control={(props) => (
           <Select
@@ -123,12 +125,14 @@ export const CourseForm: FC<CourseFormProps> = ({
         )}
       />
 
-      <ApplyFormSubtitle className="mt-8">Required documents</ApplyFormSubtitle>
+      <ApplyFormSubtitle className="mt-8">
+        {t("requiredDocuments")}
+      </ApplyFormSubtitle>
 
       <Field
         state={state}
         name="highest_education_certificate"
-        label="Highest education level certificate"
+        label={t("highestEducationCertificate")}
         required
         control={(props) => (
           <FileUploadInput
@@ -142,7 +146,7 @@ export const CourseForm: FC<CourseFormProps> = ({
       <Field
         state={state}
         name="other_certificate"
-        label="Other certificate"
+        label={t("otherCertificates")}
         required
         control={(props) => (
           <FileUploadInput

@@ -1,13 +1,28 @@
 {
   "Common": {
-    "menu": "Menu",
-    "closeMenu": "Close menu",
     "apply": "Apply",
     "availableSponsorships": "Available sponsorships",
     "viewAll": "View all",
     "myProfile": "My profile",
     "myApplications": "My applications",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "or": "or",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "understood": "Understood"
+  },
+
+  "Menu": {
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "navigate": "Navigate",
+    "home": "Front page",
+    "institutions": "Institutions",
+    "courses": "Courses",
+    "sponsorships": "Sponsorships",
+    "apply": "Apply now!",
+    "contact": "Contact"
   },
 
   "NationalIdType": {
@@ -32,6 +47,13 @@
     "moderate": "Moderate",
     "severe": "Severe",
     "profound": "Profound"
+  },
+
+  "GuardianRole": {
+    "parent": "Parent",
+    "grandparent": "Grandparent",
+    "relative": "Relative",
+    "other": "Other"
   },
 
   "FrontPage": {
@@ -65,7 +87,7 @@
     "testBookingFee": "Test booking fee",
     "requiredEducation": "Required education",
     "goToCourse": "Go to course page",
-    "paginationResults": "Showing {{amount}} of {{total}} results"
+    "paginationResults": "Showing {amount} of {total} results"
   },
 
   "LoginPage": {
@@ -139,8 +161,18 @@
 
   "DashboardPage": {
     "title": "My Applications",
-    "startApplying": "Start applying now",
+    "applyNow": "Apply now",
     "noApplications": "You have no applications yet"
+  },
+
+  "ApplySuccessPage": {
+    "title": "Thank you for applying!",
+    "description": "You should receive a confirmation on your phone that your application has been successfully submitted.<br /><br />Your application has been forwarded to {institution} is being processed and you will be notified through SMS about the next steps.",
+    "contacts": "{institution} contacts",
+    "viewApplications": "View my applications",
+    "downloadApplication": "Download my application",
+    "frontPage": "Back to front page",
+    "sponsorshipsTitle": "Available sponsorships for your course"
   },
 
   "PhoneNumbersField": {
@@ -148,7 +180,31 @@
     "addAnotherPhoneNumber": "Add another phone number"
   },
 
-  "ApplicantFormSteps": {
+  "ApplicationCard": {
+    "title": "Application form",
+    "status_draft": "Draft",
+    "status_submitted": "Submitted",
+    "status_payment_pending": "Payment pending",
+    "status_paid": "Paid",
+    "status_reviewing": "Reviewing",
+    "status_accepted": "Accepted",
+    "status_rejected": "Rejected",
+    "status_pending": "Pending",
+    "status_confirmed": "Confirmed",
+    "payment_status_unpaid": "Unpaid",
+    "payment_status_pending": "Payment pending",
+    "payment_status_proof_uploaded": "Payment proof uploaded",
+    "payment_status_paid": "Paid",
+    "payment_status_rejected": "Rejected",
+    "uploadProof": "Upload proof of payment",
+    "proofUploadSuccess": "Payment proof uploaded successfully",
+    "edit": "Edit application",
+    "viewNextSteps": "View next steps",
+    "viewRejectReason": "View reason for rejection",
+    "pay": "Pay using {method}"
+  },
+
+  "ApplyFormSteps": {
     "applicant": "Applicant",
     "guardian": "Guardian",
     "course": "Course",
@@ -156,8 +212,22 @@
     "payment": "Payment"
   },
 
-  "ApplicantForm": {
+  "ApplyForm": {
     "title": "Application form",
+    "applicantTitle": "Applicant info",
+    "guardianTitle": "Parent / guardian info",
+    "courseTitle": "Parent / guardian info",
+    "confirmationTitle": "Confirmations",
+    "paymentTitle": "Payment",
+    "firstName": "First name",
+    "middleName": "Middle name",
+    "surname": "Surname",
+    "sex": "Sex",
+    "male": "Male",
+    "female": "Female",
+    "intersex": "Intersex",
+    "dateOfBirth": "Date of birth",
+    "email": "Email",
     "nationalId": "National ID",
     "birthCertificateNumber": "Birth certificate number",
     "birthCertificateFile": "Birth Certificate",
@@ -168,23 +238,26 @@
     "disabilityCardPicture": "Disability Card Picture",
     "disabilityLevel": "Disability level",
     "disabilityDescription": "Description of requirements (learning aids, medication, etc.)",
-    "applicantInfo": "Applicant info",
-    "firstName": "First name",
-    "middleName": "Middle name",
-    "surname": "Surname",
-    "sex": "Sex",
-    "male": "Male",
-    "female": "Female",
-    "intersex": "Intersex",
-    "dateOfBirth": "Date of birth",
     "idType": "Which form of ID do you have?",
-    "email": "Email",
     "personWithDisabilities": "Person with disabilities",
     "address": "Address",
     "county": "County",
     "subCounty": "Subcounty",
     "chooseOrSearch": "Choose or search",
     "ward": "Ward",
-    "enterWard": "Enter ward"
+    "enterWard": "Enter ward",
+    "guardianRole": "Role of guardian",
+    "chooseInstitution": "Choose the institution",
+    "chooseCourse": "Choose the course",
+    "preferredIntakePeriod": "Preferred intake period",
+    "requiredDocuments": "Required documents",
+    "highestEducationCertificate": "Highest education level certificate",
+    "otherCertificates": "Other certificate",
+    "confirmPersonalInformation": "I confirm that the personal information provided in this application is accurate and complete to the best of my knowledge. I understand that this data will be used for the purpose of my application, admission, and further communication regarding my studies.",
+    "confirmEligibility": "I confirm that I meet the eligibility requirements for the chosen course and will provide all necessary supporting documents as requested. I acknowledge that failure to do so may result in the rejection of my application or a delay in processing.",
+    "paymentDescription": " An application fee is required to cover the administrative costs involved in processing student applications. The application fee is non-refundable. Be aware that without the payment of this fee, your application will not be processed.",
+    "cost": "Cost",
+    "payUsing": "Pay using {method}",
+    "payLater": "Pay later"
   }
 }

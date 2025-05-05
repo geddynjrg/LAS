@@ -1,10 +1,12 @@
 import { IconMail, IconPhone } from "@tabler/icons-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { AvailableSponsorshipsBlock } from "@workspace/ui/components/tvet/blocks/available-sponsorships-block";
+import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { Underline } from "@workspace/ui/components/underline";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -17,6 +19,7 @@ export interface SuccessPageProps {
 
 export default async function SuccessPage({ params }: SuccessPageProps) {
   const { id } = await params;
+  const t = await getTranslations("ApplySuccessPage");
 
   const application = await getApplicationProgress({ id });
 
@@ -37,21 +40,22 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
 
   return (
     <Container className="mb-8 space-y-7">
-      <h2 className="typo-h2">Thank you for applying!</h2>
+      <h2 className="typo-h2">{t("title")}</h2>
 
       <div className="space-y-5">
-        <p>
-          You should receive a confirmation on your phone that your application
-          has been successfully submitted.
-        </p>
-        <p>
-          Your application has been forwarded to {institution?.title} is being
-          processed and you will be notified through SMS about the next steps.
-        </p>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: t.markup("description", {
+              institution: institution?.title ?? "",
+            }),
+          }}
+        />
 
         {contact && (
           <div className="space-y-1">
-            <div className="font-bold">{institution?.title} Contacts</div>
+            <div className="font-bold">
+              {t("contacts", { institution: institution?.title ?? "" })}
+            </div>
 
             {contact.email && (
               <Underline asChild>
@@ -81,15 +85,15 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
 
       <div className={cn("flex w-full max-w-[27rem] flex-col gap-4")}>
         <Button asChild>
-          <Link href="/dashboard">View my applications</Link>
+          <Link href="/dashboard">{t("viewApplications")}</Link>
         </Button>
         <Button variant="secondary" asChild>
           <a href="payment-info-pdf" target="_blank" rel="noopener noreferrer">
-            Download my application
+            {t("downloadApplication")}
           </a>
         </Button>
         <Button variant="secondary" asChild>
-          <Link href="/">Back to front page</Link>
+          <Link href="/">{t("frontPage")}</Link>
         </Button>
       </div>
 
@@ -101,7 +105,7 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
               "mt-12 border-b border-solid border-neutral-400 pb-3",
             )}
           >
-            Available sponsorships for your course
+            {t("sponsorshipsTitle")}
           </h3>
 
           <AvailableSponsorshipsBlock

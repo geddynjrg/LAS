@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCalendarMonth } from "@tabler/icons-react";
+import { IconCalendarMonth, IconX } from "@tabler/icons-react";
 import { useFormatter } from "next-intl";
 import { useEffect, useState, type FC } from "react";
 
@@ -72,7 +72,7 @@ export const DatePicker: FC<DatePickerProps> = ({
         </button>
       </PopoverTrigger>
 
-      <PopoverContent withCloseButton={false} withArrow={false}>
+      <PopoverContent closeButton="sm" withArrow={false}>
         <Calendar
           value={date}
           onValueChange={setDate}

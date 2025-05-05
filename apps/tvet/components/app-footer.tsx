@@ -1,4 +1,5 @@
 import { IconChevronRight } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { type FC, type ReactNode } from "react";
 
@@ -10,18 +11,22 @@ export interface AppFooterProps {
 }
 
 export const AppFooter: FC<AppFooterProps> = ({ institutions }) => {
+  const t = useTranslations("Menu");
+
   return (
     <footer className="bg-theme-500 text-primary-foreground mt-auto">
       <Container className="grid gap-6 p-4 lg:grid-cols-2 xl:grid-cols-3">
-        <FooterNavGroup title="Navigate">
-          <FooterNavItem href="/">Home</FooterNavItem>
-          <FooterNavItem href="/courses">Courses</FooterNavItem>
-          <FooterNavItem href="/sponsorships">Sponsorships</FooterNavItem>
-          <FooterNavItem href="/apply">Apply now!</FooterNavItem>
-          <FooterNavItem href="/contact">Contact</FooterNavItem>
+        <FooterNavGroup title={t("navigate")}>
+          <FooterNavItem href="/">{t("home")}</FooterNavItem>
+          <FooterNavItem href="/courses">{t("courses")}</FooterNavItem>
+          <FooterNavItem href="/sponsorships">
+            {t("sponsorships")}
+          </FooterNavItem>
+          <FooterNavItem href="/apply">{t("apply")}</FooterNavItem>
+          <FooterNavItem href="/contact">{t("contact")}</FooterNavItem>
         </FooterNavGroup>
         {(institutions?.length ?? 0) > 0 && (
-          <FooterNavGroup title="Institutions">
+          <FooterNavGroup title={t("institutions")}>
             {institutions?.map((institution) => (
               <FooterNavItem key={institution.id} href={institution.path_alias}>
                 {institution.title}
@@ -72,13 +77,13 @@ export const FooterNavItem: FC<FooterNavItemProps> = ({ href, children }) => {
 const SubFooter: FC = () => {
   return (
     <div className="bg-theme-600 text-primary-foreground flex justify-center gap-8 px-4 py-2">
-      <p className="mr-auto">&copy; 2025</p>
-      <Link href="/#" className="text-primary-foreground">
+      <p className="mr-auto">&copy; {new Date().getFullYear()}</p>
+      {/* <Link href="/#" className="text-primary-foreground">
         Accessibility
       </Link>
       <Link href="/#" className="text-primary-foreground">
         Privacy Policy
-      </Link>
+      </Link> */}
     </div>
   );
 };

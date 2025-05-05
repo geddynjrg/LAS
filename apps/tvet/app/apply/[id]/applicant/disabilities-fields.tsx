@@ -58,7 +58,7 @@ export const DisabilitiesFields: FC<DisabilitiesFieldsProps> = ({ state }) => {
         name="applicant_disability"
         control={(props) => (
           <Checkbox {...props} onValueChange={setIsPersonWithDisabilities}>
-            {t("ApplicantForm.personWithDisabilities")}
+            {t("ApplyForm.personWithDisabilities")}
           </Checkbox>
         )}
       />
@@ -68,7 +68,7 @@ export const DisabilitiesFields: FC<DisabilitiesFieldsProps> = ({ state }) => {
           <Field
             state={state}
             name="disability_nature"
-            label={t("ApplicantForm.natureOfDisability")}
+            label={t("ApplyForm.natureOfDisability")}
             required
             control={(props) => <Select options={disabilities} {...props} />}
           />
@@ -76,7 +76,7 @@ export const DisabilitiesFields: FC<DisabilitiesFieldsProps> = ({ state }) => {
           <Field
             state={state}
             name="disability_card_number"
-            label={t("ApplicantForm.disabilityCardNumber")}
+            label={t("ApplyForm.disabilityCardNumber")}
             required
             control={(props) => <Input {...props} />}
           />
@@ -84,7 +84,7 @@ export const DisabilitiesFields: FC<DisabilitiesFieldsProps> = ({ state }) => {
           <Field
             state={state}
             name="disability_card_picture"
-            label={t("ApplicantForm.disabilityCardPicture")}
+            label={t("ApplyForm.disabilityCardPicture")}
             required
             control={(props) => (
               <FileUploadInput
@@ -98,7 +98,7 @@ export const DisabilitiesFields: FC<DisabilitiesFieldsProps> = ({ state }) => {
           <Field
             state={state}
             name="disability_level"
-            label={t("ApplicantForm.disabilityLevel")}
+            label={t("ApplyForm.disabilityLevel")}
             required
             control={(props) => (
               <Select options={disabilityLevels} {...props} />
@@ -108,7 +108,7 @@ export const DisabilitiesFields: FC<DisabilitiesFieldsProps> = ({ state }) => {
           <Field
             state={state}
             name="disability_requirements"
-            label={t("ApplicantForm.disabilityDescription")}
+            label={t("ApplyForm.disabilityDescription")}
             control={(props) => <Textarea {...props} />}
           />
         </>

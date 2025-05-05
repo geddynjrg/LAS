@@ -10,7 +10,7 @@ import { AppHeaderApplyButton } from "@/components/app-header-apply-button";
 import { ProfileMenu } from "@/components/profile-menu";
 
 export const AppHeader: FC = () => {
-  const t = useTranslations("Common");
+  const t = useTranslations();
 
   return (
     <Header
@@ -22,8 +22,8 @@ export const AppHeader: FC = () => {
       }
       endDecorator={
         <>
-          <AppHeaderApplyButton>{t("apply")}</AppHeaderApplyButton>
-          <SidebarTrigger>{t("menu")}</SidebarTrigger>
+          <AppHeaderApplyButton>{t("Common.apply")}</AppHeaderApplyButton>
+          <SidebarTrigger>{t("Menu.menu")}</SidebarTrigger>
           <ProfileMenu />
         </>
       }
