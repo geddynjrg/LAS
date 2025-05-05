@@ -84,8 +84,8 @@ export async function invalidateSession() {
 async function deleteCookies() {
   const cookieStore = await cookies();
 
-  cookieStore.delete(ACCESS_TOKEN_COOKIE_NAME);
-  cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME);
+  cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, "", { expires: new Date(0) });
+  cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, "", { expires: new Date(0) });
 }
 
 function isTokenExpired(token: unknown) {

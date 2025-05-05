@@ -33,6 +33,7 @@ export default async function ApplicantPage({ params }: ApplicantPageProps) {
         id={id}
         defaultValues={{
           ...defaultValues,
+          phones: defaultValues?.applicant_phone_number?.map(parsePhoneNumber),
 
           // id type fields
           id_type: defaultValues?.applicant_id_type as IdType,
@@ -45,8 +46,6 @@ export default async function ApplicantPage({ params }: ApplicantPageProps) {
           alien_id_number: defaultValues?.alien_id_number,
           // @ts-ignore missing type from API
           is_refugee: defaultValues?.is_refugee,
-
-          phones: defaultValues?.applicant_phone_number?.map(parsePhoneNumber),
         }}
       />
     </>

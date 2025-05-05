@@ -1,5 +1,6 @@
 import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import createClient, { type FetchResponse } from "openapi-fetch";
 import type { z } from "zod";
 
@@ -31,6 +32,15 @@ api.use({
     }
 
     return request;
+  },
+
+  async onResponse({ response }) {
+    // if the response is 401, we need to clear the session and redirect to login page
+    if (response.status === 401) {
+      redirect("/logout");
+    }
+
+    return response;
   },
 });
 
