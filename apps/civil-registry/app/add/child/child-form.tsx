@@ -150,6 +150,10 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
       birthSublocationDistrict: birthSublocationDistrict[0] ?? "",
     };
 
+    setBirthDate((prev) => ({
+      ...prev,
+      [Object.keys(prev).length]: birthDate[0] ?? "",
+    }));
     setBirthHappenedAtHome((prev) => ({
       ...prev,
       [Object.keys(prev).length]: birthHappenedAtHome[0] ?? "No",
@@ -386,6 +390,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                       value?.toDateString() ?? "",
                     )
                   }
+                  defaultValue={birthDate[childIndex]}
                 />
               )}
               required
