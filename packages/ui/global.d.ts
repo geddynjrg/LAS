@@ -1,10 +1,10 @@
-import en from "@workspace/ui/messages/en-gb.json";
+import en from "@workspace/ui/messages/en.json";
 
 type Messages = typeof en;
 
 declare module "next-intl" {
   interface AppConfig {
-    Locale: "en-gb";
+    Locale: "en";
     Messages: Messages;
   }
 }

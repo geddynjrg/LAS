@@ -18,6 +18,20 @@ export default async function DashboardPage() {
 
   console.log(userApplications);
 
+  // Split userApplications into two arrays to make two columns.
+  // This will fix the issue when card is expanded, the second column height changes
+  const columns = userApplications.reduce(
+    (acc, application, index) => {
+      const columnIndex = index % 2;
+      const column = acc[columnIndex]!;
+
+      // column.push(application);
+
+      return acc;
+    },
+    [[], []] as [(typeof userApplications)[], (typeof userApplications)[]],
+  );
+
   return (
     <Container className="mb-8">
       <h5 className="typo-h5 mb-1">{userProfile?.data.name}</h5>
@@ -33,7 +47,7 @@ export default async function DashboardPage() {
         <div className="mt-8 flex flex-col items-center justify-center gap-4">
           <h5 className="typo-h5 text-neutral-700">{t("noApplications")}</h5>
           <Button asChild>
-            <Link href={`/apply`}>{t("applyNow")}</Link>
+            <Link href="/apply">{t("applyNow")}</Link>
           </Button>
         </div>
       )}
