@@ -153,7 +153,7 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
         <Field
           state={state}
           name="residenceDistrict"
-          label={t("DetailsPage.district")}
+          label={t("DetailsPage.estate")}
           control={(props) => <Input {...props} />}
           required
         />

@@ -110,7 +110,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
   >(() =>
     defaultValues.reduce(
       (acc, child, index) => {
-        acc[index] = child.dob ?? "";
+        acc[index] = child.birthSublocation ?? "";
         return acc;
       },
       {} as Record<number, string>,
@@ -121,7 +121,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
   >(() =>
     defaultValues.reduce(
       (acc, child, index) => {
-        acc[index] = child.dob ?? "";
+        acc[index] = child.birthSublocationDistrict ?? "";
         return acc;
       },
       {} as Record<number, string>,
@@ -132,22 +132,22 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
   const [totalChildren, setTotalChildren] = useState<number>(1);
 
   const addChild = (disablePrevious: boolean) => {
-    const firstChild = state?.values?.children?.[0] ?? null;
+    // const firstChild = state?.values?.children?.[0] ?? null;
     const newChild: Partial<Person> = {
       abandoned: false,
       id: generateUUID(),
       firstName: undefined,
       middleName: undefined,
       natureOfBirth: undefined,
-      dob: firstChild ? birthDate[0] : "",
+      dob: birthDate[0] ?? "",
       sex: undefined,
       weightOnBirth: "",
-      birthHappenedAtHome: firstChild ? birthHappenedAtHome[0] : "",
-      healthInstitutionCounty: firstChild ? chosenHealthCounty[0] : "",
-      healthInstitution: firstChild ? healthInstitution[0] : "",
-      birthCounty: firstChild ? chosenBirthCounty[0] : "",
-      birthSublocation: firstChild ? birthSublocation[0] : "",
-      birthSublocationDistrict: firstChild ? birthSublocationDistrict[0] : "",
+      birthHappenedAtHome: birthHappenedAtHome[0] ?? "",
+      healthInstitutionCounty: chosenHealthCounty[0] ?? "",
+      healthInstitution: healthInstitution[0] ?? "",
+      birthCounty: chosenBirthCounty[0] ?? "",
+      birthSublocation: birthSublocation[0] ?? "",
+      birthSublocationDistrict: birthSublocationDistrict[0] ?? "",
     };
 
     setBirthHappenedAtHome((prev) => ({
@@ -175,9 +175,9 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
       [Object.keys(prev).length]: birthSublocationDistrict[0] ?? "",
     }));
 
-    state?.values?.children?.push(
-      newChild as unknown as (typeof state.values.children)[number],
-    );
+    // state?.values?.children?.push(
+    //   newChild as unknown as (typeof state.values.children)[number],
+    // );
 
     if (disablePrevious) {
       setChildren([newChild]);
@@ -468,6 +468,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                       onValueChange={(value) =>
                         handleHealthCountyChange(childIndex, value)
                       }
+                      defaultValue={chosenHealthCounty[childIndex]}
                     />
                   )}
                 />
@@ -482,6 +483,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                       onValueChange={(value) =>
                         handleHealthInstitutionChange(childIndex, value)
                       }
+                      defaultValue={healthInstitution[childIndex]}
                     />
                   )}
                   required
@@ -507,6 +509,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                         label: county.name,
                         value: county.name,
                       }))}
+                      defaultValue={chosenBirthCounty[childIndex]}
                     />
                   )}
                 />
@@ -532,6 +535,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                       onValueChange={(value) =>
                         handleSublocationChange(childIndex, value)
                       }
+                      defaultValue={birthSublocation[childIndex]}
                     />
                   )}
                 />
@@ -555,6 +559,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                           return { ...prev };
                         });
                       }}
+                      defaultValue={birthSublocationDistrict[childIndex]}
                     />
                   )}
                   required
@@ -573,7 +578,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
               onValueChange={(value) => {
                 if (value === "Single") {
                   if (totalChildren > 1) {
-                    const _children = state?.values?.children ?? [];
+                    const _children = children ?? [];
                     // Keep only the first child
                     const childrenToRemove = _children.slice(1); // all except the first
 
@@ -584,7 +589,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                   setTotalChildren(1);
                 } else if (value === "Twin") {
                   if (totalChildren > 2) {
-                    const _children = state?.values?.children ?? [];
+                    const _children = children ?? [];
                     // Keep only the first two children
                     const childrenToRemove = _children.slice(2); // all except the first two
                     childrenToRemove.forEach((child) => {
@@ -595,7 +600,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                   }
                   setTotalChildren(2);
                 } else {
-                  const currentChildren = state?.values?.children ?? [];
+                  const currentChildren = children ?? [];
                   const childrenToAdd = 3 - currentChildren.length;
                   for (let i = 0; i < childrenToAdd; i++) {
                     addChild(false);
@@ -627,7 +632,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
               }))}
               onValueChange={(value) => {
                 const newTotal = Number(value);
-                const currentChildren = state?.values?.children ?? [];
+                const currentChildren = children ?? [];
 
                 if (newTotal < currentChildren.length) {
                   // Remove extra children
