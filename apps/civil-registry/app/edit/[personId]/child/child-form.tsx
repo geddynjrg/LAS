@@ -2,6 +2,7 @@ import { IconInfoSquareRounded } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { type FC, type ReactNode } from "react";
 
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { PersonAge } from "@workspace/ui/components/civil-registry/person-age";
 import { DataNode } from "@workspace/ui/components/data-node";
@@ -89,6 +90,16 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           name="natureOfBirth"
           value={state.values?.natureOfBirth}
         />
+
+        <Field
+          state={state}
+          isVisible={state?.values?.abandoned}
+          editable={false}
+          name={`abandoned`}
+          control={(props) => (
+            <Checkbox {...props}>{t("DetailsPage.is-abandoned")}</Checkbox>
+          )}
+        />
         {isEditing ? (
           <>
             <Field
@@ -146,6 +157,7 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           variant={disabled ? "disabled" : "default"}
         >
           <input type="hidden" name="sex" value={state.values?.sex} />
+
           {state.values?.sex && sexDisplayFormat[state.values.sex]}
         </DataNode>
         <EditMessage>{t("DetailsPage.change-sex-message")}</EditMessage>
@@ -156,17 +168,15 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
           label={t("DetailsPage.birth-weight")}
           control={(props) => <Input {...props} endDecorator="kg" />}
         />
-        {state.values?.healthInstitution !== "OTHER" && (
-          <Field
-            state={state}
-            name="healthInstitution"
-            editable={false}
-            label={t("DetailsPage.place-of-birth")}
-            control={(props) => <Input {...props} />}
-          />
-        )}
-        {state.values?.healthInstitution === "OTHER" && (
+        {state.values?.birthHappenedAtHome === "No" && (
           <>
+            <Field
+              state={state}
+              name="healthInstitutionCounty"
+              editable={false}
+              label={t("DetailsPage.county")}
+              control={(props) => <Input {...props} />}
+            />
             <Field
               state={state}
               name="healthInstitution"
@@ -174,18 +184,34 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
               label={t("DetailsPage.health-institution")}
               control={(props) => <Input {...props} />}
             />
+          </>
+        )}
+        <input
+          type="hidden"
+          name="birthHappenedAtHome"
+          value={state.values?.birthHappenedAtHome}
+        />
+        {state.values?.birthHappenedAtHome === "Yes" && (
+          <>
+            <Field
+              state={state}
+              name={`birthCounty`}
+              label={t("DetailsPage.county")}
+              editable={false}
+              control={(props) => <Input {...props} />}
+            />
             <Field
               state={state}
               name="birthSublocation"
               editable={false}
-              label={t("DetailsPage.sublocation")}
+              label={t("DetailsPage.select-sublocation")}
               control={(props) => <Input {...props} />}
             />
             <Field
               state={state}
               name="birthSublocationDistrict"
               editable={false}
-              label={t("DetailsPage.district")}
+              label={t("DetailsPage.estate-and-town")}
               control={(props) => <Input {...props} />}
             />
           </>

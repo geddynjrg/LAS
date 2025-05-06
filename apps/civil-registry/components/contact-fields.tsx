@@ -15,10 +15,11 @@ import { Input } from "@workspace/ui/components/input";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { UnderlineButton } from "@/components/underline-button";
+import { usePersonNationalIdStatus } from "@/hooks/usePersonNationalIdStatus";
 
 export interface ContactFieldContact {
   phoneCode: string;
-  phone: string;
+  phone?: string;
   email?: string;
 }
 
@@ -41,6 +42,8 @@ export const ContactFields: FC<ContactFieldsProps> = ({
   const defaultState = state.values?.contacts?.map(
     (_contact, index) => index,
   ) ?? [0];
+
+  const { isNationalIdUnknown } = usePersonNationalIdStatus();
 
   const [contactIds, setContactIds] = useState(defaultState);
 
@@ -99,7 +102,7 @@ export const ContactFields: FC<ContactFieldsProps> = ({
             id > 0 && "border-t border-neutral-400 pt-4",
           )}
         >
-          <FieldGroup label={t("phone")} required>
+          <FieldGroup label={t("phone")} required={isNationalIdUnknown}>
             <Field
               state={state}
               name={`contacts.${index}.phoneCode`}
@@ -141,10 +144,12 @@ export const ContactFields: FC<ContactFieldsProps> = ({
         </div>
       ))}
 
-      <UnderlineButton className="mx-auto" onClick={addContact}>
-        <IconPlus />
-        {t("add-another-contact")}
-      </UnderlineButton>
+      {isNationalIdUnknown && (
+        <UnderlineButton className="mx-auto" onClick={addContact}>
+          <IconPlus />
+          {t("add-another-contact")}
+        </UnderlineButton>
+      )}
     </>
   );
 };

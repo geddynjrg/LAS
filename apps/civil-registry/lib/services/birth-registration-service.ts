@@ -109,7 +109,7 @@ export async function saveForm() {
     await createPerson(child);
   }
 
-  if (mother) {
+  if (mother && !children[0]?.abandoned) {
     mother.sex = "F";
     mother.children = mother.children ?? [];
 
@@ -120,7 +120,7 @@ export async function saveForm() {
     await createPerson(mother);
   }
 
-  if (father) {
+  if (father && !children[0]?.abandoned) {
     father.sex = "M";
     father.children = father.children ?? [];
     for (const child of children) {
@@ -129,6 +129,10 @@ export async function saveForm() {
     await createPerson(father);
   }
   if (informant) {
+    informant.children = informant.children ?? [];
+    for (const child of children) {
+      (informant.children as string[]).push(child.id ?? "");
+    }
     await createPerson(informant);
   }
 

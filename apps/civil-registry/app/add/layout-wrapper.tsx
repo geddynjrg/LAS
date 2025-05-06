@@ -17,30 +17,38 @@ export function IdLayoutWrapper({
   children,
   mother,
   father,
+  isAbandoned = false,
 }: {
   progress: number;
   id: string;
   today: string;
   children?: ReactNode;
-  mother?: Partial<Person>
-  father?: Partial<Person>
+  mother?: Partial<Person>;
+  father?: Partial<Person>;
+  isAbandoned?: boolean;
 }) {
   const { isNationalIdUnknown } = usePersonNationalIdStatus();
   const t = useTranslations();
-	let fatherUrl: string | undefined = '/father';
-	let informantUrl: string | undefined = '/informant';
+  let motherUrl: string | undefined = "/mother";
+  let fatherUrl: string | undefined = "/father";
+  let informantUrl: string | undefined = "/informant";
 
-  if (mother?.maritalStatus === 'Married') {
-	if (!father?.firstName) {
-		informantUrl = undefined;
-	}
+  if (mother?.maritalStatus === "Married") {
+    if (!father?.firstName) {
+      informantUrl = undefined;
+    }
   } else {
-	fatherUrl = undefined;
+    fatherUrl = undefined;
+  }
+
+  if (isAbandoned) {
+    motherUrl = undefined;
+    fatherUrl = undefined;
   }
 
   const steps: Step[] = [
     { index: 1, title: t("Stepper.Child"), path: "/child" },
-    { index: 2, title: t("Stepper.Mother"), path: "/mother" },
+    { index: 2, title: t("Stepper.Mother"), path: motherUrl },
     { index: 3, title: t("Stepper.Father"), path: fatherUrl },
     { index: 4, title: t("Stepper.Informant"), path: informantUrl },
     { index: 5, title: t("Stepper.FinalReview"), path: "/final-review" },

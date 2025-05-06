@@ -103,6 +103,16 @@
     "medical-attendant": "Medical Attendant",
     "phone": "Phone number",
     "nature-of-birth": "Nature of birth",
+    "is-abandoned": "Child is abandoned",
+    "sub-county": "Subcounty",
+    "county": "County",
+    "birth-happened-at-home": "The Birth happened at Home",
+    "yes": "Yes",
+    "no": "No",
+    "twin": "Twin",
+    "total-children-count": "How many",
+    "type-of-birth": "Type of birth",
+    "choose-or-search": "Choose or search",
     "add-another-child": "Add another child",
     "national-id-unknown": "National ID is unknown",
     "father-national-id-unknown": "I don’t know the father’s National ID",
@@ -114,8 +124,14 @@
     "birth-happened-at-health-institution": "The birth happened at health institution",
     "birth-happened-at-home-or-different-location": "The birth happened at home or a different location",
     "passport-number": "Passport/Alien card number",
+    "document-type": "Document Type",
+    "document-number": "Document Number",
     "sublocation": "Sublocation or estate and town",
+    "subcounty": "County",
+    "select-sublocation": "Sublocation",
+    "estate-and-town": "Estate and town",
     "confirm-registration": "Confirm registration",
+    "specify-the-capacity": "Specify the capacity",
     "back": "Back",
     "affidavit": "Affidavit",
     "change-dob-message": "Changing the child’s date of birth on the birth notification",
@@ -202,11 +218,13 @@
   "FormPlaceholders": {
     "searchForNationalId": "Search for a name of ID",
     "select": "Select",
-    "insertName": "Insert name"
+    "insertName": "Insert name",
+    "fathersName": "Mother’s Father’s Name/Maiden Name"
   },
   "FormErrorMessages": {
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
+    "documentTypeRequired": "Document Type is required",
     "passportNumberRequired": "Passport/Alien card number is required"
   }
 }

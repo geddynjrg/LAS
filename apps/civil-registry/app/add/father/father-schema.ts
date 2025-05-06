@@ -10,13 +10,14 @@ export const fatherSchema = z
     lastName: z.string().optional(),
     nationalId: z.string().optional(),
     citizenship: z.string().optional(),
+    documentType: z.string().optional(),
     passportNumber: z.string().optional(),
     isPredefinedId: z.string().optional(),
     contacts: z
       .array(
         z.object({
           phoneCode: z.string().nonempty(),
-          phone: z.string().nonempty(),
+          phone: z.string().optional(),
           email: z.string().optional(),
         }),
       )
@@ -33,6 +34,18 @@ export const fatherSchema = z
         code: "custom",
         message: "National ID is required.",
         path: ["nationalId"],
+      });
+    }
+
+    if (!data.nationalId) {
+      data.contacts.forEach((contact, index) => {
+        if (!contact.phone) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Phone is required",
+            path: ["contacts", index, "phone"],
+          });
+        }
       });
     }
 

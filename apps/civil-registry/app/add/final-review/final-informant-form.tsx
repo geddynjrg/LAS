@@ -126,17 +126,25 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
         <p>{defaultValues?.capacityOfInformant}</p>
       </FieldGroup>
 
-      <FieldGroup label={t("DetailsPage.nature-of-relation")}>
+      {defaultValues?.capacityOfInformant === "Other" && (
+        <FieldGroup label={t("DetailsPage.specify-the-capacity")}>
+          <p>{defaultValues?.capacityOfInformantOther}</p>
+        </FieldGroup>
+      )}
+
+      {/* <FieldGroup label={t("DetailsPage.nature-of-relation")}>
         <p>{defaultValues?.natureOfRelation ?? "–"}</p>
-      </FieldGroup>
+      </FieldGroup> */}
 
       {defaultValues?.contacts?.map((contact, index) => (
         <Fragment key={index}>
-          <FieldGroup label={t("DetailsPage.phone")}>
-            <p>
-              +{contact?.phoneCode} {contact?.phone}
-            </p>
-          </FieldGroup>
+          {contact?.phone && (
+            <FieldGroup label={t("DetailsPage.phone")}>
+              <p>
+                +{contact?.phoneCode} {contact?.phone}
+              </p>
+            </FieldGroup>
+          )}
 
           {contact?.email && (
             <FieldGroup label={t("DetailsPage.email")}>

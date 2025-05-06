@@ -13,7 +13,7 @@ export default async function Page() {
     return null;
   }
 
-  if (!mother?.firstName) {
+  if (!mother?.firstName && !child[0]?.abandoned) {
     redirect("/add");
   }
 
@@ -23,6 +23,7 @@ export default async function Page() {
       mother={mother}
       father={father}
       informant={informant}
+      isAbandoned={child[0]?.abandoned ?? false}
     />
   );
 }

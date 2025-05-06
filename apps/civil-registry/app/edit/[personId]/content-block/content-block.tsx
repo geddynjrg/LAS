@@ -67,9 +67,16 @@ export const ContentBlock: FC<ContentBlockProps> = ({ person }) => {
   return (
     <>
       <SectionWrap className={cn("space-y-6")} hasTopPadding hasBottomPadding>
-        <BackButton
-          url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
-        />
+        {person.abandoned && (
+          <BackButton
+            url={`/${typeof person.informant === "string" ? person.informant : person.informant?.id}`}
+          />
+        )}
+        {!person.abandoned && (
+          <BackButton
+            url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
+          />
+        )}
 
         <h2 className={cn("typo-h2")}>
           {editedPersonName ?? (person && getFullName(person))}

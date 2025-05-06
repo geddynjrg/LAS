@@ -131,13 +131,19 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
             />
 
             <input type="hidden" name="sex" value={state.values?.sex} />
-            <Field
+
+            <input
+              type="hidden"
+              name="citizenship"
+              value={state.values?.citizenship}
+            />
+            {/* <Field
               state={state}
               name="citizenship"
               label={t("DetailsPage.citizenship")}
               editable={false}
               control={(props) => <Input {...props} />}
-            />
+            /> */}
 
             <Field
               state={state}
@@ -153,7 +159,7 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
           </>
         )}
 
-        <Field
+        {/* <Field
           state={state}
           defaultValues={defaultValues}
           name="education"
@@ -167,7 +173,8 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
             />
           )}
           required={isEditing}
-        />
+        /> */}
+        <input type="hidden" name="education" value={state.values?.education} />
         <ContactFields
           state={state}
           defaultValues={defaultValues.contacts}

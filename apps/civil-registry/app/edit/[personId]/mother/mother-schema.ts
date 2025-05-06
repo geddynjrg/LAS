@@ -15,13 +15,27 @@ export const motherSchema = z.object({
   sex: SexTypeEnum,
   citizenship: z.string().nonempty(),
   nationality: z.string().nonempty(),
+  documentType: z.string().optional(),
   maritalStatus: z.string().nonempty(),
-  education: z.string().nonempty(),
+  education: z.string().optional(),
+  residenceCounty: z.string().optional(),
+  residenceSublocation: z.string().optional(),
+  residenceDistrict: z.string().optional(),
+  birthSublocation: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => val ?? undefined),
+  birthSublocationDistrict: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => val ?? undefined),
   contacts: z
     .array(
       z.object({
         phoneCode: z.string().nonempty(),
-        phone: z.string().nonempty(),
+        phone: z.string().optional(),
         email: z.string().optional(),
       }),
     )

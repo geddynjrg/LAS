@@ -43,6 +43,7 @@ export const FatherForm: FC<FatherFormProps> = ({ id, defaultValues }) => {
       className="space-y-4"
     >
       <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="education" value="" />
 
       <DataBlock
         title={t(`DetailsPage.title-father`)}
@@ -52,7 +53,7 @@ export const FatherForm: FC<FatherFormProps> = ({ id, defaultValues }) => {
       >
         <NationalIdFields searchSexFilter="M" state={state} />
 
-        <Field
+        {/* <Field
           state={state}
           name="education"
           label={t("DetailsPage.education")}
@@ -65,7 +66,7 @@ export const FatherForm: FC<FatherFormProps> = ({ id, defaultValues }) => {
             />
           )}
           required={false}
-        />
+        /> */}
 
         <ContactFields state={state} />
       </DataBlock>

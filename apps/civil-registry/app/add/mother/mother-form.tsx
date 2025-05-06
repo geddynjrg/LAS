@@ -20,7 +20,8 @@ import {
 } from "@/app/add/mother/mother-schema";
 import { ContactFields } from "@/components/contact-fields";
 import { NationalIdFields } from "@/components/national-id-fields";
-import { educationOptions } from "@/lib/data/dummy-data";
+import { usePersonNationalIdStatus } from "@/hooks/usePersonNationalIdStatus";
+import { dummyCounties, educationOptions } from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/data/person";
 
 export interface MotherFormProps {
@@ -39,7 +40,11 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
     defaultValues,
   );
 
-  const [placeOfBirthLocation, setPlaceOfBirthLocation] = useState<string>("");
+  const { isNationalIdUnknown } = usePersonNationalIdStatus();
+
+  const [chosenCounty, setChosenCounty] = useState(
+    state.values?.residenceCounty,
+  );
 
   const marriedOptions = [
     { label: t("DetailsPage.married"), value: "Married" },
@@ -99,7 +104,7 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
           name="fatherName"
           label={t("DetailsPage.fathers-name")}
           control={(props) => (
-            <Input {...props} placeholder={t("FormPlaceholders.insertName")} />
+            <Input {...props} placeholder={t("FormPlaceholders.fathersName")} />
           )}
           required={false}
         />
@@ -110,11 +115,41 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
 
         <Field
           state={state}
-          name="residenceSublocation"
-          label={t("DetailsPage.sublocation")}
-          control={(props) => <Input {...props} />}
+          name="residenceCounty"
+          label={t("DetailsPage.subcounty")}
           required
+          control={(props) => (
+            <SearchInput
+              {...props}
+              onValueChange={setChosenCounty}
+              placeholder={t("DetailsPage.choose-or-search")}
+              options={dummyCounties.map((county) => ({
+                label: county.name,
+                value: county.name,
+              }))}
+            />
+          )}
         />
+
+        <Field
+          state={state}
+          name="residenceSublocation"
+          label={t("DetailsPage.select-sublocation")}
+          required
+          control={(props) => (
+            <SearchInput
+              {...props}
+              placeholder={t("DetailsPage.choose-or-search")}
+              options={dummyCounties
+                .find((county) => county.name === chosenCounty)
+                ?.constituencies.map((c) => ({
+                  label: c,
+                  value: c,
+                }))}
+            />
+          )}
+        />
+
         <Field
           state={state}
           name="residenceDistrict"
@@ -122,36 +157,6 @@ export const MotherForm: FC<MotherFormProps> = ({ id, defaultValues }) => {
           control={(props) => <Input {...props} />}
           required
         />
-
-        {placeOfBirthLocation === "OTHER" && (
-          <>
-            <Field
-              state={state}
-              name="birthSublocation"
-              label={t("DetailsPage.sublocation")}
-              control={(props) => <Input {...props} />}
-              required
-            />
-            <Field
-              state={state}
-              name="birthSublocationDistrict"
-              label={t("DetailsPage.district")}
-              control={(props) => <Input {...props} />}
-              required
-            />
-            <div className={cn("flex justify-center underline")}>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPlaceOfBirthLocation("");
-                }}
-              >
-                {t("DetailsPage.birth-happened-at-health-institution")}
-              </a>
-            </div>
-          </>
-        )}
       </DataBlock>
     </FormWrap>
   );

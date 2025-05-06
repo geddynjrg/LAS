@@ -16,6 +16,9 @@ function populatePerson(person: Person | undefined): Person | undefined {
 
   return {
     ...person,
+    informant: person.informant
+      ? populatePerson(personsStore.find((p) => p.id === person.informant))
+      : undefined,
     mother: person.mother
       ? populatePerson(personsStore.find((p) => p.id === person.mother))
       : undefined,
@@ -71,6 +74,7 @@ function populatePerson(person: Person | undefined): Person | undefined {
           .filter((child): child is Person => child !== undefined)
           .map(
             ({
+              abandoned,
               id,
               firstName,
               lastName,
@@ -80,6 +84,7 @@ function populatePerson(person: Person | undefined): Person | undefined {
               validationStatus,
               natureOfBirth,
             }) => ({
+              abandoned,
               id,
               firstName,
               lastName,
@@ -102,7 +107,27 @@ export async function findPersonById(id: string): Promise<Person | undefined> {
 }
 
 export async function findFemaleWithChildren(): Promise<Person[]> {
-  return personsStore.filter((p) => p.sex === "F" && Array.isArray(p.children));
+  // console.log(personsStore);
+  // return personsStore.filter((p) => p.sex === "F" && Array.isArray(p.children));
+
+  const results: Person[] = [];
+
+  for (const p of personsStore) {
+    // const personToCheck = p;
+
+    if (p.abandoned && p.informant) {
+      const informantPerson = await findPersonById(p.informant as string);
+      if (informantPerson) {
+        results.push(informantPerson);
+      } else {
+        continue;
+      }
+    } else if (p.sex === "F" && Array.isArray(p.children)) {
+      results.push(p);
+    }
+  }
+
+  return results;
 }
 
 // Create a new person

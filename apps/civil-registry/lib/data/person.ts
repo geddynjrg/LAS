@@ -7,6 +7,7 @@ export type SexType = "M" | "F" | "I";
 export type NatureOfBirth = "LiveBirth" | "StillBirth";
 
 export interface Person {
+  abandoned?: boolean;
   id: string;
   firstName?: string;
   lastName?: string;
@@ -19,9 +20,12 @@ export interface Person {
   email?: string;
   weightOnBirth?: string;
   placeOfBirth?: string;
+  healthInstitutionCounty?: string;
   healthInstitution?: string;
+  birthCounty?: string;
   birthSublocation?: string;
   birthSublocationDistrict?: string;
+  residenceCounty?: string;
   residenceDistrict?: string;
   residenceSublocation?: string;
   nationalId?: string;
@@ -36,16 +40,20 @@ export interface Person {
   children?: string[] | Person[];
   informant?: string | Person;
   spouse?: string | Person;
+  documentType?: string;
   passportNumber?: string;
+  birthHappenedAtHome?: string;
   natureOfRelation?: string;
   capacityOfInformant?: string;
+  capacityOfInformantOther?: string;
   informantType?: string;
-  contacts?: { phoneCode: string; phone: string; email?: string }[];
+  contacts?: { phoneCode: string; phone?: string; email?: string }[];
   affidavitFile?: ValidFile;
 }
 
 export const persons: Person[] = [
   {
+    abandoned: false,
     id: "1",
     firstName: "Mary",
     lastName: "Otieno",
@@ -72,6 +80,7 @@ export const persons: Person[] = [
     validationStatus: "success",
   },
   {
+    abandoned: false,
     id: "2",
     firstName: "John",
     lastName: "Otieno",
@@ -94,6 +103,7 @@ export const persons: Person[] = [
     validationStatus: "alert",
   },
   {
+    abandoned: false,
     id: "3",
     firstName: "David",
     lastName: "Otieno",
@@ -101,6 +111,8 @@ export const persons: Person[] = [
     natureOfBirth: "LiveBirth",
     sex: "M",
     weightOnBirth: "3.1 kg",
+    birthHappenedAtHome: "No",
+    healthInstitutionCounty: "Kajiado",
     healthInstitution: "Kajiado County Referral Hospital",
     mother: "1",
     father: "2",
@@ -108,6 +120,7 @@ export const persons: Person[] = [
     validationStatus: "alert",
   },
   {
+    abandoned: false,
     id: "4",
     firstName: "Grace",
     lastName: "Otieno",
@@ -116,12 +129,15 @@ export const persons: Person[] = [
     sex: "F",
     siblings: ["3", "5"],
     weightOnBirth: "3.1 kg",
+    birthHappenedAtHome: "No",
+    healthInstitutionCounty: "Kajiado",
     healthInstitution: "Kajiado County Referral Hospital",
     mother: "1",
     father: "2",
     validationStatus: "alert",
   },
   {
+    abandoned: false,
     id: "5",
     firstName: "Paul",
     lastName: "Otieno",
@@ -131,9 +147,13 @@ export const persons: Person[] = [
     siblings: ["3", "4"],
     mother: "1",
     father: "2",
+    birthHappenedAtHome: "No",
+    healthInstitutionCounty: "Kajiado",
+    healthInstitution: "Kajiado County Referral Hospital",
     validationStatus: "success",
   },
   {
+    abandoned: false,
     id: "6",
     firstName: "Waweru",
     lastName: "",
@@ -150,6 +170,7 @@ export const persons: Person[] = [
     children: ["1"],
     weightOnBirth: "3.1 kg",
     healthInstitution: "Kajiado County Referral Hospital",
+    birthHappenedAtHome: "No",
     validationStatus: "success",
   },
 ];

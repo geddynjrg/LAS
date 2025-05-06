@@ -38,5 +38,11 @@ export const childAction: FormAction<MultiChildSchema> = async (
     await editPerson("child", child as Person);
   }
 
-  redirect(`/add/mother`);
+  if (data?.children?.[0]?.abandoned) {
+    await editPerson("mother", undefined);
+    await editPerson("father", undefined);
+    redirect(`/add/informant`);
+  } else {
+    redirect(`/add/mother`);
+  }
 };

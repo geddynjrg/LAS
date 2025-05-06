@@ -58,9 +58,13 @@ export const FinalChildForm: FC<FinalChildFormProps> = ({ defaultValues }) => {
 
         <DataNode label={t("DetailsPage.place-of-birth")}>
           {getPlaceOfBirth({
+            birthHappenedAtHome: child.birthHappenedAtHome,
+            birthCounty: child.birthCounty,
+            birthSublocation: child.birthSublocation,
+            birthSublocationDistrict: child.birthSublocationDistrict,
             district: child.birthSublocationDistrict,
             healthInstitution: child.healthInstitution,
-            subLocation: child.birthSublocation,
+            healthInstitutionCounty: child.healthInstitutionCounty,
           })}
         </DataNode>
       </DataBlock>
@@ -69,11 +73,25 @@ export const FinalChildForm: FC<FinalChildFormProps> = ({ defaultValues }) => {
 };
 
 function getPlaceOfBirth(props: {
+  birthHappenedAtHome?: string;
+  birthCounty?: string;
+  birthSublocation?: string;
+  birthSublocationDistrict?: string;
   subLocation?: string;
   district?: string;
+  healthInstitutionCounty?: string;
   healthInstitution?: string;
 }) {
-  return [props.subLocation, props.district, props.healthInstitution]
+  if (props.birthHappenedAtHome === "Yes") {
+    return [
+      props.birthCounty,
+      props.birthSublocation,
+      props.birthSublocationDistrict,
+    ]
+      .filter(Boolean)
+      .join(", ");
+  }
+  return [props.healthInstitutionCounty, props.healthInstitution]
     .filter(Boolean)
     .join(", ");
 }

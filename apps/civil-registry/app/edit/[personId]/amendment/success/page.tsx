@@ -38,10 +38,15 @@ export default async function AmendmentSuccessPage({
       </h2>
 
       <div className={cn("flex justify-center")}>
-        {person && (
+        {person && !person.abandoned && (
           <BackButton
             variant="default"
             url={`/${typeof person.mother === "string" ? person.mother : person.mother?.id}`}
+          />
+        )}
+        {person && person.abandoned && (
+          <BackButton
+            url={`/${typeof person.informant === "string" ? person.informant : person.informant?.id}`}
           />
         )}
       </div>

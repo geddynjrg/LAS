@@ -15,6 +15,7 @@ export interface ReviewFormProps {
   mother: Partial<Person>;
   father: Partial<Person>;
   informant: Partial<Person>;
+  isAbandoned: boolean;
 }
 
 export const ReviewForm: FC<ReviewFormProps> = ({
@@ -22,6 +23,7 @@ export const ReviewForm: FC<ReviewFormProps> = ({
   mother,
   father,
   informant,
+  isAbandoned = false,
 }) => {
   const t = useTranslations();
   return (
@@ -34,8 +36,8 @@ export const ReviewForm: FC<ReviewFormProps> = ({
     >
       <DataBlock title={t(`DetailsPage.title-final-review`)}>
         <FinalChildForm defaultValues={child} />
-        <FinalMotherForm defaultValues={mother} />
-        {mother.maritalStatus === "Married" && (
+        {!isAbandoned && <FinalMotherForm defaultValues={mother} />}
+        {mother.maritalStatus === "Married" && !isAbandoned && (
           <FinalFatherForm defaultValues={father} />
         )}
         <FinalInformantForm defaultValues={informant} />

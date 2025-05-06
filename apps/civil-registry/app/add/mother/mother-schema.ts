@@ -10,6 +10,7 @@ export const motherSchema = z
     lastName: z.string().optional(),
     nationalId: z.string().optional(),
     citizenship: z.string().optional(),
+    documentType: z.string().optional(),
     passportNumber: z.string().optional(),
     fatherName: z.string().optional(),
     education: z.string().optional(),
@@ -21,11 +22,12 @@ export const motherSchema = z
       .array(
         z.object({
           phoneCode: z.string().nonempty(),
-          phone: z.string().nonempty(),
+          phone: z.string().optional(),
           email: z.string().optional(),
         }),
       )
       .min(1),
+    residenceCounty: z.string().nonempty(),
     residenceSublocation: z.string().nonempty(),
     residenceDistrict: z.string().nonempty(),
     birthSublocation: z
@@ -50,6 +52,18 @@ export const motherSchema = z
       });
     }
 
+    if (!data.nationalId) {
+      data.contacts.forEach((contact, index) => {
+        if (!contact.phone) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Phone is required",
+            path: ["contacts", index, "phone"],
+          });
+        }
+      });
+    }
+
     if (!requiresNationalId) {
       if (!data.firstName) {
         ctx.addIssue({
@@ -63,6 +77,13 @@ export const motherSchema = z
           code: "custom",
           message: "FormErrorMessages.lastNameRequired",
           path: ["lastName"],
+        });
+      }
+      if (!data.documentType) {
+        ctx.addIssue({
+          code: "custom",
+          message: "FormErrorMessages.passportNumberRequired",
+          path: ["passportNumber"],
         });
       }
       if (!data.passportNumber) {

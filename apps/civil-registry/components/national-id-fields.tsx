@@ -14,6 +14,7 @@ import { isValueChanged } from "@workspace/ui/lib/utils";
 import { UnderlineButton } from "@/components/underline-button";
 import { usePersonNationalIdStatus } from "@/hooks/usePersonNationalIdStatus";
 import { usePersonSearch } from "@/hooks/usePersonSearch";
+import { documentTypes } from "@/lib/data/dummy-data";
 import type { SexType } from "@/lib/data/person";
 import { nationalityOptions } from "@/lib/util/nationalities";
 
@@ -24,6 +25,7 @@ interface NationalIdFieldValues {
   lastName: string;
   dob: string;
   citizenship: string;
+  documentType: string;
   passportNumber: string;
   nationality: string;
   isPredefinedId: string;
@@ -59,6 +61,9 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
   const [dob, setDob] = useState(state.values?.dob ?? "");
   const [citizenship, setCitizenship] = useState(
     state.values?.citizenship ?? "–",
+  );
+  const [nationality, setNationality] = useState(
+    state.values?.nationality ?? "–",
   );
 
   const fullName = [firstName, middleName, lastName]
@@ -98,6 +103,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
                   setMiddleName("");
                   setDob("");
                   setCitizenship("–");
+                  setNationality("–");
                 }
                 personSearch.onValueChange(value);
               }}
@@ -110,6 +116,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
                 setMiddleName(person?.middleName ?? "");
                 setDob(person?.dob ?? "");
                 setCitizenship(person?.citizenship ?? "–");
+                setNationality(person?.nationality ?? "–");
               }}
             />
           )}
@@ -167,6 +174,11 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             <input type="hidden" name="firstName" value={firstName} />
             <input type="hidden" name="middleName" value={middleName} />
             <input type="hidden" name="lastName" value={lastName} />
+            <input
+              type="hidden"
+              name="documentType"
+              value={state?.values?.documentType}
+            />
 
             {fullName || "–"}
           </DataNode>
@@ -182,15 +194,16 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
           </DataNode>
 
           <DataNode
-            label={t("DetailsPage.citizenship")}
+            label={t("DetailsPage.nationality")}
             isHighlighted={
               !editable &&
-              isValueChanged("citizenship", { citizenship }, defaultValues)
+              isValueChanged("nationality", { nationality }, defaultValues)
             }
           >
             <input type="hidden" name="citizenship" value={citizenship} />
+            <input type="hidden" name="nationality" value={nationality} />
 
-            {citizenship || "–"}
+            {nationality || "–"}
           </DataNode>
         </>
       ) : (
@@ -226,9 +239,26 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
 
           <Field
             state={state}
+            name="documentType"
+            label={t("DetailsPage.document-type")}
+            required
+            control={(props) => (
+              <SearchInput
+                {...props}
+                placeholder={t("DetailsPage.choose-or-search")}
+                options={documentTypes.map((type) => ({
+                  label: type.name,
+                  value: type.name,
+                }))}
+              />
+            )}
+          />
+
+          <Field
+            state={state}
             defaultValues={defaultValues}
             name="passportNumber"
-            label={t("DetailsPage.passport-number")}
+            label={t("DetailsPage.document-number")}
             control={(props) => <Input {...props} />}
             editable={editable}
             required
@@ -258,24 +288,24 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
               />
             )}
           />
+          <Field
+            state={state}
+            defaultValues={defaultValues}
+            name="nationality"
+            label={t("DetailsPage.nationality")}
+            editable={editable}
+            control={(props) => (
+              <SearchInput
+                {...props}
+                placeholder={t("FormPlaceholders.select")}
+                options={nationalityOptions}
+                endDecorator={<IconCaretDownFilled />}
+              />
+            )}
+            required
+          />
         </>
       )}
-      <Field
-        state={state}
-        defaultValues={defaultValues}
-        name="nationality"
-        label={t("DetailsPage.nationality")}
-        editable={editable}
-        control={(props) => (
-          <SearchInput
-            {...props}
-            placeholder={t("FormPlaceholders.select")}
-            options={nationalityOptions}
-            endDecorator={<IconCaretDownFilled />}
-          />
-        )}
-        required
-      />
     </>
   );
 };

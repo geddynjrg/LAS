@@ -10,7 +10,7 @@ import {
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { Field } from "@workspace/ui/components/form";
-import { RadioGroup } from "@workspace/ui/components/radio-group";
+import { Input } from "@workspace/ui/components/input";
 import { SearchInput } from "@workspace/ui/components/search-input";
 import { useForm } from "@workspace/ui/hooks/use-form";
 
@@ -31,6 +31,7 @@ export interface InformantFormProps {
   informant: Partial<InformantSchema>;
   mother: Person | undefined;
   father: Person | undefined;
+  isAbandoned: boolean;
 }
 
 export const InformantForm: FC<InformantFormProps> = ({
@@ -38,6 +39,7 @@ export const InformantForm: FC<InformantFormProps> = ({
   informant,
   mother,
   father,
+  isAbandoned = false,
 }) => {
   const t = useTranslations();
   const defaultValues = informant;
@@ -50,6 +52,10 @@ export const InformantForm: FC<InformantFormProps> = ({
     informantAction,
     informantSchema,
     defaultValues,
+  );
+
+  const [chosenCapacityOfInformant, setChosenCapacityOfInformant] = useState(
+    state.values?.capacityOfInformant,
   );
 
   function getFullName() {
@@ -79,20 +85,20 @@ export const InformantForm: FC<InformantFormProps> = ({
     { label: t("DetailsPage.other"), value: "Other" },
   ];
 
-  const relationOptions = [
-    { label: t("DetailsPage.parent"), value: "Parent" },
-    { label: t("DetailsPage.sibling"), value: "Sibling" },
-    { label: t("DetailsPage.spouse"), value: "Spouse" },
-    { label: t("DetailsPage.guardian"), value: "Guardian" },
-    { label: t("DetailsPage.relative"), value: "Relative" },
-    { label: t("DetailsPage.friend"), value: "Friend" },
-    { label: t("DetailsPage.colleague"), value: "Colleague" },
-    { label: t("DetailsPage.neighbor"), value: "Neighbor" },
-    { label: t("DetailsPage.employer"), value: "Employer" },
-    { label: t("DetailsPage.employee"), value: "Employee" },
-    { label: t("DetailsPage.partner"), value: "Partner" },
-    { label: t("DetailsPage.other"), value: "Other" },
-  ];
+  //   const relationOptions = [
+  //     { label: t("DetailsPage.parent"), value: "Parent" },
+  //     { label: t("DetailsPage.sibling"), value: "Sibling" },
+  //     { label: t("DetailsPage.spouse"), value: "Spouse" },
+  //     { label: t("DetailsPage.guardian"), value: "Guardian" },
+  //     { label: t("DetailsPage.relative"), value: "Relative" },
+  //     { label: t("DetailsPage.friend"), value: "Friend" },
+  //     { label: t("DetailsPage.colleague"), value: "Colleague" },
+  //     { label: t("DetailsPage.neighbor"), value: "Neighbor" },
+  //     { label: t("DetailsPage.employer"), value: "Employer" },
+  //     { label: t("DetailsPage.employee"), value: "Employee" },
+  //     { label: t("DetailsPage.partner"), value: "Partner" },
+  //     { label: t("DetailsPage.other"), value: "Other" },
+  //   ];
 
   const informantTypeOptions = [
     { label: t("DetailsPage.mother"), value: "Mother" },
@@ -100,10 +106,14 @@ export const InformantForm: FC<InformantFormProps> = ({
     { label: t("DetailsPage.other"), value: "Other" },
   ] as const;
 
-  let prevUrl = '/add/father';
+  let prevUrl = "/add/father";
 
-  if (mother?.maritalStatus !== 'Married') {
-	prevUrl = '/add/mother';
+  if (mother?.maritalStatus !== "Married") {
+    prevUrl = "/add/mother";
+  }
+
+  if (isAbandoned) {
+    prevUrl = "/add/child";
   }
 
   return (
@@ -129,19 +139,27 @@ export const InformantForm: FC<InformantFormProps> = ({
             defaultValue={informantType}
           >
             {informantTypeOptions.map((option) => {
-				if (mother?.maritalStatus !== 'Married' && option.value === 'Father') {
-					return null;
-				}
+              if (
+                mother?.maritalStatus !== "Married" &&
+                option.value === "Father"
+              ) {
+                return null;
+              }
 
-				return (
-					<ButtonGroupItem
-						key={option.value}
-						value={option.value}
-						enableIcon={false}
-					>
-                {option.label}
-              </ButtonGroupItem>
-            )})}
+              if (isAbandoned && ["Mother", "Father"].includes(option.value)) {
+                return null;
+              }
+
+              return (
+                <ButtonGroupItem
+                  key={option.value}
+                  value={option.value}
+                  enableIcon={false}
+                >
+                  {option.label}
+                </ButtonGroupItem>
+              );
+            })}
           </ButtonGroup>
         </>
 
@@ -155,20 +173,28 @@ export const InformantForm: FC<InformantFormProps> = ({
 
             <Field
               state={state}
+              name="capacityOfInformant"
+              label={t("DetailsPage.capacity-of-informant")}
               control={(props) => (
-                <RadioGroup
+                <SearchInput
                   {...props}
-                  orientation="vertical"
-                  size="md"
                   options={informantOptions}
+                  placeholder={t("FormPlaceholders.select")}
+                  onValueChange={setChosenCapacityOfInformant}
                 />
               )}
-              label={t("DetailsPage.capacity-of-informant")}
-              name="capacityOfInformant"
               required
             />
-
-            <Field
+            {chosenCapacityOfInformant === "Other" && (
+              <Field
+                state={state}
+                name="capacityOfInformantOther"
+                label={t("DetailsPage.specify-the-capacity")}
+                control={(props) => <Input {...props} />}
+                required
+              />
+            )}
+            {/* <Field
               state={state}
               name="natureOfRelation"
               label={t("DetailsPage.nature-of-relation")}
@@ -180,7 +206,7 @@ export const InformantForm: FC<InformantFormProps> = ({
                 />
               )}
               required
-            />
+            /> */}
 
             <ContactFields state={state} />
           </>

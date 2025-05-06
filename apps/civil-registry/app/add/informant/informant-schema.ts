@@ -13,13 +13,14 @@ export const informantSchema = z
     informantType: z.string().nonempty(),
     nationality: z.string().nonempty(),
     capacityOfInformant: z.string().nonempty(),
+    capacityOfInformantOther: z.string().optional(),
     natureOfRelation: z.string().optional(),
     isPredefinedId: z.string().optional(),
     contacts: z
       .array(
         z.object({
           phoneCode: z.string().nonempty(),
-          phone: z.string().nonempty(),
+          phone: z.string().optional(),
           email: z.string().optional(),
         }),
       )
@@ -66,6 +67,17 @@ export const informantSchema = z
           code: "custom",
           message: "At least one contact is required.",
           path: ["contacts.children.0.phone"],
+        });
+      }
+
+      if (
+        data.capacityOfInformant === "Other" &&
+        !data.capacityOfInformantOther
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Capacity of informant is required.",
+          path: ["capacityOfInformantOther"],
         });
       }
     }

@@ -13,6 +13,7 @@ export interface FormWrapProps extends FormActionBarProps {
   action?: ComponentProps<typeof Form>["action"];
   className?: string;
   children?: ReactNode;
+  ref?: HTMLFormElement;
 }
 
 export const FormWrap: FC<FormWrapProps> = ({

@@ -20,13 +20,14 @@ export const fatherSchema = z.object({
   sex: SexTypeEnum,
   citizenship: z.string().nonempty(),
   nationality: z.string().nonempty(),
+  documentType: z.string().optional(),
   education: z.string().nonempty(),
   affidavitFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   contacts: z
     .array(
       z.object({
         phoneCode: z.string().nonempty(),
-        phone: z.string().nonempty(),
+        phone: z.string().optional(),
         email: z.string().optional(),
       }),
     )

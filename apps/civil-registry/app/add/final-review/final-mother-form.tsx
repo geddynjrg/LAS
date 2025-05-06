@@ -87,8 +87,17 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
       {!nationalId && (
         <Field
           state={state}
+          name="documentType"
+          label={t("DetailsPage.document-type")}
+          control={(props) => <Input {...props} />}
+          editable={false}
+        />
+      )}
+      {!nationalId && (
+        <Field
+          state={state}
           name="passportNumber"
-          label={t("DetailsPage.passport-number")}
+          label={t("DetailsPage.document-number")}
           control={(props) => <Input {...props} />}
           editable={false}
         />
@@ -103,13 +112,15 @@ export const FinalMotherForm: FC<FinalMotherFormProps> = ({
         editable={false}
       />
 
-      <Field
-        state={state}
-        name="citizenship"
-        label={t("DetailsPage.citizenship")}
-        control={(props) => <Input {...props} />}
-        editable={false}
-      />
+      {!nationalId && (
+        <Field
+          state={state}
+          name="citizenship"
+          label={t("DetailsPage.citizenship")}
+          control={(props) => <Input {...props} />}
+          editable={false}
+        />
+      )}
 
       <Field
         state={state}

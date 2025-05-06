@@ -86,8 +86,17 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
       {!nationalId && (
         <Field
           state={state}
+          name="documentType"
+          label={t("DetailsPage.document-type")}
+          control={(props) => <Input {...props} />}
+          editable={false}
+        />
+      )}
+      {!nationalId && (
+        <Field
+          state={state}
           name="passportNumber"
-          label={t("DetailsPage.passport-number")}
+          label={t("DetailsPage.document-number")}
           control={(props) => <Input {...props} />}
           editable={false}
         />
@@ -102,13 +111,15 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
         editable={false}
       />
 
-      <Field
-        state={state}
-        name="citizenship"
-        label={t("DetailsPage.citizenship")}
-        control={(props) => <Input {...props} />}
-        editable={false}
-      />
+      {!nationalId && (
+        <Field
+          state={state}
+          name="citizenship"
+          label={t("DetailsPage.citizenship")}
+          control={(props) => <Input {...props} />}
+          editable={false}
+        />
+      )}
 
       <Field
         state={state}
@@ -118,7 +129,7 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
         editable={false}
       />
 
-      <Field
+      {/* <Field
         state={state}
         name="education"
         label={t("DetailsPage.education")}
@@ -130,7 +141,7 @@ export const FinalFatherForm: FC<FinalFatherFormProps> = ({
           />
         )}
         editable={false}
-      />
+      /> */}
 
       {defaultValues?.contacts?.map((contact, index) => (
         <Fragment key={index}>

@@ -13,6 +13,7 @@ export default async function IdLayout({ children }: LayoutProps) {
   const format = await getFormatter();
   const mother = await getFormPersonByType("mother");
   const father = await getFormPersonByType("father");
+  const child = await getFormPersonByType("child");
 
   const id = "#134345345";
   const today = format.dateTime(new Date(), {
@@ -21,6 +22,8 @@ export default async function IdLayout({ children }: LayoutProps) {
     day: "2-digit",
   });
 
+  const isAbandoned = child[0]?.abandoned ?? false;
+
   return (
     <IdLayoutWrapper
       progress={progress}
@@ -28,6 +31,7 @@ export default async function IdLayout({ children }: LayoutProps) {
       father={father}
       id={id}
       today={today}
+      isAbandoned={isAbandoned}
     >
       {children}
     </IdLayoutWrapper>

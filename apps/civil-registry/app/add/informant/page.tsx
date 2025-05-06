@@ -13,9 +13,10 @@ export default async function FatherPage(_props: ApplicantPageProps) {
   const informant = await getFormPersonByType("informant");
   const mother = await getFormPersonByType("mother");
   const father = await getFormPersonByType("father");
+  const child = await getFormPersonByType("child");
   const personId = informant?.id ?? generateUUID();
 
-  if (!mother?.firstName) {
+  if (!mother?.firstName && !child[0]?.abandoned) {
     redirect("/add");
   }
 
@@ -27,6 +28,7 @@ export default async function FatherPage(_props: ApplicantPageProps) {
       }
       mother={mother}
       father={father}
+      isAbandoned={child[0]?.abandoned ?? false}
     />
   );
 }

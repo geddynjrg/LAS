@@ -52,7 +52,9 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
 
     const changedFields = getObjectDiff(defaultValues, state?.values);
 
-    setIsMotherMarried(changedFields.maritalStatus === "Married");
+    if (changedFields.maritalStatus) {
+      setIsMotherMarried(changedFields.maritalStatus === "Married");
+    }
 
     onSubmit(changedFields);
   });
@@ -121,13 +123,18 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
         />
 
         <input type="hidden" name="sex" value={state.values?.sex} />
-        <Field
+        <input
+          type="hidden"
+          name="citizenship"
+          value={state.values?.citizenship}
+        />
+        {/* <Field
           state={state}
           name="citizenship"
           label={t("DetailsPage.citizenship")}
           editable={false}
           control={(props) => <Input {...props} />}
-        />
+        /> */}
 
         <Field
           state={state}
