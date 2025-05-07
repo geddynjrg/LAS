@@ -324,6 +324,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/{application_id}/pdf": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Download application as PDF
+     * @description Returns a PDF document with the complete application information.
+     */
+    get: operations["tvet_application_pdf"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/application/intro": {
     parameters: {
       query?: never;
@@ -536,7 +556,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1746539894
+         * @example 1746621966
          */
         timestamp: number;
         /**
@@ -2880,6 +2900,8 @@ export interface components {
          *     ]
          */
         institution?: unknown[];
+        /** @description Intake Period */
+        intake_period?: string[];
         page_components?: (
           | components["schemas"]["ParagraphCourse_data"]
           | components["schemas"]["ParagraphContact"]
@@ -4825,7 +4847,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp: number;
               /**
@@ -4898,7 +4920,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp: number;
               /**
@@ -4995,7 +5017,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5086,7 +5108,7 @@ export interface operations {
               institutions?: components["schemas"]["NodeInstitution"][];
             };
             meta?: {
-              /** @example 1746539894 */
+              /** @example 1746621966 */
               timestamp?: number;
               /** @example v1 */
               version?: string;
@@ -5135,7 +5157,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5190,7 +5212,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5280,7 +5302,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5337,7 +5359,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5404,7 +5426,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5472,7 +5494,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5541,7 +5563,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746539894
+               * @example 1746621966
                */
               timestamp?: number;
               /**
@@ -5709,6 +5731,41 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  tvet_application_pdf: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Application PDF */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/pdf": string;
+        };
+      };
+      /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
       };
     };
   };

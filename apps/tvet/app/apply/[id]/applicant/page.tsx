@@ -6,6 +6,7 @@ import {
   ensureStepAvailable,
   type ApplicationStep,
 } from "@/app/apply/[id]/stepper-utils";
+import { getCountryStates } from "@/lib/api/address";
 import { getApplicationProgress } from "@/lib/api/application";
 import { parsePhoneNumber } from "@/lib/phone";
 
@@ -19,6 +20,7 @@ export default async function ApplicantPage({ params }: ApplicantPageProps) {
   const { id } = await params;
 
   const application = await getApplicationProgress({ id });
+  const counties = await getCountryStates("KE");
 
   ensureStepAvailable(STEP_NAME, application);
 
@@ -31,6 +33,7 @@ export default async function ApplicantPage({ params }: ApplicantPageProps) {
 
       <ApplicantForm
         id={id}
+        counties={counties}
         defaultValues={{
           ...defaultValues,
           phones: defaultValues?.applicant_phone_number?.map(parsePhoneNumber),

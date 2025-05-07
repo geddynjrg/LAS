@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 
 import { Alert } from "@workspace/ui/components/alert";
 import {
@@ -25,14 +25,18 @@ import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { IdTypeFields } from "@/app/apply/[id]/id-type-fields";
 import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
+import { useCountrySubdivisions } from "@/hooks/useCountySubDivisions";
+import { clientApi } from "@/lib/api/client-api";
 
 export interface ApplicantFormProps {
   id: string;
+  counties?: { id?: number; name?: string }[];
   defaultValues?: Partial<ApplicantSchema>;
 }
 
 export const ApplicantForm: FC<ApplicantFormProps> = ({
   id,
+  counties,
   defaultValues,
 }) => {
   const t = useTranslations("ApplyForm");
@@ -46,6 +50,13 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
   const [chosenCounty, setChosenCounty] = useState(
     state.values?.applicant_county,
   );
+
+  const chosenCountyId = counties?.find(
+    (county) => county.name === chosenCounty,
+  )?.id;
+
+  const [subdivisions, subDivisionsLoading] =
+    useCountrySubdivisions(chosenCountyId);
 
   return (
     <ApplyFormWrap
@@ -130,11 +141,13 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         control={(props) => (
           <Combobox
             {...props}
-            onValueChange={setChosenCounty}
+            onValueChange={(value) => {
+              setChosenCounty(value);
+            }}
             placeholder={t("chooseOrSearch")}
-            options={dummyCounties.map((county) => ({
-              label: county.name,
-              value: county.name,
+            options={counties?.map((county) => ({
+              label: county.name ?? "",
+              value: county.name ?? "",
             }))}
           />
         )}
