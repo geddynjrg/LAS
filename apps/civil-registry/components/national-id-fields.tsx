@@ -233,7 +233,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             state={state}
             defaultValues={defaultValues}
             name="lastName"
-            label={t("DetailsPage.last-name")}
+            label={t("DetailsPage.surname")}
             control={(props) => <Input {...props} />}
             editable={editable}
             required
