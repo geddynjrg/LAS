@@ -40,6 +40,18 @@ export async function middleware(request: NextRequest) {
     });
   }
 
+  // Redirect api requests to api route with correct headers
+  if (path.startsWith("/api")) {
+    const newUrl = new URL(
+      `${path}${request.nextUrl.search}`,
+      process.env.NEXT_API_URL,
+    );
+
+    requestHeaders.set("authorization", `Bearer ${session}`);
+
+    return NextResponse.rewrite(newUrl, { headers: requestHeaders });
+  }
+
   return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
@@ -48,11 +60,10 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

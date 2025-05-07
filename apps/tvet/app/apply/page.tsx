@@ -1,4 +1,3 @@
-import { getTranslations } from "next-intl/server";
 import Form from "next/form";
 import { redirect } from "next/navigation";
 
@@ -10,7 +9,7 @@ import {
 } from "@workspace/ui/components/numbered-list";
 
 import { ApplyForm } from "@/app/apply/apply-form";
-import { createApplication } from "@/lib/api/application";
+import { createApplication, getIntroContent } from "@/lib/api/application";
 
 export interface ApplyPageProps {
   searchParams: Promise<{ course?: string }>;
@@ -34,31 +33,28 @@ const applyAction = async (formData: FormData) => {
 
 export default async function ApplyPage({ searchParams }: ApplyPageProps) {
   const { course } = await searchParams;
+  const data = await getIntroContent();
 
-  const t = await getTranslations("ApplyPage");
   return (
     <div className="flex flex-1 flex-col">
       <Container className="max-w-[500px] flex-1">
-        <h2 className="typo-h2">{t("title")}</h2>
-        <p className="mt-4">{t("description")}</p>
-        <NumberedList
-          variant="bulletNumbers"
-          bulletAlignment="top"
-          className="mx-auto mt-8"
-        >
-          <NumberedListItem>
-            <p className="typo-h6">{t("1Heading")}</p>
-            <p className="mt-2">{t("1Description")}</p>
-          </NumberedListItem>
-          <NumberedListItem>
-            <p className="typo-h6">{t("2Heading")}</p>
-            <p className="mt-2">{t("2Description")}</p>
-          </NumberedListItem>
-          <NumberedListItem>
-            <p className="typo-h6">{t("3Heading")}</p>
-            <p className="mt-2">{t("3Description")}</p>
-          </NumberedListItem>
-        </NumberedList>
+        {data?.title && <h2 className="typo-h2">{data.title}</h2>}
+        {data?.subtitle && <p className="mt-4">{data.subtitle}</p>}
+
+        {data?.blocks && (
+          <NumberedList
+            variant="bulletNumbers"
+            bulletAlignment="top"
+            className="mx-auto mt-8"
+          >
+            {data.blocks.map((block) => (
+              <NumberedListItem key={block.id}>
+                <p className="typo-h6">{block.title}</p>
+                <p className="mt-2">{block.description}</p>
+              </NumberedListItem>
+            ))}
+          </NumberedList>
+        )}
       </Container>
 
       <ActionBar>

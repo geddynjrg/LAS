@@ -1,4 +1,5 @@
 import { IconDownload, IconX } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import { type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -26,6 +27,7 @@ export const UploadPaymentProofForm: FC<UploadPaymentProofFormProps> = ({
   onClose,
   application_id,
 }) => {
+  const t = useTranslations("ApplicationCard");
   const [state, formAction, isPending] = useForm(
     uploadPaymentProofAction,
     uploadPaymentProofSchema,
@@ -48,24 +50,21 @@ export const UploadPaymentProofForm: FC<UploadPaymentProofFormProps> = ({
       >
         <IconX />
       </Button>
-      <p>
-        Complete the transfer and upload proof of payment, such as a receipt or
-        screenshot.
-      </p>
+      <p>{t("proofUploadDescription")}</p>
       <Underline asChild>
         <a
           href={`/apply/${application_id}/payment-info-pdf`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          <IconDownload className="mr-2" /> Download payment instructions
+          <IconDownload className="mr-2" /> {t("proofInstructionsLink")}
         </a>
       </Underline>
 
       <Field
         state={state}
         name="payment_proof"
-        label="Proof of payment"
+        label={t("uploadProofLabel")}
         required
         control={(props) => (
           <FileUploadInput
@@ -76,7 +75,7 @@ export const UploadPaymentProofForm: FC<UploadPaymentProofFormProps> = ({
         )}
       />
       <SubmitButton disabled={isPending} className="w-full">
-        Upload proof of payment
+        {t("proofUploadButton")}
       </SubmitButton>
     </Form>
   );

@@ -141,18 +141,6 @@
     "getInTouch": "Wasiliana nasi na tutakusaidia kupata majibu unayohitaji."
   },
 
-  "ApplyPage": {
-    "title": "Kabla hujaanza",
-    "description": "Hapa kuna mambo unapaswa kujua kabla ya kuanza mchakato wa maombi",
-    "1Heading": "Kuomba kunahitaji ada ya mara moja ya 250 KSh",
-    "1Description": "Ada hii haihakikishi kuingia, ni kwa ajili ya kuchakata maombi yako",
-    "2Heading": "Utahitaji aina fulani ya kitambulisho",
-    "2Description": "Utahitaji kupakia picha ya kitambulisho chako cha kitaifa, cheti cha kuzaliwa au kitambulisho cha wageni",
-    "3Heading": "Ikiwa huna aina yoyote ya kitambulisho",
-    "3Description": "Utahitaji kuwasiliana moja kwa moja na taasisi na kujadili chaguzi za kuomba. Mawasiliano ya taasisi yako yapo kwenye ukurasa wa taasisi",
-    "undertood": "Nimeelewa"
-  },
-
   "NotFoundPage": {
     "title": "Ukurasa haujapatikana",
     "description": "Samahani, ukurasa unaotafuta haupo.",
@@ -197,6 +185,10 @@
     "payment_status_paid": "Imelipwa",
     "payment_status_rejected": "Imekataliwa",
     "uploadProof": "Pakia ushahidi wa malipo",
+    "uploadProofLabel": "Proof of payment",
+    "proofUploadDescription": "Kamilisha uhamisho na pakia ushahidi wa malipo, kama risiti au picha ya skrini.",
+    "proofInstructionsLink": "Pakua maelekezo ya malipo",
+    "proofUploadButton": "Pakia ushahidi wa malipo",
     "proofUploadSuccess": "Ushahidi wa malipo umepakiwa kwa mafanikio",
     "edit": "Hariri maombi",
     "viewNextSteps": "Tazama hatua zinazofuata",

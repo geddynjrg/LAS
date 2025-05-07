@@ -9,6 +9,7 @@ import { useState, type FC, type ReactNode } from "react";
 import { Alert } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
+import { DataNode } from "@workspace/ui/components/data-node";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { Divider } from "@workspace/ui/components/divider";
 import { cn } from "@workspace/ui/lib/utils";
@@ -46,6 +47,9 @@ export interface ApplicationCardProps {
   payment_status?: ApplicationPaymentStatus;
   institution?: string;
   course?: string;
+  intake?: string;
+  course_duration?: string;
+  current_step?: string;
   className?: string;
 }
 
@@ -87,10 +91,10 @@ export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
     >
       <div className="flex-1">
         <DataPair className={cn("justify-around")}>
-          {/* 
-            <DataNode label="Intake">{application.intake}</DataNode>
-            <DataNode label="Duration">{application.duration}</DataNode> 
-          */}
+          {props.intake && <DataNode label="Intake">{props.intake}</DataNode>}
+          {props.course_duration && (
+            <DataNode label="Duration">{props.course_duration}</DataNode>
+          )}
         </DataPair>
       </div>
 
@@ -112,7 +116,9 @@ const ApplicationActions: FC<ApplicationCardProps> = (props) => {
     case "draft":
       return (
         <Button asChild>
-          <Link href={`/apply/${props.application_id}/applicant`}>
+          <Link
+            href={`/apply/${props.application_id}/${props.current_step ?? "applicant"}`}
+          >
             {t("edit")}
           </Link>
         </Button>

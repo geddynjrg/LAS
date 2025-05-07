@@ -16,8 +16,6 @@ export default async function DashboardPage() {
     getUserApplications(),
   ]);
 
-  console.log(userApplications);
-
   // Split userApplications into two arrays to make two columns.
   // This will fix the issue when card is expanded, the second column height changes
   const columns = userApplications.reduce(
@@ -25,11 +23,11 @@ export default async function DashboardPage() {
       const columnIndex = index % 2;
       const column = acc[columnIndex]!;
 
-      // column.push(application);
+      column.push(application);
 
       return acc;
     },
-    [[], []] as [(typeof userApplications)[], (typeof userApplications)[]],
+    [[], []] as [typeof userApplications, typeof userApplications],
   );
 
   return (
@@ -39,8 +37,12 @@ export default async function DashboardPage() {
 
       {userApplications.length > 0 ? (
         <div className="mt-7 grid gap-5 md:grid-cols-2">
-          {userApplications.map((application) => (
-            <ApplicationCard key={application.id} {...application} />
+          {columns.map((column, index) => (
+            <div key={index} className="space-y-5">
+              {column.map((application) => (
+                <ApplicationCard key={application.id} {...application} />
+              ))}
+            </div>
           ))}
         </div>
       ) : (

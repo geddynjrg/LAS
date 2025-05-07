@@ -76,3 +76,24 @@ export async function updateApplication(
     data: res.data?.data,
   };
 }
+
+export async function getIntroContent() {
+  return (
+    await api.GET("/api/v1/application/intro", {
+      params: {
+        header: { "X-Language": await getLocale() },
+      },
+    })
+  ).data?.data;
+}
+
+export async function getThankYouContent(applicationId: string) {
+  return (
+    await api.GET("/api/v1/application/{application_id}/thank-you", {
+      params: {
+        header: { "X-Language": await getLocale() },
+        path: { application_id: applicationId },
+      },
+    })
+  ).data?.data;
+}

@@ -6,11 +6,13 @@ import { notFound } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { AvailableSponsorshipsBlock } from "@workspace/ui/components/tvet/blocks/available-sponsorships-block";
-import { DescriptionBlock } from "@workspace/ui/components/tvet/blocks/description-block";
 import { Underline } from "@workspace/ui/components/underline";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { getApplicationProgress } from "@/lib/api/application";
+import {
+  getApplicationProgress,
+  getThankYouContent,
+} from "@/lib/api/application";
 import { getCourseNodeById } from "@/lib/api/node";
 
 export interface SuccessPageProps {
@@ -30,52 +32,46 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
   const courseId = application.steps_data?.course?.course;
 
   const course = courseId ? await getCourseNodeById(courseId) : null;
-  const institution = course?.data?.content.institution;
   const sponsorships = course?.data?.content.page_components.find(
     (component) => component.block_type === "available_sponsorships",
   );
-  const contact = course?.data?.content.page_components.find(
-    (component) => component.block_type === "contact",
-  );
+
+  const data = await getThankYouContent(id);
+  console.log("data", data);
 
   return (
     <Container className="mb-8 space-y-7">
-      <h2 className="typo-h2">{t("title")}</h2>
+      {data?.title && <h2 className="typo-h2">{data.title}</h2>}
 
       <div className="space-y-5">
-        <p
-          dangerouslySetInnerHTML={{
-            __html: t.markup("description", {
-              institution: institution?.title ?? "",
-            }),
-          }}
-        />
+        {data?.message && <p>{data?.message}</p>}
+        {data?.institution_message && <p>{data?.institution_message}</p>}
 
-        {contact && (
+        {data?.institution_contacts && (
           <div className="space-y-1">
             <div className="font-bold">
-              {t("contacts", { institution: institution?.title ?? "" })}
+              {t("contacts", { institution: data?.institution_contacts.name })}
             </div>
 
-            {contact.email && (
+            {data.institution_contacts.email && (
               <Underline asChild>
                 <a
                   className={cn("flex items-center")}
-                  href={`mailto:${contact.email}`}
+                  href={`mailto:${data.institution_contacts.email}`}
                 >
                   <IconMail className="mr-2" />
-                  {contact.email}
+                  {data.institution_contacts.email}
                 </a>
               </Underline>
             )}
 
-            {contact.phone && (
+            {data.institution_contacts.phone && (
               <Underline asChild>
                 <a
                   className={cn("flex items-center")}
-                  href={`tel:${contact.phone}`}
+                  href={`tel:${data.institution_contacts.phone}`}
                 >
-                  <IconPhone /> {contact.phone}
+                  <IconPhone /> {data.institution_contacts.phone}
                 </a>
               </Underline>
             )}
@@ -83,19 +79,43 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
         )}
       </div>
 
-      <div className={cn("flex w-full max-w-[27rem] flex-col gap-4")}>
-        <Button asChild>
-          <Link href="/dashboard">{t("viewApplications")}</Link>
-        </Button>
-        <Button variant="secondary" asChild>
-          <a href="payment-info-pdf" target="_blank" rel="noopener noreferrer">
-            {t("downloadApplication")}
-          </a>
-        </Button>
-        <Button variant="secondary" asChild>
-          <Link href="/">{t("frontPage")}</Link>
-        </Button>
-      </div>
+      {data?.buttons && (
+        <div className={cn("flex w-full max-w-[27rem] flex-col gap-4")}>
+          {Object.entries(data.buttons).map(([key, button], index) => (
+            <Button
+              asChild
+              key={key}
+              variant={index === 0 ? "default" : "secondary"}
+            >
+              <Link
+                href={button.url}
+                target={button.url.startsWith("/api") ? "_blank" : undefined}
+                rel={
+                  button.url.startsWith("/api")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
+              >
+                {button.title}
+              </Link>
+            </Button>
+          ))}
+
+          <hr />
+          <Button variant="secondary" asChild>
+            <a
+              href="payment-info-pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("downloadApplication")}
+            </a>
+          </Button>
+          <Button variant="secondary" asChild>
+            <Link href="/">{t("frontPage")}</Link>
+          </Button>
+        </div>
+      )}
 
       {sponsorships && (
         <>

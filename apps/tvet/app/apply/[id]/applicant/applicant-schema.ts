@@ -45,7 +45,7 @@ export const applicantSchema = idTypeSChema
     applicant_surname: z.string().min(1),
     applicant_sex: sex,
     applicant_date_of_birth: z.string().trim().date(),
-    applicant_email: z.union([z.literal(""), z.string().email()]),
+    applicant_email: z.string().email(),
     applicant_county: z.string().trim().nonempty(),
     applicant_subcounty: z.string().trim().nonempty(),
     applicant_ward: z.string().trim().nonempty(),

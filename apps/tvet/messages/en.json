@@ -141,18 +141,6 @@
     "getInTouch": "Get in contact with us and we’ll help you get the answers you need."
   },
 
-  "ApplyPage": {
-    "title": "Before you start",
-    "description": "Here are some things you should know before starting the application process",
-    "1Heading": "Applying requires a one time fee of 250 KSh",
-    "1Description": "This fee doesn’t guarantee admittance, it’s for processing your application",
-    "2Heading": "You will need some form of ID",
-    "2Description": "You will need to upload a picture of either your National ID, Birth Certificate or Alien ID",
-    "3Heading": "If you don’t have any form of ID",
-    "3Description": "You will need to contact the institution directly and discuss options for applying. The institution contact are on the institution page",
-    "understood": "Understood"
-  },
-
   "NotFoundPage": {
     "title": "Page not found",
     "description": "Sorry, the page you are looking for does not exist.",
@@ -197,6 +185,10 @@
     "payment_status_paid": "Paid",
     "payment_status_rejected": "Rejected",
     "uploadProof": "Upload proof of payment",
+    "uploadProofLabel": "Proof of payment",
+    "proofUploadDescription": "Complete the transfer and upload proof of payment, such as a receipt or screenshot.",
+    "proofInstructionsLink": "Download payment instructions",
+    "proofUploadButton": "Upload proof of payment",
     "proofUploadSuccess": "Payment proof uploaded successfully",
     "edit": "Edit application",
     "viewNextSteps": "View next steps",

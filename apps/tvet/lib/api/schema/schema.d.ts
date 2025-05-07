@@ -224,6 +224,126 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/address/countries": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a list of all countries
+     * @description Returns a list of all available countries.
+     */
+    get: operations["tvet_address_rest_countries"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/address/countries/{country_code}/subdivisions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a list of subdivisions for a country
+     * @description Returns a list of subdivisions (states, provinces, etc.) for a specific country.
+     */
+    get: operations["tvet_address_rest_subdivisions"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/address/countries/{country_code}/states": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a list of states for a country
+     * @description Returns a list of states/provinces with enhanced data for a specific country.
+     */
+    get: operations["tvet_address_rest_states"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/address/countries/{country_code}/cities": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a list of cities for a country
+     * @description Returns a list of all cities for a specific country.
+     */
+    get: operations["tvet_address_rest_country_cities"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/address/countries/{country_code}/states/{state_code}/cities": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get a list of cities for a country and state
+     * @description Returns a list of cities for a specific country and state.
+     */
+    get: operations["tvet_address_rest_cities"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/intro": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get application 'Intro' page data
+     * @description Returns the introduction content with informational blocks for TVET application process.
+     */
+    get: operations["tvet_application_intro"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/application/{application_id}/payment-proof": {
     parameters: {
       query?: never;
@@ -364,6 +484,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/{application_id}/thank-you": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get application 'Thank you' page data
+     * @description Returns the confirmation content with institution details and action buttons.
+     */
+    get: operations["tvet_application_confirmation"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/application/{application_id}/status": {
     parameters: {
       query?: never;
@@ -396,7 +536,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1746188216
+         * @example 1746539894
          */
         timestamp: number;
         /**
@@ -505,6 +645,415 @@ export interface components {
        * @example Bearer
        */
       token_type: string;
+    };
+    tvet_address_country: {
+      /**
+       * @description The ISO 3166-1 alpha-2 country code.
+       * @example US
+       */
+      country_code?: string;
+      /**
+       * @description The country name.
+       * @example United States
+       */
+      name?: string;
+      /**
+       * @description The country ID.
+       * @example 233
+       */
+      id?: number;
+      /**
+       * @description The ISO 3166-1 alpha-3 country code.
+       * @example USA
+       */
+      iso3?: string;
+      /**
+       * @description The ISO 3166-1 numeric country code.
+       * @example 840
+       */
+      numeric_code?: string;
+      /**
+       * @description The country capital.
+       * @example Washington, D.C.
+       */
+      capital?: string;
+      /**
+       * @description The country currency code.
+       * @example USD
+       */
+      currency?: string;
+      /**
+       * @description The country currency name.
+       * @example United States dollar
+       */
+      currency_name?: string;
+      /**
+       * @description The country currency symbol.
+       * @example $
+       */
+      currency_symbol?: string;
+      /**
+       * @description The country top-level domain.
+       * @example .us
+       */
+      tld?: string;
+      /**
+       * @description The country region.
+       * @example Americas
+       */
+      region?: string;
+      /**
+       * @description The country subregion.
+       * @example Northern America
+       */
+      subregion?: string;
+      /**
+       * @description The country latitude.
+       * @example 38.00000000
+       */
+      latitude?: string;
+      /**
+       * @description The country longitude.
+       * @example -97.00000000
+       */
+      longitude?: string;
+      /**
+       * @description The country flag emoji.
+       * @example 🇺🇸
+       */
+      emoji?: string;
+      /**
+       * @description The country phone code.
+       * @example 1
+       */
+      phone_code?: string;
+    };
+    tvet_address_countries_response: {
+      /** @description List of countries. */
+      data?: components["schemas"]["tvet_address_country"][];
+      /** @description Metadata about the response. */
+      meta?: {
+        /**
+         * @description Unix timestamp of the response.
+         * @example 1621234567
+         */
+        timestamp?: number;
+        /** @description Language information. */
+        language?: {
+          /**
+           * @description Current language code.
+           * @example en
+           */
+          current?: string;
+          /**
+           * @description Default language code.
+           * @example en
+           */
+          default?: string;
+          /** @description Available languages. */
+          available?: Record<string, never>;
+        };
+        /**
+         * @description Total number of countries.
+         * @example 249
+         */
+        count?: number;
+      };
+    };
+    tvet_address_subdivision: {
+      /**
+       * @description The subdivision code.
+       * @example AL
+       */
+      code?: string;
+      /**
+       * @description The subdivision name.
+       * @example Alabama
+       */
+      name?: string;
+    };
+    tvet_address_subdivisions_response: {
+      /** @description List of subdivisions. */
+      data?: components["schemas"]["tvet_address_subdivision"][];
+      /** @description Metadata about the response. */
+      meta?: {
+        /**
+         * @description Unix timestamp of the response.
+         * @example 1621234567
+         */
+        timestamp?: number;
+        /** @description Language information. */
+        language?: {
+          /**
+           * @description Current language code.
+           * @example en
+           */
+          current?: string;
+          /**
+           * @description Default language code.
+           * @example en
+           */
+          default?: string;
+          /** @description Available languages. */
+          available?: Record<string, never>;
+        };
+        /**
+         * @description The country code.
+         * @example US
+         */
+        country_code?: string;
+        /**
+         * @description The parent subdivision ID.
+         * @example null
+         */
+        parent_id?: string | null;
+        /**
+         * @description Total number of subdivisions.
+         * @example 50
+         */
+        count?: number;
+      };
+    };
+    tvet_address_state: {
+      /**
+       * @description The state ID.
+       * @example 43
+       */
+      id?: number;
+      /**
+       * @description The state name.
+       * @example Alabama
+       */
+      name?: string;
+      /**
+       * @description The state code.
+       * @example AL
+       */
+      state_code?: string;
+      /**
+       * @description The country code.
+       * @example US
+       */
+      country_code?: string;
+      /**
+       * @description The country name.
+       * @example United States
+       */
+      country_name?: string;
+      /**
+       * @description The state type.
+       * @example state
+       */
+      type?: string;
+      /**
+       * @description The state latitude.
+       * @example 32.31823140
+       */
+      latitude?: string;
+      /**
+       * @description The state longitude.
+       * @example -86.90229800
+       */
+      longitude?: string;
+    };
+    tvet_address_states_response: {
+      /** @description List of states. */
+      data?: components["schemas"]["tvet_address_state"][];
+      /** @description Metadata about the response. */
+      meta?: {
+        /**
+         * @description Unix timestamp of the response.
+         * @example 1621234567
+         */
+        timestamp?: number;
+        /** @description Language information. */
+        language?: {
+          /**
+           * @description Current language code.
+           * @example en
+           */
+          current?: string;
+          /**
+           * @description Default language code.
+           * @example en
+           */
+          default?: string;
+          /** @description Available languages. */
+          available?: Record<string, never>;
+        };
+        /**
+         * @description The country code.
+         * @example US
+         */
+        country_code?: string;
+        /**
+         * @description Total number of states.
+         * @example 50
+         */
+        count?: number;
+      };
+    };
+    tvet_address_city: {
+      /**
+       * @description The city ID.
+       * @example 57957
+       */
+      id?: number;
+      /**
+       * @description The city name.
+       * @example Los Angeles
+       */
+      name?: string;
+      /**
+       * @description The state code.
+       * @example CA
+       */
+      state_code?: string;
+      /**
+       * @description The state name.
+       * @example California
+       */
+      state_name?: string;
+      /**
+       * @description The country code.
+       * @example US
+       */
+      country_code?: string;
+      /**
+       * @description The country name.
+       * @example United States
+       */
+      country_name?: string;
+      /**
+       * @description The city latitude.
+       * @example 34.05223420
+       */
+      latitude?: string;
+      /**
+       * @description The city longitude.
+       * @example -118.24368490
+       */
+      longitude?: string;
+      /**
+       * @description The WikiData ID.
+       * @example Q65
+       */
+      wikiDataId?: string;
+    };
+    tvet_address_cities_response: {
+      /** @description List of cities. */
+      data?: components["schemas"]["tvet_address_city"][];
+      /** @description Metadata about the response. */
+      meta?: {
+        /**
+         * @description Unix timestamp of the response.
+         * @example 1621234567
+         */
+        timestamp?: number;
+        /** @description Language information. */
+        language?: {
+          /**
+           * @description Current language code.
+           * @example en
+           */
+          current?: string;
+          /**
+           * @description Default language code.
+           * @example en
+           */
+          default?: string;
+          /** @description Available languages. */
+          available?: Record<string, never>;
+        };
+        /**
+         * @description The country code.
+         * @example US
+         */
+        country_code?: string;
+        /**
+         * @description The state code.
+         * @example CA
+         */
+        state_code?: string;
+        /**
+         * @description Total number of cities.
+         * @example 482
+         */
+        count?: number;
+      };
+    };
+    IntroductionBlock: {
+      /**
+       * @description The sequential ID of the block
+       * @example 1
+       */
+      id: number;
+      /**
+       * @description The title of the information block
+       * @example Applying requires a one time fee of 250 KSh
+       */
+      title: string;
+      /**
+       * @description The description text for the information block
+       * @example This fee doesn't guarantee admittance, it's for processing your application
+       */
+      description: string;
+    };
+    Introduction: {
+      data: {
+        /**
+         * @description The main title of the introduction section
+         * @example Before you start
+         */
+        title: string;
+        /**
+         * @description The subtitle text for the introduction section
+         * @example Here are some things you should know before starting the application process
+         */
+        subtitle: string;
+        /** @description Array of information blocks */
+        blocks: components["schemas"]["IntroductionBlock"][];
+      };
+      meta: {
+        /**
+         * @description Unix timestamp when the response was generated
+         * @example 1622548800
+         */
+        timestamp: number;
+        /**
+         * @description API version
+         * @example v1
+         */
+        version: string;
+        /** @description Language information */
+        language: {
+          /**
+           * @description The current language code used for the response
+           * @example en
+           */
+          current: string;
+          /**
+           * @description The default language code of the system
+           * @example en
+           */
+          default: string;
+          /**
+           * @description List of available language codes
+           * @example [
+           *       "en",
+           *       "sw"
+           *     ]
+           */
+          available: string[];
+        };
+      };
+    };
+    ErrorResponse: {
+      /**
+       * @description Error message
+       * @example API endpoint is disabled
+       */
+      message: string;
     };
     PaymentProofRequest: {
       payment_proof: {
@@ -1618,41 +2167,6 @@ export interface components {
         version?: string;
       };
     };
-    ErrorResponse: {
-      /** @example false */
-      success?: boolean;
-      /**
-       * @description Error message
-       * @example Invalid input data provided
-       */
-      message?: string;
-      /**
-       * @description Detailed validation errors
-       * @example {
-       *       "applicant_first_name": [
-       *         "This field is required"
-       *       ],
-       *       "applicant_email": [
-       *         "Invalid email format"
-       *       ]
-       *     }
-       */
-      errors?: {
-        [key: string]: string[];
-      };
-      meta?: {
-        /**
-         * @description Unix timestamp of the response
-         * @example 1622548800
-         */
-        timestamp?: number;
-        /**
-         * @description API version
-         * @example v1
-         */
-        version?: string;
-      };
-    };
     ApplicationCreateRequest: {
       /**
        * @description First name of the applicant
@@ -2079,6 +2593,21 @@ export interface components {
          */
         course?: string;
         /**
+         * @description The duration of the course
+         * @example 1 year 3 months
+         */
+        course_duration?: string;
+        /**
+         * @description The intake period
+         * @example January 2025
+         */
+        intake?: string;
+        /**
+         * @description The current step of the application
+         * @example applicant
+         */
+        current_step?: string;
+        /**
          * @description The timestamp when the application was created (ISO 8601)
          * @example 2023-06-01T12:00:00+00:00
          */
@@ -2114,6 +2643,105 @@ export interface components {
          * @example 1622563200
          */
         timestamp?: number;
+      };
+    };
+    InstitutionContact: {
+      /**
+       * @description The name of the institution
+       * @example Kenya Technical Training Institute
+       */
+      name: string;
+      /**
+       * Format: email
+       * @description The email address of the institution
+       * @example contact@ktti.edu.ke
+       */
+      email?: string;
+      /**
+       * @description The phone number of the institution
+       * @example +254 700 123456
+       */
+      phone?: string;
+    };
+    ActionButton: {
+      /**
+       * @description The button text
+       * @example View my applications
+       */
+      title: string;
+      /**
+       * Format: uri
+       * @description The URL the button links to
+       * @example /my-applications
+       */
+      url: string;
+    };
+    Confirmation: {
+      data: {
+        /**
+         * @description The main title of the confirmation page
+         * @example Thank you for applying!
+         */
+        title: string;
+        /**
+         * @description The primary confirmation message
+         * @example You should receive a confirmation on your phone that your application has been successfully submitted.
+         */
+        message: string;
+        /**
+         * @description Message about the institution processing the application
+         * @example Your application has been forwarded to [institution:name] and is being processed. You will be notified via SMS.
+         */
+        institution_message?: string;
+        /** @description Contact information for the institution */
+        institution_contacts?: components["schemas"]["InstitutionContact"];
+        /** @description Action buttons for the confirmation page */
+        buttons: {
+          /** @description Button to view applications */
+          view_applications: components["schemas"]["ActionButton"];
+          /** @description Button to download the current application */
+          download_application: components["schemas"]["ActionButton"];
+          /** @description Button to return to the home page */
+          back_to_home: components["schemas"]["ActionButton"];
+        };
+        /**
+         * @description The application ID
+         * @example APP-2023-1234
+         */
+        application_id?: string;
+      };
+      meta: {
+        /**
+         * @description Unix timestamp when the response was generated
+         * @example 1622548800
+         */
+        timestamp: number;
+        /**
+         * @description API version
+         * @example v1
+         */
+        version: string;
+        /** @description Language information */
+        language: {
+          /**
+           * @description The current language code used for the response
+           * @example en
+           */
+          current: string;
+          /**
+           * @description The default language code of the system
+           * @example en
+           */
+          default: string;
+          /**
+           * @description List of available language codes
+           * @example [
+           *       "en",
+           *       "sw"
+           *     ]
+           */
+          available: string[];
+        };
       };
     };
     ApplicationStatusResponse: {
@@ -4197,7 +4825,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp: number;
               /**
@@ -4270,7 +4898,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp: number;
               /**
@@ -4367,7 +4995,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4458,7 +5086,7 @@ export interface operations {
               institutions?: components["schemas"]["NodeInstitution"][];
             };
             meta?: {
-              /** @example 1746188216 */
+              /** @example 1746539894 */
               timestamp?: number;
               /** @example v1 */
               version?: string;
@@ -4507,7 +5135,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4562,7 +5190,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4652,7 +5280,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4709,7 +5337,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4776,7 +5404,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4844,7 +5472,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4913,7 +5541,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746188216
+               * @example 1746539894
                */
               timestamp?: number;
               /**
@@ -4935,6 +5563,201 @@ export interface operations {
             /** @example Authentication error: Invalid or expired JWT token. */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  tvet_address_rest_countries: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description A list of countries */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["tvet_address_countries_response"];
+        };
+      };
+    };
+  };
+  tvet_address_rest_subdivisions: {
+    parameters: {
+      query?: {
+        /** @description The ID of the parent subdivision to get child subdivisions. */
+        parent_id?: string;
+      };
+      header?: never;
+      path: {
+        /** @description The ISO-2 country code (e.g., "US", "KE"). */
+        country_code: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description A list of subdivisions */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["tvet_address_subdivisions_response"];
+        };
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  tvet_address_rest_states: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The ISO-2 country code (e.g., "US", "KE"). */
+        country_code: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description A list of states */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["tvet_address_states_response"];
+        };
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  tvet_address_rest_country_cities: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The ISO-2 country code (e.g., "US", "KE"). */
+        country_code: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description A list of cities */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["tvet_address_cities_response"];
+        };
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  tvet_address_rest_cities: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description The ISO-2 country code (e.g., "US", "KE"). */
+        country_code: string;
+        /** @description The state code (e.g., "CA", "NY"). */
+        state_code: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description A list of cities */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["tvet_address_cities_response"];
+        };
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  tvet_application_intro: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Alternative way to specify language using a header (e.g., en, sw) */
+        "X-Language"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Introduction content successfully retrieved */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Introduction"];
+        };
+      };
+      /** @description Invalid request parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description API endpoint is disabled */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
     };
@@ -5287,6 +6110,59 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  tvet_application_confirmation: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Language code to specify content language (e.g., en, sw) */
+        "X-Language"?: string;
+      };
+      path: {
+        /** @description The application ID */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Confirmation content successfully retrieved */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Confirmation"];
+        };
+      };
+      /** @description Invalid request parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
       };
     };
   };
