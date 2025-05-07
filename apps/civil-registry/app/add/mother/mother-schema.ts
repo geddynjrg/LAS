@@ -14,6 +14,7 @@ export const motherSchema = z
     passportNumber: z.string().optional(),
     fatherName: z.string().optional(),
     education: z.string().optional(),
+    age: z.string().optional(),
     dob: z.string().optional(),
     nationality: z.string().nonempty(),
     maritalStatus: z.string().nonempty(),
@@ -82,8 +83,8 @@ export const motherSchema = z
       if (!data.documentType) {
         ctx.addIssue({
           code: "custom",
-          message: "FormErrorMessages.passportNumberRequired",
-          path: ["passportNumber"],
+          message: "FormErrorMessages.documentTypeRequired",
+          path: ["documentType"],
         });
       }
       if (!data.passportNumber) {

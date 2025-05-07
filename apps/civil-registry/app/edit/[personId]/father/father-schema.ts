@@ -16,12 +16,13 @@ export const fatherSchema = z.object({
   affidavit: z.string().optional(),
   lastName: z.string().nonempty(),
   passportNumber: z.string().optional(),
+  age: z.string().optional(),
   dob: z.string().nonempty(),
   sex: SexTypeEnum,
   citizenship: z.string().nonempty(),
   nationality: z.string().nonempty(),
   documentType: z.string().optional(),
-  education: z.string().nonempty(),
+  education: z.string().optional(),
   affidavitFile: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   contacts: z
     .array(

@@ -20,7 +20,6 @@ import { fatherSchema } from "@/app/edit/[personId]/father/father-schema";
 import { ContactFields } from "@/components/contact-fields";
 import { NationalIdFields } from "@/components/national-id-fields";
 import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
-import { educationOptions } from "@/lib/data/dummy-data";
 import type { Person } from "@/lib/data/person";
 import { getObjectDiff } from "@/lib/util/get-object-diff";
 import { nationalities } from "@/lib/util/nationalities";
@@ -113,22 +112,36 @@ export const FatherFormBlock: FC<FatherFormBlockProps> = ({
 
               {fullName ?? "–"}
             </DataNode>
-            <Field
-              state={state}
-              editable={false}
-              name="nationalId"
-              label={t("DetailsPage.national-id")}
-              control={(props) => <Input {...props} />}
-            />
+            {defaultValues?.nationalId && (
+              <Field
+                state={state}
+                editable={false}
+                name="nationalId"
+                label={t("DetailsPage.national-id")}
+                control={(props) => <Input {...props} />}
+              />
+            )}
 
-            <Field
-              state={state}
-              name="dob"
-              isDate
-              editable={false}
-              label={t("DetailsPage.dob")}
-              control={(props) => <DatePicker {...props} />}
-            />
+            {defaultValues?.nationalId && (
+              <Field
+                state={state}
+                name="dob"
+                isDate
+                label={t("DetailsPage.dob")}
+                control={(props) => <DatePicker {...props} />}
+                editable={false}
+              />
+            )}
+
+            {!defaultValues?.nationalId && (
+              <Field
+                state={state}
+                name="age"
+                label={t("DetailsPage.age")}
+                control={(props) => <Input {...props} />}
+                editable={false}
+              />
+            )}
 
             <input type="hidden" name="sex" value={state.values?.sex} />
 

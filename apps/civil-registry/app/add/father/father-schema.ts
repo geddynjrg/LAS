@@ -23,6 +23,7 @@ export const fatherSchema = z
       )
       .min(1),
     education: z.string().optional(),
+    age: z.string().optional(),
     dob: z.string().optional(),
     nationality: z.string().nonempty(),
   })
@@ -62,6 +63,13 @@ export const fatherSchema = z
           code: "custom",
           message: "FormErrorMessages.lastNameRequired",
           path: ["lastName"],
+        });
+      }
+      if (!data.documentType) {
+        ctx.addIssue({
+          code: "custom",
+          message: "FormErrorMessages.documentTypeRequired",
+          path: ["documentType"],
         });
       }
       if (!data.passportNumber) {

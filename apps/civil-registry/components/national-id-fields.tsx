@@ -24,6 +24,7 @@ interface NationalIdFieldValues {
   middleName: string;
   lastName: string;
   dob: string;
+  age: string;
   citizenship: string;
   documentType: string;
   passportNumber: string;
@@ -208,6 +209,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
         </>
       ) : (
         <>
+          <input type="hidden" name="dob" value={dob} />
           <Field
             state={state}
             defaultValues={defaultValues}
@@ -265,13 +267,29 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
           />
           <Field
             state={state}
+            name="age"
+            label={t("DetailsPage.age")}
+            control={(props) => (
+              <SearchInput
+                {...props}
+                options={Array.from({ length: 60 }, (_, i) => {
+                  const value = i + 10;
+                  return { label: value.toString(), value: value.toString() };
+                })}
+                placeholder={t("FormPlaceholders.select")}
+              />
+            )}
+            required={false}
+          />
+          {/* <Field
+            state={state}
             defaultValues={defaultValues}
             name="dob"
             isDate
             label={t("DetailsPage.dob")}
             editable={editable}
             control={(props) => <DatePicker {...props} />}
-          />
+          /> */}
 
           <Field
             state={state}

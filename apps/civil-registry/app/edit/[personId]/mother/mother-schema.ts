@@ -11,6 +11,7 @@ export const motherSchema = z.object({
   middleName: z.string().optional(),
   fatherName: z.string().optional(),
   lastName: z.string().nonempty(),
+  age: z.string().optional(),
   dob: z.string().nonempty(),
   sex: SexTypeEnum,
   citizenship: z.string().nonempty(),

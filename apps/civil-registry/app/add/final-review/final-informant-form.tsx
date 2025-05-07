@@ -95,14 +95,26 @@ export const FinalInformantForm: FC<FinalInformantFormProps> = ({
         />
       )}
 
-      <Field
-        state={state}
-        name="dob"
-        isDate
-        label={t("DetailsPage.dob")}
-        control={(props) => <DatePicker {...props} />}
-        editable={false}
-      />
+      {nationalId && (
+        <Field
+          state={state}
+          name="dob"
+          isDate
+          label={t("DetailsPage.dob")}
+          control={(props) => <DatePicker {...props} />}
+          editable={false}
+        />
+      )}
+
+      {!nationalId && (
+        <Field
+          state={state}
+          name="age"
+          label={t("DetailsPage.age")}
+          control={(props) => <Input {...props} />}
+          editable={false}
+        />
+      )}
 
       <Field
         state={state}

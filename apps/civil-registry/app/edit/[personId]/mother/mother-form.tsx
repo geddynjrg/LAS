@@ -105,22 +105,36 @@ export const MotherFormBlock: FC<MotherFormBlockProps> = ({
 
           {fullName ?? "–"}
         </DataNode>
-        <Field
-          state={state}
-          editable={false}
-          name="nationalId"
-          label={t("DetailsPage.national-id")}
-          control={(props) => <Input {...props} />}
-        />
+        {defaultValues?.nationalId && (
+          <Field
+            state={state}
+            editable={false}
+            name="nationalId"
+            label={t("DetailsPage.national-id")}
+            control={(props) => <Input {...props} />}
+          />
+        )}
 
-        <Field
-          state={state}
-          name="dob"
-          isDate
-          editable={false}
-          label={t("DetailsPage.dob")}
-          control={(props) => <DatePicker {...props} />}
-        />
+        {defaultValues?.nationalId && (
+          <Field
+            state={state}
+            name="dob"
+            isDate
+            label={t("DetailsPage.dob")}
+            control={(props) => <DatePicker {...props} />}
+            editable={false}
+          />
+        )}
+
+        {!defaultValues?.nationalId && (
+          <Field
+            state={state}
+            name="age"
+            label={t("DetailsPage.age")}
+            control={(props) => <Input {...props} />}
+            editable={false}
+          />
+        )}
 
         <input type="hidden" name="sex" value={state.values?.sex} />
         <input

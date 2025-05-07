@@ -8,7 +8,9 @@ export const informantSchema = z
     lastName: z.string().optional(),
     nationalId: z.string().optional(),
     citizenship: z.string().optional(),
+    documentType: z.string().optional(),
     passportNumber: z.string().optional(),
+    age: z.string().optional(),
     dob: z.string().optional(),
     informantType: z.string().nonempty(),
     nationality: z.string().nonempty(),
@@ -51,6 +53,13 @@ export const informantSchema = z
             code: "custom",
             message: "FormErrorMessages.lastNameRequired",
             path: ["lastName"],
+          });
+        }
+        if (!data.documentType) {
+          ctx.addIssue({
+            code: "custom",
+            message: "FormErrorMessages.documentTypeRequired",
+            path: ["documentType"],
           });
         }
         if (!data.passportNumber) {
