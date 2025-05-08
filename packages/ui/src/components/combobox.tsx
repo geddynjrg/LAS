@@ -51,7 +51,7 @@ export const Combobox: FC<ComboboxProps> = ({
 
   // reset value when options change
   useEffect(() => {
-    if (options?.length !== prevOptions?.length) {
+    if (prevOptions?.length && options?.length !== prevOptions?.length) {
       setValue("");
     }
   }, [options?.length, prevOptions?.length]);

@@ -18,8 +18,3 @@ export const courseSchema = z.object({
 });
 
 export type CourseSchema = z.infer<typeof courseSchema>;
-
-export const dummyIntakePeriods = [
-  { label: "January 2025 (dummy)", value: "intake-1" },
-  { label: "July 2025 (dummy)", value: "intake-2" },
-];

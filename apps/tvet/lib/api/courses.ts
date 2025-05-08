@@ -67,6 +67,7 @@ const courseSchema = z.object({
     education_level: z.array(z.string()),
     group_size: z.number(),
     tags: z.array(z.string()).optional(),
+    intake_period: z.array(z.string()),
     institution: z.object({
       id: z.string(),
       type: z.string(),

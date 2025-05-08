@@ -17,7 +17,6 @@ import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { courseAction } from "@/app/apply/[id]/course/course-action";
 import {
   courseSchema,
-  dummyIntakePeriods,
   FILE_ACCEPT,
   MAX_FILE_SIZE,
   type CourseSchema,
@@ -180,7 +179,12 @@ function useSearchCourses() {
           res?.data?.courses?.map((course) => ({
             label: course.title,
             value: course.id.toString(),
-            intakePeriods: dummyIntakePeriods,
+            intakePeriods: course.content?.intake_period.map(
+              (period: string) => ({
+                label: period,
+                value: period,
+              }),
+            ),
           })) ?? [],
         );
       });
