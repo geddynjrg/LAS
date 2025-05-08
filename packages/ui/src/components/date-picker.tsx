@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCalendarMonth, IconX } from "@tabler/icons-react";
+import { IconCalendarMonth } from "@tabler/icons-react";
 import { useFormatter } from "next-intl";
 import { useEffect, useState, type FC } from "react";
 

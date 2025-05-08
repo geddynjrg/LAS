@@ -19,8 +19,9 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 import { inputVariants } from "@workspace/ui/components/input";
-import { usePrevious } from "@workspace/ui/hooks/usePrevious";
 import { cn, type VariantProps } from "@workspace/ui/lib/utils";
+
+import { usePrevious } from "../hooks/usePrevious";
 
 export type Option = Record<"value" | "label", string>;
 
