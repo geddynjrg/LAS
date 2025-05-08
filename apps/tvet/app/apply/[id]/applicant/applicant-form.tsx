@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 
 import { Alert } from "@workspace/ui/components/alert";
 import {
@@ -17,7 +17,6 @@ import { useForm } from "@workspace/ui/hooks/use-form";
 import { applicantAction } from "@/app/apply/[id]/applicant/applicant-action";
 import {
   applicantSchema,
-  dummyCounties,
   type ApplicantSchema,
 } from "@/app/apply/[id]/applicant/applicant-schema";
 import { DisabilitiesFields } from "@/app/apply/[id]/applicant/disabilities-fields";
@@ -25,12 +24,10 @@ import { ApplyFormSubtitle } from "@/app/apply/[id]/apply-form-subtitle";
 import { ApplyFormWrap } from "@/app/apply/[id]/apply-form-wrap";
 import { IdTypeFields } from "@/app/apply/[id]/id-type-fields";
 import { PhoneNumbersField } from "@/app/apply/[id]/phone-numbers-field";
-import { useCountrySubdivisions } from "@/hooks/useCountySubDivisions";
-import { clientApi } from "@/lib/api/client-api";
 
 export interface ApplicantFormProps {
   id: string;
-  counties?: { id?: number; name?: string }[];
+  counties?: { id?: number; name?: string; sub_counties?: string[] }[];
   defaultValues?: Partial<ApplicantSchema>;
 }
 
@@ -51,12 +48,9 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
     state.values?.applicant_county,
   );
 
-  const chosenCountyId = counties?.find(
+  const subCounties = counties?.find(
     (county) => county.name === chosenCounty,
-  )?.id;
-
-  const [subdivisions, subDivisionsLoading] =
-    useCountrySubdivisions(chosenCountyId);
+  )?.sub_counties;
 
   return (
     <ApplyFormWrap
@@ -163,12 +157,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
             {...props}
             disabled={!chosenCounty}
             placeholder={t("chooseOrSearch")}
-            options={dummyCounties
-              .find((county) => county.name === chosenCounty)
-              ?.constituencies.map((c) => ({
-                label: c,
-                value: c,
-              }))}
+            options={subCounties?.map((c) => ({ label: c, value: c }))}
           />
         )}
       />

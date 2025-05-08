@@ -556,7 +556,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1746621966
+         * @example 1746683288
          */
         timestamp: number;
         /**
@@ -875,6 +875,14 @@ export interface components {
        * @example -86.90229800
        */
       longitude?: string;
+      /**
+       * @description The sub-counties of the state.
+       * @example [
+       *       "sub_county1",
+       *       "sub_county2"
+       *     ]
+       */
+      sub_counties?: string[];
     };
     tvet_address_states_response: {
       /** @description List of states. */
@@ -4847,7 +4855,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp: number;
               /**
@@ -4920,7 +4928,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp: number;
               /**
@@ -5017,7 +5025,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**
@@ -5108,7 +5116,7 @@ export interface operations {
               institutions?: components["schemas"]["NodeInstitution"][];
             };
             meta?: {
-              /** @example 1746621966 */
+              /** @example 1746683288 */
               timestamp?: number;
               /** @example v1 */
               version?: string;
@@ -5157,7 +5165,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**
@@ -5212,7 +5220,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**
@@ -5302,7 +5310,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**
@@ -5359,7 +5367,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**
@@ -5426,7 +5434,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**
@@ -5494,7 +5502,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**
@@ -5563,7 +5571,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746621966
+               * @example 1746683288
                */
               timestamp?: number;
               /**

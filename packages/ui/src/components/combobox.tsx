@@ -8,7 +8,7 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useState, type FC, type ReactNode } from "react";
+import { useEffect, useState, type FC, type ReactNode } from "react";
 
 import {
   Command,
@@ -19,6 +19,7 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 import { inputVariants } from "@workspace/ui/components/input";
+import { usePrevious } from "@workspace/ui/hooks/usePrevious";
 import { cn, type VariantProps } from "@workspace/ui/lib/utils";
 
 export type Option = Record<"value" | "label", string>;
@@ -46,6 +47,14 @@ export const Combobox: FC<ComboboxProps> = ({
   const t = useTranslations("Combobox");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(defaultValue ?? "");
+  const prevOptions = usePrevious(options);
+
+  // reset value when options change
+  useEffect(() => {
+    if (options?.length !== prevOptions?.length) {
+      setValue("");
+    }
+  }, [options?.length, prevOptions?.length]);
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
