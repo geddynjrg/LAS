@@ -37,7 +37,7 @@ import { formatBytes, getFormDataValues } from "@workspace/ui/lib/utils";
 import { validFile } from "@workspace/ui/lib/zod";
 
 const FILE_ACCEPT = {
-  "image/*": [".jpg", ".png"],
+  "image/*": [".jpg", ".jpeg", ".png"],
   "application/pdf": [".pdf"],
 };
 const MAX_FILE_SIZE = 1e6; // 1 MB

@@ -372,7 +372,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             control={(props) => (
               <FileUploadInput
                 accept={{
-                  "image/*": [".jpg", ".png"],
+                  "image/*": [".jpg", ".jpeg", ".png"],
                   "application/pdf": [".pdf"],
                 }}
                 maxSize={MAX_FILE_SIZE}

@@ -10,7 +10,7 @@ const meta = {
   component: FileUploadInput,
   args: {
     accept: {
-      "image/*": [".jpg", ".png"],
+      "image/*": [".jpg", ".jpeg", ".png"],
       "application/pdf": [".pdf"],
     },
     maxSize: MAX_FILE_SIZE,

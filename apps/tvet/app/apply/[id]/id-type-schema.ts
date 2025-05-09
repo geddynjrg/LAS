@@ -6,7 +6,7 @@ export const idType = z.enum(["national_id", "birth_certificate", "alien_id"]);
 export type IdType = z.infer<typeof idType>;
 
 export const FILE_ACCEPT = {
-  "image/*": [".jpg", ".png"],
+  "image/*": [".jpg", ".jpeg", ".png"],
   "application/pdf": [".pdf"],
 };
 export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB

@@ -156,12 +156,15 @@ export async function fileToBase64(
   file: File,
 ): Promise<{ data: string; filename: string }> {
   const arrayBuffer = await file.arrayBuffer();
-  const base64String = btoa(
-    String.fromCharCode(...new Uint8Array(arrayBuffer)),
-  );
+  const bytes = new Uint8Array(arrayBuffer);
+  let binary = "";
+
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
 
   return {
-    data: `data:${file.type};base64,${base64String}`,
+    data: `data:${file.type};base64,${btoa(binary)}`,
     filename: file.name,
   };
 }
