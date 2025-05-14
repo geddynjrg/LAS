@@ -1,0 +1,7 @@
+name: 'TVET General'
+type: module
+description: 'General module for TVET.'
+core_version_requirement: ^10 || ^11
+package: TVET
+dependencies:
+  - drupal:user

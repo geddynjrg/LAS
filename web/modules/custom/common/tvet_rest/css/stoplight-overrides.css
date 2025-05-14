@@ -1,0 +1,374 @@
+/**
+ * @file
+ * Custom styling for Stoplight Elements API documentation.
+ */
+
+/* Base styling for the documentation page */
+body {
+  background-color: #f9f9fc;
+}
+
+/* Create a professional card layout for the API docs */
+.tvet-rest-api-docs {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* max-width: 1400px; */
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Improved header styling with modern design */
+.api-docs-header {
+  padding: 40px 0;
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  text-align: center;
+  position: relative;
+}
+
+.api-docs-header:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #2c5cc5, #6c8eef);
+  border-radius: 2px;
+}
+
+.api-docs-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #1a1a2e;
+  letter-spacing: -0.5px;
+}
+
+.api-docs-description {
+  font-size: 18px;
+  color: #4a4a68;
+  margin: 0 auto 30px;
+  max-width: 800px;
+  line-height: 1.6;
+}
+
+.api-docs-actions {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.api-docs-download {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffffff;
+  color: #2c5cc5;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid #e0e0e6;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.api-docs-download:before {
+  content: "↓";
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.api-docs-download:hover {
+  background-color: #f5f8ff;
+  border-color: #2c5cc5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+}
+
+/* Container styling */
+#stoplight-container {
+  min-height: calc(100vh - 200px);
+  margin-bottom: 50px;
+  /* max-width: 1400px; */
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e6e6ef;
+}
+
+
+/* Fix for Drupal's toolbar and admin menu */
+body.toolbar-fixed #stoplight-container {
+  margin-top: 20px;
+}
+
+body.toolbar-fixed.toolbar-horizontal .sl-elements-api {
+  max-height: calc(100vh - 150px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .api-docs-header {
+    padding: 30px 0;
+  }
+
+  .api-docs-header h1 {
+    font-size: 28px;
+  }
+
+  .api-docs-description {
+    font-size: 16px;
+  }
+
+  elements-api {
+    min-height: 700px;
+  }
+}
+
+@media (max-width: 768px) {
+  elements-api {
+    min-height: 600px;
+  }
+
+  .api-docs-header {
+    padding: 20px 15px;
+  }
+
+  .api-docs-header h1 {
+    font-size: 24px;
+  }
+
+  #stoplight-container {
+    padding: 0;
+    border-radius: 8px;
+  }
+
+  .tvet-rest-api-docs {
+    padding: 0 10px;
+  }
+}
+
+/* Feature boxes in the header */
+.api-docs-features {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 25px 0;
+}
+
+.api-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 150px;
+  transition: all 0.3s ease;
+  border: 1px solid #e6e6ef;
+}
+
+.api-feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  border-color: #d1d1e0;
+}
+
+.api-feature-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.api-feature-text {
+  font-weight: 600;
+  color: #333344;
+}
+
+/* Alternative view link */
+.api-docs-alt-view {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f5f7fa;
+  color: #555566;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  border: 1px solid #e0e0e6;
+  transition: all 0.3s ease;
+}
+
+.api-docs-alt-view:hover {
+  background-color: #eef1f6;
+  color: #333344;
+  text-decoration: none;
+}
+
+/* Footer styling */
+.api-docs-footer {
+  margin-top: 60px;
+  padding: 40px 0;
+  background-color: #f5f7fa;
+  border-top: 1px solid #e6e6ef;
+}
+
+.api-docs-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 0 20px;
+}
+
+.api-docs-footer-section {
+  flex: 1;
+}
+
+.api-docs-footer-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.api-docs-footer-section h3:after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, #2c5cc5, #6c8eef);
+  border-radius: 2px;
+}
+
+.api-docs-footer-section p {
+  color: #4a4a68;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.api-docs-footer-section a {
+  color: #2c5cc5;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.api-docs-footer-section a:hover {
+  color: #1e3f8c;
+  text-decoration: underline;
+}
+
+/* Additional responsive adjustments */
+@media (max-width: 992px) {
+  .api-docs-features {
+    gap: 15px;
+  }
+
+  .api-feature {
+    width: 120px;
+    padding: 15px;
+  }
+
+  .api-docs-footer-content {
+    flex-direction: column;
+    gap: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .api-docs-features {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .api-feature {
+    width: 200px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .api-feature-icon {
+    margin-bottom: 0;
+  }
+
+  .api-docs-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Loading indicator */
+.api-docs-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  min-height: 300px;
+}
+
+.api-docs-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(44, 92, 197, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #2c5cc5;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+}
+  100% {
+    transform: rotate(360deg);
+}
+}
+
+.api-docs-loading-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #4a4a68;
+}
+
+/* Error message */
+.api-docs-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.api-docs-error-icon {
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+.api-docs-error-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #e53935;
+  margin-bottom: 10px;
+}
+
+.api-docs-error-details {
+  font-size: 16px;
+  color: #4a4a68;
+  max-width: 500px;
+}
