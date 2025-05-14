@@ -1,7 +1,7 @@
 "use client";
 
 import { IconX } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type FC } from "react";
 
@@ -18,6 +18,7 @@ const REFECTH_INTERVAL = 2000; // 2 seconds
 
 export default function MpesaPaymentStatusPage() {
   const router = useRouter();
+  const format = useFormatter();
   const { id, transactionid } = useParams<{
     id: string;
     transactionid: string;
@@ -66,7 +67,7 @@ export default function MpesaPaymentStatusPage() {
     <Container className="mb-8 flex flex-1 flex-col space-y-4">
       <div>
         <div className={cn("flex justify-between", "typo-body-small")}>
-          <div>{new Date().toLocaleDateString()}</div>
+          <div>{format.dateTime(new Date())}</div>
           <div>{transactionid}</div>
         </div>
         <h2 className={cn("typo-h2")}>{"M-Pesa payment"}</h2>

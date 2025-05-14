@@ -28,8 +28,6 @@ export const MpesaPaymentForm: FC<MpesaPaymentFormProps> = ({ id }) => {
     initiatePaymentSchema,
   );
 
-  console.log("state", state);
-
   return (
     <Form action={formAction} className="space-y-4">
       {state.message && <Alert variant="error">{state.message}</Alert>}
