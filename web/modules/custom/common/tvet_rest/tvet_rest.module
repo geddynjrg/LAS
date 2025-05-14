@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for TVET REST API module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * Implements hook_help().
+ */
+function tvet_rest_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.tvet_rest':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('TVET REST API module.') . '</p>';
+
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_request_alter().
+ */
+function tvet_rest_request_alter(Request $request) {
+  // Check if this is a REST endpoint by looking at route defaults.
+  $is_rest_api = FALSE;
+
+  // Method 1: Check for an existing attribute.
+  if ($request->attributes->has('_rest_resource_config')) {
+    $is_rest_api = TRUE;
+  }
+  else {
+    // Method 2: Query the router to find matching routes.
+    try {
+      $path = $request->getPathInfo();
+      $container = Drupal::getContainer();
+
+      if ($container->has('router.route_provider')) {
+        $route_provider = $container->get('router.route_provider');
+
+        // Find routes that match this path.
+        foreach ($route_provider->getRoutesByPattern($path) as $route) {
+          $defaults = $route->getDefaults();
+
+          // If this route has _rest_resource_config it's a REST endpoint.
+          if (isset($defaults['_rest_resource_config'])) {
+            $is_rest_api = TRUE;
+
+            // Store the resource ID as an attribute for later use.
+            $request->attributes->set('_rest_resource_id', $defaults['_rest_resource_config']);
+
+            break;
+          }
+        }
+      }
+    }
+    catch (Exception $e) {
+      Drupal::logger('tvet_rest')->warning('Error finding routes: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+    }
+  }
+
+  // Only process for REST API requests.
+  if (!$is_rest_api) {
+    return;
+  }
+
+  // For REST endpoints, force JSON format.
+  $request->setRequestFormat('json');
+  $request->attributes->set('_format', 'json');
+
+  // Set a flag to ensure responses are formatted as JSON.
+  $request->attributes->set('_is_rest_api', TRUE);
+
+  // Add Accept header if not present.
+  if (!$request->headers->has('Accept')) {
+    $request->headers->set('Accept', 'application/json');
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function tvet_rest_theme() {
+  return [
+    'tvet_rest_api_docs' => [
+      'variables' => [],
+      'template' => 'tvet-rest-api-docs',
+    ],
+    'tvet_rest_openapi_docs' => [
+      'variables' => ['spec' => []],
+      'template' => 'tvet-rest-openapi-docs',
+    ],
+    'tvet_rest_stoplight' => [
+      'variables' => [
+        'title' => 'API Documentation',
+        'spec_url' => '',
+      ],
+      'template' => 'tvet-rest-stoplight',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function tvet_rest_module_implements_alter(&$implementations, $hook) {
+  // Move our hook_rest_resource_alter() implementation to the end
+  // to ensure it runs after other modules.
+  if ($hook === 'rest_resource_alter' && isset($implementations['tvet_rest'])) {
+    $group = $implementations['tvet_rest'];
+    unset($implementations['tvet_rest']);
+    $implementations['tvet_rest'] = $group;
+  }
+}
