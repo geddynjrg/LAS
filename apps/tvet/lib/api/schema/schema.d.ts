@@ -374,10 +374,30 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Upload payment proof for an application
-     * @description Uploads payment proof and updates payment reference for an application.
+     * Upload payment proof
+     * @description Uploads payment proof and updates payment reference for an application. Use the "type" query parameter to specify if this is a course payment (type=course) or application fee payment (type=application or omitted).
      */
     post: operations["tvet_application_payment_proof"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/{application_id}/course-payment-info-pdf": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Download course payment information as PDF
+     * @description Returns a PDF document with course payment information for the application.
+     */
+    get: operations["tvet_application_course_payment_info_pdf"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -544,6 +564,66 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/{application_id}/course-payment-info": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get course payment information for an application
+     * @description Returns course payment information including bank details for a specific application.
+     */
+    get: operations["tvet_application_course_payment_info"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/mpesa-payment/{checkout_request_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Check M-Pesa payment status
+     * @description Returns the status of an M-Pesa payment transaction.
+     */
+    get: operations["tvet_mpesa_status"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/{application_id}/mpesa-payment": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Initiate M-Pesa payment
+     * @description Initiates an M-Pesa payment for the specified application.
+     */
+    post: operations["tvet_mpesa_payment"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -556,7 +636,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1746683288
+         * @example 1747130429
          */
         timestamp: number;
         /**
@@ -882,7 +962,7 @@ export interface components {
        *       "sub_county2"
        *     ]
        */
-      sub_counties?: string[];
+      sub_counties?: unknown[];
     };
     tvet_address_states_response: {
       /** @description List of states. */
@@ -1096,11 +1176,6 @@ export interface components {
          */
         filename: string;
       };
-      /**
-       * @description Reference number or transaction ID for the payment
-       * @example MPESA-ABCDEF123456
-       */
-      payment_reference: string;
     };
     PaymentProofRequestMultipart: {
       /**
@@ -1108,11 +1183,6 @@ export interface components {
        * @description Payment proof file (PDF, JPG, PNG)
        */
       payment_proof: string;
-      /**
-       * @description Reference number or transaction ID for the payment
-       * @example MPESA-ABCDEF123456
-       */
-      payment_reference: string;
     };
     PaymentProofResponse: {
       /**
@@ -1576,6 +1646,48 @@ export interface components {
             fid: number;
           };
       /**
+       * @description Course payment status
+       * @example pending
+       * @enum {string}
+       */
+      course_payment_status?: "pending" | "paid" | "proof_uploaded" | "failed";
+      /**
+       * @description Course payment reference
+       * @example 9876543210
+       */
+      course_payment_reference?: string;
+      /**
+       * @description Course payment amount
+       * @example 15000
+       */
+      course_payment_amount?: Record<string, never>;
+      /**
+       * @description Course payment method
+       * @example mpesa
+       */
+      course_payment_method?: string;
+      /** @description Course payment proof file (optional) */
+      course_payment_proof?:
+        | {
+            /**
+             * @description Base64 encoded file content
+             * @example data:application/pdf;base64,JVBERi0xLjYNJeL...
+             */
+            data: string;
+            /**
+             * @description Original filename with extension
+             * @example course_payment_receipt.jpg
+             */
+            filename: string;
+          }
+        | {
+            /**
+             * @description File ID of an existing file
+             * @example 46
+             */
+            fid: number;
+          };
+      /**
        * @description The type of step being submitted
        * @default payment
        * @example payment
@@ -1709,16 +1821,21 @@ export interface components {
         id?: number;
         /**
          * @description The current application status
-         * @example created
+         * @example submitted
          * @enum {string}
          */
         status?:
-          | "created"
-          | "completed"
+          | "draft"
+          | "in_progress"
           | "submitted"
+          | "application_payment_pending"
+          | "application_payment_received"
           | "reviewing"
+          | "rejected"
           | "approved"
-          | "rejected";
+          | "course_payment_pending"
+          | "course_payment_received"
+          | "completed";
         /**
          * @description The current step being worked on
          * @example guardian
@@ -1729,8 +1846,7 @@ export interface components {
           | "guardian"
           | "course"
           | "confirmation"
-          | "payment"
-          | null;
+          | "payment";
         /** @description Information about each step */
         step_links?: {
           applicant?: {
@@ -2153,6 +2269,51 @@ export interface components {
               /**
                * @description URL to access the file
                * @example https://example.com/sites/default/files/payment_receipt.jpg
+               */
+              url?: string;
+            };
+            /**
+             * @description Course payment status
+             * @example pending
+             * @enum {string}
+             */
+            course_payment_status?:
+              | "unpaid"
+              | "pending"
+              | "proof_uploaded"
+              | "paid"
+              | "rejected";
+            /**
+             * @description Course payment reference
+             * @example 9876543210
+             */
+            course_payment_reference?: string;
+            /**
+             * Format: float
+             * @description Course payment amount
+             * @example 15000
+             */
+            course_payment_amount?: number;
+            /**
+             * @description Course payment method
+             * @example mpesa
+             */
+            course_payment_method?: string;
+            /** @description Course payment proof file (if uploaded) */
+            course_payment_proof?: {
+              /**
+               * @description File ID
+               * @example 46
+               */
+              fid?: number;
+              /**
+               * @description Original filename
+               * @example course_payment_receipt.jpg
+               */
+              filename?: string;
+              /**
+               * @description URL to access the file
+               * @example https://example.com/sites/default/files/course_payment_receipt.jpg
                */
               url?: string;
             };
@@ -2586,25 +2747,38 @@ export interface components {
         applicant_name?: string;
         /**
          * @description The current status of the application
-         * @example completed
+         * @example submitted
          * @enum {string}
          */
         application_status?:
           | "draft"
+          | "in_progress"
           | "submitted"
-          | "payment_pending"
-          | "paid"
+          | "application_payment_pending"
+          | "application_payment_received"
           | "reviewing"
-          | "accepted"
           | "rejected"
-          | "pending"
-          | "confirmed";
+          | "approved"
+          | "course_payment_pending"
+          | "course_payment_received"
+          | "completed";
         /**
          * @description The current payment status
          * @example pending
          * @enum {string}
          */
         payment_status?:
+          | "unpaid"
+          | "pending"
+          | "proof_uploaded"
+          | "paid"
+          | "rejected";
+        /**
+         * @description The current course payment status
+         * @example unpaid
+         * @enum {string}
+         */
+        course_payment_status?:
           | "unpaid"
           | "pending"
           | "proof_uploaded"
@@ -2645,6 +2819,16 @@ export interface components {
          * @example 2023-06-05T15:30:00+00:00
          */
         changed?: string;
+        /**
+         * @description The reason for rejection
+         * @example Incomplete application
+         */
+        rejection_reason?: string;
+        /**
+         * @description The message for rejection
+         * @example Please provide more information
+         */
+        rejection_message?: string;
         _links?: {
           self?: {
             /** @example /api/v1/application/APP-20230601-ABC12/status */
@@ -2786,16 +2970,38 @@ export interface components {
         application_id?: string;
         /**
          * @description The active status of the application
-         * @example active
+         * @example submitted
          * @enum {string}
          */
-        status?: "active" | "inactive";
+        status?:
+          | "draft"
+          | "in_progress"
+          | "submitted"
+          | "application_payment_pending"
+          | "application_payment_received"
+          | "reviewing"
+          | "rejected"
+          | "approved"
+          | "course_payment_pending"
+          | "course_payment_received"
+          | "completed";
         /**
          * @description The payment status of the application
          * @example pending
          * @enum {string}
          */
         payment_status?:
+          | "unpaid"
+          | "pending"
+          | "proof_uploaded"
+          | "paid"
+          | "rejected";
+        /**
+         * @description The course payment status of the application
+         * @example unpaid
+         * @enum {string}
+         */
+        course_payment_status?:
           | "unpaid"
           | "pending"
           | "proof_uploaded"
@@ -2822,6 +3028,201 @@ export interface components {
          * @description The API version
          * @example v1
          */
+        version?: string;
+      };
+    };
+    CoursePaymentInfoResponse: {
+      /**
+       * @description Whether the request was successful
+       * @example true
+       */
+      success?: boolean;
+      data?: {
+        /**
+         * @description The name of the institution
+         * @example TVET College of Technology
+         */
+        institution?: string;
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id?: string;
+        /**
+         * @description The course name
+         * @example Certificate in Information Technology
+         */
+        course?: string;
+        /**
+         * @description The course fee amount
+         * @example 15000
+         */
+        course_payment_amount?: number;
+        /**
+         * @description The name of the bank
+         * @example Kenya Commercial Bank
+         */
+        bank_name?: string;
+        /**
+         * @description The name of the bank account
+         * @example TVET College of Technology
+         */
+        account_name?: string;
+        /**
+         * @description The bank account number
+         * @example 1234567890
+         */
+        account_number?: string;
+        /**
+         * @description The bank branch name
+         * @example Nairobi Main Branch
+         */
+        branch_name?: string;
+        /**
+         * @description The bank branch code
+         * @example 001
+         */
+        branch_code?: string;
+        /**
+         * @description The SWIFT/BIC code for international transfers
+         * @example KCBLKENX
+         */
+        swift_code?: string;
+        /**
+         * @description International Bank Account Number
+         * @example KE123456789012345678
+         */
+        iban?: string;
+        /**
+         * @description Payment instructions
+         * @example Please include your application ID and COURSE-FEE as payment reference.
+         */
+        instructions?: string;
+        /**
+         * @description The current course payment status
+         * @example unpaid
+         * @enum {string}
+         */
+        course_payment_status?:
+          | "unpaid"
+          | "pending"
+          | "proof_uploaded"
+          | "paid"
+          | "rejected";
+        /**
+         * @description The course payment reference provided by the applicant
+         * @example MPESA-ABCDEF123456
+         */
+        course_payment_reference?: string;
+        /**
+         * @description URL to the course payment proof document
+         * @example https://example.com/files/course-payment-proof.jpg
+         */
+        course_payment_proof_url?: string;
+        /**
+         * @description URL to download the course payment information PDF
+         * @example https://example.com/api/v1/application/APP-20230601-ABC12/course-payment-info-pdf
+         */
+        pdf_url?: string;
+      };
+      meta?: {
+        /**
+         * @description The timestamp when the response was generated
+         * @example 1622563200
+         */
+        timestamp?: number;
+        /**
+         * @description The API version
+         * @example v1
+         */
+        version?: string;
+      };
+    };
+    MpesaStatusResponse: {
+      /** @description Whether the status request was successful */
+      success?: boolean;
+      data?: {
+        /** @description The application ID associated with the payment */
+        application_id?: string;
+        /** @description The M-Pesa checkout request ID */
+        checkout_request_id?: string;
+        /** @description The M-Pesa merchant request ID */
+        merchant_request_id?: string;
+        /** @description The M-Pesa transaction ID */
+        transaction_id?: string | null;
+        /**
+         * @description The current status of the payment
+         * @enum {string}
+         */
+        status?: "pending" | "completed" | "cancelled" | "failed";
+        /**
+         * Format: float
+         * @description The payment amount
+         */
+        amount?: number;
+        /** @description The phone number that was billed */
+        phone_number?: string;
+        /**
+         * @description The type of payment (application or course)
+         * @enum {string}
+         */
+        payment_type?: "application" | "course";
+        /**
+         * Format: date-time
+         * @description When the payment was initiated
+         */
+        created?: string;
+        /**
+         * Format: date-time
+         * @description When the payment status was last updated
+         */
+        changed?: string;
+        /**
+         * Format: date-time
+         * @description When the payment was completed
+         */
+        completed?: string | null;
+        /**
+         * @description The payment status on the application entity
+         * @enum {string}
+         */
+        application_payment_status?: "not_paid" | "paid";
+      };
+      meta?: {
+        /** @description Unix timestamp when the response was generated */
+        timestamp?: number;
+        /** @description API version */
+        version?: string;
+      };
+    };
+    MpesaPaymentRequest: {
+      /**
+       * @description The phone number to bill
+       * @example 254712345678
+       */
+      phone_number: string;
+    };
+    MpesaPaymentResponse: {
+      /** @description Whether the payment initiation was successful */
+      success?: boolean;
+      /** @description A message describing the result of the payment initiation */
+      message?: string;
+      data?: {
+        /** @description The M-Pesa checkout request ID */
+        checkout_request_id?: string;
+        /** @description The M-Pesa merchant request ID */
+        merchant_request_id?: string;
+        /** @description The response code from M-Pesa */
+        response_code?: string;
+        /** @description The response description from M-Pesa */
+        response_description?: string;
+        /** @description Message to display to the customer */
+        customer_message?: string;
+      };
+      meta?: {
+        /** @description Unix timestamp when the response was generated */
+        timestamp?: number;
+        /** @description API version */
         version?: string;
       };
     };
@@ -4855,7 +5256,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp: number;
               /**
@@ -4928,7 +5329,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp: number;
               /**
@@ -5025,7 +5426,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5116,7 +5517,7 @@ export interface operations {
               institutions?: components["schemas"]["NodeInstitution"][];
             };
             meta?: {
-              /** @example 1746683288 */
+              /** @example 1747130429 */
               timestamp?: number;
               /** @example v1 */
               version?: string;
@@ -5165,7 +5566,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5220,7 +5621,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5310,7 +5711,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5367,7 +5768,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5434,7 +5835,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5502,7 +5903,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5571,7 +5972,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1746683288
+               * @example 1747130429
                */
               timestamp?: number;
               /**
@@ -5829,7 +6230,13 @@ export interface operations {
   };
   tvet_application_payment_proof: {
     parameters: {
-      query?: never;
+      query?: {
+        /**
+         * @description Type of payment: "application" for application fee, "course" for course fee
+         * @example course
+         */
+        type?: "application" | "course";
+      };
       header: {
         "X-Language": string;
       };
@@ -5885,6 +6292,41 @@ export interface operations {
       };
       /** @description Server error */
       500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_application_course_payment_info_pdf: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Course payment information PDF */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/pdf": string;
+        };
+      };
+      /** @description Application, institution, or bank information not found, or course payment amount not set */
+      404: {
         headers: {
           [name: string]: unknown;
         };
@@ -6255,6 +6697,132 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ApplicationStatusResponse"];
+        };
+      };
+      /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_application_course_payment_info: {
+    parameters: {
+      query?: never;
+      header: {
+        "X-Language": string;
+      };
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Course payment information retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CoursePaymentInfoResponse"];
+        };
+      };
+      /** @description Application or course payment information not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_mpesa_status: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description The M-Pesa checkout request ID
+         * @example ws_CO_123456789012_123456789
+         */
+        checkout_request_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Payment status retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MpesaStatusResponse"];
+        };
+      };
+      /** @description Transaction not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  tvet_mpesa_payment: {
+    parameters: {
+      query?: {
+        /**
+         * @description Payment type (application fee or course fee)
+         * @example application
+         */
+        type?: "application" | "course";
+      };
+      header?: never;
+      path: {
+        /**
+         * @description The unique application identifier
+         * @example APP-20230601-ABC12
+         */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MpesaPaymentRequest"];
+      };
+    };
+    responses: {
+      /** @description Payment initiated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MpesaPaymentResponse"];
+        };
+      };
+      /** @description Invalid request or payment initiation failed */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
       /** @description Application not found */

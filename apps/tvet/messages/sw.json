@@ -251,5 +251,12 @@
     "cost": "Gharama",
     "payUsing": "Lipa kwa kutumia {method}",
     "payLater": "Lipa baadaye"
+  },
+
+  "MpesaPayment": {
+    "successMessage": "Malipo yamefanikiwa",
+    "errorMessage": "Malipo yamekamilika",
+    "pendingMessage": "Malipo yanangoja",
+    "payButton": "Lipa kwa kutumia M-Pesa"
   }
 }

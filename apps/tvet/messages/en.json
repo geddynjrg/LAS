@@ -251,5 +251,11 @@
     "cost": "Cost",
     "payUsing": "Pay using {method}",
     "payLater": "Pay later"
+  },
+  "MpesaPayment": {
+    "successMessage": "Payment successful",
+    "errorMessage": "Payment failed",
+    "pendingMessage": "Payment pending",
+    "payButton": "Pay using M-Pesa"
   }
 }

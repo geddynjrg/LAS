@@ -63,7 +63,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
         )}
 
         <div className="mx-auto mt-8 flex max-w-[27rem] flex-col items-stretch gap-4">
-          <Button type="submit" name="payment_method" value="m_pesa" disabled>
+          <Button type="submit" name="payment_method" value="m_pesa">
             {t("payUsing", { method: "M-Pesa" })}
           </Button>
 

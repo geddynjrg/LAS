@@ -41,3 +41,30 @@ export async function uploadPaymentProof(data: {
     },
   });
 }
+
+export async function initiateMpesaPayment(data: {
+  application_id: string;
+  phone_number: string;
+}) {
+  return await api.POST("/api/v1/application/{application_id}/mpesa-payment", {
+    params: {
+      query: {
+        type: "application",
+      },
+      path: { application_id: data.application_id },
+    },
+    body: {
+      phone_number: data.phone_number,
+    },
+  });
+}
+
+export async function checkMpesaPaymentStatus(data: {
+  transaction_id: string;
+}) {
+  return await api.GET("/api/v1/mpesa-payment/{checkout_request_id}", {
+    params: {
+      path: { checkout_request_id: data.transaction_id },
+    },
+  });
+}

@@ -158,7 +158,9 @@ const PaymentActions: FC<{ application_id?: string }> = ({
   return (
     <>
       <Button className="w-full" asChild disabled>
-        <Link href="#">{t("pay", { method: "M-Pesa" })}</Link>
+        <Link href={`/apply/${application_id}/payment/mpesa`}>
+          {t("pay", { method: "M-Pesa" })}
+        </Link>
       </Button>
 
       <Divider>{tCommon("or")}</Divider>
