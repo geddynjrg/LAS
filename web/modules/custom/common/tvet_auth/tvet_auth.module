@@ -1,0 +1,115 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for TVET REST API module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\user\UserInterface;
+
+/**
+ * Implements hook_help().
+ */
+function tvet_auth_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.tvet_auth':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('TVET Auth module.') . '</p>';
+
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_cache_flush().
+ */
+function tvet_auth_cache_flush() {
+  // Clear our custom cache bins when cache is flushed.
+  Drupal::cache('tvet_auth')->deleteAll();
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function tvet_auth_entity_update(EntityInterface $entity) {
+  // Check if this is a user and if tokens should be revoked on password change.
+  if ($entity instanceof UserInterface && Drupal::config('tvet_auth.settings')->get('jwt_revoke_tokens_on_password_change')) {
+    $original = $entity->original;
+
+    // Check if the password has changed.
+    if ($original && $entity->getPassword() !== $original->getPassword()) {
+      // Completely remove all tokens for this user.
+      /** @var \Drupal\tvet_auth\Service\TvetJwtService $jwt_service */
+      $jwt_service = Drupal::service('tvet_auth.jwt_service');
+      $count = $jwt_service->removeAllUserTokens($entity);
+
+      Drupal::logger('tvet_auth')->info('User @uid changed password. Removed @count JWT tokens.', [
+        '@uid' => $entity->id(),
+        '@count' => $count,
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function tvet_auth_cron() {
+  // Clean up expired tokens from the storage.
+  /** @var \Drupal\tvet_auth\Service\TokenStorageService $token_storage */
+  $token_storage = Drupal::service('tvet_auth.token_storage');
+  $count = $token_storage->purgeExpiredTokens();
+
+  // Log the cleanup operation.
+  if ($count > 0) {
+    Drupal::logger('tvet_auth')->info('Cleaned up @count expired JWT tokens from storage.', ['@count' => $count]);
+  }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function tvet_auth_token_info() {
+  return [
+    'tokens' => [
+      'user' => [
+        'tvet-one-time-login-url' => [
+          'name' => t('Tvet One-time login URL'),
+          'description' => t('The URL of the one-time login page.'),
+        ],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function tvet_auth_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type == 'user' && !empty($data['user'])) {
+    /** @var \Drupal\user\UserInterface $user */
+    $user = $data['user'];
+
+    foreach ($tokens as $name => $original) {
+      if ($name == 'tvet-one-time-login-url') {
+        $timestamp = \Drupal::time()->getRequestTime();
+        $hash = user_pass_rehash($user, $timestamp);
+
+        // Get the base URL from settings.php.
+        $settings = \Drupal::service('settings')->get('tvet_ui_public_url');
+        $base_url = !empty($settings) ? $settings : \Drupal::request()->getSchemeAndHttpHost();
+
+        // Create the full URL.
+        $url = $base_url . '/reset/' . $user->id() . '/' . $timestamp . '/' . $hash;
+        $replacements[$original] = $url;
+      }
+    }
+  }
+
+  return $replacements;
+}

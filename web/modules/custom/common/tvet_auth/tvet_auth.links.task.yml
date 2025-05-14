@@ -1,0 +1,11 @@
+tvet_auth.settings_tab:
+  title: 'Settings'
+  route_name: tvet_auth.settings
+  base_route: tvet_auth.settings
+  weight: 0
+
+tvet_auth.token_management_tab:
+  title: 'Token Management'
+  route_name: tvet_auth.token_management
+  base_route: tvet_auth.settings
+  weight: 10 

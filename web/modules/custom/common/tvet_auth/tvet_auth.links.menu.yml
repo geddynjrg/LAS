@@ -1,0 +1,6 @@
+tvet_auth.settings:
+  title: 'API Authentication'
+  description: 'Configure JWT authentication and other settings for the TVET API.'
+  parent: tvet_rest.app_services_group
+  route_name: tvet_auth.settings
+  weight: 10 
