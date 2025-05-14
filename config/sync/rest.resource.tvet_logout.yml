@@ -1,0 +1,17 @@
+uuid: a114fc9c-7e58-405d-a4b4-82a398199142
+langcode: en
+status: true
+dependencies:
+  module:
+    - serialization
+    - tvet_auth
+id: tvet_logout
+plugin_id: tvet_logout
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - jwt_auth
