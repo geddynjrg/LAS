@@ -1,0 +1,18 @@
+uuid: da7552ac-90a1-4c25-98ca-da0f9fae72f8
+langcode: en
+status: true
+dependencies:
+  module:
+    - serialization
+    - tvet_auth
+    - user
+id: tvet_token_refresh
+plugin_id: tvet_token_refresh
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie
