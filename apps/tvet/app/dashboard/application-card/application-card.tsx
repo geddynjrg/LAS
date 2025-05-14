@@ -18,14 +18,16 @@ import { UploadPaymentProofForm } from "@/app/dashboard/application-card/upload-
 
 export type ApplicationStatus =
   | "draft"
+  | "in_progress"
   | "submitted"
-  | "payment_pending"
-  | "paid"
+  | "application_payment_pending"
+  | "application_payment_received"
   | "reviewing"
-  | "accepted"
   | "rejected"
-  | "pending"
-  | "confirmed";
+  | "approved"
+  | "course_payment_pending"
+  | "course_payment_received"
+  | "completed";
 
 export type ApplicationPaymentStatus =
   | "unpaid"
@@ -217,7 +219,7 @@ const DescriptionActions: FC<{ label?: string; children: ReactNode }> = ({
 
 function getCardType(application: ApplicationCardProps) {
   switch (application.application_status) {
-    case "accepted":
+    case "approved":
       return CardType.success;
     case "rejected":
       return CardType.danger;

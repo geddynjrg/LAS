@@ -962,7 +962,7 @@ export interface components {
        *       "sub_county2"
        *     ]
        */
-      sub_counties?: unknown[];
+      sub_counties?: string[];
     };
     tvet_address_states_response: {
       /** @description List of states. */
