@@ -1,0 +1,79 @@
+definitions:
+  caches:
+    composer: ~/.composer/cache
+
+  steps:
+    - step: &deploy
+        name: Deploy
+        script:
+          - rsync "$PIPELINE_USER@$PIPELINE_IP:$PIPELINE_SCRIPT" "/tmp/deploy.sh" && /tmp/deploy.sh
+
+    - step: &composer-install
+        name: Install Dependencies
+        image: composer:2.6
+        caches:
+          - composer
+        script:
+          - composer install --prefer-dist --no-scripts --ignore-platform-reqs
+        artifacts:
+          - vendor/**
+          - web/core/**
+          - web/modules/contrib/**
+          - web/themes/contrib/**
+
+    - step: &phpcs
+        name: PHP CodeSniffer
+        image: composer:2.6
+        script:
+          - vendor/bin/phpcs --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,info,txt --ignore=*.js web/modules/custom
+
+    - step: &phpstan
+        name: PHPStan Analysis
+        image: composer:2.6
+        script:
+          - vendor/bin/phpstan analyse web/modules/custom --memory-limit=256M
+
+    - step: &yamllint
+        name: YAML Lint
+        image: composer:2.6
+        script:
+          - vendor/bin/yaml-lint web/modules/custom
+
+    # - step: &jsonlint
+    #     name: JSON Lint
+    #     image: composer:2.6
+    #     script:
+    #       - vendor/bin/jsonlint web/modules/custom
+
+    - step: &security
+        name: Security Check
+        image: composer:2.6
+        script:
+          - vendor/bin/security-checker security:check
+
+pipelines:
+  branches:
+    qa:
+      - step: *deploy
+    feature-qa/*:
+      - step: *deploy
+
+  pull-requests:
+    '**':
+      - step: *composer-install
+      - parallel:
+          - step: *phpcs
+          # - step: *phpstan
+          - step: *yamllint
+          # - step: *jsonlint
+          - step: *security
+
+  custom:
+    code-quality:
+      - step: *composer-install
+      - parallel:
+          - step: *phpcs
+          # - step: *phpstan
+          - step: *yamllint
+          # - step: *jsonlint
+          - step: *security
