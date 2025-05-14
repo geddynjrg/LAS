@@ -1,0 +1,17 @@
+uuid: 3b9fa15c-954d-425f-8f33-01e48c521a64
+langcode: en
+status: true
+dependencies:
+  module:
+    - serialization
+    - tvet_auth
+id: tvet_user_profile
+plugin_id: tvet_user_profile
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - jwt_auth
