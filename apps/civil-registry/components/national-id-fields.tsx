@@ -269,6 +269,13 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
             state={state}
             name="age"
             label={t("DetailsPage.age")}
+            control={(props) => <Input {...props} />}
+            required={false}
+          />
+          {/* <Field
+            state={state}
+            name="age"
+            label={t("DetailsPage.age")}
             control={(props) => (
               <SearchInput
                 {...props}
@@ -280,7 +287,7 @@ export const NationalIdFields: FC<NationalIdFieldProps> = ({
               />
             )}
             required={false}
-          />
+          /> */}
           {/* <Field
             state={state}
             defaultValues={defaultValues}

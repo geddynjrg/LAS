@@ -202,6 +202,13 @@ export const ChildFormBlock: FC<ChildFormBlockProps> = ({
             />
             <Field
               state={state}
+              name={`birthSubCounty`}
+              label={t("DetailsPage.subcounty")}
+              editable={false}
+              control={(props) => <Input {...props} />}
+            />
+            <Field
+              state={state}
               name="birthSublocation"
               editable={false}
               label={t("DetailsPage.select-sublocation")}

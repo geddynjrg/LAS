@@ -32,6 +32,11 @@ export const childSchema = z
       .optional()
       .nullable()
       .transform((val) => val ?? undefined),
+    birthSubCounty: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((val) => val ?? undefined),
     birthSublocation: z
       .string()
       .optional()

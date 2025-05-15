@@ -60,6 +60,7 @@ export const FinalChildForm: FC<FinalChildFormProps> = ({ defaultValues }) => {
           {getPlaceOfBirth({
             birthHappenedAtHome: child.birthHappenedAtHome,
             birthCounty: child.birthCounty,
+            birthSubCounty: child.birthSubCounty,
             birthSublocation: child.birthSublocation,
             birthSublocationDistrict: child.birthSublocationDistrict,
             district: child.birthSublocationDistrict,
@@ -75,6 +76,7 @@ export const FinalChildForm: FC<FinalChildFormProps> = ({ defaultValues }) => {
 function getPlaceOfBirth(props: {
   birthHappenedAtHome?: string;
   birthCounty?: string;
+  birthSubCounty?: string;
   birthSublocation?: string;
   birthSublocationDistrict?: string;
   subLocation?: string;
@@ -85,6 +87,7 @@ function getPlaceOfBirth(props: {
   if (props.birthHappenedAtHome === "Yes") {
     return [
       props.birthCounty,
+      props.birthSubCounty,
       props.birthSublocation,
       props.birthSublocationDistrict,
     ]

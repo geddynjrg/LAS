@@ -30,6 +30,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   autoComplete?: string;
   disabled?: boolean;
   invalid?: boolean;
+  readonly?: boolean;
   placeholder?: string;
   startDecorator?: ReactNode;
   endDecorator?: ReactNode;
@@ -46,6 +47,7 @@ export const Input: FC<InputProps> = ({
   size,
   startDecorator,
   endDecorator,
+  readonly,
   onValueChange,
   onChange,
   ...props
@@ -56,6 +58,7 @@ export const Input: FC<InputProps> = ({
 
       <input
         type={type}
+        readOnly={readonly}
         className={cn(
           inputVariants({ size }),
           invalid && "border-destructive",

@@ -1,17 +1,14 @@
 "use client";
 
-import { IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useState, type FC } from "react";
 
-import { Button } from "@workspace/ui/components/button";
 import {
   ButtonGroup,
   ButtonGroupItem,
 } from "@workspace/ui/components/button-group";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DataBlock } from "@workspace/ui/components/civil-registry/data-block";
-import { DataNode } from "@workspace/ui/components/data-node";
 import { DatePicker } from "@workspace/ui/components/date-picker";
 import { Field } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
@@ -59,7 +56,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
     ),
   );
 
-  const [chosenBirthCounty, setChosenBirthCounty] = useState<
+  const [chosenBirthSubCounty, setChosenBirthSubCounty] = useState<
     Record<number, string>
   >(() =>
     defaultValues.reduce(
@@ -128,7 +125,13 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
     ),
   );
 
-  const [typeOfBirth, setTypeOfBirth] = useState<string>("Single");
+  const [typeOfBirth, setTypeOfBirth] = useState<string>(
+    defaultValues.length > 2
+      ? "Other"
+      : defaultValues.length > 0
+        ? "Twin"
+        : "Single",
+  );
   const [totalChildren, setTotalChildren] = useState<number>(1);
 
   const addChild = (disablePrevious: boolean) => {
@@ -145,7 +148,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
       birthHappenedAtHome: birthHappenedAtHome[0] ?? "",
       healthInstitutionCounty: chosenHealthCounty[0] ?? "",
       healthInstitution: healthInstitution[0] ?? "",
-      birthCounty: chosenBirthCounty[0] ?? "",
+      birthCounty: chosenBirthSubCounty[0] ?? "",
       birthSublocation: birthSublocation[0] ?? "",
       birthSublocationDistrict: birthSublocationDistrict[0] ?? "",
     };
@@ -166,9 +169,9 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
       ...prev,
       [Object.keys(prev).length]: chosenHealthCounty[0] ?? "",
     }));
-    setChosenBirthCounty((prev) => ({
+    setChosenBirthSubCounty((prev) => ({
       ...prev,
-      [Object.keys(prev).length]: chosenBirthCounty[0] ?? "",
+      [Object.keys(prev).length]: chosenBirthSubCounty[0] ?? "",
     }));
     setBirthSublocation((prev) => ({
       ...prev,
@@ -195,13 +198,6 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
       addChild(true);
     }
   }, [defaultValues]);
-
-  //   useEffect(() => {
-  //     console.log(state.errors);
-  //   }, [state]);
-
-  type DataVariant = "default" | "disabled";
-  const variant: DataVariant = "default";
 
   const natureOfBirthOptions = [
     { label: t("DetailsPage.live-birth"), value: "LiveBirth" },
@@ -255,9 +251,9 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
     [],
   );
 
-  const handleBirthCountyChange = useCallback(
+  const handleBirthSubCountyChange = useCallback(
     (childIndex: number, value: string | undefined) => {
-      setChosenBirthCounty((prev) => {
+      setChosenBirthSubCounty((prev) => {
         const prevValue = prev[childIndex] ?? "";
         if (prevValue === (value ?? "")) return prev;
         return {
@@ -314,13 +310,16 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
   return (
     <FormWrap action={formAction} isPending={isPending} className="space-y-4">
       {children?.map((child, childIndex) => (
-        <div key={child.id} className="relative">
+        <div
+          key={child.id}
+          className={`p-15 relative mb-2 shadow-sm ${childIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+        >
           <input
             type="hidden"
             name={`children.${childIndex}.id`}
             value={child.id}
           />
-          {childIndex > 0 && (
+          {/* {childIndex > 0 && (
             <Button
               variant="ghost"
               type="button"
@@ -329,9 +328,13 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
             >
               <IconX size={18} />
             </Button>
-          )}
+          )} */}
           <DataBlock
-            title={t(`DetailsPage.title-child`)}
+            title={
+              childIndex === 0
+                ? t("DetailsPage.title-child")
+                : `${childIndex + 1}. ${t("DetailsPage.title-child")}`
+            }
             disabled={undefined}
             active={undefined}
             toggleEdit={undefined}
@@ -343,6 +346,101 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                 <Checkbox {...props}>{t("DetailsPage.is-abandoned")}</Checkbox>
               )}
             />
+            {childIndex === 0 && (
+              <>
+                <Field
+                  control={(props) => {
+                    return (
+                      <RadioGroup
+                        {...props}
+                        options={typeOfBirthOptions}
+                        onValueChange={(value) => {
+                          if (value === "Single") {
+                            if (totalChildren > 1) {
+                              const _children = children ?? [];
+                              // Keep only the first child
+                              const childrenToRemove = _children.slice(1); // all except the first
+
+                              childrenToRemove.forEach((child) => {
+                                removeChild(child.id);
+                              });
+                            }
+                            setTotalChildren(1);
+                          } else if (value === "Twin") {
+                            if (totalChildren > 2) {
+                              const _children = children ?? [];
+                              // Keep only the first two children
+                              const childrenToRemove = _children.slice(2); // all except the first two
+                              childrenToRemove.forEach((child) => {
+                                removeChild(child.id);
+                              });
+                            } else if (totalChildren === 1) {
+                              addChild(false);
+                            }
+                            setTotalChildren(2);
+                          } else {
+                            const currentChildren = children ?? [];
+                            const childrenToAdd = 3 - currentChildren.length;
+                            for (let i = 0; i < childrenToAdd; i++) {
+                              addChild(false);
+                            }
+                            setTotalChildren(
+                              totalChildren < 3 ? 3 : totalChildren,
+                            );
+                          }
+
+                          setTypeOfBirth(value);
+                        }}
+                        orientation="horizontal"
+                        size="md"
+                        color="civilRegistry"
+                        defaultValue={typeOfBirth}
+                      />
+                    );
+                  }}
+                  label={t("DetailsPage.type-of-birth")}
+                  name="typeOfBirth"
+                />
+                {typeOfBirth === "Other" && (
+                  <Field
+                    name="totalChildren"
+                    label={t("DetailsPage.total-children-count")}
+                    control={(props) => (
+                      <Select
+                        options={[...Array(8)].map((_, i) => ({
+                          label: String(i + 3),
+                          value: String(i + 3),
+                        }))}
+                        onValueChange={(value) => {
+                          const newTotal = Number(value);
+                          const currentChildren = children ?? [];
+
+                          if (newTotal < currentChildren.length) {
+                            // Remove extra children
+                            const childrenToRemove =
+                              currentChildren.slice(newTotal);
+                            childrenToRemove.forEach((child) =>
+                              removeChild(child.id),
+                            );
+                          } else if (newTotal > currentChildren.length) {
+                            // Add missing children
+                            const childrenToAdd =
+                              newTotal - currentChildren.length;
+                            for (let i = 0; i < childrenToAdd; i++) {
+                              addChild(false);
+                            }
+                          }
+
+                          setTotalChildren(newTotal);
+                        }}
+                        value={totalChildren < 3 ? "3" : String(totalChildren)}
+                        {...props}
+                      />
+                    )}
+                  />
+                )}
+              </>
+            )}
             <Field
               control={(props) => {
                 return (
@@ -376,52 +474,63 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
               control={(props) => <Input {...props} />}
             />
 
-            <Field
-              state={state}
-              name={`children.${childIndex}.dob`}
-              isDate
-              label={t("DetailsPage.dob")}
-              control={(props) => (
-                <DatePicker
-                  {...props}
-                  onValueChange={(value) =>
-                    handleBirthDateChange(
-                      childIndex,
-                      value?.toDateString() ?? "",
-                    )
-                  }
-                  defaultValue={birthDate[childIndex]}
-                />
-              )}
-              required
-            />
-
-            <>
-              <DataNode
-                label={t("DetailsPage.sex")}
-                variant={variant}
+            {childIndex === 0 && (
+              <Field
+                state={state}
+                name={`children.${childIndex}.dob`}
+                isDate
+                label={t("DetailsPage.dob")}
+                control={(props) => (
+                  <DatePicker
+                    {...props}
+                    onValueChange={(value) =>
+                      handleBirthDateChange(
+                        childIndex,
+                        value?.toDateString() ?? "",
+                      )
+                    }
+                    defaultValue={birthDate[childIndex]}
+                  />
+                )}
                 required
               />
-              <ButtonGroup
+            )}
+            {childIndex !== 0 && (
+              <input
+                type="hidden"
+                name={`children.${childIndex}.dob`}
+                value={birthDate[0]}
+              />
+            )}
+
+            <>
+              <Field
+                state={state}
                 name={`children.${childIndex}.sex`}
-                onValueChange={() => {}}
-                type="single"
-                defaultValue={defaultValues?.[childIndex]?.sex}
-                className="flex w-full justify-start gap-2"
-              >
-                <React.Fragment key=".0">
-                  {sexOptions.map((option) => (
-                    <ButtonGroupItem
-                      key={option.value}
-                      value={option.value}
-                      enableIcon={false}
-                      className="flex-1 px-[10px] text-center"
-                    >
-                      {option.label}
-                    </ButtonGroupItem>
-                  ))}
-                </React.Fragment>
-              </ButtonGroup>
+                label={t("DetailsPage.sex")}
+                required
+                control={(props) => (
+                  <ButtonGroup
+                    {...props}
+                    type="single"
+                    defaultValue={defaultValues?.[childIndex]?.sex}
+                    className="flex w-full justify-start gap-2"
+                  >
+                    <React.Fragment key=".0">
+                      {sexOptions.map((option) => (
+                        <ButtonGroupItem
+                          key={option.value}
+                          value={option.value}
+                          enableIcon={false}
+                          className="flex-1 px-[10px] text-center"
+                        >
+                          {option.label}
+                        </ButtonGroupItem>
+                      ))}
+                    </React.Fragment>
+                  </ButtonGroup>
+                )}
+              />
             </>
             <Field
               state={state}
@@ -430,32 +539,45 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
               control={(props) => <Input {...props} endDecorator="kg" />}
               required
             />
-            <p className="typo-h5 mt-5">{t("DetailsPage.place-of-birth")}</p>
-            <Field
-              control={(props) => {
-                return (
-                  <RadioGroup
-                    {...props}
-                    options={birthHappenedOptions}
-                    onValueChange={(value) => {
-                      setBirthHappenedAtHome((prev) => {
-                        prev[childIndex] = value;
-                        return { ...prev };
-                      });
-                    }}
-                    defaultValue={birthHappenedAtHome[childIndex]}
-                    orientation="horizontal"
-                    size="md"
-                    color="civilRegistry"
-                  />
-                );
-              }}
-              label={t("DetailsPage.birth-happened-at-home")}
-              name={`children.${childIndex}.birthHappenedAtHome`}
-              required
-              state={state}
-            />
-            {birthHappenedAtHome[childIndex] !== "Yes" && (
+            {childIndex === 0 && (
+              <>
+                <p className="typo-h5 mt-5">
+                  {t("DetailsPage.place-of-birth")}
+                </p>
+                <Field
+                  control={(props) => {
+                    return (
+                      <RadioGroup
+                        {...props}
+                        options={birthHappenedOptions}
+                        onValueChange={(value) => {
+                          setBirthHappenedAtHome((prev) => {
+                            prev[childIndex] = value;
+                            return { ...prev };
+                          });
+                        }}
+                        defaultValue={birthHappenedAtHome[childIndex]}
+                        orientation="horizontal"
+                        size="md"
+                        color="civilRegistry"
+                      />
+                    );
+                  }}
+                  label={t("DetailsPage.birth-happened-at-home")}
+                  name={`children.${childIndex}.birthHappenedAtHome`}
+                  required
+                  state={state}
+                />
+              </>
+            )}
+            {childIndex !== 0 && (
+              <input
+                type="hidden"
+                name={`children.${childIndex}.birthHappenedAtHome`}
+                value={birthHappenedAtHome[0]}
+              />
+            )}
+            {childIndex === 0 && birthHappenedAtHome[childIndex] !== "Yes" && (
               <>
                 <Field
                   state={state}
@@ -495,26 +617,48 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                 />
               </>
             )}
+            {childIndex !== 0 && birthHappenedAtHome[childIndex] !== "Yes" && (
+              <>
+                <input
+                  type="hidden"
+                  name={`children.${childIndex}.healthInstitutionCounty`}
+                  value={chosenHealthCounty[0]}
+                />
+                <input
+                  type="hidden"
+                  name={`children.${childIndex}.healthInstitution`}
+                  value={healthInstitution[0]}
+                />
+              </>
+            )}
 
-            {birthHappenedAtHome[childIndex] === "Yes" && (
+            {childIndex === 0 && birthHappenedAtHome[childIndex] === "Yes" && (
               <>
                 <Field
                   state={state}
                   name={`children.${childIndex}.birthCounty`}
                   label={t("DetailsPage.county")}
+                  control={(props) => (
+                    <Input {...props} readonly defaultValue="Mombasa" />
+                  )}
+                />
+                <Field
+                  state={state}
+                  name={`children.${childIndex}.birthSubCounty`}
+                  label={t("DetailsPage.sub-county")}
                   required
                   control={(props) => (
                     <SearchInput
                       {...props}
                       onValueChange={(value) =>
-                        handleBirthCountyChange(childIndex, value)
+                        handleBirthSubCountyChange(childIndex, value)
                       }
                       placeholder={t("DetailsPage.choose-or-search")}
                       options={dummyCounties.map((county) => ({
                         label: county.name,
                         value: county.name,
                       }))}
-                      defaultValue={chosenBirthCounty[childIndex]}
+                      defaultValue={chosenBirthSubCounty[childIndex]}
                     />
                   )}
                 />
@@ -531,7 +675,7 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                       options={dummyCounties
                         .find(
                           (county) =>
-                            county.name === chosenBirthCounty[childIndex],
+                            county.name === chosenBirthSubCounty[childIndex],
                         )
                         ?.constituencies.map((c) => ({
                           label: c,
@@ -571,94 +715,34 @@ export const ChildForm: FC<ChildFormProps> = ({ defaultValues }) => {
                 />
               </>
             )}
+            {childIndex !== 0 && birthHappenedAtHome[childIndex] === "Yes" && (
+              <>
+                <input
+                  type="hidden"
+                  name={`children.${childIndex}.birthCounty`}
+                  value={"Mombasa"}
+                />
+                <input
+                  type="hidden"
+                  name={`children.${childIndex}.birthSubCounty`}
+                  value={chosenBirthSubCounty[0]}
+                />
+                <input
+                  type="hidden"
+                  name={`children.${childIndex}.birthSublocation`}
+                  value={birthSublocation[0]}
+                />
+                <input
+                  type="hidden"
+                  name={`children.${childIndex}.birthSublocationDistrict`}
+                  value={birthSublocationDistrict[0]}
+                />
+              </>
+            )}
           </DataBlock>
         </div>
       ))}
-      <Field
-        control={(props) => {
-          return (
-            <RadioGroup
-              {...props}
-              options={typeOfBirthOptions}
-              onValueChange={(value) => {
-                if (value === "Single") {
-                  if (totalChildren > 1) {
-                    const _children = children ?? [];
-                    // Keep only the first child
-                    const childrenToRemove = _children.slice(1); // all except the first
 
-                    childrenToRemove.forEach((child) => {
-                      removeChild(child.id);
-                    });
-                  }
-                  setTotalChildren(1);
-                } else if (value === "Twin") {
-                  if (totalChildren > 2) {
-                    const _children = children ?? [];
-                    // Keep only the first two children
-                    const childrenToRemove = _children.slice(2); // all except the first two
-                    childrenToRemove.forEach((child) => {
-                      removeChild(child.id);
-                    });
-                  } else if (totalChildren === 1) {
-                    addChild(false);
-                  }
-                  setTotalChildren(2);
-                } else {
-                  const currentChildren = children ?? [];
-                  const childrenToAdd = 3 - currentChildren.length;
-                  for (let i = 0; i < childrenToAdd; i++) {
-                    addChild(false);
-                  }
-                  setTotalChildren(totalChildren < 3 ? 3 : totalChildren);
-                }
-
-                setTypeOfBirth(value);
-              }}
-              orientation="horizontal"
-              size="md"
-              color="civilRegistry"
-              defaultValue={typeOfBirth}
-            />
-          );
-        }}
-        label={t("DetailsPage.type-of-birth")}
-        name="typeOfBirth"
-      />
-      {typeOfBirth === "Other" && (
-        <Field
-          name="totalChildren"
-          label={t("DetailsPage.total-children-count")}
-          control={(props) => (
-            <Select
-              options={[...Array(8)].map((_, i) => ({
-                label: String(i + 3),
-                value: String(i + 3),
-              }))}
-              onValueChange={(value) => {
-                const newTotal = Number(value);
-                const currentChildren = children ?? [];
-
-                if (newTotal < currentChildren.length) {
-                  // Remove extra children
-                  const childrenToRemove = currentChildren.slice(newTotal);
-                  childrenToRemove.forEach((child) => removeChild(child.id));
-                } else if (newTotal > currentChildren.length) {
-                  // Add missing children
-                  const childrenToAdd = newTotal - currentChildren.length;
-                  for (let i = 0; i < childrenToAdd; i++) {
-                    addChild(false);
-                  }
-                }
-
-                setTotalChildren(newTotal);
-              }}
-              value={totalChildren < 3 ? "3" : String(totalChildren)}
-              {...props}
-            />
-          )}
-        />
-      )}
       {/* <div className="flex justify-center">
         <Button
           type="button"

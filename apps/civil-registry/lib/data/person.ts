@@ -23,6 +23,7 @@ export interface Person {
   healthInstitutionCounty?: string;
   healthInstitution?: string;
   birthCounty?: string;
+  birthSubCounty?: string;
   birthSublocation?: string;
   birthSublocationDistrict?: string;
   residenceCounty?: string;
