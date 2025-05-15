@@ -137,6 +137,7 @@ export const InformantForm: FC<InformantFormProps> = ({
             onValueChange={(value) => setInformantType(value as InformantType)}
             type="single"
             defaultValue={informantType}
+            disabled={isAbandoned}
           >
             {informantTypeOptions.map((option) => {
               if (
