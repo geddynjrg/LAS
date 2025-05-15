@@ -133,7 +133,7 @@ export async function findFemaleWithChildren(): Promise<Person[]> {
 // Create a new person
 export async function createPerson(person: Person): Promise<Person> {
   personsStore.push(person);
-  return person;
+  return Promise.resolve(person);
 }
 
 // Update a person by ID

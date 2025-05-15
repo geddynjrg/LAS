@@ -5,9 +5,10 @@ import { revalidatePath } from "next/cache";
 import { generateUUID, nationalIdPeopleOptions } from "@/lib/data/dummy-data";
 import { createPerson } from "@/lib/services/person-service";
 import {
-  birthRegistrationStore,
+  getStore,
   Person,
   resetBirthRegistrationStore,
+  setStore,
   type BirthRegistrationStore,
   type SexType,
 } from "../data/person";
@@ -21,6 +22,7 @@ export type BirthRegistrationQuery =
 export async function getFormPerson<T extends keyof BirthRegistrationStore>(
   type: T,
 ) {
+  const birthRegistrationStore = await getStore();
   return birthRegistrationStore[type];
 }
 
@@ -28,6 +30,7 @@ export async function editPerson(
   type: BirthRegistrationQuery,
   person?: Person,
 ): Promise<Person | undefined> {
+  const birthRegistrationStore = await getStore();
   if (!person) {
     if (type === "child") {
       birthRegistrationStore[type] = [] as Person[];
@@ -63,10 +66,11 @@ export async function editPerson(
         ...birthRegistrationStore[type],
         ...person,
       };
+      await setStore(birthRegistrationStore);
     }
   }
 
-  return person;
+  return Promise.resolve(person);
 }
 
 export async function resetFormReset() {

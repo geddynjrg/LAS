@@ -190,29 +190,50 @@ export type BirthRegistrationStore = {
 
 declare global {
   // eslint-disable-next-line no-var
-  var personsStore: Person[];
+  var _personsStore: Person[];
   // eslint-disable-next-line no-var
-  var birthRegistrationStore: BirthRegistrationStore;
+  var _birthRegistrationStore: BirthRegistrationStore;
 }
 
-globalThis.personsStore = globalThis.personsStore || persons;
-globalThis.birthRegistrationStore = globalThis.birthRegistrationStore || {
+const defaultStore: BirthRegistrationStore = {
+  child: [],
+  mother: {} as Person,
+  father: {} as Person,
+  informant: {} as Person,
+};
+
+globalThis._personsStore = globalThis._personsStore ?? persons;
+globalThis._birthRegistrationStore = globalThis._birthRegistrationStore || {
   child: [] as Person[],
   mother: {} as Person,
   father: {} as Person,
   informant: {} as Person,
 };
 
-export const personsStore = globalThis.personsStore;
-export let birthRegistrationStore = globalThis.birthRegistrationStore;
+export const personsStore = globalThis._personsStore;
+// export let birthRegistrationStore = globalThis.birthRegistrationStore;
+// export const birthRegistrationStore = getStore();
 
 export async function resetBirthRegistrationStore() {
-  globalThis.birthRegistrationStore = {
+  globalThis._birthRegistrationStore = {
     child: [] as Person[],
     mother: {} as Person,
     father: {} as Person,
     informant: {} as Person,
   };
 
-  birthRegistrationStore = globalThis.birthRegistrationStore;
+  setStore(globalThis._birthRegistrationStore);
+
+  // birthRegistrationStore = globalThis._birthRegistrationStore;
+}
+
+export async function getStore() {
+  return (
+    globalThis._birthRegistrationStore ??
+    (globalThis._birthRegistrationStore = defaultStore)
+  );
+}
+
+export async function setStore(store: BirthRegistrationStore) {
+  globalThis._birthRegistrationStore = store;
 }
