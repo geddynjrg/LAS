@@ -10,13 +10,12 @@ import {
   type InitiatePaymentSchema,
 } from "@/app/apply/[id]/payment/mpesa/initiate-payment-schema";
 import { initiateMpesaPayment } from "@/lib/api/payment";
+import { formatPhoneNumber } from "@/lib/phone";
 
 export const initiatePaymentAction: FormAction<InitiatePaymentSchema> = async (
   _prev,
   formData,
 ) => {
-  console.log("paymentAction", formData);
-
   const id = formData.get("id")?.toString();
   const values = getFormZodDataValues(formData, initiatePaymentSchema);
 
@@ -41,7 +40,7 @@ export const initiatePaymentAction: FormAction<InitiatePaymentSchema> = async (
 
   const payment = await initiateMpesaPayment({
     application_id: id,
-    phone_number: [data.callingCode, data.phone].join(""),
+    phone_number: formatPhoneNumber(data),
   });
 
   if (payment.error) {
