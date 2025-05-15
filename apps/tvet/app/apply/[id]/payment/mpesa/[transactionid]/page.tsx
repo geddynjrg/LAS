@@ -6,13 +6,17 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type FC } from "react";
 
 import { Container } from "@workspace/ui/components/container";
+import { Currency } from "@workspace/ui/components/currency";
 import { IconCheck } from "@workspace/ui/components/icon-check";
 import { Loader } from "@workspace/ui/components/loader";
 import { useInterval } from "@workspace/ui/hooks/use-interval";
 import { useMount } from "@workspace/ui/hooks/use-mount";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { checkPaymentStatusAction } from "@/app/apply/[id]/payment/mpesa/[transactionId]/check-payment-status-action";
+import {
+  checkPaymentStatusAction,
+  type PaymentStatusInfo,
+} from "@/app/apply/[id]/payment/mpesa/[transactionid]/check-payment-status-action";
 
 const REFETCH_INTERVAL = 2000; // 2 seconds
 
@@ -24,28 +28,29 @@ export default function MpesaPaymentStatusPage() {
     transactionId: string;
   }>();
 
-  const [status, setStatus] = useState<
-    "pending" | "completed" | "cancelled" | "failed"
-  >("pending");
-  const [phone, setPhone] = useState<string>();
   const [error, setError] = useState<string | null>(null);
+  const [paymentStatusInfo, setPaymentStatusInfo] =
+    useState<PaymentStatusInfo | null>();
 
   // update M-Pesa payment status
   const updateStatus = async () => {
     try {
+      console.log("Checking payment status...");
       const res = await checkPaymentStatusAction(transactionId);
-
+      console.log("payment status...", { res });
+      setPaymentStatusInfo(res.data);
       setError(res.error);
-      setPhone(res.phone);
-      setStatus(res.status);
     } catch (error) {
       console.error("Error while checking transaction status:", error);
-      setStatus("failed");
+      setError("Error while checking transaction status");
     }
   };
 
   // refetch status info periodically
-  useInterval(updateStatus, status === "pending" ? REFETCH_INTERVAL : null);
+  useInterval(
+    updateStatus,
+    paymentStatusInfo?.status === "pending" ? REFETCH_INTERVAL : null,
+  );
 
   useMount(() => {
     updateStatus();
@@ -53,14 +58,14 @@ export default function MpesaPaymentStatusPage() {
 
   // redirect to success page if status is completed
   useEffect(() => {
-    if (status === "completed") {
+    if (paymentStatusInfo?.status === "completed") {
       console.log("Payment completed, do the redirect");
       router.push(`/apply/${id}/success`);
     }
-    if (status === "cancelled") {
+    if (paymentStatusInfo?.status === "cancelled") {
       router.push(`/apply/${id}/payment`);
     }
-  }, [status, id, router]);
+  }, [id, paymentStatusInfo?.status, router]);
 
   return (
     <Container className="mb-8 flex flex-1 flex-col space-y-4">
@@ -73,12 +78,28 @@ export default function MpesaPaymentStatusPage() {
       </div>
 
       <div className="m-auto max-w-2xl">
-        {status === "completed" ? (
+        {paymentStatusInfo?.status === "completed" ? (
           <ConfirmedSection />
-        ) : status === "cancelled" || status === "failed" || !transactionId ? (
+        ) : paymentStatusInfo?.status === "cancelled" ||
+          paymentStatusInfo?.status === "failed" ||
+          !transactionId ? (
           <FailedSection error={error} />
         ) : (
-          <PendingSection phone={phone} />
+          <PendingSection phone={paymentStatusInfo?.phone_number} />
+        )}
+        {paymentStatusInfo?.status === "pending" && (
+          <div className="mt-5 flex flex-col items-center gap-2">
+            <div className={cn("typo-h5 font-normal")}>
+              {paymentStatusInfo?.transaction_id}
+            </div>
+            <div className={cn("typo-h5 font-normal")}>
+              <Currency
+                className="font-bold"
+                amount={paymentStatusInfo?.amount ?? 0}
+                currency="KES"
+              />
+            </div>
+          </div>
         )}
       </div>
     </Container>

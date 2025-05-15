@@ -2,10 +2,24 @@
 
 import { checkMpesaPaymentStatus } from "@/lib/api/payment";
 
+export interface PaymentStatusInfo {
+  application_id?: string;
+  checkout_request_id?: string;
+  merchant_request_id?: string;
+  transaction_id?: string | null;
+  status?: "pending" | "completed" | "cancelled" | "failed";
+  amount?: number;
+  phone_number?: string;
+  payment_type?: "application" | "course";
+  created?: string;
+  changed?: string;
+  completed?: string | null;
+  application_payment_status?: "not_paid" | "paid";
+}
 interface CheckPaymentStatusActionResponse {
   status: "failed" | "pending" | "completed" | "cancelled";
   error: string | null;
-  phone?: string;
+  data?: PaymentStatusInfo | null;
 }
 
 export const checkPaymentStatusAction: (
@@ -15,6 +29,7 @@ export const checkPaymentStatusAction: (
     return {
       status: "failed",
       error: "Transaction ID is required",
+      data: null,
     };
   }
 
@@ -27,13 +42,14 @@ export const checkPaymentStatusAction: (
 
     return {
       status: "failed",
+      data: null,
       error: payment.error.message ?? "Something went wrong",
     };
   }
 
   return {
     status: payment.data?.data?.status ?? "pending",
-    phone: payment.data?.data?.phone_number,
+    data: payment.data.data,
     error: null,
   };
 };

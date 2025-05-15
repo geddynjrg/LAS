@@ -257,7 +257,11 @@
     "payUsing": "Pay using {method}",
     "payLater": "Pay later"
   },
+
   "MpesaPayment": {
+    "title": "Pay using M-Pesa",
+    "description": "Please enter your phone number to proceed with the payment",
+
     "successMessage": "Payment successful",
     "errorMessage": "Payment failed",
     "pendingMessage": "Payment pending",

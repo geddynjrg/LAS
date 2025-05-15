@@ -53,6 +53,8 @@ export interface ApplicationCardProps {
   course_duration?: string;
   current_step?: string;
   className?: string;
+  rejection_reason?: string;
+  rejection_message?: string;
 }
 
 export const ApplicationCard: FC<ApplicationCardProps> = (props) => {
@@ -146,8 +148,12 @@ const ApplicationActions: FC<ApplicationCardProps> = (props) => {
 
     case "rejected":
       return (
-        <DescriptionActions label={t("viewRejectReason")}>
-          TODO: Reject reason here
+        <DescriptionActions
+          label={t("viewRejectReason")}
+          className="border-red-400 bg-red-200"
+        >
+          <p className="typo-h6">{props.rejection_reason}</p>
+          {props.rejection_message}
         </DescriptionActions>
       );
 
@@ -203,10 +209,11 @@ const PaymentActions: FC<{
   );
 };
 
-const DescriptionActions: FC<{ label?: string; children: ReactNode }> = ({
-  label,
-  children,
-}) => {
+const DescriptionActions: FC<{
+  label?: string;
+  children: ReactNode;
+  className?: string;
+}> = ({ label, children, className }) => {
   const t = useTranslations("ApplicationCard");
   const [isDescriptionsVisible, setIsDescriptionsVisible] = useState(false);
 
@@ -220,7 +227,12 @@ const DescriptionActions: FC<{ label?: string; children: ReactNode }> = ({
       </Button>
 
       {isDescriptionsVisible && (
-        <div className="relative space-y-4 rounded border border-yellow-500 bg-yellow-100 p-4">
+        <div
+          className={cn(
+            "relative space-y-4 rounded border border-yellow-500 bg-yellow-100 p-4",
+            className,
+          )}
+        >
           <Button
             variant="ghost"
             size="xs"

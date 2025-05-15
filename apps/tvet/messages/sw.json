@@ -193,7 +193,7 @@
     "edit": "Hariri maombi",
     "viewNextSteps": "Tazama hatua zinazofuata",
     "viewRejectReason": "Tazama sababu ya kukataliwa",
-    "pay": "Lipa kwa kutumia {method}"
+    "pay": "Lipa na {method}"
   },
 
   "ApplyFormSteps": {
@@ -249,14 +249,17 @@
     "confirmEligibility": "Nathibitisha kuwa ninakidhi mahitaji ya kustahiki kwa kozi niliyopendekeza na nitatoa nyaraka zote muhimu za kuunga mkono kama itakavyohitajika. Ninakubali kuwa kushindwa kufanya hivyo kunaweza kusababisha kukataliwa kwa ombi langu au kucheleweshwa kwa usindikaji.",
     "paymentDescription": " Ada ya maombi inahitajika ili kufidia gharama za kiutawala zinazohusiana na usindikaji wa maombi ya wanafunzi. Ada ya maombi haiwezi kurejeshwa. Fahamu kuwa bila malipo ya ada hii, ombi lako halitasindikwa.",
     "cost": "Gharama",
-    "payUsing": "Lipa kwa kutumia {method}",
+    "payUsing": "Lipa na {method}",
     "payLater": "Lipa baadaye"
   },
 
   "MpesaPayment": {
+    "title": "Lipa na M-Pesa",
+    "description": "Please enter your phone number to proceed with the payment",
+
     "successMessage": "Malipo yamefanikiwa",
     "errorMessage": "Malipo yamekamilika",
     "pendingMessage": "Malipo yanangoja",
-    "payButton": "Lipa kwa kutumia M-Pesa"
+    "payButton": "Lipa na M-Pesa"
   }
 }
