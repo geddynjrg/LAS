@@ -42,6 +42,7 @@ export const uploadPaymentProofAction: FormAction<
   const res = await uploadPaymentProof({
     application_id: id,
     payment_proof: await prepareFileForUpload(data.payment_proof),
+    type: data.type,
   });
 
   if (res.error) {

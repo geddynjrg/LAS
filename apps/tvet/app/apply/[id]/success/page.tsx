@@ -19,13 +19,33 @@ export interface SuccessPageProps {
   params: Promise<{ id: string }>;
 }
 
+type ApplicationStatus =
+  | "draft"
+  | "in_progress"
+  | "submitted"
+  | "application_payment_pending"
+  | "application_payment_received"
+  | "reviewing"
+  | "rejected"
+  | "approved"
+  | "course_payment_pending"
+  | "course_payment_received"
+  | "completed";
+
 export default async function SuccessPage({ params }: SuccessPageProps) {
   const { id } = await params;
   const t = await getTranslations("ApplySuccessPage");
 
   const application = await getApplicationProgress({ id });
 
-  if (!application || application.status !== "submitted") {
+  const allowedStatuses: ApplicationStatus[] = [
+    "application_payment_received",
+    "reviewing",
+    "course_payment_received",
+    "completed",
+  ];
+
+  if (!application?.status || !allowedStatuses.includes(application.status)) {
     notFound();
   }
 
@@ -37,7 +57,6 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
   );
 
   const data = await getThankYouContent(id);
-  console.log("data", data);
 
   return (
     <Container className="mb-8 space-y-7">
@@ -100,20 +119,6 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
               </Link>
             </Button>
           ))}
-
-          <hr />
-          <Button variant="secondary" asChild>
-            <a
-              href="payment-info-pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("downloadApplication")}
-            </a>
-          </Button>
-          <Button variant="secondary" asChild>
-            <Link href="/">{t("frontPage")}</Link>
-          </Button>
         </div>
       )}
 

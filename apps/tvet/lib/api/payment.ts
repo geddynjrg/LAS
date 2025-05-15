@@ -24,6 +24,7 @@ export async function getPaymentInfoPdf(path: { application_id: string }) {
 
 export async function uploadPaymentProof(data: {
   application_id: string;
+  type: "application" | "course";
   payment_proof: {
     data: string;
     filename: string;
@@ -33,11 +34,10 @@ export async function uploadPaymentProof(data: {
     params: {
       header: { "X-Language": await getLocale() },
       path: { application_id: data.application_id },
+      query: { type: data.type },
     },
     body: {
       payment_proof: data.payment_proof,
-      // TODO: why is this required by API?
-      payment_reference: "?????",
     },
   });
 }

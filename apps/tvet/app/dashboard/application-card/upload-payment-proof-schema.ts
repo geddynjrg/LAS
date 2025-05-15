@@ -9,8 +9,13 @@ export const FILE_ACCEPT = {
   "application/pdf": [".pdf"],
 };
 
+const uploadPaymentProofType = z.enum(["application", "course"]);
+
+export type UploadPaymentProofType = z.infer<typeof uploadPaymentProofType>;
+
 export const uploadPaymentProofSchema = z.object({
   id: z.string().trim().nonempty(),
+  type: uploadPaymentProofType,
   payment_proof: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
 });
 

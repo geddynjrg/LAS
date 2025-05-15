@@ -127,7 +127,22 @@ const ApplicationActions: FC<ApplicationCardProps> = (props) => {
       );
 
     case "submitted":
-      return <PaymentActions {...props} />;
+      return (
+        <PaymentActions
+          {...props}
+          paymentInfoLink={`/api/v1/application/${props.application_id}/payment-info-pdf`}
+          type="application"
+        />
+      );
+
+    case "approved":
+      return (
+        <PaymentActions
+          {...props}
+          paymentInfoLink={`/api/v1/application/${props.application_id}/course-payment-info-pdf`}
+          type="course"
+        />
+      );
 
     case "rejected":
       return (
@@ -145,9 +160,11 @@ const ApplicationActions: FC<ApplicationCardProps> = (props) => {
   }
 };
 
-const PaymentActions: FC<{ application_id?: string }> = ({
-  application_id,
-}) => {
+const PaymentActions: FC<{
+  application_id?: string;
+  paymentInfoLink: string | undefined;
+  type: "application" | "course";
+}> = ({ application_id, paymentInfoLink, type }) => {
   const t = useTranslations("ApplicationCard");
   const tCommon = useTranslations("Common");
   const search = useSearchParams();
@@ -171,6 +188,8 @@ const PaymentActions: FC<{ application_id?: string }> = ({
           isHighlighted={isHighlighted}
           onClose={() => setIsPaymentProofFormVisible(false)}
           application_id={application_id || ""}
+          paymentInfoLink={paymentInfoLink}
+          type={type}
         />
       ) : (
         <Button

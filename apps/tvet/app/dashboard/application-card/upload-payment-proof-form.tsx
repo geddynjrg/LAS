@@ -14,18 +14,23 @@ import {
   FILE_ACCEPT,
   MAX_FILE_SIZE,
   uploadPaymentProofSchema,
+  type UploadPaymentProofType,
 } from "./upload-payment-proof-schema";
 
 export interface UploadPaymentProofFormProps {
   isHighlighted?: boolean;
   onClose: () => void;
   application_id: string;
+  type: UploadPaymentProofType;
+  paymentInfoLink?: string;
 }
 
 export const UploadPaymentProofForm: FC<UploadPaymentProofFormProps> = ({
   isHighlighted,
   onClose,
   application_id,
+  type,
+  paymentInfoLink,
 }) => {
   const t = useTranslations("ApplicationCard");
   const [state, formAction, isPending] = useForm(
@@ -42,6 +47,7 @@ export const UploadPaymentProofForm: FC<UploadPaymentProofFormProps> = ({
       )}
     >
       <input type="hidden" name="id" value={application_id} />
+      <input type="hidden" name="type" value={type} />
       <Button
         variant="ghost"
         size="xs"
@@ -51,15 +57,13 @@ export const UploadPaymentProofForm: FC<UploadPaymentProofFormProps> = ({
         <IconX />
       </Button>
       <p>{t("proofUploadDescription")}</p>
-      <Underline asChild>
-        <a
-          href={`/apply/${application_id}/payment-info-pdf`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <IconDownload className="mr-2" /> {t("proofInstructionsLink")}
-        </a>
-      </Underline>
+      {paymentInfoLink && (
+        <Underline asChild>
+          <a href={paymentInfoLink} target="_blank" rel="noopener noreferrer">
+            <IconDownload className="mr-2" /> {t("proofInstructionsLink")}
+          </a>
+        </Underline>
+      )}
 
       <Field
         state={state}
