@@ -17,11 +17,11 @@ import { useForm } from "@workspace/ui/hooks/use-form";
 import { initiatePaymentAction } from "@/app/apply/[id]/payment/mpesa/initiate-payment-action";
 import { initiatePaymentSchema } from "@/app/apply/[id]/payment/mpesa/initiate-payment-schema";
 
-export interface MpesaPaymentFormProps {
+export interface InitiatePaymentFormProps {
   id: string;
 }
 
-export const MpesaPaymentForm: FC<MpesaPaymentFormProps> = ({ id }) => {
+export const InitiatePaymentForm: FC<InitiatePaymentFormProps> = ({ id }) => {
   const t = useTranslations("MpesaPayment");
   const [state, formAction, isPending] = useForm(
     initiatePaymentAction,

@@ -35,5 +35,9 @@ export function formatPhoneNumber(args: {
     return phoneNumber;
   }
 
+  if (!args.callingCode) {
+    return phoneNumber;
+  }
+
   return `+${phoneNumber}`;
 }

@@ -2,7 +2,7 @@
 
 import { Container } from "@workspace/ui/components/container";
 
-import { MpesaPaymentForm } from "@/app/apply/[id]/payment/mpesa/phone-number/phone-number-form";
+import { InitiatePaymentForm } from "@/app/apply/[id]/payment/mpesa/initiate-payment-form";
 
 export interface PaymentPageProps {
   params: Promise<{ id: string }>;
@@ -17,7 +17,7 @@ export default async function ApplyPage({ params }: PaymentPageProps) {
       <p className="text-center">
         Please enter your phone number to proceed with the payment
       </p>
-      <MpesaPaymentForm id={id} />
+      <InitiatePaymentForm id={id} />
     </Container>
   );
 }

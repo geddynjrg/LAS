@@ -12,16 +12,16 @@ import { useInterval } from "@workspace/ui/hooks/use-interval";
 import { useMount } from "@workspace/ui/hooks/use-mount";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { checkPaymentStatusAction } from "@/app/apply/[id]/payment/mpesa/[transactionid]/check-payment-status.action";
+import { checkPaymentStatusAction } from "@/app/apply/[id]/payment/mpesa/[transactionId]/check-payment-status-action";
 
-const REFECTH_INTERVAL = 2000; // 2 seconds
+const REFETCH_INTERVAL = 2000; // 2 seconds
 
 export default function MpesaPaymentStatusPage() {
   const router = useRouter();
   const format = useFormatter();
-  const { id, transactionid } = useParams<{
+  const { id, transactionId: transactionId } = useParams<{
     id: string;
-    transactionid: string;
+    transactionId: string;
   }>();
 
   const [status, setStatus] = useState<
@@ -33,8 +33,7 @@ export default function MpesaPaymentStatusPage() {
   // update M-Pesa payment status
   const updateStatus = async () => {
     try {
-      const res = await checkPaymentStatusAction(transactionid);
-      console.log("status response", res.status);
+      const res = await checkPaymentStatusAction(transactionId);
 
       setError(res.error);
       setPhone(res.phone);
@@ -45,8 +44,8 @@ export default function MpesaPaymentStatusPage() {
     }
   };
 
-  // refech status info periodically
-  useInterval(updateStatus, status === "pending" ? REFECTH_INTERVAL : null);
+  // refetch status info periodically
+  useInterval(updateStatus, status === "pending" ? REFETCH_INTERVAL : null);
 
   useMount(() => {
     updateStatus();
@@ -68,7 +67,7 @@ export default function MpesaPaymentStatusPage() {
       <div>
         <div className={cn("flex justify-between", "typo-body-small")}>
           <div>{format.dateTime(new Date())}</div>
-          <div>{transactionid}</div>
+          <div>{transactionId}</div>
         </div>
         <h2 className={cn("typo-h2")}>{"M-Pesa payment"}</h2>
       </div>
@@ -76,7 +75,7 @@ export default function MpesaPaymentStatusPage() {
       <div className="m-auto max-w-2xl">
         {status === "completed" ? (
           <ConfirmedSection />
-        ) : status === "cancelled" || status === "failed" || !transactionid ? (
+        ) : status === "cancelled" || status === "failed" || !transactionId ? (
           <FailedSection error={error} />
         ) : (
           <PendingSection phone={phone} />
