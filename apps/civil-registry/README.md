@@ -83,7 +83,7 @@ All components, hooks, utilities, and even component-specific translations under
 
 ## Future Improvements
 
-### If mother of father is underage
+### If mother or father is underage
 
 Instead of adding a new field to select `mother/father is underage`, it can be determined by the age of the person that is already available.
 
