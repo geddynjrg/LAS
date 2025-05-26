@@ -73,9 +73,8 @@ Storybook supports theme switching to preview how each component appears within 
 
 - Global styles are defined in `packages/ui/src/styles/globals.css`.
 - Project-specific color overrides are placed in the `@layer base` block under their respective class selectors:
-  - `.tvet`
-  - `.uwezo`
   - `.civil-registry`
+  - `.other-project`
 
 ### Shared Resources
 
