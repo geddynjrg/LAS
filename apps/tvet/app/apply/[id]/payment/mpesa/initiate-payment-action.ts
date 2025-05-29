@@ -55,6 +55,6 @@ export const initiatePaymentAction: FormAction<InitiatePaymentSchema> = async (
   }
 
   return redirect(
-    `/apply/${id}/mpesa/${payment.data?.data?.checkout_request_id}`,
+    `/apply/${id}/payment/mpesa/${payment.data?.data?.checkout_request_id}`,
   );
 };

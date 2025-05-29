@@ -23,9 +23,9 @@ const REFETCH_INTERVAL = 2000; // 2 seconds
 export default function MpesaPaymentStatusPage() {
   const router = useRouter();
   const format = useFormatter();
-  const { id, transactionId: transactionId } = useParams<{
+  const { id, transactionid: transactionid } = useParams<{
     id: string;
-    transactionId: string;
+    transactionid: string;
   }>();
 
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export default function MpesaPaymentStatusPage() {
   const updateStatus = async () => {
     try {
       console.log("Checking payment status...");
-      const res = await checkPaymentStatusAction(transactionId);
+      const res = await checkPaymentStatusAction(transactionid);
       console.log("payment status...", { res });
       setPaymentStatusInfo(res.data);
       setError(res.error);
@@ -72,7 +72,7 @@ export default function MpesaPaymentStatusPage() {
       <div>
         <div className={cn("flex justify-between", "typo-body-small")}>
           <div>{format.dateTime(new Date())}</div>
-          <div>{transactionId}</div>
+          <div>{transactionid}</div>
         </div>
         <h2 className={cn("typo-h2")}>{"M-Pesa payment"}</h2>
       </div>
@@ -82,7 +82,7 @@ export default function MpesaPaymentStatusPage() {
           <ConfirmedSection />
         ) : paymentStatusInfo?.status === "cancelled" ||
           paymentStatusInfo?.status === "failed" ||
-          !transactionId ? (
+          !transactionid ? (
           <FailedSection error={error} />
         ) : (
           <PendingSection phone={paymentStatusInfo?.phone_number} />
