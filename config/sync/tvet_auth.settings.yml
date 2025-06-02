@@ -1,9 +1,0 @@
-jwt_secret: UBrq+KO4sVCFl75RnDfM2pmLel4MNZR2qaaIqDETxDg=
-jwt_refresh_secret: gz1pLhXIoX0UT96V3lQ2+U2gPLur2JBaQ/a+qbWM5OA=
-jwt_expiration: 3600
-jwt_refresh_expiration: 2592000
-jwt_auth_enabled: true
-jwt_strict_validation: true
-jwt_token_limit_per_user: 10
-jwt_store_tokens: true
-jwt_revoke_tokens_on_password_change: true

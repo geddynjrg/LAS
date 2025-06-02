@@ -4,21 +4,11 @@ status: true
 dependencies:
   config:
     - filter.format.basic_html
-    - rest.resource.tvet_login
-    - rest.resource.tvet_logout
-    - rest.resource.tvet_node_resource
-    - rest.resource.tvet_password_reset
-    - rest.resource.tvet_password_reset_request
-    - rest.resource.tvet_path_resource
-    - rest.resource.tvet_token_refresh
-    - rest.resource.tvet_user_profile
-    - rest.resource.tvet_user_registration
   module:
     - comment
     - contact
     - file
     - filter
-    - rest
     - search
     - shortcut
     - system
@@ -35,15 +25,6 @@ permissions:
   - 'access site-wide contact form'
   - 'delete own files'
   - 'post comments'
-  - 'restful get tvet_node_resource'
-  - 'restful get tvet_path_resource'
-  - 'restful get tvet_user_profile'
-  - 'restful post tvet_login'
-  - 'restful post tvet_logout'
-  - 'restful post tvet_password_reset'
-  - 'restful post tvet_password_reset_request'
-  - 'restful post tvet_token_refresh'
-  - 'restful post tvet_user_registration'
   - 'search content'
   - 'skip comment approval'
   - 'use text format basic_html'
