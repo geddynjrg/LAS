@@ -59,11 +59,11 @@ function api_auth_entity_update(EntityInterface $entity) {
  * Implements hook_cron().
  */
 function api_auth_cron() {
-  /** @var \Drupal\api_auth\Service\ApiJwtService $jwt_service */
-  $jwt_service = \Drupal::service('api_auth.jwt_service');
+  /** @var \Drupal\api_auth\Service\TokenStorageService $token_storage */
+  $token_storage = \Drupal::service('api_auth.token_storage');
 
   // Clean up expired tokens.
-  $jwt_service->cleanupExpiredTokens();
+  $token_storage->purgeExpiredTokens();
 }
 
 /**
