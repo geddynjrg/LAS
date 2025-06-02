@@ -1,0 +1,18 @@
+uuid: 441858c1-b060-4de7-9364-c3b0baf1a0ca
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.landing
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+    bundle_settings:
+      untranslatable_fields_hide: '0'
+id: node.landing
+target_entity_type_id: node
+target_bundle: landing
+default_langcode: site_default
+language_alterable: false

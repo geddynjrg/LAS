@@ -1,0 +1,18 @@
+uuid: f60add94-6506-4b2e-8c8b-22cce3fe51dc
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: Landing
+type: landing
+description: 'Defines the structure and fields for landing pages, enabling flexible layouts, reusable components, and consistent content presentation.'
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: true
