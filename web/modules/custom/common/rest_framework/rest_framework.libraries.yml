@@ -1,0 +1,38 @@
+openapi_ui:
+  version: 1.x
+  css:
+    theme:
+      https://unpkg.com/swagger-ui-dist@4/swagger-ui.css: { type: external }
+  js:
+    https://unpkg.com/swagger-ui-dist@4/swagger-ui-bundle.js: { type: external }
+    https://unpkg.com/swagger-ui-dist@4/swagger-ui-standalone-preset.js: { type: external }
+  dependencies:
+    - core/drupal
+    - core/jquery
+
+swagger_ui:
+  version: 4.15.5
+  js:
+    https://cdn.jsdelivr.net/npm/swagger-ui-dist@4.15.5/swagger-ui-bundle.js: { type: external, minified: true }
+    js/swagger-ui-init.js: {}
+  css:
+    theme:
+      https://cdn.jsdelivr.net/npm/swagger-ui-dist@4.15.5/swagger-ui.css: { type: external, minified: true }
+      css/swagger-ui-overrides.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+
+stoplight_elements_ui:
+  version: 7.7.1
+  css:
+    theme:
+      https://cdn.jsdelivr.net/npm/@stoplight/elements@7.7.1/styles.min.css: { type: external, minified: true }
+      css/stoplight-overrides.css: {}
+      css/rest-framework-api-loader.css: {}
+  js:
+    https://cdn.jsdelivr.net/npm/@stoplight/elements@7.7.1/web-components.min.js: { type: external, minified: true }
+    js/stoplight-init.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings

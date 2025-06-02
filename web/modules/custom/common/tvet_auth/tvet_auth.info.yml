@@ -1,9 +1,0 @@
-name: TVET Auth
-type: module
-description: 'Provides authentication and authorization services for TVET.'
-package: Custom
-core_version_requirement: ^9 || ^10 || ^11
-dependencies:
-  - drupal:rest
-  - drupal:tvet_rest
-  - serialization:serialization

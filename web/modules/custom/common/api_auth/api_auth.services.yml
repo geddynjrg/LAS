@@ -1,0 +1,36 @@
+services:
+  # JWT token storage service
+  api_auth.token_storage:
+    class: Drupal\api_auth\Service\TokenStorageService
+    arguments: ['@database', '@logger.factory', '@request_stack', '@config.factory']
+
+  # JWT service
+  api_auth.jwt_service:
+    class: Drupal\api_auth\Service\ApiJwtService
+    arguments: ['@config.factory', '@entity_type.manager', '@api_auth.token_storage']
+
+  cache.api_auth:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [api_auth]
+
+  # JWT authentication provider
+  authentication.jwt:
+    class: Drupal\api_auth\Authentication\Provider\JwtAuthProvider
+    arguments: ['@api_auth.jwt_service', '@config.factory', '@entity_type.manager', '@current_user', '@logger.factory']
+    tags:
+      - { name: authentication_provider, provider_id: 'jwt_auth', priority: 100 }
+
+  # JWT CSRF Decorator - extends the core CSRF access check service
+  access_check.header.csrf:
+    class: Drupal\api_auth\Access\JwtCsrfDecorator
+    arguments: ['@session_configuration', '@csrf_token', '@authentication.jwt']
+    tags:
+      - { name: access_check, applies_to: _csrf_request_header_token }
+
+  # OpenAPI schema provider for auth endpoints
+  plugin.manager.openapi_schema_provider.auth_endpoints:
+    class: Drupal\api_auth\Plugin\OpenApiSchemaProvider\AuthEndpointsProvider
+    parent: default_plugin_manager
