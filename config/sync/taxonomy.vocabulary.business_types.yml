@@ -1,0 +1,9 @@
+uuid: b17321e3-3199-42d0-92c3-0e03a2599db7
+langcode: en
+status: true
+dependencies: {  }
+name: 'Business Types'
+vid: business_types
+description: 'Business Types vocabulary for loan applications.'
+weight: 0
+new_revision: false

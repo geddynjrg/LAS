@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Contains api_application.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function api_application_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.api_application':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The API Application module provides loan application entities and management functionality.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function api_application_entity_type_build(array &$entity_types) {
+  // Add the Application entity to the content menu
+  if (isset($entity_types['application'])) {
+    $entity_types['application']->setLinkTemplate('collection', '/admin/content/applications');
+    $entity_types['application']->set('field_ui_base_route', 'entity.application.collection');
+  }
+  
+  // Add the Group Member entity to the content menu
+  if (isset($entity_types['group_member'])) {
+    $entity_types['group_member']->setLinkTemplate('collection', '/admin/content/group-members');
+    $entity_types['group_member']->set('field_ui_base_route', 'entity.group_member.collection');
+  }
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function api_application_menu_local_tasks_alter(&$data, $route_name) {
+  // Add tabs to content page routes
+  $content_routes = [
+    'system.admin_content',
+    'entity.application.collection',
+    'entity.group_member.collection',
+  ];
+  
+  if (in_array($route_name, $content_routes)) {
+    // Add Application tab
+    if (isset($data['tabs'][0]['entity.application.collection'])) {
+      $data['tabs'][0]['entity.application.collection']['#weight'] = 20;
+    }
+    
+    // Add Group Members tab
+    if (isset($data['tabs'][0]['entity.group_member.collection'])) {
+      $data['tabs'][0]['entity.group_member.collection']['#weight'] = 30;
+    }
+  }
+} 

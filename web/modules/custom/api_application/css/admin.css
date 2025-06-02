@@ -1,0 +1,162 @@
+/**
+ * Loan Application Admin Styles
+ */
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.75em;
+  font-size: 0.875em;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+}
+
+.badge.color-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge.color-info {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.badge.color-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.badge.color-success {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.badge.color-error {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.badge.color-disabled {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+/* Application filters */
+.application-filters {
+  margin-bottom: 1em;
+  padding: 1em;
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+}
+
+/* Application table enhancements */
+.view-api-application-admin table {
+  width: 100%;
+}
+
+.view-api-application-admin td,
+.view-api-application-admin th {
+  padding: 0.75rem;
+}
+
+/* Application view page */
+.application-view {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.application-section {
+  margin-bottom: 2em;
+  padding: 1.5em;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+}
+
+.application-section h2 {
+  margin-top: 0;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.application-field {
+  margin-bottom: 1em;
+}
+
+.application-field .field__label {
+  font-weight: 600;
+  margin-bottom: 0.25em;
+}
+
+/* Multi-step form progress */
+.application-form-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2em;
+  padding: 0;
+  list-style: none;
+}
+
+.application-form-progress li {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.application-form-progress li:not(:last-child):after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background-color: #dee2e6;
+  z-index: -1;
+}
+
+.application-form-progress li.active:not(:last-child):after,
+.application-form-progress li.completed:not(:last-child):after {
+  background-color: #28a745;
+}
+
+.application-form-progress .step-number {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  background-color: #dee2e6;
+  border-radius: 50%;
+  margin-bottom: 0.5em;
+}
+
+.application-form-progress li.active .step-number {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.application-form-progress li.completed .step-number {
+  background-color: #28a745;
+  color: #fff;
+}
+
+/* Group member cards */
+.group-members-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1em;
+}
+
+.group-member-card {
+  padding: 1em;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  background-color: #fff;
+}
+
+.group-member-card h4 {
+  margin-top: 0;
+} 

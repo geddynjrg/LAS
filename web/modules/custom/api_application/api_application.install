@@ -1,0 +1,159 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the API Application module.
+ */
+
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_install().
+ */
+function api_application_install() {
+  // Install entity schemas
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_type_manager->clearCachedDefinitions();
+  
+  // Install the entity schemas
+  $entity_types = [
+    'application',
+    'group_member',
+  ];
+  
+  foreach ($entity_types as $entity_type_id) {
+    $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+  }
+
+  // Create required vocabularies
+  $vocabularies = [
+    'group_background' => 'Group Background',
+    'value_chain' => 'Value Chain',
+    'loan_types' => 'Loan Types',
+    'counties' => 'Counties',
+    'constituencies' => 'Constituencies',
+    'business_types' => 'Business Types',
+  ];
+
+  foreach ($vocabularies as $vid => $name) {
+    if (!Vocabulary::load($vid)) {
+      $vocabulary = Vocabulary::create([
+        'vid' => $vid,
+        'name' => $name,
+        'description' => $name . ' vocabulary for loan applications.',
+      ]);
+      $vocabulary->save();
+    }
+  }
+
+  // Add sample terms for group_background
+  $group_backgrounds = [
+    'Welfare issues',
+    'Income generating activities',
+  ];
+  
+  foreach ($group_backgrounds as $term_name) {
+    $term = Term::create([
+      'vid' => 'group_background',
+      'name' => $term_name,
+    ]);
+    $term->save();
+  }
+
+  // Add sample terms for value_chain
+  $value_chains = [
+    'Leather and leather products',
+    'Cotton and textiles',
+    'Blue economy',
+    'Edible oils',
+    'Construction and building materials',
+    'Dairy and dairy products',
+  ];
+  
+  foreach ($value_chains as $term_name) {
+    $term = Term::create([
+      'vid' => 'value_chain',
+      'name' => $term_name,
+    ]);
+    $term->save();
+  }
+
+  // Add sample loan types
+  $loan_types = [
+    'Wezesha' => 'For first time borrowers. Loan amount range is 50,000 KSh - 100,000 KSh. Maximum repayment period is 24 months. The loan has a 1% interest rate.',
+    'Endeleza' => 'For repeat borrowers. Loan amount range is 100,000 KSh - 500,000 KSh. Maximum repayment period is 36 months. The loan has a 0.5% interest rate.',
+  ];
+  
+  foreach ($loan_types as $name => $description) {
+    $term = Term::create([
+      'vid' => 'loan_types',
+      'name' => $name,
+      'description' => $description,
+    ]);
+    $term->save();
+  }
+
+  // Add sample business types
+  $business_types = [
+    'Trade',
+    'Service',
+    'Manufacturing',
+    'Agriculture',
+  ];
+  
+  foreach ($business_types as $term_name) {
+    $term = Term::create([
+      'vid' => 'business_types',
+      'name' => $term_name,
+    ]);
+    $term->save();
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function api_application_uninstall() {
+  // Delete created vocabularies
+  $vocabularies = [
+    'group_background',
+    'value_chain',
+    'loan_types',
+    'counties',
+    'constituencies',
+    'business_types',
+  ];
+
+  foreach ($vocabularies as $vid) {
+    if ($vocabulary = Vocabulary::load($vid)) {
+      $vocabulary->delete();
+    }
+  }
+}
+
+/**
+ * Install entity schemas for Application and Group Member entities.
+ */
+function api_application_update_11002() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  
+  // Clear cached definitions to ensure we have the latest entity definitions
+  $entity_type_manager->clearCachedDefinitions();
+  
+  // Install Application entity if not already installed
+  if (!$entity_definition_update_manager->getEntityType('application')) {
+    $application_entity_type = $entity_type_manager->getDefinition('application');
+    $entity_definition_update_manager->installEntityType($application_entity_type);
+  }
+  
+  // Install Group Member entity if not already installed
+  if (!$entity_definition_update_manager->getEntityType('group_member')) {
+    $group_member_entity_type = $entity_type_manager->getDefinition('group_member');
+    $entity_definition_update_manager->installEntityType($group_member_entity_type);
+  }
+  
+  return t('Entity schemas for Application and Group Member have been installed.');
+}

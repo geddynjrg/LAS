@@ -1,0 +1,25 @@
+administer loan applications:
+  title: 'Administer loan applications'
+  description: 'Full administrative access to loan applications.'
+  restrict access: true
+
+create loan applications:
+  title: 'Create loan applications'
+  description: 'Create new loan applications.'
+
+view loan applications:
+  title: 'View loan applications'
+  description: 'View any loan application.'
+
+edit loan applications:
+  title: 'Edit loan applications'
+  description: 'Edit any loan application.'
+
+delete loan applications:
+  title: 'Delete loan applications'
+  description: 'Delete any loan application.'
+
+administer group members:
+  title: 'Administer group members'
+  description: 'Full administrative access to group members.'
+  restrict access: true 
