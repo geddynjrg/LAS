@@ -22,7 +22,7 @@ export const inputVariants = cva({
 export interface InputProps extends VariantProps<typeof inputVariants> {
   id?: string;
   name?: string;
-  type?: "text" | "password" | "email" | "number" | "tel" | "file";
+  type?: "text" | "password" | "email" | "number" | "tel" | "date" | "file";
   defaultValue?: string;
   required?: boolean;
   minLength?: number;

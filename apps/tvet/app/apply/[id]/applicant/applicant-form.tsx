@@ -108,7 +108,7 @@ export const ApplicantForm: FC<ApplicantFormProps> = ({
         name="applicant_date_of_birth"
         label={t("dateOfBirth")}
         required
-        control={(props) => <DatePicker format="YYYY-MM-DD" {...props} />}
+        control={(props) => <Input type="date" {...props} />}
       />
 
       <IdTypeFields state={state} />
