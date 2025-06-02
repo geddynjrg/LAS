@@ -6,6 +6,7 @@ module:
   admin_toolbar_tools: 0
   announcements_feed: 0
   api_auth: 0
+  api_content: 0
   automated_cron: 0
   big_pipe: 0
   block: 0
@@ -20,6 +21,8 @@ module:
   dblog: 0
   dynamic_page_cache: 0
   editor: 0
+  entity_reference_revisions: 0
+  entity_usage: 0
   field: 0
   field_ui: 0
   file: 0
@@ -39,6 +42,7 @@ module:
   node: 0
   options: 0
   page_cache: 0
+  paragraphs_library: 0
   path: 0
   path_alias: 0
   redirect: 0
@@ -59,7 +63,9 @@ module:
   uwezo_general: 0
   views_ui: 0
   pathauto: 1
+  content_translation: 10
   views: 10
+  paragraphs: 11
   standard: 1000
 theme:
   olivero: 0
