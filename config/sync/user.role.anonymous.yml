@@ -4,18 +4,10 @@ status: true
 dependencies:
   config:
     - filter.format.restricted_html
-    - rest.resource.tvet_login
-    - rest.resource.tvet_node_resource
-    - rest.resource.tvet_password_reset
-    - rest.resource.tvet_password_reset_request
-    - rest.resource.tvet_path_resource
-    - rest.resource.tvet_token_refresh
-    - rest.resource.tvet_user_registration
   module:
     - comment
     - contact
     - filter
-    - rest
     - search
     - system
 _core:
@@ -28,12 +20,5 @@ permissions:
   - 'access comments'
   - 'access content'
   - 'access site-wide contact form'
-  - 'restful get tvet_node_resource'
-  - 'restful get tvet_path_resource'
-  - 'restful post tvet_login'
-  - 'restful post tvet_password_reset'
-  - 'restful post tvet_password_reset_request'
-  - 'restful post tvet_token_refresh'
-  - 'restful post tvet_user_registration'
   - 'search content'
   - 'use text format restricted_html'

@@ -52,8 +52,6 @@ module:
   text: 0
   token: 0
   toolbar: 0
-  tvet_auth: 0
-  tvet_rest: 0
   update: 0
   user: 0
   uwezo_general: 0
