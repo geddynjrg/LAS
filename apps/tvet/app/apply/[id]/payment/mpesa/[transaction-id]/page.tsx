@@ -16,41 +16,41 @@ import { cn } from "@workspace/ui/lib/utils";
 import {
   checkPaymentStatusAction,
   type PaymentStatusInfo,
-} from "@/app/apply/[id]/payment/mpesa/[transactionid]/check-payment-status-action";
+} from "./check-payment-status-action";
 
 const REFETCH_INTERVAL = 2000; // 2 seconds
 
 export default function MpesaPaymentStatusPage() {
   const router = useRouter();
   const format = useFormatter();
-  const { id, transactionid: transactionid } = useParams<{
+  const { id, "transaction-id": transactionId } = useParams<{
     id: string;
-    transactionid: string;
+    "transaction-id": string;
   }>();
 
+  const [status, setStatus] = useState<string>("pending");
   const [error, setError] = useState<string | null>(null);
   const [paymentStatusInfo, setPaymentStatusInfo] =
     useState<PaymentStatusInfo | null>();
 
+  console.log("MpesaPaymentStatusPage", transactionId);
+
   // update M-Pesa payment status
   const updateStatus = async () => {
     try {
-      console.log("Checking payment status...");
-      const res = await checkPaymentStatusAction(transactionid);
-      console.log("payment status...", { res });
+      const res = await checkPaymentStatusAction(transactionId);
       setPaymentStatusInfo(res.data);
       setError(res.error);
+      setStatus(res.status);
     } catch (error) {
       console.error("Error while checking transaction status:", error);
       setError("Error while checking transaction status");
+      setStatus("failed");
     }
   };
 
   // refetch status info periodically
-  useInterval(
-    updateStatus,
-    paymentStatusInfo?.status === "pending" ? REFETCH_INTERVAL : null,
-  );
+  useInterval(updateStatus, status === "pending" ? REFETCH_INTERVAL : null);
 
   useMount(() => {
     updateStatus();
@@ -58,47 +58,46 @@ export default function MpesaPaymentStatusPage() {
 
   // redirect to success page if status is completed
   useEffect(() => {
-    if (paymentStatusInfo?.status === "completed") {
-      console.log("Payment completed, do the redirect");
+    if (status === "completed") {
       router.push(`/apply/${id}/success`);
     }
-    if (paymentStatusInfo?.status === "cancelled") {
+    if (status === "cancelled") {
       router.push(`/apply/${id}/payment`);
     }
-  }, [id, paymentStatusInfo?.status, router]);
+  }, [id, status, router]);
 
   return (
     <Container className="mb-8 flex flex-1 flex-col space-y-4">
       <div>
         <div className={cn("flex justify-between", "typo-body-small")}>
           <div>{format.dateTime(new Date())}</div>
-          <div>{transactionid}</div>
+          <div>{transactionId}</div>
         </div>
         <h2 className={cn("typo-h2")}>{"M-Pesa payment"}</h2>
       </div>
 
       <div className="m-auto max-w-2xl">
-        {paymentStatusInfo?.status === "completed" ? (
+        {status === "completed" ? (
           <ConfirmedSection />
-        ) : paymentStatusInfo?.status === "cancelled" ||
-          paymentStatusInfo?.status === "failed" ||
-          !transactionid ? (
+        ) : status === "cancelled" || status === "failed" || !transactionId ? (
           <FailedSection error={error} />
         ) : (
           <PendingSection phone={paymentStatusInfo?.phone_number} />
         )}
-        {paymentStatusInfo?.status === "pending" && (
+        {status === "pending" && (
           <div className="mt-5 flex flex-col items-center gap-2">
             <div className={cn("typo-h5 font-normal")}>
               {paymentStatusInfo?.transaction_id}
             </div>
-            <div className={cn("typo-h5 font-normal")}>
-              <Currency
-                className="font-bold"
-                amount={paymentStatusInfo?.amount ?? 0}
-                currency="KES"
-              />
-            </div>
+            {paymentStatusInfo?.amount && (
+              <div className={cn("typo-h5 font-normal")}>
+                <Currency
+                  className="font-bold"
+                  amount={paymentStatusInfo?.amount}
+                  currency="KES"
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
