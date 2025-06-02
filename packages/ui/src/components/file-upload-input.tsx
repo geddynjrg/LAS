@@ -26,7 +26,7 @@ export interface FileUploadInputProps {
   accept: Accept;
   maxSize: number;
   name?: string;
-  // multiple?: boolean;
+  multiple?: boolean;
   disabled?: boolean;
   defaultValue?: FileUploadInputValue;
   attachmentBgInverted?: boolean;
@@ -38,14 +38,12 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   accept,
   maxSize,
   name,
-  // multiple,
+  multiple = false,
   disabled,
   defaultValue,
   attachmentBgInverted = false,
   ...props
 }) => {
-  const multiple = false;
-
   const t = useTranslations("FileUploadInput");
 
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);

@@ -2,12 +2,13 @@
 
 import { checkMpesaPaymentStatus } from "@/lib/api/payment";
 
+export type PaymentStatus = "pending" | "completed" | "cancelled" | "failed";
+
 export interface PaymentStatusInfo {
   application_id?: string;
   checkout_request_id?: string;
   merchant_request_id?: string;
   transaction_id?: string | null;
-  status?: "pending" | "completed" | "cancelled" | "failed";
   amount?: number;
   phone_number?: string;
   payment_type?: "application" | "course";
@@ -17,7 +18,7 @@ export interface PaymentStatusInfo {
   application_payment_status?: "not_paid" | "paid";
 }
 interface CheckPaymentStatusActionResponse {
-  status: "failed" | "pending" | "completed" | "cancelled";
+  status: PaymentStatus;
   error: string | null;
   data?: PaymentStatusInfo | null;
 }

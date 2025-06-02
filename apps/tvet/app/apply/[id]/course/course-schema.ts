@@ -14,10 +14,10 @@ export const courseSchema = z
     institution: z.string().trim().nonempty(),
     course: z.string().trim().nonempty(),
     preferred_intake_period: z.string().trim().nonempty(),
-    highest_education_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
-    other_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
     mandatoryQualifications: z.preprocess(stringToArray, z.array(z.string())),
     qualifications: z.preprocess(stringToArray, z.array(z.string())),
+    highest_education_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
+    other_certificate: z.array(validFile(FILE_ACCEPT, MAX_FILE_SIZE)),
   })
   .superRefine((data, ctx) => {
     // Ensure mandatory qualifications are checked

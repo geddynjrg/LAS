@@ -40,15 +40,16 @@ export const courseAction: FormAction<CourseSchema> = async (
     };
   }
 
-  console.log("courseAction", data);
-
   const res = await updateApplication(id, {
     ...data,
     step_type: "course",
     highest_education_certificate: await prepareFileForUpload(
       data.highest_education_certificate,
     ),
-    other_certificate: await prepareFileForUpload(data.other_certificate),
+    // @ts-ignore TODO: wait for the API to support multiple files
+    other_certificate: await Promise.all(
+      data.other_certificate.map(prepareFileForUpload),
+    ),
   });
 
   console.log("update res", res);

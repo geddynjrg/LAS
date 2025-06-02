@@ -174,6 +174,7 @@ export const CourseForm: FC<CourseFormProps> = ({
           <FileUploadInput
             accept={FILE_ACCEPT}
             maxSize={MAX_FILE_SIZE}
+            multiple
             {...props}
           />
         )}
