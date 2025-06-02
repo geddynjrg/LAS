@@ -4,11 +4,14 @@ status: true
 dependencies:
   config:
     - filter.format.basic_html
+    - rest.resource.rest_framework_node_resource
+    - rest.resource.rest_framework_path_resource
   module:
     - comment
     - contact
     - file
     - filter
+    - rest
     - search
     - shortcut
     - system
@@ -25,6 +28,8 @@ permissions:
   - 'access site-wide contact form'
   - 'delete own files'
   - 'post comments'
+  - 'restful get rest_framework_node_resource'
+  - 'restful get rest_framework_path_resource'
   - 'search content'
   - 'skip comment approval'
   - 'use text format basic_html'

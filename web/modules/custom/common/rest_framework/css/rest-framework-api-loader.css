@@ -1,0 +1,108 @@
+/**
+ * API Documentation loader styles.
+ */
+.rest-framework-api-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  z-index: 1000;
+  min-height: 400px;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.loader-container {
+  text-align: center;
+  padding: 40px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-family: 'Roboto', sans-serif;
+  color: #2c5cc5;
+  font-size: 16px;
+  font-weight: 500;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.spinner {
+  margin: 0 auto;
+  width: 70px;
+  text-align: center;
+}
+
+.spinner > div {
+  width: 18px;
+  height: 18px;
+  background-color: #2c5cc5;
+  border-radius: 100%;
+  display: inline-block;
+  animation: rest-framework-bounce 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+  animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+  animation-delay: -0.16s;
+}
+
+@keyframes rest-framework-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  } 40% {
+    transform: scale(1.0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+}
+  50% {
+    opacity: 1;
+}
+  100% {
+    opacity: 0.6;
+}
+}
+
+/* API Documentation error styling */
+.api-docs-error {
+  text-align: center;
+  color: #e53935;
+  padding: 20px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  border: 1px solid #ffcdd2;
+}
+
+.api-docs-error-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.api-docs-error-text {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.api-docs-error-details {
+  font-size: 14px;
+  color: #616161;
+  max-width: 500px;
+  margin: 0 auto;
+  word-break: break-word;
+}

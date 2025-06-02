@@ -43,6 +43,7 @@ module:
   redirect: 0
   redis: 0
   rest: 0
+  rest_framework: 0
   restui: 0
   search: 0
   serialization: 0

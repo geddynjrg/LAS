@@ -1,0 +1,52 @@
+{#
+/**
+    * @file
+    * Default theme implementation to display the OpenAPI documentation.
+    *
+    * Available variables:
+    * - spec_url: The URL to fetch the OpenAPI specification.
+    *
+    * @ingroup themeable
+    */
+#}
+<div class="rest-framework-rest-api-wrapper">
+    <div class="api-docs-header">
+        <h1>{{ title }}</h1>
+        <div class="api-description">
+            <p class="lead">
+                Interactive documentation for the REST API. Explore endpoints, view request/response examples, and learn how to integrate with our services.
+            </p>
+        </div>
+
+        <div class="api-docs-actions">
+            <a href="{{ spec_url }}" class="api-docs-download" target="_blank">Download OpenAPI Spec</a>
+            <a href="/api/docs/swagger" class="api-docs-alt-view">Swagger UI</a>
+        </div>
+    </div>
+    <div id="stoplight-container" data-spec-url="{{ spec_url }}" class="rest-framework-api-container">
+    {# Pre-rendered loader that will be visible immediately #}
+    <div class="rest-framework-api-loader">
+        <div class="loader-container">
+        <div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+        <div class="loading-text">Loading API Documentation...</div>
+        </div>
+    </div>
+    {# The API component will be added by JavaScript #}
+    </div>
+    <div class="api-docs-footer">
+    <div class="api-docs-footer-content">
+        <div class="api-docs-footer-section">
+        <h3>API Usage Notes</h3>
+        <p>All API calls require authentication via JWT tokens unless explicitly marked as public. Response formats follow the standard structure outlined in the documentation.</p>
+        </div>
+        <div class="api-docs-footer-section">
+        <h3>Need Help?</h3>
+        <p>If you have questions about the API or need additional support, please <a href="#">contact our team</a>.</p>
+        </div>
+    </div>
+    </div>
+</div>
