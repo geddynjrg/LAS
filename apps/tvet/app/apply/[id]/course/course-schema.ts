@@ -9,12 +9,35 @@ export const FILE_ACCEPT = {
   "application/pdf": [".pdf"],
 };
 
-export const courseSchema = z.object({
-  institution: z.string().trim().nonempty(),
-  course: z.string().trim().nonempty(),
-  preferred_intake_period: z.string().trim().nonempty(),
-  highest_education_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
-  other_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
-});
+export const courseSchema = z
+  .object({
+    institution: z.string().trim().nonempty(),
+    course: z.string().trim().nonempty(),
+    preferred_intake_period: z.string().trim().nonempty(),
+    highest_education_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
+    other_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
+    mandatoryQualifications: z.preprocess(stringToArray, z.array(z.string())),
+    qualifications: z.preprocess(stringToArray, z.array(z.string())),
+  })
+  .superRefine((data, ctx) => {
+    // Ensure mandatory qualifications are checked
+    if (data.qualifications.length !== data.mandatoryQualifications.length) {
+      ctx.addIssue({
+        path: ["qualifications"],
+        code: z.ZodIssueCode.custom,
+        message: "ApplyForm.confirmQualificationsError",
+      });
+    }
+  });
 
 export type CourseSchema = z.infer<typeof courseSchema>;
+
+function stringToArray(v: unknown): string[] {
+  if (Array.isArray(v)) {
+    return v;
+  }
+  if (typeof v === "string") {
+    return v.split(",").filter(Boolean);
+  }
+  return [];
+}

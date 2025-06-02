@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState, useTransition, type FC } from "react";
 
+import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { Combobox } from "@workspace/ui/components/combobox";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import { Field } from "@workspace/ui/components/form";
@@ -53,6 +54,10 @@ export const CourseForm: FC<CourseFormProps> = ({
   const intakePeriods =
     courses.find((course) => course.value === selectedCourse)?.intakePeriods ??
     [];
+
+  const educationLevels =
+    courses.find((course) => course.value === selectedCourse)
+      ?.educationLevels ?? [];
 
   useMount(() => {
     if (selectedInstitute) {
@@ -128,6 +133,24 @@ export const CourseForm: FC<CourseFormProps> = ({
         {t("requiredDocuments")}
       </ApplyFormSubtitle>
 
+      {educationLevels.length > 0 && (
+        <Field
+          state={state}
+          name="qualifications"
+          label={t("confirmQualifications")}
+          required
+          control={(props) => (
+            <CheckboxGroup options={educationLevels} {...props} />
+          )}
+        />
+      )}
+
+      <input
+        type="hidden"
+        name="mandatoryQualifications"
+        value={educationLevels.map((level) => level.value).join(",")}
+      />
+
       <Field
         state={state}
         name="highest_education_certificate"
@@ -167,6 +190,7 @@ function useSearchCourses() {
       label: string;
       value: string;
       intakePeriods: { label: string; value: string }[];
+      educationLevels: { label: string; value: string }[];
     }[]
   >([]);
 
@@ -183,6 +207,12 @@ function useSearchCourses() {
               (period: string) => ({
                 label: period,
                 value: period,
+              }),
+            ),
+            educationLevels: course.content?.education_level.map(
+              (level: string) => ({
+                label: level,
+                value: level,
               }),
             ),
           })) ?? [],

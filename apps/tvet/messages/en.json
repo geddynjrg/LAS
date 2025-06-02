@@ -245,6 +245,8 @@
     "enterWard": "Enter ward",
     "guardianRole": "Role of guardian",
     "chooseInstitution": "Choose the institution",
+    "confirmQualifications": "I confirm that I have each of the following academic qualifications:",
+    "confirmQualificationsError": "All qualifications must be confirmed",
     "chooseCourse": "Choose the course",
     "preferredIntakePeriod": "Preferred intake period",
     "requiredDocuments": "Required documents",

@@ -240,6 +240,8 @@
     "enterWard": "Ingiza wadi",
     "guardianRole": "Jukumu la mlezi",
     "chooseInstitution": "Chagua taasisi",
+    "confirmQualifications": "Nathibitisha kuwa nina kila moja ya sifa za kitaaluma zifuatazo:",
+    "confirmQualificationsError": "Sifa zote lazima zithibitishwe",
     "chooseCourse": "Chagua kozi",
     "preferredIntakePeriod": "Kipindi kinachopendelewa cha kujiunga",
     "requiredDocuments": "Nyaraka zinazohitajika",
