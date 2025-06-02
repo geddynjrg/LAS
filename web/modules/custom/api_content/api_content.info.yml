@@ -1,0 +1,7 @@
+name: 'API Content'
+type: module
+description: 'API Content'
+core_version_requirement: ^10 || ^11
+package: Custom
+dependencies:
+  - drupal:rest_framework
