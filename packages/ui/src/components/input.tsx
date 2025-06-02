@@ -59,6 +59,17 @@ export const Input: FC<InputProps> = ({
       <input
         type={type}
         readOnly={readonly}
+        onKeyDown={(e) => {
+          // allow generic keys like Enter, Backspace, and Control
+          if (["Enter", "Backspace", "Control"].includes(e.key)) {
+            return;
+          }
+
+          // prevent invalid characters for tel input
+          if (type == "tel" && !isValidTelChar(e.key)) {
+            e.preventDefault();
+          }
+        }}
         className={cn(
           inputVariants({ size }),
           invalid && "border-destructive",
@@ -93,3 +104,8 @@ const Decorator: FC<{ children?: ReactNode }> = ({ children }) => {
     </div>
   );
 };
+
+function isValidTelChar(val: string) {
+  // Allow digits, plus sign, parentheses, and hyphen
+  return /^[0-9+()\s-]*$/.test(val);
+}
