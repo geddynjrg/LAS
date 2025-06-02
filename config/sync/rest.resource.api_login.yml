@@ -1,0 +1,18 @@
+uuid: e15d7f96-dc20-44d1-9e7e-87dc75b814d4
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_auth
+    - serialization
+    - user
+id: api_login
+plugin_id: api_login
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie

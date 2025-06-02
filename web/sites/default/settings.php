@@ -974,7 +974,7 @@ if (extension_loaded('redis')) {
 $settings['config_sync_directory'] = '../config/sync';
 
 // TVET UI public URL settings.
-$settings['tvet_ui_public_url'] = 'https://tvet.e-services-fe.fusion.adm.ee';
+$settings['api_ui_public_url'] = 'https://uwezo.e-services-fe.fusion.adm.ee';
 
 // Set the private files path.
 $settings['file_private_path'] = DRUPAL_ROOT . '/sites/default/files/private';
