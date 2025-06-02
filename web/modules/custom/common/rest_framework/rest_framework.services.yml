@@ -1,0 +1,65 @@
+services:
+  plugin.manager.paragraph_mapper:
+    class: Drupal\rest_framework\Plugin\ParagraphMapperManager
+    parent: default_plugin_manager
+
+  rest_framework.field_mapper:
+    class: Drupal\rest_framework\Service\RestFrameworkFieldMapper
+    arguments: ['@rest_framework.paragraph_mapper_manager', '@entity_type.manager', '@file_url_generator', '@language_manager', '@path_alias.manager']
+
+  cache_context.path_header:
+    class: Drupal\rest_framework\Cache\Context\PathHeaderCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context }
+
+  cache_context.language_header:
+    class: Drupal\rest_framework\Cache\Context\LanguageHeaderCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context }
+
+  rest_framework.cache_contexts_subscriber:
+    class: Drupal\rest_framework\EventSubscriber\RestFrameworkCacheContextsSubscriber
+    tags:
+      - { name: event_subscriber }
+
+  rest_framework.paragraph_mapper_manager:
+    class: Drupal\rest_framework\Plugin\ParagraphMapperManager
+    parent: default_plugin_manager
+
+  # OpenAPI schema provider plugin manager
+  plugin.manager.openapi_schema_provider:
+    class: Drupal\rest_framework\Plugin\OpenApiSchemaProviderManager
+    parent: default_plugin_manager
+
+  # REST exception subscriber - handles all REST API error responses
+  rest_framework.rest_exception_subscriber:
+    class: Drupal\rest_framework\EventSubscriber\RestFrameworkExceptionSubscriber
+    arguments: ['@logger.factory', '@router.route_provider']
+    tags:
+      - { name: event_subscriber }
+
+  rest_framework.openapi_schema:
+    class: Drupal\rest_framework\Service\OpenApiSchemaService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@cache.default'
+      - '@router.route_provider'
+      - '@plugin.manager.paragraph_mapper'
+      - '@entity_field.manager'
+      - '@entity_type.bundle.info'
+      - '@rest_framework.field_mapper'
+      - '@plugin.manager.openapi_schema_provider'
+      - '@service_container'
+
+  # DTO Factory service
+  rest_framework.dto_factory:
+    class: Drupal\rest_framework\DTO\Factory\DtoFactory
+    arguments: ['@logger.factory']
+
+parameters:
+  # http.response.debug_cacheability_headers: true
+  # Define the required cache contexts as a single parameter
+  rest_framework.required_cache_contexts: ['languages:language_interface', 'theme', 'user.permissions', 'path_header', 'language_header', 'url.query_args', 'url.site', 'headers.x-path', 'headers.x-language']

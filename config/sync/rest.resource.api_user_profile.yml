@@ -1,0 +1,17 @@
+uuid: f5432ca0-1f51-498e-acd2-3f30ded84adc
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_auth
+    - serialization
+id: api_user_profile
+plugin_id: api_user_profile
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - jwt_auth
