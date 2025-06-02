@@ -43,6 +43,7 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
     "reviewing",
     "course_payment_received",
     "completed",
+    "submitted",
   ];
 
   if (!application?.status || !allowedStatuses.includes(application.status)) {

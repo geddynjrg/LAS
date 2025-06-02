@@ -55,7 +55,5 @@ export const uploadPaymentProofAction: FormAction<
     };
   }
 
-  console.log("uploadPaymentProofAction", data);
-
-  redirect(`/dashboard?payment_proof_success=${data.id}`);
+  redirect(`/apply/${data.id}/success`);
 };
