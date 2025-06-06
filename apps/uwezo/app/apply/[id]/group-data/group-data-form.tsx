@@ -109,9 +109,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             )}
             name="dateFormed"
             required
-            control={(props) => (
-              <DatePicker placeholder="dd.mm.yyyy" {...props} />
-            )}
+            control={(props) => <Input type="date" {...props} />}
             state={state}
           />
 

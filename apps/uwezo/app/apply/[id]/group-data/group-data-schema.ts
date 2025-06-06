@@ -8,7 +8,7 @@ export const groupDataSchema = z
   .object({
     groupName: z.string().nonempty(),
     groupRegistrationNumber: z.string().nonempty(),
-    dateFormed: z.coerce.date(),
+    dateFormed: z.string().trim().date(),
     groupRegistrationCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
     listOfMembersOnCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
 

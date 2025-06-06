@@ -40,7 +40,7 @@ export const ApplicationReviewGroupData: FC<{
                   {groupData.basics.groupRegistrationNumber}
                 </DataNode>
                 <DataNode label={t("groupData.basicInfo.dateFormed")}>
-                  {format.dateTime(groupData.basics.dateFormed, {
+                  {format.dateTime(new Date(groupData.basics.dateFormed), {
                     year: "numeric",
                     month: "numeric",
                     day: "numeric",

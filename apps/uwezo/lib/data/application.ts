@@ -43,7 +43,7 @@ export interface GroupData {
   basics: {
     groupName: string;
     groupRegistrationNumber: string;
-    dateFormed: Date;
+    dateFormed: string;
     groupRegistrationCertificate: ValidFile;
     listOfMembersOnCertificate: ValidFile;
   };

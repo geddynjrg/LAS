@@ -171,7 +171,7 @@ export const dummyApplications: ApplicationData[] = [
       basics: {
         groupName: "Sunrise Farmers Group",
         groupRegistrationNumber: "REG-2024-001",
-        dateFormed: new Date("2022-05-10"),
+        dateFormed: "2022-05-10",
         groupRegistrationCertificate: {
           fid: 7,
           filename: "sample-7.jpg",
@@ -251,7 +251,7 @@ export const dummyApplications: ApplicationData[] = [
       basics: {
         groupName: "In review Group",
         groupRegistrationNumber: "REG-2024-001",
-        dateFormed: new Date("2022-05-10"),
+        dateFormed: "2022-05-10",
         groupRegistrationCertificate: {
           fid: 1,
           filename: "sample.jpg",
@@ -336,7 +336,7 @@ export const dummyApplications: ApplicationData[] = [
       basics: {
         groupName: "test name Group",
         groupRegistrationNumber: "REG-2024-001",
-        dateFormed: new Date("2022-05-10"),
+        dateFormed: "2022-05-10",
         groupRegistrationCertificate: {
           fid: 4,
           filename: "sample-4.jpg",
