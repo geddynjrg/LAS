@@ -17,6 +17,7 @@
       "invalid_date": "Invalid date",
       "number_too_small": "Value must be at least {minimum}",
       "number_too_large": "Value must be at most {maximum}",
+      "array_too_large": "Maximum of {maximum} items allowed",
       "invalid_union": "Please choose a valid option",
       "file_too_large": "Max file size is {maximum}MB",
       "password_mismatch": "Passwords do not match"

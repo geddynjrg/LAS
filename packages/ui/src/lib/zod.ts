@@ -38,6 +38,10 @@ export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
         return getIntlKey("date_too_large", issue);
       }
 
+      if (issue.type === "array") {
+        return getIntlKey("array_too_large", issue);
+      }
+
       return getIntlKey("number_too_large", issue);
     }
 

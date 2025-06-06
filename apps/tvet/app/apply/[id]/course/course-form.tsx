@@ -167,7 +167,7 @@ export const CourseForm: FC<CourseFormProps> = ({
 
       <Field
         state={state}
-        name="other_certificate"
+        name="other_certificates"
         label={t("otherCertificates")}
         required
         control={(props) => (

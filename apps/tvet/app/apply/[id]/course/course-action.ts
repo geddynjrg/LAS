@@ -46,13 +46,10 @@ export const courseAction: FormAction<CourseSchema> = async (
     highest_education_certificate: await prepareFileForUpload(
       data.highest_education_certificate,
     ),
-    // @ts-ignore TODO: wait for the API to support multiple files
-    other_certificate: await Promise.all(
-      data.other_certificate.map(prepareFileForUpload),
-    ),
+    other_certificates: data.other_certificates
+      ? await Promise.all(data.other_certificates.map(prepareFileForUpload))
+      : [],
   });
-
-  console.log("update res", res);
 
   if (res.error) {
     console.warn("updateApplication course step error", res.error);

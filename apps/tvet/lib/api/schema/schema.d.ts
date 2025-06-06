@@ -544,6 +544,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/course/{course_id}/education-levels": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get course education levels
+     * @description Retrieves the education levels required for a specific course.
+     */
+    get: operations["getCourseEducationLevels"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/application/{application_id}/status": {
     parameters: {
       query?: never;
@@ -636,7 +656,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1747130429
+         * @example 1749202853
          */
         timestamp: number;
         /**
@@ -1525,6 +1545,14 @@ export interface components {
        * @enum {string}
        */
       highest_education_level?: "primary" | "secondary" | "diploma" | "degree";
+      /**
+       * @description Confirmation that the applicant has each of the required academic qualifications for the selected course (required if course has education levels)
+       * @example [
+       *       "1",
+       *       "2"
+       *     ]
+       */
+      academic_qualifications_confirmed?: string[];
       /** @description Highest education certificate file (REQUIRED) */
       highest_education_certificate:
         | {
@@ -1546,8 +1574,19 @@ export interface components {
              */
             fid: number;
           };
-      /** @description Additional certificates or supporting documents (optional) */
-      other_certificate?:
+      /**
+       * @description Additional certificates or supporting documents (optional)
+       * @example [
+       *       {
+       *         "filename": "certificate1.pdf",
+       *         "data": "data:application/pdf;base64,JVBERi0xLjYNJeL..."
+       *       },
+       *       {
+       *         "fid": 45
+       *       }
+       *     ]
+       */
+      other_certificates?: (
         | {
             /**
              * @description Base64 encoded file content
@@ -1566,7 +1605,8 @@ export interface components {
              * @example 44
              */
             fid: number;
-          };
+          }
+      )[];
       /**
        * @description The type of step being submitted
        * @default course
@@ -2180,6 +2220,14 @@ export interface components {
               | "secondary"
               | "diploma"
               | "degree";
+            /**
+             * @description Confirmed academic qualifications (present if course has education levels)
+             * @example [
+             *       "1",
+             *       "2"
+             *     ]
+             */
+            academic_qualifications_confirmed?: string[];
             /** @description Highest education certificate file */
             highest_education_certificate?: {
               /**
@@ -2199,7 +2247,7 @@ export interface components {
               url?: string;
             };
             /** @description Additional certificates or supporting documents (optional) */
-            other_certificate?: {
+            other_certificates?: {
               /**
                * @description File ID
                * @example 44
@@ -2215,7 +2263,7 @@ export interface components {
                * @example https://example.com/sites/default/files/additional_certificate.pdf
                */
               url?: string;
-            };
+            }[];
           };
           /** @description Confirmation step data (only included if completed) */
           confirmation?: {
@@ -2544,19 +2592,28 @@ export interface components {
          */
         filename: string;
       };
-      /** @description Other certificates or supporting documents (optional) */
-      other_certificate?: {
-        /**
-         * @description Base64 encoded file content
-         * @example data:application/pdf;base64,JVBERi0xLjMKJcTl8uXr...
-         */
-        data?: string;
-        /**
-         * @description Original filename with extension
-         * @example diploma_certificate.pdf
-         */
-        filename?: string;
-      };
+      /** @description Additional certificates or supporting documents (optional) */
+      other_certificates?: (
+        | {
+            /**
+             * @description Base64 encoded file content
+             * @example data:application/pdf;base64,JVBERi0xLjYNJeL...
+             */
+            data: string;
+            /**
+             * @description Original filename with extension
+             * @example additional_certificate.pdf
+             */
+            filename: string;
+          }
+        | {
+            /**
+             * @description File ID of an existing file
+             * @example 44
+             */
+            fid: number;
+          }
+      )[];
       /**
        * @description Confirmation that personal information is accurate
        * @example true
@@ -2578,7 +2635,7 @@ export interface components {
        * Format: binary
        * @description Other relevant certificate file (PDF, JPG, PNG)
        */
-      other_certificate?: string;
+      other_certificates?: string;
       /**
        * Format: binary
        * @description Disability card image (REQUIRED when applicant_disability is true)
@@ -2955,6 +3012,51 @@ export interface components {
           available: string[];
         };
       };
+    };
+    CourseEducationLevelsResponse: {
+      /**
+       * @description Whether the request was successful
+       * @example true
+       */
+      success?: boolean;
+      data?: {
+        /**
+         * @description The course ID
+         * @example 123
+         */
+        course_id?: number;
+        /** @description List of education levels required for this course */
+        education_levels?: components["schemas"]["EducationLevel"][];
+        /**
+         * @description Whether the course has any education level requirements
+         * @example true
+         */
+        has_education_levels?: boolean;
+      };
+      meta?: {
+        /**
+         * @description Unix timestamp of the response
+         * @example 1622548800
+         */
+        timestamp?: number;
+        /**
+         * @description API version
+         * @example v1
+         */
+        version?: string;
+      };
+    };
+    EducationLevel: {
+      /**
+       * @description The education level ID
+       * @example 1
+       */
+      id?: string;
+      /**
+       * @description The education level name/label
+       * @example Secondary Education
+       */
+      label?: string;
     };
     ApplicationStatusResponse: {
       /**
@@ -5256,7 +5358,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp: number;
               /**
@@ -5329,7 +5431,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp: number;
               /**
@@ -5426,7 +5528,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -5517,7 +5619,7 @@ export interface operations {
               institutions?: components["schemas"]["NodeInstitution"][];
             };
             meta?: {
-              /** @example 1747130429 */
+              /** @example 1749202853 */
               timestamp?: number;
               /** @example v1 */
               version?: string;
@@ -5566,7 +5668,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -5621,7 +5723,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -5711,7 +5813,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -5768,7 +5870,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -5835,7 +5937,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -5903,7 +6005,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -5972,7 +6074,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1747130429
+               * @example 1749202853
                */
               timestamp?: number;
               /**
@@ -6654,6 +6756,59 @@ export interface operations {
         };
       };
       /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  getCourseEducationLevels: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Language code for the response */
+        "X-Language"?: string;
+      };
+      path: {
+        /** @description The course ID */
+        course_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Course education levels retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CourseEducationLevelsResponse"];
+        };
+      };
+      /** @description Bad request - Invalid course ID */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Course not found */
       404: {
         headers: {
           [name: string]: unknown;

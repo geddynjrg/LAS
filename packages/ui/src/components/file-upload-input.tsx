@@ -2,7 +2,7 @@
 
 import { IconCamera } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useState, type FC } from "react";
+import { Fragment, useState, type FC } from "react";
 import type { Accept, ErrorCode, FileError } from "react-dropzone";
 
 import { Attachment } from "@workspace/ui/components/attachment";
@@ -28,7 +28,7 @@ export interface FileUploadInputProps {
   name?: string;
   multiple?: boolean;
   disabled?: boolean;
-  defaultValue?: FileUploadInputValue;
+  defaultValue?: FileUploadInputValue | FileUploadInputValue[];
   attachmentBgInverted?: boolean;
   "aria-invalid"?: boolean;
   "data-invalid"?: boolean;
@@ -49,14 +49,15 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [resetCount, setResetCount] = useState(0);
   const [files, setFiles] = useState<FileUploadInputValue[] | null>(
-    defaultValue ? [defaultValue] : null,
+    defaultValue
+      ? Array.isArray(defaultValue)
+        ? defaultValue
+        : [defaultValue]
+      : null,
   );
 
   const hasImageType = "image/*" in accept;
-
-  const serverFile = files?.find(
-    (file) => !(file instanceof File) && typeof file === "object",
-  ) as ServerFile | undefined;
+  const serverFiles = files?.filter(isServerFile);
 
   // "capture" prop works only for image/* MIME type. Exclude other MIME types when picture button is pressed.
   const acceptWithCamera =
@@ -77,8 +78,24 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
     });
   }
 
+  function handleAddFiles(newFiles: FileUploadInputValue[]) {
+    setFiles((prevFiles) => {
+      if (!prevFiles) {
+        return newFiles;
+      }
+
+      // If the files are already present, do not add them again
+      const existingFiles = new Set(prevFiles.map(getFileName));
+      const filteredNewFiles = newFiles.filter(
+        (file) => !existingFiles.has(getFileName(file)),
+      );
+
+      return [...prevFiles, ...filteredNewFiles];
+    });
+  }
+
   function handleReset() {
-    setFiles(null);
+    setFiles(serverFiles ?? null);
     setResetCount((prev) => prev + 1);
   }
 
@@ -89,13 +106,15 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       multiple={multiple}
       maxSize={maxSize}
       disabled={disabled}
-      onDrop={setFiles}
+      onDrop={handleAddFiles}
     >
       <DropzoneInput
         name={
-          serverFile || !files?.length
-            ? undefined
-            : name /* prevent submitting empty files to formData */
+          files?.length === serverFiles?.length
+            ? undefined /* prevent submitting empty files to formData */
+            : multiple
+              ? `${name}.${serverFiles?.length ?? 0}`
+              : name
         }
         capture={hasImageType && isCameraEnabled}
         value={files === null ? null : files?.filter(isValidFile)}
@@ -104,17 +123,21 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         // {...props}
       />
 
-      {serverFile && (
-        <>
-          <input type="hidden" name={`${name}.fid`} value={serverFile.fid} />
-          <input
-            type="hidden"
-            name={`${name}.filename`}
-            value={serverFile.filename}
-          />
-          <input type="hidden" name={`${name}.url`} value={serverFile.url} />
-        </>
-      )}
+      {serverFiles?.map((file, index) => {
+        const namePrefix = multiple ? `${name}.${index}` : name;
+        return (
+          <Fragment key={file.fid}>
+            {/* Hidden inputs for server files */}
+            <input type="hidden" name={`${namePrefix}.fid`} value={file.fid} />
+            <input
+              type="hidden"
+              name={`${namePrefix}.filename`}
+              value={file.filename}
+            />
+            <input type="hidden" name={`${namePrefix}.url`} value={file.url} />
+          </Fragment>
+        );
+      })}
 
       <fieldset
         className="stagnation flex items-center justify-center gap-4"
@@ -204,6 +227,10 @@ function getFileName(file: FileUploadInputValue) {
   }
 
   return "";
+}
+
+function isServerFile(file: FileUploadInputValue): file is ServerFile {
+  return !(file instanceof File) && typeof file === "object";
 }
 
 function getTranslatedError(
