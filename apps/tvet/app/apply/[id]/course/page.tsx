@@ -35,7 +35,6 @@ export default async function CoursePage({ params }: CoursePageProps) {
       <CourseForm
         id={id}
         institutions={institutions}
-        // @ts-ignore TODO: wait for the API to support multiple files
         defaultValues={defaultValues}
         prevStep={getPrevStep(STEP_NAME, application)}
       />

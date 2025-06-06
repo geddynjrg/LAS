@@ -6,7 +6,8 @@ export const MAX_FILE_SIZE = 1e6 * 30; // 30 MB
 export const MAX_CERTIFICATE_FILES = 3; // Maximum number of other certificates
 
 export const FILE_ACCEPT = {
-  "image/*": [".jpg", ".jpeg", ".png"],
+  "image/jpeg": [".jpg", ".jpeg"],
+  "image/png": [".png"],
   "application/pdf": [".pdf"],
 };
 
@@ -54,7 +55,6 @@ function flatmap(v: unknown): unknown[] {
     return [];
   }
 
-  console.log("val", v);
   if (Array.isArray(v)) {
     return v.flatMap((item) => flatmap(item));
   }

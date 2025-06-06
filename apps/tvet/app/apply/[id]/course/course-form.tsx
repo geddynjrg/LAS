@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState, useTransition, type FC } from "react";
 
+import { Alert } from "@workspace/ui/components/alert";
 import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { Combobox } from "@workspace/ui/components/combobox";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
@@ -81,6 +82,10 @@ export const CourseForm: FC<CourseFormProps> = ({
     >
       <ApplyFormSubtitle>{t("courseTitle")}</ApplyFormSubtitle>
       <input type="hidden" name="id" value={id} />
+
+      {!state.success && state.message && (
+        <Alert variant="error">{state.message}</Alert>
+      )}
 
       <Field
         state={state}
