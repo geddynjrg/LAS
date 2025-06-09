@@ -1,0 +1,9 @@
+uuid: 3c8f9ab5-2c0b-4396-a39d-8338de236c96
+langcode: en
+status: true
+dependencies: {  }
+name: 'Loan Types'
+vid: loan_types
+description: 'Loan Types vocabulary for loan applications.'
+weight: 0
+new_revision: false

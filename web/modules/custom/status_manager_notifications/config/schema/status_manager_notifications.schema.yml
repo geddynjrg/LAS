@@ -1,0 +1,101 @@
+status_manager_notifications.settings:
+  type: config_object
+  label: 'Status Manager Notifications settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enable notifications'
+    default_notification_type:
+      type: string
+      label: 'Default notification type'
+      constraints:
+        Choice:
+          choices: ['none', 'email', 'sms', 'both']
+
+status_manager_notifications.email:
+  type: config_object
+  label: 'Email notification settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enable email notifications'
+    from_email:
+      type: email
+      label: 'From email address'
+    reply_to:
+      type: email
+      label: 'Reply-to email address'
+    use_html:
+      type: boolean
+      label: 'Use HTML format'
+    include_attachments:
+      type: boolean
+      label: 'Include attachments'
+
+status_manager_notifications.sms:
+  type: config_object
+  label: 'SMS notification settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enable SMS notifications'
+    provider:
+      type: string
+      label: 'SMS provider'
+      constraints:
+        Choice:
+          choices: ['twilio', 'nexmo', 'custom']
+    api_key:
+      type: string
+      label: 'API key'
+    api_secret:
+      type: string
+      label: 'API secret'
+    from_number:
+      type: string
+      label: 'From phone number'
+
+status_manager_notifications.email_templates:
+  type: config_object
+  label: 'Email templates'
+  mapping:
+    '[%key]':
+      type: mapping
+      label: 'Email template'
+      mapping:
+        subject:
+          type: text
+          label: 'Subject'
+        body:
+          type: text
+          label: 'Body'
+        entity_type:
+          type: string
+          label: 'Entity type'
+        status_field:
+          type: string
+          label: 'Status field'
+        status_value:
+          type: string
+          label: 'Status value'
+
+status_manager_notifications.sms_templates:
+  type: config_object
+  label: 'SMS templates'
+  mapping:
+    '[%key]':
+      type: mapping
+      label: 'SMS template'
+      mapping:
+        message:
+          type: text
+          label: 'Message'
+        entity_type:
+          type: string
+          label: 'Entity type'
+        status_field:
+          type: string
+          label: 'Status field'
+        status_value:
+          type: string
+          label: 'Status value' 

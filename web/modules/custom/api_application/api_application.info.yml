@@ -1,0 +1,14 @@
+name: API Application
+type: module
+description: 'Provides loan application entities and management functionality.'
+package: Custom
+core_version_requirement: ^9 || ^10 || ^11
+dependencies:
+  - drupal:taxonomy
+  - drupal:file
+  - drupal:image
+  - drupal:text
+  - drupal:datetime
+  - drupal:options
+  - drupal:telephone
+  - drupal:views

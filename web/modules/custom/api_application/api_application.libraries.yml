@@ -1,0 +1,24 @@
+admin:
+  version: 1.x
+  css:
+    theme:
+      css/admin.css: {}
+  js:
+    js/admin.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+
+application-form:
+  version: 1.x
+  css:
+    theme:
+      css/application-form.css: {}
+  js:
+    js/application-form.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.states
+    - core/drupalSettings 

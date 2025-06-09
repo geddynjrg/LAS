@@ -1,0 +1,92 @@
+status_manager.settings:
+  type: config_object
+  label: 'Status Manager settings'
+  mapping:
+    general:
+      type: mapping
+      label: 'General settings'
+      mapping:
+        auto_tracking_enabled:
+          type: boolean
+          label: 'Enable automatic status tracking'
+        tracking_mode:
+          type: string
+          label: 'Tracking mode'
+        default_notification_type:
+          type: string
+          label: 'Default notification type'
+        history_limit:
+          type: integer
+          label: 'History display limit'
+        cleanup_enabled:
+          type: boolean
+          label: 'Enable automatic cleanup'
+        cleanup_days:
+          type: integer
+          label: 'Cleanup after (days)'
+    entity_mappings:
+      type: mapping
+      label: 'Entity type mappings'
+      mapping:
+        '[%key]':
+          type: mapping
+          label: 'Entity type configuration'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enable tracking'
+            tracked_fields:
+              type: mapping
+              label: 'Tracked fields'
+              mapping:
+                '[%key]':
+                  type: string
+                  label: 'Field name'
+            notification_type:
+              type: string
+              label: 'Notification type'
+    notifications:
+      type: mapping
+      label: 'Notification settings'
+      mapping:
+        email_enabled:
+          type: boolean
+          label: 'Enable email notifications'
+        email_from:
+          type: string
+          label: 'Email from address'
+        sms_enabled:
+          type: boolean
+          label: 'Enable SMS notifications'
+        sms_provider:
+          type: string
+          label: 'SMS provider'
+    display:
+      type: mapping
+      label: 'Display settings'
+      mapping:
+        show_entity_links:
+          type: boolean
+          label: 'Show entity links'
+        show_user_info:
+          type: boolean
+          label: 'Show user information'
+        date_format:
+          type: string
+          label: 'Date format'
+        custom_date_format:
+          type: string
+          label: 'Custom date format'
+    performance:
+      type: mapping
+      label: 'Performance settings'
+      mapping:
+        batch_size:
+          type: integer
+          label: 'Batch size'
+        cache_enabled:
+          type: boolean
+          label: 'Enable caching'
+        cache_lifetime:
+          type: integer
+          label: 'Cache lifetime' 

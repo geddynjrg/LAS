@@ -1,0 +1,11 @@
+name: Status Manager Notifications
+type: module
+description: 'Provides comprehensive notification system for Status Manager with email, SMS, and template support'
+core_version_requirement: ^9 || ^10 || ^11
+package: Status Manager
+dependencies:
+  - status_manager:status_manager
+  - drupal:user
+  - drupal:field
+  - drupal:text
+  - drupal:token 
