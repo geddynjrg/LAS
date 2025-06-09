@@ -160,7 +160,7 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
 
     $fields['photo_member_id'] = BaseFieldDefinition::create('image')
       ->setLabel(t('Photo of member ID'))
-      ->setDescription(t('Upload a photo of the member\'s ID.'))
+      ->setDescription(t("Upload a photo of the member's ID."))
       ->setRequired(TRUE)
       ->setSettings([
         'file_directory' => 'applications/member_ids/[date:custom:Y]-[date:custom:m]',
@@ -383,4 +383,4 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
     return $this;
   }
 
-} 
+}

@@ -77,7 +77,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);
 
-    // Application status field
+    // Application status field.
     $fields['status'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Application Status'))
       ->setDescription(t('The current status of the application.'))
@@ -105,7 +105,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Step 1: Group Data Fields
+    // Step 1: Group Data Fields.
     $fields['group_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Group name'))
       ->setDescription(t('The name of the group applying for the loan.'))
@@ -416,7 +416,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Location fields
+    // Location fields.
     $fields['county'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('County of operations'))
       ->setDescription(t('Select the county where the group operates.'))
@@ -538,7 +538,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Step 2: Group Members
+    // Step 2: Group Members.
     $fields['nature_of_group'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Nature of the group'))
       ->setDescription(t('Select the nature of the group.'))
@@ -586,7 +586,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Step 3: Loan Conditions
+    // Step 3: Loan Conditions.
     $fields['purpose_of_loan'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Purpose of the loan'))
       ->setDescription(t('Select the purpose of the loan.'))
@@ -683,7 +683,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Bank account details
+    // Bank account details.
     $fields['bank_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Group Bank name'))
       ->setDescription(t('The name of the bank.'))
@@ -747,7 +747,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Step 4: Proposed Business
+    // Step 4: Proposed Business.
     $fields['nature_of_business'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Nature of business'))
       ->setDescription(t('Is this a startup or expansion?'))
@@ -814,7 +814,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Business performance
+    // Business performance.
     $fields['average_income'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Average income per month'))
       ->setDescription(t('The average monthly income in KES.'))
@@ -838,7 +838,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // For expenses, we'll use a custom field type or a map field
+    // For expenses, we'll use a custom field type or a map field.
     $fields['expenses'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Expenses'))
       ->setDescription(t('Monthly business expenses.'))
@@ -857,7 +857,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    // Timestamps
+    // Timestamps.
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('The time that the application was created.'));
@@ -1026,7 +1026,8 @@ class Application extends ContentEntityBase implements ApplicationInterface {
    * {@inheritdoc}
    */
   public function setTableBanking($value) {
-    // This is handled through the key_activities field
+    // This is handled through the key_activities field.
     return $this;
   }
-} 
+
+}

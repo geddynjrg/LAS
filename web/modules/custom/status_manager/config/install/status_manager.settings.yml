@@ -1,0 +1,25 @@
+general:
+  auto_tracking_enabled: true
+  default_notification_type: none
+  history_limit: 50
+  cleanup_enabled: false
+  cleanup_days: 365
+
+entity_mappings: {  }
+
+notifications:
+  email_enabled: true
+  email_from: ''
+  sms_enabled: false
+  sms_provider: twilio
+
+display:
+  show_entity_links: true
+  show_user_info: true
+  date_format: short
+  custom_date_format: 'Y-m-d H:i:s'
+
+performance:
+  batch_size: 100
+  cache_enabled: true
+  cache_lifetime: 3600 

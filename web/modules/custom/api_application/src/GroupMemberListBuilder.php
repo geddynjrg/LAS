@@ -2,10 +2,10 @@
 
 namespace Drupal\api_application;
 
+use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Link;
-use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of Group Member entities.
@@ -41,24 +41,25 @@ class GroupMemberListBuilder extends EntityListBuilder {
     $row['id_number'] = $entity->getIdNumber();
     $row['gender'] = ucfirst($entity->getGender());
     $row['position'] = $entity->getPosition();
-    
-    // Show linked application if exists
+
+    // Show linked application if exists.
     $application = $entity->getApplication();
-    
-    // If no direct application link, try to find application that references this member
+
+    // If no direct application link, try to find application that references
+    // this member.
     if (!$application) {
       $application_storage = \Drupal::entityTypeManager()->getStorage('application');
       $query = $application_storage->getQuery()
         ->accessCheck(TRUE)
         ->condition('group_members', $entity->id());
       $application_ids = $query->execute();
-      
+
       if (!empty($application_ids)) {
         $application_id = reset($application_ids);
         $application = $application_storage->load($application_id);
       }
     }
-    
+
     if ($application) {
       $row['application'] = Link::createFromRoute(
         $application->label(),
@@ -69,7 +70,7 @@ class GroupMemberListBuilder extends EntityListBuilder {
     else {
       $row['application'] = '-';
     }
-    
+
     return $row + parent::buildRow($entity);
   }
 
@@ -78,21 +79,21 @@ class GroupMemberListBuilder extends EntityListBuilder {
    */
   public function render() {
     $build = parent::render();
-    
-    // Add custom CSS for styling
+
+    // Add custom CSS for styling.
     $build['#attached']['library'][] = 'api_application/admin';
-    
-    // Add create button at the top
+
+    // Add create button at the top.
     $build['add_link'] = [
       '#type' => 'link',
       '#title' => $this->t('Add new group member'),
-      '#url' => \Drupal\Core\Url::fromRoute('entity.group_member.add_form'),
+      '#url' => Url::fromRoute('entity.group_member.add_form'),
       '#attributes' => [
         'class' => ['button', 'button--primary', 'button--small'],
       ],
       '#weight' => -10,
     ];
-    
+
     return $build;
   }
 
@@ -108,8 +109,8 @@ class GroupMemberListBuilder extends EntityListBuilder {
     if ($this->limit) {
       $query->pager($this->limit);
     }
-    
+
     return $query->execute();
   }
 
-} 
+}

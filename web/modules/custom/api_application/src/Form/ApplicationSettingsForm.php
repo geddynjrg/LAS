@@ -85,7 +85,7 @@ class ApplicationSettingsForm extends ConfigFormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $min = $form_state->getValue('min_group_members');
     $max = $form_state->getValue('max_group_members');
-    
+
     if ($min > $max) {
       $form_state->setErrorByName('min_group_members', $this->t('Minimum group members cannot be greater than maximum group members.'));
     }
@@ -105,4 +105,4 @@ class ApplicationSettingsForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
   }
 
-} 
+}

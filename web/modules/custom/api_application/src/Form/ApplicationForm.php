@@ -16,7 +16,7 @@ class ApplicationForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var \Drupal\api_application\Entity\Application $entity */
+    /** @var \Drupal\api_application\Entity\Application $entity */
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -42,8 +42,8 @@ class ApplicationForm extends ContentEntityForm {
           '%label' => $entity->label(),
         ]));
     }
-    
+
     $form_state->setRedirect('entity.application.canonical', ['application' => $entity->id()]);
   }
 
-} 
+}

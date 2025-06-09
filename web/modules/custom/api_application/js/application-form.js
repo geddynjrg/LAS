@@ -35,10 +35,10 @@
             const $field = $(field, context);
             if (isTableBankingSelected) {
               $field.show();
-              $field.find("input, select, textarea").prop("required", true);
+              $field.find("input, select, textarea").prop("required", TRUE);
             } else {
               $field.hide();
-              $field.find("input, select, textarea").prop("required", false);
+              $field.find("input, select, textarea").prop("required", FALSE);
             }
           });
         };
@@ -57,10 +57,10 @@
         const $valueChainField = $(".field--name-value-chain", context);
         if (isValueChainSelected) {
           $valueChainField.show();
-          $valueChainField.find("input, select").prop("required", true);
+          $valueChainField.find("input, select").prop("required", TRUE);
         } else {
           $valueChainField.hide();
-          $valueChainField.find("input, select").prop("required", false);
+          $valueChainField.find("input, select").prop("required", FALSE);
         }
       };
 
@@ -79,10 +79,10 @@
         const $otherField = $(".field--name-other-activities", context);
         if (isOtherSelected) {
           $otherField.show();
-          $otherField.find("input").prop("required", true);
+          $otherField.find("input").prop("required", TRUE);
         } else {
           $otherField.hide();
-          $otherField.find("input").prop("required", false);
+          $otherField.find("input").prop("required", FALSE);
         }
       };
 
@@ -107,10 +107,10 @@
               const $field = $(field).closest(".form-item");
               if (isChecked) {
                 $field.show();
-                $field.find("input, select").prop("required", true);
+                $field.find("input, select").prop("required", TRUE);
               } else {
                 $field.hide();
-                $field.find("input, select").prop("required", false);
+                $field.find("input, select").prop("required", FALSE);
               }
             });
           };

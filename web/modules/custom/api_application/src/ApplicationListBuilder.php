@@ -38,8 +38,8 @@ class ApplicationListBuilder extends EntityListBuilder {
       'entity.application.canonical',
       ['application' => $entity->id()]
     );
-    
-    // Add status with colored badge
+
+    // Add status with colored badge.
     $status = $entity->getStatus();
     $status_classes = [
       'draft' => 'color-warning',
@@ -56,18 +56,18 @@ class ApplicationListBuilder extends EntityListBuilder {
         '#markup' => '<span class="badge ' . $status_class . '">' . $this->getStatusLabel($status) . '</span>',
       ],
     ];
-    
-    // Format loan amount with currency
+
+    // Format loan amount with currency.
     $loan_amount = $entity->getLoanAmount();
     $row['loan_amount'] = $loan_amount ? 'KSh ' . number_format($loan_amount) : '-';
-    
-    // Format created date
+
+    // Format created date.
     $row['created'] = \Drupal::service('date.formatter')->format($entity->getCreatedTime(), 'short');
-    
-    // Show owner
+
+    // Show owner.
     $owner = $entity->getOwner();
     $row['owner'] = $owner ? $owner->getDisplayName() : '-';
-    
+
     return $row + parent::buildRow($entity);
   }
 
@@ -76,11 +76,11 @@ class ApplicationListBuilder extends EntityListBuilder {
    */
   public function render() {
     $build = parent::render();
-    
-    // Add custom CSS for styling
+
+    // Add custom CSS for styling.
     $build['#attached']['library'][] = 'api_application/admin';
-    
-    // Add create button at the top
+
+    // Add create button at the top.
     $build['add_link'] = [
       '#type' => 'link',
       '#title' => $this->t('Add new application'),
@@ -90,14 +90,14 @@ class ApplicationListBuilder extends EntityListBuilder {
       ],
       '#weight' => -10,
     ];
-    
-    // Add filters placeholder
+
+    // Add filters placeholder.
     $build['filters'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['application-filters']],
       '#weight' => -5,
     ];
-    
+
     return $build;
   }
 
@@ -109,13 +109,13 @@ class ApplicationListBuilder extends EntityListBuilder {
       ->accessCheck(TRUE)
       ->sort('created', 'DESC');
 
-    // Add filters if they exist in the request
+    // Add filters if they exist in the request.
     $request = \Drupal::request();
-    
+
     if ($status = $request->query->get('status')) {
       $query->condition('status', $status);
     }
-    
+
     if ($search = $request->query->get('search')) {
       $group = $query->orConditionGroup()
         ->condition('group_name', $search, 'CONTAINS')
@@ -127,7 +127,7 @@ class ApplicationListBuilder extends EntityListBuilder {
     if ($this->limit) {
       $query->pager($this->limit);
     }
-    
+
     return $query->execute();
   }
 
@@ -150,8 +150,8 @@ class ApplicationListBuilder extends EntityListBuilder {
       'disbursed' => $this->t('Disbursed'),
       'closed' => $this->t('Closed'),
     ];
-    
+
     return $statuses[$status] ?? $status;
   }
 
-} 
+}

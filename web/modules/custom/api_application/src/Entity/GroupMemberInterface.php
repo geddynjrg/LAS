@@ -164,4 +164,4 @@ interface GroupMemberInterface extends ContentEntityInterface, EntityChangedInte
    */
   public function setApplication(ApplicationInterface $application);
 
-} 
+}

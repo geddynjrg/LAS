@@ -19,19 +19,19 @@ class GroupMemberAccessControlHandler extends EntityAccessControlHandler {
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /** @var \Drupal\api_application\Entity\GroupMemberInterface $entity */
-    
-    // Check admin permission first
+
+    // Check admin permission first.
     if ($account->hasPermission('administer group members')) {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
-    // Group members are managed through their parent application
+    // Group members are managed through their parent application.
     if ($application = $entity->getApplication()) {
       $application_access = $application->access($operation, $account, TRUE);
       return $application_access;
     }
 
-    // If no application is associated, check based on operation
+    // If no application is associated, check based on operation.
     switch ($operation) {
       case 'view':
         return AccessResult::allowedIfHasPermission($account, 'view loan applications')
@@ -55,4 +55,4 @@ class GroupMemberAccessControlHandler extends EntityAccessControlHandler {
       ->cachePerPermissions();
   }
 
-} 
+}

@@ -1,0 +1,15 @@
+# Status Manager menu links
+
+status_manager.admin_content:
+  title: 'Status Changes'
+  route_name: entity.status_change.collection
+  description: 'Manage status change records'
+  parent: system.admin_content
+  weight: 10
+
+status_manager.settings:
+  title: 'Status Manager'
+  route_name: status_manager.settings
+  description: 'Configure status tracking settings'
+  parent: system.admin_config_system
+  weight: 10 

@@ -1,0 +1,11 @@
+name: Status Manager
+type: module
+description: 'A reusable module for tracking status changes on any entity type with notifications and history'
+core_version_requirement: ^9 || ^10 || ^11
+package: Custom
+dependencies:
+  - drupal:user
+  - drupal:field
+  - drupal:text
+  - drupal:datetime
+  - drupal:options 

@@ -1,0 +1,23 @@
+admin:
+  version: 1.x
+  css:
+    theme:
+      css/status-history.css: {}
+  js:
+    js/status-history.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once
+
+status_history:
+  version: 1.x
+  css:
+    theme:
+      css/status-history.css: {}
+  js:
+    js/status-history.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once 

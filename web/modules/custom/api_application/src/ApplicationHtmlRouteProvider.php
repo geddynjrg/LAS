@@ -22,12 +22,13 @@ class ApplicationHtmlRouteProvider extends AdminHtmlRouteProvider {
 
     $entity_type_id = $entity_type->id();
 
-    // @todo: Implement multi-step forms
+    // @phpcs:disable
+    // @todo Implement multi-step forms
     // Add custom step routes for the multi-step form
     // if ($add_form_route = $collection->get("entity.{$entity_type_id}.add_form")) {
     //   // Override the default add form to start with step 1
     //   $add_form_route->setDefault('_entity_form', "{$entity_type_id}.step1");
-    //   
+    //
     //   // Add individual step routes
     //   for ($step = 1; $step <= 4; $step++) {
     //     $route = new Route('/application/add/step' . $step);
@@ -43,9 +44,10 @@ class ApplicationHtmlRouteProvider extends AdminHtmlRouteProvider {
     //     $collection->add("entity.{$entity_type_id}.add_form.step{$step}", $route);
     //   }
     // }
+    // @phpcs:enable
 
-    // Add a custom status update route
-    if ($canonical_route = $collection->get("entity.{$entity_type_id}.canonical")) {
+    // Add a custom status update route.
+    if ($collection->get("entity.{$entity_type_id}.canonical")) {
       $status_route = new Route('/application/{application}/status');
       $status_route
         ->setDefaults([
@@ -59,7 +61,7 @@ class ApplicationHtmlRouteProvider extends AdminHtmlRouteProvider {
       $collection->add("entity.{$entity_type_id}.status_form", $status_route);
     }
 
-    // Add settings route
+    // Add settings route.
     if ($settings_route = $this->getSettingsFormRoute($entity_type)) {
       $collection->add("entity.{$entity_type_id}.settings", $settings_route);
     }
@@ -91,4 +93,4 @@ class ApplicationHtmlRouteProvider extends AdminHtmlRouteProvider {
     }
   }
 
-} 
+}

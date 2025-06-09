@@ -195,4 +195,4 @@ interface ApplicationInterface extends ContentEntityInterface, EntityChangedInte
    */
   public function setTableBanking($value);
 
-} 
+}

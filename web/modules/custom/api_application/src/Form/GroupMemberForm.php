@@ -16,10 +16,10 @@ class GroupMemberForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /* @var \Drupal\api_application\Entity\GroupMember $entity */
+    /** @var \Drupal\api_application\Entity\GroupMember $entity */
     $form = parent::buildForm($form, $form_state);
 
-    // Add states for PWD fields
+    // Add states for PWD fields.
     $form['certificate_disability']['#states'] = [
       'visible' => [
         ':input[name="person_with_disability[value]"]' => ['checked' => TRUE],
@@ -62,10 +62,10 @@ class GroupMemberForm extends ContentEntityForm {
         ]));
     }
 
-    // If this is being created from an application form, don't redirect
+    // If this is being created from an application form, don't redirect.
     if (!$form_state->getRedirect()) {
       $form_state->setRedirect('entity.group_member.canonical', ['group_member' => $entity->id()]);
     }
   }
 
-} 
+}

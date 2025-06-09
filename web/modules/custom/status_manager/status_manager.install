@@ -1,0 +1,311 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Status Manager module.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_install().
+ */
+function status_manager_install() {
+  // Set default configuration
+  $config = \Drupal::configFactory()->getEditable('status_manager.settings');
+  
+  $config->set('general', [
+    'auto_tracking_enabled' => TRUE,
+    'tracking_mode' => 'both',
+    'default_notification_type' => 'none',
+    'history_limit' => 50,
+    'cleanup_enabled' => FALSE,
+    'cleanup_days' => 365,
+  ]);
+  
+  $config->set('notifications', [
+    'email_enabled' => TRUE,
+    'email_from' => '',
+    'sms_enabled' => FALSE,
+    'sms_provider' => 'twilio',
+  ]);
+  
+  $config->set('display', [
+    'show_entity_links' => TRUE,
+    'show_user_info' => TRUE,
+    'date_format' => 'short',
+    'custom_date_format' => 'Y-m-d H:i:s',
+  ]);
+  
+  $config->set('performance', [
+    'batch_size' => 100,
+    'cache_enabled' => TRUE,
+    'cache_lifetime' => 3600,
+  ]);
+  
+  $config->save();
+
+  // Install entity schema
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_update_manager = \Drupal::entityDefinitionUpdateManager();
+  
+  try {
+    $status_change_type = $entity_type_manager->getDefinition('status_change');
+    $entity_update_manager->installEntityType($status_change_type);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger('status_manager')->error('Failed to install status_change entity type: @error', [
+      '@error' => $e->getMessage(),
+    ]);
+  }
+
+  \Drupal::messenger()->addMessage(t('Status Manager module has been installed successfully. Configure settings at <a href="@url">Status Manager Settings</a>.', [
+    '@url' => \Drupal\Core\Url::fromRoute('status_manager.settings')->toString(),
+  ]));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function status_manager_uninstall() {
+  // Remove configuration
+  \Drupal::configFactory()->getEditable('status_manager.settings')->delete();
+  
+  // Clean up any remaining data
+  $database = Database::getConnection();
+  
+  // Drop the status_changes table if it exists
+  if ($database->schema()->tableExists('status_changes')) {
+    $database->schema()->dropTable('status_changes');
+  }
+  
+  \Drupal::messenger()->addMessage(t('Status Manager module has been uninstalled and all data has been removed.'));
+}
+
+/**
+ * Implements hook_schema().
+ */
+function status_manager_schema() {
+  $schema = [];
+  
+  // This is handled by the entity system, but we define it here for reference
+  $schema['status_changes'] = [
+    'description' => 'Stores status change records for entities.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique status change ID.',
+      ],
+      'uuid' => [
+        'type' => 'varchar_ascii',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Unique Key: Universally unique identifier for this entity.',
+      ],
+      'target_entity_type' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The entity type of the target entity.',
+      ],
+      'target_entity_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The ID of the target entity.',
+      ],
+      'status_field' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The field name that contains the status.',
+      ],
+      'old_status' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'description' => 'The previous status value.',
+      ],
+      'new_status' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The new status value.',
+      ],
+      'source' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => 'user',
+        'description' => 'The source of the status change.',
+      ],
+      'notification_type' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => 'none',
+        'description' => 'The type of notification to send.',
+      ],
+      'notification_status' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => 'pending',
+        'description' => 'The status of the notification.',
+      ],
+      'notification_log' => [
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Log of notification processing.',
+      ],
+      'notes' => [
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Optional notes about the status change.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The user ID of the user who made the status change.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp when the status change was created.',
+      ],
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp when the status change was most recently saved.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'uuid' => ['uuid'],
+    ],
+    'indexes' => [
+      'target_entity' => ['target_entity_type', 'target_entity_id'],
+      'status_field' => ['status_field'],
+      'created' => ['created'],
+      'uid' => ['uid'],
+      'notification_status' => ['notification_status'],
+    ],
+  ];
+  
+  return $schema;
+}
+
+/**
+ * Install the status_change entity type.
+ */
+function status_manager_update_11001() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_update_manager = \Drupal::entityDefinitionUpdateManager();
+  
+  try {
+    $status_change_type = $entity_type_manager->getDefinition('status_change');
+    $entity_update_manager->installEntityType($status_change_type);
+    
+    return t('Status Change entity type installed successfully.');
+  }
+  catch (\Exception $e) {
+    throw new \Drupal\Core\Utility\UpdateException('Failed to install status_change entity type: ' . $e->getMessage());
+  }
+}
+
+/**
+ * Update configuration schema for new settings.
+ */
+function status_manager_update_11002() {
+  $config = \Drupal::configFactory()->getEditable('status_manager.settings');
+  
+  // Add new performance settings if they don't exist
+  if (!$config->get('performance')) {
+    $config->set('performance', [
+      'batch_size' => 100,
+      'cache_enabled' => TRUE,
+      'cache_lifetime' => 3600,
+    ]);
+  }
+  
+  // Add new display settings if they don't exist
+  if (!$config->get('display.custom_date_format')) {
+    $config->set('display.custom_date_format', 'Y-m-d H:i:s');
+  }
+  
+  $config->save();
+  
+  return t('Status Manager configuration updated.');
+}
+
+/**
+ * Fix field definitions for notification_log and notes fields.
+ */
+function status_manager_update_11003() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_update_manager = \Drupal::entityDefinitionUpdateManager();
+  
+  try {
+    // Get the current entity type definition
+    $entity_type = $entity_type_manager->getDefinition('status_change');
+    
+    // Force reinstall the entity type to fix field definitions
+    $entity_update_manager->uninstallEntityType($entity_type);
+    $entity_update_manager->installEntityType($entity_type);
+    
+    return t('Status Change entity type field definitions updated.');
+  }
+  catch (\Exception $e) {
+    throw new \Drupal\Core\Utility\UpdateException('Failed to update status_change entity field definitions: ' . $e->getMessage());
+  }
+}
+
+/**
+ * Clean up old status change records based on cleanup settings.
+ */
+function status_manager_cleanup_old_records() {
+  $config = \Drupal::config('status_manager.settings');
+  
+  if (!$config->get('general.cleanup_enabled')) {
+    return;
+  }
+  
+  $cleanup_days = $config->get('general.cleanup_days') ?: 365;
+  $cutoff_time = \Drupal::time()->getRequestTime() - ($cleanup_days * 24 * 60 * 60);
+  
+  $storage = \Drupal::entityTypeManager()->getStorage('status_change');
+  $query = $storage->getQuery()
+    ->condition('created', $cutoff_time, '<')
+    ->accessCheck(FALSE);
+  
+  $ids = $query->execute();
+  
+  if (!empty($ids)) {
+    $entities = $storage->loadMultiple($ids);
+    $storage->delete($entities);
+    
+    \Drupal::logger('status_manager')->info('Cleaned up @count old status change records.', [
+      '@count' => count($ids),
+    ]);
+  }
+}
+
+/**
+ * Add tracking_mode configuration setting.
+ */
+function status_manager_update_11004() {
+  $config = \Drupal::configFactory()->getEditable('status_manager.settings');
+  
+  // Add tracking_mode setting if it doesn't exist
+  if (!$config->get('general.tracking_mode')) {
+    $config->set('general.tracking_mode', 'both');
+    $config->save();
+  }
+  
+  return t('Added tracking_mode configuration setting.');
+} 

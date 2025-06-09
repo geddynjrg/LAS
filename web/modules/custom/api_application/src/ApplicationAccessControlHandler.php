@@ -19,50 +19,50 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /** @var \Drupal\api_application\Entity\ApplicationInterface $entity */
-    
-    // Check admin permission first
+
+    // Check admin permission first.
     if ($account->hasPermission('administer loan applications')) {
       return AccessResult::allowed()->cachePerPermissions();
     }
 
     switch ($operation) {
       case 'view':
-        // Allow viewing own applications
+        // Allow viewing own applications.
         if ($entity->getOwnerId() == $account->id()) {
           return AccessResult::allowed()
             ->cachePerUser()
             ->addCacheableDependency($entity);
         }
-        
-        // Check view permission
+
+        // Check view permission.
         return AccessResult::allowedIfHasPermission($account, 'view loan applications')
           ->cachePerPermissions();
 
       case 'update':
-        // Allow editing own draft applications
+        // Allow editing own draft applications.
         if ($entity->getOwnerId() == $account->id() && $entity->getStatus() === 'draft') {
           return AccessResult::allowed()
             ->cachePerUser()
             ->addCacheableDependency($entity);
         }
-        
-        // Check edit permission for staff
+
+        // Check edit permission for staff.
         if ($account->hasPermission('edit loan applications')) {
           return AccessResult::allowed()->cachePerPermissions();
         }
-        
+
         return AccessResult::forbidden()
           ->addCacheableDependency($entity);
 
       case 'delete':
-        // Only allow deleting draft applications by owner
+        // Only allow deleting draft applications by owner.
         if ($entity->getOwnerId() == $account->id() && $entity->getStatus() === 'draft') {
           return AccessResult::allowed()
             ->cachePerUser()
             ->addCacheableDependency($entity);
         }
-        
-        // Check delete permission for staff
+
+        // Check delete permission for staff.
         return AccessResult::allowedIfHasPermission($account, 'delete loan applications')
           ->cachePerPermissions();
     }
@@ -83,7 +83,7 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkFieldAccess($operation, $field_definition, AccountInterface $account, $items = NULL) {
-    // Prevent editing certain fields after submission
+    // Prevent editing certain fields after submission.
     if ($operation == 'edit' && $items) {
       $entity = $items->getEntity();
       if ($entity->getStatus() !== 'draft') {
@@ -97,15 +97,15 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
           'loan_amount',
           'loan_type',
         ];
-        
+
         if (in_array($field_definition->getName(), $protected_fields)) {
           return AccessResult::forbidden()
             ->addCacheableDependency($entity);
         }
       }
     }
-    
+
     return parent::checkFieldAccess($operation, $field_definition, $account, $items);
   }
 
-} 
+}
