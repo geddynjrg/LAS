@@ -158,7 +158,7 @@ function status_manager_entity_operation(EntityInterface $entity) {
   if (status_manager_entity_has_status_tracking($entity)) {
     $operations['status_history'] = [
       'title' => t('Status History'),
-      'url' => Url::fromRoute('status_manager.entity_status_history', [
+      'url' => Url::fromRoute('status_manager.entity_history', [
         'entity_type' => $entity->getEntityTypeId(),
         'entity_id' => $entity->id(),
       ]),
@@ -198,17 +198,17 @@ function status_manager_menu_local_tasks_alter(&$data, $route_name, RefinableCac
 
   // If we found an entity and it has status tracking, add the tab.
   if ($entity && status_manager_entity_has_status_tracking($entity)) {
-    $data['tabs'][0]['status_manager.entity_status_history'] = [
+    $data['tabs'][0]['status_manager.entity_history'] = [
       '#theme' => 'menu_local_task',
       '#link' => [
         'title' => t('Status History'),
-        'url' => Url::fromRoute('status_manager.entity_status_history', [
+        'url' => Url::fromRoute('status_manager.entity_history', [
           'entity_type' => $entity_type_id,
           'entity_id' => $entity->id(),
         ]),
         'localized_options' => [],
       ],
-      '#active' => $route_name === 'status_manager.entity_status_history',
+      '#active' => $route_name === 'status_manager.entity_history',
       '#weight' => 100,
       '#access' => \Drupal::currentUser()->hasPermission('view status changes') && $entity->access('view'),
     ];

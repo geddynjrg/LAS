@@ -46,21 +46,6 @@ class ApplicationHtmlRouteProvider extends AdminHtmlRouteProvider {
     // }
     // @phpcs:enable
 
-    // Add a custom status update route.
-    if ($collection->get("entity.{$entity_type_id}.canonical")) {
-      $status_route = new Route('/application/{application}/status');
-      $status_route
-        ->setDefaults([
-          '_form' => '\Drupal\api_application\Form\ApplicationStatusForm',
-          '_title' => 'Update Application Status',
-        ])
-        ->setRequirement('_entity_access', "{$entity_type_id}.update")
-        ->setOption('parameters', [
-          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
-        ]);
-      $collection->add("entity.{$entity_type_id}.status_form", $status_route);
-    }
-
     // Add settings route.
     if ($settings_route = $this->getSettingsFormRoute($entity_type)) {
       $collection->add("entity.{$entity_type_id}.settings", $settings_route);
