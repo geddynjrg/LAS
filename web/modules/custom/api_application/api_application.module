@@ -26,13 +26,13 @@ function api_application_help($route_name, RouteMatchInterface $route_match) {
  * Implements hook_entity_type_build().
  */
 function api_application_entity_type_build(array &$entity_types) {
-  // Add the Application entity to the content menu
+  // Add the Application entity to the content menu.
   if (isset($entity_types['application'])) {
     $entity_types['application']->setLinkTemplate('collection', '/admin/content/applications');
     $entity_types['application']->set('field_ui_base_route', 'entity.application.collection');
   }
-  
-  // Add the Group Member entity to the content menu
+
+  // Add the Group Member entity to the content menu.
   if (isset($entity_types['group_member'])) {
     $entity_types['group_member']->setLinkTemplate('collection', '/admin/content/group-members');
     $entity_types['group_member']->set('field_ui_base_route', 'entity.group_member.collection');
@@ -43,22 +43,22 @@ function api_application_entity_type_build(array &$entity_types) {
  * Implements hook_menu_local_tasks_alter().
  */
 function api_application_menu_local_tasks_alter(&$data, $route_name) {
-  // Add tabs to content page routes
+  // Add tabs to content page routes.
   $content_routes = [
     'system.admin_content',
     'entity.application.collection',
     'entity.group_member.collection',
   ];
-  
+
   if (in_array($route_name, $content_routes)) {
-    // Add Application tab
+    // Add Application tab.
     if (isset($data['tabs'][0]['entity.application.collection'])) {
       $data['tabs'][0]['entity.application.collection']['#weight'] = 20;
     }
-    
-    // Add Group Members tab
+
+    // Add Group Members tab.
     if (isset($data['tabs'][0]['entity.group_member.collection'])) {
       $data['tabs'][0]['entity.group_member.collection']['#weight'] = 30;
     }
   }
-} 
+}
