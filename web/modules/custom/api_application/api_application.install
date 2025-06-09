@@ -27,7 +27,7 @@ function api_application_install() {
     \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
   }
 
-  // Create required vocabularies
+  // Create required vocabularies.
   $vocabularies = [
     'group_background' => 'Group Background',
     'value_chain' => 'Value Chain',
