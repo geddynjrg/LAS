@@ -1,0 +1,185 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a loan application.
+ *
+ * Available variables:
+ * - content: A list of content items.
+ * - entity: The application entity.
+ * - attributes: HTML attributes for the containing element.
+ */
+#}
+<article{{ attributes.addClass('application-view') }}>
+  
+  {# Application Header with Status #}
+  <div class="application-header">
+    <h1>{{ entity.group_name.value }}</h1>
+    <div class="application-meta">
+      <span class="badge color-{{ entity.status.value|replace({'_': '-'}) }}">
+        {{ entity.status.value|replace({'_': ' '})|title }}
+      </span>
+      <span class="application-date">
+        Submitted: {{ entity.created.value|date('F j, Y') }}
+      </span>
+    </div>
+  </div>
+
+  {# Group Data Section #}
+  <div class="application-section">
+    <h2>Group Information</h2>
+    <div class="application-fields">
+      <div class="application-field">
+        <div class="field__label">Registration Number</div>
+        <div class="field__item">{{ entity.group_registration_number.value }}</div>
+      </div>
+      
+      <div class="application-field">
+        <div class="field__label">Date Registered</div>
+        <div class="field__item">{{ entity.date_registered.value|date('F j, Y') }}</div>
+      </div>
+      
+      {% if entity.county.entity %}
+      <div class="application-field">
+        <div class="field__label">Location</div>
+        <div class="field__item">
+          {{ entity.county.entity.name.value }}, 
+          {% if entity.constituency.entity %}{{ entity.constituency.entity.name.value }}, {% endif %}
+          {{ entity.ward.value }}
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="application-field">
+        <div class="field__label">Meeting Point</div>
+        <div class="field__item">{{ entity.meeting_point.value }}</div>
+      </div>
+      
+      <div class="application-field">
+        <div class="field__label">Nearest Landmark</div>
+        <div class="field__item">{{ entity.nearest_landmark.value }}</div>
+      </div>
+    </div>
+  </div>
+
+  {# Group Members Section #}
+  {% if entity.group_members %}
+  <div class="application-section">
+    <h2>Group Members ({{ entity.group_members|length }})</h2>
+    <div class="group-members-list">
+      {% for member in entity.group_members %}
+      <div class="group-member-card">
+        <h4>{{ member.entity.name.value }}</h4>
+        <div class="member-details">
+          <div><strong>ID:</strong> {{ member.entity.id_number.value }}</div>
+          <div><strong>Gender:</strong> {{ member.entity.gender.value|title }}</div>
+          <div><strong>Position:</strong> {{ member.entity.position.value }}</div>
+          <div><strong>Phone:</strong> {{ member.entity.phone_number.value }}</div>
+          {% if member.entity.person_with_disability.value %}
+          <div><strong>PWD Number:</strong> {{ member.entity.pwd_number.value }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Loan Details Section #}
+  <div class="application-section">
+    <h2>Loan Details</h2>
+    <div class="application-fields">
+      <div class="application-field">
+        <div class="field__label">Purpose of Loan</div>
+        <div class="field__item">{{ entity.purpose_of_loan.value|replace({'_': ' '})|title }}</div>
+      </div>
+      
+      {% if entity.loan_type.entity %}
+      <div class="application-field">
+        <div class="field__label">Loan Type</div>
+        <div class="field__item">
+          <strong>{{ entity.loan_type.entity.name.value }}</strong>
+          {% if entity.loan_type.entity.description.value %}
+          <p class="loan-description">{{ entity.loan_type.entity.description.value }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="application-field">
+        <div class="field__label">Loan Amount</div>
+        <div class="field__item"><strong>KSh {{ entity.loan_amount.value|number_format }}</strong></div>
+      </div>
+      
+      <div class="application-field">
+        <div class="field__label">Repayment Period</div>
+        <div class="field__item">{{ entity.proposed_repayment_period.value }} months</div>
+      </div>
+    </div>
+  </div>
+
+  {# Bank Details Section #}
+  <div class="application-section">
+    <h2>Bank Account Details</h2>
+    <div class="application-fields">
+      <div class="application-field">
+        <div class="field__label">Bank Name</div>
+        <div class="field__item">{{ entity.bank_name.value }}</div>
+      </div>
+      
+      <div class="application-field">
+        <div class="field__label">Branch</div>
+        <div class="field__item">{{ entity.bank_branch.value }}</div>
+      </div>
+      
+      <div class="application-field">
+        <div class="field__label">Account Number</div>
+        <div class="field__item">{{ entity.bank_account_number.value }}</div>
+      </div>
+    </div>
+  </div>
+
+  {# Business Information Section #}
+  <div class="application-section">
+    <h2>Business Information</h2>
+    <div class="application-fields">
+      <div class="application-field">
+        <div class="field__label">Nature of Business</div>
+        <div class="field__item">{{ entity.nature_of_business.value|title }}</div>
+      </div>
+      
+      {% if entity.business_type %}
+      <div class="application-field">
+        <div class="field__label">Business Type</div>
+        <div class="field__item">
+          {% for type in entity.business_type %}
+            <span class="badge">{{ type.entity.name.value }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="application-field">
+        <div class="field__label">Years in Operation</div>
+        <div class="field__item">{{ entity.years_in_operation.value }} years</div>
+      </div>
+      
+      <div class="application-field">
+        <div class="field__label">Average Monthly Income</div>
+        <div class="field__item">KES {{ entity.average_income.value|number_format }}</div>
+      </div>
+    </div>
+  </div>
+
+  {# Action Buttons #}
+  {% if entity.access('update') %}
+  <div class="application-actions">
+    <a href="{{ path('entity.application.edit_form', {'application': entity.id}) }}" class="button button--primary">
+      Edit Application
+    </a>
+    <a href="{{ path('entity.application.status_form', {'application': entity.id}) }}" class="button">
+      Update Status
+    </a>
+  </div>
+  {% endif %}
+
+</article> 

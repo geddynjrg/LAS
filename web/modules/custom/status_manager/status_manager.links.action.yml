@@ -1,0 +1,7 @@
+# Status Manager action links
+
+entity.status_change.add_form:
+  route_name: entity.status_change.add_form
+  title: 'Add Status Change'
+  appears_on:
+    - entity.status_change.collection 

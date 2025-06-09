@@ -1,0 +1,38 @@
+# Status Manager permissions
+administer status changes:
+  title: 'Administer status changes'
+  description: 'Administer all status change entities and settings'
+  restrict access: true
+
+view status changes:
+  title: 'View status changes'
+  description: 'View status change history for entities'
+
+create status changes:
+  title: 'Create status changes'
+  description: 'Create new status change records'
+
+edit status changes:
+  title: 'Edit status changes'
+  description: 'Edit existing status change records'
+
+delete status changes:
+  title: 'Delete status changes'
+  description: 'Delete status change records'
+
+view own status changes:
+  title: 'View own status changes'
+  description: 'View status changes created by the user'
+
+edit own status changes:
+  title: 'Edit own status changes'
+  description: 'Edit status changes created by the user'
+
+delete own status changes:
+  title: 'Delete own status changes'
+  description: 'Delete status changes created by the user'
+
+configure status manager:
+  title: 'Configure Status Manager'
+  description: 'Configure status manager settings and entity mappings'
+  restrict access: true 

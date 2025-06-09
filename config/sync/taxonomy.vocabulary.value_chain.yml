@@ -1,0 +1,9 @@
+uuid: 3d7332d7-906d-4cfb-a626-765e22168efe
+langcode: en
+status: true
+dependencies: {  }
+name: 'Value Chain'
+vid: value_chain
+description: 'Value Chain vocabulary for loan applications.'
+weight: 0
+new_revision: false

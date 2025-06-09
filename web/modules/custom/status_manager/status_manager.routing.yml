@@ -1,0 +1,72 @@
+# Status Change entity routes
+entity.status_change.collection:
+  path: '/admin/content/status-changes'
+  defaults:
+    _entity_list: 'status_change'
+    _title: 'Status Changes'
+  requirements:
+    _permission: 'view status changes'
+
+entity.status_change.add_form:
+  path: '/admin/content/status-changes/add'
+  defaults:
+    _entity_form: 'status_change.add'
+    _title: 'Add Status Change'
+  requirements:
+    _permission: 'create status changes'
+
+entity.status_change.canonical:
+  path: '/admin/content/status-changes/{status_change}'
+  defaults:
+    _entity_view: 'status_change.full'
+    _title_callback: '\Drupal\status_manager\Controller\StatusChangeController::title'
+  requirements:
+    _permission: 'view status changes'
+  parameters:
+    status_change:
+      type: entity:status_change
+
+entity.status_change.edit_form:
+  path: '/admin/content/status-changes/{status_change}/edit'
+  defaults:
+    _entity_form: 'status_change.edit'
+    _title_callback: '\Drupal\status_manager\Controller\StatusChangeController::title'
+  requirements:
+    _permission: 'edit status changes'
+  parameters:
+    status_change:
+      type: entity:status_change
+
+entity.status_change.delete_form:
+  path: '/admin/content/status-changes/{status_change}/delete'
+  defaults:
+    _entity_form: 'status_change.delete'
+    _title: 'Delete'
+  requirements:
+    _permission: 'delete status changes'
+  parameters:
+    status_change:
+      type: entity:status_change
+
+# Status history for specific entities
+status_manager.entity_history:
+  path: '/admin/content/{entity_type}/{entity_id}/status-history'
+  defaults:
+    _controller: '\Drupal\status_manager\Controller\StatusHistoryController::entityHistory'
+    _title: 'Status History'
+  requirements:
+    _permission: 'view status changes'
+  parameters:
+    entity_type:
+      type: string
+    entity_id:
+      type: string
+
+# Configuration
+status_manager.settings:
+  path: '/admin/config/system/status-manager'
+  defaults:
+    _form: '\Drupal\status_manager\Form\StatusManagerSettingsForm'
+    _title: 'Status Manager Settings'
+  requirements:
+    _permission: 'configure status manager' 
