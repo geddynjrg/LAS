@@ -1,0 +1,13 @@
+# Status Manager action links
+
+entity.application.add_form:
+  route_name: entity.application.add_form
+  title: 'Add Application'
+  appears_on:
+    - entity.application.collection
+
+entity.group_member.add_form:
+  route_name: entity.group_member.add_form
+  title: 'Add Group Member'
+  appears_on:
+    - entity.group_member.collection

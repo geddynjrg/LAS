@@ -2,7 +2,6 @@
 
 namespace Drupal\status_manager;
 
-use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Datetime\DateFormatterInterface;
@@ -124,17 +123,6 @@ class StatusChangeListBuilder extends EntityListBuilder {
 
     // Add custom CSS for styling.
     $build['#attached']['library'][] = 'status_manager/admin';
-
-    // Add create button at the top.
-    $build['add_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Add new status change'),
-      '#url' => Url::fromRoute('entity.status_change.add_form'),
-      '#attributes' => [
-        'class' => ['button', 'button--primary', 'button--small'],
-      ],
-      '#weight' => -10,
-    ];
 
     return $build;
   }

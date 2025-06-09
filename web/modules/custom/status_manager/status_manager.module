@@ -5,7 +5,9 @@
  * Contains status_manager.module.
  */
 
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_entity_update().
@@ -144,4 +146,105 @@ function status_manager_mail($key, &$message, $params) {
       $message['body'][] = $params['body'];
       break;
   }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function status_manager_entity_operation(EntityInterface $entity) {
+  $operations = [];
+
+  // Check if this entity type should have status history.
+  if (status_manager_entity_has_status_tracking($entity)) {
+    $operations['status_history'] = [
+      'title' => t('Status History'),
+      'url' => Url::fromRoute('status_manager.entity_status_history', [
+        'entity_type' => $entity->getEntityTypeId(),
+        'entity_id' => $entity->id(),
+      ]),
+      'weight' => 50,
+    ];
+  }
+
+  return $operations;
+}
+
+/**
+ * Implements hook_local_tasks_alter().
+ */
+function status_manager_local_tasks_alter(&$local_tasks) {
+  // We'll dynamically add status history tabs via hook_menu_local_tasks_alter.
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function status_manager_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableDependencyInterface &$cacheability) {
+  // Get current route match.
+  $route_match = \Drupal::routeMatch();
+
+  // Check if we're on an entity page that should have status history tab.
+  $entity = NULL;
+  $entity_type_id = NULL;
+
+  // Try to extract entity from route parameters.
+  foreach ($route_match->getParameters() as $parameter) {
+    if ($parameter instanceof EntityInterface) {
+      $entity = $parameter;
+      $entity_type_id = $entity->getEntityTypeId();
+      break;
+    }
+  }
+
+  // If we found an entity and it has status tracking, add the tab.
+  if ($entity && status_manager_entity_has_status_tracking($entity)) {
+    $data['tabs'][0]['status_manager.entity_status_history'] = [
+      '#theme' => 'menu_local_task',
+      '#link' => [
+        'title' => t('Status History'),
+        'url' => Url::fromRoute('status_manager.entity_status_history', [
+          'entity_type' => $entity_type_id,
+          'entity_id' => $entity->id(),
+        ]),
+        'localized_options' => [],
+      ],
+      '#active' => $route_name === 'status_manager.entity_status_history',
+      '#weight' => 100,
+      '#access' => \Drupal::currentUser()->hasPermission('view status changes') && $entity->access('view'),
+    ];
+  }
+}
+
+/**
+ * Helper function to check if an entity has status tracking enabled.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity to check.
+ *
+ * @return bool
+ *   TRUE if the entity has status tracking, FALSE otherwise.
+ */
+function status_manager_entity_has_status_tracking(EntityInterface $entity) {
+  $config = \Drupal::config('status_manager.settings');
+  $entity_type_id = $entity->getEntityTypeId();
+
+  // Check if explicitly configured.
+  $entity_mappings = $config->get('entity_mappings') ?? [];
+  if (isset($entity_mappings[$entity_type_id]) && !empty($entity_mappings[$entity_type_id]['enabled'])) {
+    return TRUE;
+  }
+
+  // Check common entity types.
+  $common_types = ['node', 'user', 'application'];
+  if (in_array($entity_type_id, $common_types)) {
+    // Check if entity has common status fields.
+    $status_fields = ['status', 'moderation_state', 'field_status', 'state'];
+    foreach ($status_fields as $field_name) {
+      if ($entity->hasField($field_name)) {
+        return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
 }

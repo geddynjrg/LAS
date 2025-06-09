@@ -49,8 +49,31 @@ entity.status_change.delete_form:
       type: entity:status_change
 
 # Status history for specific entities
-status_manager.entity_history:
-  path: '/admin/content/{entity_type}/{entity_id}/status-history'
+# status_manager.entity_history:
+#   path: '/admin/content/{entity_type}/{entity_id}/status-history'
+#   defaults:
+#     _controller: '\Drupal\status_manager\Controller\StatusHistoryController::entityHistory'
+#     _title: 'Status History'
+#   requirements:
+#     _permission: 'view status changes'
+#   parameters:
+#     entity_type:
+#       type: string
+#     entity_id:
+#       type: string
+
+# Configuration
+status_manager.settings:
+  path: '/admin/config/app-services/status-manager'
+  defaults:
+    _form: '\Drupal\status_manager\Form\StatusManagerSettingsForm'
+    _title: 'Status Manager Settings'
+  requirements:
+    _permission: 'configure status manager'
+
+# Generic entity status history tab
+status_manager.entity_status_history:
+  path: '/{entity_type}/{entity_id}/status-history'
   defaults:
     _controller: '\Drupal\status_manager\Controller\StatusHistoryController::entityHistory'
     _title: 'Status History'
@@ -61,12 +84,3 @@ status_manager.entity_history:
       type: string
     entity_id:
       type: string
-
-# Configuration
-status_manager.settings:
-  path: '/admin/config/system/status-manager'
-  defaults:
-    _form: '\Drupal\status_manager\Form\StatusManagerSettingsForm'
-    _title: 'Status Manager Settings'
-  requirements:
-    _permission: 'configure status manager' 

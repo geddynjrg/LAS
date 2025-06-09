@@ -21,4 +21,4 @@ application-form:
     - core/jquery
     - core/drupal
     - core/drupal.states
-    - core/drupalSettings 
+    - core/drupalSettings

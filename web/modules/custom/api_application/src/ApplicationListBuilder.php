@@ -5,7 +5,6 @@ namespace Drupal\api_application;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Link;
-use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of Application entities.
@@ -79,24 +78,6 @@ class ApplicationListBuilder extends EntityListBuilder {
 
     // Add custom CSS for styling.
     $build['#attached']['library'][] = 'api_application/admin';
-
-    // Add create button at the top.
-    $build['add_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Add new application'),
-      '#url' => Url::fromRoute('entity.application.add_form'),
-      '#attributes' => [
-        'class' => ['button', 'button--primary', 'button--small'],
-      ],
-      '#weight' => -10,
-    ];
-
-    // Add filters placeholder.
-    $build['filters'] = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['application-filters']],
-      '#weight' => -5,
-    ];
 
     return $build;
   }

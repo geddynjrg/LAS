@@ -17,4 +17,4 @@ api_application.application_settings:
   route_name: entity.application.settings
   description: 'Configure loan application settings'
   parent: system.admin_structure
-  weight: 10 
+  weight: 10

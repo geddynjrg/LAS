@@ -35,4 +35,4 @@ delete own status changes:
 configure status manager:
   title: 'Configure Status Manager'
   description: 'Configure status manager settings and entity mappings'
-  restrict access: true 
+  restrict access: true
