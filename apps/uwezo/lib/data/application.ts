@@ -95,6 +95,7 @@ export interface LoanConditionsData {
   loanAmount: number;
   repaymentPeriod: number;
   bankName: string;
+  bankNameOther?: string;
   bankBranch: string;
   accountNumber: string;
 }

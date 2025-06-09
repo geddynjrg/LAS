@@ -59,7 +59,10 @@ export const ApplicationReviewLoanConditions: FC<
           <AccordionContent>
             <div className="grid gap-4">
               <DataNode label={t("loan.groupsBankName")}>
-                {loanConditionsData.bankName}
+                {loanConditionsData.bankNameOther &&
+                loanConditionsData.bankName === "Other"
+                  ? loanConditionsData.bankNameOther
+                  : loanConditionsData.bankName}
               </DataNode>
               <DataNode label={t("loan.groupsBankBranch")}>
                 {loanConditionsData.bankBranch}

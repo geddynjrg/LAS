@@ -1,6 +1,5 @@
 "use client";
 
-import { IconCaretDownFilled, IconSearch } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState, type FC } from "react";
 
@@ -12,7 +11,7 @@ import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { Container } from "@workspace/ui/components/container";
 import { Field, Form } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import { SearchInput } from "@workspace/ui/components/search-input";
+import { RadioGroup } from "@workspace/ui/components/radio-group";
 import { Slider } from "@workspace/ui/components/slider";
 import { Card } from "@workspace/ui/components/uwezo/card";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
@@ -45,6 +44,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
       accountNumber: loanConditionsData?.accountNumber,
       bankBranch: loanConditionsData?.bankBranch,
       bankName: loanConditionsData?.bankName,
+      bankNameOther: loanConditionsData?.bankNameOther,
       loanAmount: loanConditionsData?.loanAmount,
       loanType: loanConditionsData?.loanType,
       purposeOfLoan: loanConditionsData?.purposeOfLoan,
@@ -55,6 +55,10 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
   const [selectedType, setSelectedType] = useState<
     keyof typeof loanTypes | undefined
   >(state.values?.loanType as keyof typeof loanTypes);
+
+  const [selectedBankName, setSelectedBankName] = useState(
+    state.values?.bankName,
+  );
 
   const loanTypes = {
     Endeleza: {
@@ -205,18 +209,32 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             label={t("ApplicationDetailsPage.loan.bankName")}
             required
             control={(props) => (
-              <SearchInput
-                startDecorator={<IconSearch />}
-                endDecorator={<IconCaretDownFilled />}
-                placeholder={t("ApplicationDetailsPage.loan.selectBank")}
+              <RadioGroup
                 {...props}
+                onValueChange={(val) => setSelectedBankName(val)}
                 options={[
-                  { label: "bank 1", value: "bank 1" },
-                  { label: "Better bank", value: "Better bank" },
+                  { label: "Bank 1", value: "Bank 1" },
+                  { label: "Better Bank", value: "Better Bank" },
+                  { label: t("Common.other"), value: "Other" },
                 ]}
               />
             )}
           />
+
+          {selectedBankName === "Other" && (
+            <Field
+              state={state}
+              name="bankNameOther"
+              required
+              control={(props) => (
+                <Input
+                  {...props}
+                  defaultValue={props.defaultValue ?? undefined}
+                  placeholder={t("ApplicationDetailsPage.loan.bankName")}
+                />
+              )}
+            />
+          )}
 
           <Field
             state={state}

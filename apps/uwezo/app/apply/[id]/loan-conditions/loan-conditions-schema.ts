@@ -30,6 +30,7 @@ export const loanConditionsDataSchema = z
       ),
     repaymentPeriod: z.coerce.number().min(1).max(12),
     bankName: z.string().nonempty(),
+    bankNameOther: z.string().min(3).optional(),
     bankBranch: z.string().nonempty(),
     accountNumber: z.string().nonempty(),
   })

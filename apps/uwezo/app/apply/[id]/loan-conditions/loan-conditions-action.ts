@@ -46,6 +46,7 @@ export const loanConditionsAction: FormAction<LoanConditionsData> = async (
     accountNumber: data.accountNumber,
     bankBranch: data.bankBranch,
     bankName: data.bankName,
+    bankNameOther: data.bankNameOther,
   });
 
   redirect(redirectTo);
