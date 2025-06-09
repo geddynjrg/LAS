@@ -109,7 +109,6 @@ class StatusChangeListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\status_manager\Entity\StatusChangeInterface $entity */
     $target_entity = $entity->getTargetEntity();
-    $target_label = $this->t('Unknown');
     $target_markup = '<span class="status-change-target status-change-target--unknown">Unknown</span>';
 
     if ($target_entity) {

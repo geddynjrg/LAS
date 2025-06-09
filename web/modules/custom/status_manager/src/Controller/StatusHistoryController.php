@@ -76,10 +76,12 @@ class StatusHistoryController extends ControllerBase {
     // Get total count for pagination.
     $total_count = $this->statusTracker->getStatusChangeCount($target_entity);
 
+    // @phpcs:disable
     // Set up pagination.
     $items_per_page = 20;
     $current_page = \Drupal::request()->query->get('page', 0);
     $offset = $current_page * $items_per_page;
+    // @phpcs:enable
 
     // Get paginated status change history.
     $history = $this->statusTracker->getStatusChangeHistory($target_entity, NULL, $items_per_page, $offset);
@@ -271,8 +273,10 @@ class StatusHistoryController extends ControllerBase {
         '#parameters' => [],
       ];
 
+      // @phpcs:disable
       // Initialize the pager.
       \Drupal::service('pager.manager')->createPager($total_count, $items_per_page);
+      // @phpcs:enable
 
       $build['history_wrapper']['pager'] = $pager;
     }

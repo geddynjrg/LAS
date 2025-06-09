@@ -298,13 +298,13 @@ function template_preprocess_status_change(array &$variables) {
   // Add edit and delete URLs if user has access.
   $variables['edit_url'] = NULL;
   $variables['delete_url'] = NULL;
-  
+
   if ($status_change->access('update')) {
     $variables['edit_url'] = Url::fromRoute('entity.status_change.edit_form', [
       'status_change' => $status_change->id(),
     ])->toString();
   }
-  
+
   if ($status_change->access('delete')) {
     $variables['delete_url'] = Url::fromRoute('entity.status_change.delete_form', [
       'status_change' => $status_change->id(),
