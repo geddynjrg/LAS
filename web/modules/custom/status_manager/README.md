@@ -136,6 +136,59 @@ Status change history is available:
 - **Entity-specific**: `/admin/content/status-changes?entity_type=node&entity_id=123`
 - **Programmatically**: Via the StatusTracker service
 
+## New Features
+
+### Status History Tabs
+
+The module now automatically adds **Status History** tabs to entity view and edit pages for entities that have status tracking enabled. These tabs provide:
+
+- **Entity-specific history**: Complete status change history for the current entity
+- **Visual timeline**: Color-coded status changes with timestamps
+- **User attribution**: Shows who made each change
+- **Detailed information**: Includes field names, old/new values, and notes
+- **Automatic access control**: Only visible to users with appropriate permissions
+
+**Access the tab:**
+- Navigate to any tracked entity (node, application, etc.)
+- Look for the "Status History" tab alongside View/Edit tabs
+- Click to see the complete status change history for that entity
+
+### Status Updates Content Tab
+
+A new **Status Updates** tab is available in the main content administration area:
+
+**Location**: `/admin/content/status-updates`
+
+**Features:**
+- **System-wide view**: See all status changes across all entities
+- **Entity links**: Direct links to entities and their individual status history
+- **Pagination**: Handles large volumes of status changes efficiently
+- **Action links**: Quick access to view individual status changes
+- **Filtering**: Built-in responsive table with sorting capabilities
+
+**Access:**
+1. Go to **Content** in the admin menu
+2. Click the **Status Updates** tab
+3. View all status changes across your entire site
+
+### Entity Operations Integration
+
+Status history is now integrated into entity operation menus:
+
+- **Bulk operations**: Status History appears in entity list bulk operations
+- **Individual entities**: Status History link in entity operation dropdowns
+- **Contextual links**: Quick access from entity displays
+
+### App Services Configuration
+
+The configuration page has been moved to a more logical location:
+
+**New location**: `/admin/config/app-services/status-manager`
+
+This creates a dedicated "App Services" section in the configuration area for application-specific service configurations, making it easier to find and organize related settings.
+
+**Migration**: Existing configurations will continue to work. The old path redirects to the new location.
+
 ## Testing the Tracking Modes
 
 ### Test Configured Entities Mode

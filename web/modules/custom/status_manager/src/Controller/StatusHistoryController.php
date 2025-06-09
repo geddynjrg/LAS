@@ -4,6 +4,8 @@ namespace Drupal\status_manager\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\status_manager\Service\StatusTracker;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -61,9 +63,9 @@ class StatusHistoryController extends ControllerBase {
     // Load the target entity.
     try {
       $storage = $this->entityTypeManager->getStorage($entity_type);
-      $entity = $storage->load($entity_id);
+      $target_entity = $storage->load($entity_id);
 
-      if (!$entity) {
+      if (!$target_entity) {
         throw new NotFoundHttpException();
       }
     }
@@ -71,41 +73,114 @@ class StatusHistoryController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    // Get status change history.
-    $history = $this->statusTracker->getStatusChangeHistory($entity, NULL, 100);
+    // Get total count for pagination.
+    $total_count = $this->statusTracker->getStatusChangeCount($target_entity);
+
+    // @phpcs:disable
+    // Set up pagination.
+    $items_per_page = 20;
+    $current_page = \Drupal::request()->query->get('page', 0);
+    $offset = $current_page * $items_per_page;
+    // @phpcs:enable
+
+    // Get paginated status change history.
+    $history = $this->statusTracker->getStatusChangeHistory($target_entity, NULL, $items_per_page, $offset);
 
     $build = [];
 
+    // Add wrapper for modern styling.
+    $build['#prefix'] = '<div class="status-history-wrapper">';
+    $build['#suffix'] = '</div>';
+
+    // Page header with entity link.
+    $build['header'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['page-header', 'status-history-header']],
+    ];
+
+    $entity_link = '';
+    if ($target_entity->hasLinkTemplate('canonical')) {
+      $entity_link = $target_entity->toLink($target_entity->label(), 'canonical')->toString();
+    }
+    else {
+      $entity_link = $target_entity->label();
+    }
+
+    $build['header']['title'] = [
+      '#markup' => '<h1>' . $this->t('Status History for @entity', [
+        '@entity' => $entity_link,
+      ]) . '</h1>',
+    ];
+
+    // Breadcrumb-style navigation.
+    $build['navigation'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['status-history-nav']],
+    ];
+
+    $nav_links = [];
+
+    // Link back to entity.
+    if ($target_entity->hasLinkTemplate('canonical')) {
+      $nav_links[] = $target_entity->toLink($this->t('← Back to @entity', [
+        '@entity' => $target_entity->getEntityType()->getLabel(),
+      ]), 'canonical')->toString();
+    }
+
+    // Link to entity list if available.
+    try {
+      $entity_type_def = $this->entityTypeManager->getDefinition($entity_type);
+      if ($entity_type_def->hasLinkTemplate('collection')) {
+        $nav_links[] = Link::fromTextAndUrl(
+          $this->t('All @entities', ['@entities' => $entity_type_def->getPluralLabel()]),
+          Url::fromRoute($entity_type_def->getLinkTemplate('collection'))
+        )->toString();
+      }
+    }
+    catch (\Exception $e) {
+      // Ignore if collection route doesn't exist.
+    }
+
+    $build['navigation']['links'] = [
+      '#markup' => '<div class="nav-links">' . implode(' | ', $nav_links) . '</div>',
+    ];
+
+    // Summary section with modern card design.
+    $build['summary_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['status-history-summary-wrapper']],
+    ];
+
     // Entity summary section.
-    $build['entity_summary'] = [
+    $build['summary_wrapper']['entity_summary'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['entity-summary']],
     ];
 
-    $build['entity_summary']['entity_details'] = [
+    $build['summary_wrapper']['entity_summary']['entity_details'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['entity-details-card']],
     ];
 
-    $build['entity_summary']['entity_details']['header'] = [
-      '#markup' => '<h3 class="details-card-header">' . $this->t('Entity Details') . '</h3>',
+    $build['summary_wrapper']['entity_summary']['entity_details']['header'] = [
+      '#markup' => '<h3 class="details-card-header">' . $this->t('Entity Information') . '</h3>',
     ];
 
-    $build['entity_summary']['entity_details']['details'] = [
+    $build['summary_wrapper']['entity_summary']['entity_details']['details'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['details-grid']],
     ];
 
     // Entity information.
     $entity_info = [
-      'type' => $entity->getEntityType()->getLabel(),
-      'id' => $entity->id(),
-      'label' => $entity->label(),
+      'type' => $target_entity->getEntityType()->getLabel(),
+      'id' => $target_entity->id(),
+      'label' => $target_entity->label(),
     ];
 
     // Add bundle information if available.
-    if ($entity->getEntityType()->hasKey('bundle')) {
-      $bundle = $entity->bundle();
+    if ($target_entity->getEntityType()->hasKey('bundle')) {
+      $bundle = $target_entity->bundle();
       $bundle_info = $this->entityTypeManager->getDefinition($entity_type)->getBundleEntityType();
       if ($bundle_info) {
         $bundle_storage = $this->entityTypeManager->getStorage($bundle_info);
@@ -116,8 +191,18 @@ class StatusHistoryController extends ControllerBase {
       }
     }
 
+    // Add creation date if available.
+    if ($target_entity->hasField('created')) {
+      $created = $target_entity->get('created')->value;
+      if ($created) {
+        // @phpcs:disable
+        $entity_info['created'] = \Drupal::service('date.formatter')->format($created, 'medium');
+        // @phpcs:enable
+      }
+    }
+
     foreach ($entity_info as $key => $value) {
-      $build['entity_summary']['entity_details']['details'][$key] = [
+      $build['summary_wrapper']['entity_summary']['entity_details']['details'][$key] = [
         '#type' => 'container',
         '#attributes' => ['class' => ['detail-item']],
         'label' => [
@@ -130,7 +215,7 @@ class StatusHistoryController extends ControllerBase {
     }
 
     // Current status cards.
-    $build['entity_summary']['status_cards'] = [
+    $build['summary_wrapper']['entity_summary']['status_cards'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['status-cards']],
     ];
@@ -138,11 +223,11 @@ class StatusHistoryController extends ControllerBase {
     // Get current status from common status fields.
     $status_fields = ['status', 'moderation_state', 'field_status', 'state'];
     foreach ($status_fields as $field_name) {
-      if ($entity->hasField($field_name) && !$entity->get($field_name)->isEmpty()) {
-        $field_value = $entity->get($field_name)->value;
-        $field_label = $entity->getFieldDefinition($field_name)->getLabel();
+      if ($target_entity->hasField($field_name) && !$target_entity->get($field_name)->isEmpty()) {
+        $field_value = $target_entity->get($field_name)->value;
+        $field_label = $target_entity->getFieldDefinition($field_name)->getLabel();
 
-        $build['entity_summary']['status_cards'][$field_name] = [
+        $build['summary_wrapper']['entity_summary']['status_cards'][$field_name] = [
           '#type' => 'container',
           '#attributes' => ['class' => ['status-card', 'status-' . strtolower(str_replace(' ', '-', $field_value))]],
           'label' => [
@@ -155,26 +240,56 @@ class StatusHistoryController extends ControllerBase {
       }
     }
 
-    // Status history section.
-    $build['history_section'] = [
+    // Status history section with modern table wrapper.
+    $build['history_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['status-history-table-wrapper']],
+    ];
+
+    $build['history_wrapper']['history_section'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['status-history-section']],
     ];
 
-    $build['history_section']['header'] = [
-      '#markup' => '<h2 class="history-header">' . $this->t('Status Change History') . '</h2>',
+    // Summary bar.
+    $build['history_wrapper']['summary'] = [
+      '#markup' => '<div class="status-history-listing-summary">' .
+      '<span class="total-count">' .
+      $this->formatPlural($total_count, '1 status change', '@count status changes') .
+      '</span></div>',
+      '#weight' => -10,
     ];
 
     if (!empty($history)) {
-      $build['history_section']['description'] = [
-        '#markup' => '<p class="history-description">' . $this->t('Complete history of status changes for this entity.') . '</p>',
+      $build['history_wrapper']['history_section']['table'] = $this->buildHistoryTable($history);
+
+      // Add pager.
+      $pager = [
+        '#type' => 'pager',
+        '#element' => 0,
+        '#quantity' => 9,
+        '#tags' => [],
+        '#route_name' => '<current>',
+        '#parameters' => [],
       ];
 
-      $build['history_section']['table'] = $this->buildHistoryTable($history);
+      // @phpcs:disable
+      // Initialize the pager.
+      \Drupal::service('pager.manager')->createPager($total_count, $items_per_page);
+      // @phpcs:enable
+
+      $build['history_wrapper']['pager'] = $pager;
     }
     else {
-      $build['history_section']['empty'] = [
-        '#markup' => '<p><em>' . $this->t('No status changes have been recorded for this entity.') . '</em></p>',
+      $build['history_wrapper']['history_section']['empty'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['empty-state']],
+        'message' => [
+          '#markup' => '<p><em>' . $this->t('No status changes have been recorded for this entity yet.') . '</em></p>',
+        ],
+        'help' => [
+          '#markup' => '<p>' . $this->t("Status changes will appear here when the entity's status fields are modified.") . '</p>',
+        ],
       ];
     }
 

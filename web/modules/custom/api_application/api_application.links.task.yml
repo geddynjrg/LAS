@@ -14,4 +14,4 @@ entity.group_member.collection:
   route_name: entity.group_member.collection
   base_route: system.admin_content
   title: 'Group Members'
-  weight: 20 
+  weight: 11

@@ -5,7 +5,6 @@ namespace Drupal\api_application;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Link;
-use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of Application entities.
@@ -18,12 +17,36 @@ class ApplicationListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['id'] = $this->t('ID');
-    $header['group_name'] = $this->t('Group Name');
-    $header['status'] = $this->t('Status');
-    $header['loan_amount'] = $this->t('Loan Amount');
-    $header['created'] = $this->t('Created');
-    $header['owner'] = $this->t('Submitted By');
+    $header['id'] = [
+      'data' => $this->t('ID'),
+      'class' => ['application-header-id'],
+      'width' => '60px',
+    ];
+    $header['group_name'] = [
+      'data' => $this->t('Application Name'),
+      'class' => ['application-header-group'],
+      'width' => '30%',
+    ];
+    $header['status'] = [
+      'data' => $this->t('Status'),
+      'class' => ['application-header-status'],
+      'width' => '140px',
+    ];
+    $header['loan_amount'] = [
+      'data' => $this->t('Loan Amount'),
+      'class' => ['application-header-amount'],
+      'width' => '120px',
+    ];
+    $header['created'] = [
+      'data' => $this->t('Created'),
+      'class' => ['application-header-date'],
+      'width' => '180px',
+    ];
+    $header['owner'] = [
+      'data' => $this->t('Submitted By'),
+      'class' => ['application-header-owner'],
+      'width' => '120px',
+    ];
     return $header + parent::buildHeader();
   }
 
@@ -32,41 +55,71 @@ class ApplicationListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\api_application\Entity\ApplicationInterface $entity */
-    $row['id'] = $entity->id();
-    $row['group_name'] = Link::createFromRoute(
-      $entity->getGroupName(),
-      'entity.application.canonical',
-      ['application' => $entity->id()]
-    );
-
-    // Add status with colored badge.
-    $status = $entity->getStatus();
-    $status_classes = [
-      'draft' => 'color-warning',
-      'submitted' => 'color-info',
-      'under_review' => 'color-primary',
-      'approved' => 'color-success',
-      'rejected' => 'color-error',
-      'disbursed' => 'color-success',
-      'closed' => 'color-disabled',
+    $row['id'] = [
+      'data' => [
+        '#markup' => '<span class="application-id">' . $entity->id() . '</span>',
+      ],
+      'class' => ['text-center'],
     ];
-    $status_class = $status_classes[$status] ?? '';
+
+    $row['group_name'] = [
+      'data' => Link::createFromRoute(
+        $entity->getGroupName(),
+        'entity.application.canonical',
+        ['application' => $entity->id()],
+        ['attributes' => ['class' => ['application-group-link']]]
+      ),
+    ];
+
+    // Enhanced status with colored badge and icon.
+    $status = $entity->getStatus();
+    $status_config = $this->getStatusConfig($status);
     $row['status'] = [
       'data' => [
-        '#markup' => '<span class="badge ' . $status_class . '">' . $this->getStatusLabel($status) . '</span>',
+        '#markup' => sprintf(
+          '<span class="status-badge status-badge--%s" title="%s">%s</span>',
+          $status,
+          $this->getStatusDescription($status),
+          $status_config['label']
+        ),
+      ],
+      'class' => ['text-center'],
+    ];
+
+    // Enhanced loan amount with better formatting.
+    $loan_amount = $entity->getLoanAmount();
+    $row['loan_amount'] = [
+      'data' => [
+        '#markup' => $loan_amount ?
+        '<span class="loan-amount">KSh <strong>' . number_format($loan_amount) . '</strong></span>' :
+        '<span class="loan-amount loan-amount--empty">-</span>',
+      ],
+      'class' => ['text-right'],
+    ];
+
+    // Enhanced created date - single line format.
+    $created_time = $entity->getCreatedTime();
+    $formatted_date = \Drupal::service('date.formatter')->format($created_time, 'custom', 'M j, Y - g:i A');
+    $row['created'] = [
+      'data' => [
+        '#markup' => sprintf(
+          '<time class="application-date" datetime="%s" title="%s">%s</time>',
+          date('c', $created_time),
+          \Drupal::service('date.formatter')->format($created_time, 'long'),
+          $formatted_date
+        ),
       ],
     ];
 
-    // Format loan amount with currency.
-    $loan_amount = $entity->getLoanAmount();
-    $row['loan_amount'] = $loan_amount ? 'KSh ' . number_format($loan_amount) : '-';
-
-    // Format created date.
-    $row['created'] = \Drupal::service('date.formatter')->format($entity->getCreatedTime(), 'short');
-
-    // Show owner.
+    // Enhanced owner display.
     $owner = $entity->getOwner();
-    $row['owner'] = $owner ? $owner->getDisplayName() : '-';
+    $row['owner'] = [
+      'data' => [
+        '#markup' => $owner ?
+        '<span class="application-owner">' . $owner->getDisplayName() . '</span>' :
+        '<span class="application-owner application-owner--empty">-</span>',
+      ],
+    ];
 
     return $row + parent::buildRow($entity);
   }
@@ -80,22 +133,46 @@ class ApplicationListBuilder extends EntityListBuilder {
     // Add custom CSS for styling.
     $build['#attached']['library'][] = 'api_application/admin';
 
-    // Add create button at the top.
-    $build['add_link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Add new application'),
-      '#url' => Url::fromRoute('entity.application.add_form'),
-      '#attributes' => [
-        'class' => ['button', 'button--primary', 'button--small'],
-      ],
-      '#weight' => -10,
-    ];
+    // Add wrapper classes for better styling.
+    $build['table']['#attributes']['class'][] = 'application-listing-table';
+    $build['#prefix'] = '<div class="application-listing-wrapper">';
+    $build['#suffix'] = '</div>';
 
-    // Add filters placeholder.
-    $build['filters'] = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['application-filters']],
-      '#weight' => -5,
+    // Add summary information with status breakdown.
+    $total_count = $this->getStorage()->getQuery()->accessCheck(TRUE)->count()->execute();
+
+    // Get status counts.
+    $status_counts = [];
+    $statuses = ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'disbursed', 'closed'];
+    foreach ($statuses as $status) {
+      $count = $this->getStorage()->getQuery()
+        ->accessCheck(TRUE)
+        ->condition('status', $status)
+        ->count()
+        ->execute();
+      if ($count > 0) {
+        $status_counts[$status] = $count;
+      }
+    }
+
+    $summary_text = '<span class="total-count">' .
+                    $this->formatPlural($total_count, '1 application', '@count applications') .
+                    '</span>';
+
+    if (!empty($status_counts)) {
+      $status_breakdown = [];
+      foreach ($status_counts as $status => $count) {
+        $config = $this->getStatusConfig($status);
+        $status_breakdown[] = '<span class="status-summary status-summary--' . $status . '">' .
+                                 $count . ' ' . $config['label'] .
+                                 '</span>';
+      }
+      $summary_text .= '<div class="status-breakdown">' . implode('', $status_breakdown) . '</div>';
+    }
+
+    $build['summary'] = [
+      '#markup' => '<div class="application-listing-summary">' . $summary_text . '</div>',
+      '#weight' => -10,
     ];
 
     return $build;
@@ -123,10 +200,9 @@ class ApplicationListBuilder extends EntityListBuilder {
       $query->condition($group);
     }
 
-    // Only add the pager if a limit is specified.
-    if ($this->limit) {
-      $query->pager($this->limit);
-    }
+    // Always add pager with default limit of 50 if not specified.
+    $limit = $this->limit ?: 20;
+    $query->pager($limit);
 
     return $query->execute();
   }
@@ -152,6 +228,68 @@ class ApplicationListBuilder extends EntityListBuilder {
     ];
 
     return $statuses[$status] ?? $status;
+  }
+
+  /**
+   * Get status configuration with label.
+   *
+   * @param string $status
+   *   The status machine name.
+   *
+   * @return array
+   *   Array with 'label' keys.
+   */
+  protected function getStatusConfig($status) {
+    $configs = [
+      'draft' => [
+        'label' => $this->t('Draft'),
+      ],
+      'submitted' => [
+        'label' => $this->t('Submitted'),
+      ],
+      'under_review' => [
+        'label' => $this->t('Under Review'),
+      ],
+      'approved' => [
+        'label' => $this->t('Approved'),
+      ],
+      'rejected' => [
+        'label' => $this->t('Rejected'),
+      ],
+      'disbursed' => [
+        'label' => $this->t('Disbursed'),
+      ],
+      'closed' => [
+        'label' => $this->t('Closed'),
+      ],
+    ];
+
+    return $configs[$status] ?? [
+      'label' => $status,
+    ];
+  }
+
+  /**
+   * Get detailed status description.
+   *
+   * @param string $status
+   *   The status machine name.
+   *
+   * @return string
+   *   The status description.
+   */
+  protected function getStatusDescription($status) {
+    $descriptions = [
+      'draft' => $this->t('Application is being prepared and not yet submitted'),
+      'submitted' => $this->t('Application has been submitted and is awaiting review'),
+      'under_review' => $this->t('Application is currently being reviewed by administrators'),
+      'approved' => $this->t('Application has been approved and is ready for disbursement'),
+      'rejected' => $this->t('Application has been rejected'),
+      'disbursed' => $this->t('Loan has been disbursed to the group'),
+      'closed' => $this->t('Application has been closed'),
+    ];
+
+    return $descriptions[$status] ?? $this->t('Status: @status', ['@status' => $status]);
   }
 
 }

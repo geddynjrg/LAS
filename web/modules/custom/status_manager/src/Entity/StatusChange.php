@@ -48,6 +48,9 @@ use Drupal\user\EntityOwnerInterface;
  *     "delete-form" = "/admin/content/status-changes/{status_change}/delete",
  *     "collection" = "/admin/content/status-changes",
  *   },
+ *   list_builder_settings = {
+ *     "limit" = 20
+ *   }
  * )
  */
 class StatusChange extends ContentEntityBase implements StatusChangeInterface, EntityOwnerInterface {

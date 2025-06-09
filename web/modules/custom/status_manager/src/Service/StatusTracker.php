@@ -146,11 +146,13 @@ class StatusTracker {
    *   Optional status field to filter by.
    * @param int $limit
    *   The maximum number of records to return.
+   * @param int $offset
+   *   The offset for pagination.
    *
    * @return \Drupal\status_manager\Entity\StatusChangeInterface[]
    *   An array of status change entities.
    */
-  public function getStatusChangeHistory(EntityInterface $entity, $status_field = NULL, $limit = 10) {
+  public function getStatusChangeHistory(EntityInterface $entity, $status_field = NULL, $limit = 10, $offset = 0) {
     try {
       $status_change_storage = $this->entityTypeManager->getStorage('status_change');
       $query = $status_change_storage->getQuery()
@@ -158,7 +160,7 @@ class StatusTracker {
         ->condition('target_entity_id', $entity->id())
         ->sort('created', 'DESC')
         ->accessCheck(FALSE)
-        ->range(0, $limit);
+        ->range($offset, $limit);
 
       if ($status_field) {
         $query->condition('status_field', $status_field);
@@ -174,6 +176,42 @@ class StatusTracker {
         '@error' => $e->getMessage(),
       ]);
       return [];
+    }
+  }
+
+  /**
+   * Gets the count of status changes for an entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The target entity.
+   * @param string|null $status_field
+   *   Optional status field to filter by.
+   *
+   * @return int
+   *   The count of status changes.
+   */
+  public function getStatusChangeCount(EntityInterface $entity, $status_field = NULL) {
+    try {
+      $status_change_storage = $this->entityTypeManager->getStorage('status_change');
+      $query = $status_change_storage->getQuery()
+        ->condition('target_entity_type', $entity->getEntityTypeId())
+        ->condition('target_entity_id', $entity->id())
+        ->accessCheck(FALSE)
+        ->count();
+
+      if ($status_field) {
+        $query->condition('status_field', $status_field);
+      }
+
+      return $query->execute();
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Failed to get status change count for @entity_type @entity_id: @error', [
+        '@entity_type' => $entity->getEntityTypeId(),
+        '@entity_id' => $entity->id(),
+        '@error' => $e->getMessage(),
+      ]);
+      return 0;
     }
   }
 

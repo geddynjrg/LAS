@@ -22,4 +22,4 @@ delete loan applications:
 administer group members:
   title: 'Administer group members'
   description: 'Full administrative access to group members.'
-  restrict access: true 
+  restrict access: true
