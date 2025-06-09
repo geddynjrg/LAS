@@ -248,3 +248,79 @@ function status_manager_entity_has_status_tracking(EntityInterface $entity) {
 
   return FALSE;
 }
+
+/**
+ * Implements hook_theme().
+ */
+function status_manager_theme() {
+  return [
+    'status_change' => [
+      'render element' => 'elements',
+      'template' => 'status-change',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for status change templates.
+ *
+ * Default template: status-change.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the status change entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_status_change(array &$variables) {
+  $status_change = $variables['elements']['#status_change'];
+  $variables['status_change'] = $status_change;
+
+  // Add the default content.
+  $variables['content'] = $variables['elements'];
+
+  // Get the target entity.
+  $target_entity = $status_change->getTargetEntity();
+  $variables['target_entity'] = $target_entity;
+
+  // Add target entity URL if available.
+  $variables['target_entity_url'] = NULL;
+  if ($target_entity) {
+    if (method_exists($target_entity, 'hasLinkTemplate') && $target_entity->hasLinkTemplate('canonical')) {
+      try {
+        $variables['target_entity_url'] = $target_entity->toUrl('canonical')->toString();
+      }
+      catch (\Exception $e) {
+        // Ignore if URL generation fails.
+      }
+    }
+  }
+
+  // Add edit and delete URLs if user has access.
+  $variables['edit_url'] = NULL;
+  $variables['delete_url'] = NULL;
+  
+  if ($status_change->access('update')) {
+    $variables['edit_url'] = Url::fromRoute('entity.status_change.edit_form', [
+      'status_change' => $status_change->id(),
+    ])->toString();
+  }
+  
+  if ($status_change->access('delete')) {
+    $variables['delete_url'] = Url::fromRoute('entity.status_change.delete_form', [
+      'status_change' => $status_change->id(),
+    ])->toString();
+  }
+
+  // Add cache tags.
+  $variables['#cache']['tags'] = $status_change->getCacheTags();
+}
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ */
+function status_manager_entity_view_mode_alter(&$view_mode, EntityInterface $entity) {
+  // Ensure status_change entities use our custom template.
+  if ($entity->getEntityTypeId() === 'status_change' && $view_mode === 'full') {
+    // The template will be used automatically.
+  }
+}

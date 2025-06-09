@@ -9,6 +9,7 @@ admin:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+    - core/once
 
 application-form:
   version: 1.x
