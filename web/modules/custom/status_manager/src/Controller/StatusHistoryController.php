@@ -113,12 +113,6 @@ class StatusHistoryController extends ControllerBase {
       ]), 'canonical')->toString();
     }
 
-    // Link to all status changes.
-    $nav_links[] = Link::fromTextAndUrl(
-      $this->t('All Status Updates'),
-      Url::fromRoute('status_manager.all_updates')
-    )->toString();
-
     // Link to entity list if available.
     try {
       $entity_type_def = $this->entityTypeManager->getDefinition($entity_type);
