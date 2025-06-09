@@ -1,4 +1,4 @@
-import { getFormatter, getTranslations } from "next-intl/server";
+import { useFormatter, useTranslations } from "next-intl";
 import type { FC } from "react";
 
 import {
@@ -14,9 +14,9 @@ import type { GroupData } from "@/lib/data/application";
 
 export const ApplicationReviewGroupData: FC<{
   groupData?: GroupData;
-}> = async ({ groupData }) => {
-  const t = await getTranslations("ApplicationDetailsPage");
-  const format = await getFormatter();
+}> = ({ groupData }) => {
+  const t = useTranslations("ApplicationDetailsPage");
+  const format = useFormatter();
 
   if (!groupData?.basics && !groupData?.location && !groupData?.background) {
     return null;

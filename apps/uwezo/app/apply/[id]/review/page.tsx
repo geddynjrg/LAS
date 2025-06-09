@@ -14,6 +14,8 @@ export interface GroupDataPageProps {
   params: Promise<{ id: string }>;
 }
 
+/* TODO: PAGE CURRENTLY UNUSED, REMOVE WHEN CLEAR IF THIS WILL NEVER BE USED AGAIN */
+
 export default async function Page({ params }: GroupDataPageProps) {
   const { id } = await params;
   const t = await getTranslations();

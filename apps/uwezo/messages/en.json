@@ -214,8 +214,7 @@
       "groupData": "Group data",
       "steps": {
         "groupMembers": "Group members",
-        "confirmations": "Confirmations",
-        "finalReview": "Final review"
+        "confirmations": "Confirmations"
       },
       "basicInfo": {
         "groupBasics": "Group basics",

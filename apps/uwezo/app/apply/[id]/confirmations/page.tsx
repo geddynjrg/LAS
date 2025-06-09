@@ -38,6 +38,7 @@ export default async function Page({ params }: GroupDataPageProps) {
 
       <ConfirmationFormsWrapper
         id={id}
+        application={application}
         applicationConfirmationData={application.confirmations}
         members={application.members}
       />

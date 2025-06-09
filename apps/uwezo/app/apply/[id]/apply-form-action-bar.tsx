@@ -18,6 +18,7 @@ interface ApplyFormActionBarProps {
   nextUrl?: string;
   prevUrl?: string;
   onBack?: () => void;
+  hideNext?: boolean;
   className?: string;
 }
 
@@ -25,6 +26,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   disabled,
   nextUrl,
   prevUrl,
+  hideNext,
   onBack,
   className,
 }) => {
@@ -50,27 +52,28 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
             </Link>
           )}
         </Button>
-        {(activeStep === 6 || activeStep === 5) && nextUrl ? (
-          <Button disabled={disabled}>
-            <Link
-              href={nextUrl}
-              className={cn(
-                "text-background flex flex-row gap-1",
-                disabled && "text-neutral-400",
-              )}
-            >
-              {activeStep === 6 ? t("Common.submit") : t("Common.next")}
-              <IconArrowRight />
-            </Link>
-          </Button>
-        ) : (
-          <SubmitButton disabled={disabled}>
-            <div className="flex flex-row gap-1">
-              {t("Common.next")}
-              <IconArrowRight />
-            </div>
-          </SubmitButton>
-        )}
+        {!hideNext &&
+          (activeStep === 5 && nextUrl ? (
+            <Button disabled={disabled}>
+              <Link
+                href={nextUrl}
+                className={cn(
+                  "text-background flex flex-row gap-1",
+                  disabled && "text-neutral-400",
+                )}
+              >
+                {activeStep === 5 ? t("Common.submit") : t("Common.next")}
+                <IconArrowRight />
+              </Link>
+            </Button>
+          ) : (
+            <SubmitButton disabled={disabled}>
+              <div className="flex flex-row gap-1">
+                {t("Common.next")}
+                <IconArrowRight />
+              </div>
+            </SubmitButton>
+          ))}
       </div>
     </ActionBar>
   );

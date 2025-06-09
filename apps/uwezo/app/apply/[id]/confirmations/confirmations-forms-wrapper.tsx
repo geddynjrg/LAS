@@ -6,18 +6,24 @@ import { confirmationDataAction } from "@/app/apply/[id]/confirmations/confirmat
 import { ConfirmationsDataForm } from "@/app/apply/[id]/confirmations/confirmations-data-form";
 import { ConfirmationsMembersForm } from "@/app/apply/[id]/confirmations/confirmations-members-form";
 import { membersConfirmationDataAction } from "@/app/apply/[id]/confirmations/members-confirmation-action";
-import type { ConfirmationsData, MembersData } from "@/lib/data/application";
+import type {
+  ApplicationData,
+  ConfirmationsData,
+  MembersData,
+} from "@/lib/data/application";
 
 export interface GroupDataPageProps {
   id: string;
   applicationConfirmationData?: ConfirmationsData;
   members: MembersData;
+  application: ApplicationData;
 }
 
 export default function ConfirmationFormsWrapper({
   id,
   applicationConfirmationData,
   members,
+  application,
 }: GroupDataPageProps) {
   const [step, setStep] = useState<"declaration" | "confirmation">(
     applicationConfirmationData?.declarations.correctInformationConfirm === "on" // all fields have to be checked so we can just check one and decide what view to show
@@ -38,6 +44,7 @@ export default function ConfirmationFormsWrapper({
       {step === "confirmation" && (
         <ConfirmationsMembersForm
           id={id}
+          application={application}
           action={membersConfirmationDataAction}
           onBack={() => setStep("declaration")}
           members={members.members}

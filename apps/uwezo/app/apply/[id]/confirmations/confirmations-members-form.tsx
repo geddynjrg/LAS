@@ -2,6 +2,7 @@
 
 import { IconCheck } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -11,8 +12,10 @@ import { DataNode } from "@workspace/ui/components/data-node";
 import { DataPair } from "@workspace/ui/components/data-pair";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Loader } from "@workspace/ui/components/loader";
+import { ModalButton } from "@workspace/ui/components/modal-button";
 import { Card } from "@workspace/ui/components/uwezo/card";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
+import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -21,13 +24,19 @@ import {
   membersConfirmationDataSchema,
   type MembersConfirmationData,
 } from "@/app/apply/[id]/confirmations/members-confirmation-schema";
-import type { Member } from "@/lib/data/application";
+import { updateApplicationStatusById } from "@/app/apply/[id]/review/update-application-status-by-id-action";
+import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
+import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
+import { ApplicationReviewMembers } from "@/components/application-review-members";
+import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
+import type { ApplicationData, Member } from "@/lib/data/application";
 
 export interface ConfirmMembersFormProps {
   id: string;
   action: FormAction<MembersConfirmationData>;
   onBack: () => void;
   members: Member[];
+  application: ApplicationData;
 }
 
 export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
@@ -35,6 +44,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
   action,
   onBack,
   members,
+  application,
 }) => {
   const [state, formAction, isPending] = useForm(
     action,
@@ -43,6 +53,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
   const [allChecked, setAllChecked] = useState(false);
   const [checkedMembers, setCheckedMembers] = useState<string[]>([]);
   const t = useTranslations();
+  const router = useRouter();
   const [confirmationSent, setConfirmationSent] = useState<boolean>();
   const [membersList, setMembersList] = useState<Member[]>(members);
   const [isBelowConfirmThreshold, setIsBelowConfirmThreshold] = useState(
@@ -88,6 +99,31 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       autoComplete="on"
       className={cn("grow-1 flex flex-col justify-between")}
     >
+      <div className="grow-1 flex flex-col justify-between">
+        <Container className="pb-7">
+          <div className="mt-4 flex flex-row justify-between">
+            <div>
+              <h2 className="typo-h3">{t("ReviewPage.title")}</h2>
+              <p>{t("ReviewPage.subTitle")}</p>
+            </div>
+          </div>
+
+          <ApplicationReviewLoanConditions
+            loanConditionsData={application.loanConditions}
+          />
+
+          <ApplicationReviewMembers membersData={application.members} />
+
+          <ApplicationReviewGroupData groupData={application.groupData} />
+
+          <ApplicationReviewProposedBusiness
+            businessDetails={application.proposedBusiness}
+          />
+        </Container>
+
+        <InfoPopover />
+      </div>
+
       <Container className={cn("space-y-8")}>
         <FormCard
           title={t("ConfirmationsPage.form-title-members")}
@@ -229,12 +265,23 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                 "flex justify-center",
               )}
             >
-              <SubmitButton
-                className={cn("w-full max-w-[27rem]")}
+              <ModalButton
                 disabled={confirmationSent || checkedMembers.length === 0}
+                onConfirm={() => {
+                  updateApplicationStatusById(id);
+                  router.push(`/apply/${id}/done`);
+                }}
+                cancelTitle={t("Common.back")}
+                confirmTitle={t("Common.submit")}
+                modalText={t("ReviewPage.confirmationDescription")}
+                modalTitle={t("ReviewPage.confirmationTitle")}
+                cancelButtonProps={{ variant: "secondary" }}
+                contentProps={{ size: "sm" }}
+                titleUnderline
+                className={cn("w-full max-w-[27rem]")}
               >
                 {t("ConfirmationsPage.confirmMembersForm.send-to-members")}
-              </SubmitButton>
+              </ModalButton>
             </div>
           </div>
         </FormCard>
@@ -245,11 +292,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       {/* TODO: Currently pass empty list to server, one day if needed to only sent to accepted users then pass on users id in the list */}
       <input type="hidden" name="membersConfirmation" value={"[]"} />
 
-      <ApplyFormActionBar
-        disabled={isPending || !confirmationSent || isBelowConfirmThreshold}
-        nextUrl={nextUrl}
-        onBack={onBack}
-      />
+      <ApplyFormActionBar onBack={onBack} hideNext />
     </Form>
   );
 };

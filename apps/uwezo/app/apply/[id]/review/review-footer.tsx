@@ -1,7 +1,7 @@
 "use client";
 
+import { IconArrowLeft } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FC } from "react";
 
@@ -17,14 +17,16 @@ export interface ReviewDataProps {
 
 export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
   const t = useTranslations();
-  const prevUrl = `/apply/${id}/confirmations`;
   const router = useRouter();
 
   return (
     <ActionBar className="mt-8">
       <div className="mx-auto flex flex-row items-center gap-4">
         <Button variant="secondary" asChild type="button">
-          <Link href={prevUrl || "#"}>{t("Common.back")}</Link>
+          <div>
+            <IconArrowLeft />
+            {t("Common.back")}
+          </div>
         </Button>
         <ModalButton
           onConfirm={async () => {

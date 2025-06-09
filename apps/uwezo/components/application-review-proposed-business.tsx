@@ -1,5 +1,5 @@
-import { getTranslations } from "next-intl/server";
-import type { FC } from "react";
+import { useTranslations } from "next-intl";
+import { type FC } from "react";
 
 import {
   Accordion,
@@ -14,8 +14,8 @@ import type { ProposedBusinessData } from "@/app/apply/[id]/proposed-business/pr
 
 export const ApplicationReviewProposedBusiness: FC<{
   businessDetails?: ProposedBusinessData;
-}> = async ({ businessDetails }) => {
-  const t = await getTranslations("ApplicationDetailsPage");
+}> = ({ businessDetails }) => {
+  const t = useTranslations("ApplicationDetailsPage");
 
   if (!businessDetails) {
     return null;
