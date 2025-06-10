@@ -101,24 +101,26 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
     >
       <div className="grow-1 flex flex-col justify-between">
         <Container className="pb-7">
-          <div className="mt-4 flex flex-row justify-between">
-            <div>
-              <h2 className="typo-h3">{t("ReviewPage.title")}</h2>
-              <p>{t("ReviewPage.subTitle")}</p>
+          <FormCard title={t("ReviewPage.title")}>
+            <div className="mt-4 flex flex-row justify-between">
+              <div>
+                {/* <h2 className="typo-h3">{t("ReviewPage.title")}</h2> */}
+                <p>{t("ReviewPage.subTitle")}</p>
+              </div>
             </div>
-          </div>
 
-          <ApplicationReviewLoanConditions
-            loanConditionsData={application.loanConditions}
-          />
+            <ApplicationReviewLoanConditions
+              loanConditionsData={application.loanConditions}
+            />
 
-          <ApplicationReviewMembers membersData={application.members} />
+            <ApplicationReviewMembers membersData={application.members} />
 
-          <ApplicationReviewGroupData groupData={application.groupData} />
+            <ApplicationReviewGroupData groupData={application.groupData} />
 
-          <ApplicationReviewProposedBusiness
-            businessDetails={application.proposedBusiness}
-          />
+            <ApplicationReviewProposedBusiness
+              businessDetails={application.proposedBusiness}
+            />
+          </FormCard>
         </Container>
 
         <InfoPopover />
