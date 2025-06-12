@@ -54,6 +54,14 @@ class ApplicationSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['application_settings']['application_prefix'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Application ID Prefix'),
+      '#default_value' => $config->get('application_prefix') ?: 'APP-',
+      '#description' => $this->t('Prefix for application IDs displayed in the listing. Default is APP-'),
+      '#required' => TRUE,
+    ];
+
     $form['file_settings'] = [
       '#type' => 'details',
       '#title' => $this->t('File Upload Settings'),
@@ -100,6 +108,7 @@ class ApplicationSettingsForm extends ConfigFormBase {
       ->set('max_group_members', $form_state->getValue('max_group_members'))
       ->set('max_file_size', $form_state->getValue('max_file_size'))
       ->set('allowed_extensions', $form_state->getValue('allowed_extensions'))
+      ->set('application_prefix', $form_state->getValue('application_prefix'))
       ->save();
 
     parent::submitForm($form, $form_state);
