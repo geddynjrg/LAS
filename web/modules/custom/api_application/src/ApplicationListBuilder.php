@@ -19,32 +19,32 @@ class ApplicationListBuilder extends EntityListBuilder {
   public function buildHeader() {
     $header['id'] = [
       'data' => $this->t('ID'),
-      'class' => ['application-header-id'],
-      'width' => '60px',
+      'class' => ['application-header-id', 'text-center'],
+      'width' => '20%',
     ];
     $header['group_name'] = [
-      'data' => $this->t('Application Name'),
-      'class' => ['application-header-group'],
-      'width' => '30%',
+      'data' => $this->t('Group Name'),
+      'class' => ['application-header-group', 'text-center'],
+      'width' => '20%',
     ];
     $header['status'] = [
       'data' => $this->t('Status'),
-      'class' => ['application-header-status'],
-      'width' => '140px',
+      'class' => ['application-header-status', 'text-center'],
+      'width' => '15%',
     ];
     $header['loan_amount'] = [
       'data' => $this->t('Loan Amount'),
-      'class' => ['application-header-amount'],
-      'width' => '120px',
+      'class' => ['application-header-amount', 'text-center'],
+      'width' => '10%',
     ];
     $header['created'] = [
       'data' => $this->t('Created'),
-      'class' => ['application-header-date'],
-      'width' => '180px',
+      'class' => ['application-header-date', 'text-center'],
+      'width' => '20%',
     ];
     $header['owner'] = [
       'data' => $this->t('Submitted By'),
-      'class' => ['application-header-owner'],
+      'class' => ['application-header-owner', 'text-center'],
       'width' => '120px',
     ];
     return $header + parent::buildHeader();
@@ -55,9 +55,10 @@ class ApplicationListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\api_application\Entity\ApplicationInterface $entity */
+
     $row['id'] = [
       'data' => [
-        '#markup' => '<span class="application-id">' . $entity->id() . '</span>',
+        '#markup' => '<span class="application-id">' . ($entity->getApplicationId() ?: 'APP-' . $entity->id()) . '</span>',
       ],
       'class' => ['text-center'],
     ];
@@ -69,6 +70,7 @@ class ApplicationListBuilder extends EntityListBuilder {
         ['application' => $entity->id()],
         ['attributes' => ['class' => ['application-group-link']]]
       ),
+      'class' => ['text-center'],
     ];
 
     // Enhanced status with colored badge and icon.
@@ -94,7 +96,7 @@ class ApplicationListBuilder extends EntityListBuilder {
         '<span class="loan-amount">KSh <strong>' . number_format($loan_amount) . '</strong></span>' :
         '<span class="loan-amount loan-amount--empty">-</span>',
       ],
-      'class' => ['text-right'],
+      'class' => ['text-center'],
     ];
 
     // Enhanced created date - single line format.
@@ -109,6 +111,7 @@ class ApplicationListBuilder extends EntityListBuilder {
           $formatted_date
         ),
       ],
+      'class' => ['text-center'],
     ];
 
     // Enhanced owner display.
@@ -119,6 +122,7 @@ class ApplicationListBuilder extends EntityListBuilder {
         '<span class="application-owner">' . $owner->getDisplayName() . '</span>' :
         '<span class="application-owner application-owner--empty">-</span>',
       ],
+      'class' => ['text-center'],
     ];
 
     return $row + parent::buildRow($entity);

@@ -2,11 +2,11 @@ _core:
   default_config_hash: ZX1Ejfhpfa8vvuMM60szCa4F2l8jCnBdqv4afKAaa-8
 general:
   auto_tracking_enabled: true
+  tracking_mode: configured
   default_notification_type: none
   history_limit: 50
   cleanup_enabled: true
   cleanup_days: 365
-  tracking_mode: configured
 entity_mappings:
   application:
     enabled: 1
