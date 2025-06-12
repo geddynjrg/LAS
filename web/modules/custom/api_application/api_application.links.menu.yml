@@ -1,5 +1,5 @@
 api_application.applications:
-  title: 'Loan Applications'
+  title: 'Applications'
   route_name: entity.application.collection
   description: 'List and manage loan applications'
   parent: system.admin_content
