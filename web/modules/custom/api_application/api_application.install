@@ -171,10 +171,10 @@ function api_application_update_11003() {
   // Get the field definition for application_id.
   $application_entity_type = $entity_type_manager->getDefinition('application');
   $field_definitions = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions('application');
-  
+
   if (isset($field_definitions['application_id'])) {
     $application_id_field = $field_definitions['application_id'];
-    
+
     // Install the field.
     $entity_definition_update_manager->installFieldStorageDefinition(
       'application_id',
@@ -186,10 +186,10 @@ function api_application_update_11003() {
     // Populate existing applications with application IDs.
     $storage = $entity_type_manager->getStorage('application');
     $applications = $storage->loadMultiple();
-    
+
     $config = \Drupal::config('api_application.settings');
     $prefix = $config->get('application_prefix') ?: 'APP-';
-    
+
     foreach ($applications as $application) {
       if (empty($application->getApplicationId())) {
         // Generate application ID for existing records.
