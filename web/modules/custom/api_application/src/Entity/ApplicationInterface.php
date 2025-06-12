@@ -52,6 +52,25 @@ interface ApplicationInterface extends ContentEntityInterface, EntityChangedInte
   public function setStatus($status);
 
   /**
+   * Gets the application ID.
+   *
+   * @return string
+   *   The application ID.
+   */
+  public function getApplicationId();
+
+  /**
+   * Sets the application ID.
+   *
+   * @param string $application_id
+   *   The application ID.
+   *
+   * @return \Drupal\api_application\Entity\ApplicationInterface
+   *   The called Application entity.
+   */
+  public function setApplicationId($application_id);
+
+  /**
    * Gets the group name.
    *
    * @return string

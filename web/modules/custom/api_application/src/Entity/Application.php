@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\EntityOwnerTrait;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * Defines the Application entity.
@@ -104,6 +105,27 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
+
+    // Application ID field.
+    $fields['application_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Application ID'))
+      ->setDescription(t('The unique application identifier.'))
+      ->setReadOnly(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => -50,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -50,
+        'settings' => [
+          'size' => 30,
+          'placeholder' => '',
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
     // Step 1: Group Data Fields.
     $fields['group_name'] = BaseFieldDefinition::create('string')
@@ -902,6 +924,21 @@ class Application extends ContentEntityBase implements ApplicationInterface {
   /**
    * {@inheritdoc}
    */
+  public function getApplicationId() {
+    return $this->get('application_id')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setApplicationId($application_id) {
+    $this->set('application_id', $application_id);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getGroupName() {
     return $this->get('group_name')->value;
   }
@@ -1028,6 +1065,31 @@ class Application extends ContentEntityBase implements ApplicationInterface {
   public function setTableBanking($value) {
     // This is handled through the key_activities field.
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    // Generate application ID if it doesn't exist.
+    if ($this->isNew() && empty($this->getApplicationId())) {
+      $this->setApplicationId($this->generateApplicationId());
+    }
+  }
+
+  /**
+   * Generate a unique application ID.
+   *
+   * @return string
+   *   The generated application ID.
+   */
+  protected function generateApplicationId() {
+    $config = \Drupal::config('api_application.settings');
+    $prefix = $config->get('application_prefix') ?: 'APP-';
+    $time = \Drupal::time()->getCurrentTime();
+    return $prefix . date('Ymd', $time) . '-' . substr(uniqid(), -5);
   }
 
 }

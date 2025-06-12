@@ -157,3 +157,52 @@ function api_application_update_11002() {
 
   return t('Entity schemas for Application and Group Member have been installed.');
 }
+
+/**
+ * Add application_id field to Application entity and populate existing records.
+ */
+function api_application_update_11003() {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // Clear cached definitions to ensure we have the latest field definitions.
+  $entity_type_manager->clearCachedDefinitions();
+
+  // Get the field definition for application_id.
+  $field_definitions = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions('application');
+
+  if (isset($field_definitions['application_id'])) {
+    $application_id_field = $field_definitions['application_id'];
+
+    // Install the field.
+    $entity_definition_update_manager->installFieldStorageDefinition(
+      'application_id',
+      'application',
+      'api_application',
+      $application_id_field
+    );
+
+    // Populate existing applications with application IDs.
+    $storage = $entity_type_manager->getStorage('application');
+    $applications = $storage->loadMultiple();
+
+    $config = \Drupal::config('api_application.settings');
+    $prefix = $config->get('application_prefix') ?: 'APP-';
+
+    foreach ($applications as $application) {
+      if (empty($application->getApplicationId())) {
+        // Generate application ID for existing records.
+        $time = $application->getCreatedTime() ?: \Drupal::time()->getCurrentTime();
+        $application_id = $prefix . date('Ymd', $time) . '-' . substr(uniqid(), -5);
+        $application->setApplicationId($application_id);
+        $application->save();
+      }
+    }
+
+    return t('Application ID field has been added and @count existing applications have been updated.', [
+      '@count' => count($applications),
+    ]);
+  }
+
+  return t('Application ID field definition not found.');
+}
