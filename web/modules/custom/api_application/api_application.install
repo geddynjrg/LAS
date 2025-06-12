@@ -169,7 +169,6 @@ function api_application_update_11003() {
   $entity_type_manager->clearCachedDefinitions();
 
   // Get the field definition for application_id.
-  $application_entity_type = $entity_type_manager->getDefinition('application');
   $field_definitions = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions('application');
 
   if (isset($field_definitions['application_id'])) {
