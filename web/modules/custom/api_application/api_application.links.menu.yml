@@ -1,5 +1,5 @@
 api_application.applications:
-  title: 'Loan Applications'
+  title: 'Applications'
   route_name: entity.application.collection
   description: 'List and manage loan applications'
   parent: system.admin_content
@@ -18,3 +18,12 @@ api_application.application_settings:
   description: 'Configure loan application settings'
   parent: system.admin_structure
   weight: 10
+
+api_application.application_collection:
+  title: 'Applications'
+  description: 'Applications Dashboard with real-time metrics and visualizations.'
+  route_name: entity.application.collection
+  icon: 'fa-solid fa-file-invoice'
+  parent: system.admin
+  weight: -9
+  
