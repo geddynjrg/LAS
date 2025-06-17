@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\gin\GinSettings;
 
 /**
  * Implements hook_help().
@@ -59,6 +60,52 @@ function api_application_menu_local_tasks_alter(&$data, $route_name) {
     // Add Group Members tab.
     if (isset($data['tabs'][0]['entity.group_member.collection'])) {
       $data['tabs'][0]['entity.group_member.collection']['#weight'] = 30;
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function api_application_theme_registry_alter(&$theme_registry) {
+  // Add our custom preprocess function that will run after theme preprocessing.
+  if (isset($theme_registry['html'])) {
+    $theme_registry['html']['preprocess functions'][] = 'api_application_preprocess_html_late';
+  }
+}
+
+/**
+ * Late preprocess function for HTML that runs after theme preprocessing.
+ */
+function api_application_preprocess_html_late(&$variables) {
+  // Get theme settings.
+  /** @var \Drupal\gin\GinSettings $settings */
+  $settings = \Drupal::classResolver(GinSettings::class);
+  $toolbar = $settings->get('classic_toolbar');
+
+  if ($toolbar && $toolbar === 'new') {
+    // Check if navigation exists and has the expected structure.
+    if (isset($variables['page_top']['navigation']['#menu_middle']['content']['#items'])) {
+      $navigation = &$variables['page_top']['navigation'];
+      $items = &$navigation['#menu_middle']['content']['#items'];
+
+      // Create the applications menu item.
+      $applications_item = [
+        'title' => t('Applications'),
+        'class' => 'files',
+        'url' => '/admin/content/applications',
+      ];
+
+      // Insert the applications item as the second item (index 1).
+      $items_array = array_values($items);
+      $keys_array = array_keys($items);
+
+      // Insert at position 1 (second position).
+      array_splice($items_array, 1, 0, [$applications_item]);
+      array_splice($keys_array, 1, 0, ['applications']);
+
+      // Reconstruct the items array with proper keys.
+      $navigation['#menu_middle']['content']['#items'] = array_combine($keys_array, $items_array);
     }
   }
 }
