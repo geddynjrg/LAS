@@ -64,7 +64,14 @@ const courseSchema = z.object({
     test_booking_fee: z.number(),
     course_fee: z.number(),
     duration: z.number(),
-    education_level: z.array(z.string()),
+    education_level: z
+      .array(
+        z.object({
+          id: z.number(),
+          name: z.string(),
+        }),
+      )
+      .optional(),
     group_size: z.number(),
     tags: z.array(z.string()).optional(),
     intake_period: z.array(z.string()),

@@ -278,10 +278,14 @@ const ItemDetails: FC<courseRowProps> = (props) => {
           </div>
         )}
 
-        {props.content.education_level.length > 0 && (
+        {(props.content.education_level ?? []).length > 0 && (
           <div className="mt-4">
             <span className="font-bold">{t("requiredEducation")}: </span>
-            <span>{props.content.education_level.join(", ")}</span>
+            <span>
+              {(props.content.education_level ?? [])
+                .map((level) => level.name)
+                .join(", ")}
+            </span>
           </div>
         )}
 

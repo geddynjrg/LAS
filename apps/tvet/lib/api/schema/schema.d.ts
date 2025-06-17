@@ -5491,7 +5491,12 @@ export interface operations {
         /** @description Maximum course duration in months */
         max_duration?: number;
         /** @description Filter by education level (can have multiple values) */
-        "education_level[]"?: string[];
+        "education_level[]"?: {
+          /** @description The education level ID */
+          id: number;
+          /** @description The education level name */
+          name: string;
+        }[];
         /** @description Filter by institution ID */
         institution?: string;
         /** @description Filter by tags (can have multiple values) */

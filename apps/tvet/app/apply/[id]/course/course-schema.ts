@@ -17,7 +17,10 @@ export const courseSchema = z
     course: z.string().trim().nonempty(),
     preferred_intake_period: z.string().trim().nonempty(),
     mandatoryQualifications: z.preprocess(stringToArray, z.array(z.string())),
-    qualifications: z.preprocess(stringToArray, z.array(z.string())),
+    academic_qualifications_confirmed: z.preprocess(
+      stringToArray,
+      z.array(z.string()),
+    ),
     highest_education_certificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
     other_certificates: z.preprocess(
       flatmap,
@@ -29,9 +32,12 @@ export const courseSchema = z
   })
   .superRefine((data, ctx) => {
     // Ensure mandatory qualifications are checked
-    if (data.qualifications.length !== data.mandatoryQualifications.length) {
+    if (
+      data.academic_qualifications_confirmed.length !==
+      data.mandatoryQualifications.length
+    ) {
       ctx.addIssue({
-        path: ["qualifications"],
+        path: ["academic_qualifications_confirmed"],
         code: z.ZodIssueCode.custom,
         message: "ApplyForm.confirmQualificationsError",
       });

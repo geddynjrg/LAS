@@ -141,7 +141,7 @@ export const CourseForm: FC<CourseFormProps> = ({
       {educationLevels.length > 0 && (
         <Field
           state={state}
-          name="qualifications"
+          name="academic_qualifications_confirmed"
           label={t("confirmQualifications")}
           required
           control={(props) => (
@@ -209,16 +209,14 @@ function useSearchCourses() {
           res?.data?.courses?.map((course) => ({
             label: course.title,
             value: course.id.toString(),
-            intakePeriods: course.content?.intake_period.map(
-              (period: string) => ({
-                label: period,
-                value: period,
-              }),
-            ),
-            educationLevels: course.content?.education_level.map(
-              (level: string) => ({
-                label: level,
-                value: level,
+            intakePeriods: course.content?.intake_period?.map((period) => ({
+              label: period,
+              value: period,
+            })),
+            educationLevels: (course.content?.education_level ?? []).map(
+              (level) => ({
+                label: level.name,
+                value: level.id.toString(),
               }),
             ),
           })) ?? [],

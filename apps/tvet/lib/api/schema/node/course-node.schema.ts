@@ -22,7 +22,9 @@ export const CourseNodeSchema = z.object({
         apply_till: z.array(z.string()).optional(),
         course_fee: z.number().optional().nullable(),
         duration: z.number().optional().nullable(),
-        education_level: z.array(z.any()).optional(),
+        education_level: z
+          .array(z.object({ id: z.number(), name: z.string() }))
+          .optional(),
         body: z
           .object({
             value: z.string().nullable(),
