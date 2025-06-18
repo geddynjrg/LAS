@@ -7,6 +7,7 @@
 
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
  * Implements hook_install().
@@ -205,4 +206,212 @@ function api_application_update_11003() {
   }
 
   return t('Application ID field definition not found.');
+}
+
+/**
+ * Update position field from string to entity reference.
+ */
+function api_application_update_11004() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $database = \Drupal::database();
+
+  // Get the current field definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('position', 'group_member');
+
+  // Store existing position values before changing field type.
+  $existing_positions = [];
+  if ($field_storage_definition && $database->schema()->tableExists('group_member_field_data')) {
+    $query = $database->select('group_member_field_data', 'gmfd')
+      ->fields('gmfd', ['id', 'position'])
+      ->condition('position', '', '<>')
+      ->isNotNull('position');
+    $existing_positions = $query->execute()->fetchAllKeyed();
+  }
+
+  if ($field_storage_definition) {
+    // First, uninstall the old field.
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+  }
+
+  // Create the new field definition.
+  $field_storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Position of member'))
+    ->setDescription(t('The position/role of the member in the group.'))
+    ->setRequired(TRUE)
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings', [
+      'target_bundles' => [
+        'position_of_member' => 'position_of_member',
+      ],
+      'sort' => [
+        'field' => 'name',
+        'direction' => 'asc',
+      ],
+      'auto_create' => TRUE,
+      'auto_create_bundle' => 'position_of_member',
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'entity_reference_label',
+      'weight' => 4,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+      'weight' => 4,
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => '60',
+        'autocomplete_type' => 'tags',
+        'placeholder' => '',
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the new field.
+  $update_manager->installFieldStorageDefinition('position', 'group_member', 'api_application', $field_storage_definition);
+
+  // Migrate existing position values to taxonomy terms.
+  if (!empty($existing_positions)) {
+    $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+    $group_member_storage = $entity_type_manager->getStorage('group_member');
+
+    foreach ($existing_positions as $member_id => $position_value) {
+      // Check if term already exists.
+      $existing_terms = $term_storage->loadByProperties([
+        'vid' => 'position_of_member',
+        'name' => $position_value,
+      ]);
+
+      if (!empty($existing_terms)) {
+        $term = reset($existing_terms);
+      }
+      else {
+        // Create new term.
+        $term = $term_storage->create([
+          'vid' => 'position_of_member',
+          'name' => $position_value,
+        ]);
+        $term->save();
+      }
+
+      // Update the group member entity.
+      $member = $group_member_storage->load($member_id);
+      if ($member) {
+        $member->set('position', $term->id());
+        $member->save();
+      }
+    }
+  }
+}
+
+/**
+ * Update purpose_of_loan field from list_string to entity reference.
+ */
+function api_application_update_11005() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $database = \Drupal::database();
+
+  // Get the current field definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('purpose_of_loan', 'application');
+
+  // Store existing purpose values before changing field type.
+  $existing_purposes = [];
+  if ($field_storage_definition && $database->schema()->tableExists('application_field_data')) {
+    $query = $database->select('application_field_data', 'afd')
+      ->fields('afd', ['id', 'purpose_of_loan'])
+      ->condition('purpose_of_loan', '', '<>')
+      ->isNotNull('purpose_of_loan');
+    $existing_purposes = $query->execute()->fetchAllKeyed();
+  }
+
+  if ($field_storage_definition) {
+    // First, uninstall the old field.
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+  }
+
+  // Create the new field definition.
+  $field_storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Purpose of the loan'))
+    ->setDescription(t('Select the purpose of the loan.'))
+    ->setRequired(TRUE)
+    ->setRevisionable(TRUE)
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings', [
+      'target_bundles' => [
+        'purpose_of_the_loan' => 'purpose_of_the_loan',
+      ],
+      'sort' => [
+        'field' => 'name',
+        'direction' => 'asc',
+      ],
+      'auto_create' => TRUE,
+      'auto_create_bundle' => 'purpose_of_the_loan',
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'entity_reference_label',
+      'weight' => 30,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+      'weight' => 30,
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => '60',
+        'autocomplete_type' => 'tags',
+        'placeholder' => '',
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the new field.
+  $update_manager->installFieldStorageDefinition('purpose_of_loan', 'application', 'api_application', $field_storage_definition);
+
+  // Migrate existing purpose values to taxonomy terms.
+  if (!empty($existing_purposes)) {
+    $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+    $application_storage = $entity_type_manager->getStorage('application');
+
+    // Map old values to new term names.
+    $value_mapping = [
+      'table_banking' => 'Table banking',
+      'common_group_project' => 'Common group project',
+    ];
+
+    foreach ($existing_purposes as $application_id => $purpose_value) {
+      // Get the proper term name.
+      $term_name = isset($value_mapping[$purpose_value]) ? $value_mapping[$purpose_value] : $purpose_value;
+
+      // Check if term already exists.
+      $existing_terms = $term_storage->loadByProperties([
+        'vid' => 'purpose_of_the_loan',
+        'name' => $term_name,
+      ]);
+
+      if (!empty($existing_terms)) {
+        $term = reset($existing_terms);
+      }
+      else {
+        // Create new term.
+        $term = $term_storage->create([
+          'vid' => 'purpose_of_the_loan',
+          'name' => $term_name,
+        ]);
+        $term->save();
+      }
+
+      // Update the application entity.
+      $application = $application_storage->load($application_id);
+      if ($application) {
+        $application->set('purpose_of_loan', $term->id());
+        $application->save();
+      }
+    }
+  }
 }
