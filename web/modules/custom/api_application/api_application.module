@@ -5,7 +5,10 @@
  * Contains api_application.module.
  */
 
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
+use Drupal\Core\Url;
 use Drupal\gin\GinSettings;
 
 /**
@@ -106,6 +109,324 @@ function api_application_preprocess_html_late(&$variables) {
 
       // Reconstruct the items array with proper keys.
       $navigation['#menu_middle']['content']['#items'] = array_combine($keys_array, $items_array);
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function api_application_theme() {
+  return [
+    'application' => [
+      'render element' => 'elements',
+      'template' => 'application',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for application templates.
+ *
+ * Default template: application.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the application entity and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_application(array &$variables) {
+  // Fetch Application Entity Object.
+  /** @var \Drupal\api_application\Entity\ApplicationInterface $application */
+  $application = $variables['elements']['#application'];
+  $variables['entity'] = $application;
+
+  // Normalize all field values to avoid FieldItemList conversion errors.
+  $variables['application'] = [
+    // Basic info.
+    'id' => $application->id(),
+    'application_id' => $application->getApplicationId() ?: 'APP-' . $application->id(),
+    'status' => $application->get('status')->value ?: 'draft',
+    'created' => $application->getCreatedTime(),
+    'changed' => $application->getChangedTime(),
+
+    // Group information.
+    'group_name' => $application->get('group_name')->value ?: '',
+    'group_registration_number' => $application->get('group_registration_number')->value ?: '',
+    'date_registered' => $application->get('date_registered')->value ?: '',
+    'meeting_point' => $application->get('meeting_point')->value ?: '',
+    'nearest_landmark' => $application->get('nearest_landmark')->value ?: '',
+    'nature_of_group' => $application->get('nature_of_group')->value ?: '',
+
+    // Group background.
+    'group_background' => [],
+    'key_activities' => [],
+    'value_chain' => [],
+    'other_activities' => $application->get('other_activities')->value ?: '',
+
+    // Table banking fields.
+    'table_banking_duration' => $application->get('table_banking_duration')->value ?: '',
+    'monthly_share_contribution' => $application->get('monthly_share_contribution')->value ?: 0,
+    'total_amount_loaned' => $application->get('total_amount_loaned')->value ?: 0,
+    'total_revolving_fund' => $application->get('total_revolving_fund')->value ?: 0,
+
+    // Location.
+    'county' => NULL,
+    'constituency' => NULL,
+    'ward' => $application->get('ward')->value ?: '',
+
+    // Loan details.
+    'purpose_of_loan' => NULL,
+    'loan_type' => NULL,
+    'loan_amount' => $application->get('loan_amount')->value ?: 0,
+    'proposed_repayment_period' => $application->get('proposed_repayment_period')->value ?: 0,
+
+    // Bank details.
+    'bank_name' => $application->get('bank_name')->value ?: '',
+    'bank_branch' => $application->get('bank_branch')->value ?: '',
+    'bank_account_number' => $application->get('bank_account_number')->value ?: '',
+
+    // Business details.
+    'nature_of_business' => $application->get('nature_of_business')->value ?: '',
+    'business_type' => [],
+    'years_in_operation' => $application->get('years_in_operation')->value ?: 0,
+    'average_income' => $application->get('average_income')->value ?: 0,
+    'expenses' => [],
+
+    // Documents.
+    'group_credit_history' => NULL,
+
+    // Rejection details.
+    'rejection_reason' => $application->get('rejection_reason')->value ?: '',
+    'rejection_message' => $application->get('rejection_message')->value ?: '',
+  ];
+
+  // Handle group members.
+  $group_members = $application->get('group_members');
+  $variables['application']['group_members'] = [];
+  $variables['application']['group_members_count'] = 0;
+
+  if ($group_members && !$group_members->isEmpty()) {
+    $variables['application']['group_members_count'] = count($group_members);
+    foreach ($group_members as $member_item) {
+      if ($member_item->entity) {
+        $member = $member_item->entity;
+        $position = $member->get('position')->entity;
+        $variables['application']['group_members'][] = [
+          'name' => $member->getName(),
+          'id_number' => $member->getIdNumber(),
+          'gender' => $member->getGender(),
+          'phone_number' => $member->getPhoneNumber(),
+          'position' => $position ? $position->getName() : '',
+          'is_pwd' => $member->isPersonWithDisability(),
+          'pwd_number' => $member->getPwdNumber(),
+        ];
+      }
+    }
+  }
+
+  // Group background.
+  if (!$application->get('group_background')->isEmpty()) {
+    foreach ($application->get('group_background') as $item) {
+      if ($item->entity) {
+        $variables['application']['group_background'][] = $item->entity->getName();
+      }
+    }
+  }
+
+  // Key activities.
+  if (!$application->get('key_activities')->isEmpty()) {
+    foreach ($application->get('key_activities') as $item) {
+      $variables['application']['key_activities'][] = $item->value;
+    }
+  }
+
+  // Value chain.
+  if (!$application->get('value_chain')->isEmpty()) {
+    foreach ($application->get('value_chain') as $item) {
+      if ($item->entity) {
+        $variables['application']['value_chain'][] = $item->entity->getName();
+      }
+    }
+  }
+
+  // Business type.
+  if (!$application->get('business_type')->isEmpty()) {
+    foreach ($application->get('business_type') as $item) {
+      if ($item->entity) {
+        $variables['application']['business_type'][] = $item->entity->getName();
+      }
+    }
+  }
+
+  // County.
+  if (!$application->get('county')->isEmpty()) {
+    $county = $application->get('county')->entity;
+    if ($county) {
+      $variables['application']['county'] = $county->getName();
+    }
+  }
+
+  // Constituency.
+  if (!$application->get('constituency')->isEmpty()) {
+    $constituency = $application->get('constituency')->entity;
+    if ($constituency) {
+      $variables['application']['constituency'] = $constituency->getName();
+    }
+  }
+
+  // Purpose of loan.
+  if (!$application->get('purpose_of_loan')->isEmpty()) {
+    $purpose = $application->get('purpose_of_loan')->entity;
+    if ($purpose) {
+      $variables['application']['purpose_of_loan'] = $purpose->getName();
+    }
+  }
+
+  // Loan type.
+  if (!$application->get('loan_type')->isEmpty()) {
+    $loan_type = $application->get('loan_type')->entity;
+    if ($loan_type) {
+      $variables['application']['loan_type'] = [
+        'name' => $loan_type->getName(),
+        'description' => $loan_type->getDescription(),
+      ];
+    }
+  }
+
+  // Handle expenses map field.
+  if (!$application->get('expenses')->isEmpty()) {
+    foreach ($application->get('expenses') as $item) {
+      $variables['application']['expenses'][] = $item->getValue();
+    }
+  }
+
+  // Handle group credit history file.
+  if (!$application->get('group_credit_history')->isEmpty()) {
+    $file = $application->get('group_credit_history')->entity;
+    if ($file) {
+      // Use ByteSizeMarkup for Drupal 11 compatibility.
+      $size = ByteSizeMarkup::create($file->getSize());
+      $variables['application']['group_credit_history'] = [
+        'filename' => $file->getFilename(),
+        'url' => $file->createFileUrl(),
+        'size' => (string) $size,
+        'mime' => $file->getMimeType(),
+      ];
+    }
+  }
+
+  // Format dates.
+  if ($variables['application']['date_registered']) {
+    $variables['application']['date_registered_formatted'] = \Drupal::service('date.formatter')->format(
+      strtotime($variables['application']['date_registered']),
+      'custom',
+      'Y-m-d'
+    );
+  }
+
+  // Format created date.
+  $variables['application']['created_formatted'] = \Drupal::service('date.formatter')->format(
+    $variables['application']['created'],
+    'long'
+  );
+
+  // Check if user can update.
+  $variables['can_update'] = $application->access('update');
+
+  // Generate URLs for actions if user has access.
+  if ($variables['can_update']) {
+    $variables['status_update_url'] = Url::fromRoute(
+      'api_application.application_status_update',
+      ['application' => $application->id()]
+    )->toString();
+
+    // Get allowed status transitions.
+    $current_status = $application->get('status')->value;
+    $allowed_transitions = [
+      'draft' => ['submitted'],
+      'submitted' => ['under_review', 'rejected'],
+      'under_review' => ['approved', 'rejected'],
+      'approved' => ['disbursed'],
+      'rejected' => ['under_review'],
+      'disbursed' => ['under_review', 'closed'],
+      'closed' => [],
+    ];
+
+    $variables['allowed_statuses'] = $allowed_transitions[$current_status] ?? [];
+
+    // Get rejection reasons for the form.
+    $rejection_reasons = [
+      'incomplete_information' => t('Incomplete or incorrect information'),
+      'missing_documents' => t('Required documents missing or invalid'),
+      'eligibility_criteria' => t('Does not meet eligibility criteria'),
+      'duplicate_application' => t('Duplicate application'),
+      'insufficient_collateral' => t('Insufficient collateral'),
+      'poor_credit_history' => t('Poor credit history'),
+      'other' => t('Other reason'),
+    ];
+    $variables['rejection_reasons'] = $rejection_reasons;
+  }
+
+  // Get status label.
+  $status_options = [
+    'draft' => t('Draft'),
+    'submitted' => t('Submitted'),
+    'under_review' => t('Under Review'),
+    'approved' => t('Approved'),
+    'rejected' => t('Rejected'),
+    'disbursed' => t('Disbursed'),
+    'closed' => t('Closed'),
+  ];
+  $variables['application']['status_label'] = $status_options[$variables['application']['status']] ?? $variables['application']['status'];
+  $variables['status_options'] = $status_options;
+
+  // Add CSRF token for AJAX requests.
+  $variables['#attached']['drupalSettings']['csrf_token'] = \Drupal::csrfToken()->get('rest');
+
+  // Get rejection reason label if rejected.
+  if ($variables['application']['status'] === 'rejected' && $variables['application']['rejection_reason']) {
+    $rejection_reasons = [
+      'incomplete_information' => t('Incomplete or incorrect information'),
+      'missing_documents' => t('Required documents missing or invalid'),
+      'eligibility_criteria' => t('Does not meet eligibility criteria'),
+      'duplicate_application' => t('Duplicate application'),
+      'insufficient_collateral' => t('Insufficient collateral'),
+      'poor_credit_history' => t('Poor credit history'),
+      'other' => t('Other reason'),
+    ];
+    $variables['application']['rejection_reason_label'] = $rejection_reasons[$variables['application']['rejection_reason']] ?? $variables['application']['rejection_reason'];
+  }
+
+  // Helpful $content variable for templates.
+  $variables['content'] = [];
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function api_application_preprocess_page(&$variables) {
+  $route_match = \Drupal::routeMatch();
+
+  // Check if we're on an application canonical page.
+  if ($route_match->getRouteName() === 'entity.application.canonical') {
+    if (isset($variables['page']['content']['page_title'])) {
+      unset($variables['page']['content']['page_title']);
+    }
+    // Remove from any region where it might appear.
+    foreach ($variables['page'] as &$region) {
+      if (is_array($region)) {
+        foreach ($region as $block_name => &$block) {
+          if (str_contains($block_name, 'page_title') ||
+              (isset($block['#plugin_id']) && str_contains($block['#plugin_id'], 'page_title'))) {
+            unset($region[$block_name]);
+          }
+        }
+      }
     }
   }
 }

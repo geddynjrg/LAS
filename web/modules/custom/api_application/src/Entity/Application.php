@@ -23,6 +23,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "list_builder" = "Drupal\api_application\ApplicationListBuilder",
  *     "views_data" = "Drupal\views\EntityViewsData",
  *     "access" = "Drupal\api_application\ApplicationAccessControlHandler",
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "form" = {
  *       "default" = "Drupal\api_application\Form\ApplicationForm",
  *       "add" = "Drupal\api_application\Form\ApplicationForm",
@@ -57,8 +58,12 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "edit-form" = "/application/{application}/edit",
  *     "delete-form" = "/application/{application}/delete",
  *     "collection" = "/admin/content/applications",
+ *     "revision" = "/application/{application}/revisions/{application_revision}/view",
+ *     "revision-revert-form" = "/application/{application}/revisions/{application_revision}/revert",
+ *     "revision-delete-form" = "/application/{application}/revisions/{application_revision}/delete",
  *   },
  *   field_ui_base_route = "entity.application.settings",
+ *   show_revision_ui = TRUE,
  *   revision_metadata_keys = {
  *     "revision_user" = "revision_uid",
  *     "revision_created" = "revision_timestamp",
@@ -102,6 +107,54 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayOptions('form', [
         'type' => 'options_select',
         'weight' => -10,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    // Rejection reason field.
+    $fields['rejection_reason'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Rejection Reason'))
+      ->setDescription(t('Reason for rejecting this application.'))
+      ->setRequired(FALSE)
+      ->setRevisionable(TRUE)
+      ->setSetting('allowed_values', [
+        'incomplete_information' => t('Incomplete or incorrect information'),
+        'missing_documents' => t('Required documents missing or invalid'),
+        'eligibility_criteria' => t('Does not meet eligibility criteria'),
+        'duplicate_application' => t('Duplicate application'),
+        'insufficient_collateral' => t('Insufficient collateral'),
+        'poor_credit_history' => t('Poor credit history'),
+        'other' => t('Other reason'),
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'list_default',
+        'weight' => -9,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -9,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    // Rejection message field.
+    $fields['rejection_message'] = BaseFieldDefinition::create('text_long')
+      ->setLabel(t('Rejection Message'))
+      ->setDescription(t('Detailed explanation for the rejection.'))
+      ->setRequired(FALSE)
+      ->setRevisionable(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'text_default',
+        'weight' => -8,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => -8,
+        'settings' => [
+          'rows' => 4,
+        ],
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
@@ -609,23 +662,38 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('form', TRUE);
 
     // Step 3: Loan Conditions.
-    $fields['purpose_of_loan'] = BaseFieldDefinition::create('list_string')
+    $fields['purpose_of_loan'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Purpose of the loan'))
-      ->setDescription(t('Select the purpose of the loan.'))
+      ->setDescription(t('Select the purpose of the loan. Start typing to search existing purposes or create a new one.'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setSetting('allowed_values', [
-        'table_banking' => t('Table banking'),
-        'common_group_project' => t('Common group project'),
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler', 'default:taxonomy_term')
+      ->setSetting('handler_settings', [
+        'target_bundles' => [
+          'purpose_of_the_loan' => 'purpose_of_the_loan',
+        ],
+        'sort' => [
+          'field' => 'name',
+          'direction' => 'asc',
+        ],
+        'auto_create' => TRUE,
+        'auto_create_bundle' => 'purpose_of_the_loan',
       ])
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'list_default',
+        'type' => 'entity_reference_label',
         'weight' => 30,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'options_select',
+        'type' => 'entity_reference_autocomplete',
         'weight' => 30,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'autocomplete_type' => 'tags',
+          'placeholder' => 'Type to search existing purposes or add new one...',
+        ],
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
