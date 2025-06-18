@@ -1,0 +1,9 @@
+uuid: 051adb5c-ab68-4da4-ae4e-f98172e2c3cf
+langcode: en
+status: true
+dependencies: {  }
+name: 'Purpose of the loan'
+vid: purpose_of_the_loan
+description: null
+weight: 0
+new_revision: false

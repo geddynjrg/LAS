@@ -1,0 +1,16 @@
+uuid: 0db0c535-ef87-48f7-897a-1e9b11ae41fc
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.purpose_of_the_loan
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: taxonomy_term.purpose_of_the_loan
+target_entity_type_id: taxonomy_term
+target_bundle: purpose_of_the_loan
+default_langcode: site_default
+language_alterable: false
