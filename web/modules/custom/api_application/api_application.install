@@ -386,7 +386,7 @@ function api_application_update_11005() {
 
     foreach ($existing_purposes as $application_id => $purpose_value) {
       // Get the proper term name.
-      $term_name = isset($value_mapping[$purpose_value]) ? $value_mapping[$purpose_value] : $purpose_value;
+      $term_name = $value_mapping[$purpose_value] ?? $purpose_value;
 
       // Check if term already exists.
       $existing_terms = $term_storage->loadByProperties([
@@ -414,4 +414,65 @@ function api_application_update_11005() {
       }
     }
   }
+}
+
+/**
+ * Add rejection reason and rejection message fields to Application entity.
+ */
+function api_application_update_11007() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_type = $entity_type_manager->getDefinition('application');
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add rejection_reason field.
+  $rejection_reason = BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Rejection Reason'))
+    ->setDescription(t('Reason for rejecting this application.'))
+    ->setRequired(FALSE)
+    ->setRevisionable(TRUE)
+    ->setSetting('allowed_values', [
+      'incomplete_information' => t('Incomplete or incorrect information'),
+      'missing_documents' => t('Required documents missing or invalid'),
+      'eligibility_criteria' => t('Does not meet eligibility criteria'),
+      'duplicate_application' => t('Duplicate application'),
+      'insufficient_collateral' => t('Insufficient collateral'),
+      'poor_credit_history' => t('Poor credit history'),
+      'other' => t('Other reason'),
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'list_default',
+      'weight' => -9,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => -9,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('rejection_reason', 'application', 'api_application', $rejection_reason);
+
+  // Add rejection_message field.
+  $rejection_message = BaseFieldDefinition::create('text_long')
+    ->setLabel(t('Rejection Message'))
+    ->setDescription(t('Detailed explanation for the rejection.'))
+    ->setRequired(FALSE)
+    ->setRevisionable(TRUE)
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'text_default',
+      'weight' => -8,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'text_textarea',
+      'weight' => -8,
+      'settings' => [
+        'rows' => 4,
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('rejection_message', 'application', 'api_application', $rejection_message);
 }

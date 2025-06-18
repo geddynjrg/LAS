@@ -4,22 +4,9 @@ admin:
     theme:
       css/admin.css: {}
   js:
-    js/admin.js: {}
+    js/application-view.js: {}
   dependencies:
     - core/jquery
     - core/drupal
     - core/drupalSettings
     - core/once
-
-application-form:
-  version: 1.x
-  css:
-    theme:
-      css/application-form.css: {}
-  js:
-    js/application-form.js: {}
-  dependencies:
-    - core/jquery
-    - core/drupal
-    - core/drupal.states
-    - core/drupalSettings

@@ -20,7 +20,7 @@ class ApplicationListBuilder extends EntityListBuilder {
     $header['id'] = [
       'data' => $this->t('ID'),
       'class' => ['application-header-id', 'text-center'],
-      'width' => '20%',
+      'width' => '15%',
     ];
     $header['group_name'] = [
       'data' => $this->t('Group Name'),
@@ -35,17 +35,17 @@ class ApplicationListBuilder extends EntityListBuilder {
     $header['loan_amount'] = [
       'data' => $this->t('Loan Amount'),
       'class' => ['application-header-amount', 'text-center'],
-      'width' => '10%',
+      'width' => '12%',
     ];
     $header['created'] = [
       'data' => $this->t('Created'),
       'class' => ['application-header-date', 'text-center'],
-      'width' => '20%',
+      'width' => '15%',
     ];
     $header['owner'] = [
       'data' => $this->t('Submitted By'),
       'class' => ['application-header-owner', 'text-center'],
-      'width' => '120px',
+      'width' => '12%',
     ];
     return $header + parent::buildHeader();
   }
@@ -126,6 +126,45 @@ class ApplicationListBuilder extends EntityListBuilder {
     ];
 
     return $row + parent::buildRow($entity);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDefaultOperations(EntityInterface $entity) {
+    $operations = [];
+
+    // View operation.
+    if ($entity->access('view') && $entity->hasLinkTemplate('canonical')) {
+      $operations['view'] = [
+        'title' => $this->t('View'),
+        'weight' => 0,
+        'url' => $this->ensureDestination($entity->toUrl()),
+      ];
+    }
+
+    // Edit operation.
+    if ($entity->access('update') && $entity->hasLinkTemplate('edit-form')) {
+      $operations['edit'] = [
+        'title' => $this->t('Edit'),
+        'weight' => 10,
+        'url' => $this->ensureDestination($entity->toUrl('edit-form')),
+      ];
+    }
+
+    // Delete operation.
+    if ($entity->access('delete') && $entity->hasLinkTemplate('delete-form')) {
+      $operations['delete'] = [
+        'title' => $this->t('Delete'),
+        'weight' => 100,
+        'url' => $this->ensureDestination($entity->toUrl('delete-form')),
+        'attributes' => [
+          'class' => ['button', 'button--danger', 'button--small'],
+        ],
+      ];
+    }
+
+    return $operations;
   }
 
   /**
