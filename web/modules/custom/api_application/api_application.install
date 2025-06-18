@@ -421,7 +421,6 @@ function api_application_update_11005() {
  */
 function api_application_update_11007() {
   $entity_type_manager = \Drupal::entityTypeManager();
-  $entity_type = $entity_type_manager->getDefinition('application');
   $update_manager = \Drupal::entityDefinitionUpdateManager();
 
   // Add rejection_reason field.
