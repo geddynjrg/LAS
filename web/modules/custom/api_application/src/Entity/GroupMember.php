@@ -138,22 +138,37 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    $fields['position'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Position'))
-      ->setDescription(t('The position/role of the member in the group.'))
+    $fields['position'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Position of member'))
+      ->setDescription(t('The position/role of the member in the group. Start typing to search existing positions or create a new one.'))
       ->setRequired(TRUE)
-      ->setSettings([
-        'max_length' => 100,
-        'text_processing' => 0,
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler', 'default:taxonomy_term')
+      ->setSetting('handler_settings', [
+        'target_bundles' => [
+          'position_of_member' => 'position_of_member',
+        ],
+        'sort' => [
+          'field' => 'name',
+          'direction' => 'asc',
+        ],
+        'auto_create' => TRUE,
+        'auto_create_bundle' => 'position_of_member',
       ])
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'string',
+        'type' => 'entity_reference_label',
         'weight' => 4,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
+        'type' => 'entity_reference_autocomplete',
         'weight' => 4,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'autocomplete_type' => 'tags',
+          'placeholder' => 'Type to search existing positions or add new one...',
+        ],
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
@@ -327,7 +342,7 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
    * {@inheritdoc}
    */
   public function getPosition() {
-    return $this->get('position')->value;
+    return $this->get('position')->entity;
   }
 
   /**

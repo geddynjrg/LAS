@@ -91,16 +91,16 @@ interface GroupMemberInterface extends ContentEntityInterface, EntityChangedInte
   /**
    * Gets the position.
    *
-   * @return string
-   *   The position in the group.
+   * @return \Drupal\taxonomy\TermInterface|null
+   *   The position taxonomy term or NULL.
    */
   public function getPosition();
 
   /**
    * Sets the position.
    *
-   * @param string $position
-   *   The position in the group.
+   * @param \Drupal\taxonomy\TermInterface|int|null $position
+   *   The position taxonomy term, term ID, or NULL.
    *
    * @return \Drupal\api_application\Entity\GroupMemberInterface
    *   The called Group Member entity.

@@ -1,0 +1,15 @@
+# AJAX status update route
+api_application.application_status_update:
+  path: '/admin/structure/application/{application}/status-update'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::updateStatus'
+    _title: 'Update Application Status'
+  requirements:
+    _entity_access: 'application.update'
+    application: \d+
+  methods: [POST]
+  options:
+    _admin_route: TRUE
+    parameters:
+      application:
+        type: entity:application

@@ -38,7 +38,7 @@ class GroupMemberListBuilder extends EntityListBuilder {
       'width' => '100px',
     ];
     $header['position'] = [
-      'data' => $this->t('Position'),
+      'data' => $this->t('Position of member'),
       'class' => ['group-member-header-position'],
       'width' => '150px',
     ];
@@ -85,9 +85,10 @@ class GroupMemberListBuilder extends EntityListBuilder {
     ];
 
     $position = $entity->getPosition();
+    $position_name = $position ? $position->getName() : NULL;
     $row['position'] = [
       'data' => [
-        '#markup' => $position ? '<span class="position-badge">' . $position . '</span>' : '<span class="position-badge position-badge--empty">-</span>',
+        '#markup' => $position_name ? '<span class="position-badge">' . $position_name . '</span>' : '<span class="position-badge position-badge--empty">-</span>',
       ],
     ];
 
