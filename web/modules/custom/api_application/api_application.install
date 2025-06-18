@@ -420,7 +420,6 @@ function api_application_update_11005() {
  * Add rejection reason and rejection message fields to Application entity.
  */
 function api_application_update_11007() {
-  $entity_type_manager = \Drupal::entityTypeManager();
   $update_manager = \Drupal::entityDefinitionUpdateManager();
 
   // Add rejection_reason field.
