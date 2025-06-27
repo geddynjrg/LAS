@@ -48,7 +48,7 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
   ];
 
   return (
-    <Authenticated session={session}>
+    <Authenticated session={session ? true : null}>
       <ApplyFormStepper
         steps={steps}
         applicationProgress={
