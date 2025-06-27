@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
+import { Alert } from "@workspace/ui/components/alert";
 import { Container } from "@workspace/ui/components/container";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
@@ -21,7 +22,9 @@ export default function Page() {
       <Container className="max-w-[500px] pt-8">
         <div className="flex flex-col gap-2 pb-4">
           <h2 className="typo-h2">{t("success")}</h2>
-          <p className="typo-body-medium">{t("successDescription")}</p>
+          <p className="typo-body-medium">
+            {state.message || t("successDescription")}
+          </p>
         </div>
 
         <div className="flex gap-2 pt-4">
@@ -43,6 +46,12 @@ export default function Page() {
 
       <div>
         <Form action={formAction} className="space-y-6" autoComplete="on">
+          {state.message && (
+            <Alert variant="error" className="mb-4">
+              {state.message}
+            </Alert>
+          )}
+
           <Field
             state={state}
             name="email"

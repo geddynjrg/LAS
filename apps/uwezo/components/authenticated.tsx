@@ -1,11 +1,10 @@
 "use client";
 
-import type { Session } from "next-auth";
 import { redirect, usePathname } from "next/navigation";
 import type { FC, ReactNode } from "react";
 
 export interface AuthenticatedProps {
-  session: Session | null;
+  session: true | null;
   children?: ReactNode;
 }
 

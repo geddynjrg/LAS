@@ -2,7 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
+import { Alert } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Divider } from "@workspace/ui/components/divider";
@@ -13,10 +16,20 @@ import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { signupAction } from "@/app/(auth)/signup/signup-action";
 import { signupSchema } from "@/app/(auth)/signup/signup-schema";
+import { useSession } from "@/hooks/useSession";
 
 export default function Page() {
   const t = useTranslations("SignUpPage");
+  const router = useRouter();
+  const { setSession } = useSession();
   const [state, formAction, isPending] = useForm(signupAction, signupSchema);
+
+  useEffect(() => {
+    if (state.success) {
+      setSession(true);
+      router.replace("/dashboard");
+    }
+  }, [state.success, router, setSession]);
 
   return (
     <Container className="max-w-[500px] pt-8">
@@ -27,6 +40,12 @@ export default function Page() {
 
       <div>
         <Form action={formAction} className="space-y-6" autoComplete="on">
+          {state.message && (
+            <Alert variant="error" className="mb-4">
+              {state.message}
+            </Alert>
+          )}
+
           <Field
             state={state}
             name="email"

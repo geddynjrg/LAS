@@ -1,7 +1,5 @@
 import "@workspace/ui/globals.css";
 
-import type { Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { DM_Sans } from "next/font/google";
@@ -16,7 +14,9 @@ import { AppFooter } from "@/components/app-footer";
 import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Providers } from "@/components/providers";
+import { SessionProvider } from "@/hooks/useSession";
 import { type Locale } from "@/i18n/config";
+import { getSession } from "@/lib/session";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -25,16 +25,13 @@ const dmSans = DM_Sans({
 
 export interface RootLayoutProps {
   children: ReactNode;
-  session?: Session | null;
 }
 
-export default async function RootLayout({
-  children,
-  session,
-}: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
   const locale = (await getLocale()) as Locale;
   const messages = await getMessages();
   const headersList = await headers();
+  const session = await getSession();
 
   return (
     <html
@@ -44,7 +41,7 @@ export default async function RootLayout({
     >
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
         <NextIntlClientProvider messages={messages}>
-          <SessionProvider session={session}>
+          <SessionProvider initialSession={session ? true : null}>
             <Providers>
               <AppHeader />
               <AppSidebar locale={locale} />

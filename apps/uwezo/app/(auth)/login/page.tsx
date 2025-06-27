@@ -5,14 +5,50 @@ import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Divider } from "@workspace/ui/components/divider";
 import { Underline } from "@workspace/ui/components/underline";
+import type { FormAction } from "@workspace/ui/hooks/use-form";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import { LoginForm } from "@/app/(auth)/login/login-form";
-import { signIn } from "@/lib/auth";
+import { loginSchema, type Login } from "@/app/(auth)/login/login-schema";
+import { login } from "@/lib/api/login";
+import { createSession } from "@/lib/session";
 
-async function signInAction(_prev: unknown, formData: FormData) {
+const loginAction: FormAction<Login> = async (_prev, formData) => {
   "use server";
-  return signIn("credentials", formData);
-}
+  const values = getFormZodDataValues(formData, loginSchema);
+  const { data, success, error } = loginSchema.safeParse(values);
+
+  if (error) {
+    return {
+      success,
+      errors: error.flatten().fieldErrors,
+      values,
+    };
+  }
+
+  try {
+    const res = await login({
+      username: data.email,
+      password: data.password,
+    });
+
+    await createSession({
+      accessToken: res.data.access_token,
+      refreshToken: res.data.refresh_token,
+    });
+  } catch (error) {
+    console.warn("Error during login:", error);
+
+    return {
+      success: false,
+      errors: {},
+      message: error instanceof Error ? error.message : "Unknown error",
+      values,
+    };
+  }
+
+  return { success: true };
+};
 
 export interface LoginPageProps {
   searchParams: Promise<{ callbackUrl?: string }>;
@@ -40,7 +76,7 @@ export default async function Page({ searchParams }: LoginPageProps) {
       </div>
 
       <div>
-        <LoginForm action={signInAction} redirectTo={callbackUrl} />
+        <LoginForm action={loginAction} redirectTo={callbackUrl} />
 
         <div className="flex justify-center gap-2 pt-4">
           <p className="typo-body-medium">{t("doNotHaveAccount")}</p>

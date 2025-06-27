@@ -1,7 +1,6 @@
 "use client";
 
 import { IconUserCircle } from "@tabler/icons-react";
-import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC } from "react";
@@ -14,9 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 
+import { useSession } from "@/hooks/useSession";
+
 export const ProfileMenu: FC = () => {
   const t = useTranslations("Common");
-  const { data: session } = useSession();
+  const { session } = useSession();
 
   if (!session) {
     return null;
@@ -43,8 +44,8 @@ export const ProfileMenu: FC = () => {
             {t("myApplications")}
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => signOut()}>
-          {t("signOut")}
+        <DropdownMenuItem asChild>
+          <Link href="/logout">{t("signOut")}</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
