@@ -10,5 +10,7 @@ export interface CreateLayoutProps {
 export default async function CreateLayout({ children }: CreateLayoutProps) {
   const session = await auth();
 
-  return <Authenticated session={session}>{children}</Authenticated>;
+  return (
+    <Authenticated session={session ? true : null}>{children}</Authenticated>
+  );
 }

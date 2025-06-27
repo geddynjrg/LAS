@@ -12,5 +12,7 @@ export default async function DashboardLayout({
 }: DashboardLayoutProps) {
   const session = await auth();
 
-  return <Authenticated session={session}>{children}</Authenticated>;
+  return (
+    <Authenticated session={session ? true : null}>{children}</Authenticated>
+  );
 }
