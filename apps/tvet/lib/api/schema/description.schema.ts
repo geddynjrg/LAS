@@ -1,9 +1,0 @@
-import { z } from "zod";
-
-export const DescriptionSchema = z.object({
-  value: z.string().nullable(),
-  format: z.string().nullable(),
-  processed: z.string().nullable(),
-});
-
-export type DescriptionType = z.infer<typeof DescriptionSchema>;
