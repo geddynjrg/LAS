@@ -98,12 +98,12 @@ to run a specific app run the following command at the root of the repository:
 pnpm --filter uwezo run start
 ```
 
-## Updating TVET API schema
+## Updating API schema
 
 Whenever Api changes, you should also update the API schema typings
 
 ```bash
-pnpm --filter tvet run schema
+pnpm --filter uwezo run schema
 ```
 
 ### Common issues
