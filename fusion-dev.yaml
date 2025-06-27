@@ -38,12 +38,6 @@ post_deploy:
 # That is because the folder name and thus the prefix is not constant between environments and instances.
 #
 services:
-  civil-registry:
-    port: 8080
-    container: civil-registry-1
-  tvet:
-    port: 8080
-    container: tvet-1
   uwezo:
     port: 8080
     container: uwezo-1

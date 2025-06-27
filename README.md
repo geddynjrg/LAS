@@ -4,9 +4,7 @@ This is a monorepo for the frontend of the Kenya e-services project. It contains
 
 - `packages/ui`: A shared UI component library
 - `apps/docs`: Documentation app (Storybook) for the shared UI component library
-- `apps/civil-registry`: The Civil Registry frontend
 - `apps/uwezo`: The Uwezo Fund digital application form frontend
-- `apps/tvet`: The Nairobi vocational training centres (TVET) common web and digital application frontend
 
 ## Tech stack
 
@@ -91,13 +89,13 @@ pnpm run build
 to build a specific app run the following command at the root of the repository:
 
 ```bash
-pnpm --filter civil-registry run build
+pnpm --filter uwezo run build
 ```
 
 to run a specific app run the following command at the root of the repository:
 
 ```bash
-pnpm --filter civil-registry run start
+pnpm --filter uwezo run start
 ```
 
 ## Updating TVET API schema
@@ -126,5 +124,5 @@ docker-compose -f docker-compose.yml up -d
 Start single app in detached mode
 
 ```bash
-docker-compose -f docker-compose.yml up -d civil-registry
+docker-compose -f docker-compose.yml up -d uwezo
 ```

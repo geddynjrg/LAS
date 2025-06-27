@@ -192,38 +192,6 @@
 }
 
 @layer base {
-  .tvet {
-    --sidebar-inset-max-width: 100%;
-    --app-container-max-width: var(--container-6xl);
-
-    --color-background: var(--color-neutral-100);
-
-    --color-theme-100: hsl(46, 15%, 83%);
-    --color-theme-200: hsl(82, 20%, 62%);
-    --color-theme-500: hsl(131, 22%, 29%);
-    --color-theme-600: hsl(150, 20%, 16%);
-
-    --color-primary: hsl(119, 19%, 42%);
-    --color-primary-hover: hsl(131, 22%, 29%);
-    --color-primary-active: hsl(150, 20%, 16%);
-
-    --color-secondary: hsl(119, 19%, 42%);
-
-    --color-sidebar-accent: var(--color-theme-100);
-
-    --color-accordion: hsl(119, 15%, 84%);
-
-    /* stepper */
-    --color-stepper: hsl(46, 15%, 83%);
-    --color-stepper-foreground: hsl(150, 20%, 16%);
-    --color-stepper-hover: hsl(82, 20%, 62%);
-    --color-stepper-hover-foreground: hsl(150, 20%, 16%);
-    --color-stepper-active: hsl(120, 14%, 54%);
-    --color-stepper-active-foreground: hsl(0, 0%, 100%);
-    --color-stepper-focus: hsl(46, 15%, 83%);
-    --color-stepper-focus-foreground: hsl(150, 20%, 16%);
-  }
-
   .uwezo {
     --sidebar-inset-max-width: 100%;
     --app-container-max-width: 1024px;
@@ -245,33 +213,6 @@
     --color-stepper-active-foreground: hsl(0, 0%, 100%);
     --color-stepper-focus: hsl(310, 51%, 89%);
     --color-stepper-focus-foreground: hsl(309, 64%, 17%);
-  }
-
-  .civil-registry {
-    --sidebar-inset-max-width: 100%;
-    --app-container-max-width: 960px;
-
-    --color-primary: hsl(142, 78%, 31%);
-    --color-primary-hover: hsl(143, 78%, 19%);
-    --color-primary-active: hsl(143, 79%, 11%);
-
-    --color-secondary: hsl(143, 49%, 75%);
-
-    --color-accordion: hsl(142, 63%, 62%);
-
-    /* stepper */
-    --color-stepper: hsl(180, 16%, 92%);
-    --color-stepper-primary: hsl(183, 95%, 15%);
-    --color-stepper-foreground: hsl(184, 94%, 6%);
-    --color-stepper-hover: hsl(183, 17%, 75%);
-    --color-stepper-hover-foreground: hsl(184, 94%, 6%);
-    --color-stepper-active: hsl(183, 17%, 49%);
-    --color-stepper-active-foreground: hsl(0, 0%, 100%);
-    --color-stepper-focus: hsl(180, 16%, 93%);
-    --color-stepper-focus-foreground: hsl(184, 94%, 6%);
-
-    /* Radio Group */
-    --color-radio-secondary: hsl(309, 64%, 17%);
   }
 }
 

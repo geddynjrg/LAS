@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 
-import { SectionWrap } from "@workspace/ui/components/civil-registry/section-wrap";
+import { SectionWrap } from "@workspace/ui/components/section-wrap";
 import { cn } from "@workspace/ui/lib/utils";
 
 export interface ActionBarProps {
