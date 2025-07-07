@@ -1,4 +1,4 @@
 default:
-  subject: 'Status Update: [target_entity:label]'
-  body: "Dear User,\r\n\r\nWe would like to inform you that there has been a status update.\r\n\r\nDetails:\r\n- Reference: [target_entity:label]\r\n- Previous Status: [status_change:old-status:human]\r\n- New Status: [status_change:new-status:human]\r\n- Date: [status_change:created]\r\n\r\nIf you have any questions or require further assistance, please do not hesitate to contact us.\r\n\r\nBest regards,\r\n[site:name]"
-  format: html
+  subject: 'Your Application Status Update: [target_entity:application_id]'
+  body: '<p>Dear User,</p><p>We would like to inform you that there has been a <strong>status update</strong>.</p><p><strong>Details:</strong><br>- Reference: [target_entity:label]<br>- Previous Status: [status_change:old-status:human]<br>- New Status: <em>[status_change:new-status:human]</em><br>- Date: [status_change:created]</p><p>If you have any questions, please contact us.</p><p>Best regards,<br>[site:name]</p>'
+  format: full_html
