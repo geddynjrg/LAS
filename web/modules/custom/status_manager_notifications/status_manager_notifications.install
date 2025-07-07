@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Status Manager Notifications module.
+ * Install, update functions for the Status Manager Notifications module.
  */
 
 use Drupal\Core\Url;
@@ -116,7 +116,7 @@ function _status_manager_notifications_configure_status_tracking() {
 
   $config = \Drupal::configFactory()->getEditable('status_manager.settings');
 
-  // Enable auto tracking
+  // Enable auto tracking.
   $config->set('general.auto_tracking_enabled', TRUE);
   $config->set('general.tracking_mode', 'both');
   $config->set('general.default_notification_type', 'email');
@@ -149,8 +149,6 @@ function _status_manager_notifications_configure_status_tracking() {
  * Clean up notification templates.
  */
 function _status_manager_notifications_cleanup_templates() {
-  $database = \Drupal::database();
-
   // We're using config, so this would clean up config entries.
   $config_factory = \Drupal::configFactory();
   $config_names = $config_factory->listAll('status_manager_notifications.template.');
