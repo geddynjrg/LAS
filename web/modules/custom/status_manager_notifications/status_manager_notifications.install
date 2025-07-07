@@ -1,0 +1,178 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Status Manager Notifications module.
+ */
+
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_install().
+ */
+function status_manager_notifications_install() {
+  // Install default notification templates.
+  _status_manager_notifications_install_default_templates();
+  
+  // Configure default email provider to be enabled.
+  _status_manager_notifications_configure_default_providers();
+  
+  // Configure status_manager to track application status changes.
+  _status_manager_notifications_configure_status_tracking();
+
+  \Drupal::messenger()->addMessage(t('Status Manager Notifications has been installed. Default email and SMS templates have been created. Application status tracking is enabled with email notifications. You can manage settings at <a href="@settings_url">Notification Settings</a>.', [
+    '@settings_url' => Url::fromRoute('status_manager_notifications.settings')->toString(),
+  ]));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function status_manager_notifications_uninstall() {
+  // Clean up notification templates.
+  _status_manager_notifications_cleanup_templates();
+  
+  \Drupal::messenger()->addMessage(t('Status Manager Notifications has been uninstalled and all configuration has been removed.'));
+}
+
+/**
+ * Install default notification templates.
+ */
+function _status_manager_notifications_install_default_templates() {
+  /** @var \Drupal\status_manager_notifications\Service\TemplateManager $template_manager */
+  $template_manager = \Drupal::service('status_manager_notifications.template_manager');
+  
+  // Install only default professional templates
+  
+  // Default email template - professional and generic
+  $template_manager->saveTemplate('email', 'default', [
+    'subject' => t('Status Update: [target_entity:label]'),
+    'body' => t("Dear User,\n\nWe would like to inform you that there has been a status update.\n\nDetails:\n- Reference: [target_entity:label]\n- Previous Status: [status_change:old-status:human]\n- New Status: [status_change:new-status:human]\n- Date: [status_change:created]\n\nIf you have any questions or require further assistance, please do not hesitate to contact us.\n\nBest regards,\n[site:name]"),
+    'format' => 'plain_text',
+  ]);
+  
+  // Default SMS template - concise and professional
+  $template_manager->saveTemplate('sms', 'default', [
+    'message' => t('Status Update: [target_entity:label] changed to [status_change:new-status:human]. [site:name]'),
+  ]);
+}
+
+/**
+ * Configure default notification providers.
+ */
+function _status_manager_notifications_configure_default_providers() {
+  $config = \Drupal::configFactory()->getEditable('status_manager_notifications.settings');
+  
+  // Set the default email provider as active
+  $config->set('email.active_provider', 'default_email');
+  $config->set('sms.active_provider', ''); // No SMS provider by default
+  
+  // Configure provider settings - note the correct path structure
+  $config->set('email.providers.default_email', [
+    'enabled' => TRUE,
+    'from_name' => \Drupal::config('system.site')->get('name'),
+    'from_email' => \Drupal::config('system.site')->get('mail'),
+    'reply_to' => \Drupal::config('system.site')->get('mail'),
+    'use_html' => TRUE,
+  ]);
+  
+  // Configure other providers as disabled
+  $config->set('email.providers.sendgrid_email', [
+    'enabled' => FALSE,
+  ]);
+  
+  $config->set('sms.providers.twilio_sms', [
+    'enabled' => FALSE,
+  ]);
+  
+  $config->set('sms.providers.africas_talking_sms', [
+    'enabled' => FALSE,
+  ]);
+  
+  $config->save();
+}
+
+/**
+ * Configure status_manager to track application status changes.
+ */
+function _status_manager_notifications_configure_status_tracking() {
+  // Only configure if status_manager module exists
+  if (!\Drupal::moduleHandler()->moduleExists('status_manager')) {
+    return;
+  }
+  
+  $config = \Drupal::configFactory()->getEditable('status_manager.settings');
+  
+  // Enable auto tracking
+  $config->set('general.auto_tracking_enabled', TRUE);
+  $config->set('general.tracking_mode', 'both'); // Use both configured and automatic detection
+  $config->set('general.default_notification_type', 'email');
+  
+  // Configure application entity mapping
+  $config->set('entity_mappings.application', [
+    'enabled' => TRUE,
+    'tracked_fields' => ['status'],
+    'notification_type' => 'email',
+  ]);
+  
+  // Also configure node and user tracking with notifications disabled by default
+  $config->set('entity_mappings.node', [
+    'enabled' => TRUE,
+    'tracked_fields' => ['status', 'moderation_state'],
+    'notification_type' => 'none',
+  ]);
+  
+  $config->set('entity_mappings.user', [
+    'enabled' => TRUE,
+    'tracked_fields' => ['status'],
+    'notification_type' => 'none',
+  ]);
+  
+  $config->save();
+}
+
+/**
+ * Clean up notification templates.
+ */
+function _status_manager_notifications_cleanup_templates() {
+  $database = \Drupal::database();
+  
+  // Delete all templates (if we had a dedicated table)
+  // For now, we're using config, so this would clean up config entries
+  $config_factory = \Drupal::configFactory();
+  $config_names = $config_factory->listAll('status_manager_notifications.template.');
+  
+  foreach ($config_names as $config_name) {
+    $config_factory->getEditable($config_name)->delete();
+  }
+}
+
+/**
+ * Simplify templates and fix provider configuration.
+ */
+function status_manager_notifications_update_11001() {
+  // Clear existing templates
+  $config_factory = \Drupal::configFactory();
+  $template_configs = $config_factory->listAll('status_manager_notifications.email_templates');
+  foreach ($template_configs as $config_name) {
+    $config_factory->getEditable($config_name)->delete();
+  }
+  
+  $template_configs = $config_factory->listAll('status_manager_notifications.sms_templates');
+  foreach ($template_configs as $config_name) {
+    $config_factory->getEditable($config_name)->delete();
+  }
+  
+  // Install new simplified templates
+  _status_manager_notifications_install_default_templates();
+  
+  // Fix provider configuration
+  _status_manager_notifications_configure_default_providers();
+  
+  // Ensure status_manager integration is active
+  _status_manager_notifications_configure_status_tracking();
+  
+  return t('Simplified notification templates and fixed provider configuration.');
+} 
