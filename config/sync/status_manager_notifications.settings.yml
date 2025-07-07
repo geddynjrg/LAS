@@ -1,0 +1,18 @@
+email:
+  active_provider: default_email
+  providers:
+    default_email:
+      enabled: true
+      from_name: Uwezo
+      from_email: uwezo@adm.ee
+      reply_to: uwezo@adm.ee
+      use_html: true
+    sendgrid_email:
+      enabled: false
+sms:
+  active_provider: ''
+  providers:
+    twilio_sms:
+      enabled: false
+    africas_talking_sms:
+      enabled: false

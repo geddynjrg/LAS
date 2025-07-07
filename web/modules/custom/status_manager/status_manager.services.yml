@@ -1,4 +1,4 @@
 services:
   status_manager.status_tracker:
     class: Drupal\status_manager\Service\StatusTracker
-    arguments: ['@entity_type.manager', '@current_user', '@config.factory', '@logger.factory']
+    arguments: ['@entity_type.manager', '@current_user', '@config.factory', '@logger.factory', '@module_handler', '@?status_manager_notifications.notification_manager']

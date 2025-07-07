@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Service for tracking status changes on any entity type.
@@ -42,6 +43,20 @@ class StatusTracker {
   protected $logger;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * The notification manager.
+   *
+   * @var \Drupal\status_manager_notifications\Service\NotificationManager|null
+   */
+  protected $notificationManager;
+
+  /**
    * Constructs a new StatusTracker.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -52,17 +67,25 @@ class StatusTracker {
    *   The config factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\status_manager_notifications\Service\NotificationManager|null $notification_manager
+   *   The notification manager (optional).
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     AccountProxyInterface $current_user,
     ConfigFactoryInterface $config_factory,
     LoggerChannelFactoryInterface $logger_factory,
+    ModuleHandlerInterface $module_handler,
+    $notification_manager = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
     $this->configFactory = $config_factory;
     $this->logger = $logger_factory->get('status_manager');
+    $this->moduleHandler = $module_handler;
+    $this->notificationManager = $notification_manager;
   }
 
   /**
@@ -341,12 +364,10 @@ class StatusTracker {
    *   The status change entity.
    */
   protected function triggerNotifications($status_change) {
-    // @phpcs:disable
-    // Check if the notification submodule is available.
-    if (\Drupal::moduleHandler()->moduleExists('status_manager_notifications')) {
+    // Check if the notification submodule is available and we have the manager.
+    if ($this->moduleHandler->moduleExists('status_manager_notifications') && $this->notificationManager) {
       try {
-        $notification_manager = \Drupal::service('status_manager_notifications.notification_manager');
-        $notification_manager->sendNotifications($status_change);
+        $this->notificationManager->sendNotifications($status_change);
       }
       catch (\Exception $e) {
         $this->logger->error('Failed to send notifications via notification manager: @error', [
@@ -356,9 +377,8 @@ class StatusTracker {
     }
     else {
       // Fallback to hook system for custom implementations.
-      \Drupal::moduleHandler()->invokeAll('status_manager_notification', [$status_change]);
+      $this->moduleHandler->invokeAll('status_manager_notification', [$status_change]);
     }
-    // @phpcs:enable
   }
 
 }
