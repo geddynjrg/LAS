@@ -38,17 +38,26 @@ function status_manager_notifications_mail($key, &$message, $params) {
       // same way.
       $message['subject'] = $params['subject'] ?? t('Notification from @site', ['@site' => \Drupal::config('system.site')->get('name')]);
 
-      // Ensure body is set.
+      // Check if this should be HTML format.
+      $is_html = !empty($params['format']) && ($params['format'] === 'text/html' || $params['format'] === 'html' || $params['format'] === 'full_html');
+
+      // Always set the body first.
       if (!empty($params['body'])) {
-        $message['body'][] = $params['body'];
+        $message['body'] = [$params['body']];
       }
       else {
-        $message['body'][] = t('No message content provided.');
+        $message['body'] = [t('No message content provided.')];
       }
 
       // Set format if HTML.
-      if (!empty($params['format']) && ($params['format'] === 'text/html' || $params['format'] === 'html')) {
-        $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+      if ($is_html) {
+        // Force HTML headers.
+        $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+        $message['headers']['MIME-Version'] = '1.0';
+        $message['headers']['Content-Transfer-Encoding'] = '8bit';
+
+        // Also set the message format for Drupal's mail system.
+        $message['params']['format'] = 'text/html';
       }
 
       // Add other headers if provided.

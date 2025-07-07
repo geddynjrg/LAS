@@ -71,7 +71,7 @@ class DefaultEmailProvider extends EmailProviderBase {
     $params = [
       'subject' => $subject,
       'body' => $body,
-      'format' => $this->configuration['use_html'] ? 'text/html' : 'text/plain',
+      'format' => $template['format'] ?? ($this->configuration['use_html'] ? 'full_html' : 'text/plain'),
       'headers' => [],
     ];
 
@@ -125,7 +125,7 @@ class DefaultEmailProvider extends EmailProviderBase {
     $params = [
       'subject' => $subject,
       'body' => $message,
-      'format' => $this->configuration['use_html'] ? 'text/html' : 'text/plain',
+      'format' => $options['format'] ?? ($this->configuration['use_html'] ? 'full_html' : 'text/plain'),
       'headers' => [],
     ];
 

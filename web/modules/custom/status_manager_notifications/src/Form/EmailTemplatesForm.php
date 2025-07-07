@@ -189,28 +189,33 @@ class EmailTemplatesForm extends FormBase {
     ];
 
     $form['template_form']['body'] = [
-      '#type' => 'textarea',
+      '#type' => 'text_format',
       '#title' => $this->t('Body'),
-      '#description' => $this->t('Email body content. You can use tokens.'),
+      '#description' => $this->t('Email body content. You can use the rich text editor to format your content and insert tokens. The editor supports HTML formatting, links, lists, and more.'),
       '#required' => TRUE,
-      '#default_value' => $template['body'] ?? '',
-      '#rows' => 15,
-    ];
+      '#default_value' => $template['body'] ?? $this->t('<p>Dear User,</p>
 
-    $form['template_form']['format'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Format'),
-      '#options' => [
-        'plain_text' => $this->t('Plain Text'),
-        'html' => $this->t('HTML'),
-      ],
-      '#default_value' => $template['format'] ?? 'plain_text',
+<p>We would like to inform you that there has been a <strong>status update</strong>.</p>
+
+<p><strong>Details:</strong><br />
+- Reference: [target_entity:label]<br />
+- Previous Status: [status_change:old-status:human]<br />
+- New Status: <em>[status_change:new-status:human]</em><br />
+- Date: [status_change:created]</p>
+
+<p>If you have any questions, please contact us.</p>
+
+<p>Best regards,<br />
+[site:name]</p>'),
+      '#format' => $template['format'] ?? 'full_html',
+      '#rows' => 15,
     ];
 
     // Token help.
     $form['template_form']['token_help'] = [
       '#type' => 'details',
       '#title' => $this->t('Available Tokens'),
+      '#description' => $this->t('<strong>How to use tokens:</strong> You can copy and paste these tokens directly into the rich text editor above. Tokens will be replaced with actual values when the email is sent. For example, <code>[target_entity:label]</code> will be replaced with the actual name/title of the item.'),
       '#open' => FALSE,
     ];
 
@@ -260,7 +265,8 @@ class EmailTemplatesForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $template_id = $form_state->getValue('template_id');
     $subject = $form_state->getValue('subject');
-    $body = $form_state->getValue('body');
+    $body_field = $form_state->getValue('body');
+    $body = is_array($body_field) ? $body_field['value'] : $body_field;
 
     // Validate template ID format.
     if (!preg_match('/^[a-z0-9_\.]+$/', $template_id)) {
@@ -283,10 +289,12 @@ class EmailTemplatesForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $template_id = $form_state->getValue('template_id');
+    $body_field = $form_state->getValue('body');
+
     $template_data = [
       'subject' => $form_state->getValue('subject'),
-      'body' => $form_state->getValue('body'),
-      'format' => $form_state->getValue('format'),
+      'body' => is_array($body_field) ? $body_field['value'] : $body_field,
+      'format' => is_array($body_field) ? $body_field['format'] : $form_state->getValue('format'),
     ];
 
     $this->templateManager->saveTemplate('email', $template_id, $template_data);

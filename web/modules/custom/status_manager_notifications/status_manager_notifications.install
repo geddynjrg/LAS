@@ -5,8 +5,6 @@
  * Install, update and uninstall functions for the Status Manager Notifications module.
  */
 
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-
 use Drupal\Core\Url;
 
 /**
@@ -15,10 +13,10 @@ use Drupal\Core\Url;
 function status_manager_notifications_install() {
   // Install default notification templates.
   _status_manager_notifications_install_default_templates();
-  
+
   // Configure default email provider to be enabled.
   _status_manager_notifications_configure_default_providers();
-  
+
   // Configure status_manager to track application status changes.
   _status_manager_notifications_configure_status_tracking();
 
@@ -33,7 +31,7 @@ function status_manager_notifications_install() {
 function status_manager_notifications_uninstall() {
   // Clean up notification templates.
   _status_manager_notifications_cleanup_templates();
-  
+
   \Drupal::messenger()->addMessage(t('Status Manager Notifications has been uninstalled and all configuration has been removed.'));
 }
 
@@ -43,17 +41,30 @@ function status_manager_notifications_uninstall() {
 function _status_manager_notifications_install_default_templates() {
   /** @var \Drupal\status_manager_notifications\Service\TemplateManager $template_manager */
   $template_manager = \Drupal::service('status_manager_notifications.template_manager');
-  
-  // Install only default professional templates
-  
-  // Default email template - professional and generic
+
+  // Default email template - professional and generic with HTML.
   $template_manager->saveTemplate('email', 'default', [
     'subject' => t('Status Update: [target_entity:label]'),
-    'body' => t("Dear User,\n\nWe would like to inform you that there has been a status update.\n\nDetails:\n- Reference: [target_entity:label]\n- Previous Status: [status_change:old-status:human]\n- New Status: [status_change:new-status:human]\n- Date: [status_change:created]\n\nIf you have any questions or require further assistance, please do not hesitate to contact us.\n\nBest regards,\n[site:name]"),
-    'format' => 'plain_text',
+    'body' => t('<p>Dear User,</p>
+
+<p>We would like to inform you that there has been a <strong>status update</strong>.</p>
+
+<p><strong>Details:</strong></p>
+<ul>
+<li>Reference: [target_entity:label]</li>
+<li>Previous Status: [status_change:old-status:human]</li>
+<li>New Status: <em>[status_change:new-status:human]</em></li>
+<li>Date: [status_change:created]</li>
+</ul>
+
+<p>If you have any questions or require further assistance, please do not hesitate to contact us.</p>
+
+<p>Best regards,<br />
+[site:name]</p>'),
+    'format' => 'full_html',
   ]);
-  
-  // Default SMS template - concise and professional
+
+  // Default SMS template - concise and professional.
   $template_manager->saveTemplate('sms', 'default', [
     'message' => t('Status Update: [target_entity:label] changed to [status_change:new-status:human]. [site:name]'),
   ]);
@@ -64,12 +75,12 @@ function _status_manager_notifications_install_default_templates() {
  */
 function _status_manager_notifications_configure_default_providers() {
   $config = \Drupal::configFactory()->getEditable('status_manager_notifications.settings');
-  
-  // Set the default email provider as active
+
+  // Set the default email provider as active.
   $config->set('email.active_provider', 'default_email');
-  $config->set('sms.active_provider', ''); // No SMS provider by default
-  
-  // Configure provider settings - note the correct path structure
+  $config->set('sms.active_provider', '');
+
+  // Configure provider settings - note the correct path structure.
   $config->set('email.providers.default_email', [
     'enabled' => TRUE,
     'from_name' => \Drupal::config('system.site')->get('name'),
@@ -77,20 +88,20 @@ function _status_manager_notifications_configure_default_providers() {
     'reply_to' => \Drupal::config('system.site')->get('mail'),
     'use_html' => TRUE,
   ]);
-  
-  // Configure other providers as disabled
+
+  // Configure other providers as disabled.
   $config->set('email.providers.sendgrid_email', [
     'enabled' => FALSE,
   ]);
-  
+
   $config->set('sms.providers.twilio_sms', [
     'enabled' => FALSE,
   ]);
-  
+
   $config->set('sms.providers.africas_talking_sms', [
     'enabled' => FALSE,
   ]);
-  
+
   $config->save();
 }
 
@@ -98,38 +109,39 @@ function _status_manager_notifications_configure_default_providers() {
  * Configure status_manager to track application status changes.
  */
 function _status_manager_notifications_configure_status_tracking() {
-  // Only configure if status_manager module exists
+  // Only configure if status_manager module exists.
   if (!\Drupal::moduleHandler()->moduleExists('status_manager')) {
     return;
   }
-  
+
   $config = \Drupal::configFactory()->getEditable('status_manager.settings');
-  
+
   // Enable auto tracking
   $config->set('general.auto_tracking_enabled', TRUE);
-  $config->set('general.tracking_mode', 'both'); // Use both configured and automatic detection
+  $config->set('general.tracking_mode', 'both');
   $config->set('general.default_notification_type', 'email');
-  
-  // Configure application entity mapping
+
+  // Configure application entity mapping.
   $config->set('entity_mappings.application', [
     'enabled' => TRUE,
     'tracked_fields' => ['status'],
     'notification_type' => 'email',
   ]);
-  
-  // Also configure node and user tracking with notifications disabled by default
+
+  // Also configure node and user tracking with notifications disabled by
+  // default.
   $config->set('entity_mappings.node', [
     'enabled' => TRUE,
     'tracked_fields' => ['status', 'moderation_state'],
     'notification_type' => 'none',
   ]);
-  
+
   $config->set('entity_mappings.user', [
     'enabled' => TRUE,
     'tracked_fields' => ['status'],
     'notification_type' => 'none',
   ]);
-  
+
   $config->save();
 }
 
@@ -138,12 +150,11 @@ function _status_manager_notifications_configure_status_tracking() {
  */
 function _status_manager_notifications_cleanup_templates() {
   $database = \Drupal::database();
-  
-  // Delete all templates (if we had a dedicated table)
-  // For now, we're using config, so this would clean up config entries
+
+  // We're using config, so this would clean up config entries.
   $config_factory = \Drupal::configFactory();
   $config_names = $config_factory->listAll('status_manager_notifications.template.');
-  
+
   foreach ($config_names as $config_name) {
     $config_factory->getEditable($config_name)->delete();
   }
@@ -153,26 +164,118 @@ function _status_manager_notifications_cleanup_templates() {
  * Simplify templates and fix provider configuration.
  */
 function status_manager_notifications_update_11001() {
-  // Clear existing templates
+  // Clear existing templates.
   $config_factory = \Drupal::configFactory();
   $template_configs = $config_factory->listAll('status_manager_notifications.email_templates');
   foreach ($template_configs as $config_name) {
     $config_factory->getEditable($config_name)->delete();
   }
-  
+
   $template_configs = $config_factory->listAll('status_manager_notifications.sms_templates');
   foreach ($template_configs as $config_name) {
     $config_factory->getEditable($config_name)->delete();
   }
-  
-  // Install new simplified templates
+
+  // Install new simplified templates.
   _status_manager_notifications_install_default_templates();
-  
-  // Fix provider configuration
+
+  // Fix provider configuration.
   _status_manager_notifications_configure_default_providers();
-  
-  // Ensure status_manager integration is active
+
+  // Ensure status_manager integration is active.
   _status_manager_notifications_configure_status_tracking();
-  
+
   return t('Simplified notification templates and fixed provider configuration.');
-} 
+}
+
+/**
+ * Fix HTML email formatting and update templates.
+ */
+function status_manager_notifications_update_11002() {
+  // Update existing default template to use HTML format.
+  /** @var \Drupal\status_manager_notifications\Service\TemplateManager $template_manager */
+  $template_manager = \Drupal::service('status_manager_notifications.template_manager');
+
+  // Load existing default template.
+  $existing_template = $template_manager->loadTemplate('email', 'default');
+  if ($existing_template) {
+    // Update format to HTML.
+    $existing_template['format'] = 'text/html';
+    $template_manager->saveTemplate('email', 'default', $existing_template);
+  }
+
+  return t('Updated email templates to use HTML formatting.');
+}
+
+/**
+ * Update template with proper HTML structure and improve email formatting.
+ */
+function status_manager_notifications_update_11003() {
+  /** @var \Drupal\status_manager_notifications\Service\TemplateManager $template_manager */
+  $template_manager = \Drupal::service('status_manager_notifications.template_manager');
+
+  // Update the default email template with proper HTML.
+  $template_manager->saveTemplate('email', 'default', [
+    'subject' => t('Status Update: [target_entity:label]'),
+    'body' => t('<p>Dear User,</p>
+
+<p>We would like to inform you that there has been a <strong>status update</strong>.</p>
+
+<p><strong>Details:</strong></p>
+<ul>
+<li>Reference: [target_entity:label]</li>
+<li>Previous Status: [status_change:old-status:human]</li>
+<li>New Status: <em>[status_change:new-status:human]</em></li>
+<li>Date: [status_change:created]</li>
+</ul>
+
+<p>If you have any questions or require further assistance, please do not hesitate to contact us.</p>
+
+<p>Best regards,<br />
+[site:name]</p>'),
+    'format' => 'full_html',
+  ]);
+
+  return t('Updated default email template with proper HTML structure and improved formatting.');
+}
+
+/**
+ * Enable CKEditor for email templates and update default template format.
+ */
+function status_manager_notifications_update_11004() {
+  /** @var \Drupal\status_manager_notifications\Service\TemplateManager $template_manager */
+  $template_manager = \Drupal::service('status_manager_notifications.template_manager');
+
+  // Update all existing email templates to use full_html format.
+  $templates = $template_manager->getTemplates('email');
+  foreach ($templates as $template_id => $template) {
+    if (isset($template['format']) && $template['format'] === 'text/html') {
+      $template['format'] = 'full_html';
+      $template_manager->saveTemplate('email', $template_id, $template);
+    }
+  }
+
+  // Update the default template with improved HTML and list formatting.
+  $template_manager->saveTemplate('email', 'default', [
+    'subject' => t('Status Update: [target_entity:label]'),
+    'body' => t('<p>Dear User,</p>
+
+<p>We would like to inform you that there has been a <strong>status update</strong>.</p>
+
+<p><strong>Details:</strong></p>
+<ul>
+<li>Reference: [target_entity:label]</li>
+<li>Previous Status: [status_change:old-status:human]</li>
+<li>New Status: <em>[status_change:new-status:human]</em></li>
+<li>Date: [status_change:created]</li>
+</ul>
+
+<p>If you have any questions or require further assistance, please do not hesitate to contact us.</p>
+
+<p>Best regards,<br />
+[site:name]</p>'),
+    'format' => 'full_html',
+  ]);
+
+  return t('Enabled CKEditor for email templates and updated formatting to use lists and full_html format.');
+}
