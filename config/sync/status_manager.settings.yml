@@ -3,7 +3,7 @@ _core:
 general:
   auto_tracking_enabled: true
   tracking_mode: configured
-  default_notification_type: none
+  default_notification_type: email
   history_limit: 50
   cleanup_enabled: true
   cleanup_days: 365
@@ -13,6 +13,8 @@ entity_mappings:
     tracked_fields:
       status: status
       uid: 0
+      rejection_reason: 0
+      application_id: 0
       group_name: 0
       group_registration_number: 0
       group_background: 0
@@ -35,7 +37,7 @@ entity_mappings:
       nature_of_business: 0
       business_type: 0
       revision_default: 0
-    notification_type: none
+    notification_type: email
   group_member:
     enabled: 0
     tracked_fields:
@@ -110,11 +112,11 @@ entity_mappings:
       revision_translation_affected: 0
     notification_type: none
   node:
-    enabled: 0
+    enabled: 1
     tracked_fields:
+      status: status
       type: 0
       revision_uid: 0
-      status: 0
       uid: 0
       title: 0
       promote: 0
@@ -184,13 +186,15 @@ entity_mappings:
       default_langcode: 0
       revision_default: 0
       revision_translation_affected: 0
+      content_translation_outdated: 0
+      content_translation_uid: 0
     notification_type: none
   user:
     enabled: 0
     tracked_fields:
+      status: status
       name: 0
       timezone: 0
-      status: 0
       roles: 0
       default_langcode: 0
     notification_type: none

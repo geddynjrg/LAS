@@ -1,0 +1,4 @@
+default:
+  subject: 'Status Update: [target_entity:label]'
+  body: "Dear User,\r\n\r\nWe would like to inform you that there has been a status update.\r\n\r\nDetails:\r\n- Reference: [target_entity:label]\r\n- Previous Status: [status_change:old-status:human]\r\n- New Status: [status_change:new-status:human]\r\n- Date: [status_change:created]\r\n\r\nIf you have any questions or require further assistance, please do not hesitate to contact us.\r\n\r\nBest regards,\r\n[site:name]"
+  format: html
