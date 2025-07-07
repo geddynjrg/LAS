@@ -38,11 +38,11 @@ class EmailNotificationService implements NotificationInterface {
   protected $logger;
 
   /**
-   * The email template service.
+   * The template manager service.
    *
-   * @var \Drupal\status_manager_notifications\Service\EmailTemplateService
+   * @var \Drupal\status_manager_notifications\Service\TemplateManager
    */
-  protected $templateService;
+  protected $templateManager;
 
   /**
    * The token replacement service.
@@ -60,8 +60,8 @@ class EmailNotificationService implements NotificationInterface {
    *   The mail manager.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory service.
-   * @param \Drupal\status_manager_notifications\Service\EmailTemplateService $template_service
-   *   The email template service.
+   * @param \Drupal\status_manager_notifications\Service\TemplateManager $template_manager
+   *   The template manager service.
    * @param \Drupal\status_manager_notifications\Service\TokenReplacementService $token_service
    *   The token replacement service.
    */
@@ -69,13 +69,13 @@ class EmailNotificationService implements NotificationInterface {
     ConfigFactoryInterface $config_factory,
     MailManagerInterface $mail_manager,
     LoggerChannelFactoryInterface $logger_factory,
-    EmailTemplateService $template_service,
+    TemplateManager $template_manager,
     TokenReplacementService $token_service,
   ) {
     $this->configFactory = $config_factory;
     $this->mailManager = $mail_manager;
     $this->logger = $logger_factory->get('status_manager_notifications');
-    $this->templateService = $template_service;
+    $this->templateManager = $template_manager;
     $this->tokenService = $token_service;
   }
 
@@ -102,7 +102,7 @@ class EmailNotificationService implements NotificationInterface {
     }
 
     // Get email template.
-    $template = $this->templateService->getTemplate($status_change);
+    $template = $this->templateManager->getTemplate('email', $status_change);
     if (!$template) {
       return [
         'success' => FALSE,
@@ -120,6 +120,7 @@ class EmailNotificationService implements NotificationInterface {
       'body' => $body,
       'status_change' => $status_change,
       'template' => $template,
+      'format' => $template['format'] ?? 'plain_text',
     ];
 
     // @phpcs:disable

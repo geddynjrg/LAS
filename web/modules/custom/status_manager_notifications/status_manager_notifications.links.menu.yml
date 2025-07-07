@@ -1,0 +1,27 @@
+status_manager_notifications.settings:
+  title: 'Notifications'
+  description: 'Configure notification providers and templates'
+  route_name: status_manager_notifications.settings
+  parent: status_manager.settings
+  weight: 10
+
+status_manager_notifications.providers:
+  title: 'Providers'
+  description: 'Configure email and SMS notification providers'
+  route_name: status_manager_notifications.providers
+  parent: status_manager_notifications.settings
+  weight: 0
+
+status_manager_notifications.email_templates:
+  title: 'Email Templates'
+  description: 'Manage email notification templates'
+  route_name: status_manager_notifications.email_templates
+  parent: status_manager_notifications.settings
+  weight: 10
+
+status_manager_notifications.sms_templates:
+  title: 'SMS Templates'
+  description: 'Manage SMS notification templates'
+  route_name: status_manager_notifications.sms_templates
+  parent: status_manager_notifications.settings
+  weight: 20 
