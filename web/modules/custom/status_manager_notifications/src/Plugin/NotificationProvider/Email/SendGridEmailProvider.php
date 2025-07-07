@@ -50,7 +50,9 @@ class SendGridEmailProvider extends EmailProviderBase {
    * {@inheritdoc}
    */
   public function isConfigured() {
-    return !empty($this->configuration['enabled']) && !empty($this->configuration['api_key']);
+    return !empty($this->configuration['enabled']) &&
+           !empty($this->configuration['api_key']) &&
+           !empty($this->configuration['from_email']);
   }
 
   /**

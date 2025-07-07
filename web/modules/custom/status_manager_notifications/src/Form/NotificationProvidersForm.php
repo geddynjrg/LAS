@@ -137,6 +137,10 @@ class NotificationProvidersForm extends ConfigFormBase {
             '#value' => $this->t('Send Test Email'),
             '#name' => "test_email_{$id}",
             '#submit' => ['::sendTestEmail'],
+            '#limit_validation_errors' => [
+              ['email', 'providers', $id, 'config'],
+              ['email', 'providers', $id, 'test', 'test_email'],
+            ],
             '#ajax' => [
               'callback' => '::testEmailCallback',
               'wrapper' => "test-result-{$id}",
@@ -232,6 +236,10 @@ class NotificationProvidersForm extends ConfigFormBase {
             '#value' => $this->t('Send Test SMS'),
             '#name' => "test_sms_{$id}",
             '#submit' => ['::sendTestSms'],
+            '#limit_validation_errors' => [
+              ['sms', 'providers', $id, 'config'],
+              ['sms', 'providers', $id, 'test', 'test_phone'],
+            ],
             '#ajax' => [
               'callback' => '::testSmsCallback',
               'wrapper' => "test-sms-result-{$id}",
@@ -259,6 +267,12 @@ class NotificationProvidersForm extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
+
+    // Skip validation if this is a test submission.
+    $triggering_element = $form_state->getTriggeringElement();
+    if ($triggering_element && (strpos($triggering_element['#name'], 'test_email_') === 0 || strpos($triggering_element['#name'], 'test_sms_') === 0)) {
+      return;
+    }
 
     // Validate email provider configurations.
     $email_provider = $form_state->getValue(['email', 'active_provider']);
@@ -358,9 +372,21 @@ class NotificationProvidersForm extends ConfigFormBase {
     $test_email = $form_state->getValue(['email', 'providers', $provider_id, 'test', 'test_email']);
     $config = $form_state->getValue(['email', 'providers', $provider_id, 'config']) ?: [];
 
+    // Add enabled flag for testing.
+    $config['enabled'] = TRUE;
+
     if ($test_email) {
       try {
+        // Create provider with current form configuration.
         $provider = $this->providerManager->createInstance($provider_id, $config);
+        $provider->setConfiguration($config);
+
+        // Check if provider is properly configured.
+        if (!$provider->isConfigured()) {
+          $this->messenger()->addError($this->t('Provider is not properly configured. Please fill in all required fields before testing.'));
+          return;
+        }
+
         $result = $provider->testConfiguration($test_email);
 
         if ($result['success']) {
@@ -374,6 +400,9 @@ class NotificationProvidersForm extends ConfigFormBase {
         $this->messenger()->addError($this->t('Error sending test email: @error', ['@error' => $e->getMessage()]));
       }
     }
+    else {
+      $this->messenger()->addError($this->t('Please enter a test email address.'));
+    }
   }
 
   /**
@@ -386,9 +415,21 @@ class NotificationProvidersForm extends ConfigFormBase {
     $test_phone = $form_state->getValue(['sms', 'providers', $provider_id, 'test', 'test_phone']);
     $config = $form_state->getValue(['sms', 'providers', $provider_id, 'config']) ?: [];
 
+    // Add enabled flag for testing.
+    $config['enabled'] = TRUE;
+
     if ($test_phone) {
       try {
+        // Create provider with current form configuration.
         $provider = $this->providerManager->createInstance($provider_id, $config);
+        $provider->setConfiguration($config);
+
+        // Check if provider is properly configured.
+        if (!$provider->isConfigured()) {
+          $this->messenger()->addError($this->t('Provider is not properly configured. Please fill in all required fields before testing.'));
+          return;
+        }
+
         $result = $provider->testConfiguration($test_phone);
 
         if ($result['success']) {
@@ -401,6 +442,9 @@ class NotificationProvidersForm extends ConfigFormBase {
       catch (\Exception $e) {
         $this->messenger()->addError($this->t('Error sending test SMS: @error', ['@error' => $e->getMessage()]));
       }
+    }
+    else {
+      $this->messenger()->addError($this->t('Please enter a test phone number.'));
     }
   }
 

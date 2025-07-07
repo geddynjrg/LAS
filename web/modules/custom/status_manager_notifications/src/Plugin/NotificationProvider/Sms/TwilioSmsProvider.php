@@ -49,7 +49,10 @@ class TwilioSmsProvider extends SmsProviderBase {
    * {@inheritdoc}
    */
   public function isConfigured() {
-    return parent::isConfigured() && !empty($this->configuration['account_sid']);
+    return parent::isConfigured() &&
+           !empty($this->configuration['account_sid']) &&
+           !empty($this->configuration['api_secret']) &&
+           !empty($this->configuration['from_number']);
   }
 
   /**

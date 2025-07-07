@@ -51,7 +51,9 @@ class AfricasTalkingSmsProvider extends SmsProviderBase {
    * {@inheritdoc}
    */
   public function isConfigured() {
-    return parent::isConfigured() && !empty($this->configuration['username']);
+    return parent::isConfigured() &&
+           !empty($this->configuration['username']) &&
+           !empty($this->configuration['api_key']);
   }
 
   /**
