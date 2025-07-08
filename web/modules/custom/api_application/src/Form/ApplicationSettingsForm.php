@@ -61,7 +61,6 @@ class ApplicationSettingsForm extends ConfigFormBase {
     // Add vertical tabs.
     $form['#tree'] = TRUE;
     $form['#attached']['library'][] = 'api_application/admin';
-    $form['#attached']['library'][] = 'media_library/widget';
 
     // Add class for proper form handling.
     $form['#attributes']['class'][] = 'api-application-settings';
