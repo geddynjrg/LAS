@@ -1,5 +1,66 @@
-min_group_members: '1'
-max_group_members: '15'
-max_file_size: 5MB
-allowed_extensions: 'pdf jpg jpeg png'
+min_group_members: 1
+max_group_members: 15
 application_prefix: APP-
+max_file_size: 5MB
+allowed_extensions: 'pdf jpg jpeg png webp'
+instructions:
+  title: 'What you need to know before applying'
+  body:
+    value: '<p>In the application process you will be asked to provide documents and to confirm that all group members agree to the loan application.</p>'
+    format: basic_html
+  documents_required:
+    -
+      title: 'Valid group registration certificate'
+      subtitle:
+        value: ''
+        format: basic_html
+      link:
+        uri: 'https://uwezo.e-services-fe.fusion.adm.ee/apply'
+        title: 'More info about the certificate'
+        options: {  }
+      example_images:
+        -
+          fid: 29
+      examples_subtitle: ''
+    -
+      title: 'Group credit history'
+      subtitle:
+        value: '<p>Group credit history can be proven by several documents:</p><ul><li>Table banking ledger</li><li>Discharge certificate</li><li>Letter of clearance from another lender</li><li>Others</li></ul><p>Kindly provide all related to your group.</p>'
+        format: basic_html
+      link:
+        uri: 'https://uwezo.e-services-fe.fusion.adm.ee/apply'
+        title: 'More information about the credit history documents'
+        options: {  }
+      example_images:
+        -
+          fid: 33
+        -
+          fid: 34
+      examples_subtitle: ''
+    -
+      title: 'Group members’ national IDs'
+      subtitle:
+        value: ''
+        format: basic_html
+      link:
+        uri: ''
+        title: ''
+        options: {  }
+      example_images:
+        -
+          fid: 35
+      examples_subtitle: 'Applicant must provide copies of IDs of members and a list of members'
+instructions_title: 'What you need to know before applying'
+instructions_subtitle: ''
+instructions_body:
+  value: '<p>In the application process you will be asked to provide documents and to confirm that all group members agree to the loan application.</p>'
+  format: basic_html
+documents_section_title: 'Documents required in the application:'
+document_requirements:
+  -
+    title: 'Valid group registration certificate'
+    description: ''
+    examples: {  }
+    example_descriptions: ''
+    link: 'https://uwezo.e-services-fe.fusion.adm.ee/apply#'
+    link_text: ''
