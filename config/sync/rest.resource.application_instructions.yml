@@ -1,0 +1,18 @@
+uuid: ca063e0f-20de-44de-ad35-011aae3b6b88
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+    - user
+id: application_instructions
+plugin_id: application_instructions
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie
