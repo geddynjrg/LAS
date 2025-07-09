@@ -112,7 +112,7 @@ entity_mappings:
       revision_translation_affected: 0
     notification_type: none
   node:
-    enabled: 1
+    enabled: 0
     tracked_fields:
       status: status
       type: 0
@@ -213,10 +213,21 @@ entity_mappings:
       field_reusable_paragraph: 0
     notification_type: none
 notifications:
-  email_enabled: true
-  email_from: ''
-  sms_enabled: false
-  sms_provider: twilio
+  email:
+    enabled: 1
+    provider: default_email
+    default_template: auto
+  sms:
+    enabled: 0
+    provider: ''
+    default_template: auto
+  entity_settings:
+    application:
+      override_enabled: 0
+      email_provider: ''
+      email_template: ''
+      sms_provider: ''
+      sms_template: ''
 display:
   show_entity_links: true
   show_user_info: true

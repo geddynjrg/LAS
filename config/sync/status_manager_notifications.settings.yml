@@ -9,6 +9,7 @@ email:
       use_html: true
     sendgrid_email:
       enabled: false
+  default_template: auto
 sms:
   active_provider: ''
   providers:
@@ -16,3 +17,4 @@ sms:
       enabled: false
     africas_talking_sms:
       enabled: false
+  default_template: auto
