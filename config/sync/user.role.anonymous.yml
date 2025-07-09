@@ -9,6 +9,7 @@ dependencies:
     - rest.resource.api_password_reset_request
     - rest.resource.api_token_refresh
     - rest.resource.api_user_registration
+    - rest.resource.application_instructions
     - rest.resource.rest_framework_node_resource
     - rest.resource.rest_framework_path_resource
   module:
@@ -28,6 +29,7 @@ permissions:
   - 'access comments'
   - 'access content'
   - 'access site-wide contact form'
+  - 'restful get application_instructions'
   - 'restful get rest_framework_node_resource'
   - 'restful get rest_framework_path_resource'
   - 'restful post api_login'
