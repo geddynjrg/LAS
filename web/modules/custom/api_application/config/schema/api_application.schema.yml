@@ -1,0 +1,92 @@
+api_application.settings:
+  type: config_object
+  label: 'API Application settings'
+  mapping:
+    min_group_members:
+      type: integer
+      label: 'Minimum group members'
+    max_group_members:
+      type: integer
+      label: 'Maximum group members'
+    application_prefix:
+      type: string
+      label: 'Application ID prefix'
+    max_file_size:
+      type: string
+      label: 'Maximum file size'
+    allowed_extensions:
+      type: string
+      label: 'Allowed file extensions'
+    instructions:
+      type: mapping
+      label: 'Instructions settings'
+      mapping:
+        title:
+          type: label
+          label: 'Instructions page title'
+          translatable: true
+        body:
+          type: mapping
+          label: 'Instructions body text'
+          mapping:
+            value:
+              type: text
+              label: 'Text value'
+              translatable: true
+            format:
+              type: string
+              label: 'Text format'
+        documents_required:
+          type: sequence
+          label: 'Documents required in the application'
+          sequence:
+            type: mapping
+            label: 'Document requirement'
+            mapping:
+              title:
+                type: label
+                label: 'Document title'
+                translatable: true
+              subtitle:
+                type: mapping
+                label: 'Document instructions'
+                mapping:
+                  value:
+                    type: text
+                    label: 'Text value'
+                    translatable: true
+                  format:
+                    type: string
+                    label: 'Text format'
+              link:
+                type: mapping
+                label: 'Document link'
+                mapping:
+                  uri:
+                    type: uri
+                    label: 'Link URI'
+                  title:
+                    type: label
+                    label: 'Link title'
+                    translatable: true
+                  options:
+                    type: mapping
+                    label: 'Link options'
+                    mapping:
+                      attributes:
+                        type: mapping
+                        label: 'Link attributes'
+              example_images:
+                type: sequence
+                label: 'Example images'
+                sequence:
+                  type: mapping
+                  label: 'Example image'
+                  mapping:
+                    fid:
+                      type: integer
+                      label: 'File ID'
+              examples_subtitle:
+                type: label
+                label: 'Examples caption'
+                translatable: true 
