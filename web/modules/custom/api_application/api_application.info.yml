@@ -12,3 +12,4 @@ dependencies:
   - drupal:options
   - drupal:telephone
   - drupal:views
+  - rest_framework:rest_framework
