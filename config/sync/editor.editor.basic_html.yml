@@ -15,6 +15,7 @@ settings:
     items:
       - bold
       - italic
+      - underline
       - '|'
       - link
       - '|'
