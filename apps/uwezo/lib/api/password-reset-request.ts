@@ -1,5 +1,4 @@
-import { z } from "zod";
-
+import { PasswordResetRequestResponseSchema } from "@/lib/api/schema/response/auth-response.schema";
 import { api, validate } from "@/lib/api/utils";
 
 export async function passwordResetRequest(data: { email: string }) {
@@ -9,11 +8,5 @@ export async function passwordResetRequest(data: { email: string }) {
     },
   });
 
-  return validate(res, schema);
+  return validate(res, PasswordResetRequestResponseSchema);
 }
-
-export const schema = z.object({
-  data: z.object({
-    message: z.string(),
-  }),
-}); 

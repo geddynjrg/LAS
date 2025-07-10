@@ -1,5 +1,4 @@
-import { z } from "zod";
-
+import { RegisterResponseSchema } from "@/lib/api/schema/response/auth-response.schema";
 import { api, validate } from "@/lib/api/utils";
 
 export async function register(data: {
@@ -18,7 +17,7 @@ export async function register(data: {
   if (!res.response.ok) {
     // Try to get error message from response
     let errorMessage = `Registration failed: ${res.response.statusText}`;
-    
+
     try {
       const contentType = res.response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
@@ -31,26 +30,16 @@ export async function register(data: {
         } else if (res.response.status === 401) {
           errorMessage = "Authentication required for registration";
         } else if (res.response.status === 400) {
-          errorMessage = "Invalid registration data. Please check your email and password";
+          errorMessage =
+            "Invalid registration data. Please check your email and password";
         }
       }
     } catch (e) {
       console.error("Error parsing error response:", e);
     }
-    
+
     throw new Error(errorMessage);
   }
 
-  return validate(res, schema);
+  return validate(res, RegisterResponseSchema);
 }
-
-export const schema = z.object({
-  data: z.object({
-    mail: z.string(),
-    access_token: z.string(),
-    refresh_token: z.string(),
-    expires_in: z.number(),
-    token_type: z.string(),
-    status: z.string(),
-  }),
-}); 

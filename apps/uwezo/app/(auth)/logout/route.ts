@@ -6,4 +6,4 @@ export async function GET() {
   await logout();
 
   redirect("/login");
-} 
+}
