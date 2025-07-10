@@ -241,6 +241,33 @@ class ApplicationInstructionsSchemaProvider extends OpenApiSchemaProviderBase {
         ],
         'required' => ['fid', 'filename', 'url', 'size', 'mime_type'],
       ],
+      'Error' => [
+        'type' => 'object',
+        'description' => 'Error response structure',
+        'properties' => [
+          'error' => [
+            'type' => 'string',
+            'description' => 'Error type or code',
+            'example' => 'not_found',
+          ],
+          'message' => [
+            'type' => 'string',
+            'description' => 'Human-readable error message',
+            'example' => 'The requested resource was not found.',
+          ],
+          'status' => [
+            'type' => 'integer',
+            'description' => 'HTTP status code',
+            'example' => 404,
+          ],
+          'timestamp' => [
+            'type' => 'integer',
+            'description' => 'Unix timestamp when the error occurred',
+            'example' => 1704067200,
+          ],
+        ],
+        'required' => ['error', 'message', 'status'],
+      ],
     ];
   }
 

@@ -358,6 +358,9 @@ class ContentEndpointsProvider extends OpenApiSchemaProviderBase {
           'description' => 'The banner title',
           'example' => 'Quick Loan Approval',
         ],
+        'help_text' => [
+          '$ref' => '#/components/schemas/TextWithFormat',
+        ],
         'text' => [
           '$ref' => '#/components/schemas/TextWithFormat',
         ],
@@ -476,6 +479,11 @@ class ContentEndpointsProvider extends OpenApiSchemaProviderBase {
               [
                 'block_type' => 'banner',
                 'title' => 'Quick Loan Approval',
+                'help_text' => [
+                  'value' => '<p>Apply for a loan in minutes and get approved within 24 hours</p>',
+                  'format' => 'full_html',
+                  'processed' => '<p>Apply for a loan in minutes and get approved within 24 hours</p>',
+                ],
                 'text' => [
                   'value' => '<p>Apply for a loan in minutes and get approved within 24 hours</p>',
                   'format' => 'full_html',
