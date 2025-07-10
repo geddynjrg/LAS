@@ -21,9 +21,12 @@ class TextBlocksMapper extends ParagraphMapperBase implements ParagraphMapperInt
    * {@inheritdoc}
    */
   public function map(ParagraphInterface $paragraph): array {
-    $data = [
-      'block_type' => 'text_blocks',
-    ];
+    $data = array_merge(
+      ['block_type' => 'text_blocks'],
+      $this->mapFields($paragraph, [
+        'field_button',
+      ])
+    );
 
     // Handle multiple blocks.
     if ($paragraph->hasField('field_blocks')) {

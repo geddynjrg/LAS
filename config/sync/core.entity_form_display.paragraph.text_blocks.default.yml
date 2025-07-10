@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.text_blocks.field_blocks
+    - field.field.paragraph.text_blocks.field_button
     - paragraphs.paragraphs_type.text_blocks
   module:
+    - link
     - paragraphs
 id: paragraph.text_blocks.default
 targetEntityType: paragraph
@@ -29,6 +31,14 @@ content:
       features:
         collapse_edit_all: collapse_edit_all
         duplicate: duplicate
+    third_party_settings: {  }
+  field_button:
+    type: link_default
+    weight: 2
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
     third_party_settings: {  }
 hidden:
   created: true

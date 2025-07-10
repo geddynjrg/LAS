@@ -26,6 +26,7 @@ class BannerMapper extends ParagraphMapperBase implements ParagraphMapperInterfa
       $this->mapFields($paragraph, [
         'field_title',
         'field_text',
+        'field_help_text',
         'field_button',
       ])
     );

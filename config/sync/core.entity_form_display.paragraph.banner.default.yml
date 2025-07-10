@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.banner.field_button
+    - field.field.paragraph.banner.field_help_text
     - field.field.paragraph.banner.field_text
     - field.field.paragraph.banner.field_title
     - paragraphs.paragraphs_type.banner
@@ -17,11 +18,19 @@ mode: default
 content:
   field_button:
     type: link_default
-    weight: 2
+    weight: 3
     region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings: {  }
+  field_help_text:
+    type: text_textarea
+    weight: 2
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
     third_party_settings: {  }
   field_text:
     type: text_textarea
