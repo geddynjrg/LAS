@@ -1,5 +1,4 @@
-import { z } from "zod";
-
+import { LoginResponseSchema } from "@/lib/api/schema/response/auth-response.schema";
 import { api, validate } from "@/lib/api/utils";
 
 export async function login(data: { username: string; password: string }) {
@@ -20,14 +19,5 @@ export async function login(data: { username: string; password: string }) {
     throw new Error(`Login failed: ${res.response.statusText}`);
   }
 
-  return validate(res, schema);
+  return validate(res, LoginResponseSchema);
 }
-
-export const schema = z.object({
-  data: z.object({
-    access_token: z.string(),
-    refresh_token: z.string(),
-    expires_in: z.number(),
-    token_type: z.string(),
-  }),
-}); 

@@ -36,9 +36,9 @@ api.use({
 
   async onResponse({ response, request }) {
     // Check if this is a protected API call (not login/logout/register)
-    const isAuthEndpoint = 
-      request.url.includes("/login") || 
-      request.url.includes("/logout") || 
+    const isAuthEndpoint =
+      request.url.includes("/login") ||
+      request.url.includes("/logout") ||
       request.url.includes("/register") ||
       request.url.includes("/password/reset");
 
@@ -74,4 +74,4 @@ export function validate<
   }
 
   return res.data as z.infer<TSchema>;
-} 
+}

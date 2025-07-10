@@ -1,10 +1,6 @@
-"use client";
-
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import type { FC } from "react";
+import { getTranslations } from "next-intl/server";
 
-import { Button } from "@workspace/ui/components/button";
 import {
   Carousel,
   CarouselContent,
@@ -23,7 +19,10 @@ import { Card } from "@workspace/ui/components/uwezo/card";
 import { HeroSection } from "@workspace/ui/components/uwezo/hero-section";
 import { MetricCard } from "@workspace/ui/components/uwezo/metric-card";
 import { NewsItem } from "@workspace/ui/components/uwezo/news-item";
-import { cn } from "@workspace/ui/lib/utils";
+
+import { ApplyButton } from "@/components/apply-button";
+import { PageComponents } from "@/components/page-components";
+import { getLanding } from "@/lib/api/landing";
 
 const NEWS_ITEMS: {
   date: Date;
@@ -57,45 +56,122 @@ const NEWS_ITEMS: {
   },
 ];
 
-export default function Page() {
-  const t = useTranslations("FrontPage");
+export default async function Page() {
+  const t = await getTranslations("FrontPage");
+
+  // Fetch landing page data
+  let pageData;
+  try {
+    pageData = await getLanding();
+  } catch (error) {
+    console.error("Failed to fetch landing page data:", error);
+    // Continue with static content if API fails
+  }
+
+  // Check if we have dynamic content from the API
+  const hasDynamicContent =
+    pageData?.data?.content?.page_components &&
+    pageData.data.content.page_components.length > 0;
 
   return (
     <>
-      <HeroSection
-        title={t.rich("title", {
-          title: (chunks) => <span className="typo-display">{chunks}</span>,
-          light: (chunks) => <span className="font-light">{chunks}</span>,
-          subTitle: (chunks) => <span className="typo-h4">{chunks}</span>,
-          lineBreak: () => <br />,
-        })}
-        backgroundAlt={t("imageDescription")}
-        actions={<ApplyButton />}
-      >
-        <span className="typo-body-large">
-          {t.rich("description", {
-            underline: (chunks) => <span className="underline">{chunks}</span>,
-          })}
-        </span>
-      </HeroSection>
+      {/* Render dynamic content if available */}
+      {hasDynamicContent ? (
+        <PageComponents
+          node_id={pageData!.data.id?.toString()}
+          page_components={pageData!.data.content.page_components}
+        />
+      ) : (
+        /* Fallback to static content */
+        <>
+          <HeroSection
+            title={t.rich("title", {
+              title: (chunks) => <span className="typo-display">{chunks}</span>,
+              light: (chunks) => <span className="font-light">{chunks}</span>,
+              subTitle: (chunks) => <span className="typo-h4">{chunks}</span>,
+              lineBreak: () => <br />,
+            })}
+            backgroundAlt={t("imageDescription")}
+            actions={<ApplyButton />}
+          >
+            <span className="typo-body-large">
+              {t.rich("description", {
+                underline: (chunks) => (
+                  <span className="underline">{chunks}</span>
+                ),
+              })}
+            </span>
+          </HeroSection>
 
-      <CriteriaSection />
+          <StaticCriteriaSection />
 
-      <div className="py-7.5 bg-primary lg:bg-transparent">
-        <Container className="flex">
-          <ApplyButton className="lg:hover:bg-primary mx-auto max-lg:flex-1 lg:basis-1/2" />
-        </Container>
-      </div>
+          <div className="py-7.5 bg-primary lg:bg-transparent">
+            <Container className="flex">
+              <ApplyButton className="lg:hover:bg-primary mx-auto max-lg:flex-1 lg:basis-1/2" />
+            </Container>
+          </div>
 
-      {/* <DescriptionSection />
+          {/* <DescriptionSection />
 
-      <AchievementsSection />
+          <AchievementsSection />
 
-      <NewsSection /> */}
+          <NewsSection /> */}
+        </>
+      )}
     </>
   );
 }
 
+// Create a server component version of CriteriaSection
+async function StaticCriteriaSection() {
+  const t = await getTranslations("FrontPage");
+
+  return (
+    <Container className="my-9" asChild>
+      <section>
+        <h1 className="typo-h3 mb-4">{t("criteria.title")}</h1>
+
+        <div className="border-primary typo-body-medium grid gap-4 border-t pt-4 md:grid-cols-2">
+          <div className="grid gap-4">
+            <Card radius="lg" variant="primary">
+              {t("criteria.one")}
+            </Card>
+            <Card radius="lg" variant="primary">
+              {t("criteria.two")}
+            </Card>
+            <Card radius="lg" variant="primary">
+              {t.rich("criteria.three", {
+                bold: (chunks) => (
+                  <>
+                    <span className="font-bold">{chunks}</span>
+                    <br />
+                  </>
+                ),
+                ul: (chunks) => (
+                  <ul className="typo-list-bullet ml-7">{chunks}</ul>
+                ),
+                li: (chunks) => <li>{chunks}</li>,
+              })}
+            </Card>
+          </div>
+          <div className="grid gap-4">
+            <Card radius="lg" variant="primary">
+              {t("criteria.four")}
+            </Card>
+            <Card radius="lg" variant="primary">
+              {t("criteria.five")}
+            </Card>
+            <Card radius="lg" variant="primary">
+              {t("criteria.six")}
+            </Card>
+          </div>
+        </div>
+      </section>
+    </Container>
+  );
+}
+
+// Keep the original client components for reference (not used in server component)
 function CriteriaSection() {
   const t = useTranslations("FrontPage");
 
@@ -284,20 +360,3 @@ function NewsSection() {
     </Container>
   );
 }
-
-const ApplyButton: FC<{ className?: string }> = ({ className }) => {
-  const t = useTranslations("FrontPage");
-
-  return (
-    <Button
-      asChild
-      variant="secondary"
-      className={cn(
-        "bg-background text-primary hover:text-background border-primary px-6",
-        className,
-      )}
-    >
-      <Link href="/apply">{t("startApplying")}</Link>
-    </Button>
-  );
-};

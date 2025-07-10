@@ -21,10 +21,10 @@ export const resetAction: FormAction<Reset> = async (_prev, formData) => {
 
   try {
     const res = await passwordResetRequest({ email: data.email });
-    
-    return { 
-      success: true, 
-      message: res.data.message 
+
+    return {
+      success: true,
+      message: res.data.message,
     };
   } catch (error) {
     console.warn("Error during password reset request:", error);

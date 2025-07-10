@@ -184,6 +184,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/instructions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get application instructions
+     * @description Retrieves the application instructions including document requirements and example images.
+     */
+    get: operations["rest_framework.application_instructions_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -196,7 +216,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1750945118
+         * @example 1752171455
          */
         timestamp: number;
         /**
@@ -316,8 +336,8 @@ export interface components {
           processed?: string;
         };
         page_components?: (
-          | components["schemas"]["ParagraphText_blocks"]
           | components["schemas"]["ParagraphBanner"]
+          | components["schemas"]["ParagraphText_blocks"]
         )[];
       };
     };
@@ -349,6 +369,7 @@ export interface components {
        * @example Quick Loan Approval
        */
       title: string;
+      help_text?: components["schemas"]["TextWithFormat"];
       text?: components["schemas"]["TextWithFormat"];
       button?: components["schemas"]["LinkButton"][];
     };
@@ -412,6 +433,273 @@ export interface components {
        * @example Bearer
        */
       token_type: string;
+    };
+    /** @description Response containing application instructions */
+    ApplicationInstructionsResponse: {
+      data: components["schemas"]["ApplicationInstructions"];
+      meta: {
+        /**
+         * @description Unix timestamp of when the response was generated
+         * @example 1752171455
+         */
+        timestamp: number;
+        /**
+         * @description API version
+         * @example v1
+         */
+        version: string;
+        language: {
+          /**
+           * @description Current language code
+           * @example en
+           */
+          current?: string;
+          /**
+           * @description Default language code
+           * @example en
+           */
+          default?: string;
+          /** @description Available language translations */
+          available?: {
+            [key: string]: {
+              /** @example en */
+              langcode?: string;
+              /** @example English */
+              name?: string;
+              /** @example https://example.com/api/v1/application/instructions */
+              url?: string;
+              /** @example /api/v1/application/instructions */
+              path?: string;
+            };
+          };
+        };
+      };
+    };
+    /** @description Application instructions and document requirements */
+    ApplicationInstructions: {
+      /**
+       * @description Unique identifier for instructions
+       * @example application_instructions
+       */
+      id: string;
+      /**
+       * @description The content type
+       * @example application_instructions
+       */
+      type: string;
+      /**
+       * @description The title of the instructions page
+       * @example Application Instructions
+       */
+      title: string;
+      body: components["schemas"]["FormattedText"];
+      /** @description List of required documents */
+      documents_required: components["schemas"]["DocumentRequirement"][];
+      language?: {
+        /** @example en */
+        code?: string;
+        /** @example English */
+        name?: string;
+        /** @example ltr */
+        direction?: string;
+      };
+      /**
+       * @description The absolute URL to access these instructions
+       * @example https://example.com/api/v1/application/instructions
+       */
+      url: string;
+    };
+    /** @description Formatted text with processing information */
+    FormattedText: {
+      /**
+       * @description The raw text content
+       * @example <p>Please follow these instructions carefully when submitting your application.</p>
+       */
+      value: string;
+      /**
+       * @description The text format used for processing
+       * @example basic_html
+       * @enum {string}
+       */
+      format: "basic_html" | "full_html" | "plain_text";
+      /**
+       * @description The processed HTML output
+       * @example <p>Please follow these instructions carefully when submitting your application.</p>
+       */
+      processed: string;
+    };
+    /** @description A required document configuration */
+    DocumentRequirement: {
+      /**
+       * @description The name of the document
+       * @example Valid group registration certificate
+       */
+      title: string;
+      subtitle: components["schemas"]["FormattedText"];
+      /** @description Optional link for more information */
+      link?: {
+        /**
+         * Format: uri
+         * @description The URL
+         * @example https://example.com/certificate-info
+         */
+        uri: string;
+        /**
+         * @description The link text
+         * @example More info about this certificate
+         */
+        title: string;
+      } | null;
+      /** @description Example images for this document */
+      example_images?: components["schemas"]["ExampleImage"][];
+      /**
+       * @description Caption for the example images
+       * @example Example of a valid certificate
+       */
+      examples_subtitle?: string;
+    };
+    /** @description An example image file */
+    ExampleImage: {
+      /**
+       * @description The file ID
+       * @example 123
+       */
+      fid: number;
+      /**
+       * @description The filename
+       * @example certificate-example.webp
+       */
+      filename: string;
+      /**
+       * Format: uri
+       * @description The absolute URL to the file
+       * @example https://example.com/sites/default/files/application_instructions/examples/certificate-example.webp
+       */
+      url: string;
+      /**
+       * @description File size in bytes
+       * @example 45678
+       */
+      size: number;
+      /**
+       * @description The MIME type of the file
+       * @example image/webp
+       */
+      mime_type: string;
+    };
+    /** @description Error response structure */
+    Error: {
+      /**
+       * @description Error type or code
+       * @example not_found
+       */
+      error: string;
+      /**
+       * @description Human-readable error message
+       * @example The requested resource was not found.
+       */
+      message: string;
+      /**
+       * @description HTTP status code
+       * @example 404
+       */
+      status: number;
+      /**
+       * @description Unix timestamp when the error occurred
+       * @example 1704067200
+       */
+      timestamp?: number;
+    };
+    /**
+     * Text Block Mapper
+     * @description Paragraph of type text_block
+     * @example {
+     *       "block_type": "text_block",
+     *       "text": {
+     *         "value": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>",
+     *         "format": "full_html",
+     *         "processed": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>"
+     *       },
+     *       "button": [
+     *         {
+     *           "title": "Learn More",
+     *           "url": "https://example.com/personal-loans",
+     *           "options": [],
+     *           "is_external": false
+     *         }
+     *       ]
+     *     }
+     */
+    ParagraphText_block: {
+      /**
+       * @description The block type identifier (enum property replaced by openapi-typescript)
+       * @enum {string}
+       */
+      block_type: "ParagraphText_block";
+      text?: {
+        /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
+        value?: string;
+        /** @example full_html */
+        format?: string;
+        /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
+        processed?: string;
+      };
+      button?: {
+        /** @example Learn More */
+        title?: string;
+        /** @example https://example.com/personal-loans */
+        url?: string;
+        options?: Record<string, never>;
+        /** @example false */
+        is_external?: boolean;
+      }[];
+    };
+    /**
+     * Banner Mapper
+     * @description Paragraph of type banner
+     * @example {
+     *       "block_type": "banner",
+     *       "title": "Quick Loan Approval",
+     *       "text": {
+     *         "value": "<p>Apply for a loan in minutes and get approved within 24 hours</p>",
+     *         "format": "full_html",
+     *         "processed": "<p>Apply for a loan in minutes and get approved within 24 hours</p>"
+     *       },
+     *       "button": [
+     *         {
+     *           "title": "Apply Now",
+     *           "url": "https://example.com/apply",
+     *           "options": [],
+     *           "is_external": false
+     *         }
+     *       ]
+     *     }
+     */
+    ParagraphBanner: {
+      /**
+       * @description The block type identifier (enum property replaced by openapi-typescript)
+       * @enum {string}
+       */
+      block_type: "ParagraphBanner";
+      /** @example Quick Loan Approval */
+      title?: string;
+      text?: {
+        /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
+        value?: string;
+        /** @example full_html */
+        format?: string;
+        /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
+        processed?: string;
+      };
+      button?: {
+        /** @example Apply Now */
+        title?: string;
+        /** @example https://example.com/apply */
+        url?: string;
+        options?: Record<string, never>;
+        /** @example false */
+        is_external?: boolean;
+      }[];
     };
     /**
      * Text Blocks Mapper
@@ -482,101 +770,10 @@ export interface components {
         }[];
       }[];
     };
-    /**
-     * Banner Mapper
-     * @description Paragraph of type banner
-     * @example {
-     *       "block_type": "banner",
-     *       "title": "Quick Loan Approval",
-     *       "text": {
-     *         "value": "<p>Apply for a loan in minutes and get approved within 24 hours</p>",
-     *         "format": "full_html",
-     *         "processed": "<p>Apply for a loan in minutes and get approved within 24 hours</p>"
-     *       },
-     *       "button": [
-     *         {
-     *           "title": "Apply Now",
-     *           "url": "https://example.com/apply",
-     *           "options": [],
-     *           "is_external": false
-     *         }
-     *       ]
-     *     }
-     */
-    ParagraphBanner: {
-      /**
-       * @description The block type identifier (enum property replaced by openapi-typescript)
-       * @enum {string}
-       */
-      block_type: "ParagraphBanner";
-      /** @example Quick Loan Approval */
-      title?: string;
-      text?: {
-        /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
-        value?: string;
-        /** @example full_html */
-        format?: string;
-        /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
-        processed?: string;
-      };
-      button?: {
-        /** @example Apply Now */
-        title?: string;
-        /** @example https://example.com/apply */
-        url?: string;
-        options?: Record<string, never>;
-        /** @example false */
-        is_external?: boolean;
-      }[];
-    };
-    /**
-     * Text Block Mapper
-     * @description Paragraph of type text_block
-     * @example {
-     *       "block_type": "text_block",
-     *       "text": {
-     *         "value": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>",
-     *         "format": "full_html",
-     *         "processed": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>"
-     *       },
-     *       "button": [
-     *         {
-     *           "title": "Learn More",
-     *           "url": "https://example.com/personal-loans",
-     *           "options": [],
-     *           "is_external": false
-     *         }
-     *       ]
-     *     }
-     */
-    ParagraphText_block: {
-      /**
-       * @description The block type identifier (enum property replaced by openapi-typescript)
-       * @enum {string}
-       */
-      block_type: "ParagraphText_block";
-      text?: {
-        /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
-        value?: string;
-        /** @example full_html */
-        format?: string;
-        /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
-        processed?: string;
-      };
-      button?: {
-        /** @example Learn More */
-        title?: string;
-        /** @example https://example.com/personal-loans */
-        url?: string;
-        options?: Record<string, never>;
-        /** @example false */
-        is_external?: boolean;
-      }[];
-    };
     ZodParagraphTypes:
-      | components["schemas"]["ParagraphText_blocks"]
+      | components["schemas"]["ParagraphText_block"]
       | components["schemas"]["ParagraphBanner"]
-      | components["schemas"]["ParagraphText_block"];
+      | components["schemas"]["ParagraphText_blocks"];
   };
   responses: never;
   parameters: never;
@@ -611,7 +808,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp: number;
               /**
@@ -681,7 +878,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp: number;
               /**
@@ -756,7 +953,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp?: number;
               /**
@@ -811,7 +1008,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp?: number;
               /**
@@ -901,7 +1098,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp?: number;
               /**
@@ -958,7 +1155,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp?: number;
               /**
@@ -1025,7 +1222,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp?: number;
               /**
@@ -1093,7 +1290,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp?: number;
               /**
@@ -1162,7 +1359,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1750945118
+               * @example 1752171455
                */
               timestamp?: number;
               /**
@@ -1184,6 +1381,69 @@ export interface operations {
             /** @example Authentication error: Invalid or expired JWT token. */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  "rest_framework.application_instructions_get": {
+    parameters: {
+      query?: never;
+      header: {
+        /**
+         * @description Language code for localized content. Configuration will be loaded in the specified language.
+         * @example en
+         */
+        "X-Language": "en" | "sw";
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Application instructions retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApplicationInstructionsResponse"];
+        };
+      };
+      /** @description Bad request - Invalid language code */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example Invalid language code */
+            error?: string;
+            /** @example Language code "fr" is not supported. Available languages: en, sw */
+            message?: string;
+            /** @example [
+             *       "en",
+             *       "sw"
+             *     ] */
+            available_languages?: string[];
+          };
+        };
+      };
+      /** @description Instructions not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
         };
       };
     };

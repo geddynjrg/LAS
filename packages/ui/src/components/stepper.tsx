@@ -120,7 +120,7 @@ const Step: FC<StepProps> = ({
       onClick={() => {
         // allow stepper navigation if baseUrl and progress is present. Allows navigation back to previous steps and to currently in progress step
         if (
-			step.path &&
+          step.path &&
           baseUrl &&
           progress &&
           step.index <= progress &&

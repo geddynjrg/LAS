@@ -40,7 +40,7 @@ export async function updateSession() {
   const { accessToken, refreshToken } = await getStoredTokens();
 
   if (accessToken && !isTokenExpired(accessToken)) {
-    return accessToken; // Token is valid
+    return accessToken;
   }
 
   // cannot update session if refresh token is not set
@@ -147,4 +147,4 @@ async function getNewTokens() {
   }
 
   return { accessToken, refreshToken };
-} 
+}
