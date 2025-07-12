@@ -21,6 +21,7 @@
 # Ignore files
 .DS_Store
 services.yml
+CLAUDE.local.md
 
 /web/sites/default/settings.local.php
 /web/sites/default/settings.ddev.php
