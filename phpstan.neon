@@ -26,5 +26,4 @@ parameters:
         - web/sites/default/settings.php
         - web/sites/default/default.settings.php
         - web/sites/default/settings.*.php
-        - web/modules/custom/openapi_rest
         - web/modules/custom/healthcheck/src/Plugin/HealthCheck/S3HealthCheck.php

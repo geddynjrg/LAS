@@ -13,6 +13,8 @@ use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
 corepack_enable: true
+webimage_extra_packages: [make]
+
 
 # Key features of DDEV's config.yaml:
 
