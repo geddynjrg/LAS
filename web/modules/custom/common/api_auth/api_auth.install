@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Database\Database;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 
 /**
  * Implements hook_schema().
@@ -122,4 +124,111 @@ function api_auth_update_11001() {
   }
 
   return t('JWT active tokens tracking table already exists.');
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Creates the phone number field for OTP authentication.
+ */
+function api_auth_update_11002() {
+  _api_auth_create_phone_field();
+
+  return t('Created phone number field for OTP authentication.');
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add unique index to phone number field for uniqueness constraint.
+ */
+function api_auth_update_11003() {
+  $connection = Database::getConnection();
+  $schema = $connection->schema();
+
+  // Add unique index to phone number field.
+  $table_name = 'user__field_phone_number';
+  $index_name = 'field_phone_number_value_unique';
+
+  // Check if the table exists.
+  if ($schema->tableExists($table_name)) {
+    // Drop existing index if it exists (in case of re-run).
+    if ($schema->indexExists($table_name, $index_name)) {
+      $schema->dropIndex($table_name, $index_name);
+    }
+
+    // Add unique index.
+    $schema->addUniqueKey($table_name, $index_name, ['field_phone_number_value']);
+
+    return t('Added unique constraint to phone number field.');
+  }
+
+  return t('Phone number field table not found, skipping unique constraint.');
+}
+
+/**
+ * Creates the phone number field for users.
+ */
+function _api_auth_create_phone_field() {
+  $field_name = 'field_phone_number';
+  $entity_type = 'user';
+  $bundle = 'user';
+
+  // Check if field storage already exists.
+  $field_storage = FieldStorageConfig::loadByName($entity_type, $field_name);
+
+  if (!$field_storage) {
+    $field_storage = FieldStorageConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => $entity_type,
+      'type' => 'telephone',
+      'settings' => [],
+    ]);
+    $field_storage->save();
+  }
+
+  // Check if field config already exists.
+  $field_config = FieldConfig::loadByName($entity_type, $bundle, $field_name);
+
+  if (!$field_config) {
+    $field_config = FieldConfig::create([
+      'field_storage' => $field_storage,
+      'bundle' => $bundle,
+      'label' => 'Phone Number',
+      'description' => 'Phone number for OTP authentication',
+      'required' => FALSE,
+      'settings' => [],
+    ]);
+    $field_config->save();
+
+    // Configure the form display.
+    $form_display = Drupal::entityTypeManager()
+      ->getStorage('entity_form_display')
+      ->load("{$entity_type}.{$bundle}.default");
+
+    if ($form_display) {
+      $form_display->setComponent($field_name, [
+        'type' => 'telephone_default',
+        'weight' => 5,
+        'settings' => [
+          'placeholder' => '+254712345678',
+        ],
+      ]);
+      $form_display->save();
+    }
+
+    // Configure the view display.
+    $view_display = Drupal::entityTypeManager()
+      ->getStorage('entity_view_display')
+      ->load("{$entity_type}.{$bundle}.default");
+
+    if ($view_display) {
+      $view_display->setComponent($field_name, [
+        'type' => 'telephone_link',
+        'weight' => 5,
+        'label' => 'above',
+      ]);
+      $view_display->save();
+    }
+  }
 }

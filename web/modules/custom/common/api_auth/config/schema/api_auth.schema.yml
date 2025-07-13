@@ -29,3 +29,34 @@ api_auth.settings:
     jwt_revoke_tokens_on_password_change:
       type: boolean
       label: 'Remove All Tokens on Password Change'
+    otp:
+      type: mapping
+      label: 'OTP Authentication Settings'
+      mapping:
+        enabled:
+          type: boolean
+          label: 'Enable OTP Authentication'
+        length:
+          type: integer
+          label: 'OTP Code Length'
+        expiry:
+          type: integer
+          label: 'OTP Expiration Time (seconds)'
+        max_attempts:
+          type: integer
+          label: 'Maximum Verification Attempts'
+        rate_limit:
+          type: integer
+          label: 'Rate Limit (requests per hour)'
+        message_template:
+          type: string
+          label: 'SMS Message Template'
+        user_phone_field:
+          type: string
+          label: 'User Phone Number Field'
+        default_role:
+          type: string
+          label: 'Default Role for New Users'
+        username_prefix:
+          type: string
+          label: 'Username Prefix for New Users'
