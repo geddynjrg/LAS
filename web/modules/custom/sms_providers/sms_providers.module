@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Contains sms_providers.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function sms_providers_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sms_providers module.
+    case 'help.page.sms_providers':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The SMS Providers module provides a plugin-based system') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Managing SMS Providers') . '</dt>';
+      $output .= '<dd>' . t('Configure different SMS providers and their settings through the administration interface.') . '</dd>';
+      $output .= '<dt>' . t('Sending Messages') . '</dt>';
+      $output .= '<dd>' . t('Use the SMS service to send messages through configured providers with automatic failover support.') . '</dd>';
+      $output .= '</dl>';
+      return $output;
+
+    default:
+  }
+}

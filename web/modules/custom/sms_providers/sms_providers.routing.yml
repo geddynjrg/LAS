@@ -1,0 +1,7 @@
+sms_providers.settings:
+  path: '/admin/config/services/sms-providers'
+  defaults:
+    _form: '\Drupal\sms_providers\Form\SmsProvidersSettingsForm'
+    _title: 'SMS Providers Settings'
+  requirements:
+    _permission: 'administer sms providers'

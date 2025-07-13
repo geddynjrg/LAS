@@ -1,0 +1,7 @@
+sms_providers.settings:
+  type: config_object
+  label: 'SMS Providers settings'
+  mapping:
+    default_provider:
+      type: string
+      label: 'Default SMS provider'
