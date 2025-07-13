@@ -107,10 +107,7 @@ abstract class SmsProviderBase extends PluginBase implements SmsProviderInterfac
    * {@inheritdoc}
    */
   public function defaultConfiguration(): array {
-    return [
-      'enabled' => TRUE,
-      'api_endpoint' => '',
-    ];
+    return [];
   }
 
   /**

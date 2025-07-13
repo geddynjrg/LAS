@@ -35,6 +35,9 @@ class EbisCloudSmsProvider extends SmsProviderBase {
   // API constants.
   public const RESPONSE_TYPE_JSON = 'json';
 
+  // Settings constants.
+  public const SETTINGS_KEY = 'ebiscloud_sms';
+
   /**
    * The HTTP client.
    */
@@ -46,8 +49,36 @@ class EbisCloudSmsProvider extends SmsProviderBase {
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form = parent::buildConfigurationForm($form, $form_state);
 
+    // Add instructions for settings.local.php configuration.
+    $form['settings_instructions'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Settings Configuration (Recommended)'),
+      '#description' => $this->t('For security, configure sensitive settings in settings.local.php instead of storing them in the database.'),
+      '#open' => FALSE,
+    ];
+
+    $form['settings_instructions']['instructions'] = [
+      '#markup' => $this->t('
+        <p>Add the following to your <code>settings.local.php</code> file:</p>
+        <pre><code>$settings[\'@settings_key\'] = [
+  \'@api_key\' => \'your-ebiscloud-api-key-here\',
+  \'@service_id\' => \'0\', // or your service ID
+  \'@shortcode\' => \'YOUR_SHORTCODE\',
+  \'@api_url\' => \'@default_api_url\',
+];</code></pre>
+        <p>When configured in settings, the form fields below will be disabled and values will be used from settings instead of the database.</p>
+      ', [
+        '@settings_key' => self::SETTINGS_KEY,
+        '@api_key' => self::CONFIG_API_KEY,
+        '@service_id' => self::CONFIG_SERVICE_ID,
+        '@shortcode' => self::CONFIG_SHORTCODE,
+        '@api_url' => self::CONFIG_API_URL,
+        '@default_api_url' => 'https://bulk.ebisclouderp.com/api/sms/sendsms',
+      ]),
+    ];
+
     // Check if API key is set in settings.
-    $settings_api_key = Settings::get('ebiscloud_sms')['api_key'] ?? '';
+    $settings_api_key = Settings::get(self::SETTINGS_KEY)[self::CONFIG_API_KEY] ?? '';
     $is_set_in_settings = !empty($settings_api_key);
 
     $form[self::CONFIG_API_KEY] = [
@@ -65,11 +96,14 @@ class EbisCloudSmsProvider extends SmsProviderBase {
       $form[self::CONFIG_API_KEY]['#default_value'] = substr($settings_api_key, 0, 8) . '...';
     }
     else {
-      $form[self::CONFIG_API_KEY]['#description'] = $this->t('Your EBISCloud API key. Can also be set in settings.local.php as $settings["ebiscloud_sms"]["api_key"].');
+      $form[self::CONFIG_API_KEY]['#description'] = $this->t('Your EBISCloud API key. Can also be set in settings.local.php as $settings["@settings_key"]["@api_key"].', [
+        '@settings_key' => self::SETTINGS_KEY,
+        '@api_key' => self::CONFIG_API_KEY,
+      ]);
     }
 
     // Check if service_id is set in settings.
-    $settings_service_id = Settings::get('ebiscloud_sms')['service_id'] ?? '';
+    $settings_service_id = Settings::get(self::SETTINGS_KEY)[self::CONFIG_SERVICE_ID] ?? '';
     $service_id_in_settings = $settings_service_id !== '';
 
     $form[self::CONFIG_SERVICE_ID] = [
@@ -84,7 +118,7 @@ class EbisCloudSmsProvider extends SmsProviderBase {
     ];
 
     // Check if shortcode is set in settings.
-    $settings_shortcode = Settings::get('ebiscloud_sms')['shortcode'] ?? '';
+    $settings_shortcode = Settings::get(self::SETTINGS_KEY)[self::CONFIG_SHORTCODE] ?? '';
     $shortcode_in_settings = !empty($settings_shortcode);
 
     $form[self::CONFIG_SHORTCODE] = [
@@ -98,12 +132,19 @@ class EbisCloudSmsProvider extends SmsProviderBase {
       '#disabled' => $shortcode_in_settings,
     ];
 
+    // Check if api_url is set in settings.
+    $settings_api_url = Settings::get(self::SETTINGS_KEY)[self::CONFIG_API_URL] ?? '';
+    $api_url_in_settings = !empty($settings_api_url);
+
     $form[self::CONFIG_API_URL] = [
       '#type' => 'url',
       '#title' => $this->t('API URL'),
-      '#description' => $this->t('EBISCloud API endpoint URL.'),
-      '#default_value' => $this->configuration[self::CONFIG_API_URL] ?? 'https://bulk.ebisclouderp.com/api/sms/sendsms',
-      '#required' => TRUE,
+      '#description' => $api_url_in_settings
+        ? $this->t('API URL is configured in settings.local.php: @value', ['@value' => $settings_api_url])
+        : $this->t('EBISCloud API endpoint URL.'),
+      '#default_value' => $api_url_in_settings ? $settings_api_url : ($this->configuration[self::CONFIG_API_URL] ?? 'https://bulk.ebisclouderp.com/api/sms/sendsms'),
+      '#required' => !$api_url_in_settings,
+      '#disabled' => $api_url_in_settings,
     ];
 
     return $form;
@@ -124,6 +165,18 @@ class EbisCloudSmsProvider extends SmsProviderBase {
   /**
    * {@inheritdoc}
    */
+  public function defaultConfiguration(): array {
+    return [
+      self::CONFIG_API_KEY => '',
+      self::CONFIG_SERVICE_ID => '',
+      self::CONFIG_SHORTCODE => '',
+      self::CONFIG_API_URL => 'https://bulk.ebisclouderp.com/api/sms/sendsms',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getLabel(): string {
     return $this->t('EBISCloud SMS');
   }
@@ -136,18 +189,22 @@ class EbisCloudSmsProvider extends SmsProviderBase {
     $has_api_key = !empty($this->getApiKey());
 
     // Check service_id (either in settings or configuration).
-    $settings = Settings::get('ebiscloud_sms');
-    $has_service_id = !empty($settings['service_id'])
+    $settings = Settings::get(self::SETTINGS_KEY);
+    $has_service_id = !empty($settings[self::CONFIG_SERVICE_ID])
       || (isset($this->configuration[self::CONFIG_SERVICE_ID]) && $this->configuration[self::CONFIG_SERVICE_ID] !== '');
 
     // Check shortcode (either in settings or configuration).
-    $has_shortcode = !empty($settings['shortcode'])
+    $has_shortcode = !empty($settings[self::CONFIG_SHORTCODE])
       || !empty($this->configuration[self::CONFIG_SHORTCODE]);
+
+    // Check API URL (either in settings or configuration).
+    $has_api_url = !empty($settings[self::CONFIG_API_URL])
+      || !empty($this->configuration[self::CONFIG_API_URL]);
 
     return $has_api_key
       && $has_service_id
       && $has_shortcode
-      && !empty($this->configuration[self::CONFIG_API_URL]);
+      && $has_api_url;
   }
 
   /**
@@ -156,10 +213,27 @@ class EbisCloudSmsProvider extends SmsProviderBase {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     parent::submitConfigurationForm($form, $form_state);
 
-    $this->configuration[self::CONFIG_API_KEY] = $form_state->getValue(self::CONFIG_API_KEY);
-    $this->configuration[self::CONFIG_SERVICE_ID] = $form_state->getValue(self::CONFIG_SERVICE_ID);
-    $this->configuration[self::CONFIG_SHORTCODE] = $form_state->getValue(self::CONFIG_SHORTCODE);
-    $this->configuration[self::CONFIG_API_URL] = $form_state->getValue(self::CONFIG_API_URL);
+    // Only save API key if not set in settings.
+    $settings = Settings::get(self::SETTINGS_KEY);
+
+    if (empty($settings[self::CONFIG_API_KEY])) {
+      $this->configuration[self::CONFIG_API_KEY] = $form_state->getValue(self::CONFIG_API_KEY);
+    }
+
+    // Only save service_id if not set in settings.
+    if (!isset($settings[self::CONFIG_SERVICE_ID]) || $settings[self::CONFIG_SERVICE_ID] === '') {
+      $this->configuration[self::CONFIG_SERVICE_ID] = $form_state->getValue(self::CONFIG_SERVICE_ID);
+    }
+
+    // Only save shortcode if not set in settings.
+    if (empty($settings[self::CONFIG_SHORTCODE])) {
+      $this->configuration[self::CONFIG_SHORTCODE] = $form_state->getValue(self::CONFIG_SHORTCODE);
+    }
+
+    // Only save API URL if not set in settings.
+    if (empty($settings[self::CONFIG_API_URL])) {
+      $this->configuration[self::CONFIG_API_URL] = $form_state->getValue(self::CONFIG_API_URL);
+    }
   }
 
   /**
@@ -174,28 +248,36 @@ class EbisCloudSmsProvider extends SmsProviderBase {
     $api_url = $form_state->getValue(self::CONFIG_API_URL);
 
     // Only validate API key if not set in settings.
-    $settings_api_key = Settings::get('ebiscloud_sms')['api_key'] ?? '';
+    $settings_api_key = Settings::get(self::SETTINGS_KEY)[self::CONFIG_API_KEY] ?? '';
 
     if (empty($settings_api_key) && empty($api_key)) {
       $form_state->setErrorByName(self::CONFIG_API_KEY, $this->t('API Key is required.'));
     }
 
     // Only validate service_id if not set in settings.
-    $settings_service_id = Settings::get('ebiscloud_sms')['service_id'] ?? '';
+    $settings_service_id = Settings::get(self::SETTINGS_KEY)[self::CONFIG_SERVICE_ID] ?? '';
 
     if ($settings_service_id === '' && (!isset($service_id) || $service_id === '')) {
       $form_state->setErrorByName(self::CONFIG_SERVICE_ID, $this->t('Service ID is required.'));
     }
 
     // Only validate shortcode if not set in settings.
-    $settings_shortcode = Settings::get('ebiscloud_sms')['shortcode'] ?? '';
+    $settings_shortcode = Settings::get(self::SETTINGS_KEY)[self::CONFIG_SHORTCODE] ?? '';
 
     if (empty($settings_shortcode) && empty($shortcode)) {
       $form_state->setErrorByName(self::CONFIG_SHORTCODE, $this->t('Shortcode is required.'));
     }
 
-    if (!empty($api_url) && !filter_var($api_url, \FILTER_VALIDATE_URL)) {
-      $form_state->setErrorByName(self::CONFIG_API_URL, $this->t('Please enter a valid API URL.'));
+    // Only validate API URL if not set in settings.
+    $settings_api_url = Settings::get(self::SETTINGS_KEY)[self::CONFIG_API_URL] ?? '';
+
+    if (empty($settings_api_url)) {
+      if (empty($api_url)) {
+        $form_state->setErrorByName(self::CONFIG_API_URL, $this->t('API URL is required.'));
+      }
+      elseif (!filter_var($api_url, \FILTER_VALIDATE_URL)) {
+        $form_state->setErrorByName(self::CONFIG_API_URL, $this->t('Please enter a valid API URL.'));
+      }
     }
   }
 
@@ -224,11 +306,14 @@ class EbisCloudSmsProvider extends SmsProviderBase {
       }
 
       // Get service_id from settings or configuration.
-      $settings = Settings::get('ebiscloud_sms');
-      $service_id = $settings['service_id'] ?? $this->configuration[self::CONFIG_SERVICE_ID];
+      $settings = Settings::get(self::SETTINGS_KEY);
+      $service_id = $settings[self::CONFIG_SERVICE_ID] ?? $this->configuration[self::CONFIG_SERVICE_ID];
 
       // Get shortcode from settings or configuration.
-      $shortcode = $settings['shortcode'] ?? $this->configuration[self::CONFIG_SHORTCODE];
+      $shortcode = $settings[self::CONFIG_SHORTCODE] ?? $this->configuration[self::CONFIG_SHORTCODE];
+
+      // Get API URL from settings or configuration.
+      $api_url = $settings[self::CONFIG_API_URL] ?? $this->configuration[self::CONFIG_API_URL];
 
       // Prepare request data for EBISCloud API.
       $request_data = [
@@ -246,7 +331,7 @@ class EbisCloudSmsProvider extends SmsProviderBase {
       }
 
       // Make the API request.
-      $response = $this->httpClient->request('POST', $this->configuration[self::CONFIG_API_URL], [
+      $response = $this->httpClient->request('POST', $api_url, [
         'json' => $request_data,
         'timeout' => 30,
         'headers' => [
@@ -358,10 +443,10 @@ class EbisCloudSmsProvider extends SmsProviderBase {
    */
   protected function getApiKey(): ?string {
     // First try to get from Drupal settings.
-    $settings = Settings::get('ebiscloud_sms');
+    $settings = Settings::get(self::SETTINGS_KEY);
 
-    if (!empty($settings['api_key'])) {
-      return $settings['api_key'];
+    if (!empty($settings[self::CONFIG_API_KEY])) {
+      return $settings[self::CONFIG_API_KEY];
     }
 
     // Fallback to configuration (for when not set in settings).
