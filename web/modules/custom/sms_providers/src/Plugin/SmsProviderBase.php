@@ -17,6 +17,23 @@ abstract class SmsProviderBase extends PluginBase implements SmsProviderInterfac
 
   use StringTranslationTrait;
 
+  public const ERROR_CODE_API_ERROR = 'API_ERROR';
+
+  public const ERROR_CODE_EMPTY_RESPONSE = 'EMPTY_RESPONSE';
+
+  public const ERROR_CODE_EXCEPTION = 'EXCEPTION';
+
+  public const ERROR_CODE_HTTP_ERROR = 'HTTP_ERROR';
+
+  /**
+   * Standard error codes for SMS providers.
+   */
+  public const ERROR_CODE_NOT_CONFIGURED = 'NOT_CONFIGURED';
+
+  public const ERROR_CODE_REQUEST_FAILED = 'REQUEST_FAILED';
+
+  public const ERROR_CODE_UNEXPECTED_ERROR = 'UNEXPECTED_ERROR';
+
   /**
    * The logger channel name for SMS providers.
    */
@@ -63,13 +80,6 @@ abstract class SmsProviderBase extends PluginBase implements SmsProviderInterfac
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
-    $form['enabled'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Enable @provider', ['@provider' => $this->getLabel()]),
-      '#default_value' => $this->configuration['enabled'],
-      '#description' => $this->t('Enable this SMS provider.'),
-    ];
-
     return $form;
   }
 

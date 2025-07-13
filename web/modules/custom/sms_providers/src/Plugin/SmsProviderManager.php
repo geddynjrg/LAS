@@ -66,12 +66,12 @@ class SmsProviderManager extends DefaultPluginManager {
     $default_provider_id = $config->get(SmsProvidersSettingsForm::CONFIG_DEFAULT_PROVIDER);
 
     if (empty($default_provider_id)) {
-      // If no default set, try to get the first enabled provider.
-      $enabled = $this->getEnabledProviders();
+      // If no default set, try to get the first configured provider.
+      $configured = $this->getEnabledProviders();
 
-      if (!empty($enabled)) {
+      if (!empty($configured)) {
         /** @var \Drupal\sms_providers\Plugin\SmsProviderInterface */
-        return reset($enabled);
+        return reset($configured);
       }
 
       return NULL;
@@ -86,11 +86,7 @@ class SmsProviderManager extends DefaultPluginManager {
       $instance = $this->createInstance($default_provider_id, $configuration);
 
       if ($instance->isConfigured()) {
-        $config = $instance->getConfiguration();
-
-        if (!empty($config['enabled'])) {
-          return $instance;
-        }
+        return $instance;
       }
     }
     catch (\Exception $e) {
@@ -104,13 +100,13 @@ class SmsProviderManager extends DefaultPluginManager {
   }
 
   /**
-   * Gets all configured and enabled providers.
+   * Gets all configured providers.
    *
    * @return array
-   *   An array of provider instances that are configured and enabled.
+   *   An array of provider instances that are configured.
    */
   public function getEnabledProviders(): array {
-    $enabled_providers = [];
+    $configured_providers = [];
     $definitions = $this->getDefinitions();
 
     foreach ($definitions as $plugin_id => $definition) {
@@ -123,11 +119,7 @@ class SmsProviderManager extends DefaultPluginManager {
         $instance = $this->createInstance($plugin_id, $configuration);
 
         if ($instance->isConfigured()) {
-          $config = $instance->getConfiguration();
-
-          if (!empty($config['enabled'])) {
-            $enabled_providers[$plugin_id] = $instance;
-          }
+          $configured_providers[$plugin_id] = $instance;
         }
       }
       catch (\Exception $e) {
@@ -139,7 +131,7 @@ class SmsProviderManager extends DefaultPluginManager {
       }
     }
 
-    return $enabled_providers;
+    return $configured_providers;
   }
 
   /**
@@ -178,7 +170,7 @@ class SmsProviderManager extends DefaultPluginManager {
    * Gets options array for form select elements.
    *
    * @param bool $enabled_only
-   *   Whether to include only enabled providers.
+   *   Whether to include only configured providers.
    *
    * @return array
    *   An array suitable for form select options.

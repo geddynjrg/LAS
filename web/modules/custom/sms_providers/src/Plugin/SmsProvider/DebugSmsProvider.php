@@ -66,7 +66,7 @@ class DebugSmsProvider extends SmsProviderBase {
    * {@inheritdoc}
    */
   public function isConfigured(): bool {
-    return !empty($this->configuration['enabled']);
+    return TRUE;
   }
 
   /**
