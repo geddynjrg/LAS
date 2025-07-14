@@ -185,12 +185,14 @@ class EbisCloudSmsProvider extends SmsProviderBase {
    * {@inheritdoc}
    */
   public function isConfigured(): bool {
+    $settings = Settings::get(self::SETTINGS_KEY) ?? [];
+
     // Check if API key is available (either in settings or configuration).
     $has_api_key = !empty($this->getApiKey());
 
     // Check service_id (either in settings or configuration).
-    $settings = Settings::get(self::SETTINGS_KEY);
-    $has_service_id = !empty($settings[self::CONFIG_SERVICE_ID])
+    // Service ID can be '0' which is a valid value.
+    $has_service_id = (isset($settings[self::CONFIG_SERVICE_ID]) && $settings[self::CONFIG_SERVICE_ID] !== '')
       || (isset($this->configuration[self::CONFIG_SERVICE_ID]) && $this->configuration[self::CONFIG_SERVICE_ID] !== '');
 
     // Check shortcode (either in settings or configuration).
