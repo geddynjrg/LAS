@@ -1,5 +1,5 @@
 import { IconArrowLeft, IconPinEnd } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
@@ -16,8 +16,38 @@ import { Container } from "@workspace/ui/components/container";
 import { Underline } from "@workspace/ui/components/underline";
 import { ApplySideLogo } from "@workspace/ui/components/uwezo/apply-side-logo";
 
-export default function Page() {
-  const t = useTranslations("ApplyPage");
+import { getApplicationInstructions } from "@/lib/api/application/instruction";
+import type { DocumentRequirement } from "@/lib/api/schema/application/instruction.schema";
+
+// Helper function to format image filename into a readable title
+function formatImageTitle(filename: string): string {
+  return (
+    filename
+      // Remove file extension
+      .replace(/\.[^/.]+$/, "")
+      // Replace hyphens and underscores with spaces
+      .replace(/[-_]/g, " ")
+      // Capitalize first letter of each word
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  );
+}
+
+export default async function Page() {
+  const t = await getTranslations("ApplyPage");
+
+  let data;
+  try {
+    const instructions = await getApplicationInstructions();
+    data = instructions.data;
+  } catch (error) {
+    console.error("Failed to fetch application instructions:", error);
+    // Fallback data to prevent hydration issues
+    data = {
+      title: "Application Instructions",
+      body: null,
+      documents_required: [],
+    };
+  }
 
   return (
     <div className="relative mt-4 flex flex-1 flex-col">
@@ -33,116 +63,31 @@ export default function Page() {
               {t("backToFrontPage")}
             </Link>
           </Button>
-          <h1 className="typo-h2">{t("needToKnowBefore")}</h1>
-          <p className="typo-body-large">{t("description")}</p>
+          <h1 className="typo-h2">{data.title}</h1>
+          {data.body && (data.body.processed || data.body.value) && (
+            <div
+              className="typo-body-large"
+              suppressHydrationWarning
+              dangerouslySetInnerHTML={{
+                __html: data.body.processed || data.body.value || "",
+              }}
+            />
+          )}
         </div>
       </Container>
 
       <h1 className="typo-h3 mb-8 px-4 md:mx-auto">{t("documentsRequired")}</h1>
 
       <Container className="space-y-8 px-0 pb-8 md:max-w-[600px]">
-        <ApplyContentContainer>
-          <SectionHeader index={1}>{t("validGroupSectionTitle")}</SectionHeader>
-          <div className="flex flex-col items-center">
-            <p className="typo-body-medium mb-3">{t("example")}</p>
-            <Image
-              className="md:border md:border-neutral-300 md:shadow-lg"
-              src={"/images/sample-certificate.png"}
-              alt="cert example"
-              width={300}
-              height={200}
-            />
-            <div className="flex flex-row gap-1">
-              <Link href="#" className={"text-primary typo-link"}>
-                <Underline
-                  variant="primary"
-                  className="text-primary items-center"
-                >
-                  {t("moreInfoAboutTheCertificate")}
-                  <IconPinEnd className="scale-x-[-1]" />
-                </Underline>
-              </Link>
-            </div>
-          </div>
-        </ApplyContentContainer>
-
-        <ApplyContentContainer>
-          <SectionHeader index={2}>
-            {t("groupCreditHistorySectionTitle")}
-          </SectionHeader>
-          <div className="mb-4 px-4">
-            <p className="typo-body-medium">{t("groupCreditHistory")}</p>
-            <ul className="list-inside list-disc px-4 py-4">
-              <li>{t("creditHistoryList.tableBankingLedger")}</li>
-              <li>{t("creditHistoryList.dischargeCertificate")}</li>
-              <li>{t("creditHistoryList.letterOfClearance")}</li>
-              <li>{t("creditHistoryList.others")}</li>
-            </ul>
-            <p className="typo-body-medium">
-              {t("kindlyProvideAllRelatedToYourGroup")}
-            </p>
-          </div>
-          <div>
-            <Carousel>
-              <CarouselContent>
-                <CarouselItem className="flex flex-col items-center">
-                  <p className="typo-body-medium mb-3 font-bold">Example 1</p>
-                  <Image
-                    className="md:border md:border-neutral-300 md:shadow-lg"
-                    src={"/images/cert-example.jpg"}
-                    alt="ledger"
-                    width={300}
-                    height={200}
-                  />
-                </CarouselItem>
-                <CarouselItem className="flex flex-col items-center">
-                  <p className="typo-body-medium mb-3 font-bold">Example 2</p>
-                  <Image
-                    className="md:border md:border-neutral-300 md:shadow-lg"
-                    src={"/images/cert-example.jpg"}
-                    alt="ledger"
-                    width={300}
-                    height={200}
-                  />
-                </CarouselItem>
-              </CarouselContent>
-              <Link
-                href="#"
-                className={
-                  "text-primary typo-link flex flex-row justify-center gap-1 px-4"
-                }
-              >
-                <Underline
-                  variant="primary"
-                  className="text-primary items-center"
-                >
-                  {t("moreInfoAboutCredit")}
-                  <IconPinEnd className="scale-x-[-1]" />
-                </Underline>
-              </Link>
-              <CarouselControls />
-            </Carousel>
-          </div>
-        </ApplyContentContainer>
-
-        <ApplyContentContainer>
-          <SectionHeader index={3}>
-            {t("validGroupMembersIdSectionTitle")}
-          </SectionHeader>
-          <div className="flex flex-col items-center">
-            <p className="typo-body-medium mb-3 font-bold">
-              {t("exampleOfNationalId")}
-            </p>
-            <Image
-              src={"/images/id-example.jpg"}
-              alt="national ID example"
-              width={300}
-              height={200}
-            />
-          </div>
-          <p className="typo-body-medium px-4">{t("membersMustBeInformed")}</p>
-        </ApplyContentContainer>
+        {data.documents_required.map((document, index) => (
+          <DocumentRequirementSection
+            key={document.title}
+            document={document}
+            index={index + 1}
+          />
+        ))}
       </Container>
+
       <ActionBar>
         <Button className="px-22 mx-auto" asChild>
           <Link href="/apply/create">{t("beginFillingForm")}</Link>
@@ -151,6 +96,103 @@ export default function Page() {
     </div>
   );
 }
+
+const DocumentRequirementSection: FC<{
+  document: DocumentRequirement;
+  index: number;
+}> = ({ document, index }) => {
+  return (
+    <ApplyContentContainer>
+      <SectionHeader index={index}>{document.title}</SectionHeader>
+
+      {/* Description */}
+      {document.subtitle &&
+        (document.subtitle.processed || document.subtitle.value) && (
+          <div className="mb-4 px-4">
+            <div
+              className="typo-body-medium [&_ul]:list-inside [&_ul]:list-disc [&_ul]:px-4 [&_ul]:py-4"
+              suppressHydrationWarning
+              dangerouslySetInnerHTML={{
+                __html:
+                  document.subtitle.processed || document.subtitle.value || "",
+              }}
+            />
+          </div>
+        )}
+
+      {/* Example Images */}
+      {document.example_images && document.example_images.length > 0 && (
+        <div className="flex flex-col items-center">
+          {document.example_images.length === 1 &&
+          document.example_images[0] ? (
+            // Single image display
+            <div className="flex flex-col items-center">
+              <p className="typo-body-medium mb-3 font-bold">
+                {formatImageTitle(document.example_images[0].filename)}
+              </p>
+              <Image
+                // className="md:border md:border-neutral-300 md:shadow-lg"
+                src={document.example_images[0].url}
+                alt={document.example_images[0].filename}
+                width={300}
+                height={200}
+              />
+            </div>
+          ) : (
+            // Multiple images in carousel
+            <Carousel>
+              <CarouselContent>
+                {document.example_images.filter(Boolean).map((example) => (
+                  <CarouselItem
+                    key={example.fid}
+                    className="flex flex-col items-center"
+                  >
+                    <p className="typo-body-medium mb-3 font-bold">
+                      {formatImageTitle(example.filename)}
+                    </p>
+                    <Image
+                      // className="md:border md:border-neutral-300 md:shadow-lg"
+                      src={example.url}
+                      alt={example.filename}
+                      width={300}
+                      height={200}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselControls />
+            </Carousel>
+          )}
+
+          {/* Examples subtitle */}
+          {document.examples_subtitle && (
+            <p className="typo-body-medium px-4">
+              {document.examples_subtitle}
+            </p>
+          )}
+
+          {/* More info link */}
+          {document.link && (
+            <div className="mt-2 flex flex-row gap-1">
+              <Link
+                href={document.link.uri}
+                className={"text-primary typo-link"}
+              >
+                <Underline
+                  variant="primary"
+                  className="text-primary items-center"
+                >
+                  {document.link.title}
+                  <IconPinEnd className="scale-x-[-1]" />
+                </Underline>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </ApplyContentContainer>
+  );
+};
 
 const SectionHeader: FC<{
   index: number;
