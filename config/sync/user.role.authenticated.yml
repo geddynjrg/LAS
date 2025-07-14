@@ -12,6 +12,7 @@ dependencies:
     - rest.resource.api_user_profile
     - rest.resource.api_user_registration
     - rest.resource.application_instructions
+    - rest.resource.application_taxonomy_vocabularies
     - rest.resource.rest_framework_node_resource
     - rest.resource.rest_framework_path_resource
   module:
@@ -38,6 +39,7 @@ permissions:
   - 'post comments'
   - 'restful get api_user_profile'
   - 'restful get application_instructions'
+  - 'restful get application_taxonomy_vocabularies'
   - 'restful get rest_framework_node_resource'
   - 'restful get rest_framework_path_resource'
   - 'restful post api_login'
