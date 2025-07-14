@@ -5,6 +5,7 @@ namespace Drupal\api_application\Plugin\rest\resource;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\rest_framework\Plugin\rest\resource\RestFrameworkResourceBase;
+use Drupal\api_application\Service\ConfigFileService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,6 +43,13 @@ class ApplicationInstructionsResource extends RestFrameworkResourceBase {
   protected $entityTypeManager;
 
   /**
+   * The config file service.
+   *
+   * @var \Drupal\api_application\Service\ConfigFileService
+   */
+  protected $configFileService;
+
+  /**
    * Constructs a new ApplicationInstructionsResource object.
    *
    * @param array $configuration
@@ -66,6 +74,8 @@ class ApplicationInstructionsResource extends RestFrameworkResourceBase {
    *   The config factory.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\api_application\Service\ConfigFileService $config_file_service
+   *   The config file service.
    */
   public function __construct(
     array $configuration,
@@ -79,10 +89,12 @@ class ApplicationInstructionsResource extends RestFrameworkResourceBase {
     AliasManagerInterface $alias_manager,
     ConfigFactoryInterface $config_factory,
     EntityTypeManagerInterface $entity_type_manager,
+    ConfigFileService $config_file_service,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger, $path_matcher, $field_mapper, $language_manager, $alias_manager);
     $this->configFactory = $config_factory;
     $this->entityTypeManager = $entity_type_manager;
+    $this->configFileService = $config_file_service;
   }
 
   /**
@@ -100,7 +112,8 @@ class ApplicationInstructionsResource extends RestFrameworkResourceBase {
       $container->get('language_manager'),
       $container->get('path_alias.manager'),
       $container->get('config.factory'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('api_application.config_file_service')
     );
   }
 
@@ -222,14 +235,47 @@ class ApplicationInstructionsResource extends RestFrameworkResourceBase {
           ];
         }
 
-        // Process example images.
+        // Process example images using the new UUID-based system.
         if (!empty($document['example_images'])) {
+          // Handle both old FID format and new UUID format for backward
+          // compatibility.
+          $image_fids = [];
+
+          // Check if we have old FID format or new UUID format.
+          $has_old_format = FALSE;
           foreach ($document['example_images'] as $image) {
-            if (!empty($image['fid'])) {
-              $file = $file_storage->load($image['fid']);
+            if (isset($image['fid'])) {
+              $has_old_format = TRUE;
+              $image_fids[] = $image['fid'];
+            }
+          }
+
+          if ($has_old_format) {
+            // Old format: direct FID references.
+            foreach ($image_fids as $fid) {
+              $file = $file_storage->load($fid);
               if ($file) {
                 $doc_data['example_images'][] = [
                   'fid' => $file->id(),
+                  'uuid' => $file->uuid(),
+                  'filename' => $file->getFilename(),
+                  'url' => $file->createFileUrl(FALSE),
+                  'size' => $file->getSize(),
+                  'mime_type' => $file->getMimeType(),
+                ];
+              }
+            }
+          }
+          else {
+            // New format: UUID-based references.
+            $resolved_fids = $this->configFileService->resolveConfigFilesToFids($document['example_images']);
+
+            foreach ($resolved_fids as $fid) {
+              $file = $file_storage->load($fid);
+              if ($file) {
+                $doc_data['example_images'][] = [
+                  'fid' => $file->id(),
+                  'uuid' => $file->uuid(),
                   'filename' => $file->getFilename(),
                   'url' => $file->createFileUrl(FALSE),
                   'size' => $file->getSize(),
