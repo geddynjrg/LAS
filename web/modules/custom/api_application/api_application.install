@@ -522,7 +522,7 @@ function api_application_update_11007() {
 }
 
 /**
- * Update bank_name field from string to entity reference and create banks vocabulary.
+ * Update bank_name field to entity reference and create banks vocabulary.
  */
 function api_application_update_11009() {
   $entity_type_manager = \Drupal::entityTypeManager();
