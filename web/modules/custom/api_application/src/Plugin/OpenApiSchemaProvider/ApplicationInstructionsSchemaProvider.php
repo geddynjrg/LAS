@@ -217,6 +217,11 @@ class ApplicationInstructionsSchemaProvider extends OpenApiSchemaProviderBase {
             'description' => 'The file ID',
             'example' => 123,
           ],
+          'uuid' => [
+            'type' => 'string',
+            'description' => 'The file UUID',
+            'example' => '123e4567-e89b-12d3-a456-426614174000',
+          ],
           'filename' => [
             'type' => 'string',
             'description' => 'The filename',
@@ -239,7 +244,7 @@ class ApplicationInstructionsSchemaProvider extends OpenApiSchemaProviderBase {
             'example' => 'image/webp',
           ],
         ],
-        'required' => ['fid', 'filename', 'url', 'size', 'mime_type'],
+        'required' => ['fid', 'uuid', 'filename', 'url', 'size', 'mime_type'],
       ],
       'Error' => [
         'type' => 'object',
@@ -329,6 +334,7 @@ class ApplicationInstructionsSchemaProvider extends OpenApiSchemaProviderBase {
                           'example_images' => [
                             [
                               'fid' => 123,
+                              'uuid' => '123e4567-e89b-12d3-a456-426614174000',
                               'filename' => 'certificate-example.webp',
                               'url' => 'https://example.com/sites/default/files/application_instructions/examples/certificate-example.webp',
                               'size' => 45678,
