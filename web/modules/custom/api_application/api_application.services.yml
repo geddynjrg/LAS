@@ -1,0 +1,8 @@
+services:
+  api_application.config_file_service:
+    class: Drupal\api_application\Service\ConfigFileService
+    arguments:
+      - '@entity_type.manager'
+      - '@file_system'
+      - '@logger.factory'
+      - '@file.usage'

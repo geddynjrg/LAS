@@ -5,6 +5,7 @@ namespace Drupal\api_application\Form;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\api_application\Service\ConfigFileService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,13 +21,23 @@ class ApplicationSettingsForm extends ConfigFormBase {
   protected $entityTypeManager;
 
   /**
+   * The config file service.
+   *
+   * @var \Drupal\api_application\Service\ConfigFileService
+   */
+  protected $configFileService;
+
+  /**
    * Constructs a new ApplicationSettingsForm.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\api_application\Service\ConfigFileService $config_file_service
+   *   The config file service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ConfigFileService $config_file_service) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->configFileService = $config_file_service;
   }
 
   /**
@@ -34,7 +45,8 @@ class ApplicationSettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('api_application.config_file_service')
     );
   }
 
@@ -260,14 +272,11 @@ class ApplicationSettingsForm extends ConfigFormBase {
         ],
       ];
 
-      // Get stored file IDs.
+      // Get stored file IDs from UUID references.
       $default_fids = [];
       if (!empty($document['example_images'])) {
-        foreach ($document['example_images'] as $img) {
-          if (is_array($img) && !empty($img['fid'])) {
-            $default_fids[] = $img['fid'];
-          }
-        }
+        // Convert UUID-based file references to current environment FIDs.
+        $default_fids = $this->configFileService->resolveConfigFilesToFids($document['example_images']);
       }
 
       // Multiple file upload field.
@@ -463,20 +472,11 @@ class ApplicationSettingsForm extends ConfigFormBase {
 
           // Process example images.
           if (!empty($document['examples_container']['images'])) {
-            foreach ($document['examples_container']['images'] as $fid) {
-              if ($fid) {
-                // Load and mark file as permanent.
-                $file = $this->entityTypeManager->getStorage('file')->load($fid);
-                if ($file) {
-                  $file->setPermanent();
-                  $file->save();
+            // Convert FIDs to UUID-based configuration format.
+            $doc_data['example_images'] = $this->configFileService->convertFidsToConfigFormat($document['examples_container']['images']);
 
-                  $doc_data['example_images'][] = [
-                    'fid' => $fid,
-                  ];
-                }
-              }
-            }
+            // Ensure files are marked as permanent.
+            $this->configFileService->ensureFilesPermanent($document['examples_container']['images']);
           }
 
           $documents_required[] = $doc_data;
