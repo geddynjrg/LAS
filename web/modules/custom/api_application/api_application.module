@@ -183,7 +183,7 @@ function template_preprocess_application(array &$variables) {
     'proposed_repayment_period' => $application->get('proposed_repayment_period')->value ?: 0,
 
     // Bank details.
-    'bank_name' => $application->get('bank_name')->value ?: '',
+    'bank_name' => $application->get('bank_name')->entity ? $application->get('bank_name')->entity->getName() : '',
     'bank_branch' => $application->get('bank_branch')->value ?: '',
     'bank_account_number' => $application->get('bank_account_number')->value ?: '',
 
