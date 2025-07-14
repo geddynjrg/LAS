@@ -1,21 +1,8 @@
 import { z } from "zod";
 
 import { DescriptionSchema } from "@/lib/api/schema/description.schema";
+import { AvailableLanguagesSchema } from "@/lib/api/schema/language-availability.schema";
 import { BlockSchema } from "@/lib/api/types";
-
-// Schema for individual language availability
-export const LanguageAvailabilitySchema = z.object({
-  langcode: z.string(),
-  name: z.string(),
-  url: z.string(),
-  path: z.string(),
-});
-
-// Schema for available languages object
-export const AvailableLanguagesSchema = z.record(
-  z.string(),
-  LanguageAvailabilitySchema,
-);
 
 export const LandingNodeSchema = z.object({
   data: z.object({
@@ -48,6 +35,4 @@ export const LandingNodeSchema = z.object({
   }),
 });
 
-export type LanguageAvailability = z.infer<typeof LanguageAvailabilitySchema>;
-export type AvailableLanguages = z.infer<typeof AvailableLanguagesSchema>;
 export type LandingNode = z.infer<typeof LandingNodeSchema>;

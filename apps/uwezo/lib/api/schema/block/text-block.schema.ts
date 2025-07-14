@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { LinkButtonSchema } from "@/lib/api/schema/link-button.schema";
 import { DescriptionSchema } from "@/lib/api/schema/description.schema";
+import { LinkButtonSchema } from "@/lib/api/schema/link-button.schema";
 
 export const TextBlockSchema = z.object({
   block_type: z.literal("text_block"),

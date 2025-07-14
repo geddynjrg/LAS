@@ -10,4 +10,4 @@ export function isTextBlocksContainer(
   component: BlockType,
 ): component is TextBlocksContainer {
   return component.block_type === "text_blocks";
-} 
+}

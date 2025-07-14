@@ -34,16 +34,9 @@ api.use({
     return request;
   },
 
-  async onResponse({ response, request }) {
-    // Check if this is a protected API call (not login/logout/register)
-    const isAuthEndpoint =
-      request.url.includes("/login") ||
-      request.url.includes("/logout") ||
-      request.url.includes("/register") ||
-      request.url.includes("/password/reset");
-
-    // Only redirect on 401 for protected endpoints
-    if (response.status === 401 && !isAuthEndpoint) {
+  async onResponse({ response }) {
+    // if the response is 401, we need to clear the session and redirect to login page
+    if (response.status === 401) {
       redirect("/logout");
     }
 
