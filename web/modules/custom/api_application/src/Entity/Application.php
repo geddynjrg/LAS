@@ -774,23 +774,31 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('form', TRUE);
 
     // Bank account details.
-    $fields['bank_name'] = BaseFieldDefinition::create('string')
+    $fields['bank_name'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Group Bank name'))
-      ->setDescription(t('The name of the bank.'))
+      ->setDescription(t('Select the bank name.'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setSettings([
-        'max_length' => 255,
-        'text_processing' => 0,
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler', 'default:taxonomy_term')
+      ->setSetting('handler_settings', [
+        'target_bundles' => [
+          'banks' => 'banks',
+        ],
       ])
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'string',
+        'type' => 'entity_reference_label',
         'weight' => 34,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
+        'type' => 'entity_reference_autocomplete',
         'weight' => 34,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ],
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
