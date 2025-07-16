@@ -10,11 +10,12 @@ This directory contains the configuration for log monitoring using the Grafana +
 
 ## Services
 
-### Loki (Port 3101)
+### Loki (Internal Only)
 
 - Stores and indexes application logs
 - Provides a query API for log retrieval
 - Lightweight alternative to Elasticsearch
+- Accessible internally by other containers only
 
 ### Promtail
 
@@ -22,11 +23,12 @@ This directory contains the configuration for log monitoring using the Grafana +
 - Configured to read from `/var/lib/docker/containers/`
 - Sends logs to Loki with proper labeling
 
-### Grafana (Port 3002)
+### Grafana (Proxied via Uwezo)
 
 - Web UI for viewing logs and creating dashboards
 - Default credentials: `admin` / `admin123`
 - Pre-configured with Loki as a datasource
+- Accessible through reverse proxy at `/monitoring/` path via uwezo service
 
 ## Getting Started
 
@@ -38,7 +40,7 @@ This directory contains the configuration for log monitoring using the Grafana +
 
 2. **Access Grafana:**
 
-   - Open http://localhost:3002
+   - Open http://localhost:8080/monitoring/
    - Login with username: `admin`, password: `admin123`
 
 3. **View logs:**
@@ -93,7 +95,7 @@ The pre-configured dashboard includes:
 
 1. Check if containers are running: `docker-compose ps`
 2. Verify Promtail is collecting logs: `docker-compose logs promtail`
-3. Check Loki is receiving data: `curl http://localhost:3101/metrics`
+3. Check Loki is receiving data: `docker-compose logs loki`
 
 ### Grafana connection issues:
 

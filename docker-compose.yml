@@ -15,6 +15,8 @@ services:
     labels:
       - "promtail.enable=true"
       - "promtail.job=uwezo-app"
+    depends_on:
+      - grafana
 
   docs:
     build:
@@ -35,8 +37,7 @@ services:
   # Log storage and processing
   loki:
     image: grafana/loki:2.9.0
-    ports:
-      - "3101:3100"
+    # No external port - internal only
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - loki-data:/loki
@@ -57,11 +58,12 @@ services:
   # Log visualization dashboard
   grafana:
     image: grafana/grafana:10.0.0
-    ports:
-      - "3002:3000"
+    # No external port - internal only, proxied through uwezo
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin123
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:8080/monitoring/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - grafana-data:/var/lib/grafana
       - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
