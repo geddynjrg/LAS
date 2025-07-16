@@ -16,14 +16,6 @@ const nextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: "/monitoring/:path*",
-        destination: "http://grafana:3000/:path*",
-      },
-    ];
-  },
 };
 
 export default withNextIntl(nextConfig);
