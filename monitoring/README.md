@@ -22,7 +22,7 @@ This directory contains the configuration for log monitoring using the Grafana +
 - Configured to read from `/var/lib/docker/containers/`
 - Sends logs to Loki with proper labeling
 
-### Grafana (Port 3001)
+### Grafana (Port 3002)
 
 - Web UI for viewing logs and creating dashboards
 - Default credentials: `admin` / `admin123`
@@ -38,7 +38,7 @@ This directory contains the configuration for log monitoring using the Grafana +
 
 2. **Access Grafana:**
 
-   - Open http://localhost:3001
+   - Open http://localhost:3002
    - Login with username: `admin`, password: `admin123`
 
 3. **View logs:**
