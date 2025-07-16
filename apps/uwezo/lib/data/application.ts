@@ -135,7 +135,7 @@ export async function getApplicationById(id: string) {
 }
 
 export async function createApplication() {
-  const session = await auth();
+  // const session = await auth();
 
   // if (!session?.user?.email) {
   //   throw new Error("User not found");
@@ -144,7 +144,7 @@ export async function createApplication() {
   const generalDetails: GeneralDetails = {
     applicationId: createApplicationId(),
     status: "UNSUBMITTED",
-    user: session?.user?.email || "test@test.com",
+    user: "test@test.com",
     applicationProgress: 1,
   };
   dummyApplicationsTest.push({ generalDetails });
