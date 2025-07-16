@@ -10,7 +10,7 @@ This directory contains the configuration for log monitoring using the Grafana +
 
 ## Services
 
-### Loki (Port 3100)
+### Loki (Port 3101)
 
 - Stores and indexes application logs
 - Provides a query API for log retrieval
@@ -93,7 +93,7 @@ The pre-configured dashboard includes:
 
 1. Check if containers are running: `docker-compose ps`
 2. Verify Promtail is collecting logs: `docker-compose logs promtail`
-3. Check Loki is receiving data: `curl http://localhost:3100/metrics`
+3. Check Loki is receiving data: `curl http://localhost:3101/metrics`
 
 ### Grafana connection issues:
 
