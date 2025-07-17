@@ -10,7 +10,7 @@ import { ApplicationReviewLoanConditions } from "@/components/application-review
 import { ApplicationReviewMembers } from "@/components/application-review-members";
 import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
 import { ApplicationStatus } from "@/components/application-status";
-import { getApplicationById } from "@/lib/data/application";
+import { getApplicationById } from "@/lib/data/application-db";
 
 interface Props {
   params: Promise<{ id: string }>;

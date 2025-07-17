@@ -10,6 +10,7 @@ import { Button } from "@workspace/ui/components/button";
 import { ModalButton } from "@workspace/ui/components/modal-button";
 
 import { updateApplicationStatusById } from "@/app/apply/[id]/review/update-application-status-by-id-action";
+import { ApplicationStatus } from "@/generated/prisma";
 
 export interface ReviewDataProps {
   id: string;
@@ -30,7 +31,7 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
         </Button>
         <ModalButton
           onConfirm={async () => {
-            await updateApplicationStatusById(id);
+            await updateApplicationStatusById(id, ApplicationStatus.SUBMITTED);
             router.push(`/apply/${id}/done`);
           }}
           cancelTitle={t("Common.back")}

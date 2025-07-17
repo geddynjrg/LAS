@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect api requests to api route with correct headers
-  if (path.startsWith("/api")) {
+  if (path.startsWith("/api") && !path.startsWith("/api/upload")) {
     const newUrl = new URL(
       `${path}${request.nextUrl.search}`,
       process.env.NEXT_API_URL,

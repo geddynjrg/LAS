@@ -9,7 +9,7 @@ import {
   proposedBusinessDataSchema,
   type ProposedBusinessData,
 } from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
-import { updateApplicationProposedBusinessData } from "@/lib/data/application";
+import { updateApplicationProposedBusinessData } from "@/lib/data/application-db";
 
 export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
   _prev,

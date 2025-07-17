@@ -9,7 +9,7 @@ import {
   loanConditionsDataSchema,
   type LoanConditionsData,
 } from "@/app/apply/[id]/loan-conditions/loan-conditions-schema";
-import { updateApplicationLoanConditionsData } from "@/lib/data/application";
+import { updateApplicationLoanConditionsData } from "@/lib/data/application-db";
 
 export const loanConditionsAction: FormAction<LoanConditionsData> = async (
   _prev,

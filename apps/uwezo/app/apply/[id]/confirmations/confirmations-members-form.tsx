@@ -10,7 +10,7 @@ import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Container } from "@workspace/ui/components/container";
 import { DataNode } from "@workspace/ui/components/data-node";
 import { DataPair } from "@workspace/ui/components/data-pair";
-import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
+import { Field, Form } from "@workspace/ui/components/form";
 import { Loader } from "@workspace/ui/components/loader";
 import { ModalButton } from "@workspace/ui/components/modal-button";
 import { Card } from "@workspace/ui/components/uwezo/card";
@@ -19,11 +19,11 @@ import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   membersConfirmationDataSchema,
   type MembersConfirmationData,
 } from "@/app/apply/[id]/confirmations/members-confirmation-schema";
+import { ReviewFooter } from "@/app/apply/[id]/review/review-footer";
 import { updateApplicationStatusById } from "@/app/apply/[id]/review/update-application-status-by-id-action";
 import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
 import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
@@ -42,7 +42,6 @@ export interface ConfirmMembersFormProps {
 export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
   id,
   action,
-  onBack,
   members,
   application,
 }) => {
@@ -60,8 +59,6 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
     Math.ceil(members.length * 0.7) >
       members.map((member) => member.status === "confirmed").length,
   );
-
-  const nextUrl = `/apply/${id}/review`;
 
   const confirmedMembers = membersList.filter(
     (member) => member.status === "confirmed",
@@ -294,7 +291,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       {/* TODO: Currently pass empty list to server, one day if needed to only sent to accepted users then pass on users id in the list */}
       <input type="hidden" name="membersConfirmation" value={"[]"} />
 
-      <ApplyFormActionBar onBack={onBack} hideNext />
+      <ReviewFooter id={id} />
     </Form>
   );
 };

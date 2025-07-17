@@ -1,5 +1,46 @@
+version: "3.8"
+
 services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: uwezo_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: uwezo_applications
+      MYSQL_USER: uwezo_user
+      MYSQL_PASSWORD: uwezo_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: uwezo_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "8081:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Uwezo Application
   uwezo:
+    container_name: uwezo_app
     env_file: ./apps/uwezo/.env
     build:
       context: .
@@ -7,70 +48,26 @@ services:
     restart: unless-stopped
     ports:
       - 8080
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    labels:
-      - "promtail.enable=true"
-      - "promtail.job=uwezo-app"
+    environment:
+      - DATABASE_URL=mysql://uwezo_user:uwezo_password@mysql:3306/uwezo_applications
+      - NODE_ENV=production
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./apps/uwezo/uploads:/app/uploads
 
+  # Documentation
   docs:
+    container_name: uwezo_docs
     build:
       context: .
       dockerfile: ./apps/docs/Dockerfile
     restart: unless-stopped
     ports:
-      - 80
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    labels:
-      - "promtail.enable=true"
-      - "promtail.job=docs-app"
+      - "8082:80"
 
-  # Log storage and processing
-  loki:
-    image: grafana/loki:2.9.0
-    ports:
-      - "3101:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    volumes:
-      - loki-data:/loki
-    restart: unless-stopped
-
-  # Log collection agent
-  promtail:
-    image: grafana/promtail:2.9.0
-    volumes:
-      - /var/log:/var/log:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
-    command: -config.file=/etc/promtail/config.yml
-    restart: unless-stopped
-    depends_on:
-      - loki
-
-  # Log visualization dashboard
-  grafana:
-    image: grafana/grafana:10.0.0
-    ports:
-      - "3002:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-      - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./monitoring/dashboards:/var/lib/grafana/dashboards
-    restart: unless-stopped
-    depends_on:
-      - loki
-
+# Volumes
 volumes:
-  loki-data:
-  grafana-data:
+  mysql_data:
+    driver: local

@@ -5,7 +5,7 @@ import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import { membersDataAction } from "@/app/apply/[id]/members/members-data-action";
 import { MembersDataForm } from "@/app/apply/[id]/members/members-data-form";
-import { getApplicationById } from "@/lib/data/application";
+import { getApplicationById } from "@/lib/data/application-db";
 
 export interface MembersPageProps {
   params: Promise<{ id: string }>;

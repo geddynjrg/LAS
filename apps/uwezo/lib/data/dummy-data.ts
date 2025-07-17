@@ -186,11 +186,13 @@ export const dummyApplications: ApplicationData[] = [
       background: {
         purposeOfTheGroup: ["Welfare issues"],
         keyActivitiesOfTheGroup: ["Value chain"],
-        groupCreditHistory: {
-          fid: 9,
-          filename: "sample-9.jpg",
-          url: "/images/cert-example.jpg",
-        },
+        groupCreditHistory: [
+          {
+            fid: 9,
+            filename: "sample-9.jpg",
+            url: "/images/cert-example.jpg",
+          },
+        ],
         valueChain: ["Blue economy", "Cotton and textiles"],
         tableBanking: {},
       },
@@ -211,9 +213,11 @@ export const dummyApplications: ApplicationData[] = [
           gender: "Male",
           type: "Chairman",
           phoneNumber: "0712345678",
-          photoOfId: new File(["Sample content"], "sample.txt", {
-            type: "text/plain",
-          }),
+          photoOfId: {
+            fid: 10,
+            filename: "sample-10.txt",
+            url: "/images/id-example.jpg",
+          },
           disability: {
             certificateOfDisability: "",
             pwdNumber: undefined,
@@ -266,11 +270,13 @@ export const dummyApplications: ApplicationData[] = [
       background: {
         purposeOfTheGroup: ["Other"],
         keyActivitiesOfTheGroup: ["Table banking"],
-        groupCreditHistory: {
-          fid: 3,
-          filename: "sample-3.jpg",
-          url: "/images/cert-example.jpg",
-        },
+        groupCreditHistory: [
+          {
+            fid: 3,
+            filename: "sample-3.jpg",
+            url: "/images/cert-example.jpg",
+          },
+        ],
         valueChain: [],
         tableBanking: {
           tableBankingExperience: 3,
@@ -296,9 +302,11 @@ export const dummyApplications: ApplicationData[] = [
           gender: "Male",
           type: "Chairman",
           phoneNumber: "0712345678",
-          photoOfId: new File(["Sample content"], "sample.txt", {
-            type: "text/plain",
-          }),
+          photoOfId: {
+            fid: 11,
+            filename: "sample-11.txt",
+            url: "/images/id-example.jpg",
+          },
           disability: {
             certificateOfDisability: "",
             pwdNumber: undefined,
@@ -351,11 +359,13 @@ export const dummyApplications: ApplicationData[] = [
       background: {
         purposeOfTheGroup: ["Income generating activities"],
         keyActivitiesOfTheGroup: ["Table banking"],
-        groupCreditHistory: {
-          fid: 6,
-          filename: "sample-6.jpg",
-          url: "/images/cert-example.jpg",
-        },
+        groupCreditHistory: [
+          {
+            fid: 6,
+            filename: "sample-6.jpg",
+            url: "/images/cert-example.jpg",
+          },
+        ],
         valueChain: [],
         tableBanking: {
           tableBankingExperience: 3,
@@ -420,24 +430,30 @@ export const dummyMembers: Omit<Member, "type" | "phoneNumber">[] = [
     fullname: "John Doe",
     nationalIdCode: "12345678",
     gender: "Male",
-    photoOfId: new File(["Sample content"], "sample.txt", {
-      type: "text/plain",
-    }),
+    photoOfId: {
+      fid: 12,
+      filename: "sample-12.txt",
+      url: "/images/id-example.jpg",
+    },
   },
   {
     fullname: "Jane Wanjiku",
     nationalIdCode: "87654321",
     gender: "Female",
-    photoOfId: new File(["Sample content"], "sample.txt", {
-      type: "text/plain",
-    }),
+    photoOfId: {
+      fid: 13,
+      filename: "sample-13.txt",
+      url: "/images/id-example.jpg",
+    },
   },
   {
     fullname: "Ali Mohamed",
     nationalIdCode: "11223344",
     gender: "Male",
-    photoOfId: new File(["Sample content"], "sample.txt", {
-      type: "text/plain",
-    }),
+    photoOfId: {
+      fid: 14,
+      filename: "sample-14.txt",
+      url: "/images/id-example.jpg",
+    },
   },
 ];

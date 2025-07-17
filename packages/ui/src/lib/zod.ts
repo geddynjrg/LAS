@@ -119,21 +119,40 @@ export function checkbox(required = false) {
 }
 
 export function validFile(accept: Accept, fileSize: number) {
+  // File-like object schema (works for both File objects and FormDataEntryValue)
+  const fileSchema = z
+    .custom<File | FormDataEntryValue>((value) => {
+      // Check if it's a file-like object with required properties
+      return (
+        value !== null &&
+        typeof value === "object" &&
+        "name" in value &&
+        "size" in value &&
+        "type" in value &&
+        typeof (value as unknown as { size: number }).size === "number"
+      );
+    }, getIntlKey("required"))
+    // check if file exists and has content
+    .refine(
+      (file) => (file as unknown as { size: number }).size > 0,
+      getIntlKey("required"),
+    )
+    // check that file is not too large
+    .refine(
+      (file) => (file as unknown as { size: number }).size <= fileSize,
+      getIntlKey("file_too_large", { maximum: fileSize } as z.ZodIssue),
+    )
+    // check that file is one of the accepted types
+    .refine(
+      (file) =>
+        expandMimeTypes(accept).includes(
+          (file as unknown as { type: string }).type,
+        ),
+      getIntlKey("invalid"),
+    );
+
   return z.union([
-    z
-      .instanceof(File)
-      // check if file exists
-      .refine((file) => file && file.size > 0, getIntlKey("required"))
-      // check that file is not too large
-      .refine(
-        (file) => file.size <= fileSize,
-        getIntlKey("file_too_large", { maximum: fileSize } as z.ZodIssue),
-      )
-      // check that file is one of the accepted types
-      .refine(
-        (file) => expandMimeTypes(accept).includes(file.type),
-        getIntlKey("invalid"),
-      ),
+    fileSchema,
     z.object({
       fid: z.coerce.number().optional(),
       filename: z.string().optional(),

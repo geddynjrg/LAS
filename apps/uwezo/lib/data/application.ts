@@ -1,8 +1,10 @@
 "use server";
 
+import { isFileUpload } from "@workspace/ui/lib/utils";
 import type { ValidFile } from "@workspace/ui/lib/zod";
 
-import { auth } from "@/lib/auth";
+import { ApplicationStatus } from "@/generated/prisma";
+// import { auth } from "@/lib/auth";
 import { dummyApplications } from "@/lib/data/dummy-data";
 import { createApplicationId } from "@/lib/util";
 
@@ -17,7 +19,7 @@ globalThis.dummyApplicationsTest = globalThis.dummyApplicationsTest || [
 
 const dummyApplicationsTest = globalThis.dummyApplicationsTest;
 
-export type Status = "PENDING" | "IN_REVIEW" | "UNSUBMITTED";
+export type Status = ApplicationStatus;
 
 export type MemberType = "Chairman" | "Secretary" | "Member";
 
@@ -50,7 +52,7 @@ export interface GroupData {
   background: {
     purposeOfTheGroup: string[];
     keyActivitiesOfTheGroup: string[];
-    groupCreditHistory: ValidFile;
+    groupCreditHistory: ValidFile[];
     other?: string | null;
     valueChain?: string[] | null;
     tableBanking?: {
@@ -76,9 +78,9 @@ export interface Member {
   gender?: GenderType;
   type?: MemberType;
   phoneNumber?: string;
-  photoOfId?: ValidFile;
+  photoOfId: ValidFile;
   disability?: {
-    certificateOfDisability: string;
+    certificateOfDisability: ValidFile;
     pwdNumber?: string;
   };
   status?: "confirmed" | "pending";
@@ -143,7 +145,7 @@ export async function createApplication() {
 
   const generalDetails: GeneralDetails = {
     applicationId: createApplicationId(),
-    status: "UNSUBMITTED",
+    status: ApplicationStatus.UNSUBMITTED,
     user: "test@test.com",
     applicationProgress: 1,
   };
@@ -196,22 +198,23 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
     },
   } satisfies ApplicationData;
 
-  // save files
-  if (data.background.groupCreditHistory instanceof File) {
-    newApplicationData.groupData.background.groupCreditHistory = saveFile(
-      data.background.groupCreditHistory,
-    );
+  // save files - check if values are file-like objects
+  if (Array.isArray(data.background.groupCreditHistory)) {
+    newApplicationData.groupData.background.groupCreditHistory =
+      data.background.groupCreditHistory.map((file) =>
+        isFileUpload(file) ? saveFile(file as File) : file,
+      );
   }
 
-  if (data.basics.groupRegistrationCertificate instanceof File) {
+  if (isFileUpload(data.basics.groupRegistrationCertificate)) {
     newApplicationData.groupData.basics.groupRegistrationCertificate = saveFile(
-      data.basics.groupRegistrationCertificate,
+      data.basics.groupRegistrationCertificate as File,
     );
   }
 
-  if (data.basics.listOfMembersOnCertificate instanceof File) {
+  if (isFileUpload(data.basics.listOfMembersOnCertificate)) {
     newApplicationData.groupData.basics.listOfMembersOnCertificate = saveFile(
-      data.basics.listOfMembersOnCertificate,
+      data.basics.listOfMembersOnCertificate as File,
     );
   }
 
@@ -357,7 +360,7 @@ export async function updateApplicationStatus(id: string) {
     ...application,
     generalDetails: {
       ...application.generalDetails,
-      status: "PENDING",
+      status: ApplicationStatus.SUBMITTED,
       applicationProgress: 7,
     },
   };
@@ -371,10 +374,22 @@ export async function updateApplicationStatus(id: string) {
 function saveFile(file: File) {
   console.log("save file", file);
   // TODO: if we want to store real files, we need to upload them to a server
+
+  // Check if it's a file-like object
+  if (isFileUpload(file)) {
+    const fileObject: ValidFile = {
+      fid: Date.now() + Math.random(),
+      filename: file.name,
+      url: typeof URL !== "undefined" ? URL.createObjectURL(file) : "",
+    };
+    return fileObject;
+  }
+
+  // Fallback for server environment
   const fileObject: ValidFile = {
     fid: Date.now() + Math.random(),
-    filename: file.name,
-    url: URL.createObjectURL(file),
+    filename: "unknown-file",
+    url: "/images/sample-file.jpg",
   };
 
   return fileObject;
