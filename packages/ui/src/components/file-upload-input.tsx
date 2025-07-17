@@ -47,6 +47,11 @@ export interface FileUploadInputProps {
   // Server action props (modern approach)
   uploadAction?: (prev: any, formData: FormData) => any;
   onUploadComplete?: (files: ServerFile[]) => void;
+  // Delete action prop
+  deleteAction?: (
+    file: FileUploadInputValue,
+  ) => Promise<{ success: boolean; error?: string }>;
+  onDeleteCompleted?: (deletedFile: FileUploadInputValue) => void;
 }
 
 export const FileUploadInput: FC<FileUploadInputProps> = ({
@@ -64,6 +69,8 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   onChange,
   uploadAction,
   onUploadComplete,
+  deleteAction,
+  onDeleteCompleted,
   ...props
 }) => {
   const t = useTranslations("FileUploadInput");
@@ -83,6 +90,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<ServerFile[]>([]);
+  const [deletingFiles, setDeletingFiles] = useState<Set<number>>(new Set());
 
   // Server action state
   const [isPending, startTransition] = useTransition();
@@ -368,26 +376,74 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   }
 
   // Enhanced delete function to handle uploaded files
-  const handleDelete = useCallback((index: number) => {
-    setFiles((prevFiles) => {
-      if (!prevFiles) {
-        return null;
+  const handleDelete = useCallback(
+    async (index: number) => {
+      const fileToDelete = files?.[index];
+      if (!fileToDelete) return;
+
+      // Set deleting state
+      setDeletingFiles((prev) => new Set(prev).add(index));
+
+      // If deleteAction is provided, call it first
+      if (deleteAction) {
+        try {
+          const result = await deleteAction(fileToDelete);
+          if (!result.success) {
+            const errorMessage = result.error || "Failed to delete file";
+            setUploadError(errorMessage);
+            onUploadError?.(errorMessage);
+            setDeletingFiles((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(index);
+              return newSet;
+            });
+            return;
+          }
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Failed to delete file";
+          setUploadError(errorMessage);
+          onUploadError?.(errorMessage);
+          setDeletingFiles((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(index);
+            return newSet;
+          });
+          return;
+        }
       }
 
-      const fileToDelete = prevFiles[index];
-      const newFiles = [...prevFiles];
-      newFiles.splice(index, 1);
+      // Remove from local state only if server deletion succeeded (or no deleteAction)
+      setFiles((prevFiles) => {
+        if (!prevFiles) {
+          return null;
+        }
 
-      // If it's an uploaded file, remove it from uploadedFiles as well
-      if (fileToDelete && isServerFile(fileToDelete)) {
-        setUploadedFiles((prev) =>
-          prev.filter((f) => f.fid !== fileToDelete.fid),
-        );
-      }
+        const newFiles = [...prevFiles];
+        newFiles.splice(index, 1);
 
-      return newFiles.length ? newFiles : null;
-    });
-  }, []);
+        // If it's an uploaded file, remove it from uploadedFiles as well
+        if (fileToDelete && isServerFile(fileToDelete)) {
+          setUploadedFiles((prev) =>
+            prev.filter((f) => f.fid !== fileToDelete.fid),
+          );
+        }
+
+        return newFiles.length ? newFiles : null;
+      });
+
+      // Notify parent component of successful deletion
+      onDeleteCompleted?.(fileToDelete);
+
+      // Clear deleting state
+      setDeletingFiles((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        return newSet;
+      });
+    },
+    [files, deleteAction, onUploadError, onDeleteCompleted],
+  );
 
   // Notify parent of changes
   useEffect(() => {
@@ -645,26 +701,46 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
                       <button
                         type="button"
                         onClick={() => handleDelete(index)}
-                        className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100"
+                        disabled={deletingFiles.has(index)}
+                        className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                         title="Remove file"
                       >
-                        <svg
-                          className="mr-1 h-4 w-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
-                            clipRule="evenodd"
-                          />
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Remove
+                        {deletingFiles.has(index) ? (
+                          <>
+                            <svg
+                              className="mr-1 h-4 w-4 animate-spin"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4 2a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2H4zm6 2a2 2 0 100 4 2 2 0 000-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Removing...
+                          </>
+                        ) : (
+                          <>
+                            <svg
+                              className="mr-1 h-4 w-4"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
+                                clipRule="evenodd"
+                              />
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Remove
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
