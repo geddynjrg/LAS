@@ -15,6 +15,10 @@ import { Underline } from "@workspace/ui/components/underline";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
+import {
+  uploadFileAction,
+  uploadSingleFileAction,
+} from "@/app/actions/file-upload";
 import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   groupDataSchema,
@@ -137,6 +141,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                 maxSize={MAX_FILE_SIZE}
                 applicationId={id}
                 enableUpload={true}
+                uploadAction={uploadSingleFileAction}
                 {...props}
               />
             )}
@@ -155,6 +160,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                 maxSize={MAX_FILE_SIZE}
                 applicationId={id}
                 enableUpload={true}
+                uploadAction={uploadSingleFileAction}
                 {...props}
               />
             )}
@@ -400,6 +406,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                 applicationId={id}
                 enableUpload={true}
                 multiple
+                uploadAction={uploadFileAction}
                 {...props}
               />
             )}

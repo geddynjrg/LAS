@@ -79,7 +79,7 @@ export interface Member {
   phoneNumber?: string;
   photoOfId?: ValidFile;
   disability?: {
-    certificateOfDisability: string;
+    certificateOfDisability: ValidFile;
     pwdNumber?: string;
   };
   status?: "confirmed" | "pending";

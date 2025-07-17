@@ -21,7 +21,7 @@ import { DataNode } from "@workspace/ui/components/data-node";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import { Field, Form } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import { SearchInput } from "@workspace/ui/components/search-input";
+// import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from "@workspace/ui/components/select";
 import { Underline } from "@workspace/ui/components/underline";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
@@ -34,6 +34,7 @@ import {
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { formatBytes } from "@workspace/ui/lib/utils";
 
+import { uploadSingleFileAction } from "@/app/actions/file-upload";
 import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import { memberAction } from "@/app/apply/[id]/members/member-action";
 import { memberSchema } from "@/app/apply/[id]/members/member-schema";
@@ -47,7 +48,8 @@ import {
   type GenderType,
   type Member,
 } from "@/lib/data/application";
-import { dummyMembers } from "@/lib/data/dummy-data";
+
+// import { dummyMembers } from "@/lib/data/dummy-data";
 
 export interface MembersDataProps {
   id: string;
@@ -178,7 +180,6 @@ export const MembersDataForm: FC<MembersDataProps> = ({
           {displayNewMemberForm && (
             <EditMemberFormFields
               onSuccess={(member) => {
-                console.log(member);
                 setMembers([...members, member]);
                 setDisplayNewMemberForm(false);
               }}
@@ -354,6 +355,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     certificateOfDisability:
       existingMember?.disability?.certificateOfDisability,
     pwdNumber: existingMember?.disability?.pwdNumber,
+    photoOfId: existingMember?.photoOfId,
   });
   const [withDisability, setWithDisability] = useState(
     existingMember?.disability?.certificateOfDisability ||
@@ -498,9 +500,18 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             accept={FILE_ACCEPT}
             maxSize={MAX_FILE_SIZE}
             applicationId={applicationId}
-            enableUpload={true}
+            uploadAction={uploadSingleFileAction}
+            onUploadComplete={(files) => {
+              setMember((member) => ({
+                ...member,
+                photoOfId: {
+                  fid: files[0]?.fid ? parseInt(files[0].fid, 10) : undefined,
+                  filename: files[0]?.filename,
+                  url: files[0]?.url,
+                },
+              }));
+            }}
             {...props}
-            /* TODO: On value change might be needed here */
           />
         )}
         description={t("MembersPage.maxFileSize", {
@@ -535,6 +546,21 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                 accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
                 applicationId={applicationId}
+                uploadAction={uploadSingleFileAction}
+                onUploadComplete={(files) => {
+                  setMember((member) => ({
+                    ...member,
+                    disability: {
+                      certificateOfDisability: {
+                        fid: files[0]?.fid
+                          ? parseInt(files[0].fid, 10)
+                          : undefined,
+                        filename: files[0]?.filename,
+                        url: files[0]?.url,
+                      },
+                    },
+                  }));
+                }}
                 enableUpload={true}
                 {...props}
               />
@@ -553,7 +579,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                   setMember((member) => ({
                     ...member,
                     disability: {
-                      certificateOfDisability: "", // TODO: sort this out when file upload can handle onValueChange
+                      certificateOfDisability: "",
                       pwdNumber: value,
                     },
                   }));

@@ -2,7 +2,14 @@
 
 import { IconCamera } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { Fragment, useCallback, useEffect, useState, type FC } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+  type FC,
+} from "react";
 import type { Accept, ErrorCode, FileError } from "react-dropzone";
 
 import { Attachment } from "@workspace/ui/components/attachment";
@@ -32,12 +39,15 @@ export interface FileUploadInputProps {
   attachmentBgInverted?: boolean;
   "aria-invalid"?: boolean;
   "data-invalid"?: boolean;
-  // New upload functionality props
+  // Upload functionality props
   applicationId?: string;
   enableUpload?: boolean;
   onUploadProgress?: (progress: number) => void;
   onUploadError?: (error: string) => void;
   onChange?: (value: any) => void;
+  // Server action props (modern approach)
+  uploadAction?: (prev: any, formData: FormData) => any;
+  onUploadComplete?: (files: ServerFile[]) => void;
 }
 
 export const FileUploadInput: FC<FileUploadInputProps> = ({
@@ -53,6 +63,8 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   onUploadProgress,
   onUploadError,
   onChange,
+  uploadAction,
+  onUploadComplete,
   ...props
 }) => {
   const t = useTranslations("FileUploadInput");
@@ -72,6 +84,9 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<ServerFile[]>([]);
+
+  // Server action state
+  const [isPending, startTransition] = useTransition();
 
   const hasImageType = "image/*" in accept;
   const serverFiles = files?.filter(isServerFile);
@@ -150,8 +165,91 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       // Clear previous upload error
       setUploadError(null);
 
-      if (enableUpload && applicationId) {
-        // Handle file upload
+      // Prioritize server action over legacy upload
+      if (uploadAction && applicationId) {
+        // Handle file upload with server action
+        const filesToUpload = newFiles.filter(
+          (file): file is File => file instanceof File,
+        );
+
+        if (filesToUpload.length === 0) {
+          return;
+        }
+
+        // Client-side validation
+        const validationErrors: string[] = [];
+        for (const file of filesToUpload) {
+          if (file.size > maxSize) {
+            validationErrors.push(
+              `File "${file.name}" exceeds maximum size limit of ${Math.round(maxSize / 1024 / 1024)}MB`,
+            );
+          }
+          if (!allowedTypes.includes(file.type)) {
+            validationErrors.push(
+              `File type "${file.type}" is not allowed for file "${file.name}"`,
+            );
+          }
+        }
+
+        if (validationErrors.length > 0) {
+          setUploadError(validationErrors.join(", "));
+          onUploadError?.(validationErrors.join(", "));
+          return;
+        }
+
+        startTransition(async () => {
+          try {
+            const formData = new FormData();
+
+            if (applicationId) {
+              formData.append("applicationId", applicationId);
+            }
+
+            // Add files to form data
+            if (multiple) {
+              filesToUpload.forEach((file) => {
+                formData.append("files", file);
+              });
+            } else {
+              formData.append("file", filesToUpload[0]!);
+            }
+
+            const result = await uploadAction(null, formData);
+
+            if (result.success) {
+              // Handle successful upload
+              const uploadResults = result.files || [];
+              setUploadedFiles((prev) => [...prev, ...uploadResults]);
+              onUploadComplete?.(uploadResults);
+
+              // Add uploaded files to the files state
+              setFiles((prevFiles) => {
+                const allFiles = [...(prevFiles || []), ...uploadResults];
+                const existingFiles = new Set(allFiles.map(getFileName));
+                return allFiles.filter(
+                  (file, index, arr) =>
+                    arr.findIndex(
+                      (f) => getFileName(f) === getFileName(file),
+                    ) === index,
+                );
+              });
+            } else {
+              // Handle upload errors
+              const errorMessages = result.errors
+                ? Object.values(result.errors).flat().join(", ")
+                : result.error || "Upload failed";
+              setUploadError(errorMessages);
+              onUploadError?.(errorMessages);
+            }
+          } catch (error) {
+            const errorMessage =
+              error instanceof Error ? error.message : "Upload failed";
+            setUploadError(errorMessage);
+            onUploadError?.(errorMessage);
+          }
+        });
+      } else if (enableUpload && applicationId) {
+        // Legacy file upload with fetch
         setIsUploading(true);
         setUploadProgress(0);
 
@@ -222,9 +320,13 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       }
     },
     [
-      enableUpload,
+      uploadAction,
       applicationId,
       maxSize,
+      allowedTypes,
+      multiple,
+      onUploadComplete,
+      enableUpload,
       uploadFile,
       onUploadProgress,
       onUploadError,
@@ -288,7 +390,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       accept={acceptWithCamera}
       multiple={multiple}
       maxSize={maxSize}
-      disabled={disabled}
+      disabled={disabled || isUploading || isPending}
       onDrop={handleAddFiles}
     >
       <DropzoneInput
@@ -327,18 +429,24 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         aria-invalid={props["aria-invalid"]}
         data-invalid={props["data-invalid"]}
       >
-        {isUploading ? (
+        {isUploading || isPending ? (
           // Upload progress display
           <div className="flex w-full flex-col items-center justify-center gap-2 p-4">
             <div className="text-sm font-medium">Uploading...</div>
             <div className="h-2 w-full rounded-full bg-gray-200">
-              <div
-                className="h-2 rounded-full bg-blue-600 transition-all"
-                style={{ width: `${uploadProgress}%` }}
-              />
+              {isPending ? (
+                <div className="h-2 w-full animate-pulse rounded-full bg-blue-600" />
+              ) : (
+                <div
+                  className="h-2 rounded-full bg-blue-600 transition-all"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              )}
             </div>
             <div className="text-xs text-gray-600">
-              {Math.round(uploadProgress)}% complete
+              {isPending
+                ? "Processing files..."
+                : `${Math.round(uploadProgress)}% complete`}
             </div>
           </div>
         ) : (
