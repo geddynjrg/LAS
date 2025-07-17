@@ -56,7 +56,7 @@ services:
       mysql:
         condition: service_healthy
     volumes:
-      - ./apps/uwezo/uploads:/app/uploads
+      - /mnt/qa/www/uwezo_e-services-fe-qa/apps/uwezo/public/uploads:/app/public/uploads
 
   # Documentation
   docs:
