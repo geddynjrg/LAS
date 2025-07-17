@@ -1,4 +1,26 @@
 {
+  "AdminDashboard": {
+    "title": "Dashibodi ya Admin",
+    "description": "Raisa maombi zote katika mfumo",
+    "searchPlaceholder": "Tafuta maombi...",
+    "stats": {
+      "total": "Jumla ya Maombi",
+      "pending": "Inakaguliwa",
+      "inReview": "Inakaguliwa",
+      "approved": "Inayofanyika",
+      "rejected": "Inayotokea"
+    },
+    "table": {
+      "applicationId": "Application ID",
+      "user": "Mshiriki wa Kikundi",
+      "groupName": "Jina la Kikundi",
+      "loanAmount": "Kiasi cha Mkopo",
+      "status": "Hali",
+      "syncStatus": "Hali ya Sync",
+      "createdAt": "Tarehe",
+      "actions": "Vitu"
+    }
+  },
   "Common": {
     "menu": "Menyu",
     "close": "Funga",
@@ -20,6 +42,7 @@
     "agriculture": "Kilimo",
     "myProfile": "Wasifu Wangu",
     "myApplications": "Maombi Yangu",
+    "adminDashboard": "Dashibodi ya Admin",
     "signOut": "Ondoka",
     "resend": "Tuma tena",
     "remove": "Ondoa",
@@ -322,7 +345,7 @@
     "youth": "Vijana",
     "peopleWithDisabilities": "Watu wenye ulemavu",
     "women": "Wanawake",
-    "addMember": "Ongeza mwanachama kwa mkono",
+    "addMember": "Ongeza mshiriki",
     "groupBasics": "Misingi ya Kikundi",
     "natureOfTheGroup": "Asili ya kikundi",
     "searchForMember": "Tafuta mwanachama",

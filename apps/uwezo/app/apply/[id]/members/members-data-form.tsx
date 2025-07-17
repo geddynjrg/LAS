@@ -125,7 +125,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             )}
           />
 
-          <div>
+          {/* <div>
             <div className="font-bold">
               {t("MembersPage.searchForMember")}
               <span className="text-destructive">*</span>
@@ -161,7 +161,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                 ]);
               }}
             />
-          </div>
+          </div> */}
           <Button
             variant="secondary"
             type="button"
