@@ -23,7 +23,6 @@ import {
   DropzoneUploadIcon,
   DropzoneZone,
 } from "@workspace/ui/components/dropzone";
-import { cn } from "@workspace/ui/lib/utils";
 
 type ServerFile = { fid: string; filename: string; url: string };
 
@@ -98,22 +97,20 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       : accept;
 
   // Convert accept object to allowed MIME types for validation
-  const allowedTypes = Object.entries(accept).flatMap(
-    ([mimeType, extensions]) => {
-      if (mimeType === "image/*") {
-        return [
-          "image/jpeg",
-          "image/jpg",
-          "image/png",
-          "image/webp",
-          "image/gif",
-          "image/bmp",
-          "image/svg+xml",
-        ];
-      }
-      return [mimeType];
-    },
-  );
+  const allowedTypes = Object.entries(accept).flatMap(([mimeType, _]) => {
+    if (mimeType === "image/*") {
+      return [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "image/bmp",
+        "image/svg+xml",
+      ];
+    }
+    return [mimeType];
+  });
 
   // Upload function
   const uploadFile = useCallback(
@@ -164,6 +161,15 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
     async (newFiles: FileUploadInputValue[]) => {
       // Clear previous upload error
       setUploadError(null);
+
+      // Validate file count for single file uploads
+      if (!multiple && newFiles.length > 1) {
+        const error =
+          "Only one file can be uploaded at a time. Please select a single file.";
+        setUploadError(error);
+        onUploadError?.(error);
+        return;
+      }
 
       // Prioritize server action over legacy upload
       if (uploadAction && applicationId) {
@@ -224,8 +230,13 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
 
               // Add uploaded files to the files state
               setFiles((prevFiles) => {
+                if (!multiple) {
+                  // For single file uploads, replace existing files
+                  return uploadResults;
+                }
+
+                // For multiple file uploads, append and remove duplicates
                 const allFiles = [...(prevFiles || []), ...uploadResults];
-                const existingFiles = new Set(allFiles.map(getFileName));
                 return allFiles.filter(
                   (file, index, arr) =>
                     arr.findIndex(
@@ -294,8 +305,13 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
 
         // Add uploaded files to the files state
         setFiles((prevFiles) => {
+          if (!multiple) {
+            // For single file uploads, replace existing files
+            return uploadedServerFiles;
+          }
+
+          // For multiple file uploads, append and remove duplicates
           const allFiles = [...(prevFiles || []), ...uploadedServerFiles];
-          const existingFiles = new Set(allFiles.map(getFileName));
           return allFiles.filter(
             (file, index, arr) =>
               arr.findIndex((f) => getFileName(f) === getFileName(file)) ===
@@ -305,11 +321,16 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       } else {
         // Original behavior without upload
         setFiles((prevFiles) => {
+          if (!multiple) {
+            // For single file uploads, replace existing files
+            return newFiles;
+          }
+
           if (!prevFiles) {
             return newFiles;
           }
 
-          // If the files are already present, do not add them again
+          // For multiple file uploads, avoid duplicates
           const existingFiles = new Set(prevFiles.map(getFileName));
           const filteredNewFiles = newFiles.filter(
             (file) => !existingFiles.has(getFileName(file)),
@@ -334,7 +355,13 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   );
 
   function handleReset() {
-    setFiles(serverFiles ?? null);
+    if (!multiple && files && files.length > 0) {
+      // For single file uploads, clear everything
+      setFiles(null);
+    } else {
+      // For multiple file uploads, keep only server files (already uploaded)
+      setFiles(serverFiles ?? null);
+    }
     setResetCount((prev) => prev + 1);
     setUploadError(null);
     setUploadProgress(0);
@@ -499,23 +526,153 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       )}
 
       {files && (
-        <ul className="mt-4 space-y-2">
-          {files.map((file, index) => (
-            <Attachment
-              key={index}
-              className={cn(
-                "shadow",
-                attachmentBgInverted && "bg-site-background",
-              )}
-              url={
-                typeof file === "object" && "url" in file ? file.url : undefined
-              }
-              onDelete={() => handleDelete(index)}
-            >
-              {getFileName(file)}
-            </Attachment>
-          ))}
-        </ul>
+        <div className="mt-4">
+          <div className="mb-2 text-sm font-medium text-gray-700">
+            {multiple ? `${files.length} file(s) selected:` : "Selected file:"}
+          </div>
+          <ul className="space-y-3">
+            {files.map((file, index) => {
+              const fileName = getFileName(file);
+              const isServerFile =
+                typeof file === "object" && file !== null && "fid" in file;
+              const hasUrl =
+                typeof file === "object" && "url" in file && file.url;
+
+              return (
+                <li key={index} className="relative">
+                  <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-shadow duration-200 hover:shadow-md">
+                    {/* File type icon */}
+                    <div className="flex-shrink-0">
+                      {(() => {
+                        const isImage =
+                          /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(fileName);
+                        const isPdf = /\.pdf$/i.test(fileName);
+
+                        if (isImage) {
+                          return (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                              <svg
+                                className="h-5 w-5 text-blue-600"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          );
+                        } else if (isPdf) {
+                          return (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100">
+                              <svg
+                                className="h-5 w-5 text-red-600"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          );
+                        } else {
+                          return (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
+                              <svg
+                                className="h-5 w-5 text-gray-600"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          );
+                        }
+                      })()}
+                    </div>
+
+                    {/* File details */}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-gray-900">
+                        {fileName}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {isServerFile
+                          ? "Uploaded"
+                          : file instanceof File
+                            ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+                            : ""}
+                      </p>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-2">
+                      {/* View button */}
+                      {hasUrl && (
+                        <a
+                          href={(file as any).url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors duration-200 hover:border-blue-300 hover:bg-blue-100"
+                          title="View file"
+                        >
+                          <svg
+                            className="mr-1 h-4 w-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                            <path
+                              fillRule="evenodd"
+                              d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          View
+                        </a>
+                      )}
+
+                      {/* Remove button */}
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(index)}
+                        className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100"
+                        title="Remove file"
+                      >
+                        <svg
+                          className="mr-1 h-4 w-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
+                            clipRule="evenodd"
+                          />
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
 
       <DropzoneRejected>
