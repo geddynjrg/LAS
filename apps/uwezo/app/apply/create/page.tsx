@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { createApplication } from "@/lib/data/application";
+import { createApplication } from "@/lib/data/application-db";
 
 export default async function CreatePage() {
   const newApplication = await createApplication();

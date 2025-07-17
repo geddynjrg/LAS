@@ -3,7 +3,7 @@
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 
 import { type MembersConfirmationData } from "@/app/apply/[id]/confirmations/members-confirmation-schema";
-import { updateApplicationMembersConfirmationData } from "@/lib/data/application";
+import { updateApplicationMembersConfirmationData } from "@/lib/data/application-db";
 
 export const membersConfirmationDataAction: FormAction<
   MembersConfirmationData

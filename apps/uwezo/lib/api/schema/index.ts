@@ -18,3 +18,9 @@ export type { Language } from "./language.schema";
 
 // Application schemas
 export type { ApplicationInstructions } from "./application/instruction.schema";
+export type {
+  TaxonomyTerm,
+  TaxonomyVocabulary,
+  TaxonomyVocabulariesMeta,
+  TaxonomyVocabulariesResponse,
+} from "./application/taxonomy-vocabularies.schema";

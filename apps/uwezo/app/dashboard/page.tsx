@@ -10,7 +10,8 @@ import { Currency } from "@workspace/ui/components/currency";
 import { Underline } from "@workspace/ui/components/underline";
 
 import { ApplicationStatus } from "@/components/application-status";
-import { getApplications, type Status } from "@/lib/data/application";
+import { type Status } from "@/lib/data/application";
+import { getApplications } from "@/lib/data/application-db";
 
 export default async function Page() {
   const t = await getTranslations("DashboardPage");
@@ -27,13 +28,13 @@ export default async function Page() {
         </span>
       </div>
       <div className="grid justify-center gap-8 pb-6 md:grid-cols-2 md:justify-normal">
-        {data.map((data) => (
+        {data.map((application) => (
           <GroupDetails
-            key={data.generalDetails.applicationId}
-            applicationId={data.generalDetails.applicationId}
-            groupName={data.groupData?.basics.groupName}
-            loanAmount={data.loanConditions?.loanAmount}
-            status={data.generalDetails.status}
+            key={application.generalDetails.applicationId}
+            applicationId={application.generalDetails.applicationId}
+            groupName={application.groupData?.basics.groupName}
+            loanAmount={application.loanConditions?.loanAmount}
+            status={application.generalDetails.status}
           />
         ))}
       </div>

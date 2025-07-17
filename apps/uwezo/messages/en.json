@@ -1,4 +1,26 @@
 {
+  "AdminDashboard": {
+    "title": "Admin Dashboard",
+    "description": "Manage all applications across the system",
+    "searchPlaceholder": "Search applications...",
+    "stats": {
+      "total": "Total Applications",
+      "pending": "Pending",
+      "inReview": "In Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "table": {
+      "applicationId": "Application ID",
+      "user": "User",
+      "groupName": "Group Name",
+      "loanAmount": "Loan Amount",
+      "status": "Status",
+      "syncStatus": "Sync Status",
+      "createdAt": "Created",
+      "actions": "Actions"
+    }
+  },
   "Common": {
     "menu": "Menu",
     "close": "Close",
@@ -20,6 +42,7 @@
     "agriculture": "Agriculture",
     "myProfile": "My Profile",
     "myApplications": "My Applications",
+    "adminDashboard": "Admin Dashboard",
     "signOut": "Sign out",
     "resend": "Resend",
     "remove": "Remove",

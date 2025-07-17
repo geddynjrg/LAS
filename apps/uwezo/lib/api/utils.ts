@@ -37,7 +37,7 @@ api.use({
   async onResponse({ response }) {
     // if the response is 401, we need to clear the session and redirect to login page
     if (response.status === 401) {
-      redirect("/logout");
+      redirect("/login");
     }
 
     return response;

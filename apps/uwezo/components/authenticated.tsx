@@ -1,7 +1,7 @@
 "use client";
 
-import { redirect, usePathname } from "next/navigation";
-import type { FC, ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, type FC, type ReactNode } from "react";
 
 export interface AuthenticatedProps {
   session: true | null;
@@ -13,10 +13,17 @@ export const Authenticated: FC<AuthenticatedProps> = ({
   children,
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!session) {
+      router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [session, pathname, router]);
 
   if (!session) {
-    return redirect(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+    return null; // Return null while redirecting
   }
 
-  return children;
+  return <>{children}</>;
 };

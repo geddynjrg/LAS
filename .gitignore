@@ -34,3 +34,7 @@ npm-debug.log*
 .DS_Store
 *.pem
 .idea
+
+# File uploads
+uploads/
+apps/*/uploads/

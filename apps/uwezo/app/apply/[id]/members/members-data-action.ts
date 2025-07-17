@@ -9,7 +9,7 @@ import {
   membersDataSchema,
   type MembersData,
 } from "@/app/apply/[id]/members/members-data-schema";
-import { updateApplicationMembersData } from "@/lib/data/application";
+import { updateApplicationMembersData } from "@/lib/data/application-db";
 
 export const membersDataAction: FormAction<MembersData> = async (
   _prev,

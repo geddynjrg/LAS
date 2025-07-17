@@ -204,6 +204,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/taxonomy-vocabularies": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get all taxonomy vocabularies for Application forms
+     * @description Retrieves all taxonomy vocabularies and their terms used in Application entity forms.
+     */
+    get: operations["api_application.taxonomy_vocabularies_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -216,7 +236,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1752171455
+         * @example 1752511342
          */
         timestamp: number;
         /**
@@ -440,7 +460,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1752171455
+         * @example 1752511342
          */
         timestamp: number;
         /**
@@ -566,6 +586,11 @@ export interface components {
        */
       fid: number;
       /**
+       * @description The file UUID
+       * @example 123e4567-e89b-12d3-a456-426614174000
+       */
+      uuid: string;
+      /**
        * @description The filename
        * @example certificate-example.webp
        */
@@ -609,6 +634,194 @@ export interface components {
        * @example 1704067200
        */
       timestamp?: number;
+    };
+    /**
+     * Taxonomy Vocabulary
+     * @description A taxonomy vocabulary with its terms
+     */
+    TaxonomyVocabulary: {
+      /**
+       * @description The machine name of the vocabulary
+       * @example group_background
+       */
+      vocabulary_id: string;
+      /**
+       * @description The human-readable label of the vocabulary
+       * @example Group Background
+       */
+      vocabulary_label: string;
+      /**
+       * @description The description of the vocabulary
+       * @example Categories for group background types
+       */
+      vocabulary_description: string;
+      /**
+       * @description The field name in the entity that references this vocabulary
+       * @example group_background
+       */
+      field_name: string;
+      /**
+       * @description The entity type that uses this vocabulary
+       * @example application
+       * @enum {string}
+       */
+      entity_type: "application" | "group_member";
+      /**
+       * @description Whether the field accepts single or multiple values
+       * @example multiple
+       * @enum {string}
+       */
+      cardinality: "single" | "multiple";
+      /**
+       * @description Whether new terms can be auto-created for this vocabulary
+       * @example false
+       */
+      auto_create: boolean;
+      /** @description Array of taxonomy terms in this vocabulary */
+      terms: components["schemas"]["TaxonomyTerm"][];
+      /**
+       * @description Total number of terms in this vocabulary
+       * @example 5
+       */
+      total_terms: number;
+    };
+    /**
+     * Taxonomy Term
+     * @description A taxonomy term
+     */
+    TaxonomyTerm: {
+      /**
+       * @description The term ID
+       * @example 1
+       */
+      tid: number;
+      /**
+       * @description The term UUID
+       * @example 550e8400-e29b-41d4-a716-446655440000
+       */
+      uuid: string;
+      /**
+       * @description The term name
+       * @example Youth Group
+       */
+      name: string;
+      /** @description The term description */
+      description: {
+        /**
+         * @description The raw description text
+         * @example Groups primarily composed of young people
+         */
+        value: string;
+        /**
+         * @description The text format
+         * @example basic_html
+         */
+        format: string;
+        /**
+         * @description The processed description HTML
+         * @example <p>Groups primarily composed of young people</p>
+         */
+        processed: string;
+      };
+      /**
+       * @description The term weight (for ordering)
+       * @example 0
+       */
+      weight: number;
+      /**
+       * @description Array of parent term IDs
+       * @example []
+       */
+      parent_ids: number[];
+      /**
+       * @description The absolute URL to the term
+       * @example https://example.com/taxonomy/term/1
+       */
+      url: string;
+      /** @description Language information for the term */
+      language: {
+        /**
+         * @description The language code
+         * @example en
+         */
+        code: string;
+        /**
+         * @description The language name
+         * @example English
+         */
+        name: string;
+      };
+    };
+    /**
+     * Taxonomy Vocabularies Meta
+     * @description Metadata for taxonomy vocabularies response
+     */
+    TaxonomyVocabulariesMeta: {
+      /**
+       * @description Unix timestamp of when the response was generated
+       * @example 1752511342
+       */
+      timestamp: number;
+      /**
+       * @description API version
+       * @example v1
+       */
+      version: string;
+      /**
+       * @description Total number of vocabularies in the response
+       * @example 9
+       */
+      total_vocabularies: number;
+      /** @description Language information */
+      language: {
+        /**
+         * @description Current language code
+         * @example en
+         */
+        current: string;
+        /**
+         * @description Default language code
+         * @example en
+         */
+        default: string;
+        /** @description Available languages */
+        available: {
+          [key: string]: {
+            /** @example en */
+            langcode: string;
+            /** @example English */
+            name: string;
+            /** @example https://example.com/api/v1/application/taxonomy-vocabularies */
+            url: string;
+            /** @example /api/v1/application/taxonomy-vocabularies */
+            path: string;
+          };
+        };
+      };
+    };
+    /**
+     * Error Response
+     * @description Error response structure
+     */
+    ErrorResponse: {
+      /**
+       * @description Error type
+       * @example Invalid language code
+       */
+      error: string;
+      /**
+       * @description Detailed error message
+       * @example Language code "xx" is not supported. Available languages: en, sw
+       */
+      message: string;
+      /**
+       * @description List of available language codes
+       * @example [
+       *       "en",
+       *       "sw"
+       *     ]
+       */
+      available_languages: string[];
     };
     /**
      * Text Block Mapper
@@ -808,7 +1021,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp: number;
               /**
@@ -878,7 +1091,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp: number;
               /**
@@ -953,7 +1166,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp?: number;
               /**
@@ -1008,7 +1221,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp?: number;
               /**
@@ -1098,7 +1311,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp?: number;
               /**
@@ -1155,7 +1368,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp?: number;
               /**
@@ -1222,7 +1435,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp?: number;
               /**
@@ -1290,7 +1503,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp?: number;
               /**
@@ -1359,7 +1572,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1752511342
                */
               timestamp?: number;
               /**
@@ -1444,6 +1657,42 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  "api_application.taxonomy_vocabularies_get": {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description The language code for the response (e.g., "en", "sw") */
+        "X-Language"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Taxonomy vocabularies retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Taxonomy vocabularies data */
+            data: components["schemas"]["TaxonomyVocabulary"];
+            meta: components["schemas"]["TaxonomyVocabulariesMeta"];
+          };
+        };
+      };
+      /** @description Invalid language code provided */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
     };

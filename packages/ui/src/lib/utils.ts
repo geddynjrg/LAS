@@ -170,10 +170,28 @@ export async function fileToBase64(
 }
 
 export async function prepareFileForUpload<T>(file: T) {
-  if (file instanceof File) {
+  if (typeof File !== "undefined" && file instanceof File) {
     return fileToBase64(file);
   }
 
   // return file as Exclude<T, File>; // TODO: fix this type once api is fixed
-  return file as unknown as { data: string; filename: any };
+  return file as unknown as { data: string; filename: string };
+}
+
+/**
+ * Check if a value is a file upload (has file-like properties)
+ * Works for both File objects and FormDataEntryValue in server actions
+ */
+export function isFileUpload(
+  value: unknown,
+): value is File | FormDataEntryValue {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "name" in value &&
+    "size" in value &&
+    "type" in value &&
+    typeof (value as unknown as { size: number }).size === "number" &&
+    (value as unknown as { size: number }).size > 0
+  );
 }

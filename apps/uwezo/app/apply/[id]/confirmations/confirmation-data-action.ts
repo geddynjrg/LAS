@@ -7,7 +7,7 @@ import {
   confirmationDataSchema,
   type ConfirmationData,
 } from "@/app/apply/[id]/confirmations/confirmation-data-schema";
-import { updateApplicationDeclarationsData } from "@/lib/data/application";
+import { updateApplicationDeclarationsData } from "@/lib/data/application-db";
 
 export const confirmationDataAction: FormAction<ConfirmationData> = async (
   _prev,

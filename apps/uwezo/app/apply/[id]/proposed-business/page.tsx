@@ -5,7 +5,7 @@ import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import { proposedBusinessAction } from "@/app/apply/[id]/proposed-business/proposed-business-action";
 import { ProposedBusinessDataForm } from "@/app/apply/[id]/proposed-business/proposed-business-data-form";
-import { getApplicationById } from "@/lib/data/application";
+import { getApplicationById } from "@/lib/data/application-db";
 
 export interface ProposedBusinessPageProps {
   params: Promise<{ id: string }>;

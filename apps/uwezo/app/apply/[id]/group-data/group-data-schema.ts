@@ -71,7 +71,10 @@ export const groupDataSchema = z
 
     other: z.string().nullable().optional(),
 
-    groupCreditHistory: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
+    groupCreditHistory: z.preprocess(
+      (v) => (Array.isArray(v) ? v : v != null ? [v] : []),
+      z.array(validFile(FILE_ACCEPT, MAX_FILE_SIZE)).min(1),
+    ),
     countyOfOperation: z.string().nonempty(),
     constituency: z.string().nonempty(),
     ward: z.string().nonempty(),

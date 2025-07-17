@@ -18,7 +18,7 @@ export const memberSchema = z.object({
   phoneNumber: z.string().nonempty(),
   photoOfId: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   disability: z.union([z.literal("on"), z.null()]),
-  certificateOfDisability: z.string().nonempty(),
+  certificateOfDisability: validFile(FILE_ACCEPT, MAX_FILE_SIZE).optional(),
   pwdNumber: z.string().optional(),
 });
 

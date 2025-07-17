@@ -106,7 +106,11 @@ export const ApplicationReviewGroupData: FC<{
                   {groupData.background.keyActivitiesOfTheGroup}
                 </DataNode>
                 <DataNode label={t("groupData.groupBackground.creditHistory")}>
-                  {getFileName(groupData.background.groupCreditHistory)}
+                  {Array.isArray(groupData.background.groupCreditHistory)
+                    ? groupData.background.groupCreditHistory
+                        .map((file) => getFileName(file))
+                        .join(", ")
+                    : getFileName(groupData.background.groupCreditHistory)}
                 </DataNode>
               </div>
             </AccordionContent>
@@ -118,9 +122,9 @@ export const ApplicationReviewGroupData: FC<{
 };
 
 function getFileName(file: ValidFile) {
-  if (file instanceof File) {
+  if (typeof File !== "undefined" && file instanceof File) {
     return file.name;
   }
 
-  return file.filename;
+  return (file as { filename?: string }).filename || "Unknown file";
 }

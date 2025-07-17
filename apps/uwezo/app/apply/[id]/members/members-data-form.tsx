@@ -184,6 +184,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
               }}
               onReject={() => setDisplayNewMemberForm(false)}
               isNew
+              applicationId={id}
             />
           )}
 
@@ -197,6 +198,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                         key={index}
                         existingMember={member}
                         isNew={false}
+                        applicationId={id}
                         onReject={() => {
                           setMembersInEdit(
                             membersInEdit.filter((val) => val !== index),
@@ -332,6 +334,7 @@ interface NewMemberFormFieldsProps {
   onReject: () => void;
   existingMember?: Partial<Member>;
   isNew: boolean; // differentiate between new and existing members for form fields
+  applicationId?: string; // for file uploads
 }
 
 const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
@@ -339,6 +342,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   onSuccess,
   existingMember,
   isNew,
+  applicationId,
 }) => {
   const [state] = useForm(memberAction, memberSchema, {
     fullname: existingMember?.fullname,
@@ -493,6 +497,8 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <FileUploadInput
             accept={FILE_ACCEPT}
             maxSize={MAX_FILE_SIZE}
+            applicationId={applicationId}
+            enableUpload={true}
             {...props}
             /* TODO: On value change might be needed here */
           />
@@ -528,6 +534,8 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               <FileUploadInput
                 accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
+                applicationId={applicationId}
+                enableUpload={true}
                 {...props}
               />
             )}

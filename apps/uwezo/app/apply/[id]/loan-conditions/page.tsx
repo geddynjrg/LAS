@@ -5,7 +5,7 @@ import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import { loanConditionsAction } from "@/app/apply/[id]/loan-conditions/loan-conditions-action";
 import { LoanConditionsDataForm } from "@/app/apply/[id]/loan-conditions/loan-conditions-data-form";
-import { getApplicationById } from "@/lib/data/application";
+import { getApplicationById } from "@/lib/data/application-db";
 
 export interface LoanConditionsPageProps {
   params: Promise<{ id: string }>;

@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
 import type { Step } from "@workspace/ui/components/stepper";
 
 import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
-import { Authenticated } from "@/components/authenticated";
-import { auth } from "@/lib/auth";
-import { getApplicationById } from "@/lib/data/application";
+import { getApplicationById } from "@/lib/data/application-db";
+import { getSession } from "@/lib/session";
 
 export interface ApplyLayoutProps {
   params: Promise<{ id: string }>;
@@ -16,7 +16,12 @@ export interface ApplyLayoutProps {
 export default async function IdLayout({ params, children }: ApplyLayoutProps) {
   const { id } = await params;
   const t = await getTranslations();
-  const session = await auth();
+  const session = await getSession();
+
+  if (!session) {
+    redirect(`/login?callbackUrl=/apply/${id}`);
+  }
+
   const application = await getApplicationById(id);
 
   const steps: Step[] = [
@@ -48,7 +53,7 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
   ];
 
   return (
-    <Authenticated session={session ? true : null}>
+    <>
       <ApplyFormStepper
         steps={steps}
         applicationProgress={
@@ -58,6 +63,6 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
       />
 
       {children}
-    </Authenticated>
+    </>
   );
 }

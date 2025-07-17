@@ -4,7 +4,7 @@ import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import ConfirmationFormsWrapper from "@/app/apply/[id]/confirmations/confirmations-forms-wrapper";
-import { getApplicationById } from "@/lib/data/application";
+import { getApplicationById } from "@/lib/data/application-db";
 
 export interface GroupDataPageProps {
   params: Promise<{ id: string }>;
