@@ -43,7 +43,7 @@ services:
     container: uwezo-1
   uwezo_phpmyadmin:
     port: 8081
-    container: uwezo-phpmyadmin-1
+    container: uwezo-phpmyadmin
   uwezo_docs:
     port: 8082
-    container: uwezo-docs-1
+    container: uwezo-docs
