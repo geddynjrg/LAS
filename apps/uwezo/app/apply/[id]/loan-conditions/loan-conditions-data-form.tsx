@@ -22,18 +22,25 @@ import {
   loanConditionsDataSchema,
   type LoanConditionsData,
 } from "@/app/apply/[id]/loan-conditions/loan-conditions-schema";
+import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
 import { LoanConditionsData as ApplicationLoanConditionsData } from "@/lib/data/application";
 
 export interface LoanConditionsDataProps {
   id: string;
   action: FormAction<LoanConditionsData>;
   loanConditionsData?: ApplicationLoanConditionsData;
+  taxonomyOptions?: {
+    bankName: TaxonomyOption[];
+    purposeOfLoan: TaxonomyOption[];
+    loanType: TaxonomyOption[];
+  };
 }
 
 export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
   id,
   action,
   loanConditionsData,
+  taxonomyOptions,
 }) => {
   const t = useTranslations();
 
@@ -101,20 +108,22 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             control={(props) => (
               <CheckboxGroup
                 {...props}
-                options={[
-                  {
-                    label: t(
-                      "ApplicationDetailsPage.groupData.groupBackground.tableBanking",
-                    ),
-                    value: "Table banking",
-                  },
-                  {
-                    label: t(
-                      "ApplicationDetailsPage.groupData.groupBackground.commonGroupProject",
-                    ),
-                    value: "Common group project",
-                  },
-                ]}
+                options={
+                  taxonomyOptions?.purposeOfLoan || [
+                    {
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.tableBanking",
+                      ),
+                      value: "Table banking",
+                    },
+                    {
+                      label: t(
+                        "ApplicationDetailsPage.groupData.groupBackground.commonGroupProject",
+                      ),
+                      value: "Common group project",
+                    },
+                  ]
+                }
               />
             )}
           />
@@ -212,11 +221,13 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
               <RadioGroup
                 {...props}
                 onValueChange={(val) => setSelectedBankName(val)}
-                options={[
-                  { label: "Bank 1", value: "Bank 1" },
-                  { label: "Better Bank", value: "Better Bank" },
-                  { label: t("Common.other"), value: "Other" },
-                ]}
+                options={
+                  taxonomyOptions?.bankName || [
+                    { label: "Bank 1", value: "Bank 1" },
+                    { label: "Better Bank", value: "Better Bank" },
+                    { label: t("Common.other"), value: "Other" },
+                  ]
+                }
               />
             )}
           />

@@ -242,7 +242,7 @@ const taxonomyFieldMapping = {
   memberType: "member_position",
 
   // Loan conditions mappings
-  purposeOfLoan: "loan_purpose",
+  purposeOfLoan: "purpose_of_loan",
   loanType: "loan_type",
   bankName: "bank_name",
 

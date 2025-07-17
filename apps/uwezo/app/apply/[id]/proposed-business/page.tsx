@@ -5,6 +5,7 @@ import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import { proposedBusinessAction } from "@/app/apply/[id]/proposed-business/proposed-business-action";
 import { ProposedBusinessDataForm } from "@/app/apply/[id]/proposed-business/proposed-business-data-form";
+import { getFormFieldOptions } from "@/lib/api/taxonomy.service";
 import { getApplicationById } from "@/lib/data/application-db";
 
 export interface ProposedBusinessPageProps {
@@ -14,7 +15,15 @@ export interface ProposedBusinessPageProps {
 export default async function Page({ params }: ProposedBusinessPageProps) {
   const t = await getTranslations();
   const { id } = await params;
-  const application = await getApplicationById(id);
+
+  const [application, businessTypeOptions] = await Promise.all([
+    getApplicationById(id),
+    getFormFieldOptions("businessType"),
+  ]);
+
+  const taxonomyOptions = {
+    businessType: businessTypeOptions,
+  };
 
   return (
     <>
@@ -34,6 +43,7 @@ export default async function Page({ params }: ProposedBusinessPageProps) {
         action={proposedBusinessAction}
         id={id}
         applicationBusinessData={application?.proposedBusiness}
+        taxonomyOptions={taxonomyOptions}
       />
     </>
   );
