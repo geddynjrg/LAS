@@ -528,7 +528,10 @@ export async function updateApplicationMembersConfirmationData(id: string) {
         prisma.memberData.update({
           where: { id: member.id },
           data: {
-            status: index + 1 <= passThreshold ? MemberStatus.CONFIRMED : MemberStatus.PENDING,
+            status:
+              index + 1 <= passThreshold
+                ? MemberStatus.CONFIRMED
+                : MemberStatus.PENDING,
           },
         }),
       ),
@@ -542,7 +545,10 @@ export async function updateApplicationMembersConfirmationData(id: string) {
   }
 }
 
-export async function updateApplicationStatus(id: string, status?: ApplicationStatus) {
+export async function updateApplicationStatus(
+  id: string,
+  status?: ApplicationStatus,
+) {
   try {
     const user = await getCurrentUser();
 

@@ -14,7 +14,7 @@ const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || "10485760"); // 10MB
 
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
-  "image/jpg", 
+  "image/jpg",
   "image/png",
   "image/webp",
   "image/gif",
@@ -62,20 +62,19 @@ export const uploadFileAction: FormAction<{
 }> = async (_prev, formData) => {
   const applicationId = formData.get("applicationId")?.toString();
   const files: File[] = [];
-  
-      // Extract all files from form data
-    for (const [key, value] of formData.entries()) {
-      if (key === "file" || key.startsWith("files")) {
-        if (isFileUpload(value)) {
-          files.push(value as File);
-        }
+
+  // Extract all files from form data
+  for (const [key, value] of formData.entries()) {
+    if (key === "file" || key.startsWith("files")) {
+      if (isFileUpload(value)) {
+        files.push(value as File);
       }
     }
+  }
 
   const values = { files, applicationId };
 
   try {
-
     if (files.length === 0) {
       return {
         success: false,
@@ -91,7 +90,7 @@ export const uploadFileAction: FormAction<{
     const appDir = applicationId
       ? path.join(UPLOAD_DIR, applicationId)
       : UPLOAD_DIR;
-    
+
     if (applicationId) {
       await ensureUploadDir(appDir);
     }
@@ -166,14 +165,21 @@ export const uploadFileAction: FormAction<{
     // Return error if no files were uploaded
     return {
       success: false,
-      errors: Object.keys(errors).length > 0 ? errors : { files: ["Failed to upload any files"] },
+      errors:
+        Object.keys(errors).length > 0
+          ? errors
+          : { files: ["Failed to upload any files"] },
       values,
     };
   } catch (error) {
     console.error("Error in uploadFileAction:", error);
     return {
       success: false,
-      errors: { files: [`Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`] },
+      errors: {
+        files: [
+          `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        ],
+      },
       values,
     };
   }
@@ -200,7 +206,11 @@ export const uploadSingleFileAction: FormAction<{
     if (file.size > MAX_FILE_SIZE) {
       return {
         success: false,
-        errors: { file: [`File exceeds maximum size limit of ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`] },
+        errors: {
+          file: [
+            `File exceeds maximum size limit of ${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`,
+          ],
+        },
         values,
       };
     }
@@ -221,7 +231,7 @@ export const uploadSingleFileAction: FormAction<{
     const appDir = applicationId
       ? path.join(UPLOAD_DIR, applicationId)
       : UPLOAD_DIR;
-    
+
     if (applicationId) {
       await ensureUploadDir(appDir);
     }
@@ -245,7 +255,7 @@ export const uploadSingleFileAction: FormAction<{
       size: file.size,
       type: file.type,
     };
-      
+
     return {
       success: true,
       files: [uploadResult],
@@ -254,8 +264,12 @@ export const uploadSingleFileAction: FormAction<{
     console.error("Error in uploadSingleFileAction:", error);
     return {
       success: false,
-      errors: { file: [`Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`] },
+      errors: {
+        file: [
+          `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        ],
+      },
       values,
     };
   }
-}; 
+};

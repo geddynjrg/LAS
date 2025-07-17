@@ -10,11 +10,11 @@ import {
   groupDataSchema,
   type GroupData,
 } from "@/app/apply/[id]/group-data/group-data-schema";
+import { ApplicationStatus } from "@/generated/prisma";
 import {
   updateApplicationGroupData,
   updateApplicationStatus,
 } from "@/lib/data/application-db";
-import { ApplicationStatus } from "@/generated/prisma";
 
 export const groupDataAction: FormAction<GroupData> = async (
   _prev,

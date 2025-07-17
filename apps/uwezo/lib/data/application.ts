@@ -3,10 +3,10 @@
 import { isFileUpload } from "@workspace/ui/lib/utils";
 import type { ValidFile } from "@workspace/ui/lib/zod";
 
+import { ApplicationStatus } from "@/generated/prisma";
 // import { auth } from "@/lib/auth";
 import { dummyApplications } from "@/lib/data/dummy-data";
 import { createApplicationId } from "@/lib/util";
-import { ApplicationStatus } from "@/generated/prisma";
 
 declare global {
   /* eslint no-var: off */
