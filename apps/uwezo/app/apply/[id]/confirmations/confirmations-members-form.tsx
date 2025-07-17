@@ -24,6 +24,7 @@ import {
   membersConfirmationDataSchema,
   type MembersConfirmationData,
 } from "@/app/apply/[id]/confirmations/members-confirmation-schema";
+import { ReviewFooter } from "@/app/apply/[id]/review/review-footer";
 import { updateApplicationStatusById } from "@/app/apply/[id]/review/update-application-status-by-id-action";
 import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
 import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
@@ -61,7 +62,8 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       members.map((member) => member.status === "confirmed").length,
   );
 
-  const nextUrl = `/apply/${id}/review`;
+  // const nextUrl = `/apply/${id}/review`;
+  const nextUrl = `/apply/${id}/thank-you`;
 
   const confirmedMembers = membersList.filter(
     (member) => member.status === "confirmed",
@@ -294,7 +296,8 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       {/* TODO: Currently pass empty list to server, one day if needed to only sent to accepted users then pass on users id in the list */}
       <input type="hidden" name="membersConfirmation" value={"[]"} />
 
-      <ApplyFormActionBar onBack={onBack} hideNext />
+      {/* <ApplyFormActionBar onBack={onBack} nextUrl={nextUrl} /> */}
+      <ReviewFooter id={id} />
     </Form>
   );
 };

@@ -72,12 +72,12 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         <Button variant="secondary" className="w-full text-neutral-700" asChild>
           <Link
             href={
-              status === "UNSUBMITTED"
+              status === "UNSUBMITTED" || status === "DRAFT"
                 ? `/apply/${applicationId}/group-data`
                 : `/dashboard/${applicationId}`
             }
           >
-            {status === "UNSUBMITTED"
+            {status === "UNSUBMITTED" || status === "DRAFT"
               ? t("continueFillingApplication")
               : t("viewApplication")}
           </Link>

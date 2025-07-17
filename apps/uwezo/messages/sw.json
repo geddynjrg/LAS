@@ -5,10 +5,13 @@
     "searchPlaceholder": "Tafuta maombi...",
     "stats": {
       "total": "Jumla ya Maombi",
-      "pending": "Inakaguliwa",
+      "unsubmitted": "Haijawasilishwa",
+      "draft": "Haijazwa",
+      "submitted": "Imewasilishwa",
+      "pending": "Inasubiri",
       "inReview": "Inakaguliwa",
-      "approved": "Inayofanyika",
-      "rejected": "Inayotokea"
+      "approved": "Imeidhinishwa",
+      "rejected": "Imekataliwa"
     },
     "table": {
       "applicationId": "Application ID",
@@ -177,9 +180,13 @@
     "continueFillingApplication": "Endelea kujaza maombi",
     "status": {
       "title": "Hali",
-      "inReview": "<bold>Hatua ya 1:</bold> Inakaguliwa",
-      "pending": "<bold>Hatua ya 3:</bold> Uamuzi wa kamati unasubiriwa",
-      "unsubmitted": "<bold>Haijawasilishwa</bold>"
+      "unsubmitted": "<bold>Haijawasilishwa:</bold> Haijaanza",
+      "draft": "<bold>Hatua ya 1:</bold> Inaendelea",
+      "submitted": "<bold>Hatua ya 2:</bold> Imewasilishwa",
+      "inReview": "<bold>Hatua ya 3:</bold> Inakaguliwa",
+      "pending": "<bold>Hatua ya 4:</bold> Uamuzi wa kamati unasubiriwa",
+      "approved": "<bold>Imeidhinishwa:</bold> Mkopo umeidhinishwa",
+      "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa"
     },
     "stepDescription": {
       "title": "Nini kinafanyika katika hatua hii?",

@@ -5,6 +5,9 @@
     "searchPlaceholder": "Search applications...",
     "stats": {
       "total": "Total Applications",
+      "unsubmitted": "Unsubmitted",
+      "draft": "Draft",
+      "submitted": "Submitted",
       "pending": "Pending",
       "inReview": "In Review",
       "approved": "Approved",
@@ -179,9 +182,13 @@
     "continueFillingApplication": "Continue filling application",
     "status": {
       "title": "Status",
-      "inReview": "<bold>Step 1:</bold> Being reviewed",
-      "pending": "<bold>Step 3:</bold> Committee decision pending",
-      "unsubmitted": "<bold>Unsubmitted</bold>"
+      "unsubmitted": "<bold>Unsubmitted:</bold> Not started",
+      "draft": "<bold>Step 1:</bold> In progress",
+      "submitted": "<bold>Step 2:</bold> Submitted",
+      "inReview": "<bold>Step 3:</bold> Being reviewed",
+      "pending": "<bold>Step 4:</bold> Committee decision pending",
+      "approved": "<bold>Approved:</bold> Loan approved",
+      "rejected": "<bold>Rejected:</bold> Application rejected"
     },
     "stepDescription": {
       "title": "What is being done in this step?",

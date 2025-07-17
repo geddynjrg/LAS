@@ -252,10 +252,12 @@ model SyncQueue {
 // Enums
 enum ApplicationStatus {
   UNSUBMITTED
+  SUBMITTED
   PENDING
   IN_REVIEW
   APPROVED
   REJECTED
+  DRAFT
 }
 
 enum SyncStatus {

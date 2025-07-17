@@ -3,9 +3,10 @@
 import { isFileUpload } from "@workspace/ui/lib/utils";
 import type { ValidFile } from "@workspace/ui/lib/zod";
 
-import { auth } from "@/lib/auth";
+// import { auth } from "@/lib/auth";
 import { dummyApplications } from "@/lib/data/dummy-data";
 import { createApplicationId } from "@/lib/util";
+import { ApplicationStatus } from "@/generated/prisma";
 
 declare global {
   /* eslint no-var: off */
@@ -18,7 +19,7 @@ globalThis.dummyApplicationsTest = globalThis.dummyApplicationsTest || [
 
 const dummyApplicationsTest = globalThis.dummyApplicationsTest;
 
-export type Status = "PENDING" | "IN_REVIEW" | "UNSUBMITTED";
+export type Status = ApplicationStatus;
 
 export type MemberType = "Chairman" | "Secretary" | "Member";
 
@@ -144,7 +145,7 @@ export async function createApplication() {
 
   const generalDetails: GeneralDetails = {
     applicationId: createApplicationId(),
-    status: "UNSUBMITTED",
+    status: ApplicationStatus.UNSUBMITTED,
     user: "test@test.com",
     applicationProgress: 1,
   };
@@ -359,7 +360,7 @@ export async function updateApplicationStatus(id: string) {
     ...application,
     generalDetails: {
       ...application.generalDetails,
-      status: "PENDING",
+      status: ApplicationStatus.SUBMITTED,
       applicationProgress: 7,
     },
   };

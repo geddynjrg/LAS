@@ -10,7 +10,11 @@ import {
   groupDataSchema,
   type GroupData,
 } from "@/app/apply/[id]/group-data/group-data-schema";
-import { updateApplicationGroupData } from "@/lib/data/application-db";
+import {
+  updateApplicationGroupData,
+  updateApplicationStatus,
+} from "@/lib/data/application-db";
+import { ApplicationStatus } from "@/generated/prisma";
 
 export const groupDataAction: FormAction<GroupData> = async (
   _prev,
@@ -91,6 +95,8 @@ export const groupDataAction: FormAction<GroupData> = async (
         nearestLandmark: data.nearestLandmark,
       },
     });
+
+    await updateApplicationStatus(id, ApplicationStatus.DRAFT);
 
     // Revalidate the application pages to show updated file data
     revalidatePath(`/apply/${id}`);

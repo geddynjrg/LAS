@@ -5,6 +5,8 @@ import { isFileUpload } from "@workspace/ui/lib/utils";
 import {
   ApplicationStatus,
   MemberStatus,
+  QueueStatus,
+  SyncAction,
   SyncStatus,
 } from "@/generated/prisma";
 import { getProfile } from "@/lib/api/profile";
@@ -526,7 +528,7 @@ export async function updateApplicationMembersConfirmationData(id: string) {
         prisma.memberData.update({
           where: { id: member.id },
           data: {
-            status: index + 1 <= passThreshold ? "CONFIRMED" : "PENDING",
+            status: index + 1 <= passThreshold ? MemberStatus.CONFIRMED : MemberStatus.PENDING,
           },
         }),
       ),
@@ -540,7 +542,7 @@ export async function updateApplicationMembersConfirmationData(id: string) {
   }
 }
 
-export async function updateApplicationStatus(id: string) {
+export async function updateApplicationStatus(id: string, status?: ApplicationStatus) {
   try {
     const user = await getCurrentUser();
 
@@ -560,7 +562,7 @@ export async function updateApplicationStatus(id: string) {
     await prisma.application.update({
       where: { id: application.id },
       data: {
-        status: ApplicationStatus.PENDING,
+        status: status || ApplicationStatus.SUBMITTED,
         applicationProgress: 7,
         syncStatus: SyncStatus.PENDING,
       },
@@ -570,9 +572,9 @@ export async function updateApplicationStatus(id: string) {
     await prisma.syncQueue.create({
       data: {
         applicationId: application.applicationId,
-        action: "CREATE",
+        action: SyncAction.CREATE,
         payload: {},
-        status: "PENDING",
+        status: QueueStatus.PENDING,
       },
     });
 
