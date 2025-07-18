@@ -249,7 +249,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDescription(t('Upload the group registration certificate (PDF or Image).'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setSetting('file_extensions', 'pdf jpg jpeg png')
+      ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/certificates/[date:custom:Y]-[date:custom:m]')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
@@ -270,7 +270,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDescription(t('Upload the list of members on certificate (PDF or Image).'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setSetting('file_extensions', 'pdf jpg jpeg png')
+      ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/members/[date:custom:Y]-[date:custom:m]')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
@@ -473,9 +473,10 @@ class Application extends ContentEntityBase implements ApplicationInterface {
 
     $fields['group_credit_history'] = BaseFieldDefinition::create('file')
       ->setLabel(t('Group credit history'))
-      ->setDescription(t('Upload the group credit history document (PDF or Image).'))
+      ->setDescription(t('Upload the group credit history documents (PDF or Image). Multiple files allowed.'))
       ->setRevisionable(TRUE)
-      ->setSetting('file_extensions', 'pdf jpg jpeg png')
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/credit_history/[date:custom:Y]-[date:custom:m]')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
@@ -1104,7 +1105,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
    * {@inheritdoc}
    */
   public function addGroupMember(GroupMemberInterface $member) {
-    $this->get('group_members')->appendItem($member);
+    $this->get('group_members')->appendItem($member->id());
     return $this;
   }
 

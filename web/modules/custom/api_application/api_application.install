@@ -664,3 +664,40 @@ function api_application_update_11009() {
 
   return t('Bank name field has been updated to use taxonomy reference and banks vocabulary has been created.');
 }
+
+/**
+ * Add group_credit_history field to Application entity.
+ */
+function api_application_update_11010() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Create the group_credit_history field definition.
+  $field_storage_definition = BaseFieldDefinition::create('file')
+    ->setLabel(t('Group Credit History'))
+    ->setDescription(t('Upload documents showing the group\'s credit history.'))
+    ->setRevisionable(TRUE)
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setSetting('file_extensions', 'pdf doc docx jpg jpeg png gif bmp tiff svg webp')
+    ->setSetting('file_directory', 'applications/[application:application_id]/credit_history')
+    ->setSetting('max_filesize', '10 MB')
+    ->setSetting('description_field', FALSE)
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'file_default',
+      'weight' => 24,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'file_generic',
+      'weight' => 24,
+      'settings' => [
+        'progress_indicator' => 'throbber',
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the field.
+  $update_manager->installFieldStorageDefinition('group_credit_history', 'application', 'api_application', $field_storage_definition);
+
+  return t('Group credit history field has been added to the Application entity.');
+}

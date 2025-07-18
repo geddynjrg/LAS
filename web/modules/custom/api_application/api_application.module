@@ -5,10 +5,15 @@
  * Contains api_application.module.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
+use Drupal\api_application\Entity\Application;
+use Drupal\api_application\Entity\GroupMember;
+use Drupal\file\FileInterface;
 use Drupal\gin\GinSettings;
 
 /**
@@ -20,6 +25,7 @@ function api_application_help($route_name, RouteMatchInterface $route_match) {
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t('The API Application module provides loan application entities and management functionality.') . '</p>';
+
       return $output;
 
     default:
@@ -54,7 +60,7 @@ function api_application_menu_local_tasks_alter(&$data, $route_name) {
     'entity.group_member.collection',
   ];
 
-  if (in_array($route_name, $content_routes)) {
+  if (in_array($route_name, $content_routes, TRUE)) {
     // Add Application tab.
     if (isset($data['tabs'][0]['entity.application.collection'])) {
       $data['tabs'][0]['entity.application.collection']['#weight'] = 20;
@@ -83,7 +89,7 @@ function api_application_theme_registry_alter(&$theme_registry) {
 function api_application_preprocess_html_late(&$variables) {
   // Get theme settings.
   /** @var \Drupal\gin\GinSettings $settings */
-  $settings = \Drupal::classResolver(GinSettings::class);
+  $settings = Drupal::classResolver(GinSettings::class);
   $toolbar = $settings->get('classic_toolbar');
 
   if ($toolbar && $toolbar === 'new') {
@@ -209,6 +215,7 @@ function template_preprocess_application(array &$variables) {
 
   if ($group_members && !$group_members->isEmpty()) {
     $variables['application']['group_members_count'] = count($group_members);
+
     foreach ($group_members as $member_item) {
       if ($member_item->entity) {
         $member = $member_item->entity;
@@ -263,6 +270,7 @@ function template_preprocess_application(array &$variables) {
   // County.
   if (!$application->get('county')->isEmpty()) {
     $county = $application->get('county')->entity;
+
     if ($county) {
       $variables['application']['county'] = $county->getName();
     }
@@ -271,6 +279,7 @@ function template_preprocess_application(array &$variables) {
   // Constituency.
   if (!$application->get('constituency')->isEmpty()) {
     $constituency = $application->get('constituency')->entity;
+
     if ($constituency) {
       $variables['application']['constituency'] = $constituency->getName();
     }
@@ -279,6 +288,7 @@ function template_preprocess_application(array &$variables) {
   // Purpose of loan.
   if (!$application->get('purpose_of_loan')->isEmpty()) {
     $purpose = $application->get('purpose_of_loan')->entity;
+
     if ($purpose) {
       $variables['application']['purpose_of_loan'] = $purpose->getName();
     }
@@ -287,6 +297,7 @@ function template_preprocess_application(array &$variables) {
   // Loan type.
   if (!$application->get('loan_type')->isEmpty()) {
     $loan_type = $application->get('loan_type')->entity;
+
     if ($loan_type) {
       $variables['application']['loan_type'] = [
         'name' => $loan_type->getName(),
@@ -296,15 +307,32 @@ function template_preprocess_application(array &$variables) {
   }
 
   // Handle expenses map field.
+  $variables['application']['total_expenses'] = 0;
+
   if (!$application->get('expenses')->isEmpty()) {
     foreach ($application->get('expenses') as $item) {
-      $variables['application']['expenses'][] = $item->getValue();
+      $itemValue = $item->getValue();
+
+      // Each item should contain the expense data.
+      if (is_array($itemValue['value']) && !empty($itemValue['value'])) {
+        foreach ($itemValue['value'] as $key => $value) {
+          $variables['application']['expenses'][] = [
+            'key' => $key,
+            'value' => $value,
+          ];
+          $variables['application']['total_expenses'] += $value;
+        }
+      }
     }
   }
+
+  // Balance between income and expenses.
+  $variables['application']['balance'] = $variables['application']['average_income'] - $variables['application']['total_expenses'];
 
   // Handle group credit history file.
   if (!$application->get('group_credit_history')->isEmpty()) {
     $file = $application->get('group_credit_history')->entity;
+
     if ($file) {
       // Use ByteSizeMarkup for Drupal 11 compatibility.
       $size = ByteSizeMarkup::create($file->getSize());
@@ -319,7 +347,7 @@ function template_preprocess_application(array &$variables) {
 
   // Format dates.
   if ($variables['application']['date_registered']) {
-    $variables['application']['date_registered_formatted'] = \Drupal::service('date.formatter')->format(
+    $variables['application']['date_registered_formatted'] = Drupal::service('date.formatter')->format(
       strtotime($variables['application']['date_registered']),
       'custom',
       'Y-m-d'
@@ -327,7 +355,7 @@ function template_preprocess_application(array &$variables) {
   }
 
   // Format created date.
-  $variables['application']['created_formatted'] = \Drupal::service('date.formatter')->format(
+  $variables['application']['created_formatted'] = Drupal::service('date.formatter')->format(
     $variables['application']['created'],
     'long'
   );
@@ -383,7 +411,7 @@ function template_preprocess_application(array &$variables) {
   $variables['status_options'] = $status_options;
 
   // Add CSRF token for AJAX requests.
-  $variables['#attached']['drupalSettings']['csrf_token'] = \Drupal::csrfToken()->get('rest');
+  $variables['#attached']['drupalSettings']['csrf_token'] = Drupal::csrfToken()->get('rest');
 
   // Get rejection reason label if rejected.
   if ($variables['application']['status'] === 'rejected' && $variables['application']['rejection_reason']) {
@@ -401,6 +429,7 @@ function template_preprocess_application(array &$variables) {
 
   // Helpful $content variable for templates.
   $variables['content'] = [];
+
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
@@ -410,20 +439,220 @@ function template_preprocess_application(array &$variables) {
  * Implements hook_preprocess_page().
  */
 function api_application_preprocess_page(&$variables) {
-  $route_match = \Drupal::routeMatch();
+  $route_match = Drupal::routeMatch();
 
   // Check if we're on an application canonical page.
   if ($route_match->getRouteName() === 'entity.application.canonical') {
     if (isset($variables['page']['content']['page_title'])) {
       unset($variables['page']['content']['page_title']);
     }
+
     // Remove from any region where it might appear.
     foreach ($variables['page'] as &$region) {
       if (is_array($region)) {
         foreach ($region as $block_name => &$block) {
-          if (str_contains($block_name, 'page_title') ||
-              (isset($block['#plugin_id']) && str_contains($block['#plugin_id'], 'page_title'))) {
+          if (str_contains($block_name, 'page_title')
+              || (isset($block['#plugin_id']) && str_contains($block['#plugin_id'], 'page_title'))) {
             unset($region[$block_name]);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for application entities.
+ */
+function api_application_application_presave(EntityInterface $entity) {
+  if ($entity instanceof Application && !$entity->isNew()) {
+    // Move files to application-specific directories when updating.
+    _api_application_organize_application_files($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for application entities.
+ */
+function api_application_application_insert(EntityInterface $entity) {
+  if ($entity instanceof Application) {
+    // Move files to application-specific directories after creation.
+    _api_application_organize_application_files($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for group_member entities.
+ */
+function api_application_group_member_presave(EntityInterface $entity) {
+  if ($entity instanceof GroupMember && !$entity->isNew()) {
+    // Move files to application-specific directories when updating.
+    _api_application_organize_group_member_files($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for group_member entities.
+ */
+function api_application_group_member_insert(EntityInterface $entity) {
+  if ($entity instanceof GroupMember) {
+    // Move files to application-specific directories after creation.
+    _api_application_organize_group_member_files($entity);
+  }
+}
+
+/**
+ * Organizes application files into application-specific directories.
+ *
+ * @param \Drupal\api_application\Entity\Application $application
+ *   The application entity.
+ */
+function _api_application_organize_application_files(Application $application) {
+  $application_id = $application->getApplicationId();
+
+  if (empty($application_id)) {
+    return;
+  }
+
+  $file_fields = [
+    'group_registration_certificate' => 'certificates',
+    'list_of_members_certificate' => 'members',
+  ];
+
+  $file_system = Drupal::service('file_system');
+  $file_storage = Drupal::entityTypeManager()->getStorage('file');
+
+  foreach ($file_fields as $field_name => $subdirectory) {
+    if ($application->hasField($field_name) && !$application->get($field_name)->isEmpty()) {
+      $file_id = $application->get($field_name)->target_id;
+
+      if ($file_id) {
+        $file = $file_storage->load($file_id);
+
+        if ($file instanceof FileInterface) {
+          $current_uri = $file->getFileUri();
+
+          // Check if file is already in the correct directory.
+          $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
+
+          if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
+            // Move file to application-specific directory.
+            $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
+            $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
+
+            $filename = $file->getFilename();
+            $new_uri = $new_directory . '/' . $filename;
+
+            // Move the file.
+            $moved_uri = $file_system->move(
+              $current_uri,
+              $new_uri,
+              FileSystemInterface::EXISTS_RENAME
+            );
+
+            if ($moved_uri) {
+              $file->setFileUri($moved_uri);
+              $file->save();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Handle multi-value file field (group_credit_history).
+  if ($application->hasField('group_credit_history') && !$application->get('group_credit_history')->isEmpty()) {
+    $credit_history_field = $application->get('group_credit_history');
+
+    foreach ($credit_history_field as $item) {
+      $file_id = $item->target_id;
+
+      if ($file_id) {
+        $file = $file_storage->load($file_id);
+
+        if ($file instanceof FileInterface) {
+          $current_uri = $file->getFileUri();
+
+          // Check if file is already in the correct directory.
+          $expected_dir_pattern = 'public://applications/' . $application_id . '/credit_history';
+
+          if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
+            // Move file to application-specific directory.
+            $new_directory = 'public://applications/' . $application_id . '/credit_history';
+            $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
+
+            $filename = $file->getFilename();
+            $new_uri = $new_directory . '/' . $filename;
+
+            // Move the file.
+            $moved_uri = $file_system->move($current_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
+
+            if ($moved_uri) {
+              $file->setFileUri($moved_uri);
+              $file->save();
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Organizes group member files into application-specific directories.
+ *
+ * @param \Drupal\api_application\Entity\GroupMember $member
+ *   The group member entity.
+ */
+function _api_application_organize_group_member_files(GroupMember $member) {
+  $application = $member->getApplication();
+
+  if (!$application) {
+    return;
+  }
+
+  $application_id = $application->getApplicationId();
+
+  if (empty($application_id)) {
+    return;
+  }
+
+  $file_fields = [
+    'photo_member_id' => 'member_ids',
+    'certificate_disability' => 'disability_certs',
+  ];
+
+  $file_system = Drupal::service('file_system');
+  $file_storage = Drupal::entityTypeManager()->getStorage('file');
+
+  foreach ($file_fields as $field_name => $subdirectory) {
+    if ($member->hasField($field_name) && !$member->get($field_name)->isEmpty()) {
+      $file_id = $member->get($field_name)->target_id;
+
+      if ($file_id) {
+        $file = $file_storage->load($file_id);
+
+        if ($file instanceof FileInterface) {
+          $current_uri = $file->getFileUri();
+
+          // Check if file is already in the correct directory.
+          $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
+
+          if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
+            // Move file to application-specific directory.
+            $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
+            $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
+
+            $filename = $file->getFilename();
+            $new_uri = $new_directory . '/' . $filename;
+
+            // Move the file.
+            $moved_uri = $file_system->move($current_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
+
+            if ($moved_uri) {
+              $file->setFileUri($moved_uri);
+              $file->save();
+            }
           }
         }
       }
