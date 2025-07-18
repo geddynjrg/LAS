@@ -33,7 +33,7 @@ export async function getTaxonomyOptions(
         .sort((a: any, b: any) => a.weight - b.weight)
         .map((term: any) => ({
           label: term.name,
-          value: term.uuid,
+          value: term.name,
         }));
     }
 
@@ -60,7 +60,7 @@ export async function getTaxonomyOptions(
       .sort((a: any, b: any) => a.weight - b.weight)
       .map((term: any) => ({
         label: term.name,
-        value: term.uuid,
+        value: term.name,
       }));
   } catch (error) {
     console.error(`Error fetching taxonomy options for ${fieldName}:`, error);
@@ -88,7 +88,7 @@ export async function getTaxonomyOptionsByVocabularyId(
       .sort((a: any, b: any) => a.weight - b.weight)
       .map((term: any) => ({
         label: term.name,
-        value: term.uuid,
+        value: term.name,
       }));
   } catch (error) {
     console.error(
@@ -250,6 +250,62 @@ const taxonomyFieldMapping = {
   businessType: "business_type",
   natureOfBusiness: "business_nature",
 };
+
+/**
+ * Get term UUID by name for a specific vocabulary field
+ * This is used when syncing to external API which expects UUIDs
+ */
+export async function getTermUuidByName(
+  fieldName: string,
+  termName: string,
+): Promise<string | undefined> {
+  try {
+    const vocabulary = await prisma.taxonomyVocabulary.findFirst({
+      where: { fieldName },
+      include: {
+        terms: {
+          where: { name: termName },
+        },
+      },
+    });
+
+    return vocabulary?.terms[0]?.uuid;
+  } catch (error) {
+    console.error(
+      `Error getting term UUID for ${termName} in field ${fieldName}:`,
+      error,
+    );
+    return undefined;
+  }
+}
+
+/**
+ * Get multiple term UUIDs by names for a specific vocabulary field
+ * This is used when syncing to external API which expects UUIDs
+ */
+export async function getTermUuidsByNames(
+  fieldName: string,
+  termNames: string[],
+): Promise<string[]> {
+  try {
+    const vocabulary = await prisma.taxonomyVocabulary.findFirst({
+      where: { fieldName },
+      include: {
+        terms: {
+          where: { name: { in: termNames } },
+        },
+      },
+    });
+
+    return vocabulary?.terms.map((term) => term.uuid) || [];
+  } catch (error) {
+    console.error(
+      `Error getting term UUIDs for ${termNames} in field ${fieldName}:`,
+      error,
+    );
+    return [];
+  }
+}
 
 /**
  * Helper to get options for a form field

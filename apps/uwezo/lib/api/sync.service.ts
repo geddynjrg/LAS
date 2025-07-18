@@ -1,7 +1,14 @@
 "use server";
 
-import { ApplicationStatus, QueueStatus, SyncStatus } from "@/generated/prisma";
-import type { ApplicationData } from "@/lib/data/application";
+import { promises as fs } from "fs";
+import path from "path";
+
+import { QueueStatus, SyncAction, SyncStatus } from "@/generated/prisma";
+import { createOrUpdateApplication } from "@/lib/api/application/create";
+import type {
+  ApplicationPostRequest,
+  FileUpload,
+} from "@/lib/api/schema/application/application.schema";
 import { prisma } from "@/lib/db/prisma";
 
 interface ExternalApiResponse {
@@ -26,7 +33,7 @@ export async function processSyncQueue() {
       orderBy: {
         scheduledFor: "asc",
       },
-      take: 10, // Process 10 items at a time
+      take: 10,
     });
 
     console.log(`Processing ${pendingItems.length} sync queue items...`);
@@ -130,15 +137,23 @@ async function processSyncItem(queueItemId: string) {
 
     const attempts = queueItem.attempts + 1;
     const maxAttempts = queueItem.maxAttempts || 3;
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
 
-    if (attempts >= maxAttempts) {
+    // Check if this is a permanent error that shouldn't be retried
+    const isPermanentError =
+      errorMessage.includes("not found") ||
+      errorMessage.includes("invalid") ||
+      errorMessage.includes("unauthorized");
+
+    if (attempts >= maxAttempts || isPermanentError) {
       // Mark as failed
       await prisma.syncQueue.update({
         where: { id: queueItemId },
         data: {
           status: QueueStatus.FAILED,
           attempts,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: errorMessage,
           processedAt: new Date(),
         },
       });
@@ -149,21 +164,34 @@ async function processSyncItem(queueItemId: string) {
         data: {
           syncStatus: SyncStatus.FAILED,
           syncAttempts: attempts,
-          syncError: error instanceof Error ? error.message : "Unknown error",
+          syncError: errorMessage,
         },
       });
+
+      console.log(
+        `Sync failed permanently for ${queueItem.applicationId}: ${errorMessage}`,
+      );
     } else {
       // Schedule retry with exponential backoff
-      const retryDelay = Math.pow(2, attempts) * 5 * 60 * 1000; // 5min, 10min, 20min
+      const baseDelay = 5 * 60 * 1000; // 5 minutes
+      const retryDelay = Math.min(
+        baseDelay * Math.pow(2, attempts - 1),
+        24 * 60 * 60 * 1000, // Max 24 hours
+      );
+
       await prisma.syncQueue.update({
         where: { id: queueItemId },
         data: {
           status: QueueStatus.PENDING,
           attempts,
           scheduledFor: new Date(Date.now() + retryDelay),
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: errorMessage,
         },
       });
+
+      console.log(
+        `Scheduled retry ${attempts}/${maxAttempts} for ${queueItem.applicationId} in ${retryDelay / 1000 / 60} minutes`,
+      );
     }
   }
 }
@@ -175,31 +203,35 @@ async function sendApplicationToExternalApi(
   application: any,
 ): Promise<ExternalApiResponse> {
   try {
-    const payload = transformApplicationForExternalApi(application);
+    const payload = await transformApplicationForExternalApi(application);
+    const result = await createOrUpdateApplication(payload);
 
-    const response = await fetch(
-      `${process.env.EXTERNAL_API_URL}/applications`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.EXTERNAL_API_KEY}`,
-          "X-API-Secret": process.env.EXTERNAL_API_SECRET || "",
-        },
-        body: JSON.stringify(payload),
-      },
-    );
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`API error (${response.status}): ${error}`);
+    if ("error" in result && result.error) {
+      throw new Error(result.message || result.error || "Unknown error");
     }
 
-    const result = await response.json();
-    return {
-      success: true,
-      id: result.id || result.application_id,
-    };
+    // Check if it's a successful response
+    if (
+      "success" in result &&
+      result.success &&
+      "data" in result &&
+      result.data
+    ) {
+      return {
+        success: true,
+        id: result.data.application_id,
+      };
+    }
+
+    // Handle other successful responses without explicit success field
+    if ("data" in result && result.data) {
+      return {
+        success: true,
+        id: result.data.application_id,
+      };
+    }
+
+    throw new Error("Unexpected response format from API");
   } catch (error) {
     console.error("Error sending application to external API:", error);
     return {
@@ -221,24 +253,35 @@ async function updateApplicationInExternalApi(
       return sendApplicationToExternalApi(application);
     }
 
-    const payload = transformApplicationForExternalApi(application);
+    // For updates, we need to include the application_id in the payload
+    const payload = await transformApplicationForExternalApi(application);
+    payload.application_id = application.externalId;
 
-    const response = await fetch(
-      `${process.env.EXTERNAL_API_URL}/applications/${application.externalId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.EXTERNAL_API_KEY}`,
-          "X-API-Secret": process.env.EXTERNAL_API_SECRET || "",
-        },
-        body: JSON.stringify(payload),
-      },
-    );
+    const result = await createOrUpdateApplication(payload);
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`API error (${response.status}): ${error}`);
+    if ("error" in result && result.error) {
+      throw new Error(result.message || result.error || "Unknown error");
+    }
+
+    // Check if it's a successful response
+    if (
+      "success" in result &&
+      result.success &&
+      "data" in result &&
+      result.data
+    ) {
+      return {
+        success: true,
+        id: result.data.application_id,
+      };
+    }
+
+    // Handle other successful responses without explicit success field
+    if ("data" in result && result.data) {
+      return {
+        success: true,
+        id: result.data.application_id,
+      };
     }
 
     return { success: true };
@@ -253,6 +296,7 @@ async function updateApplicationInExternalApi(
 
 /**
  * Delete application from external API
+ * Note: Since the API doesn't have a DELETE endpoint, we'll update the status to "closed"
  */
 async function deleteApplicationInExternalApi(
   applicationId: string,
@@ -260,26 +304,35 @@ async function deleteApplicationInExternalApi(
   try {
     const application = await prisma.application.findUnique({
       where: { applicationId },
+      include: {
+        user: true,
+        groupData: true,
+        members: true,
+        loanConditions: true,
+        proposedBusiness: true,
+        confirmations: true,
+      },
     });
 
     if (!application?.externalId) {
       return { success: true }; // Nothing to delete
     }
 
-    const response = await fetch(
-      `${process.env.EXTERNAL_API_URL}/applications/${application.externalId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${process.env.EXTERNAL_API_KEY}`,
-          "X-API-Secret": process.env.EXTERNAL_API_SECRET || "",
-        },
-      },
-    );
+    // Update the application status to "closed" instead of deleting
+    const updatedApplication = {
+      ...application,
+      status: "closed" as const,
+    };
 
-    if (!response.ok && response.status !== 404) {
-      const error = await response.text();
-      throw new Error(`API error (${response.status}): ${error}`);
+    const payload =
+      await transformApplicationForExternalApi(updatedApplication);
+    payload.application_id = application.externalId;
+    payload.status = "closed";
+
+    const result = await createOrUpdateApplication(payload);
+
+    if ("error" in result && result.error) {
+      throw new Error(result.message || result.error || "Unknown error");
     }
 
     return { success: true };
@@ -295,111 +348,309 @@ async function deleteApplicationInExternalApi(
 /**
  * Transform application data for external API
  */
-function transformApplicationForExternalApi(application: any) {
+async function transformApplicationForExternalApi(
+  application: any,
+): Promise<ApplicationPostRequest> {
+  // Helper function to read file and convert to base64
+  const readFileAsBase64 = async (filePath: string): Promise<string | null> => {
+    try {
+      // Construct the full path - handle both relative and absolute paths
+      const fullPath = filePath.startsWith("/uploads/")
+        ? path.join(process.cwd(), "public", filePath)
+        : filePath;
+
+      const fileBuffer = await fs.readFile(fullPath);
+      return fileBuffer.toString("base64");
+    } catch (error) {
+      console.error(`Error reading file ${filePath}:`, error);
+      return null;
+    }
+  };
+
+  // Helper function to transform file fields
+  const transformFile = async (file: any): Promise<FileUpload | undefined> => {
+    if (!file) return undefined;
+
+    // If it's already a number or string (legacy format), return as is
+    if (typeof file === "number" || typeof file === "string") return file;
+
+    // If it's an object with url/filename, read the file and convert to base64
+    if (file.url && file.filename) {
+      const base64Data = await readFileAsBase64(file.url);
+      if (base64Data) {
+        return {
+          filename: file.filename,
+          data: base64Data,
+        };
+      }
+    }
+
+    // If it already has filename and data, return as is
+    if (file.filename && file.data) {
+      return {
+        filename: file.filename,
+        data: file.data,
+      };
+    }
+
+    return undefined;
+  };
+
+  // Helper function to transform multiple files
+  const transformFiles = async (
+    files: any,
+  ): Promise<FileUpload[] | FileUpload | undefined> => {
+    if (!files) return undefined;
+
+    // If it's an array, transform each file
+    if (Array.isArray(files)) {
+      const transformedFiles = await Promise.all(
+        files.map((file) => transformFile(file)),
+      );
+      // Filter out undefined values
+      const validFiles = transformedFiles.filter(
+        (f) => f !== undefined,
+      ) as FileUpload[];
+
+      // Return the array if we have multiple files, or the first file if only one
+      return validFiles.length > 1 ? validFiles : validFiles[0];
+    }
+
+    // If it's not an array, transform as a single file
+    return transformFile(files);
+  };
+
+  // Helper function for fields that must be single files
+  const transformSingleFile = async (
+    files: any,
+  ): Promise<FileUpload | undefined> => {
+    const result = await transformFiles(files);
+    // If it's an array, return only the first file
+    if (Array.isArray(result)) {
+      console.warn(
+        "Multiple files provided where only one is expected. Using the first file.",
+      );
+      return result[0];
+    }
+    return result;
+  };
+
+  // Map status values
+  const mapStatus = (status: string): ApplicationPostRequest["status"] => {
+    const statusMap: Record<string, ApplicationPostRequest["status"]> = {
+      UNSUBMITTED: "draft",
+      SUBMITTED: "submitted",
+      UNDER_REVIEW: "under_review",
+      APPROVED: "approved",
+      REJECTED: "rejected",
+      DISBURSED: "disbursed",
+      CLOSED: "closed",
+    };
+    return statusMap[status] || "draft";
+  };
+
+  // Map gender values
+  const mapGender = (gender: string): "male" | "female" | "other" => {
+    const genderMap: Record<string, "male" | "female" | "other"> = {
+      Male: "male",
+      Female: "female",
+      Other: "other",
+    };
+    return (
+      genderMap[gender] || (gender.toLowerCase() as "male" | "female" | "other")
+    );
+  };
+
+  // Map nature of business
+  const mapNatureOfBusiness = (
+    nature: string,
+  ): "startup" | "expansion" | undefined => {
+    if (!nature) return undefined;
+    const natureMap: Record<string, "startup" | "expansion"> = {
+      "Start-up": "startup",
+      Expansion: "expansion",
+    };
+    return (
+      natureMap[nature] || (nature.toLowerCase() as "startup" | "expansion")
+    );
+  };
+
+  // Format date
+  const formatDate = (date: any): string => {
+    if (!date) return new Date().toISOString().split("T")[0]!;
+    if (date instanceof Date) return date.toISOString().split("T")[0]!;
+    if (typeof date === "string") return date;
+    return new Date().toISOString().split("T")[0]!;
+  };
+
+  // Extract value from array or single value
+  const extractValue = (value: any): string | number | undefined => {
+    if (!value) return undefined;
+    if (typeof value === "string" || typeof value === "number") return value;
+    if (Array.isArray(value) && value.length > 0) {
+      const firstItem = value[0];
+      if (typeof firstItem === "object" && firstItem !== null) {
+        return (
+          firstItem.name ||
+          firstItem.label ||
+          firstItem.value ||
+          firstItem.id ||
+          firstItem.tid
+        );
+      }
+      return firstItem;
+    }
+    if (typeof value === "object" && value !== null) {
+      return value.name || value.label || value.value || value.id || value.tid;
+    }
+    return undefined;
+  };
+
+  // Transform key activities
+  const transformKeyActivities = (
+    activities: any,
+  ): ("value_chain" | "table_banking" | "other")[] | undefined => {
+    if (!activities || !Array.isArray(activities)) return undefined;
+    return activities
+      .map((activity) => {
+        if (typeof activity === "string") {
+          const activityMap: Record<
+            string,
+            "value_chain" | "table_banking" | "other"
+          > = {
+            "Value chain": "value_chain",
+            "Table banking": "table_banking",
+            Other: "other",
+          };
+          return activityMap[activity] || "other";
+        }
+        return "other";
+      })
+      .filter(Boolean) as ("value_chain" | "table_banking" | "other")[];
+  };
+
+  // Clean null values
+  const cleanValue = <T>(value: T | null | undefined): T | undefined => {
+    return value === null ? undefined : value;
+  };
+
+  // Transform files
+  const groupRegistrationCertificate = await transformSingleFile(
+    application.groupData?.groupRegistrationCertificate,
+  );
+  const listOfMembersOnCertificate = await transformSingleFile(
+    application.groupData?.listOfMembersOnCertificate,
+  );
+  const groupCreditHistory = await transformFiles(
+    application.groupData?.groupCreditHistory,
+  );
+
+  // Transform member files
+  const transformedMembers = await Promise.all(
+    (application.members || []).map(async (member: any) => ({
+      name: member.fullname || "",
+      id_number: member.nationalIdCode || "",
+      gender: mapGender(member.gender),
+      phone_number: member.phoneNumber || "",
+      position: extractValue(member.type),
+      photo_member_id: await transformSingleFile(member.photoOfId),
+      person_with_disability: !!member.certificateOfDisability,
+      pwd_number: cleanValue(member.pwdNumber),
+      certificate_disability: await transformSingleFile(
+        member.certificateOfDisability,
+      ),
+    })),
+  );
+
   return {
-    internal_id: application.applicationId,
-    status: application.status,
-    user_email: application.user.email,
-    user_name: application.user.name,
+    application_id: application.applicationId,
+    owner_email: application.user.email,
+    status: mapStatus(application.status),
 
     // Group data
-    group: application.groupData
-      ? {
-          name: application.groupData.groupName,
-          registration_number: application.groupData.groupRegistrationNumber,
-          date_formed: application.groupData.dateFormed,
-          purpose: application.groupData.purposeOfTheGroup,
-          activities: application.groupData.keyActivitiesOfTheGroup,
-          value_chain: application.groupData.valueChain,
-          location: {
-            county: application.groupData.countyOfOperation,
-            constituency: application.groupData.constituency,
-            ward: application.groupData.ward,
-            meeting_point: application.groupData.meetingPoint,
-            landmark: application.groupData.nearestLandmark,
-          },
-          table_banking: {
-            experience: application.groupData.tableBankingExperience,
-            share_contribution:
-              application.groupData.tableBankingShareContribution,
-            total_loaned: application.groupData.tableBankingTotalLoanedOut,
-            revolving_fund:
-              application.groupData.tableBankingTotalRevolvingFund,
-          },
-          documents: {
-            registration_certificate:
-              application.groupData.groupRegistrationCertificate,
-            members_list: application.groupData.listOfMembersOnCertificate,
-            credit_history: application.groupData.groupCreditHistory,
-          },
-        }
-      : null,
+    group_name: application.groupData?.groupName || "",
+    group_registration_number:
+      application.groupData?.groupRegistrationNumber || "",
+    date_registered: formatDate(application.groupData?.dateFormed),
+    group_registration_certificate: groupRegistrationCertificate,
+    list_of_members_certificate: listOfMembersOnCertificate,
+    group_background: application.groupData?.purposeOfTheGroup
+      ? Array.isArray(application.groupData.purposeOfTheGroup)
+        ? application.groupData.purposeOfTheGroup
+        : [application.groupData.purposeOfTheGroup]
+      : undefined,
+    key_activities: transformKeyActivities(
+      application.groupData?.keyActivitiesOfTheGroup,
+    ),
+    value_chain: application.groupData?.valueChain
+      ? Array.isArray(application.groupData.valueChain)
+        ? application.groupData.valueChain
+        : [application.groupData.valueChain]
+      : undefined,
+    table_banking_duration:
+      application.groupData?.tableBankingExperience !== null &&
+      application.groupData?.tableBankingExperience !== undefined
+        ? String(application.groupData.tableBankingExperience)
+        : undefined,
+    monthly_share_contribution: cleanValue(
+      application.groupData?.tableBankingShareContribution,
+    ),
+    total_amount_loaned: cleanValue(
+      application.groupData?.tableBankingTotalLoanedOut,
+    ),
+    total_revolving_fund: cleanValue(
+      application.groupData?.tableBankingTotalRevolvingFund,
+    ),
+    other_activities: cleanValue(application.groupData?.other),
+    group_credit_history: groupCreditHistory
+      ? Array.isArray(groupCreditHistory)
+        ? groupCreditHistory
+        : [groupCreditHistory]
+      : undefined,
+
+    // Location
+    county: extractValue(application.groupData?.countyOfOperation),
+    constituency: extractValue(application.groupData?.constituency),
+    ward: application.groupData?.ward || "",
+    meeting_point: application.groupData?.meetingPoint || "",
+    nearest_landmark: application.groupData?.nearestLandmark || "",
+    nature_of_group: application.members?.[0]?.natureOfTheGroup,
 
     // Members
-    members:
-      application.members?.map((member: any) => ({
-        name: member.fullname,
-        id_number: member.nationalIdCode,
-        gender: member.gender,
-        position: member.type,
-        phone: member.phoneNumber,
-        status: member.status,
-        disability: member.certificateOfDisability
-          ? {
-              certificate: member.certificateOfDisability,
-              pwd_number: member.pwdNumber,
-            }
-          : null,
-        photo_id: member.photoOfId,
-      })) || [],
+    group_members: transformedMembers,
 
     // Loan details
-    loan: application.loanConditions
-      ? {
-          purpose: application.loanConditions.purposeOfLoan,
-          type: application.loanConditions.loanType,
-          amount: application.loanConditions.loanAmount,
-          repayment_period: application.loanConditions.repaymentPeriod,
-          bank_details: {
-            name: application.loanConditions.bankName,
-            name_other: application.loanConditions.bankNameOther,
-            branch: application.loanConditions.bankBranch,
-            account_number: application.loanConditions.accountNumber,
-          },
-        }
-      : null,
+    purpose_of_loan: Array.isArray(application.loanConditions?.purposeOfLoan)
+      ? extractValue(application.loanConditions.purposeOfLoan[0])
+      : extractValue(application.loanConditions?.purposeOfLoan),
+    loan_type: extractValue(application.loanConditions?.loanType),
+    loan_amount: application.loanConditions?.loanAmount,
+    proposed_repayment_period: application.loanConditions?.repaymentPeriod,
+    bank_name: extractValue(application.loanConditions?.bankName),
+    bank_branch: application.loanConditions?.bankBranch,
+    bank_account_number: application.loanConditions?.accountNumber,
 
     // Business details
-    business: application.proposedBusiness
-      ? {
-          nature: application.proposedBusiness.natureOfBusiness,
-          type: application.proposedBusiness.businessType,
-          years_in_business: application.proposedBusiness.yearsInBusiness,
-          financials: {
-            average_income: application.proposedBusiness.averageIncome,
+    nature_of_business: mapNatureOfBusiness(
+      application.proposedBusiness?.natureOfBusiness,
+    ),
+    business_type: application.proposedBusiness?.businessType
+      ? Array.isArray(application.proposedBusiness.businessType)
+        ? application.proposedBusiness.businessType
+        : [application.proposedBusiness.businessType]
+      : undefined,
+    years_in_operation: application.proposedBusiness?.yearsInBusiness,
+    average_income: application.proposedBusiness?.averageIncome,
+    expenses: application.proposedBusiness
+      ? [
+          {
             cost_of_goods: application.proposedBusiness.costOfGoods,
             rent: application.proposedBusiness.rentForBusiness,
             salaries: application.proposedBusiness.salaries,
             transport: application.proposedBusiness.transportForBusinessStock,
           },
-        }
-      : null,
-
-    // Confirmations
-    declarations: application.confirmations
-      ? {
-          members_confirm: application.confirmations.membersConfirm,
-          correct_info: application.confirmations.correctInformationConfirm,
-          liability: application.confirmations.liabilityConfirm,
-          funds_eligible: application.confirmations.fundsEligibleConfirm,
-        }
-      : null,
-
-    metadata: {
-      created_at: application.createdAt,
-      updated_at: application.updatedAt,
-      progress: application.applicationProgress,
-    },
+        ]
+      : undefined,
   };
 }
 
@@ -416,15 +667,84 @@ export async function syncApplication(applicationId: string) {
       throw new Error("Application not found");
     }
 
-    // Add to sync queue
-    await prisma.syncQueue.create({
-      data: {
+    // Check if there's already a pending sync for this application
+    const existingQueueItem = await prisma.syncQueue.findFirst({
+      where: {
         applicationId,
-        action: application.externalId ? "UPDATE" : "CREATE",
-        payload: {},
-        status: QueueStatus.PENDING,
+        status: {
+          in: [QueueStatus.PENDING, QueueStatus.PROCESSING],
+        },
       },
     });
+
+    if (existingQueueItem) {
+      console.log(
+        `Application ${applicationId} is already in the sync queue with status: ${existingQueueItem.status}`,
+      );
+
+      // If it's processing, wait for it to complete
+      if (existingQueueItem.status === QueueStatus.PROCESSING) {
+        return {
+          success: true,
+          message: "Application is currently being synced",
+        };
+      }
+
+      // If it's pending and scheduled for later (due to retry), update it to run now
+      if (existingQueueItem.scheduledFor > new Date()) {
+        await prisma.syncQueue.update({
+          where: { id: existingQueueItem.id },
+          data: {
+            scheduledFor: new Date(),
+            // Reset attempts if user manually triggers sync
+            attempts: 0,
+          },
+        });
+        console.log(`Rescheduled sync for ${applicationId} to run immediately`);
+      }
+    } else {
+      // Check if there's a recently failed item
+      const failedQueueItem = await prisma.syncQueue.findFirst({
+        where: {
+          applicationId,
+          status: QueueStatus.FAILED,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      if (failedQueueItem) {
+        // If max attempts reached, create a new queue item with reset attempts
+        await prisma.syncQueue.create({
+          data: {
+            applicationId,
+            action: application.externalId
+              ? SyncAction.UPDATE
+              : SyncAction.CREATE,
+            payload: {},
+            status: QueueStatus.PENDING,
+            attempts: 0, // Reset attempts for manual retry
+            maxAttempts: 5, // Give more attempts for manual retries
+          },
+        });
+        console.log(
+          `Created new sync queue item for previously failed application ${applicationId}`,
+        );
+      } else {
+        // No existing queue item, create a new one
+        await prisma.syncQueue.create({
+          data: {
+            applicationId,
+            action: application.externalId
+              ? SyncAction.UPDATE
+              : SyncAction.CREATE,
+            payload: {},
+            status: QueueStatus.PENDING,
+          },
+        });
+      }
+    }
 
     // Process immediately
     await processSyncQueue();
@@ -436,5 +756,67 @@ export async function syncApplication(applicationId: string) {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     };
+  }
+}
+
+/**
+ * Add or update sync queue item for an application
+ * This is a helper function to handle queue item creation/updates consistently
+ */
+export async function addToSyncQueue(
+  applicationId: string,
+  action: SyncAction = SyncAction.CREATE,
+  options?: {
+    priority?: boolean;
+    maxAttempts?: number;
+  },
+) {
+  try {
+    // Check for existing active queue items
+    const existingQueueItem = await prisma.syncQueue.findFirst({
+      where: {
+        applicationId,
+        status: {
+          in: [QueueStatus.PENDING, QueueStatus.PROCESSING],
+        },
+      },
+    });
+
+    if (existingQueueItem) {
+      // If item exists and is pending, we might want to update its priority
+      if (
+        options?.priority &&
+        existingQueueItem.status === QueueStatus.PENDING
+      ) {
+        await prisma.syncQueue.update({
+          where: { id: existingQueueItem.id },
+          data: {
+            scheduledFor: new Date(), // Schedule immediately
+            action, // Update action in case it changed
+          },
+        });
+      }
+      return existingQueueItem.id;
+    }
+
+    // Create new queue item
+    const newQueueItem = await prisma.syncQueue.create({
+      data: {
+        applicationId,
+        action,
+        payload: {},
+        status: QueueStatus.PENDING,
+        maxAttempts: options?.maxAttempts || 3,
+        scheduledFor: options?.priority ? new Date() : new Date(),
+      },
+    });
+
+    return newQueueItem.id;
+  } catch (error) {
+    console.error(
+      `Error adding application ${applicationId} to sync queue:`,
+      error,
+    );
+    throw error;
   }
 }

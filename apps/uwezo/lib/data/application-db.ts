@@ -10,6 +10,7 @@ import {
   SyncStatus,
 } from "@/generated/prisma";
 import { getProfile } from "@/lib/api/profile";
+import { addToSyncQueue } from "@/lib/api/sync.service";
 import type {
   ApplicationData,
   DeclarationsData,
@@ -574,15 +575,12 @@ export async function updateApplicationStatus(
       },
     });
 
-    // Add to sync queue
-    await prisma.syncQueue.create({
-      data: {
-        applicationId: application.applicationId,
-        action: SyncAction.CREATE,
-        payload: {},
-        status: QueueStatus.PENDING,
-      },
-    });
+    // Add to sync queue using the helper function
+    await addToSyncQueue(
+      application.applicationId,
+      SyncAction.CREATE,
+      { priority: true }, // Prioritize status updates
+    );
 
     const updatedApplication = await getApplicationById(id);
     return updatedApplication?.generalDetails;
