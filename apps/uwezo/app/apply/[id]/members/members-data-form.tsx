@@ -112,13 +112,13 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                   {t("MembersPage.youth")}
                 </ButtonGroupItem>
                 <ButtonGroupItem
-                  value="People with disabilities"
+                  value="pwd"
                   className="typo-body-small-bold grow px-1"
                 >
                   {t("MembersPage.peopleWithDisabilities")}
                 </ButtonGroupItem>
                 <ButtonGroupItem
-                  value="Woman"
+                  value="women"
                   className="typo-body-small-bold grow px-1"
                 >
                   {t("MembersPage.women")}

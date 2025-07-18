@@ -24,6 +24,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   name?: string;
   type?: "text" | "password" | "email" | "number" | "tel" | "date" | "file";
   defaultValue?: string;
+  value?: string;
   required?: boolean;
   minLength?: number;
   maxLength?: number;
