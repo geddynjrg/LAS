@@ -11,6 +11,9 @@ api_application.settings:
     application_prefix:
       type: string
       label: 'Application ID prefix'
+    api_key:
+      type: string
+      label: 'API authentication key'
     max_file_size:
       type: string
       label: 'Maximum file size'
