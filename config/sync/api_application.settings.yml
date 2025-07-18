@@ -1,6 +1,7 @@
 min_group_members: 1
 max_group_members: 15
 application_prefix: APP-
+api_key: 0eb29f8d-7dcc-48b2-aae9-1d21eeae3f4a
 max_file_size: 5MB
 allowed_extensions: 'pdf jpg jpeg png webp'
 instructions:

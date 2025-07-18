@@ -252,6 +252,18 @@
           <label>{{ 'Average Monthly Income'|t }}</label>
           <span>{{ application.average_income ? 'KES ' ~ application.average_income|number_format : 'Not provided'|t }}</span>
         </div>
+
+        {# Render balance between income and expences #}
+        {% if application.balance %}
+          <div class="info-item">
+            <label>{{ 'Monthly Balance'|t }}</label>
+              {% if application.balance >= 0 %}
+                <span class="positive">{{ 'KES +' ~ application.balance|number_format }}</span>
+              {% else %}
+                <span class="negative">{{ 'KES ' ~ application.balance|number_format }}</span>
+              {% endif %}
+          </div>
+        {% endif %}
       </div>
 
       {% if application.business_type %}
@@ -283,6 +295,11 @@
                 </tr>
               {% endfor %}
             </tbody>
+            <tfoot>
+              <tr>
+                <td><strong>{{ 'Total'|t }}</strong></td>
+                <td><strong>{{ application.total_expenses ? 'KES ' ~ application.total_expenses|number_format : 'Not provided'|t }}</strong></td>
+              </tr>
           </table>
         </div>
       {% endif %}

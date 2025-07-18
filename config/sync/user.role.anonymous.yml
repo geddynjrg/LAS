@@ -10,6 +10,7 @@ dependencies:
     - rest.resource.api_token_refresh
     - rest.resource.api_user_registration
     - rest.resource.application_instructions
+    - rest.resource.application_post
     - rest.resource.application_taxonomy_vocabularies
     - rest.resource.rest_framework_node_resource
     - rest.resource.rest_framework_path_resource
@@ -39,5 +40,6 @@ permissions:
   - 'restful post api_password_reset_request'
   - 'restful post api_token_refresh'
   - 'restful post api_user_registration'
+  - 'restful post application_post'
   - 'search content'
   - 'use text format restricted_html'

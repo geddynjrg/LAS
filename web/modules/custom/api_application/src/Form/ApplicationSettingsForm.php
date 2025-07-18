@@ -121,6 +121,26 @@ class ApplicationSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    // API Settings.
+    $form['general_settings']['api_settings'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('API Settings'),
+    ];
+
+    $form['general_settings']['api_settings']['api_key'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('API Key'),
+      '#default_value' => $config->get('api_key') ?: '',
+      '#description' => $this->t('The API key for authenticating external API requests. This key should be included in the X-API-Key header.'),
+      '#required' => TRUE,
+      '#maxlength' => 255,
+    ];
+
+    $form['general_settings']['api_settings']['api_key_help'] = [
+      '#type' => 'item',
+      '#markup' => $this->t('<strong>Note:</strong> This API key is used for authenticating requests to the Application POST and GET endpoints. Keep this key secure and only share it with authorized systems.'),
+    ];
+
     $form['general_settings']['file_settings'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('File Upload Settings'),
@@ -137,8 +157,8 @@ class ApplicationSettingsForm extends ConfigFormBase {
     $form['general_settings']['file_settings']['allowed_extensions'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Allowed file extensions'),
-      '#description' => $this->t('Enter allowed file extensions separated by spaces (e.g., "pdf jpg jpeg png").'),
-      '#default_value' => $config->get('allowed_extensions') ?? 'pdf jpg jpeg png',
+      '#description' => $this->t('Enter allowed file extensions separated by spaces (e.g., "pdf jpg jpeg png webp").'),
+      '#default_value' => $config->get('allowed_extensions') ?? 'pdf jpg jpeg png webp',
       '#required' => TRUE,
     ];
 
@@ -435,7 +455,8 @@ class ApplicationSettingsForm extends ConfigFormBase {
       ->set('max_group_members', $general['application_settings']['max_group_members'])
       ->set('max_file_size', $general['file_settings']['max_file_size'])
       ->set('allowed_extensions', $general['file_settings']['allowed_extensions'])
-      ->set('application_prefix', $general['application_settings']['application_prefix']);
+      ->set('application_prefix', $general['application_settings']['application_prefix'])
+      ->set('api_key', $general['api_settings']['api_key']);
 
     // Save instructions settings.
     $instructions = $values['instructions_tab']['instructions'];
