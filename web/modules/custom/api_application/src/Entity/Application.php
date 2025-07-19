@@ -249,7 +249,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDescription(t('Upload the group registration certificate (PDF or Image).'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setSetting('file_extensions', 'pdf jpg jpeg png')
+      ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/certificates/[date:custom:Y]-[date:custom:m]')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
@@ -270,7 +270,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDescription(t('Upload the list of members on certificate (PDF or Image).'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setSetting('file_extensions', 'pdf jpg jpeg png')
+      ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/members/[date:custom:Y]-[date:custom:m]')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
@@ -473,9 +473,10 @@ class Application extends ContentEntityBase implements ApplicationInterface {
 
     $fields['group_credit_history'] = BaseFieldDefinition::create('file')
       ->setLabel(t('Group credit history'))
-      ->setDescription(t('Upload the group credit history document (PDF or Image).'))
+      ->setDescription(t('Upload the group credit history documents (PDF or Image). Multiple files allowed.'))
       ->setRevisionable(TRUE)
-      ->setSetting('file_extensions', 'pdf jpg jpeg png')
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/credit_history/[date:custom:Y]-[date:custom:m]')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
@@ -774,23 +775,31 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('form', TRUE);
 
     // Bank account details.
-    $fields['bank_name'] = BaseFieldDefinition::create('string')
+    $fields['bank_name'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Group Bank name'))
-      ->setDescription(t('The name of the bank.'))
+      ->setDescription(t('Select the bank name.'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setSettings([
-        'max_length' => 255,
-        'text_processing' => 0,
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler', 'default:taxonomy_term')
+      ->setSetting('handler_settings', [
+        'target_bundles' => [
+          'banks' => 'banks',
+        ],
       ])
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'string',
+        'type' => 'entity_reference_label',
         'weight' => 34,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
+        'type' => 'entity_reference_autocomplete',
         'weight' => 34,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ],
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
@@ -1096,7 +1105,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
    * {@inheritdoc}
    */
   public function addGroupMember(GroupMemberInterface $member) {
-    $this->get('group_members')->appendItem($member);
+    $this->get('group_members')->appendItem($member->id());
     return $this;
   }
 

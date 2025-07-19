@@ -180,7 +180,7 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
       ->setSettings([
         'file_directory' => 'applications/member_ids/[date:custom:Y]-[date:custom:m]',
         'alt_field_required' => FALSE,
-        'file_extensions' => 'png jpg jpeg',
+        'file_extensions' => 'png jpg jpeg webp',
         'max_filesize' => '2MB',
       ])
       ->setDisplayOptions('view', [
@@ -220,7 +220,7 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
     $fields['certificate_disability'] = BaseFieldDefinition::create('file')
       ->setLabel(t('Certificate of disability'))
       ->setDescription(t('Upload the disability certificate (PDF or Image).'))
-      ->setSetting('file_extensions', 'pdf jpg jpeg png')
+      ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/disability_certs/[date:custom:Y]-[date:custom:m]')
       ->setSetting('max_filesize', '2MB')
       ->setSetting('handler', 'default:file')
