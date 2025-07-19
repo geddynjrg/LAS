@@ -212,18 +212,35 @@ class SmsProvidersSettingsForm extends ConfigFormBase {
     $result = $provider->sendSms($phone, $message, ['test_mode' => TRUE]);
 
     if ($result['success']) {
-      $this->messenger()->addStatus($this->t('Test message sent successfully via @provider! Message ID: @id', [
+      // Prepare response data for display.
+      $response_data = '';
+
+      if (isset($result['provider_response'])) {
+        $response_data = ' Response data: ' . json_encode($result['provider_response'], \JSON_PRETTY_PRINT);
+      }
+
+      $this->messenger()->addStatus($this->t('Test message sent successfully via @provider! Message ID: @id@response', [
         '@provider' => $provider->getLabel(),
         '@id' => $result['message_id'] ?? 'N/A',
+        '@response' => $response_data,
       ]));
-
     }
     else {
-      $this->messenger()->addError($this->t('Failed to send test message via @provider: @error', [
+      // Prepare response data for debugging.
+      $response_data = '';
+
+      if (isset($result['provider_response'])) {
+        $response_data = ' Response data: ' . json_encode($result['provider_response'], \JSON_PRETTY_PRINT);
+      }
+      elseif (isset($result['response_body'])) {
+        $response_data = ' Response body: ' . $result['response_body'];
+      }
+
+      $this->messenger()->addError($this->t('Failed to send test message via @provider: @error@response', [
         '@provider' => $provider->getLabel(),
         '@error' => $result['message'] ?? 'Unknown error',
+        '@response' => $response_data,
       ]));
-
     }
 
     // Don't redirect after test message - stay on the form.
