@@ -5,7 +5,9 @@ node_modules
 .pnp
 .pnp.js
 
-# Local env files
+# Environment files (but keep .env.example)
+.env
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
@@ -34,3 +36,4 @@ npm-debug.log*
 .DS_Store
 *.pem
 .idea
+CLAUDE.local.md
