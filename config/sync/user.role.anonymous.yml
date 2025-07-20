@@ -14,6 +14,7 @@ dependencies:
     - rest.resource.application_taxonomy_vocabularies
     - rest.resource.rest_framework_node_resource
     - rest.resource.rest_framework_path_resource
+    - rest.resource.site_information
   module:
     - comment
     - contact
@@ -35,6 +36,7 @@ permissions:
   - 'restful get application_taxonomy_vocabularies'
   - 'restful get rest_framework_node_resource'
   - 'restful get rest_framework_path_resource'
+  - 'restful get site_information'
   - 'restful post api_login'
   - 'restful post api_password_reset'
   - 'restful post api_password_reset_request'
