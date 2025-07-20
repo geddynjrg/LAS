@@ -43,7 +43,9 @@ export async function GET(request: NextRequest) {
     });
 
     if (stuckItems > 0) {
-      console.warn(`[CRON] Found ${stuckItems} stuck items in processing state`);
+      console.warn(
+        `[CRON] Found ${stuckItems} stuck items in processing state`,
+      );
       // Reset stuck items to pending
       await prisma.syncQueue.updateMany({
         where: {
@@ -69,10 +71,13 @@ export async function GET(request: NextRequest) {
       _count: true,
     });
 
-    const statusCounts = stats.reduce((acc, curr) => {
-      acc[curr.status] = curr._count;
-      return acc;
-    }, {} as Record<string, number>);
+    const statusCounts = stats.reduce(
+      (acc, curr) => {
+        acc[curr.status] = curr._count;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const duration = Date.now() - startTime;
     logEntry.duration = duration;
@@ -108,10 +113,12 @@ export async function GET(request: NextRequest) {
     const duration = Date.now() - startTime;
     logEntry.status = "failed";
     logEntry.duration = duration;
-    logEntry.errors = [error instanceof Error ? error.message : "Unknown error"];
+    logEntry.errors = [
+      error instanceof Error ? error.message : "Unknown error",
+    ];
 
     console.error("[CRON] Error in sync cron job:", error);
-    
+
     // Send alert (you could integrate with monitoring services)
     if (process.env.NODE_ENV === "production") {
       // Example: Send to monitoring service

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     await requireAdmin();
 
     const searchParams = request.nextUrl.searchParams;
-    
+
     // Parse filters
     const status = searchParams.get("status");
     const applicationId = searchParams.get("applicationId");
@@ -23,9 +23,11 @@ export async function GET(request: NextRequest) {
     const filters: any = {};
 
     if (status) {
-      filters.status = status.split(",").filter(s => 
-        Object.values(QueueStatus).includes(s as QueueStatus)
-      ) as QueueStatus[];
+      filters.status = status
+        .split(",")
+        .filter((s) =>
+          Object.values(QueueStatus).includes(s as QueueStatus),
+        ) as QueueStatus[];
     }
 
     if (applicationId) {
@@ -49,19 +51,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching sync queue items:", error);
-    
+
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
-} 
+}

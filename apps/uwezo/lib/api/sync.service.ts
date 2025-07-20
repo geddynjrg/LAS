@@ -879,16 +879,16 @@ export async function getSyncQueueItems(
     const items = await prisma.syncQueue.findMany({
       where,
       orderBy: [
-        { status: 'asc' },
-        { scheduledFor: 'asc' },
-        { createdAt: 'desc' },
+        { status: "asc" },
+        { scheduledFor: "asc" },
+        { createdAt: "desc" },
       ],
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
     // Get related application data
-    const applicationIds = items.map(item => item.applicationId);
+    const applicationIds = items.map((item) => item.applicationId);
     const applications = await prisma.application.findMany({
       where: {
         applicationId: { in: applicationIds },
@@ -909,10 +909,10 @@ export async function getSyncQueueItems(
     });
 
     const applicationMap = new Map(
-      applications.map(app => [app.applicationId, app]),
+      applications.map((app) => [app.applicationId, app]),
     );
 
-    const enrichedItems = items.map(item => ({
+    const enrichedItems = items.map((item) => ({
       ...item,
       application: applicationMap.get(item.applicationId),
     }));
@@ -939,25 +939,31 @@ export async function getSyncQueueStatistics(): Promise<QueueStatistics> {
   try {
     // Get counts by status
     const statusCounts = await prisma.syncQueue.groupBy({
-      by: ['status'],
+      by: ["status"],
       _count: true,
     });
 
-    const byStatus = statusCounts.reduce((acc, curr) => {
-      acc[curr.status] = curr._count;
-      return acc;
-    }, {} as Record<QueueStatus, number>);
+    const byStatus = statusCounts.reduce(
+      (acc, curr) => {
+        acc[curr.status] = curr._count;
+        return acc;
+      },
+      {} as Record<QueueStatus, number>,
+    );
 
     // Get counts by action
     const actionCounts = await prisma.syncQueue.groupBy({
-      by: ['action'],
+      by: ["action"],
       _count: true,
     });
 
-    const byAction = actionCounts.reduce((acc, curr) => {
-      acc[curr.action] = curr._count;
-      return acc;
-    }, {} as Record<SyncAction, number>);
+    const byAction = actionCounts.reduce(
+      (acc, curr) => {
+        acc[curr.action] = curr._count;
+        return acc;
+      },
+      {} as Record<SyncAction, number>,
+    );
 
     // Calculate average processing time for completed items
     const completedItems = await prisma.syncQueue.findMany({
@@ -992,7 +998,7 @@ export async function getSyncQueueStatistics(): Promise<QueueStatistics> {
     // Get oldest pending item
     const oldestPending = await prisma.syncQueue.findFirst({
       where: { status: QueueStatus.PENDING },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: "asc" },
       select: { createdAt: true },
     });
 
@@ -1036,7 +1042,10 @@ export async function processQueueItem(queueItemId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error(`Error manually processing queue item ${queueItemId}:`, error);
+    console.error(
+      `Error manually processing queue item ${queueItemId}:`,
+      error,
+    );
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -1068,7 +1077,7 @@ export async function releaseQueueItem(queueItemId: string) {
     if (processingTime < maxProcessingTime) {
       throw new Error(
         `Item has only been processing for ${Math.round(processingTime / 1000)} seconds. ` +
-        `Wait at least ${Math.round(maxProcessingTime / 1000)} seconds before releasing.`
+          `Wait at least ${Math.round(maxProcessingTime / 1000)} seconds before releasing.`,
       );
     }
 
@@ -1218,7 +1227,7 @@ export async function retryAllFailedItems() {
       await prisma.application.updateMany({
         where: {
           applicationId: {
-            in: failedApplications.map(item => item.applicationId),
+            in: failedApplications.map((item) => item.applicationId),
           },
         },
         data: {

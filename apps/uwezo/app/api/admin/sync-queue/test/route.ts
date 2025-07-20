@@ -5,4 +5,4 @@ export async function GET(request: NextRequest) {
     message: "Sync queue test endpoint is working",
     timestamp: new Date().toISOString(),
   });
-} 
+}
