@@ -3,7 +3,7 @@
 import { IconUserCircle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useEffect, useState, type FC } from "react";
+import { useMemo, type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -15,29 +15,29 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 
 import { useSession } from "@/hooks/useSession";
-import { getCurrentUserRolesClient } from "@/lib/auth/guards.client";
 
 export const ProfileMenu: FC = () => {
   const t = useTranslations("Common");
-  const { session } = useSession();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAuthenticated, profile, logout, isLoading } = useSession();
 
-  useEffect(() => {
-    // Check if user is admin
-    getCurrentUserRolesClient().then((roles) => {
-      setIsAdmin(
-        roles.some(
-          (role) =>
-            role.toLowerCase() === "admin" ||
-            role.toLowerCase() === "administrator",
-        ),
-      );
-    });
-  }, []);
+  const isAdmin = useMemo(() => {
+    if (!profile?.roles) return false;
 
-  if (!session) {
+    return profile.roles.some(
+      (role) =>
+        role.toLowerCase() === "admin" ||
+        role.toLowerCase() === "administrator",
+    );
+  }, [profile?.roles]);
+
+  if (!isAuthenticated || isLoading) {
     return null;
   }
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await logout();
+  };
 
   return (
     <DropdownMenu>
@@ -55,11 +55,24 @@ export const ProfileMenu: FC = () => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
+        {profile?.name && (
+          <>
+            <div className="px-2 py-1.5 text-sm font-medium">
+              {profile.name}
+            </div>
+            <div className="text-muted-foreground px-2 pb-1.5 text-xs">
+              {profile.email}
+            </div>
+            <DropdownMenuSeparator />
+          </>
+        )}
+
         <DropdownMenuItem asChild>
           <Link href="/dashboard" className="text-foreground">
             {t("myApplications")}
           </Link>
         </DropdownMenuItem>
+
         {isAdmin && (
           <>
             <DropdownMenuSeparator />
@@ -70,9 +83,10 @@ export const ProfileMenu: FC = () => {
             </DropdownMenuItem>
           </>
         )}
+
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/logout">{t("signOut")}</Link>
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+          {t("signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

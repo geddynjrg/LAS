@@ -264,6 +264,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/site-info": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get site information
+     * @description Returns site configuration including name, contact information, and useful links.
+     */
+    get: operations["rest_framework.site_info_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -276,7 +296,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1752791166
+         * @example 1753044534
          */
         timestamp: number;
         /**
@@ -500,7 +520,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1752791166
+         * @example 1753044534
          */
         timestamp: number;
         /**
@@ -980,7 +1000,7 @@ export interface components {
     TaxonomyVocabulariesMeta: {
       /**
        * @description Unix timestamp of when the response was generated
-       * @example 1752791166
+       * @example 1753044534
        */
       timestamp: number;
       /**
@@ -1160,6 +1180,122 @@ export interface components {
       /** @description MIME type */
       mime_type?: string;
     } | null;
+    SiteInformationResponse: {
+      data: components["schemas"]["SiteInformationData"];
+      meta: components["schemas"]["SiteInformationMeta"];
+    };
+    SiteInformationData: {
+      site: {
+        /**
+         * @description The site name
+         * @example Uwezo Kenya
+         */
+        name: string;
+        /**
+         * @description The site slogan
+         * @example Empowering Communities
+         */
+        slogan: string;
+        /**
+         * Format: email
+         * @description The site system email address
+         * @example system@uwezo.go.ke
+         */
+        mail: string;
+        contact: {
+          /**
+           * @description Physical address
+           * @example Lonrho House, 16th Floor, Standard Street
+           */
+          address: string;
+          /**
+           * @description Postal box address
+           * @example 42009-00100, Nairobi
+           */
+          po_box: string;
+          /**
+           * @description Contact phone number
+           * @example +254 0776 154 215
+           */
+          phone: string;
+          /**
+           * Format: email
+           * @description Contact email address
+           * @example info@uwezo.go.ke
+           */
+          email: string;
+        };
+      };
+      /** @description List of useful external links */
+      useful_links: components["schemas"]["UsefulLink"][];
+    };
+    UsefulLink: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the link
+       * @example 123e4567-e89b-12d3-a456-426614174000
+       */
+      id: string;
+      /**
+       * @description Link title
+       * @example Staff Mail
+       */
+      title: string;
+      /**
+       * Format: url
+       * @description Link URL
+       * @example https://mail.kenya.go.ke
+       */
+      url: string;
+      /**
+       * @description Sort weight for ordering
+       * @example 0
+       */
+      weight: number;
+      /**
+       * @description Whether the link is external
+       * @example true
+       */
+      external: boolean;
+    };
+    SiteInformationMeta: {
+      /**
+       * @description Unix timestamp of the response
+       * @example 1753044534
+       */
+      timestamp: number;
+      /**
+       * @description API version
+       * @example v1
+       */
+      version: string;
+      language: {
+        /**
+         * @description Current language code
+         * @example en
+         */
+        current: string;
+        /**
+         * @description Default language code
+         * @example en
+         */
+        default: string;
+        /** @description Available languages */
+        available: {
+          [key: string]: {
+            /** @example en */
+            langcode?: string;
+            /** @example English */
+            name?: string;
+            /**
+             * @example ltr
+             * @enum {string}
+             */
+            direction?: "ltr" | "rtl";
+          };
+        };
+      };
+    };
     /**
      * Text Block Mapper
      * @description Paragraph of type text_block
@@ -1358,7 +1494,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp: number;
               /**
@@ -1428,7 +1564,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp: number;
               /**
@@ -1503,7 +1639,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1558,7 +1694,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1648,7 +1784,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1705,7 +1841,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1772,7 +1908,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1840,7 +1976,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1909,7 +2045,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752791166
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -2132,6 +2268,43 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["ErrorResponse"];
         };
+      };
+    };
+  };
+  "rest_framework.site_info_get": {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Preferred language code */
+        "X-Language"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SiteInformationResponse"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

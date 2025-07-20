@@ -31,3 +31,11 @@ export type {
   GroupMemberInput,
   FileUpload,
 } from "./application/application.schema";
+
+// Site Info schemas
+export type {
+  SiteInformationResponse,
+  SiteInformationData,
+  SiteInformationMeta,
+  UsefulLink,
+} from "./site-info/site-info.schema";

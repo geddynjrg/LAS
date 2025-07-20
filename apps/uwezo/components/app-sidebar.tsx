@@ -34,7 +34,10 @@ export const AppSidebar: FC<AppSidebarProps> = ({ locale }) => {
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem asChild>
-            <NavLink href="/">Home</NavLink>
+            <NavLink href="/">{t("home")}</NavLink>
+          </SidebarMenuItem>
+          <SidebarMenuItem asChild>
+            <NavLink href="/dashboard">{t("myApplications")}</NavLink>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
