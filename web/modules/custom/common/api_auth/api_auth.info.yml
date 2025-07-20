@@ -7,4 +7,4 @@ dependencies:
   - drupal:rest
   - drupal:rest_framework
   - serialization:serialization
-  - sms_providers 
+  - sms_providers:sms_providers 
