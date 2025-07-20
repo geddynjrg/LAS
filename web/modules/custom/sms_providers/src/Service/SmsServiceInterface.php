@@ -2,7 +2,7 @@
 
 namespace Drupal\sms_providers\Service;
 
-use Drupal\sms_providers\Plugin\SmsProviderInterface;
+use Drupal\sms_providers\Provider\SmsProviderInterface;
 
 /**
  * Defines an interface for the SMS service.
@@ -12,7 +12,7 @@ interface SmsServiceInterface {
   /**
    * Gets the default SMS provider.
    *
-   * @return \Drupal\sms_providers\Plugin\SmsProviderInterface|null
+   * @return \Drupal\sms_providers\Provider\SmsProviderInterface|null
    *   The default provider instance or NULL.
    */
   public function getDefaultProvider(): ?SmsProviderInterface;
