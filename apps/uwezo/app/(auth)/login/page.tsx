@@ -6,13 +6,16 @@ import { Divider } from "@workspace/ui/components/divider";
 import { Underline } from "@workspace/ui/components/underline";
 
 import { EmailLoginForm } from "@/app/(auth)/login/email-login-form";
+import {
+  emailLoginAction,
+  phoneLoginAction,
+} from "@/app/(auth)/login/login-actions";
 import { PhoneLoginForm } from "@/app/(auth)/login/phone-login-form";
-import { emailLoginAction, phoneLoginAction } from "@/app/(auth)/login/login-actions";
 
-export default async function Page({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ callbackUrl?: string; type?: string }> 
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string; type?: string }>;
 }) {
   const params = await searchParams;
   const loginType = params.type === "email" ? "email" : "phone";
@@ -38,17 +41,28 @@ export default async function Page({
         </header>
 
         <section aria-labelledby="login-form-heading">
-          <h2 id="login-form-heading" className="sr-only">{t("loginFormHeading")}</h2>
-          
+          <h2 id="login-form-heading" className="sr-only">
+            {t("loginFormHeading")}
+          </h2>
+
           {loginType === "phone" ? (
-            <PhoneLoginForm action={phoneLoginAction} redirectTo={callbackUrl} />
+            <PhoneLoginForm
+              action={phoneLoginAction}
+              redirectTo={callbackUrl}
+            />
           ) : (
-            <EmailLoginForm action={emailLoginAction} redirectTo={callbackUrl} />
+            <EmailLoginForm
+              action={emailLoginAction}
+              redirectTo={callbackUrl}
+            />
           )}
-          
+
           <Divider className="my-6">{t("or")}</Divider>
 
-          <nav aria-label="Authentication options" className="flex flex-col items-center gap-3">
+          <nav
+            aria-label="Authentication options"
+            className="flex flex-col items-center gap-3"
+          >
             <div className="flex justify-center gap-2">
               <Link
                 href={`/login?type=${loginType === "phone" ? "email" : "phone"}${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ""}`}
@@ -56,11 +70,13 @@ export default async function Page({
                 aria-label={`Switch to ${loginType === "phone" ? "email" : "phone"} login`}
               >
                 <Underline variant="primary" className="text-primary">
-                  {loginType === "phone" ? "Use e-mail instead of phone" : "Use phone instead of e-mail"}
+                  {loginType === "phone"
+                    ? "Use e-mail instead of phone"
+                    : "Use phone instead of e-mail"}
                 </Underline>
               </Link>
             </div>
-            
+
             <div className="flex justify-center gap-2">
               <span className="typo-body-medium">{t("doNotHaveAccount")}</span>
               <Underline variant="primary">
@@ -69,7 +85,7 @@ export default async function Page({
                 </Link>
               </Underline>
             </div>
-            
+
             <div className="flex justify-center gap-2">
               <span className="typo-body-medium">{t("ForgotPassword")}</span>
               <Link href="/reset" className="text-primary underline">

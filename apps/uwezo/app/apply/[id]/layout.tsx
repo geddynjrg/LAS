@@ -5,8 +5,8 @@ import type { Step } from "@workspace/ui/components/stepper";
 
 import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
 import { Authenticated } from "@/components/authenticated";
-import { getSession } from "@/lib/session";
 import { getApplicationById } from "@/lib/data/application";
+import { getSession } from "@/lib/session";
 
 export interface ApplyLayoutProps {
   params: Promise<{ id: string }>;

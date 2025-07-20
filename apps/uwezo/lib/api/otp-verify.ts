@@ -1,37 +1,42 @@
-import { z } from "zod";
 import { getTranslations } from "next-intl/server";
-import { getApiEndpoints } from "@/lib/config";
+import { z } from "zod";
 
 const OtpVerifyResponseSchema = z.object({
   success: z.boolean(),
   access_token: z.string(),
   refresh_token: z.string(),
   expires_in: z.number(),
-  user: z.object({
-    uid: z.number().optional(),
-    email: z.string().optional(),
-    name: z.string().optional(),
-    phone_number: z.string().optional(),
-    created: z.boolean().optional(),
-  }).optional(),
+  user: z
+    .object({
+      uid: z.number().optional(),
+      email: z.string().optional(),
+      name: z.string().optional(),
+      phone_number: z.string().optional(),
+      created: z.boolean().optional(),
+    })
+    .optional(),
 });
 
-export async function verifyOtp(data: { 
-  request_id: string; 
-  otp_code: string; 
+export async function verifyOtp(data: {
+  request_id: string;
+  otp_code: string;
 }) {
   const t = await getTranslations("LoginPage");
-  
+
   // Use direct fetch to avoid authentication headers for login endpoints
-  const { OTP_VERIFY } = getApiEndpoints();
-  
+  const apiUrl = process.env.NEXT_API_URL;
+  if (!apiUrl) {
+    throw new Error("NEXT_API_URL environment variable is required");
+  }
+  const OTP_VERIFY = `${apiUrl.replace(/\/$/, "")}/api/auth/otp/verify`;
+
   let response: Response;
-  
-  if (process.env.NODE_ENV === 'development') {
+
+  if (process.env.NODE_ENV === "development") {
     // In development, temporarily set the environment variable for this specific request
     const originalValue = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
     try {
       response = await fetch(OTP_VERIFY, {
         method: "POST",
@@ -79,10 +84,14 @@ export async function verifyOtp(data: {
 
   const responseData = await response.json();
   const validation = OtpVerifyResponseSchema.safeParse(responseData);
-  
+
   if (!validation.success) {
-    console.warn("[OTP Verify] Response Schema Error:", validation.error.toString(), responseData);
+    console.warn(
+      "[OTP Verify] Response Schema Error:",
+      validation.error.toString(),
+      responseData,
+    );
   }
-  
+
   return responseData as z.infer<typeof OtpVerifyResponseSchema>;
 }

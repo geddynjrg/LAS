@@ -1,6 +1,5 @@
-import { z } from "zod";
 import { getTranslations } from "next-intl/server";
-import { getApiEndpoints } from "@/lib/config";
+import { z } from "zod";
 
 const OtpRequestResponseSchema = z.object({
   success: z.boolean(),
@@ -12,17 +11,21 @@ const OtpRequestResponseSchema = z.object({
 
 export async function requestOtp(data: { phone: string }) {
   const t = await getTranslations("LoginPage");
-  
+
   // Use direct fetch to avoid authentication headers for login endpoints
-  const { OTP_REQUEST } = getApiEndpoints();
-  
+  const apiUrl = process.env.NEXT_API_URL;
+  if (!apiUrl) {
+    throw new Error("NEXT_API_URL environment variable is required");
+  }
+  const OTP_REQUEST = `${apiUrl.replace(/\/$/, "")}/api/auth/otp/request`;
+
   let response: Response;
-  
-  if (process.env.NODE_ENV === 'development') {
+
+  if (process.env.NODE_ENV === "development") {
     // In development, temporarily set the environment variable for this specific request
     const originalValue = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
     try {
       response = await fetch(OTP_REQUEST, {
         method: "POST",
@@ -65,10 +68,14 @@ export async function requestOtp(data: { phone: string }) {
 
   const responseData = await response.json();
   const validation = OtpRequestResponseSchema.safeParse(responseData);
-  
+
   if (!validation.success) {
-    console.warn("[OTP Request] Response Schema Error:", validation.error.toString(), responseData);
+    console.warn(
+      "[OTP Request] Response Schema Error:",
+      validation.error.toString(),
+      responseData,
+    );
   }
-  
+
   return responseData as z.infer<typeof OtpRequestResponseSchema>;
 }

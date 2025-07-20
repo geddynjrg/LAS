@@ -1,23 +1,29 @@
 "use server";
 
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 import { getTranslations } from "next-intl/server";
 
-import { 
+import type { FormAction } from "@workspace/ui/hooks/use-form";
+import { getFormZodDataValues } from "@workspace/ui/lib/utils";
+
+import {
   createEmailLoginSchema,
   createPhoneLoginSchema,
-  type EmailLogin, 
-  type PhoneLogin 
+  type EmailLogin,
+  type PhoneLogin,
 } from "@/app/(auth)/login/login-schema";
 import { login } from "@/lib/api/login";
 import { requestOtp } from "@/lib/api/otp-request";
 import { verifyOtp } from "@/lib/api/otp-verify";
 import { createSession } from "@/lib/session";
 
-export const emailLoginAction: FormAction<EmailLogin> = async (_prev, formData) => {
+export const emailLoginAction: FormAction<EmailLogin> = async (
+  _prev,
+  formData,
+) => {
   const t = await getTranslations("LoginPage");
-  const emailLoginSchema = createEmailLoginSchema((key: string) => t(key as any));
+  const emailLoginSchema = createEmailLoginSchema((key: string) =>
+    t(key as Parameters<typeof t>[0]),
+  );
   const values = getFormZodDataValues(formData, emailLoginSchema);
   const { data, success, error } = emailLoginSchema.safeParse(values);
 
@@ -51,9 +57,14 @@ export const emailLoginAction: FormAction<EmailLogin> = async (_prev, formData) 
   }
 };
 
-export const phoneLoginAction: FormAction<PhoneLogin> = async (_prev, formData) => {
+export const phoneLoginAction: FormAction<PhoneLogin> = async (
+  _prev,
+  formData,
+) => {
   const t = await getTranslations("LoginPage");
-  const phoneLoginSchema = createPhoneLoginSchema((key: string) => t(key as any));
+  const phoneLoginSchema = createPhoneLoginSchema((key: string) =>
+    t(key as Parameters<typeof t>[0]),
+  );
   const values = getFormZodDataValues(formData, phoneLoginSchema);
   const { data, success, error } = phoneLoginSchema.safeParse(values);
 
@@ -70,12 +81,13 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (_prev, formData) 
     if (!data.otp_code) {
       // Step 1: Request OTP
       // Add country code to phone number if not already present
-      const fullPhoneNumber = data.phone!.startsWith('+') ? data.phone! : `+254${data.phone!}`;
+      const fullPhoneNumber = data.phone!.startsWith("+")
+        ? data.phone!
+        : `+254${data.phone!}`;
       const otpResponse = await requestOtp({ phone: fullPhoneNumber });
-      
+
       return {
-        success: false,
-        errors: {},
+        success: true,
         message: t("otpSent"),
         values,
         // Custom field to trigger UI state change

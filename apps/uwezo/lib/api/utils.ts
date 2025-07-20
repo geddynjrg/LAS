@@ -11,8 +11,8 @@ export const api = createClient<paths>({
   baseUrl: process.env.NEXT_API_URL,
   fetch: (input: RequestInfo | URL, init?: RequestInit) => {
     // Bypass SSL certificate validation in development
-    if (process.env.NODE_ENV === 'development') {
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    if (process.env.NODE_ENV === "development") {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     }
     return fetch(input, init);
   },
