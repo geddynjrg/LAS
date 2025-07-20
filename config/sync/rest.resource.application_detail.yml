@@ -1,0 +1,18 @@
+uuid: 3258e6ac-4101-4dba-9aff-a90cf9145321
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - api_auth
+    - serialization
+id: application_detail
+plugin_id: application_detail
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - jwt_auth
