@@ -232,3 +232,23 @@ function _api_auth_create_phone_field() {
     }
   }
 }
+
+/**
+ * Implements hook_update_N().
+ *
+ * Ensures sms_providers module is installed for OTP functionality.
+ */
+function api_auth_update_11004() {
+  $module_handler = \Drupal::service('module_handler');
+  $module_installer = \Drupal::service('module_installer');
+  
+  // Check if sms_providers module is not installed.
+  if (!$module_handler->moduleExists('sms_providers')) {
+    // Install the sms_providers module.
+    $module_installer->install(['sms_providers']);
+    
+    return t('Installed sms_providers module for OTP functionality.');
+  }
+  
+  return t('SMS providers module already installed.');
+}
