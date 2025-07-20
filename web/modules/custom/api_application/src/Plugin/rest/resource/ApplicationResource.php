@@ -270,16 +270,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
       }
     }
 
-    // Try to find by group registration number.
-    if (!empty($data['group_registration_number'])) {
-      $applications = $applicationStorage->loadByProperties([
-        'group_registration_number' => $data['group_registration_number'],
-      ]);
-      if (!empty($applications)) {
-        return reset($applications);
-      }
-    }
-
     return NULL;
   }
 
