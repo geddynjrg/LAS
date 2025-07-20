@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { UsefulLinkSchema } from "./useful-link.schema";
 
 export const SiteInformationDataSchema = z.object({
@@ -16,4 +17,4 @@ export const SiteInformationDataSchema = z.object({
   useful_links: z.array(UsefulLinkSchema),
 });
 
-export type SiteInformationData = z.infer<typeof SiteInformationDataSchema>; 
+export type SiteInformationData = z.infer<typeof SiteInformationDataSchema>;

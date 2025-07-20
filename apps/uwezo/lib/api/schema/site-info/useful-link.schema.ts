@@ -8,4 +8,4 @@ export const UsefulLinkSchema = z.object({
   external: z.boolean(),
 });
 
-export type UsefulLink = z.infer<typeof UsefulLinkSchema>; 
+export type UsefulLink = z.infer<typeof UsefulLinkSchema>;

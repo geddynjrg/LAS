@@ -15,4 +15,4 @@ export async function getSiteInfo() {
   });
 
   return validate(res, SiteInformationResponseSchema);
-} 
+}

@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 
 import { invalidateSession } from "@/lib/session";
 
@@ -9,10 +9,7 @@ export async function POST() {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Logout API error:", error);
-    return NextResponse.json(
-      { error: "Logout failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Logout failed" }, { status: 500 });
   }
 }
 
@@ -25,4 +22,4 @@ export async function GET() {
     console.error("Logout API error:", error);
     redirect("/login");
   }
-} 
+}

@@ -17,9 +17,9 @@ export async function getProfile() {
           name: undefined,
           roles: [],
           created: undefined,
-          last_access: undefined
+          last_access: undefined,
         },
-        meta: {}
+        meta: {},
       };
     }
     throw new Error(`Failed to get profile: ${res.response.statusText}`);

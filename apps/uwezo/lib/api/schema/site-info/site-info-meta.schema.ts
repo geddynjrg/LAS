@@ -12,9 +12,9 @@ export const SiteInformationMetaSchema = z.object({
         langcode: z.string().optional(),
         name: z.string().optional(),
         direction: z.enum(["ltr", "rtl"]).optional(),
-      })
+      }),
     ),
   }),
 });
 
-export type SiteInformationMeta = z.infer<typeof SiteInformationMetaSchema>; 
+export type SiteInformationMeta = z.infer<typeof SiteInformationMetaSchema>;
