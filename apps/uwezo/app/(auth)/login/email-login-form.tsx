@@ -10,19 +10,19 @@ import { Input } from "@workspace/ui/components/input";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 import { useMount } from "@workspace/ui/hooks/use-mount";
 
-import { loginSchema, type Login } from "@/app/(auth)/login/login-schema";
+import { emailLoginSchema, type EmailLogin } from "@/app/(auth)/login/login-schema";
 import { useSession } from "@/hooks/useSession";
 
-export interface LoginFormProps {
-  action: FormAction<Login>;
+export interface EmailLoginFormProps {
+  action: FormAction<EmailLogin>;
   redirectTo?: string;
 }
 
-export const LoginForm: FC<LoginFormProps> = ({ action, redirectTo }) => {
+export const EmailLoginForm: FC<EmailLoginFormProps> = ({ action, redirectTo }) => {
   const t = useTranslations("LoginPage");
   const router = useRouter();
   const { setSession } = useSession();
-  const [state, formAction, isPending] = useForm(action, loginSchema);
+  const [state, formAction, isPending] = useForm(action, emailLoginSchema);
 
   // reset ui session
   useMount(() => {
@@ -67,6 +67,7 @@ export const LoginForm: FC<LoginFormProps> = ({ action, redirectTo }) => {
         )}
       />
 
+      <input type="hidden" name="loginType" value="email" />
       {redirectTo && (
         <input type="hidden" name="redirectTo" value={redirectTo} />
       )}

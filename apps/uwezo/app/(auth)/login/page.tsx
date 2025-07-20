@@ -1,105 +1,84 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
 import { Divider } from "@workspace/ui/components/divider";
 import { Underline } from "@workspace/ui/components/underline";
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
-import { LoginForm } from "@/app/(auth)/login/login-form";
-import { loginSchema, type Login } from "@/app/(auth)/login/login-schema";
-import { login } from "@/lib/api/login";
-import { createSession } from "@/lib/session";
+import { EmailLoginForm } from "@/app/(auth)/login/email-login-form";
+import { PhoneLoginForm } from "@/app/(auth)/login/phone-login-form";
+import { emailLoginAction, phoneLoginAction } from "@/app/(auth)/login/login-actions";
 
-const loginAction: FormAction<Login> = async (_prev, formData) => {
-  "use server";
-  const values = getFormZodDataValues(formData, loginSchema);
-  const { data, success, error } = loginSchema.safeParse(values);
-
-  if (error) {
-    return {
-      success,
-      errors: error.flatten().fieldErrors,
-      values,
-    };
-  }
-
-  try {
-    const res = await login({
-      username: data.email,
-      password: data.password,
-    });
-
-    await createSession({
-      accessToken: res.data.access_token,
-      refreshToken: res.data.refresh_token,
-    });
-  } catch (error) {
-    console.warn("Error during login:", error);
-
-    return {
-      success: false,
-      errors: {},
-      message: error instanceof Error ? error.message : "Unknown error",
-      values,
-    };
-  }
-
-  return { success: true };
-};
-
-export interface LoginPageProps {
-  searchParams: Promise<{ callbackUrl?: string }>;
-}
-
-export default async function Page({ searchParams }: LoginPageProps) {
-  const { callbackUrl } = await searchParams;
+export default async function Page({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ callbackUrl?: string; type?: string }> 
+}) {
+  const params = await searchParams;
+  const loginType = params.type === "email" ? "email" : "phone";
+  const callbackUrl = params.callbackUrl;
   const t = await getTranslations("LoginPage");
 
   return (
     <Container className="max-w-[500px] pt-8">
-      <div className="flex flex-col gap-2 pb-4">
-        <h2 className="typo-h2">{t("title")}</h2>
-        <p className="typo-body-medium">{t("description")}</p>
-        <p className="typo-body-medium">
-          {t.rich("flowDescription", {
-            bold: (chunk) => <strong>{chunk}</strong>,
-          })}
-        </p>
-        <p className="typo-body-medium">
-          {t.rich("submittedDescription", {
-            bold: (chunk) => <strong>{chunk}</strong>,
-          })}
-        </p>
-      </div>
+      <main>
+        <header className="flex flex-col gap-2 pb-4">
+          <h1 className="typo-h2">{t("title")}</h1>
+          <p className="typo-body-medium">{t("description")}</p>
+          <p className="typo-body-medium">
+            {t.rich("flowDescription", {
+              bold: (chunk) => <strong>{chunk}</strong>,
+            })}
+          </p>
+          <p className="typo-body-medium">
+            {t.rich("submittedDescription", {
+              bold: (chunk) => <strong>{chunk}</strong>,
+            })}
+          </p>
+        </header>
 
-      <div>
-        <LoginForm action={loginAction} redirectTo={callbackUrl} />
+        <section aria-labelledby="login-form-heading">
+          <h2 id="login-form-heading" className="sr-only">{t("loginFormHeading")}</h2>
+          
+          {loginType === "phone" ? (
+            <PhoneLoginForm action={phoneLoginAction} redirectTo={callbackUrl} />
+          ) : (
+            <EmailLoginForm action={emailLoginAction} redirectTo={callbackUrl} />
+          )}
+          
+          <Divider className="my-6">{t("or")}</Divider>
 
-        <div className="flex justify-center gap-2 pt-4">
-          <p className="typo-body-medium">{t("doNotHaveAccount")}</p>
-          <Underline variant="primary">
-            <Link href="signup" className="text-primary">
-              {t("signUp")}
-            </Link>
-          </Underline>
-        </div>
-      </div>
-
-      <Divider className="border-neutral-600 py-4">{t("or")}</Divider>
-
-      <Button className="w-full bg-[color:hsl(142,78%,31%)] hover:bg-[color:hsl(143,78%,19%)]">
-        {t("LogInThroughECitizen")}
-      </Button>
-
-      <div className="pt-17 flex justify-center gap-2">
-        <p className="typo-body-medium">{t("ForgotPassword")}</p>
-        <Link href="/reset" className="text-primary underline">
-          {t("reset")}
-        </Link>
-      </div>
+          <nav aria-label="Authentication options" className="flex flex-col items-center gap-3">
+            <div className="flex justify-center gap-2">
+              <Link
+                href={`/login?type=${loginType === "phone" ? "email" : "phone"}${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ""}`}
+                className="text-primary"
+                aria-label={`Switch to ${loginType === "phone" ? "email" : "phone"} login`}
+              >
+                <Underline variant="primary" className="text-primary">
+                  {loginType === "phone" ? "Use e-mail instead of phone" : "Use phone instead of e-mail"}
+                </Underline>
+              </Link>
+            </div>
+            
+            <div className="flex justify-center gap-2">
+              <span className="typo-body-medium">{t("doNotHaveAccount")}</span>
+              <Underline variant="primary">
+                <Link href="/signup" className="text-primary">
+                  {t("signUp")}
+                </Link>
+              </Underline>
+            </div>
+            
+            <div className="flex justify-center gap-2">
+              <span className="typo-body-medium">{t("ForgotPassword")}</span>
+              <Link href="/reset" className="text-primary underline">
+                {t("reset")}
+              </Link>
+            </div>
+          </nav>
+        </section>
+      </main>
     </Container>
   );
 }
