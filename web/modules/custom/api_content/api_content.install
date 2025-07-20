@@ -1,0 +1,116 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the API Content module.
+ */
+
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+
+/**
+ * Implements hook_install().
+ */
+function api_content_install() {
+  // Create default useful links menu items.
+  _api_content_create_useful_links();
+}
+
+/**
+ * Add useful links menu items.
+ */
+function api_content_update_11001() {
+  // Create the useful links menu items.
+  _api_content_create_useful_links();
+
+  return t('Added useful links menu items.');
+}
+
+/**
+ * Add site contact information fields.
+ */
+function api_content_update_11002() {
+  $config = \Drupal::configFactory()->getEditable('api_content.settings');
+  $contact_info = $config->get('contact_info');
+
+  // Only set defaults if the contact_info doesn't already exist.
+  if (empty($contact_info)) {
+    $config->set('contact_info', [
+      'address' => 'Lonrho House, 16th Floor, Standard Street',
+      'po_box' => '42009-00100, Nairobi',
+      'phone' => '+254 0776 154 215',
+      'email' => 'info@uwezo.go.ke',
+    ]);
+    $config->save();
+  }
+
+  return t('Added site contact information configuration fields. Please update them at /admin/config/system/site-information');
+}
+
+/**
+ * Create useful links menu items.
+ */
+function _api_content_create_useful_links() {
+  // First, ensure the useful-links menu exists.
+  $menu_storage = \Drupal::entityTypeManager()->getStorage('menu');
+  $menu = $menu_storage->load('useful-links');
+
+  if (!$menu) {
+    $menu = $menu_storage->create([
+      'id' => 'useful-links',
+      'label' => 'Useful Links',
+      'description' => 'External useful links menu',
+    ]);
+    $menu->save();
+  }
+
+  $links = [
+    [
+      'title' => 'Staff Mail',
+      'link' => ['uri' => 'https://mail.kenya.go.ke'],
+      'menu_name' => 'useful-links',
+      'weight' => 0,
+      'expanded' => FALSE,
+      'enabled' => TRUE,
+    ],
+    [
+      'title' => 'MyGov',
+      'link' => ['uri' => 'https://mygov.go.ke'],
+      'menu_name' => 'useful-links',
+      'weight' => 1,
+      'expanded' => FALSE,
+      'enabled' => TRUE,
+    ],
+    [
+      'title' => 'eCitizen',
+      'link' => ['uri' => 'https://ecitizen.go.ke'],
+      'menu_name' => 'useful-links',
+      'weight' => 2,
+      'expanded' => FALSE,
+      'enabled' => TRUE,
+    ],
+    [
+      'title' => 'Public Service Jobs',
+      'link' => ['uri' => 'https://psckenyajobs.go.ke'],
+      'menu_name' => 'useful-links',
+      'weight' => 3,
+      'expanded' => FALSE,
+      'enabled' => TRUE,
+    ],
+  ];
+
+  foreach ($links as $link_data) {
+    // Check if a link with this title already exists in the useful-links menu.
+    $existing = \Drupal::entityTypeManager()
+      ->getStorage('menu_link_content')
+      ->loadByProperties([
+        'title' => $link_data['title'],
+        'menu_name' => $link_data['menu_name'],
+      ]);
+
+    // Only create if it doesn't already exist.
+    if (empty($existing)) {
+      $menu_link = MenuLinkContent::create($link_data);
+      $menu_link->save();
+    }
+  }
+}
