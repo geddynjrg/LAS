@@ -1,0 +1,19 @@
+uuid: c10c9cab-a858-4266-84a7-1451cd1e10de
+langcode: en
+status: true
+dependencies:
+  module:
+    - telephone
+    - user
+id: user.field_phone_number
+field_name: field_phone_number
+entity_type: user
+type: telephone
+settings: {  }
+module: telephone
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
