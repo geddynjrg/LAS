@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for API Content module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter() for system_site_information_settings.
+ */
+function api_content_form_system_site_information_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config = \Drupal::config('api_content.settings');
+  $contact_info = $config->get('contact_info') ?? [];
+
+  // Add a new section for contact information.
+  $form['site_contact'] = [
+    '#type' => 'details',
+    '#title' => t('Site Contact Information'),
+    '#open' => TRUE,
+    '#weight' => 1,
+  ];
+
+  $form['site_contact']['site_address'] = [
+    '#type' => 'textfield',
+    '#title' => t('Address'),
+    '#default_value' => $contact_info['address'] ?? '',
+    '#description' => t('The physical address of your organization.'),
+    '#maxlength' => 255,
+  ];
+
+  $form['site_contact']['site_po_box'] = [
+    '#type' => 'textfield',
+    '#title' => t('P.O. Box'),
+    '#default_value' => $contact_info['po_box'] ?? '',
+    '#description' => t('The postal box address.'),
+    '#maxlength' => 100,
+  ];
+
+  $form['site_contact']['site_phone'] = [
+    '#type' => 'tel',
+    '#title' => t('Phone'),
+    '#default_value' => $contact_info['phone'] ?? '',
+    '#description' => t('The main contact phone number.'),
+    '#maxlength' => 50,
+    '#attributes' => [
+      'placeholder' => t('+254 XXX XXXXXX'),
+    ],
+  ];
+
+  $form['site_contact']['site_email'] = [
+    '#type' => 'email',
+    '#title' => t('Email'),
+    '#default_value' => $contact_info['email'] ?? '',
+    '#description' => t('The main contact email address. This is different from the site email used for system notifications.'),
+    '#maxlength' => 255,
+  ];
+
+  // Move the existing site_mail field to better group it.
+  if (isset($form['site_information']['site_mail'])) {
+    $form['site_information']['site_mail']['#description'] = t('The <em>system</em> email address used for automated emails sent during registration and new password requests, and other notifications. (Use the Email field above for your public contact email.)');
+  }
+
+  // Add our submit handler to save the new fields.
+  $form['#submit'][] = 'api_content_site_information_submit';
+}
+
+/**
+ * Submit handler for the site information form.
+ */
+function api_content_site_information_submit(&$form, FormStateInterface $form_state) {
+  $contact_info = [
+    'address' => $form_state->getValue('site_address'),
+    'po_box' => $form_state->getValue('site_po_box'),
+    'phone' => $form_state->getValue('site_phone'),
+    'email' => $form_state->getValue('site_email'),
+  ];
+
+  \Drupal::configFactory()->getEditable('api_content.settings')
+    ->set('contact_info', $contact_info)
+    ->save();
+}

@@ -5,3 +5,6 @@ core_version_requirement: ^10 || ^11
 package: Custom
 dependencies:
   - drupal:rest_framework
+  - drupal:rest
+  - drupal:menu_link_content
+  - drupal:system
