@@ -43,6 +43,7 @@
     "service": "Service",
     "manufacturing": "Manufacturing",
     "agriculture": "Agriculture",
+    "home": "Home",
     "myProfile": "My Profile",
     "myApplications": "My Applications",
     "adminDashboard": "Admin Dashboard",
