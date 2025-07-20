@@ -21,7 +21,7 @@ function api_content_install() {
 function api_content_update_11001() {
   // Create the useful links menu items.
   _api_content_create_useful_links();
-  
+
   return t('Added useful links menu items.');
 }
 
@@ -31,7 +31,7 @@ function api_content_update_11001() {
 function api_content_update_11002() {
   $config = \Drupal::configFactory()->getEditable('api_content.settings');
   $contact_info = $config->get('contact_info');
-  
+
   // Only set defaults if the contact_info doesn't already exist.
   if (empty($contact_info)) {
     $config->set('contact_info', [
@@ -42,7 +42,7 @@ function api_content_update_11002() {
     ]);
     $config->save();
   }
-  
+
   return t('Added site contact information configuration fields. Please update them at /admin/config/system/site-information');
 }
 
@@ -53,7 +53,7 @@ function _api_content_create_useful_links() {
   // First, ensure the useful-links menu exists.
   $menu_storage = \Drupal::entityTypeManager()->getStorage('menu');
   $menu = $menu_storage->load('useful-links');
-  
+
   if (!$menu) {
     $menu = $menu_storage->create([
       'id' => 'useful-links',
@@ -62,7 +62,7 @@ function _api_content_create_useful_links() {
     ]);
     $menu->save();
   }
-  
+
   $links = [
     [
       'title' => 'Staff Mail',

@@ -674,7 +674,7 @@ function api_application_update_11010() {
   // Create the group_credit_history field definition.
   $field_storage_definition = BaseFieldDefinition::create('file')
     ->setLabel(t('Group Credit History'))
-    ->setDescription(t('Upload documents showing the group\'s credit history.'))
+    ->setDescription(t("Upload documents showing the group's credit history."))
     ->setRevisionable(TRUE)
     ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
     ->setSetting('file_extensions', 'pdf doc docx jpg jpeg png gif bmp tiff svg webp')
