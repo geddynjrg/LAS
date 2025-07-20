@@ -58,9 +58,9 @@ RUN adduser --system --uid 1001 nodejs
 WORKDIR /app
 COPY --from=builder /app .
 
-# Create directories for supervisor and logs
-RUN mkdir -p /var/log/supervisor /app/logs && \
-    chown -R nodejs:nodejs /var/log/supervisor /app/logs
+# Create directory for logs
+RUN mkdir -p /app/logs && \
+    chown -R nodejs:nodejs /app/logs
 
 # Copy worker scripts and supervisor config
 COPY --chown=nodejs:nodejs apps/${PROJECT}/docker/worker/sync-worker.sh /app/sync-worker.sh
@@ -68,6 +68,9 @@ COPY --chown=nodejs:nodejs apps/${PROJECT}/docker/worker/supervisord.conf /etc/s
 
 # Make scripts executable
 RUN chmod +x /app/sync-worker.sh
+
+# Update supervisor config permissions
+RUN chmod 644 /etc/supervisord.conf
 
 WORKDIR /app/apps/${PROJECT}
 
