@@ -105,7 +105,7 @@ class SiteInformationResource extends RestFrameworkResourceBase {
   /**
    * Responds to GET requests.
    *
-   * @return \Drupal\rest\ResourceResponse
+   * @return \Drupal\rest\ModifiedResourceResponse
    *   The HTTP response object.
    */
   public function get() {
@@ -150,7 +150,7 @@ class SiteInformationResource extends RestFrameworkResourceBase {
     ];
 
     // Use the parent class method to create response with proper caching.
-    return $this->createResponse($response_data, NULL);
+    return $this->createModifiedResponse($response_data);
   }
 
   /**
