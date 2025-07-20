@@ -4,2135 +4,2276 @@
  */
 
 export interface paths {
-  "/api/v1/node/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/node/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get node by ID
+         * @description Retrieves a specific node by its ID.
+         */
+        get: operations["rest_framework.node_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get node by ID
-     * @description Retrieves a specific node by its ID.
-     */
-    get: operations["rest_framework.node_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/resolve": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resolve content by path alias
+         * @description Resolves a path alias to its corresponding content.
+         */
+        get: operations["rest_framework.resolve_content"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Resolve content by path alias
-     * @description Resolves a path alias to its corresponding content.
-     */
-    get: operations["rest_framework.resolve_content"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user/login": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login
+         * @description Authenticate a user and get access and refresh tokens.
+         */
+        post: operations["api_auth.user_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Login
-     * @description Authenticate a user and get access and refresh tokens.
-     */
-    post: operations["api_auth.user_login"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user/token/refresh": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/token/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh token
+         * @description Get new access and refresh tokens using a refresh token.
+         */
+        post: operations["api_auth.token_refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Refresh token
-     * @description Get new access and refresh tokens using a refresh token.
-     */
-    post: operations["api_auth.token_refresh"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user/register": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Registration
+         * @description Register a new user and get access and refresh tokens.
+         */
+        post: operations["api_auth.user_register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Registration
-     * @description Register a new user and get access and refresh tokens.
-     */
-    post: operations["api_auth.user_register"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user/password/reset-request": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/password/reset-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request password reset
+         * @description Request a password reset link to be sent to the email address.
+         */
+        post: operations["api_auth.password_reset_request"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Request password reset
-     * @description Request a password reset link to be sent to the email address.
-     */
-    post: operations["api_auth.password_reset_request"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user/password/reset": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset password
+         * @description Reset password using a one-time reset link.
+         */
+        post: operations["api_auth.password_reset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Reset password
-     * @description Reset password using a one-time reset link.
-     */
-    post: operations["api_auth.password_reset"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user/profile": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user profile
+         * @description Get the authenticated user profile information.
+         */
+        get: operations["api_auth.user_profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get user profile
-     * @description Get the authenticated user profile information.
-     */
-    get: operations["api_auth.user_profile"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/user/logout": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/user/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout
+         * @description Logout the user and revoke their tokens.
+         */
+        post: operations["api_auth.user_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Logout
-     * @description Logout the user and revoke their tokens.
-     */
-    post: operations["api_auth.user_logout"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/application/instructions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/application/instructions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get application instructions
+         * @description Retrieves the application instructions including document requirements and example images.
+         */
+        get: operations["rest_framework.application_instructions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get application instructions
-     * @description Retrieves the application instructions including document requirements and example images.
-     */
-    get: operations["rest_framework.application_instructions_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/application": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/application": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create or update a loan application
+         * @description Creates a new loan application or updates an existing one if application_id or group_registration_number matches
+         */
+        post: operations["createApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Create or update a loan application
-     * @description Creates a new loan application or updates an existing one if application_id or group_registration_number matches
-     */
-    post: operations["createApplication"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/application/taxonomy-vocabularies": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/application/taxonomy-vocabularies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all taxonomy vocabularies for Application forms
+         * @description Retrieves all taxonomy vocabularies and their terms used in Application entity forms.
+         */
+        get: operations["api_application.taxonomy_vocabularies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get all taxonomy vocabularies for Application forms
-     * @description Retrieves all taxonomy vocabularies and their terms used in Application entity forms.
-     */
-    get: operations["api_application.taxonomy_vocabularies_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/application/{application_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/application/{application_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get application details
+         * @description Retrieve full details of a loan application by ID, UUID, or application_id
+         */
+        get: operations["getApplication"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get application details
-     * @description Retrieve full details of a loan application by ID, UUID, or application_id
-     */
-    get: operations["getApplication"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/api/v1/site-info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get site information
+         * @description Returns site configuration including name, contact information, and useful links.
+         */
+        get: operations["rest_framework.site_info_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    RestFrameworkResponse: {
-      /** @description The response data */
-      data:
-        | components["schemas"]["NodeResponse"]
-        | components["schemas"]["NodeListResponse"];
-      meta: {
-        /**
-         * @description Unix timestamp of when the response was generated
-         * @example 1752791166
-         */
-        timestamp: number;
-        /**
-         * @description API version
-         * @example v1
-         */
-        version: string;
-        language: {
-          /**
-           * @description Current language code
-           * @example en
-           */
-          current?: string;
-          /**
-           * @description Default language code
-           * @example en
-           */
-          default?: string;
-          /** @description Available language translations */
-          available?: {
-            [key: string]: {
-              /** @example en */
-              langcode?: string;
-              /** @example English */
-              name?: string;
-              /** @example https://example.com/node/1 */
-              url?: string;
-              /** @example /about-us */
-              path?: string;
+    schemas: {
+        RestFrameworkResponse: {
+            /** @description The response data */
+            data: components["schemas"]["NodeResponse"] | components["schemas"]["NodeListResponse"];
+            meta: {
+                /**
+                 * @description Unix timestamp of when the response was generated
+                 * @example 1753044534
+                 */
+                timestamp: number;
+                /**
+                 * @description API version
+                 * @example v1
+                 */
+                version: string;
+                language: {
+                    /**
+                     * @description Current language code
+                     * @example en
+                     */
+                    current?: string;
+                    /**
+                     * @description Default language code
+                     * @example en
+                     */
+                    default?: string;
+                    /** @description Available language translations */
+                    available?: {
+                        [key: string]: {
+                            /** @example en */
+                            langcode?: string;
+                            /** @example English */
+                            name?: string;
+                            /** @example https://example.com/node/1 */
+                            url?: string;
+                            /** @example /about-us */
+                            path?: string;
+                        };
+                    };
+                };
             };
-          };
         };
-      };
-    };
-    NodeResponse: {
-      /**
-       * @description The node ID
-       * @example 1
-       */
-      id: number;
-      /**
-       * @description The node bundle (content type)
-       * @example page
-       */
-      type: string;
-      /**
-       * @description The node UUID
-       * @example 550e8400-e29b-41d4-a716-446655440000
-       */
-      uuid: string;
-      /**
-       * @description The node title
-       * @example Example Page
-       */
-      title: string;
-      language?: {
-        /** @example en */
-        code?: string;
-        /** @example English */
-        name?: string;
-        /** @example ltr */
-        direction?: string;
-      };
-      /**
-       * @description The absolute URL to the node
-       * @example https://example.com/node/1
-       */
-      url: string;
-      /**
-       * @description The path alias of the node
-       * @example /about-us
-       */
-      path_alias: string;
-      /** @description The node content fields */
-      content: {
-        [key: string]: unknown;
-      };
-    };
-    NodeListResponse: {
-      /** @example course_list */
-      type: string;
-      courses: components["schemas"]["NodeResponse"][];
-    };
-    RequestBody: {
-      /** @description The request data */
-      data: Record<string, never>;
-    };
-    NodeLanding: {
-      /** @example 123 */
-      id: number;
-      /** @example landing */
-      type: string;
-      /** @example 550e8400-e29b-41d4-a716-446655440000 */
-      uuid: string;
-      /** @example Example Node Title */
-      title: string;
-      language: {
-        /** @example en-gb */
-        code?: string;
-        /** @example English, British */
-        name?: string;
-        /** @example ltr */
-        direction?: string;
-      };
-      /** @example https://example.com/node/123 */
-      url: string;
-      /** @example /example-node */
-      path_alias: string;
-      content: {
-        /** @description Body */
-        body?: {
-          /** @example <p>Example formatted text content</p> */
-          value?: string;
-          /** @example full_html */
-          format?: string;
-          /** @example <p>Example formatted text content</p> */
-          processed?: string;
-        };
-        page_components?: (
-          | components["schemas"]["ParagraphBanner"]
-          | components["schemas"]["ParagraphText_blocks"]
-        )[];
-      };
-    };
-    TextWithFormat: {
-      /**
-       * @description The raw text value
-       * @example <p>Get the financial support you need with our quick loan application process.</p>
-       */
-      value: string;
-      /**
-       * @description The text format
-       * @example full_html
-       */
-      format: string;
-      /**
-       * @description The processed/rendered text
-       * @example <p>Get the financial support you need with our quick loan application process.</p>
-       */
-      processed: string;
-    };
-    BannerBlock: {
-      /**
-       * @example banner
-       * @enum {string}
-       */
-      block_type: "banner";
-      /**
-       * @description The banner title
-       * @example Quick Loan Approval
-       */
-      title: string;
-      help_text?: components["schemas"]["TextWithFormat"];
-      text?: components["schemas"]["TextWithFormat"];
-      button?: components["schemas"]["LinkButton"][];
-    };
-    TextBlocksContainer: {
-      /**
-       * @example text_blocks
-       * @enum {string}
-       */
-      block_type: "text_blocks";
-      blocks: components["schemas"]["TextBlock"][];
-    };
-    TextBlock: {
-      /**
-       * @example text_block
-       * @enum {string}
-       */
-      block_type: "text_block";
-      text: components["schemas"]["TextWithFormat"];
-      button?: components["schemas"]["LinkButton"][];
-    };
-    LinkButton: {
-      /**
-       * @description The link title/text
-       * @example Apply Now
-       */
-      title: string;
-      /**
-       * @description The link URL
-       * @example https://example.com/apply
-       */
-      url: string;
-      /**
-       * @description Additional link options
-       * @example []
-       */
-      options: unknown[];
-      /**
-       * @description Whether the link is external
-       * @example false
-       */
-      is_external: boolean;
-    };
-    AuthTokens: {
-      /**
-       * @description JWT access token
-       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-       */
-      access_token: string;
-      /**
-       * @description JWT refresh token
-       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-       */
-      refresh_token: string;
-      /**
-       * @description Token expiration time in seconds
-       * @example 3600
-       */
-      expires_in: number;
-      /**
-       * @description Token type
-       * @example Bearer
-       */
-      token_type: string;
-    };
-    /** @description Response containing application instructions */
-    ApplicationInstructionsResponse: {
-      data: components["schemas"]["ApplicationInstructions"];
-      meta: {
-        /**
-         * @description Unix timestamp of when the response was generated
-         * @example 1752791166
-         */
-        timestamp: number;
-        /**
-         * @description API version
-         * @example v1
-         */
-        version: string;
-        language: {
-          /**
-           * @description Current language code
-           * @example en
-           */
-          current?: string;
-          /**
-           * @description Default language code
-           * @example en
-           */
-          default?: string;
-          /** @description Available language translations */
-          available?: {
-            [key: string]: {
-              /** @example en */
-              langcode?: string;
-              /** @example English */
-              name?: string;
-              /** @example https://example.com/api/v1/application/instructions */
-              url?: string;
-              /** @example /api/v1/application/instructions */
-              path?: string;
+        NodeResponse: {
+            /**
+             * @description The node ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description The node bundle (content type)
+             * @example page
+             */
+            type: string;
+            /**
+             * @description The node UUID
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            uuid: string;
+            /**
+             * @description The node title
+             * @example Example Page
+             */
+            title: string;
+            language?: {
+                /** @example en */
+                code?: string;
+                /** @example English */
+                name?: string;
+                /** @example ltr */
+                direction?: string;
             };
-          };
-        };
-      };
-    };
-    /** @description Application instructions and document requirements */
-    ApplicationInstructions: {
-      /**
-       * @description Unique identifier for instructions
-       * @example application_instructions
-       */
-      id: string;
-      /**
-       * @description The content type
-       * @example application_instructions
-       */
-      type: string;
-      /**
-       * @description The title of the instructions page
-       * @example Application Instructions
-       */
-      title: string;
-      body: components["schemas"]["FormattedText"];
-      /** @description List of required documents */
-      documents_required: components["schemas"]["DocumentRequirement"][];
-      language?: {
-        /** @example en */
-        code?: string;
-        /** @example English */
-        name?: string;
-        /** @example ltr */
-        direction?: string;
-      };
-      /**
-       * @description The absolute URL to access these instructions
-       * @example https://example.com/api/v1/application/instructions
-       */
-      url: string;
-    };
-    /** @description Formatted text with processing information */
-    FormattedText: {
-      /**
-       * @description The raw text content
-       * @example <p>Please follow these instructions carefully when submitting your application.</p>
-       */
-      value: string;
-      /**
-       * @description The text format used for processing
-       * @example basic_html
-       * @enum {string}
-       */
-      format: "basic_html" | "full_html" | "plain_text";
-      /**
-       * @description The processed HTML output
-       * @example <p>Please follow these instructions carefully when submitting your application.</p>
-       */
-      processed: string;
-    };
-    /** @description A required document configuration */
-    DocumentRequirement: {
-      /**
-       * @description The name of the document
-       * @example Valid group registration certificate
-       */
-      title: string;
-      subtitle: components["schemas"]["FormattedText"];
-      /** @description Optional link for more information */
-      link?: {
-        /**
-         * Format: uri
-         * @description The URL
-         * @example https://example.com/certificate-info
-         */
-        uri: string;
-        /**
-         * @description The link text
-         * @example More info about this certificate
-         */
-        title: string;
-      } | null;
-      /** @description Example images for this document */
-      example_images?: components["schemas"]["ExampleImage"][];
-      /**
-       * @description Caption for the example images
-       * @example Example of a valid certificate
-       */
-      examples_subtitle?: string;
-    };
-    /** @description An example image file */
-    ExampleImage: {
-      /**
-       * @description The file ID
-       * @example 123
-       */
-      fid: number;
-      /**
-       * @description The file UUID
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      uuid: string;
-      /**
-       * @description The filename
-       * @example certificate-example.webp
-       */
-      filename: string;
-      /**
-       * Format: uri
-       * @description The absolute URL to the file
-       * @example https://example.com/sites/default/files/application_instructions/examples/certificate-example.webp
-       */
-      url: string;
-      /**
-       * @description File size in bytes
-       * @example 45678
-       */
-      size: number;
-      /**
-       * @description The MIME type of the file
-       * @example image/webp
-       */
-      mime_type: string;
-    };
-    /** @description Error response structure */
-    Error: {
-      /**
-       * @description Error type or code
-       * @example not_found
-       */
-      error: string;
-      /**
-       * @description Human-readable error message
-       * @example The requested resource was not found.
-       */
-      message: string;
-      /**
-       * @description HTTP status code
-       * @example 404
-       */
-      status: number;
-      /**
-       * @description Unix timestamp when the error occurred
-       * @example 1704067200
-       */
-      timestamp?: number;
-    };
-    /** @description Request body for creating or updating an application */
-    ApplicationPostRequest: {
-      /**
-       * @description Existing application ID for updates (optional)
-       * @example APP-20240115-abc12
-       */
-      application_id?: string;
-      /**
-       * Format: email
-       * @description Email of the application owner
-       * @example user@example.com
-       */
-      owner_email: string;
-      /**
-       * @description Application status
-       * @default draft
-       * @enum {string}
-       */
-      status:
-        | "draft"
-        | "submitted"
-        | "under_review"
-        | "approved"
-        | "rejected"
-        | "disbursed"
-        | "closed";
-      /**
-       * @description Name of the group
-       * @example Youth Empowerment Group
-       */
-      group_name: string;
-      /**
-       * @description Official registration number
-       * @example REG-2024-001
-       */
-      group_registration_number: string;
-      /**
-       * Format: date
-       * @description Date when group was registered
-       * @example 2024-01-15
-       */
-      date_registered: string;
-      group_registration_certificate?: components["schemas"]["FileUpload"];
-      list_of_members_certificate?: components["schemas"]["FileUpload"];
-      /**
-       * @description Group background categories (taxonomy term names or IDs, auto-creates if not found)
-       * @example [
-       *       "Welfare issues",
-       *       "Income generating activities"
-       *     ]
-       */
-      group_background?: (string | number)[];
-      /** @description Key activities of the group */
-      key_activities?: ("value_chain" | "table_banking" | "other")[];
-      /** @description Value chain categories (auto-creates if not found) */
-      value_chain?: (string | number)[];
-      /** @description Duration of table banking practice */
-      table_banking_duration?: string;
-      /** @description Monthly share contribution amount */
-      monthly_share_contribution?: number;
-      /** @description Total amount loaned out */
-      total_amount_loaned?: number;
-      /** @description Total revolving fund amount */
-      total_revolving_fund?: number;
-      /** @description Other activities description */
-      other_activities?: string;
-      /** @description Group credit history documents (multiple files allowed) */
-      group_credit_history?: components["schemas"]["FileUpload"][];
-      county?: string | number;
-      constituency?: string | number;
-      /** @description Ward name */
-      ward?: string;
-      /** @description Where the group meets */
-      meeting_point?: string;
-      /** @description Nearest landmark to meeting point */
-      nearest_landmark?: string;
-      /**
-       * @description Nature of the group
-       * @enum {string}
-       */
-      nature_of_group?: "youth" | "pwd" | "women";
-      /** @description Group members */
-      group_members?: components["schemas"]["GroupMemberInput"][];
-      purpose_of_loan?: string | number;
-      loan_type?: string | number;
-      /** @description Requested loan amount in KSh */
-      loan_amount?: number;
-      /** @description Repayment period in months */
-      proposed_repayment_period?: number;
-      bank_name?: string | number;
-      /** @description Bank branch name */
-      bank_branch?: string;
-      /** @description Bank account number */
-      bank_account_number?: string;
-      /**
-       * @description Nature of business
-       * @enum {string}
-       */
-      nature_of_business?: "startup" | "expansion";
-      /** @description Business type categories (auto-creates if not found) */
-      business_type?: (string | number)[];
-      /**
-       * Format: float
-       * @description Years in operation
-       */
-      years_in_operation?: number;
-      /** @description Average monthly income in KES */
-      average_income?: number;
-      /** @description Business expenses */
-      expenses?: {
-        [key: string]: unknown;
-      }[];
-    };
-    GroupMemberInput: {
-      /** @description Member full name */
-      name: string;
-      /** @description National ID number */
-      id_number: string;
-      /** @enum {string} */
-      gender: "male" | "female" | "other";
-      /** @description Phone number */
-      phone_number: string;
-      position?: string | number;
-      photo_member_id?: components["schemas"]["FileUpload"];
-      /** @default false */
-      person_with_disability: boolean;
-      /** @description PWD registration number */
-      pwd_number?: string;
-      certificate_disability?: components["schemas"]["FileUpload"];
-    };
-    FileUpload:
-      | number
-      | string
-      | {
-          /**
-           * @description File name
-           * @example certificate.pdf
-           */
-          filename: string;
-          /**
-           * Format: base64
-           * @description Base64 encoded file content
-           */
-          data: string;
-        };
-    ApplicationPostResponse: {
-      /** @example true */
-      success?: boolean;
-      /** @example Application created successfully */
-      message?: string;
-      data?: {
-        /** @description Entity ID */
-        id?: number;
-        /**
-         * Format: uuid
-         * @description Entity UUID
-         */
-        uuid?: string;
-        /**
-         * @description Application ID
-         * @example APP-20240115-abc12
-         */
-        application_id?: string;
-        /** @description Application status */
-        status?: string;
-        /** @description Group name */
-        group_name?: string;
-        /** @description Creation timestamp */
-        created?: number;
-        /** @description Last modified timestamp */
-        changed?: number;
-      };
-    };
-    ErrorResponse: {
-      /** @description Error type */
-      error?: string;
-      /** @description Error message */
-      message?: string;
-      /** @description List of missing required fields */
-      missing_fields?: string[];
-    };
-    /**
-     * Taxonomy Vocabulary
-     * @description A taxonomy vocabulary with its terms
-     */
-    TaxonomyVocabulary: {
-      /**
-       * @description The machine name of the vocabulary
-       * @example group_background
-       */
-      vocabulary_id: string;
-      /**
-       * @description The human-readable label of the vocabulary
-       * @example Group Background
-       */
-      vocabulary_label: string;
-      /**
-       * @description The description of the vocabulary
-       * @example Categories for group background types
-       */
-      vocabulary_description: string;
-      /**
-       * @description The field name in the entity that references this vocabulary
-       * @example group_background
-       */
-      field_name: string;
-      /**
-       * @description The entity type that uses this vocabulary
-       * @example application
-       * @enum {string}
-       */
-      entity_type: "application" | "group_member";
-      /**
-       * @description Whether the field accepts single or multiple values
-       * @example multiple
-       * @enum {string}
-       */
-      cardinality: "single" | "multiple";
-      /**
-       * @description Whether new terms can be auto-created for this vocabulary
-       * @example false
-       */
-      auto_create: boolean;
-      /** @description Array of taxonomy terms in this vocabulary */
-      terms: components["schemas"]["TaxonomyTerm"][];
-      /**
-       * @description Total number of terms in this vocabulary
-       * @example 5
-       */
-      total_terms: number;
-    };
-    /**
-     * Taxonomy Term
-     * @description A taxonomy term
-     */
-    TaxonomyTerm: {
-      /**
-       * @description The term ID
-       * @example 1
-       */
-      tid: number;
-      /**
-       * @description The term UUID
-       * @example 550e8400-e29b-41d4-a716-446655440000
-       */
-      uuid: string;
-      /**
-       * @description The term name
-       * @example Youth Group
-       */
-      name: string;
-      /** @description The term description */
-      description: {
-        /**
-         * @description The raw description text
-         * @example Groups primarily composed of young people
-         */
-        value: string;
-        /**
-         * @description The text format
-         * @example basic_html
-         */
-        format: string;
-        /**
-         * @description The processed description HTML
-         * @example <p>Groups primarily composed of young people</p>
-         */
-        processed: string;
-      };
-      /**
-       * @description The term weight (for ordering)
-       * @example 0
-       */
-      weight: number;
-      /**
-       * @description Array of parent term IDs
-       * @example []
-       */
-      parent_ids: number[];
-      /**
-       * @description The absolute URL to the term
-       * @example https://example.com/taxonomy/term/1
-       */
-      url: string;
-      /** @description Language information for the term */
-      language: {
-        /**
-         * @description The language code
-         * @example en
-         */
-        code: string;
-        /**
-         * @description The language name
-         * @example English
-         */
-        name: string;
-      };
-    };
-    /**
-     * Taxonomy Vocabularies Meta
-     * @description Metadata for taxonomy vocabularies response
-     */
-    TaxonomyVocabulariesMeta: {
-      /**
-       * @description Unix timestamp of when the response was generated
-       * @example 1752791166
-       */
-      timestamp: number;
-      /**
-       * @description API version
-       * @example v1
-       */
-      version: string;
-      /**
-       * @description Total number of vocabularies in the response
-       * @example 9
-       */
-      total_vocabularies: number;
-      /** @description Language information */
-      language: {
-        /**
-         * @description Current language code
-         * @example en
-         */
-        current: string;
-        /**
-         * @description Default language code
-         * @example en
-         */
-        default: string;
-        /** @description Available languages */
-        available: {
-          [key: string]: {
-            /** @example en */
-            langcode: string;
-            /** @example English */
-            name: string;
-            /** @example https://example.com/api/v1/application/taxonomy-vocabularies */
+            /**
+             * @description The absolute URL to the node
+             * @example https://example.com/node/1
+             */
             url: string;
-            /** @example /api/v1/application/taxonomy-vocabularies */
-            path: string;
-          };
+            /**
+             * @description The path alias of the node
+             * @example /about-us
+             */
+            path_alias: string;
+            /** @description The node content fields */
+            content: {
+                [key: string]: unknown;
+            };
         };
-      };
-    };
-    ApplicationDetailResponse: {
-      /** @example true */
-      success?: boolean;
-      data?: components["schemas"]["ApplicationDetail"];
-    };
-    ApplicationDetail: {
-      /** @description Entity ID */
-      id?: number;
-      /**
-       * Format: uuid
-       * @description Entity UUID
-       */
-      uuid?: string;
-      /**
-       * @description Application ID
-       * @example APP-20240115-abc12
-       */
-      application_id?: string;
-      /**
-       * @description Application status
-       * @enum {string}
-       */
-      status?:
-        | "draft"
-        | "submitted"
-        | "under_review"
-        | "approved"
-        | "rejected"
-        | "disbursed"
-        | "closed";
-      /** @description Creation timestamp */
-      created?: number;
-      /** @description Last modified timestamp */
-      changed?: number;
-      owner?: {
-        /** @description User ID */
-        id?: number;
+        NodeListResponse: {
+            /** @example course_list */
+            type: string;
+            courses: components["schemas"]["NodeResponse"][];
+        };
+        RequestBody: {
+            /** @description The request data */
+            data: Record<string, never>;
+        };
+        NodeLanding: {
+            /** @example 123 */
+            id: number;
+            /** @example landing */
+            type: string;
+            /** @example 550e8400-e29b-41d4-a716-446655440000 */
+            uuid: string;
+            /** @example Example Node Title */
+            title: string;
+            language: {
+                /** @example en-gb */
+                code?: string;
+                /** @example English, British */
+                name?: string;
+                /** @example ltr */
+                direction?: string;
+            };
+            /** @example https://example.com/node/123 */
+            url: string;
+            /** @example /example-node */
+            path_alias: string;
+            content: {
+                /** @description Body */
+                body?: {
+                    /** @example <p>Example formatted text content</p> */
+                    value?: string;
+                    /** @example full_html */
+                    format?: string;
+                    /** @example <p>Example formatted text content</p> */
+                    processed?: string;
+                };
+                page_components?: (components["schemas"]["ParagraphBanner"] | components["schemas"]["ParagraphText_blocks"])[];
+            };
+        };
+        TextWithFormat: {
+            /**
+             * @description The raw text value
+             * @example <p>Get the financial support you need with our quick loan application process.</p>
+             */
+            value: string;
+            /**
+             * @description The text format
+             * @example full_html
+             */
+            format: string;
+            /**
+             * @description The processed/rendered text
+             * @example <p>Get the financial support you need with our quick loan application process.</p>
+             */
+            processed: string;
+        };
+        BannerBlock: {
+            /**
+             * @example banner
+             * @enum {string}
+             */
+            block_type: "banner";
+            /**
+             * @description The banner title
+             * @example Quick Loan Approval
+             */
+            title: string;
+            help_text?: components["schemas"]["TextWithFormat"];
+            text?: components["schemas"]["TextWithFormat"];
+            button?: components["schemas"]["LinkButton"][];
+        };
+        TextBlocksContainer: {
+            /**
+             * @example text_blocks
+             * @enum {string}
+             */
+            block_type: "text_blocks";
+            blocks: components["schemas"]["TextBlock"][];
+        };
+        TextBlock: {
+            /**
+             * @example text_block
+             * @enum {string}
+             */
+            block_type: "text_block";
+            text: components["schemas"]["TextWithFormat"];
+            button?: components["schemas"]["LinkButton"][];
+        };
+        LinkButton: {
+            /**
+             * @description The link title/text
+             * @example Apply Now
+             */
+            title: string;
+            /**
+             * @description The link URL
+             * @example https://example.com/apply
+             */
+            url: string;
+            /**
+             * @description Additional link options
+             * @example []
+             */
+            options: unknown[];
+            /**
+             * @description Whether the link is external
+             * @example false
+             */
+            is_external: boolean;
+        };
+        AuthTokens: {
+            /**
+             * @description JWT access token
+             * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+             */
+            access_token: string;
+            /**
+             * @description JWT refresh token
+             * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+             */
+            refresh_token: string;
+            /**
+             * @description Token expiration time in seconds
+             * @example 3600
+             */
+            expires_in: number;
+            /**
+             * @description Token type
+             * @example Bearer
+             */
+            token_type: string;
+        };
+        /** @description Response containing application instructions */
+        ApplicationInstructionsResponse: {
+            data: components["schemas"]["ApplicationInstructions"];
+            meta: {
+                /**
+                 * @description Unix timestamp of when the response was generated
+                 * @example 1753044534
+                 */
+                timestamp: number;
+                /**
+                 * @description API version
+                 * @example v1
+                 */
+                version: string;
+                language: {
+                    /**
+                     * @description Current language code
+                     * @example en
+                     */
+                    current?: string;
+                    /**
+                     * @description Default language code
+                     * @example en
+                     */
+                    default?: string;
+                    /** @description Available language translations */
+                    available?: {
+                        [key: string]: {
+                            /** @example en */
+                            langcode?: string;
+                            /** @example English */
+                            name?: string;
+                            /** @example https://example.com/api/v1/application/instructions */
+                            url?: string;
+                            /** @example /api/v1/application/instructions */
+                            path?: string;
+                        };
+                    };
+                };
+            };
+        };
+        /** @description Application instructions and document requirements */
+        ApplicationInstructions: {
+            /**
+             * @description Unique identifier for instructions
+             * @example application_instructions
+             */
+            id: string;
+            /**
+             * @description The content type
+             * @example application_instructions
+             */
+            type: string;
+            /**
+             * @description The title of the instructions page
+             * @example Application Instructions
+             */
+            title: string;
+            body: components["schemas"]["FormattedText"];
+            /** @description List of required documents */
+            documents_required: components["schemas"]["DocumentRequirement"][];
+            language?: {
+                /** @example en */
+                code?: string;
+                /** @example English */
+                name?: string;
+                /** @example ltr */
+                direction?: string;
+            };
+            /**
+             * @description The absolute URL to access these instructions
+             * @example https://example.com/api/v1/application/instructions
+             */
+            url: string;
+        };
+        /** @description Formatted text with processing information */
+        FormattedText: {
+            /**
+             * @description The raw text content
+             * @example <p>Please follow these instructions carefully when submitting your application.</p>
+             */
+            value: string;
+            /**
+             * @description The text format used for processing
+             * @example basic_html
+             * @enum {string}
+             */
+            format: "basic_html" | "full_html" | "plain_text";
+            /**
+             * @description The processed HTML output
+             * @example <p>Please follow these instructions carefully when submitting your application.</p>
+             */
+            processed: string;
+        };
+        /** @description A required document configuration */
+        DocumentRequirement: {
+            /**
+             * @description The name of the document
+             * @example Valid group registration certificate
+             */
+            title: string;
+            subtitle: components["schemas"]["FormattedText"];
+            /** @description Optional link for more information */
+            link?: {
+                /**
+                 * Format: uri
+                 * @description The URL
+                 * @example https://example.com/certificate-info
+                 */
+                uri: string;
+                /**
+                 * @description The link text
+                 * @example More info about this certificate
+                 */
+                title: string;
+            } | null;
+            /** @description Example images for this document */
+            example_images?: components["schemas"]["ExampleImage"][];
+            /**
+             * @description Caption for the example images
+             * @example Example of a valid certificate
+             */
+            examples_subtitle?: string;
+        };
+        /** @description An example image file */
+        ExampleImage: {
+            /**
+             * @description The file ID
+             * @example 123
+             */
+            fid: number;
+            /**
+             * @description The file UUID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            uuid: string;
+            /**
+             * @description The filename
+             * @example certificate-example.webp
+             */
+            filename: string;
+            /**
+             * Format: uri
+             * @description The absolute URL to the file
+             * @example https://example.com/sites/default/files/application_instructions/examples/certificate-example.webp
+             */
+            url: string;
+            /**
+             * @description File size in bytes
+             * @example 45678
+             */
+            size: number;
+            /**
+             * @description The MIME type of the file
+             * @example image/webp
+             */
+            mime_type: string;
+        };
+        /** @description Error response structure */
+        Error: {
+            /**
+             * @description Error type or code
+             * @example not_found
+             */
+            error: string;
+            /**
+             * @description Human-readable error message
+             * @example The requested resource was not found.
+             */
+            message: string;
+            /**
+             * @description HTTP status code
+             * @example 404
+             */
+            status: number;
+            /**
+             * @description Unix timestamp when the error occurred
+             * @example 1704067200
+             */
+            timestamp?: number;
+        };
+        /** @description Request body for creating or updating an application */
+        ApplicationPostRequest: {
+            /**
+             * @description Existing application ID for updates (optional)
+             * @example APP-20240115-abc12
+             */
+            application_id?: string;
+            /**
+             * Format: email
+             * @description Email of the application owner
+             * @example user@example.com
+             */
+            owner_email: string;
+            /**
+             * @description Application status
+             * @default draft
+             * @enum {string}
+             */
+            status: "draft" | "submitted" | "under_review" | "approved" | "rejected" | "disbursed" | "closed";
+            /**
+             * @description Name of the group
+             * @example Youth Empowerment Group
+             */
+            group_name: string;
+            /**
+             * @description Official registration number
+             * @example REG-2024-001
+             */
+            group_registration_number: string;
+            /**
+             * Format: date
+             * @description Date when group was registered
+             * @example 2024-01-15
+             */
+            date_registered: string;
+            group_registration_certificate?: components["schemas"]["FileUpload"];
+            list_of_members_certificate?: components["schemas"]["FileUpload"];
+            /**
+             * @description Group background categories (taxonomy term names or IDs, auto-creates if not found)
+             * @example [
+             *       "Welfare issues",
+             *       "Income generating activities"
+             *     ]
+             */
+            group_background?: (string | number)[];
+            /** @description Key activities of the group */
+            key_activities?: ("value_chain" | "table_banking" | "other")[];
+            /** @description Value chain categories (auto-creates if not found) */
+            value_chain?: (string | number)[];
+            /** @description Duration of table banking practice */
+            table_banking_duration?: string;
+            /** @description Monthly share contribution amount */
+            monthly_share_contribution?: number;
+            /** @description Total amount loaned out */
+            total_amount_loaned?: number;
+            /** @description Total revolving fund amount */
+            total_revolving_fund?: number;
+            /** @description Other activities description */
+            other_activities?: string;
+            /** @description Group credit history documents (multiple files allowed) */
+            group_credit_history?: components["schemas"]["FileUpload"][];
+            county?: string | number;
+            constituency?: string | number;
+            /** @description Ward name */
+            ward?: string;
+            /** @description Where the group meets */
+            meeting_point?: string;
+            /** @description Nearest landmark to meeting point */
+            nearest_landmark?: string;
+            /**
+             * @description Nature of the group
+             * @enum {string}
+             */
+            nature_of_group?: "youth" | "pwd" | "women";
+            /** @description Group members */
+            group_members?: components["schemas"]["GroupMemberInput"][];
+            purpose_of_loan?: string | number;
+            loan_type?: string | number;
+            /** @description Requested loan amount in KSh */
+            loan_amount?: number;
+            /** @description Repayment period in months */
+            proposed_repayment_period?: number;
+            bank_name?: string | number;
+            /** @description Bank branch name */
+            bank_branch?: string;
+            /** @description Bank account number */
+            bank_account_number?: string;
+            /**
+             * @description Nature of business
+             * @enum {string}
+             */
+            nature_of_business?: "startup" | "expansion";
+            /** @description Business type categories (auto-creates if not found) */
+            business_type?: (string | number)[];
+            /**
+             * Format: float
+             * @description Years in operation
+             */
+            years_in_operation?: number;
+            /** @description Average monthly income in KES */
+            average_income?: number;
+            /** @description Business expenses */
+            expenses?: {
+                [key: string]: unknown;
+            }[];
+        };
+        GroupMemberInput: {
+            /** @description Member full name */
+            name: string;
+            /** @description National ID number */
+            id_number: string;
+            /** @enum {string} */
+            gender: "male" | "female" | "other";
+            /** @description Phone number */
+            phone_number: string;
+            position?: string | number;
+            photo_member_id?: components["schemas"]["FileUpload"];
+            /** @default false */
+            person_with_disability: boolean;
+            /** @description PWD registration number */
+            pwd_number?: string;
+            certificate_disability?: components["schemas"]["FileUpload"];
+        };
+        FileUpload: number | string | {
+            /**
+             * @description File name
+             * @example certificate.pdf
+             */
+            filename: string;
+            /**
+             * Format: base64
+             * @description Base64 encoded file content
+             */
+            data: string;
+        };
+        ApplicationPostResponse: {
+            /** @example true */
+            success?: boolean;
+            /** @example Application created successfully */
+            message?: string;
+            data?: {
+                /** @description Entity ID */
+                id?: number;
+                /**
+                 * Format: uuid
+                 * @description Entity UUID
+                 */
+                uuid?: string;
+                /**
+                 * @description Application ID
+                 * @example APP-20240115-abc12
+                 */
+                application_id?: string;
+                /** @description Application status */
+                status?: string;
+                /** @description Group name */
+                group_name?: string;
+                /** @description Creation timestamp */
+                created?: number;
+                /** @description Last modified timestamp */
+                changed?: number;
+            };
+        };
+        ErrorResponse: {
+            /** @description Error type */
+            error?: string;
+            /** @description Error message */
+            message?: string;
+            /** @description List of missing required fields */
+            missing_fields?: string[];
+        };
         /**
-         * Format: email
-         * @description User email
+         * Taxonomy Vocabulary
+         * @description A taxonomy vocabulary with its terms
          */
-        email?: string;
-        /** @description User name */
-        name?: string;
-      };
-      group_data?: {
-        group_name?: string;
-        group_registration_number?: string;
-        /** Format: date */
-        date_registered?: string;
-        group_registration_certificate?: components["schemas"]["FileData"];
-        list_of_members_certificate?: components["schemas"]["FileData"];
-        group_background?: components["schemas"]["TaxonomyTerm"][];
-        key_activities?: string[];
-        value_chain?: components["schemas"]["TaxonomyTerm"][];
-        table_banking_duration?: string | null;
-        monthly_share_contribution?: number | null;
-        total_amount_loaned?: number | null;
-        total_revolving_fund?: number | null;
-        other_activities?: string | null;
-        /** @description Group credit history documents */
-        group_credit_history?: components["schemas"]["FileData"][];
-      };
-      location?: {
-        county?: components["schemas"]["TaxonomyTerm"];
-        constituency?: components["schemas"]["TaxonomyTerm"];
-        ward?: string;
-        meeting_point?: string;
-        nearest_landmark?: string;
-      };
-      /** @enum {string} */
-      nature_of_group?: "youth" | "pwd" | "women";
-      group_members?: components["schemas"]["GroupMemberDetail"][];
-      loan_conditions?: {
-        purpose_of_loan?: components["schemas"]["TaxonomyTerm"];
-        loan_type?: components["schemas"]["TaxonomyTerm"];
-        loan_amount?: number;
-        proposed_repayment_period?: number;
-        bank_name?: components["schemas"]["TaxonomyTerm"];
-        bank_branch?: string;
-        bank_account_number?: string;
-      };
-      proposed_business?: {
-        /** @enum {string} */
-        nature_of_business?: "startup" | "expansion";
-        business_type?: components["schemas"]["TaxonomyTerm"][];
-        /** Format: float */
-        years_in_operation?: number;
-        average_income?: number;
-        expenses?: {
-          [key: string]: unknown;
-        }[];
-      };
-      rejection_details?: {
-        /** @enum {string} */
-        rejection_reason?:
-          | "incomplete_information"
-          | "missing_documents"
-          | "eligibility_criteria"
-          | "duplicate_application"
-          | "insufficient_collateral"
-          | "poor_credit_history"
-          | "other";
-        rejection_message?: string;
-      } | null;
-    };
-    GroupMemberDetail: {
-      /** @description Member entity ID */
-      id?: number;
-      name?: string;
-      id_number?: string;
-      /** @enum {string} */
-      gender?: "male" | "female" | "other";
-      phone_number?: string;
-      position?: components["schemas"]["TaxonomyTerm"];
-      photo_member_id?: components["schemas"]["FileData"];
-      person_with_disability?: boolean;
-      pwd_number?: string | null;
-      certificate_disability?: components["schemas"]["FileData"];
-    };
-    FileData: {
-      /** @description File ID */
-      fid?: number;
-      /**
-       * Format: uuid
-       * @description File UUID
-       */
-      uuid?: string;
-      /** @description File name */
-      filename?: string;
-      /**
-       * Format: uri
-       * @description File URL
-       */
-      url?: string;
-      /** @description File size in bytes */
-      size?: number;
-      /** @description MIME type */
-      mime_type?: string;
-    } | null;
-    /**
-     * Text Block Mapper
-     * @description Paragraph of type text_block
-     * @example {
-     *       "block_type": "text_block",
-     *       "text": {
-     *         "value": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>",
-     *         "format": "full_html",
-     *         "processed": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>"
-     *       },
-     *       "button": [
-     *         {
-     *           "title": "Learn More",
-     *           "url": "https://example.com/personal-loans",
-     *           "options": [],
-     *           "is_external": false
-     *         }
-     *       ]
-     *     }
-     */
-    ParagraphText_block: {
-      /**
-       * @description The block type identifier (enum property replaced by openapi-typescript)
-       * @enum {string}
-       */
-      block_type: "ParagraphText_block";
-      text?: {
-        /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
-        value?: string;
-        /** @example full_html */
-        format?: string;
-        /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
-        processed?: string;
-      };
-      button?: {
-        /** @example Learn More */
-        title?: string;
-        /** @example https://example.com/personal-loans */
-        url?: string;
-        options?: Record<string, never>;
-        /** @example false */
-        is_external?: boolean;
-      }[];
-    };
-    /**
-     * Banner Mapper
-     * @description Paragraph of type banner
-     * @example {
-     *       "block_type": "banner",
-     *       "title": "Quick Loan Approval",
-     *       "text": {
-     *         "value": "<p>Apply for a loan in minutes and get approved within 24 hours</p>",
-     *         "format": "full_html",
-     *         "processed": "<p>Apply for a loan in minutes and get approved within 24 hours</p>"
-     *       },
-     *       "button": [
-     *         {
-     *           "title": "Apply Now",
-     *           "url": "https://example.com/apply",
-     *           "options": [],
-     *           "is_external": false
-     *         }
-     *       ]
-     *     }
-     */
-    ParagraphBanner: {
-      /**
-       * @description The block type identifier (enum property replaced by openapi-typescript)
-       * @enum {string}
-       */
-      block_type: "ParagraphBanner";
-      /** @example Quick Loan Approval */
-      title?: string;
-      text?: {
-        /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
-        value?: string;
-        /** @example full_html */
-        format?: string;
-        /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
-        processed?: string;
-      };
-      button?: {
-        /** @example Apply Now */
-        title?: string;
-        /** @example https://example.com/apply */
-        url?: string;
-        options?: Record<string, never>;
-        /** @example false */
-        is_external?: boolean;
-      }[];
-    };
-    /**
-     * Text Blocks Mapper
-     * @description Paragraph of type text_blocks
-     * @example {
-     *       "block_type": "text_blocks",
-     *       "blocks": [
-     *         {
-     *           "block_type": "text_block",
-     *           "text": {
-     *             "value": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>",
-     *             "format": "full_html",
-     *             "processed": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>"
-     *           },
-     *           "button": [
-     *             {
-     *               "title": "Learn More",
-     *               "url": "https://example.com/personal-loans",
-     *               "options": [],
-     *               "is_external": false
-     *             }
-     *           ]
-     *         },
-     *         {
-     *           "block_type": "text_block",
-     *           "text": {
-     *             "value": "<p><strong>Business Loans</strong></p><p>Grow your business with our tailored business loan solutions.</p>",
-     *             "format": "full_html",
-     *             "processed": "<p><strong>Business Loans</strong></p><p>Grow your business with our tailored business loan solutions.</p>"
-     *           },
-     *           "button": [
-     *             {
-     *               "title": "Apply for Business Loan",
-     *               "url": "https://example.com/business-loans",
-     *               "options": [],
-     *               "is_external": false
-     *             }
-     *           ]
-     *         }
-     *       ]
-     *     }
-     */
-    ParagraphText_blocks: {
-      /**
-       * @description The block type identifier (enum property replaced by openapi-typescript)
-       * @enum {string}
-       */
-      block_type: "ParagraphText_blocks";
-      blocks?: {
-        /** @example text_block */
-        block_type?: string;
-        text?: {
-          /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
-          value?: string;
-          /** @example full_html */
-          format?: string;
-          /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
-          processed?: string;
+        TaxonomyVocabulary: {
+            /**
+             * @description The machine name of the vocabulary
+             * @example group_background
+             */
+            vocabulary_id: string;
+            /**
+             * @description The human-readable label of the vocabulary
+             * @example Group Background
+             */
+            vocabulary_label: string;
+            /**
+             * @description The description of the vocabulary
+             * @example Categories for group background types
+             */
+            vocabulary_description: string;
+            /**
+             * @description The field name in the entity that references this vocabulary
+             * @example group_background
+             */
+            field_name: string;
+            /**
+             * @description The entity type that uses this vocabulary
+             * @example application
+             * @enum {string}
+             */
+            entity_type: "application" | "group_member";
+            /**
+             * @description Whether the field accepts single or multiple values
+             * @example multiple
+             * @enum {string}
+             */
+            cardinality: "single" | "multiple";
+            /**
+             * @description Whether new terms can be auto-created for this vocabulary
+             * @example false
+             */
+            auto_create: boolean;
+            /** @description Array of taxonomy terms in this vocabulary */
+            terms: components["schemas"]["TaxonomyTerm"][];
+            /**
+             * @description Total number of terms in this vocabulary
+             * @example 5
+             */
+            total_terms: number;
         };
-        button?: {
-          /** @example Learn More */
-          title?: string;
-          /** @example https://example.com/personal-loans */
-          url?: string;
-          options?: Record<string, never>;
-          /** @example false */
-          is_external?: boolean;
-        }[];
-      }[];
+        /**
+         * Taxonomy Term
+         * @description A taxonomy term
+         */
+        TaxonomyTerm: {
+            /**
+             * @description The term ID
+             * @example 1
+             */
+            tid: number;
+            /**
+             * @description The term UUID
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            uuid: string;
+            /**
+             * @description The term name
+             * @example Youth Group
+             */
+            name: string;
+            /** @description The term description */
+            description: {
+                /**
+                 * @description The raw description text
+                 * @example Groups primarily composed of young people
+                 */
+                value: string;
+                /**
+                 * @description The text format
+                 * @example basic_html
+                 */
+                format: string;
+                /**
+                 * @description The processed description HTML
+                 * @example <p>Groups primarily composed of young people</p>
+                 */
+                processed: string;
+            };
+            /**
+             * @description The term weight (for ordering)
+             * @example 0
+             */
+            weight: number;
+            /**
+             * @description Array of parent term IDs
+             * @example []
+             */
+            parent_ids: number[];
+            /**
+             * @description The absolute URL to the term
+             * @example https://example.com/taxonomy/term/1
+             */
+            url: string;
+            /** @description Language information for the term */
+            language: {
+                /**
+                 * @description The language code
+                 * @example en
+                 */
+                code: string;
+                /**
+                 * @description The language name
+                 * @example English
+                 */
+                name: string;
+            };
+        };
+        /**
+         * Taxonomy Vocabularies Meta
+         * @description Metadata for taxonomy vocabularies response
+         */
+        TaxonomyVocabulariesMeta: {
+            /**
+             * @description Unix timestamp of when the response was generated
+             * @example 1753044534
+             */
+            timestamp: number;
+            /**
+             * @description API version
+             * @example v1
+             */
+            version: string;
+            /**
+             * @description Total number of vocabularies in the response
+             * @example 9
+             */
+            total_vocabularies: number;
+            /** @description Language information */
+            language: {
+                /**
+                 * @description Current language code
+                 * @example en
+                 */
+                current: string;
+                /**
+                 * @description Default language code
+                 * @example en
+                 */
+                default: string;
+                /** @description Available languages */
+                available: {
+                    [key: string]: {
+                        /** @example en */
+                        langcode: string;
+                        /** @example English */
+                        name: string;
+                        /** @example https://example.com/api/v1/application/taxonomy-vocabularies */
+                        url: string;
+                        /** @example /api/v1/application/taxonomy-vocabularies */
+                        path: string;
+                    };
+                };
+            };
+        };
+        ApplicationDetailResponse: {
+            /** @example true */
+            success?: boolean;
+            data?: components["schemas"]["ApplicationDetail"];
+        };
+        ApplicationDetail: {
+            /** @description Entity ID */
+            id?: number;
+            /**
+             * Format: uuid
+             * @description Entity UUID
+             */
+            uuid?: string;
+            /**
+             * @description Application ID
+             * @example APP-20240115-abc12
+             */
+            application_id?: string;
+            /**
+             * @description Application status
+             * @enum {string}
+             */
+            status?: "draft" | "submitted" | "under_review" | "approved" | "rejected" | "disbursed" | "closed";
+            /** @description Creation timestamp */
+            created?: number;
+            /** @description Last modified timestamp */
+            changed?: number;
+            owner?: {
+                /** @description User ID */
+                id?: number;
+                /**
+                 * Format: email
+                 * @description User email
+                 */
+                email?: string;
+                /** @description User name */
+                name?: string;
+            };
+            group_data?: {
+                group_name?: string;
+                group_registration_number?: string;
+                /** Format: date */
+                date_registered?: string;
+                group_registration_certificate?: components["schemas"]["FileData"];
+                list_of_members_certificate?: components["schemas"]["FileData"];
+                group_background?: components["schemas"]["TaxonomyTerm"][];
+                key_activities?: string[];
+                value_chain?: components["schemas"]["TaxonomyTerm"][];
+                table_banking_duration?: string | null;
+                monthly_share_contribution?: number | null;
+                total_amount_loaned?: number | null;
+                total_revolving_fund?: number | null;
+                other_activities?: string | null;
+                /** @description Group credit history documents */
+                group_credit_history?: components["schemas"]["FileData"][];
+            };
+            location?: {
+                county?: components["schemas"]["TaxonomyTerm"];
+                constituency?: components["schemas"]["TaxonomyTerm"];
+                ward?: string;
+                meeting_point?: string;
+                nearest_landmark?: string;
+            };
+            /** @enum {string} */
+            nature_of_group?: "youth" | "pwd" | "women";
+            group_members?: components["schemas"]["GroupMemberDetail"][];
+            loan_conditions?: {
+                purpose_of_loan?: components["schemas"]["TaxonomyTerm"];
+                loan_type?: components["schemas"]["TaxonomyTerm"];
+                loan_amount?: number;
+                proposed_repayment_period?: number;
+                bank_name?: components["schemas"]["TaxonomyTerm"];
+                bank_branch?: string;
+                bank_account_number?: string;
+            };
+            proposed_business?: {
+                /** @enum {string} */
+                nature_of_business?: "startup" | "expansion";
+                business_type?: components["schemas"]["TaxonomyTerm"][];
+                /** Format: float */
+                years_in_operation?: number;
+                average_income?: number;
+                expenses?: {
+                    [key: string]: unknown;
+                }[];
+            };
+            rejection_details?: {
+                /** @enum {string} */
+                rejection_reason?: "incomplete_information" | "missing_documents" | "eligibility_criteria" | "duplicate_application" | "insufficient_collateral" | "poor_credit_history" | "other";
+                rejection_message?: string;
+            } | null;
+        };
+        GroupMemberDetail: {
+            /** @description Member entity ID */
+            id?: number;
+            name?: string;
+            id_number?: string;
+            /** @enum {string} */
+            gender?: "male" | "female" | "other";
+            phone_number?: string;
+            position?: components["schemas"]["TaxonomyTerm"];
+            photo_member_id?: components["schemas"]["FileData"];
+            person_with_disability?: boolean;
+            pwd_number?: string | null;
+            certificate_disability?: components["schemas"]["FileData"];
+        };
+        FileData: {
+            /** @description File ID */
+            fid?: number;
+            /**
+             * Format: uuid
+             * @description File UUID
+             */
+            uuid?: string;
+            /** @description File name */
+            filename?: string;
+            /**
+             * Format: uri
+             * @description File URL
+             */
+            url?: string;
+            /** @description File size in bytes */
+            size?: number;
+            /** @description MIME type */
+            mime_type?: string;
+        } | null;
+        SiteInformationResponse: {
+            data: components["schemas"]["SiteInformationData"];
+            meta: components["schemas"]["SiteInformationMeta"];
+        };
+        SiteInformationData: {
+            site: {
+                /**
+                 * @description The site name
+                 * @example Uwezo Kenya
+                 */
+                name: string;
+                /**
+                 * @description The site slogan
+                 * @example Empowering Communities
+                 */
+                slogan: string;
+                /**
+                 * Format: email
+                 * @description The site system email address
+                 * @example system@uwezo.go.ke
+                 */
+                mail: string;
+                contact: {
+                    /**
+                     * @description Physical address
+                     * @example Lonrho House, 16th Floor, Standard Street
+                     */
+                    address: string;
+                    /**
+                     * @description Postal box address
+                     * @example 42009-00100, Nairobi
+                     */
+                    po_box: string;
+                    /**
+                     * @description Contact phone number
+                     * @example +254 0776 154 215
+                     */
+                    phone: string;
+                    /**
+                     * Format: email
+                     * @description Contact email address
+                     * @example info@uwezo.go.ke
+                     */
+                    email: string;
+                };
+            };
+            /** @description List of useful external links */
+            useful_links: components["schemas"]["UsefulLink"][];
+        };
+        UsefulLink: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the link
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Link title
+             * @example Staff Mail
+             */
+            title: string;
+            /**
+             * Format: url
+             * @description Link URL
+             * @example https://mail.kenya.go.ke
+             */
+            url: string;
+            /**
+             * @description Sort weight for ordering
+             * @example 0
+             */
+            weight: number;
+            /**
+             * @description Whether the link is external
+             * @example true
+             */
+            external: boolean;
+        };
+        SiteInformationMeta: {
+            /**
+             * @description Unix timestamp of the response
+             * @example 1753044534
+             */
+            timestamp: number;
+            /**
+             * @description API version
+             * @example v1
+             */
+            version: string;
+            language: {
+                /**
+                 * @description Current language code
+                 * @example en
+                 */
+                current: string;
+                /**
+                 * @description Default language code
+                 * @example en
+                 */
+                default: string;
+                /** @description Available languages */
+                available: {
+                    [key: string]: {
+                        /** @example en */
+                        langcode?: string;
+                        /** @example English */
+                        name?: string;
+                        /**
+                         * @example ltr
+                         * @enum {string}
+                         */
+                        direction?: "ltr" | "rtl";
+                    };
+                };
+            };
+        };
+        /**
+         * Text Block Mapper
+         * @description Paragraph of type text_block
+         * @example {
+         *       "block_type": "text_block",
+         *       "text": {
+         *         "value": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>",
+         *         "format": "full_html",
+         *         "processed": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>"
+         *       },
+         *       "button": [
+         *         {
+         *           "title": "Learn More",
+         *           "url": "https://example.com/personal-loans",
+         *           "options": [],
+         *           "is_external": false
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphText_block: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphText_block";
+            text?: {
+                /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
+                value?: string;
+                /** @example full_html */
+                format?: string;
+                /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
+                processed?: string;
+            };
+            button?: {
+                /** @example Learn More */
+                title?: string;
+                /** @example https://example.com/personal-loans */
+                url?: string;
+                options?: Record<string, never>;
+                /** @example false */
+                is_external?: boolean;
+            }[];
+        };
+        /**
+         * Banner Mapper
+         * @description Paragraph of type banner
+         * @example {
+         *       "block_type": "banner",
+         *       "title": "Quick Loan Approval",
+         *       "text": {
+         *         "value": "<p>Apply for a loan in minutes and get approved within 24 hours</p>",
+         *         "format": "full_html",
+         *         "processed": "<p>Apply for a loan in minutes and get approved within 24 hours</p>"
+         *       },
+         *       "button": [
+         *         {
+         *           "title": "Apply Now",
+         *           "url": "https://example.com/apply",
+         *           "options": [],
+         *           "is_external": false
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphBanner: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphBanner";
+            /** @example Quick Loan Approval */
+            title?: string;
+            text?: {
+                /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
+                value?: string;
+                /** @example full_html */
+                format?: string;
+                /** @example <p>Apply for a loan in minutes and get approved within 24 hours</p> */
+                processed?: string;
+            };
+            button?: {
+                /** @example Apply Now */
+                title?: string;
+                /** @example https://example.com/apply */
+                url?: string;
+                options?: Record<string, never>;
+                /** @example false */
+                is_external?: boolean;
+            }[];
+        };
+        /**
+         * Text Blocks Mapper
+         * @description Paragraph of type text_blocks
+         * @example {
+         *       "block_type": "text_blocks",
+         *       "blocks": [
+         *         {
+         *           "block_type": "text_block",
+         *           "text": {
+         *             "value": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>",
+         *             "format": "full_html",
+         *             "processed": "<p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p>"
+         *           },
+         *           "button": [
+         *             {
+         *               "title": "Learn More",
+         *               "url": "https://example.com/personal-loans",
+         *               "options": [],
+         *               "is_external": false
+         *             }
+         *           ]
+         *         },
+         *         {
+         *           "block_type": "text_block",
+         *           "text": {
+         *             "value": "<p><strong>Business Loans</strong></p><p>Grow your business with our tailored business loan solutions.</p>",
+         *             "format": "full_html",
+         *             "processed": "<p><strong>Business Loans</strong></p><p>Grow your business with our tailored business loan solutions.</p>"
+         *           },
+         *           "button": [
+         *             {
+         *               "title": "Apply for Business Loan",
+         *               "url": "https://example.com/business-loans",
+         *               "options": [],
+         *               "is_external": false
+         *             }
+         *           ]
+         *         }
+         *       ]
+         *     }
+         */
+        ParagraphText_blocks: {
+            /**
+             * @description The block type identifier (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            block_type: "ParagraphText_blocks";
+            blocks?: {
+                /** @example text_block */
+                block_type?: string;
+                text?: {
+                    /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
+                    value?: string;
+                    /** @example full_html */
+                    format?: string;
+                    /** @example <p><strong>Personal Loans</strong></p><p>Flexible personal loans for any purpose with competitive interest rates.</p> */
+                    processed?: string;
+                };
+                button?: {
+                    /** @example Learn More */
+                    title?: string;
+                    /** @example https://example.com/personal-loans */
+                    url?: string;
+                    options?: Record<string, never>;
+                    /** @example false */
+                    is_external?: boolean;
+                }[];
+            }[];
+        };
+        ZodParagraphTypes: components["schemas"]["ParagraphText_block"] | components["schemas"]["ParagraphBanner"] | components["schemas"]["ParagraphText_blocks"];
     };
-    ZodParagraphTypes:
-      | components["schemas"]["ParagraphText_block"]
-      | components["schemas"]["ParagraphBanner"]
-      | components["schemas"]["ParagraphText_blocks"];
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  "rest_framework.node_get": {
-    parameters: {
-      query?: never;
-      header: {
-        "X-Language": string;
-      };
-      path: {
-        /** @description The node ID */
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Node retrieved successfully */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    "rest_framework.node_get": {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Language": string;
+            };
+            path: {
+                /** @description The node ID */
+                id: string;
+            };
+            cookie?: never;
         };
-        content: {
-          "application/json": {
-            data?: components["schemas"]["NodeLanding"];
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version: string;
-              language: {
-                /**
-                 * @description Current language code
-                 * @example en
-                 */
-                current?: string;
-                /**
-                 * @description Default language code
-                 * @example en
-                 */
-                default?: string;
-                /** @description Available language translations */
-                available?: {
-                  [key: string]: {
-                    /** @example en */
-                    langcode?: string;
-                    /** @example English */
-                    name?: string;
-                    /** @example https://example.com/node/1 */
-                    url?: string;
-                    /** @example /about-us */
-                    path?: string;
-                  };
+        requestBody?: never;
+        responses: {
+            /** @description Node retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
                 };
-              };
-            };
-          };
-        };
-      };
-      /** @description Node not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  "rest_framework.resolve_content": {
-    parameters: {
-      query?: never;
-      header: {
-        /** @description The path alias to resolve */
-        "X-Path": string;
-        "X-Language": string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Content resolved successfully */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            data?: components["schemas"]["NodeLanding"];
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version: string;
-              language: {
-                /**
-                 * @description Current language code
-                 * @example en
-                 */
-                current?: string;
-                /**
-                 * @description Default language code
-                 * @example en
-                 */
-                default?: string;
-                /** @description Available language translations */
-                available?: {
-                  [key: string]: {
-                    /** @example en */
-                    langcode?: string;
-                    /** @example English */
-                    name?: string;
-                    /** @example https://example.com/node/1 */
-                    url?: string;
-                    /** @example /about-us */
-                    path?: string;
-                  };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["NodeLanding"];
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version: string;
+                            language: {
+                                /**
+                                 * @description Current language code
+                                 * @example en
+                                 */
+                                current?: string;
+                                /**
+                                 * @description Default language code
+                                 * @example en
+                                 */
+                                default?: string;
+                                /** @description Available language translations */
+                                available?: {
+                                    [key: string]: {
+                                        /** @example en */
+                                        langcode?: string;
+                                        /** @example English */
+                                        name?: string;
+                                        /** @example https://example.com/node/1 */
+                                        url?: string;
+                                        /** @example /about-us */
+                                        path?: string;
+                                    };
+                                };
+                            };
+                        };
+                    };
                 };
-              };
             };
-          };
-        };
-      };
-      /** @description Content not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  "api_auth.user_login": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description Username or email address */
-          username: string;
-          /** @description User password */
-          password: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Login successful */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            data?: components["schemas"]["AuthTokens"];
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp?: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version?: string;
+            /** @description Node not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
-          };
         };
-      };
-      /** @description Invalid request parameters */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Invalid credentials */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
     };
-  };
-  "api_auth.token_refresh": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description Refresh token */
-          refresh_token: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Token refresh successful */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            data?: components["schemas"]["AuthTokens"];
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp?: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version?: string;
+    "rest_framework.resolve_content": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The path alias to resolve */
+                "X-Path": string;
+                "X-Language": string;
             };
-          };
+            path?: never;
+            cookie?: never;
         };
-      };
-      /** @description Invalid request parameters */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Invalid or expired refresh token */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  "api_auth.user_register": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          mail: {
-            /**
-             * Format: email
-             * @description Email address
-             */
-            value?: string;
-          }[];
-          name: {
-            /** @description Username */
-            value?: string;
-          }[];
-          pass: {
-            /** @description Password */
-            value?: string;
-          }[];
-        };
-      };
-    };
-    responses: {
-      /** @description Registration successful */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            data?: {
-              /**
-               * Format: email
-               * @description Email address of the registered user
-               */
-              mail?: string;
-              /** @description JWT access token */
-              access_token?: string;
-              /** @description JWT refresh token */
-              refresh_token?: string;
-              /** @description Token expiration time in seconds */
-              expires_in?: number;
-              /**
-               * @description Token type
-               * @example Bearer
-               */
-              token_type?: string;
-              /**
-               * @description User account status
-               * @example active
-               */
-              status?: string;
+        requestBody?: never;
+        responses: {
+            /** @description Content resolved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["NodeLanding"];
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version: string;
+                            language: {
+                                /**
+                                 * @description Current language code
+                                 * @example en
+                                 */
+                                current?: string;
+                                /**
+                                 * @description Default language code
+                                 * @example en
+                                 */
+                                default?: string;
+                                /** @description Available language translations */
+                                available?: {
+                                    [key: string]: {
+                                        /** @example en */
+                                        langcode?: string;
+                                        /** @example English */
+                                        name?: string;
+                                        /** @example https://example.com/node/1 */
+                                        url?: string;
+                                        /** @example /about-us */
+                                        path?: string;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
             };
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp?: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version?: string;
+            /** @description Content not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
-          };
         };
-      };
-      /** @description Invalid request parameters or user already exists */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
     };
-  };
-  "api_auth.password_reset_request": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: email
-           * @description Email address
-           */
-          email: string;
+    "api_auth.user_login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    responses: {
-      /** @description Password reset request successful */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            data?: {
-              /**
-               * @description Success message
-               * @example If the email exists, a password reset link has been sent.
-               */
-              message?: string;
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Username or email address */
+                    username: string;
+                    /** @description User password */
+                    password: string;
+                };
             };
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp?: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version?: string;
+        };
+        responses: {
+            /** @description Login successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["AuthTokens"];
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
             };
-          };
-        };
-      };
-      /** @description Invalid request parameters */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Too many attempts */
-      429: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  "api_auth.password_reset": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description User ID */
-          uid: string;
-          /** @description Timestamp from reset link */
-          timestamp: string;
-          /** @description Security hash from reset link */
-          hash: string;
-          /** @description New password */
-          new_password: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Password reset successful */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            data?: {
-              /**
-               * @description Success message
-               * @example Password has been reset successfully.
-               */
-              message?: string;
+            /** @description Invalid request parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp?: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version?: string;
+            /** @description Invalid credentials */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
-          };
         };
-      };
-      /** @description Invalid request parameters */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Invalid or expired reset link */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
     };
-  };
-  "api_auth.user_profile": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description User profile information */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    "api_auth.token_refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": {
-            data?: {
-              /**
-               * Format: email
-               * @description User email address
-               */
-              email?: string;
-              /** @description Username */
-              name?: string;
-              /** @description User roles */
-              roles?: string[];
-              /**
-               * Format: date-time
-               * @description Account creation date
-               */
-              created?: string;
-              /**
-               * Format: date-time
-               * @description Last access date
-               */
-              last_access?: string;
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Refresh token */
+                    refresh_token: string;
+                };
             };
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp?: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version?: string;
+        };
+        responses: {
+            /** @description Token refresh successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["AuthTokens"];
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
             };
-          };
-        };
-      };
-      /** @description Unauthorized - No authentication token provided or invalid token */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Authentication error: Invalid or expired JWT token. */
-            message?: string;
-          };
-        };
-      };
-      /** @description User not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example User not found. */
-            message?: string;
-          };
-        };
-      };
-    };
-  };
-  "api_auth.user_logout": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Logout successful */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            data?: {
-              /**
-               * @description Success message
-               * @example Successfully logged out
-               */
-              message?: string;
-              /**
-               * @description Number of tokens removed
-               * @example 3
-               */
-              removed_tokens?: number;
+            /** @description Invalid request parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
-            meta?: {
-              /**
-               * @description Unix timestamp of when the response was generated
-               * @example 1752791166
-               */
-              timestamp?: number;
-              /**
-               * @description API version
-               * @example v1
-               */
-              version?: string;
+            /** @description Invalid or expired refresh token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
-          };
         };
-      };
-      /** @description Unauthorized - No authentication token provided or invalid token */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @example Authentication error: Invalid or expired JWT token. */
-            message?: string;
-          };
-        };
-      };
     };
-  };
-  "rest_framework.application_instructions_get": {
-    parameters: {
-      query?: never;
-      header: {
-        /**
-         * @description Language code for localized content. Configuration will be loaded in the specified language.
-         * @example en
-         */
-        "X-Language": "en" | "sw";
-      };
-      path?: never;
-      cookie?: never;
+    "api_auth.user_register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    mail: {
+                        /**
+                         * Format: email
+                         * @description Email address
+                         */
+                        value?: string;
+                    }[];
+                    name: {
+                        /** @description Username */
+                        value?: string;
+                    }[];
+                    pass: {
+                        /** @description Password */
+                        value?: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Registration successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /**
+                             * Format: email
+                             * @description Email address of the registered user
+                             */
+                            mail?: string;
+                            /** @description JWT access token */
+                            access_token?: string;
+                            /** @description JWT refresh token */
+                            refresh_token?: string;
+                            /** @description Token expiration time in seconds */
+                            expires_in?: number;
+                            /**
+                             * @description Token type
+                             * @example Bearer
+                             */
+                            token_type?: string;
+                            /**
+                             * @description User account status
+                             * @example active
+                             */
+                            status?: string;
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request parameters or user already exists */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description Application instructions retrieved successfully */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    "api_auth.password_reset_request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": components["schemas"]["ApplicationInstructionsResponse"];
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: email
+                     * @description Email address
+                     */
+                    email: string;
+                };
+            };
         };
-      };
-      /** @description Bad request - Invalid language code */
-      400: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description Password reset request successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /**
+                             * @description Success message
+                             * @example If the email exists, a password reset link has been sent.
+                             */
+                            message?: string;
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many attempts */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-        content: {
-          "application/json": {
-            /** @example Invalid language code */
-            error?: string;
-            /** @example Language code "fr" is not supported. Available languages: en, sw */
-            message?: string;
-            /** @example [
-             *       "en",
-             *       "sw"
-             *     ] */
-            available_languages?: string[];
-          };
-        };
-      };
-      /** @description Instructions not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
     };
-  };
-  createApplication: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "api_auth.password_reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description User ID */
+                    uid: string;
+                    /** @description Timestamp from reset link */
+                    timestamp: string;
+                    /** @description Security hash from reset link */
+                    hash: string;
+                    /** @description New password */
+                    new_password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Password reset successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /**
+                             * @description Success message
+                             * @example Password has been reset successfully.
+                             */
+                            message?: string;
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid or expired reset link */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ApplicationPostRequest"];
-      };
+    "api_auth.user_profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile information */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /**
+                             * Format: email
+                             * @description User email address
+                             */
+                            email?: string;
+                            /** @description Username */
+                            name?: string;
+                            /** @description User roles */
+                            roles?: string[];
+                            /**
+                             * Format: date-time
+                             * @description Account creation date
+                             */
+                            created?: string;
+                            /**
+                             * Format: date-time
+                             * @description Last access date
+                             */
+                            last_access?: string;
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized - No authentication token provided or invalid token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Authentication error: Invalid or expired JWT token. */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description User not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example User not found. */
+                        message?: string;
+                    };
+                };
+            };
+        };
     };
-    responses: {
-      /** @description Application created or updated successfully */
-      201: {
-        headers: {
-          [name: string]: unknown;
+    "api_auth.user_logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": components["schemas"]["ApplicationPostResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description Logout successful */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: {
+                            /**
+                             * @description Success message
+                             * @example Successfully logged out
+                             */
+                            message?: string;
+                            /**
+                             * @description Number of tokens removed
+                             * @example 3
+                             */
+                            removed_tokens?: number;
+                        };
+                        meta?: {
+                            /**
+                             * @description Unix timestamp of when the response was generated
+                             * @example 1753044534
+                             */
+                            timestamp?: number;
+                            /**
+                             * @description API version
+                             * @example v1
+                             */
+                            version?: string;
+                        };
+                    };
+                };
+            };
+            /** @description Unauthorized - No authentication token provided or invalid token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Authentication error: Invalid or expired JWT token. */
+                        message?: string;
+                    };
+                };
+            };
         };
-      };
-      /** @description Bad request - validation failed */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description Unauthorized - invalid or missing API key */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
     };
-  };
-  "api_application.taxonomy_vocabularies_get": {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description The language code for the response (e.g., "en", "sw") */
-        "X-Language"?: string;
-      };
-      path?: never;
-      cookie?: never;
+    "rest_framework.application_instructions_get": {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Language code for localized content. Configuration will be loaded in the specified language.
+                 * @example en
+                 */
+                "X-Language": "en" | "sw";
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Application instructions retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationInstructionsResponse"];
+                };
+            };
+            /** @description Bad request - Invalid language code */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Invalid language code */
+                        error?: string;
+                        /** @example Language code "fr" is not supported. Available languages: en, sw */
+                        message?: string;
+                        /** @example [
+                         *       "en",
+                         *       "sw"
+                         *     ] */
+                        available_languages?: string[];
+                    };
+                };
+            };
+            /** @description Instructions not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description Taxonomy vocabularies retrieved successfully */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    createApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": {
-            /** @description Taxonomy vocabularies data */
-            data: components["schemas"]["TaxonomyVocabulary"];
-            meta: components["schemas"]["TaxonomyVocabulariesMeta"];
-          };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplicationPostRequest"];
+            };
         };
-      };
-      /** @description Invalid language code provided */
-      400: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description Application created or updated successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationPostResponse"];
+                };
+            };
+            /** @description Bad request - validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unauthorized - invalid or missing API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
     };
-  };
-  getApplication: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description Application identifier (entity ID, UUID, or application_id) */
-        application_id: string;
-      };
-      cookie?: never;
+    "api_application.taxonomy_vocabularies_get": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description The language code for the response (e.g., "en", "sw") */
+                "X-Language"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Taxonomy vocabularies retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Taxonomy vocabularies data */
+                        data: components["schemas"]["TaxonomyVocabulary"];
+                        meta: components["schemas"]["TaxonomyVocabulariesMeta"];
+                    };
+                };
+            };
+            /** @description Invalid language code provided */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
     };
-    requestBody?: never;
-    responses: {
-      /** @description Application details retrieved successfully */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Application identifier (entity ID, UUID, or application_id) */
+                application_id: string;
+            };
+            cookie?: never;
         };
-        content: {
-          "application/json": components["schemas"]["ApplicationDetailResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description Application details retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDetailResponse"];
+                };
+            };
+            /** @description Unauthorized - invalid or missing API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Application not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
         };
-      };
-      /** @description Unauthorized - invalid or missing API key */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description Application not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
     };
-  };
+    "rest_framework.site_info_get": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Preferred language code */
+                "X-Language"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteInformationResponse"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }
