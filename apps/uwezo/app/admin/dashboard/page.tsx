@@ -4,12 +4,14 @@ import {
   IconCircleCheck,
   IconCircleX,
   IconClock,
+  IconDatabase,
   IconEye,
   IconFiles,
   IconSearch,
   IconX,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Container } from "@workspace/ui/components/container";
@@ -201,7 +203,15 @@ export default function AdminDashboardPage() {
                 </div>
               )}
             </div>
-            <TaxonomySyncButton />
+            <div className="flex gap-2">
+              <Link href="/admin/sync-queue">
+                <button className="inline-flex items-center gap-2 rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  <IconDatabase className="h-4 w-4" />
+                  Sync Queue
+                </button>
+              </Link>
+              <TaxonomySyncButton />
+            </div>
           </div>
 
           {/* Search results info */}
