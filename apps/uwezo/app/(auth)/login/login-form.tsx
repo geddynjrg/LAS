@@ -8,10 +8,8 @@ import { Alert } from "@workspace/ui/components/alert";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-import { useMount } from "@workspace/ui/hooks/use-mount";
 
 import { loginSchema, type Login } from "@/app/(auth)/login/login-schema";
-import { useSession } from "@/hooks/useSession";
 
 export interface LoginFormProps {
   action: FormAction<Login>;
@@ -21,21 +19,16 @@ export interface LoginFormProps {
 export const LoginForm: FC<LoginFormProps> = ({ action, redirectTo }) => {
   const t = useTranslations("LoginPage");
   const router = useRouter();
-  const { setSession } = useSession();
   const [state, formAction, isPending] = useForm(action, loginSchema);
 
-  // reset ui session
-  useMount(() => {
-    setSession(null);
-  });
-
-  // set new session on login
+  // Navigate on successful login
   useEffect(() => {
     if (state.success) {
-      setSession(true);
+      // The server action has already created the session
+      // We just need to navigate to trigger a refresh
       router.replace(redirectTo ?? "/dashboard");
     }
-  }, [redirectTo, router, setSession, state.success]);
+  }, [redirectTo, router, state.success]);
 
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">

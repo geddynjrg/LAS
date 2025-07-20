@@ -181,7 +181,7 @@ const SubFooter: FC<SubFooterProps> = ({ siteName }) => {
             &copy; Copyright {currentYear} | {siteName}. | All Rights Reserved.
           </p>
         </div>
-        <div className="flex flex-row gap-2">
+        {/* <div className="flex flex-row gap-2">
           <Link
             href={"#"}
             className="bg-twitter-background text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full"
@@ -194,7 +194,7 @@ const SubFooter: FC<SubFooterProps> = ({ siteName }) => {
           >
             <IconFacebookInverted height={17} width={17} />
           </Link>
-        </div>
+        </div> */}
       </Container>
     </div>
   );

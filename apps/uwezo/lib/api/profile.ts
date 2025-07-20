@@ -9,7 +9,18 @@ export async function getProfile() {
       throw new Error("Authentication required");
     }
     if (res.response.status === 404) {
-      throw new Error("User not found");
+      // Return a minimal profile structure for users without profiles
+      console.log("Profile not found, returning empty profile");
+      return {
+        data: {
+          email: undefined,
+          name: undefined,
+          roles: [],
+          created: undefined,
+          last_access: undefined
+        },
+        meta: {}
+      };
     }
     throw new Error(`Failed to get profile: ${res.response.statusText}`);
   }

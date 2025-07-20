@@ -43,7 +43,11 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect api requests to api route with correct headers
-  if (path.startsWith("/api") && !path.startsWith("/api/upload")) {
+  // Exclude internal Next.js API routes
+  const internalApiRoutes = ["/api/profile", "/api/logout", "/api/upload"];
+  const isInternalRoute = internalApiRoutes.some(route => path.startsWith(route));
+  
+  if (path.startsWith("/api") && !isInternalRoute) {
     const newUrl = new URL(
       `${path}${request.nextUrl.search}`,
       process.env.NEXT_API_URL,
