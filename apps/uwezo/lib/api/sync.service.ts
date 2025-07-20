@@ -17,6 +17,23 @@ interface ExternalApiResponse {
   error?: string;
 }
 
+export interface QueueFilters {
+  status?: QueueStatus[];
+  applicationId?: string;
+  action?: SyncAction;
+  dateFrom?: Date;
+  dateTo?: Date;
+}
+
+export interface QueueStatistics {
+  total: number;
+  byStatus: Record<QueueStatus, number>;
+  byAction: Record<SyncAction, number>;
+  averageProcessingTime: number;
+  successRate: number;
+  oldestPending?: Date;
+}
+
 /**
  * Process pending sync queue items
  */
@@ -818,5 +835,418 @@ export async function addToSyncQueue(
       error,
     );
     throw error;
+  }
+}
+
+/**
+ * Get sync queue items with advanced filtering and pagination
+ */
+export async function getSyncQueueItems(
+  filters?: QueueFilters,
+  page: number = 1,
+  pageSize: number = 20,
+) {
+  try {
+    const where: any = {};
+
+    if (filters?.status && filters.status.length > 0) {
+      where.status = { in: filters.status };
+    }
+
+    if (filters?.applicationId) {
+      where.applicationId = {
+        contains: filters.applicationId,
+      };
+    }
+
+    if (filters?.action) {
+      where.action = filters.action;
+    }
+
+    if (filters?.dateFrom || filters?.dateTo) {
+      where.createdAt = {};
+      if (filters.dateFrom) {
+        where.createdAt.gte = filters.dateFrom;
+      }
+      if (filters.dateTo) {
+        where.createdAt.lte = filters.dateTo;
+      }
+    }
+
+    const totalCount = await prisma.syncQueue.count({ where });
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    const items = await prisma.syncQueue.findMany({
+      where,
+      orderBy: [
+        { status: "asc" },
+        { scheduledFor: "asc" },
+        { createdAt: "desc" },
+      ],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    // Get related application data
+    const applicationIds = items.map((item) => item.applicationId);
+    const applications = await prisma.application.findMany({
+      where: {
+        applicationId: { in: applicationIds },
+      },
+      include: {
+        user: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
+        groupData: {
+          select: {
+            groupName: true,
+          },
+        },
+      },
+    });
+
+    const applicationMap = new Map(
+      applications.map((app) => [app.applicationId, app]),
+    );
+
+    const enrichedItems = items.map((item) => ({
+      ...item,
+      application: applicationMap.get(item.applicationId),
+    }));
+
+    return {
+      items: enrichedItems,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        pageSize,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching sync queue items:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get sync queue statistics
+ */
+export async function getSyncQueueStatistics(): Promise<QueueStatistics> {
+  try {
+    // Get counts by status
+    const statusCounts = await prisma.syncQueue.groupBy({
+      by: ["status"],
+      _count: true,
+    });
+
+    const byStatus = statusCounts.reduce(
+      (acc, curr) => {
+        acc[curr.status] = curr._count;
+        return acc;
+      },
+      {} as Record<QueueStatus, number>,
+    );
+
+    // Get counts by action
+    const actionCounts = await prisma.syncQueue.groupBy({
+      by: ["action"],
+      _count: true,
+    });
+
+    const byAction = actionCounts.reduce(
+      (acc, curr) => {
+        acc[curr.action] = curr._count;
+        return acc;
+      },
+      {} as Record<SyncAction, number>,
+    );
+
+    // Calculate average processing time for completed items
+    const completedItems = await prisma.syncQueue.findMany({
+      where: {
+        status: QueueStatus.COMPLETED,
+        processedAt: { not: null },
+      },
+      select: {
+        createdAt: true,
+        processedAt: true,
+      },
+    });
+
+    let averageProcessingTime = 0;
+    if (completedItems.length > 0) {
+      const totalTime = completedItems.reduce((sum, item) => {
+        if (item.processedAt) {
+          return sum + (item.processedAt.getTime() - item.createdAt.getTime());
+        }
+        return sum;
+      }, 0);
+      averageProcessingTime = totalTime / completedItems.length / 1000; // in seconds
+    }
+
+    // Calculate success rate
+    const total = await prisma.syncQueue.count();
+    const completed = byStatus[QueueStatus.COMPLETED] || 0;
+    const failed = byStatus[QueueStatus.FAILED] || 0;
+    const processed = completed + failed;
+    const successRate = processed > 0 ? (completed / processed) * 100 : 0;
+
+    // Get oldest pending item
+    const oldestPending = await prisma.syncQueue.findFirst({
+      where: { status: QueueStatus.PENDING },
+      orderBy: { createdAt: "asc" },
+      select: { createdAt: true },
+    });
+
+    return {
+      total,
+      byStatus,
+      byAction,
+      averageProcessingTime,
+      successRate,
+      oldestPending: oldestPending?.createdAt,
+    };
+  } catch (error) {
+    console.error("Error getting sync queue statistics:", error);
+    throw error;
+  }
+}
+
+/**
+ * Manually process a specific queue item
+ */
+export async function processQueueItem(queueItemId: string) {
+  try {
+    const queueItem = await prisma.syncQueue.findUnique({
+      where: { id: queueItemId },
+    });
+
+    if (!queueItem) {
+      throw new Error("Queue item not found");
+    }
+
+    if (queueItem.status === QueueStatus.PROCESSING) {
+      throw new Error("Item is already being processed");
+    }
+
+    if (queueItem.status === QueueStatus.COMPLETED) {
+      throw new Error("Item has already been completed");
+    }
+
+    // Process the item
+    await processSyncItem(queueItemId);
+
+    return { success: true };
+  } catch (error) {
+    console.error(
+      `Error manually processing queue item ${queueItemId}:`,
+      error,
+    );
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Release a stuck queue item (reset from PROCESSING to PENDING)
+ */
+export async function releaseQueueItem(queueItemId: string) {
+  try {
+    const queueItem = await prisma.syncQueue.findUnique({
+      where: { id: queueItemId },
+    });
+
+    if (!queueItem) {
+      throw new Error("Queue item not found");
+    }
+
+    if (queueItem.status !== QueueStatus.PROCESSING) {
+      throw new Error("Item is not in processing state");
+    }
+
+    // Check if it's been processing for too long (e.g., > 5 minutes)
+    const processingTime = Date.now() - queueItem.updatedAt.getTime();
+    const maxProcessingTime = 5 * 60 * 1000; // 5 minutes
+
+    if (processingTime < maxProcessingTime) {
+      throw new Error(
+        `Item has only been processing for ${Math.round(processingTime / 1000)} seconds. ` +
+          `Wait at least ${Math.round(maxProcessingTime / 1000)} seconds before releasing.`,
+      );
+    }
+
+    await prisma.syncQueue.update({
+      where: { id: queueItemId },
+      data: {
+        status: QueueStatus.PENDING,
+        scheduledFor: new Date(),
+        error: "Released from stuck processing state",
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error(`Error releasing queue item ${queueItemId}:`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Retry a failed queue item
+ */
+export async function retryQueueItem(queueItemId: string) {
+  try {
+    const queueItem = await prisma.syncQueue.findUnique({
+      where: { id: queueItemId },
+    });
+
+    if (!queueItem) {
+      throw new Error("Queue item not found");
+    }
+
+    if (queueItem.status !== QueueStatus.FAILED) {
+      throw new Error("Only failed items can be retried");
+    }
+
+    await prisma.syncQueue.update({
+      where: { id: queueItemId },
+      data: {
+        status: QueueStatus.PENDING,
+        attempts: 0, // Reset attempts
+        scheduledFor: new Date(),
+        error: null,
+      },
+    });
+
+    // Update application sync status
+    await prisma.application.update({
+      where: { applicationId: queueItem.applicationId },
+      data: {
+        syncStatus: SyncStatus.PENDING,
+        syncAttempts: 0,
+        syncError: null,
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error(`Error retrying queue item ${queueItemId}:`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Cancel a queue item
+ */
+export async function cancelQueueItem(queueItemId: string) {
+  try {
+    const queueItem = await prisma.syncQueue.findUnique({
+      where: { id: queueItemId },
+    });
+
+    if (!queueItem) {
+      throw new Error("Queue item not found");
+    }
+
+    if (queueItem.status === QueueStatus.COMPLETED) {
+      throw new Error("Cannot cancel completed items");
+    }
+
+    if (queueItem.status === QueueStatus.PROCESSING) {
+      throw new Error("Cannot cancel items that are currently processing");
+    }
+
+    await prisma.syncQueue.update({
+      where: { id: queueItemId },
+      data: {
+        status: QueueStatus.FAILED,
+        error: "Cancelled by admin",
+        processedAt: new Date(),
+      },
+    });
+
+    // Update application sync status
+    await prisma.application.update({
+      where: { applicationId: queueItem.applicationId },
+      data: {
+        syncStatus: SyncStatus.FAILED,
+        syncError: "Sync cancelled by admin",
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error(`Error cancelling queue item ${queueItemId}:`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+/**
+ * Bulk retry all failed items
+ */
+export async function retryAllFailedItems() {
+  try {
+    const result = await prisma.syncQueue.updateMany({
+      where: {
+        status: QueueStatus.FAILED,
+      },
+      data: {
+        status: QueueStatus.PENDING,
+        attempts: 0,
+        scheduledFor: new Date(),
+        error: null,
+      },
+    });
+
+    // Update related applications
+    const failedApplications = await prisma.syncQueue.findMany({
+      where: {
+        status: QueueStatus.FAILED,
+      },
+      select: {
+        applicationId: true,
+      },
+    });
+
+    if (failedApplications.length > 0) {
+      await prisma.application.updateMany({
+        where: {
+          applicationId: {
+            in: failedApplications.map((item) => item.applicationId),
+          },
+        },
+        data: {
+          syncStatus: SyncStatus.PENDING,
+          syncAttempts: 0,
+          syncError: null,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      count: result.count,
+    };
+  } catch (error) {
+    console.error("Error retrying all failed items:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }

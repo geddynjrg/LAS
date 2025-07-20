@@ -1,0 +1,80 @@
+ARG NODE_VERSION=20
+ARG PROJECT=uwezo
+
+# Alpine image
+FROM node:${NODE_VERSION}-alpine AS alpine
+RUN apk update
+RUN apk add --no-cache libc6-compat supervisor curl
+
+# Setup pnpm and turbo on the alpine base
+FROM alpine as base
+RUN npm install pnpm turbo --global
+RUN pnpm config set store-dir ~/.pnpm-store
+
+# Prune projects
+FROM base AS pruner
+ARG PROJECT
+
+WORKDIR /app
+COPY . .
+RUN turbo prune --scope=${PROJECT} --docker
+
+# Build the project
+FROM base AS builder
+ARG PROJECT
+
+WORKDIR /app
+
+# Copy lockfile and package.json's of isolated subworkspace
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=pruner /app/out/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=pruner /app/out/json/ .
+
+# First install the dependencies (as they change less often)
+RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm install --frozen-lockfile
+
+# Copy source code of isolated subworkspace
+COPY --from=pruner /app/out/full/ .
+
+# Generate Prisma client before building
+WORKDIR /app/apps/${PROJECT}
+RUN npx prisma generate
+WORKDIR /app
+
+RUN turbo build --filter=${PROJECT}
+RUN --mount=type=cache,id=pnpm,target=~/.pnpm-store pnpm prune --prod --no-optional
+RUN rm -rf ./**/*/src
+
+# Final image
+FROM alpine AS runner
+ARG PROJECT
+
+# Install supervisor and curl
+RUN apk add --no-cache supervisor curl bash
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nodejs
+
+WORKDIR /app
+COPY --from=builder /app .
+
+# Create directories for supervisor and logs
+RUN mkdir -p /var/log/supervisor /app/logs && \
+    chown -R nodejs:nodejs /var/log/supervisor /app/logs
+
+# Copy worker scripts and supervisor config
+COPY --chown=nodejs:nodejs apps/${PROJECT}/docker/worker/sync-worker.sh /app/sync-worker.sh
+COPY --chown=nodejs:nodejs apps/${PROJECT}/docker/worker/supervisord.conf /etc/supervisord.conf
+
+# Make scripts executable
+RUN chmod +x /app/sync-worker.sh
+
+WORKDIR /app/apps/${PROJECT}
+
+ENV NODE_ENV=production
+
+# Run as nodejs user
+USER nodejs
+
+# Start supervisor
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"] 

@@ -2,7 +2,7 @@ import { NextResponse, userAgent, type NextRequest } from "next/server";
 
 import { updateSession } from "@/lib/session";
 
-const protectedRoutes = ["/dashboard", "/apply"];
+const protectedRoutes = ["/dashboard", "/apply", "/admin"];
 const publicRoutes = ["/login", "/signup", "/reset"];
 
 const loggedInRedirect = "/dashboard";
@@ -44,7 +44,14 @@ export async function middleware(request: NextRequest) {
 
   // Redirect api requests to api route with correct headers
   // Exclude internal Next.js API routes
-  const internalApiRoutes = ["/api/profile", "/api/logout", "/api/upload"];
+  const internalApiRoutes = [
+    "/api/profile",
+    "/api/logout",
+    "/api/upload",
+    "/api/admin/sync-queue",
+    "/api/cron/sync-applications",
+    "/api/test",
+  ];
   const isInternalRoute = internalApiRoutes.some((route) =>
     path.startsWith(route),
   );

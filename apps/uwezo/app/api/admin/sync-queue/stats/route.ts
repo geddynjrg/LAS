@@ -1,0 +1,28 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { getSyncQueueStatistics } from "@/lib/api/sync.service";
+import { requireAdmin } from "@/lib/auth/guards";
+
+export async function GET(request: NextRequest) {
+  try {
+    // Ensure user is admin
+    await requireAdmin();
+
+    const stats = await getSyncQueueStatistics();
+
+    return NextResponse.json(stats);
+  } catch (error) {
+    console.error("Error fetching sync queue statistics:", error);
+
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
+  }
+}
