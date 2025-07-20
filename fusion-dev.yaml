@@ -18,6 +18,7 @@ ip_list: ken
 # if you manually create a file and want to keep it you should add it to this list.
 rsync_exclude:
   - /.env
+  - /apps/uwezo/.env
 
 # Commands run in the working directory after the project has been deployed.
 post_deploy:
