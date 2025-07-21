@@ -1,4 +1,29 @@
 {
+  "AdminDashboard": {
+    "title": "Admin Dashboard",
+    "description": "Manage all applications across the system",
+    "searchPlaceholder": "Search applications...",
+    "stats": {
+      "total": "Total Applications",
+      "unsubmitted": "Unsubmitted",
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "pending": "Pending",
+      "inReview": "In Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "table": {
+      "applicationId": "Application ID",
+      "user": "User",
+      "groupName": "Group Name",
+      "loanAmount": "Loan Amount",
+      "status": "Status",
+      "syncStatus": "Sync Status",
+      "createdAt": "Created",
+      "actions": "Actions"
+    }
+  },
   "Common": {
     "menu": "Menu",
     "close": "Close",
@@ -18,8 +43,10 @@
     "service": "Service",
     "manufacturing": "Manufacturing",
     "agriculture": "Agriculture",
+    "home": "Home",
     "myProfile": "My Profile",
     "myApplications": "My Applications",
+    "adminDashboard": "Admin Dashboard",
     "signOut": "Sign out",
     "resend": "Resend",
     "remove": "Remove",
@@ -175,9 +202,13 @@
     "continueFillingApplication": "Continue filling application",
     "status": {
       "title": "Status",
-      "inReview": "<bold>Step 1:</bold> Being reviewed",
-      "pending": "<bold>Step 3:</bold> Committee decision pending",
-      "unsubmitted": "<bold>Unsubmitted</bold>"
+      "unsubmitted": "<bold>Unsubmitted:</bold> Not started",
+      "draft": "<bold>Step 1:</bold> In progress",
+      "submitted": "<bold>Step 2:</bold> Submitted",
+      "inReview": "<bold>Step 3:</bold> Being reviewed",
+      "pending": "<bold>Step 4:</bold> Committee decision pending",
+      "approved": "<bold>Approved:</bold> Loan approved",
+      "rejected": "<bold>Rejected:</bold> Application rejected"
     },
     "stepDescription": {
       "title": "What is being done in this step?",
@@ -342,7 +373,7 @@
     "member": "Members",
     "peopleWithDisabilities": "People with disabilities",
     "women": "Women",
-    "addMember": "Add member manually",
+    "addMember": "Add member",
     "groupBasics": "Group basics",
     "natureOfTheGroup": "Nature of the group",
     "searchForMember": "Search for member",

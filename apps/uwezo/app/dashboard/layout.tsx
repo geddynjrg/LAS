@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
-import { Authenticated } from "@/components/authenticated";
 import { getSession } from "@/lib/session";
 
 export interface DashboardLayoutProps {
@@ -12,7 +12,9 @@ export default async function DashboardLayout({
 }: DashboardLayoutProps) {
   const session = await getSession();
 
-  return (
-    <Authenticated session={session ? true : null}>{children}</Authenticated>
-  );
+  if (!session) {
+    redirect("/login?callbackUrl=/dashboard");
+  }
+
+  return <>{children}</>;
 }

@@ -8,13 +8,11 @@ import { Alert } from "@workspace/ui/components/alert";
 import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-import { useMount } from "@workspace/ui/hooks/use-mount";
 
 import {
   phoneLoginSchema,
   type PhoneLogin,
 } from "@/app/(auth)/login/login-schema";
-import { useSession } from "@/hooks/useSession";
 
 type PhoneLoginState = "phone_input" | "otp_input";
 
@@ -29,7 +27,6 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
 }) => {
   const t = useTranslations("LoginPage");
   const router = useRouter();
-  const { setSession } = useSession();
   const [state, formAction, isPending] = useForm(action, phoneLoginSchema);
   const [phoneLoginState, setPhoneLoginState] =
     useState<PhoneLoginState>("phone_input");
@@ -39,21 +36,15 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   // Hardcoded to Kenya until multi-country support is needed
   const COUNTRY_CODE = "+254";
 
-  // reset ui session
-  useMount(() => {
-    setSession(null);
-  });
-
-  // set new session on final login completion (not OTP request)
+  // Navigate on successful final login completion (not OTP request)
   useEffect(() => {
     const stateWithOtp = state as typeof state & { otpRequestId?: string };
     if (state.success && !stateWithOtp.otpRequestId) {
       // Only redirect if success is true AND we don't have an OTP request ID
       // (meaning this is final login, not just OTP sent)
-      setSession(true);
       router.replace(redirectTo ?? "/dashboard");
     }
-  }, [redirectTo, router, setSession, state.success, state]);
+  }, [redirectTo, router, state.success, state]);
 
   // handle OTP request ID from server response
   useEffect(() => {
@@ -67,14 +58,10 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">
       {state.message && (
-        <Alert
-          variant={state.success ? "success" : "error"}
-          className="mb-4"
-        >
+        <Alert variant={state.success ? "success" : "error"} className="mb-4">
           {state.message}
         </Alert>
       )}
-
 
       {/* Phone Input - Step 1 */}
       {phoneLoginState === "phone_input" && (

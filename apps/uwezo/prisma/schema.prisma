@@ -1,0 +1,328 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String?
+  applications  Application[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("users")
+}
+
+// Main application model
+model Application {
+  id                    String                  @id @default(cuid())
+  applicationId         String                  @unique
+  status                ApplicationStatus       @default(UNSUBMITTED)
+  applicationProgress   Int                     @default(1)
+  
+  // Relations
+  userId                String
+  user                  User                    @relation(fields: [userId], references: [id])
+  
+  // Application sections
+  groupData             GroupData?
+  members               MemberData[]
+  loanConditions        LoanConditions?
+  proposedBusiness      ProposedBusiness?
+  confirmations         Confirmations?
+  
+  // Sync tracking
+  syncStatus            SyncStatus              @default(PENDING)
+  syncAttempts          Int                     @default(0)
+  lastSyncAt            DateTime?
+  syncError             String?                 @db.Text
+  externalId            String?
+  
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([syncStatus])
+  @@map("applications")
+}
+
+// Group data section
+model GroupData {
+  id                              String        @id @default(cuid())
+  applicationId                   String        @unique
+  application                     Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  // Basic info
+  groupName                       String
+  groupRegistrationNumber         String
+  dateFormed                      DateTime
+  groupRegistrationCertificate    Json          // File object {fid, filename, url}
+  listOfMembersOnCertificate      Json          // File object
+  
+  // Background
+  purposeOfTheGroup               Json          // Array of strings
+  keyActivitiesOfTheGroup         Json          // Array of strings
+  groupCreditHistory              Json          // File object
+  other                           String?
+  valueChain                      Json?         // Array of strings
+  tableBankingExperience          Int?
+  tableBankingShareContribution   Float?
+  tableBankingTotalLoanedOut      Float?
+  tableBankingTotalRevolvingFund  Float?
+  
+  // Location
+  countyOfOperation               String
+  constituency                    String
+  ward                            String
+  meetingPoint                    String
+  nearestLandmark                 String
+  
+  createdAt                       DateTime      @default(now())
+  updatedAt                       DateTime      @updatedAt
+
+  @@map("group_data")
+}
+
+// Member data
+model MemberData {
+  id                        String        @id @default(cuid())
+  applicationId             String
+  application               Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  natureOfTheGroup          String
+  fullname                  String
+  nationalIdCode            String
+  gender                    Gender
+  type                      MemberType
+  phoneNumber               String
+  photoOfId                 Json          // File object
+  
+  // Disability info (optional)
+  certificateOfDisability   Json?         // File object (optional)
+  pwdNumber                 String?
+  
+  status                    MemberStatus  @default(PENDING)
+  
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+
+  @@index([applicationId])
+  @@map("member_data")
+}
+
+// Loan conditions
+model LoanConditions {
+  id                String        @id @default(cuid())
+  applicationId     String        @unique
+  application       Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  purposeOfLoan     Json          // Array of strings
+  loanType          String
+  loanAmount        Float
+  repaymentPeriod   Int
+  bankName          String
+  bankNameOther     String?
+  bankBranch        String
+  accountNumber     String
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@map("loan_conditions")
+}
+
+// Proposed business
+model ProposedBusiness {
+  id                        String        @id @default(cuid())
+  applicationId             String        @unique
+  application               Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  natureOfBusiness          String
+  businessType              Json          // Array of strings
+  yearsInBusiness           Int
+  averageIncome             Float
+  costOfGoods               Float
+  rentForBusiness           Float
+  salaries                  Float
+  transportForBusinessStock Float
+  
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+
+  @@map("proposed_business")
+}
+
+// Confirmations/declarations
+model Confirmations {
+  id                        String        @id @default(cuid())
+  applicationId             String        @unique
+  application               Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  membersConfirm            Boolean       @default(false)
+  correctInformationConfirm Boolean       @default(false)
+  liabilityConfirm          Boolean       @default(false)
+  fundsEligibleConfirm      Boolean       @default(false)
+  
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+
+  @@map("confirmations")
+}
+
+// Taxonomy vocabulary cache
+model TaxonomyVocabulary {
+  id                    String              @id @default(cuid())
+  vocabularyId          String              @unique
+  vocabularyLabel       String
+  vocabularyDescription String              @db.Text
+  fieldName             String
+  entityType            EntityType
+  cardinality           Cardinality
+  autoCreate            Boolean             @default(false)
+  totalTerms            Int
+  terms                 TaxonomyTerm[]
+  
+  lastSyncedAt          DateTime            @default(now())
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  @@index([fieldName])
+  @@index([entityType])
+  @@map("taxonomy_vocabularies")
+}
+
+// Taxonomy terms
+model TaxonomyTerm {
+  id              String              @id @default(cuid())
+  tid             Int
+  uuid            String              @unique
+  name            String
+  description     Json                // Description object
+  weight          Int
+  parentIds       Json                // Array of parent IDs
+  url             String
+  language        Json                // Language object
+  
+  vocabularyId    String
+  vocabulary      TaxonomyVocabulary  @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([vocabularyId])
+  @@index([tid])
+  @@map("taxonomy_terms")
+}
+
+// External API sync queue
+model SyncQueue {
+  id              String          @id @default(cuid())
+  applicationId   String
+  action          SyncAction
+  payload         Json
+  attempts        Int             @default(0)
+  maxAttempts     Int             @default(3)
+  status          QueueStatus     @default(PENDING)
+  scheduledFor    DateTime        @default(now())
+  processedAt     DateTime?
+  error           String?         @db.Text
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([status, scheduledFor])
+  @@index([applicationId])
+  @@map("sync_queue")
+}
+
+// Enums
+enum ApplicationStatus {
+  UNSUBMITTED
+  SUBMITTED
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  DRAFT
+}
+
+enum SyncStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum MemberType {
+  Chairman
+  Secretary
+  Member
+}
+
+enum MemberStatus {
+  PENDING
+  CONFIRMED
+}
+
+enum EntityType {
+  application
+  group_member
+}
+
+enum Cardinality {
+  single
+  multiple
+}
+
+enum SyncAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum QueueStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// File storage
+model File {
+  id              String        @id @default(cuid())
+  filename        String        // Unique filename on disk
+  originalName    String        // Original filename from upload
+  mimeType        String
+  size            Int
+  path            String        // Relative path from upload directory
+  
+  userId          String
+  applicationId   String?       // Optional - files can be uploaded before being linked
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([applicationId])
+  @@map("files")
+}

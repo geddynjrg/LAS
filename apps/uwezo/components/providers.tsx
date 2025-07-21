@@ -5,7 +5,15 @@ import * as React from "react";
 
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+import { SessionProvider } from "@/hooks/useSession";
+
+export function Providers({
+  children,
+  initialSession = false,
+}: {
+  children: React.ReactNode;
+  initialSession?: boolean;
+}) {
   return (
     <NextThemesProvider
       attribute="class"
@@ -13,7 +21,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <SidebarProvider>{children}</SidebarProvider>
+      <SessionProvider initialSession={initialSession}>
+        <SidebarProvider>{children}</SidebarProvider>
+      </SessionProvider>
     </NextThemesProvider>
   );
 }

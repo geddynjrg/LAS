@@ -1,4 +1,29 @@
 {
+  "AdminDashboard": {
+    "title": "Dashibodi ya Admin",
+    "description": "Raisa maombi zote katika mfumo",
+    "searchPlaceholder": "Tafuta maombi...",
+    "stats": {
+      "total": "Jumla ya Maombi",
+      "unsubmitted": "Haijawasilishwa",
+      "draft": "Haijazwa",
+      "submitted": "Imewasilishwa",
+      "pending": "Inasubiri",
+      "inReview": "Inakaguliwa",
+      "approved": "Imeidhinishwa",
+      "rejected": "Imekataliwa"
+    },
+    "table": {
+      "applicationId": "Application ID",
+      "user": "Mshiriki wa Kikundi",
+      "groupName": "Jina la Kikundi",
+      "loanAmount": "Kiasi cha Mkopo",
+      "status": "Hali",
+      "syncStatus": "Hali ya Sync",
+      "createdAt": "Tarehe",
+      "actions": "Vitu"
+    }
+  },
   "Common": {
     "menu": "Menyu",
     "close": "Funga",
@@ -18,8 +43,10 @@
     "service": "Huduma",
     "manufacturing": "Utengenezaji",
     "agriculture": "Kilimo",
+    "home": "Nyumbani",
     "myProfile": "Wasifu Wangu",
     "myApplications": "Maombi Yangu",
+    "adminDashboard": "Dashibodi ya Admin",
     "signOut": "Ondoka",
     "resend": "Tuma tena",
     "remove": "Ondoa",
@@ -173,9 +200,13 @@
     "continueFillingApplication": "Endelea kujaza maombi",
     "status": {
       "title": "Hali",
-      "inReview": "<bold>Hatua ya 1:</bold> Inakaguliwa",
-      "pending": "<bold>Hatua ya 3:</bold> Uamuzi wa kamati unasubiriwa",
-      "unsubmitted": "<bold>Haijawasilishwa</bold>"
+      "unsubmitted": "<bold>Haijawasilishwa:</bold> Haijaanza",
+      "draft": "<bold>Hatua ya 1:</bold> Inaendelea",
+      "submitted": "<bold>Hatua ya 2:</bold> Imewasilishwa",
+      "inReview": "<bold>Hatua ya 3:</bold> Inakaguliwa",
+      "pending": "<bold>Hatua ya 4:</bold> Uamuzi wa kamati unasubiriwa",
+      "approved": "<bold>Imeidhinishwa:</bold> Mkopo umeidhinishwa",
+      "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa"
     },
     "stepDescription": {
       "title": "Nini kinafanyika katika hatua hii?",
@@ -341,7 +372,7 @@
     "youth": "Vijana",
     "peopleWithDisabilities": "Watu wenye ulemavu",
     "women": "Wanawake",
-    "addMember": "Ongeza mwanachama kwa mkono",
+    "addMember": "Ongeza mshiriki",
     "groupBasics": "Misingi ya Kikundi",
     "natureOfTheGroup": "Asili ya kikundi",
     "searchForMember": "Tafuta mwanachama",

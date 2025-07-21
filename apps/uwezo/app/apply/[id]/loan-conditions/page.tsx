@@ -5,7 +5,8 @@ import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import { loanConditionsAction } from "@/app/apply/[id]/loan-conditions/loan-conditions-action";
 import { LoanConditionsDataForm } from "@/app/apply/[id]/loan-conditions/loan-conditions-data-form";
-import { getApplicationById } from "@/lib/data/application";
+import { getFormFieldOptions } from "@/lib/api/taxonomy.service";
+import { getApplicationById } from "@/lib/data/application-db";
 
 export interface LoanConditionsPageProps {
   params: Promise<{ id: string }>;
@@ -13,8 +14,22 @@ export interface LoanConditionsPageProps {
 
 export default async function Page({ params }: LoanConditionsPageProps) {
   const { id } = await params;
-  const application = await getApplicationById(id);
   const t = await getTranslations();
+
+  // Fetch application and taxonomy data in parallel
+  const [application, bankNameOptions, purposeOfLoanOptions, loanTypeOptions] =
+    await Promise.all([
+      getApplicationById(id),
+      getFormFieldOptions("bankName"),
+      getFormFieldOptions("purposeOfLoan"),
+      getFormFieldOptions("loanType"),
+    ]);
+
+  const taxonomyOptions = {
+    bankName: bankNameOptions,
+    purposeOfLoan: purposeOfLoanOptions,
+    loanType: loanTypeOptions,
+  };
 
   return (
     <>
@@ -34,6 +49,7 @@ export default async function Page({ params }: LoanConditionsPageProps) {
         action={loanConditionsAction}
         id={id}
         loanConditionsData={application?.loanConditions}
+        taxonomyOptions={taxonomyOptions}
       />
     </>
   );

@@ -7,7 +7,6 @@ import { useState, type FC } from "react";
 
 import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { Container } from "@workspace/ui/components/container";
-import { DatePicker } from "@workspace/ui/components/date-picker";
 import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
 import { Field, Form } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
@@ -16,11 +15,16 @@ import { Underline } from "@workspace/ui/components/underline";
 import { FormCard } from "@workspace/ui/components/uwezo/form-card";
 import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
+import {
+  uploadFileAction,
+  uploadSingleFileAction,
+} from "@/app/actions/file-upload";
 import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
   groupDataSchema,
   type GroupData,
 } from "@/app/apply/[id]/group-data/group-data-schema";
+import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
 import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 import { GroupData as ApplicationGroupData } from "@/lib/data/application";
 import { dummyCounty } from "@/lib/data/dummy-data";
@@ -29,12 +33,19 @@ export interface GroupDataProps {
   id: string;
   applicationGroupData?: ApplicationGroupData;
   action: FormAction<GroupData>;
+  taxonomyOptions?: {
+    groupPurpose: TaxonomyOption[];
+    groupActivities: TaxonomyOption[];
+    valueChain: TaxonomyOption[];
+    county: TaxonomyOption[];
+  };
 }
 
 export const GroupDataForm: FC<GroupDataProps> = ({
   action,
   id,
   applicationGroupData,
+  taxonomyOptions,
 }) => {
   const [state, formAction, isPending] = useForm(action, groupDataSchema, {
     groupName: applicationGroupData?.basics.groupName,
@@ -59,7 +70,11 @@ export const GroupDataForm: FC<GroupDataProps> = ({
       applicationGroupData?.background.tableBanking
         ?.tableBankingTotalRevolvingFund,
     other: applicationGroupData?.background.other,
-    groupCreditHistory: applicationGroupData?.background.groupCreditHistory,
+    groupCreditHistory: applicationGroupData?.background.groupCreditHistory
+      ? Array.isArray(applicationGroupData.background.groupCreditHistory)
+        ? applicationGroupData.background.groupCreditHistory
+        : [applicationGroupData.background.groupCreditHistory]
+      : undefined,
     countyOfOperation: applicationGroupData?.location.countyOfOperation,
     constituency: applicationGroupData?.location.constituency,
     ward: applicationGroupData?.location.ward,
@@ -124,7 +139,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               <FileUploadInput
                 accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
-                attachmentBgInverted
+                applicationId={id}
+                enableUpload={true}
+                uploadAction={uploadSingleFileAction}
                 {...props}
               />
             )}
@@ -141,7 +158,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               <FileUploadInput
                 accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
-                attachmentBgInverted
+                applicationId={id}
+                enableUpload={true}
+                uploadAction={uploadSingleFileAction}
                 {...props}
               />
             )}
@@ -164,24 +183,28 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             control={(props) => (
               <CheckboxGroup
                 {...props}
-                options={[
-                  {
-                    label: t(
-                      "ApplicationDetailsPage.groupData.groupBackground.welfareIssues",
-                    ),
-                    value: "Welfare issues",
-                  },
-                  {
-                    label: t(
-                      "ApplicationDetailsPage.groupData.groupBackground.incomeActivities",
-                    ),
-                    value: "Income generating activities",
-                  },
-                  {
-                    label: t("Common.other"),
-                    value: "Other",
-                  },
-                ]}
+                options={
+                  taxonomyOptions?.groupPurpose?.length
+                    ? taxonomyOptions.groupPurpose
+                    : [
+                        {
+                          label: t(
+                            "ApplicationDetailsPage.groupData.groupBackground.welfareIssues",
+                          ),
+                          value: "Welfare issues",
+                        },
+                        {
+                          label: t(
+                            "ApplicationDetailsPage.groupData.groupBackground.incomeActivities",
+                          ),
+                          value: "Income generating activities",
+                        },
+                        {
+                          label: t("Common.other"),
+                          value: "Other",
+                        },
+                      ]
+                }
                 orientation="vertical"
               />
             )}
@@ -198,26 +221,31 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               <CheckboxGroup
                 {...props}
                 onValueChange={(val) => {
-                  setChosenKeyActivities(val);
+                  // Use setTimeout to avoid setState during render
+                  setTimeout(() => setChosenKeyActivities(val), 0);
                 }}
-                options={[
-                  {
-                    label: t(
-                      "ApplicationDetailsPage.groupData.groupBackground.valueChain",
-                    ),
-                    value: "Value chain",
-                  },
-                  {
-                    label: t(
-                      "ApplicationDetailsPage.groupData.groupBackground.tableBanking",
-                    ),
-                    value: "Table banking",
-                  },
-                  {
-                    label: t("Common.other"),
-                    value: "Other",
-                  },
-                ]}
+                options={
+                  taxonomyOptions?.groupActivities?.length
+                    ? taxonomyOptions.groupActivities
+                    : [
+                        {
+                          label: t(
+                            "ApplicationDetailsPage.groupData.groupBackground.valueChain",
+                          ),
+                          value: "Value chain",
+                        },
+                        {
+                          label: t(
+                            "ApplicationDetailsPage.groupData.groupBackground.tableBanking",
+                          ),
+                          value: "Table banking",
+                        },
+                        {
+                          label: t("Common.other"),
+                          value: "Other",
+                        },
+                      ]
+                }
                 orientation="vertical"
               />
             )}
@@ -235,44 +263,48 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                 <CheckboxGroup
                   {...props}
                   defaultValue={props.defaultValue ?? []}
-                  options={[
-                    {
-                      label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.leatherProducts",
-                      ),
-                      value: "Leather and leather products",
-                    },
-                    {
-                      label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.cottonAndTextile",
-                      ),
-                      value: "Cotton and textiles",
-                    },
-                    {
-                      label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.blueEconomy",
-                      ),
-                      value: "Blue economy",
-                    },
-                    {
-                      label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.edibleOils",
-                      ),
-                      value: "Edible oils",
-                    },
-                    {
-                      label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.constructionAndBuilding",
-                      ),
-                      value: "Construction and building materials",
-                    },
-                    {
-                      label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.dairyProducts",
-                      ),
-                      value: "Dairy and dairy products",
-                    },
-                  ]}
+                  options={
+                    taxonomyOptions?.valueChain?.length
+                      ? taxonomyOptions.valueChain
+                      : [
+                          {
+                            label: t(
+                              "ApplicationDetailsPage.groupData.groupBackground.leatherProducts",
+                            ),
+                            value: "Leather and leather products",
+                          },
+                          {
+                            label: t(
+                              "ApplicationDetailsPage.groupData.groupBackground.cottonAndTextile",
+                            ),
+                            value: "Cotton and textiles",
+                          },
+                          {
+                            label: t(
+                              "ApplicationDetailsPage.groupData.groupBackground.blueEconomy",
+                            ),
+                            value: "Blue economy",
+                          },
+                          {
+                            label: t(
+                              "ApplicationDetailsPage.groupData.groupBackground.edibleOils",
+                            ),
+                            value: "Edible oils",
+                          },
+                          {
+                            label: t(
+                              "ApplicationDetailsPage.groupData.groupBackground.constructionAndBuilding",
+                            ),
+                            value: "Construction and building materials",
+                          },
+                          {
+                            label: t(
+                              "ApplicationDetailsPage.groupData.groupBackground.dairyProducts",
+                            ),
+                            value: "Dairy and dairy products",
+                          },
+                        ]
+                  }
                   orientation="vertical"
                 />
               )}
@@ -369,12 +401,12 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             description={t("Common.youCanAddMultipleFiles")}
             control={(props) => (
               <FileUploadInput
-                accept={{
-                  "image/*": [".jpg", ".jpeg", ".png"],
-                  "application/pdf": [".pdf"],
-                }}
+                accept={FILE_ACCEPT}
                 maxSize={MAX_FILE_SIZE}
-                attachmentBgInverted
+                applicationId={id}
+                enableUpload={true}
+                multiple
+                uploadAction={uploadFileAction}
                 {...props}
               />
             )}

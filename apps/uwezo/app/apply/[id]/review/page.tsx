@@ -8,7 +8,7 @@ import { ApplicationReviewGroupData } from "@/components/application-review-grou
 import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
 import { ApplicationReviewMembers } from "@/components/application-review-members";
 import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
-import { getApplicationById } from "@/lib/data/application";
+import { getApplicationById } from "@/lib/data/application-db";
 
 export interface GroupDataPageProps {
   params: Promise<{ id: string }>;

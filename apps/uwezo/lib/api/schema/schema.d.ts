@@ -264,26 +264,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/application/{application_id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get application details
-     * @description Retrieve full details of a loan application by ID, UUID, or application_id
-     */
-    get: operations["getApplication"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/v1/application": {
     parameters: {
       query?: never;
@@ -304,6 +284,66 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/taxonomy-vocabularies": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get all taxonomy vocabularies for Application forms
+     * @description Retrieves all taxonomy vocabularies and their terms used in Application entity forms.
+     */
+    get: operations["api_application.taxonomy_vocabularies_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/{application_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get application details
+     * @description Retrieve full details of a loan application by ID, UUID, or application_id
+     */
+    get: operations["getApplication"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/site-info": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get site information
+     * @description Returns site configuration including name, contact information, and useful links.
+     */
+    get: operations["rest_framework.site_info_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -316,7 +356,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753009095
+         * @example 1753044534
          */
         timestamp: number;
         /**
@@ -800,7 +840,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753009095
+         * @example 1753044534
          */
         timestamp: number;
         /**
@@ -975,146 +1015,6 @@ export interface components {
        */
       timestamp?: number;
     };
-    ApplicationDetailResponse: {
-      /** @example true */
-      success?: boolean;
-      data?: components["schemas"]["ApplicationDetail"];
-    };
-    ApplicationDetail: {
-      /** @description Entity ID */
-      id?: number;
-      /**
-       * Format: uuid
-       * @description Entity UUID
-       */
-      uuid?: string;
-      /**
-       * @description Application ID
-       * @example APP-20240115-abc12
-       */
-      application_id?: string;
-      /**
-       * @description Application status
-       * @enum {string}
-       */
-      status?:
-        | "draft"
-        | "submitted"
-        | "under_review"
-        | "approved"
-        | "rejected"
-        | "disbursed"
-        | "closed";
-      /** @description Creation timestamp */
-      created?: number;
-      /** @description Last modified timestamp */
-      changed?: number;
-      owner?: {
-        /** @description User ID */
-        id?: number;
-        /**
-         * Format: email
-         * @description User email
-         */
-        email?: string;
-        /** @description User name */
-        name?: string;
-      };
-      group_data?: {
-        group_name?: string;
-        group_registration_number?: string;
-        /** Format: date */
-        date_registered?: string;
-        group_registration_certificate?: components["schemas"]["FileData"];
-        list_of_members_certificate?: components["schemas"]["FileData"];
-        group_background?: components["schemas"]["TaxonomyTerm"][];
-        key_activities?: string[];
-        value_chain?: components["schemas"]["TaxonomyTerm"][];
-        table_banking_duration?: string | null;
-        monthly_share_contribution?: number | null;
-        total_amount_loaned?: number | null;
-        total_revolving_fund?: number | null;
-        other_activities?: string | null;
-        /** @description Group credit history documents */
-        group_credit_history?: components["schemas"]["FileData"][];
-      };
-      location?: {
-        county?: components["schemas"]["TaxonomyTerm"];
-        constituency?: components["schemas"]["TaxonomyTerm"];
-        ward?: string;
-        meeting_point?: string;
-        nearest_landmark?: string;
-      };
-      /** @enum {string} */
-      nature_of_group?: "youth" | "pwd" | "women";
-      group_members?: components["schemas"]["GroupMemberDetail"][];
-      loan_conditions?: {
-        purpose_of_loan?: components["schemas"]["TaxonomyTerm"];
-        loan_type?: components["schemas"]["TaxonomyTerm"];
-        loan_amount?: number;
-        proposed_repayment_period?: number;
-        bank_name?: components["schemas"]["TaxonomyTerm"];
-        bank_branch?: string;
-        bank_account_number?: string;
-      };
-      proposed_business?: {
-        /** @enum {string} */
-        nature_of_business?: "startup" | "expansion";
-        business_type?: components["schemas"]["TaxonomyTerm"][];
-        /** Format: float */
-        years_in_operation?: number;
-        average_income?: number;
-        expenses?: {
-          [key: string]: unknown;
-        }[];
-      };
-      rejection_details?: {
-        /** @enum {string} */
-        rejection_reason?:
-          | "incomplete_information"
-          | "missing_documents"
-          | "eligibility_criteria"
-          | "duplicate_application"
-          | "insufficient_collateral"
-          | "poor_credit_history"
-          | "other";
-        rejection_message?: string;
-      } | null;
-    };
-    GroupMemberDetail: {
-      /** @description Member entity ID */
-      id?: number;
-      name?: string;
-      id_number?: string;
-      /** @enum {string} */
-      gender?: "male" | "female" | "other";
-      phone_number?: string;
-      position?: components["schemas"]["TaxonomyTerm"];
-      photo_member_id?: components["schemas"]["FileData"];
-      person_with_disability?: boolean;
-      pwd_number?: string | null;
-      certificate_disability?: components["schemas"]["FileData"];
-    };
-    FileData: {
-      /** @description File ID */
-      fid?: number;
-      /**
-       * Format: uuid
-       * @description File UUID
-       */
-      uuid?: string;
-      /** @description File name */
-      filename?: string;
-      /**
-       * Format: uri
-       * @description File URL
-       */
-      url?: string;
-      /** @description File size in bytes */
-      size?: number;
-      /** @description MIME type */
-      mime_type?: string;
-    } | null;
     /** @description Request body for creating or updating an application */
     ApplicationPostRequest: {
       /**
@@ -1286,6 +1186,434 @@ export interface components {
         created?: number;
         /** @description Last modified timestamp */
         changed?: number;
+      };
+    };
+    ErrorResponse: {
+      /** @description Error type */
+      error?: string;
+      /** @description Error message */
+      message?: string;
+      /** @description List of missing required fields */
+      missing_fields?: string[];
+    };
+    /**
+     * Taxonomy Vocabulary
+     * @description A taxonomy vocabulary with its terms
+     */
+    TaxonomyVocabulary: {
+      /**
+       * @description The machine name of the vocabulary
+       * @example group_background
+       */
+      vocabulary_id: string;
+      /**
+       * @description The human-readable label of the vocabulary
+       * @example Group Background
+       */
+      vocabulary_label: string;
+      /**
+       * @description The description of the vocabulary
+       * @example Categories for group background types
+       */
+      vocabulary_description: string;
+      /**
+       * @description The field name in the entity that references this vocabulary
+       * @example group_background
+       */
+      field_name: string;
+      /**
+       * @description The entity type that uses this vocabulary
+       * @example application
+       * @enum {string}
+       */
+      entity_type: "application" | "group_member";
+      /**
+       * @description Whether the field accepts single or multiple values
+       * @example multiple
+       * @enum {string}
+       */
+      cardinality: "single" | "multiple";
+      /**
+       * @description Whether new terms can be auto-created for this vocabulary
+       * @example false
+       */
+      auto_create: boolean;
+      /** @description Array of taxonomy terms in this vocabulary */
+      terms: components["schemas"]["TaxonomyTerm"][];
+      /**
+       * @description Total number of terms in this vocabulary
+       * @example 5
+       */
+      total_terms: number;
+    };
+    /**
+     * Taxonomy Term
+     * @description A taxonomy term
+     */
+    TaxonomyTerm: {
+      /**
+       * @description The term ID
+       * @example 1
+       */
+      tid: number;
+      /**
+       * @description The term UUID
+       * @example 550e8400-e29b-41d4-a716-446655440000
+       */
+      uuid: string;
+      /**
+       * @description The term name
+       * @example Youth Group
+       */
+      name: string;
+      /** @description The term description */
+      description: {
+        /**
+         * @description The raw description text
+         * @example Groups primarily composed of young people
+         */
+        value: string;
+        /**
+         * @description The text format
+         * @example basic_html
+         */
+        format: string;
+        /**
+         * @description The processed description HTML
+         * @example <p>Groups primarily composed of young people</p>
+         */
+        processed: string;
+      };
+      /**
+       * @description The term weight (for ordering)
+       * @example 0
+       */
+      weight: number;
+      /**
+       * @description Array of parent term IDs
+       * @example []
+       */
+      parent_ids: number[];
+      /**
+       * @description The absolute URL to the term
+       * @example https://example.com/taxonomy/term/1
+       */
+      url: string;
+      /** @description Language information for the term */
+      language: {
+        /**
+         * @description The language code
+         * @example en
+         */
+        code: string;
+        /**
+         * @description The language name
+         * @example English
+         */
+        name: string;
+      };
+    };
+    /**
+     * Taxonomy Vocabularies Meta
+     * @description Metadata for taxonomy vocabularies response
+     */
+    TaxonomyVocabulariesMeta: {
+      /**
+       * @description Unix timestamp of when the response was generated
+       * @example 1753044534
+       */
+      timestamp: number;
+      /**
+       * @description API version
+       * @example v1
+       */
+      version: string;
+      /**
+       * @description Total number of vocabularies in the response
+       * @example 9
+       */
+      total_vocabularies: number;
+      /** @description Language information */
+      language: {
+        /**
+         * @description Current language code
+         * @example en
+         */
+        current: string;
+        /**
+         * @description Default language code
+         * @example en
+         */
+        default: string;
+        /** @description Available languages */
+        available: {
+          [key: string]: {
+            /** @example en */
+            langcode: string;
+            /** @example English */
+            name: string;
+            /** @example https://example.com/api/v1/application/taxonomy-vocabularies */
+            url: string;
+            /** @example /api/v1/application/taxonomy-vocabularies */
+            path: string;
+          };
+        };
+      };
+    };
+    ApplicationDetailResponse: {
+      /** @example true */
+      success?: boolean;
+      data?: components["schemas"]["ApplicationDetail"];
+    };
+    ApplicationDetail: {
+      /** @description Entity ID */
+      id?: number;
+      /**
+       * Format: uuid
+       * @description Entity UUID
+       */
+      uuid?: string;
+      /**
+       * @description Application ID
+       * @example APP-20240115-abc12
+       */
+      application_id?: string;
+      /**
+       * @description Application status
+       * @enum {string}
+       */
+      status?:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "approved"
+        | "rejected"
+        | "disbursed"
+        | "closed";
+      /** @description Creation timestamp */
+      created?: number;
+      /** @description Last modified timestamp */
+      changed?: number;
+      owner?: {
+        /** @description User ID */
+        id?: number;
+        /**
+         * Format: email
+         * @description User email
+         */
+        email?: string;
+        /** @description User name */
+        name?: string;
+      };
+      group_data?: {
+        group_name?: string;
+        group_registration_number?: string;
+        /** Format: date */
+        date_registered?: string;
+        group_registration_certificate?: components["schemas"]["FileData"];
+        list_of_members_certificate?: components["schemas"]["FileData"];
+        group_background?: components["schemas"]["TaxonomyTerm"][];
+        key_activities?: string[];
+        value_chain?: components["schemas"]["TaxonomyTerm"][];
+        table_banking_duration?: string | null;
+        monthly_share_contribution?: number | null;
+        total_amount_loaned?: number | null;
+        total_revolving_fund?: number | null;
+        other_activities?: string | null;
+        /** @description Group credit history documents */
+        group_credit_history?: components["schemas"]["FileData"][];
+      };
+      location?: {
+        county?: components["schemas"]["TaxonomyTerm"];
+        constituency?: components["schemas"]["TaxonomyTerm"];
+        ward?: string;
+        meeting_point?: string;
+        nearest_landmark?: string;
+      };
+      /** @enum {string} */
+      nature_of_group?: "youth" | "pwd" | "women";
+      group_members?: components["schemas"]["GroupMemberDetail"][];
+      loan_conditions?: {
+        purpose_of_loan?: components["schemas"]["TaxonomyTerm"];
+        loan_type?: components["schemas"]["TaxonomyTerm"];
+        loan_amount?: number;
+        proposed_repayment_period?: number;
+        bank_name?: components["schemas"]["TaxonomyTerm"];
+        bank_branch?: string;
+        bank_account_number?: string;
+      };
+      proposed_business?: {
+        /** @enum {string} */
+        nature_of_business?: "startup" | "expansion";
+        business_type?: components["schemas"]["TaxonomyTerm"][];
+        /** Format: float */
+        years_in_operation?: number;
+        average_income?: number;
+        expenses?: {
+          [key: string]: unknown;
+        }[];
+      };
+      rejection_details?: {
+        /** @enum {string} */
+        rejection_reason?:
+          | "incomplete_information"
+          | "missing_documents"
+          | "eligibility_criteria"
+          | "duplicate_application"
+          | "insufficient_collateral"
+          | "poor_credit_history"
+          | "other";
+        rejection_message?: string;
+      } | null;
+    };
+    GroupMemberDetail: {
+      /** @description Member entity ID */
+      id?: number;
+      name?: string;
+      id_number?: string;
+      /** @enum {string} */
+      gender?: "male" | "female" | "other";
+      phone_number?: string;
+      position?: components["schemas"]["TaxonomyTerm"];
+      photo_member_id?: components["schemas"]["FileData"];
+      person_with_disability?: boolean;
+      pwd_number?: string | null;
+      certificate_disability?: components["schemas"]["FileData"];
+    };
+    FileData: {
+      /** @description File ID */
+      fid?: number;
+      /**
+       * Format: uuid
+       * @description File UUID
+       */
+      uuid?: string;
+      /** @description File name */
+      filename?: string;
+      /**
+       * Format: uri
+       * @description File URL
+       */
+      url?: string;
+      /** @description File size in bytes */
+      size?: number;
+      /** @description MIME type */
+      mime_type?: string;
+    } | null;
+    SiteInformationResponse: {
+      data: components["schemas"]["SiteInformationData"];
+      meta: components["schemas"]["SiteInformationMeta"];
+    };
+    SiteInformationData: {
+      site: {
+        /**
+         * @description The site name
+         * @example Uwezo Kenya
+         */
+        name: string;
+        /**
+         * @description The site slogan
+         * @example Empowering Communities
+         */
+        slogan: string;
+        /**
+         * Format: email
+         * @description The site system email address
+         * @example system@uwezo.go.ke
+         */
+        mail: string;
+        contact: {
+          /**
+           * @description Physical address
+           * @example Lonrho House, 16th Floor, Standard Street
+           */
+          address: string;
+          /**
+           * @description Postal box address
+           * @example 42009-00100, Nairobi
+           */
+          po_box: string;
+          /**
+           * @description Contact phone number
+           * @example +254 0776 154 215
+           */
+          phone: string;
+          /**
+           * Format: email
+           * @description Contact email address
+           * @example info@uwezo.go.ke
+           */
+          email: string;
+        };
+      };
+      /** @description List of useful external links */
+      useful_links: components["schemas"]["UsefulLink"][];
+    };
+    UsefulLink: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the link
+       * @example 123e4567-e89b-12d3-a456-426614174000
+       */
+      id: string;
+      /**
+       * @description Link title
+       * @example Staff Mail
+       */
+      title: string;
+      /**
+       * Format: url
+       * @description Link URL
+       * @example https://mail.kenya.go.ke
+       */
+      url: string;
+      /**
+       * @description Sort weight for ordering
+       * @example 0
+       */
+      weight: number;
+      /**
+       * @description Whether the link is external
+       * @example true
+       */
+      external: boolean;
+    };
+    SiteInformationMeta: {
+      /**
+       * @description Unix timestamp of the response
+       * @example 1753044534
+       */
+      timestamp: number;
+      /**
+       * @description API version
+       * @example v1
+       */
+      version: string;
+      language: {
+        /**
+         * @description Current language code
+         * @example en
+         */
+        current: string;
+        /**
+         * @description Default language code
+         * @example en
+         */
+        default: string;
+        /** @description Available languages */
+        available: {
+          [key: string]: {
+            /** @example en */
+            langcode?: string;
+            /** @example English */
+            name?: string;
+            /**
+             * @example ltr
+             * @enum {string}
+             */
+            direction?: "ltr" | "rtl";
+          };
+        };
       };
     };
     /**
@@ -1486,7 +1814,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp: number;
               /**
@@ -1556,7 +1884,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp: number;
               /**
@@ -1631,7 +1959,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1686,7 +2014,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1776,7 +2104,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1833,7 +2161,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1900,7 +2228,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -1968,7 +2296,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -2037,7 +2365,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753044534
                */
               timestamp?: number;
               /**
@@ -2290,6 +2618,93 @@ export interface operations {
       };
     };
   };
+  createApplication: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ApplicationPostRequest"];
+      };
+    };
+    responses: {
+      /** @description Application created or updated successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApplicationPostResponse"];
+        };
+      };
+      /** @description Bad request - validation failed */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized - invalid or missing API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  "api_application.taxonomy_vocabularies_get": {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description The language code for the response (e.g., "en", "sw") */
+        "X-Language"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Taxonomy vocabularies retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Taxonomy vocabularies data */
+            data: components["schemas"]["TaxonomyVocabulary"];
+            meta: components["schemas"]["TaxonomyVocabulariesMeta"];
+          };
+        };
+      };
+      /** @description Invalid language code provided */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
   getApplication: {
     parameters: {
       query?: never;
@@ -2340,54 +2755,40 @@ export interface operations {
       };
     };
   };
-  createApplication: {
+  "rest_framework.site_info_get": {
     parameters: {
       query?: never;
-      header?: never;
+      header?: {
+        /** @description Preferred language code */
+        "X-Language"?: string;
+      };
       path?: never;
       cookie?: never;
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ApplicationPostRequest"];
-      };
-    };
+    requestBody?: never;
     responses: {
-      /** @description Application created or updated successfully */
-      201: {
+      /** @description Successful response */
+      200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["ApplicationPostResponse"];
+          "application/json": components["schemas"]["SiteInformationResponse"];
         };
       };
-      /** @description Bad request - validation failed */
-      400: {
+      /** @description Not found */
+      404: {
         headers: {
           [name: string]: unknown;
         };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
-      };
-      /** @description Unauthorized - invalid or missing API key */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
+        content?: never;
       };
       /** @description Internal server error */
       500: {
         headers: {
           [name: string]: unknown;
         };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
+        content?: never;
       };
     };
   };

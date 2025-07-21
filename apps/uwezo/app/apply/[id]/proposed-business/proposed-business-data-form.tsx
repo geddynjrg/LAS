@@ -22,6 +22,7 @@ import {
   proposedBusinessDataSchema,
   type ProposedBusinessData,
 } from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
+import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
 import { ProposedBusinessData as ApplicationProposedBusinessData } from "@/lib/data/application";
 import { parseNumber } from "@/lib/util";
 
@@ -29,12 +30,16 @@ export interface ProposedBusinessDataProps {
   id: string;
   action: FormAction<ProposedBusinessData>;
   applicationBusinessData?: ApplicationProposedBusinessData;
+  taxonomyOptions?: {
+    businessType: TaxonomyOption[];
+  };
 }
 
 export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
   id,
   action,
   applicationBusinessData,
+  taxonomyOptions,
 }) => {
   const t = useTranslations();
   const [state, formAction, isPending] = useForm(
@@ -138,13 +143,18 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             control={(props) => (
               <CheckboxGroup
                 {...props}
-                options={[
-                  { label: t("Common.trade"), value: "Trade" },
-                  { label: t("Common.service"), value: "Service" },
-                  { label: t("Common.manufacturing"), value: "Manufacturing" },
-                  { label: t("Common.agriculture"), value: "Agriculture" },
-                  { label: t("Common.other"), value: "Other" },
-                ]}
+                options={
+                  taxonomyOptions?.businessType || [
+                    { label: t("Common.trade"), value: "Trade" },
+                    { label: t("Common.service"), value: "Service" },
+                    {
+                      label: t("Common.manufacturing"),
+                      value: "Manufacturing",
+                    },
+                    { label: t("Common.agriculture"), value: "Agriculture" },
+                    { label: t("Common.other"), value: "Other" },
+                  ]
+                }
               />
             )}
           />

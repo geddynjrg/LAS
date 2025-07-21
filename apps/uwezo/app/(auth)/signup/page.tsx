@@ -16,20 +16,19 @@ import { useForm } from "@workspace/ui/hooks/use-form";
 
 import { signupAction } from "@/app/(auth)/signup/signup-action";
 import { signupSchema } from "@/app/(auth)/signup/signup-schema";
-import { useSession } from "@/hooks/useSession";
 
 export default function Page() {
   const t = useTranslations("SignUpPage");
   const router = useRouter();
-  const { setSession } = useSession();
   const [state, formAction, isPending] = useForm(signupAction, signupSchema);
 
   useEffect(() => {
     if (state.success) {
-      setSession(true);
+      // The server action has already created the session
+      // We just need to navigate to trigger a refresh
       router.replace("/dashboard");
     }
-  }, [state.success, router, setSession]);
+  }, [state.success, router]);
 
   return (
     <Container className="max-w-[500px] pt-8">

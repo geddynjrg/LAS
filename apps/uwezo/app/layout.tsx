@@ -14,7 +14,6 @@ import { AppFooter } from "@/components/app-footer";
 import { AppHeader } from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Providers } from "@/components/providers";
-import { SessionProvider } from "@/hooks/useSession";
 import { type Locale } from "@/i18n/config";
 import { getSession } from "@/lib/session";
 
@@ -41,24 +40,22 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     >
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
         <NextIntlClientProvider messages={messages}>
-          <SessionProvider initialSession={session ? true : null}>
-            <Providers>
-              <AppHeader />
-              <AppSidebar locale={locale} />
-              <SidebarInset className="bg-gradient-to-b from-[hsl(0,0%,97%)] to-[hsl(310,50%,97%)]">
-                <Suspense
-                  fallback={
-                    <div className="flex flex-1 items-center justify-center">
-                      <Loader size={40} />
-                    </div>
-                  }
-                >
-                  {children}
-                </Suspense>
-              </SidebarInset>
-              <AppFooter />
-            </Providers>
-          </SessionProvider>
+          <Providers initialSession={!!session}>
+            <AppHeader />
+            <AppSidebar locale={locale} />
+            <SidebarInset className="bg-gradient-to-b from-[hsl(0,0%,97%)] to-[hsl(310,50%,97%)]">
+              <Suspense
+                fallback={
+                  <div className="flex flex-1 items-center justify-center">
+                    <Loader size={40} />
+                  </div>
+                }
+              >
+                {children}
+              </Suspense>
+            </SidebarInset>
+            <AppFooter />
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

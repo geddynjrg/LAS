@@ -1,22 +1,33 @@
 "use client";
 
-import { redirect, usePathname } from "next/navigation";
-import type { FC, ReactNode } from "react";
+import { type FC, type ReactNode } from "react";
+
+import { Loader } from "@workspace/ui/components/loader";
+
+import { useRequireAuth } from "@/hooks/useSession";
 
 export interface AuthenticatedProps {
-  session: true | null;
   children?: ReactNode;
+  redirectTo?: string;
 }
 
 export const Authenticated: FC<AuthenticatedProps> = ({
-  session,
   children,
+  redirectTo = "/login",
 }) => {
-  const pathname = usePathname();
+  const { isAuthenticated, isLoading } = useRequireAuth(redirectTo);
 
-  if (!session) {
-    return redirect(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
-  return children;
+  if (!isAuthenticated) {
+    return null; // Return null while redirecting
+  }
+
+  return <>{children}</>;
 };

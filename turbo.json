@@ -15,7 +15,11 @@
       "env": [
         "NEXT_API_URL",
         "NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID",
-        "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY"
+        "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY",
+        "UPLOAD_DIR",
+        "MAX_FILE_SIZE",
+        "DATABASE_URL",
+        "EXTERNAL_API_KEY"
       ]
     },
     "lint": {
