@@ -9,6 +9,11 @@ services:
     class: Drupal\api_auth\Service\ApiJwtService
     arguments: ['@config.factory', '@entity_type.manager', '@api_auth.token_storage']
 
+  # OTP authentication service
+  api_auth.otp_service:
+    class: Drupal\api_auth\Service\OtpAuthService
+    arguments: ['@config.factory', '@entity_type.manager', '@sms_providers.sms_service', '@api_auth.jwt_service', '@cache.default']
+
   cache.api_auth:
     class: Drupal\Core\Cache\CacheBackendInterface
     tags:

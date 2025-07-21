@@ -22,6 +22,7 @@ module:
   datetime: 0
   dblog: 0
   dynamic_page_cache: 0
+  ebiscloud_sms: 0
   editor: 0
   entity_reference_revisions: 0
   entity_usage: 0
@@ -56,6 +57,7 @@ module:
   search: 0
   serialization: 0
   shortcut: 0
+  sms_providers: 0
   status_manager: 0
   status_manager_notifications: 0
   system: 0
