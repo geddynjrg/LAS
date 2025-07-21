@@ -7,5 +7,5 @@ definitions:
 
 pipelines:
   branches:
-    qa:
+    main:
       - step: *deploy
