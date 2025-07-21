@@ -2,7 +2,6 @@
 
 import type { ValidFile } from "@workspace/ui/lib/zod";
 
-import { auth } from "@/lib/auth";
 import { dummyApplications } from "@/lib/data/dummy-data";
 import { createApplicationId } from "@/lib/util";
 

@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "check-types": "tsc --noEmit",
-    "schema": "openapi-typescript https://uwezo-api-qa.fusion.adm.ee/api/docs/json -o ./lib/api/schema/schema.d.ts && prettier --write ./lib/api/schema/schema.d.ts"
+    "schema": ". ./.env && openapi-typescript \"$NEXT_API_URL/api/docs/json\" -o ./lib/api/schema/schema.d.ts && prettier --write ./lib/api/schema/schema.d.ts",
+    "schema:dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run schema"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.17.0",

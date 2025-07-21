@@ -68,16 +68,23 @@ export async function updateSession() {
 export async function invalidateSession() {
   const accessToken = await getSession();
 
-  // invalidate token on the server
-  await fetch(LOGOUT_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  // only try to invalidate on server if we have a valid token
+  if (accessToken) {
+    try {
+      await fetch(LOGOUT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    } catch (error) {
+      // Ignore logout API errors - we still want to clear local session
+      console.warn("[Session] Failed to logout on server:", error);
+    }
+  }
 
-  // delete token from cookies
+  // always delete token from cookies, even if server logout fails
   await deleteCookies();
 }
 

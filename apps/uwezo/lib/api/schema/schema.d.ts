@@ -184,6 +184,66 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/auth/otp/request": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Request OTP
+     * @description Request a one-time password (OTP) to be sent via SMS to the provided phone number.
+     */
+    post: operations["api_auth.otp_request"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/otp/verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Verify OTP
+     * @description Verify the OTP code and authenticate the user. Returns JWT tokens on successful verification.
+     */
+    post: operations["api_auth.otp_verify"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application/taxonomy-vocabularies": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get all taxonomy vocabularies for Application forms
+     * @description Retrieves all taxonomy vocabularies and their terms used in Application entity forms.
+     */
+    get: operations["api_application.taxonomy_vocabularies_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/application/instructions": {
     parameters: {
       query?: never;
@@ -204,6 +264,46 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/application/{application_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get application details
+     * @description Retrieve full details of a loan application by ID, UUID, or application_id
+     */
+    get: operations["getApplication"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/application": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create or update a loan application
+     * @description Creates a new loan application or updates an existing one if application_id or group_registration_number matches
+     */
+    post: operations["createApplication"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -216,7 +316,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1752171455
+         * @example 1753009095
          */
         timestamp: number;
         /**
@@ -434,13 +534,273 @@ export interface components {
        */
       token_type: string;
     };
+    OtpRequest: {
+      /**
+       * @description Unique identifier for the OTP request
+       * @example req_abc123def456
+       */
+      request_id: string;
+      /**
+       * @description Status message
+       * @example OTP sent successfully
+       */
+      message: string;
+      /**
+       * @description OTP expiration time in seconds
+       * @example 300
+       */
+      expires_in: number;
+      /**
+       * @description Phone number (masked for security)
+       * @example +254712***678
+       */
+      phone_number?: string;
+    };
+    OtpVerifyResponse: {
+      /**
+       * @description JWT access token
+       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+       */
+      access_token: string;
+      /**
+       * @description JWT refresh token
+       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+       */
+      refresh_token: string;
+      /**
+       * @description Token expiration time in seconds
+       * @example 3600
+       */
+      expires_in: number;
+      /**
+       * @description Token type
+       * @example Bearer
+       */
+      token_type: string;
+      user: {
+        /**
+         * @description User ID
+         * @example 123
+         */
+        id?: number;
+        /**
+         * Format: email
+         * @description User email address
+         * @example user@example.com
+         */
+        email?: string;
+        /**
+         * @description Username
+         * @example user_254712345678
+         */
+        name?: string;
+        /**
+         * @description User phone number
+         * @example +254712345678
+         */
+        phone_number?: string;
+        /**
+         * @description Whether this user was created during OTP verification
+         * @example false
+         */
+        created?: boolean;
+      };
+    };
+    /**
+     * Taxonomy Vocabulary
+     * @description A taxonomy vocabulary with its terms
+     */
+    TaxonomyVocabulary: {
+      /**
+       * @description The machine name of the vocabulary
+       * @example group_background
+       */
+      vocabulary_id: string;
+      /**
+       * @description The human-readable label of the vocabulary
+       * @example Group Background
+       */
+      vocabulary_label: string;
+      /**
+       * @description The description of the vocabulary
+       * @example Categories for group background types
+       */
+      vocabulary_description: string;
+      /**
+       * @description The field name in the entity that references this vocabulary
+       * @example group_background
+       */
+      field_name: string;
+      /**
+       * @description The entity type that uses this vocabulary
+       * @example application
+       * @enum {string}
+       */
+      entity_type: "application" | "group_member";
+      /**
+       * @description Whether the field accepts single or multiple values
+       * @example multiple
+       * @enum {string}
+       */
+      cardinality: "single" | "multiple";
+      /**
+       * @description Whether new terms can be auto-created for this vocabulary
+       * @example false
+       */
+      auto_create: boolean;
+      /** @description Array of taxonomy terms in this vocabulary */
+      terms: components["schemas"]["TaxonomyTerm"][];
+      /**
+       * @description Total number of terms in this vocabulary
+       * @example 5
+       */
+      total_terms: number;
+    };
+    /**
+     * Taxonomy Term
+     * @description A taxonomy term
+     */
+    TaxonomyTerm: {
+      /**
+       * @description The term ID
+       * @example 1
+       */
+      tid: number;
+      /**
+       * @description The term UUID
+       * @example 550e8400-e29b-41d4-a716-446655440000
+       */
+      uuid: string;
+      /**
+       * @description The term name
+       * @example Youth Group
+       */
+      name: string;
+      /** @description The term description */
+      description: {
+        /**
+         * @description The raw description text
+         * @example Groups primarily composed of young people
+         */
+        value: string;
+        /**
+         * @description The text format
+         * @example basic_html
+         */
+        format: string;
+        /**
+         * @description The processed description HTML
+         * @example <p>Groups primarily composed of young people</p>
+         */
+        processed: string;
+      };
+      /**
+       * @description The term weight (for ordering)
+       * @example 0
+       */
+      weight: number;
+      /**
+       * @description Array of parent term IDs
+       * @example []
+       */
+      parent_ids: number[];
+      /**
+       * @description The absolute URL to the term
+       * @example https://example.com/taxonomy/term/1
+       */
+      url: string;
+      /** @description Language information for the term */
+      language: {
+        /**
+         * @description The language code
+         * @example en
+         */
+        code: string;
+        /**
+         * @description The language name
+         * @example English
+         */
+        name: string;
+      };
+    };
+    /**
+     * Taxonomy Vocabularies Meta
+     * @description Metadata for taxonomy vocabularies response
+     */
+    TaxonomyVocabulariesMeta: {
+      /**
+       * @description Unix timestamp of when the response was generated
+       * @example 1753009095
+       */
+      timestamp: number;
+      /**
+       * @description API version
+       * @example v1
+       */
+      version: string;
+      /**
+       * @description Total number of vocabularies in the response
+       * @example 9
+       */
+      total_vocabularies: number;
+      /** @description Language information */
+      language: {
+        /**
+         * @description Current language code
+         * @example en
+         */
+        current: string;
+        /**
+         * @description Default language code
+         * @example en
+         */
+        default: string;
+        /** @description Available languages */
+        available: {
+          [key: string]: {
+            /** @example en */
+            langcode: string;
+            /** @example English */
+            name: string;
+            /** @example https://example.com/api/v1/application/taxonomy-vocabularies */
+            url: string;
+            /** @example /api/v1/application/taxonomy-vocabularies */
+            path: string;
+          };
+        };
+      };
+    };
+    /**
+     * Error Response
+     * @description Error response structure
+     */
+    ErrorResponse: {
+      /**
+       * @description Error type
+       * @example Invalid language code
+       */
+      error: string;
+      /**
+       * @description Detailed error message
+       * @example Language code "xx" is not supported. Available languages: en, sw
+       */
+      message: string;
+      /**
+       * @description List of available language codes
+       * @example [
+       *       "en",
+       *       "sw"
+       *     ]
+       */
+      available_languages: string[];
+    };
     /** @description Response containing application instructions */
     ApplicationInstructionsResponse: {
       data: components["schemas"]["ApplicationInstructions"];
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1752171455
+         * @example 1753009095
          */
         timestamp: number;
         /**
@@ -566,6 +926,11 @@ export interface components {
        */
       fid: number;
       /**
+       * @description The file UUID
+       * @example 123e4567-e89b-12d3-a456-426614174000
+       */
+      uuid: string;
+      /**
        * @description The filename
        * @example certificate-example.webp
        */
@@ -609,6 +974,319 @@ export interface components {
        * @example 1704067200
        */
       timestamp?: number;
+    };
+    ApplicationDetailResponse: {
+      /** @example true */
+      success?: boolean;
+      data?: components["schemas"]["ApplicationDetail"];
+    };
+    ApplicationDetail: {
+      /** @description Entity ID */
+      id?: number;
+      /**
+       * Format: uuid
+       * @description Entity UUID
+       */
+      uuid?: string;
+      /**
+       * @description Application ID
+       * @example APP-20240115-abc12
+       */
+      application_id?: string;
+      /**
+       * @description Application status
+       * @enum {string}
+       */
+      status?:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "approved"
+        | "rejected"
+        | "disbursed"
+        | "closed";
+      /** @description Creation timestamp */
+      created?: number;
+      /** @description Last modified timestamp */
+      changed?: number;
+      owner?: {
+        /** @description User ID */
+        id?: number;
+        /**
+         * Format: email
+         * @description User email
+         */
+        email?: string;
+        /** @description User name */
+        name?: string;
+      };
+      group_data?: {
+        group_name?: string;
+        group_registration_number?: string;
+        /** Format: date */
+        date_registered?: string;
+        group_registration_certificate?: components["schemas"]["FileData"];
+        list_of_members_certificate?: components["schemas"]["FileData"];
+        group_background?: components["schemas"]["TaxonomyTerm"][];
+        key_activities?: string[];
+        value_chain?: components["schemas"]["TaxonomyTerm"][];
+        table_banking_duration?: string | null;
+        monthly_share_contribution?: number | null;
+        total_amount_loaned?: number | null;
+        total_revolving_fund?: number | null;
+        other_activities?: string | null;
+        /** @description Group credit history documents */
+        group_credit_history?: components["schemas"]["FileData"][];
+      };
+      location?: {
+        county?: components["schemas"]["TaxonomyTerm"];
+        constituency?: components["schemas"]["TaxonomyTerm"];
+        ward?: string;
+        meeting_point?: string;
+        nearest_landmark?: string;
+      };
+      /** @enum {string} */
+      nature_of_group?: "youth" | "pwd" | "women";
+      group_members?: components["schemas"]["GroupMemberDetail"][];
+      loan_conditions?: {
+        purpose_of_loan?: components["schemas"]["TaxonomyTerm"];
+        loan_type?: components["schemas"]["TaxonomyTerm"];
+        loan_amount?: number;
+        proposed_repayment_period?: number;
+        bank_name?: components["schemas"]["TaxonomyTerm"];
+        bank_branch?: string;
+        bank_account_number?: string;
+      };
+      proposed_business?: {
+        /** @enum {string} */
+        nature_of_business?: "startup" | "expansion";
+        business_type?: components["schemas"]["TaxonomyTerm"][];
+        /** Format: float */
+        years_in_operation?: number;
+        average_income?: number;
+        expenses?: {
+          [key: string]: unknown;
+        }[];
+      };
+      rejection_details?: {
+        /** @enum {string} */
+        rejection_reason?:
+          | "incomplete_information"
+          | "missing_documents"
+          | "eligibility_criteria"
+          | "duplicate_application"
+          | "insufficient_collateral"
+          | "poor_credit_history"
+          | "other";
+        rejection_message?: string;
+      } | null;
+    };
+    GroupMemberDetail: {
+      /** @description Member entity ID */
+      id?: number;
+      name?: string;
+      id_number?: string;
+      /** @enum {string} */
+      gender?: "male" | "female" | "other";
+      phone_number?: string;
+      position?: components["schemas"]["TaxonomyTerm"];
+      photo_member_id?: components["schemas"]["FileData"];
+      person_with_disability?: boolean;
+      pwd_number?: string | null;
+      certificate_disability?: components["schemas"]["FileData"];
+    };
+    FileData: {
+      /** @description File ID */
+      fid?: number;
+      /**
+       * Format: uuid
+       * @description File UUID
+       */
+      uuid?: string;
+      /** @description File name */
+      filename?: string;
+      /**
+       * Format: uri
+       * @description File URL
+       */
+      url?: string;
+      /** @description File size in bytes */
+      size?: number;
+      /** @description MIME type */
+      mime_type?: string;
+    } | null;
+    /** @description Request body for creating or updating an application */
+    ApplicationPostRequest: {
+      /**
+       * @description Existing application ID for updates (optional)
+       * @example APP-20240115-abc12
+       */
+      application_id?: string;
+      /**
+       * Format: email
+       * @description Email of the application owner
+       * @example user@example.com
+       */
+      owner_email: string;
+      /**
+       * @description Application status
+       * @default draft
+       * @enum {string}
+       */
+      status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "approved"
+        | "rejected"
+        | "disbursed"
+        | "closed";
+      /**
+       * @description Name of the group
+       * @example Youth Empowerment Group
+       */
+      group_name: string;
+      /**
+       * @description Official registration number
+       * @example REG-2024-001
+       */
+      group_registration_number: string;
+      /**
+       * Format: date
+       * @description Date when group was registered
+       * @example 2024-01-15
+       */
+      date_registered: string;
+      group_registration_certificate?: components["schemas"]["FileUpload"];
+      list_of_members_certificate?: components["schemas"]["FileUpload"];
+      /**
+       * @description Group background categories (taxonomy term names or IDs, auto-creates if not found)
+       * @example [
+       *       "Welfare issues",
+       *       "Income generating activities"
+       *     ]
+       */
+      group_background?: (string | number)[];
+      /** @description Key activities of the group */
+      key_activities?: ("value_chain" | "table_banking" | "other")[];
+      /** @description Value chain categories (auto-creates if not found) */
+      value_chain?: (string | number)[];
+      /** @description Duration of table banking practice */
+      table_banking_duration?: string;
+      /** @description Monthly share contribution amount */
+      monthly_share_contribution?: number;
+      /** @description Total amount loaned out */
+      total_amount_loaned?: number;
+      /** @description Total revolving fund amount */
+      total_revolving_fund?: number;
+      /** @description Other activities description */
+      other_activities?: string;
+      /** @description Group credit history documents (multiple files allowed) */
+      group_credit_history?: components["schemas"]["FileUpload"][];
+      county?: string | number;
+      constituency?: string | number;
+      /** @description Ward name */
+      ward?: string;
+      /** @description Where the group meets */
+      meeting_point?: string;
+      /** @description Nearest landmark to meeting point */
+      nearest_landmark?: string;
+      /**
+       * @description Nature of the group
+       * @enum {string}
+       */
+      nature_of_group?: "youth" | "pwd" | "women";
+      /** @description Group members */
+      group_members?: components["schemas"]["GroupMemberInput"][];
+      purpose_of_loan?: string | number;
+      loan_type?: string | number;
+      /** @description Requested loan amount in KSh */
+      loan_amount?: number;
+      /** @description Repayment period in months */
+      proposed_repayment_period?: number;
+      bank_name?: string | number;
+      /** @description Bank branch name */
+      bank_branch?: string;
+      /** @description Bank account number */
+      bank_account_number?: string;
+      /**
+       * @description Nature of business
+       * @enum {string}
+       */
+      nature_of_business?: "startup" | "expansion";
+      /** @description Business type categories (auto-creates if not found) */
+      business_type?: (string | number)[];
+      /**
+       * Format: float
+       * @description Years in operation
+       */
+      years_in_operation?: number;
+      /** @description Average monthly income in KES */
+      average_income?: number;
+      /** @description Business expenses */
+      expenses?: {
+        [key: string]: unknown;
+      }[];
+    };
+    GroupMemberInput: {
+      /** @description Member full name */
+      name: string;
+      /** @description National ID number */
+      id_number: string;
+      /** @enum {string} */
+      gender: "male" | "female" | "other";
+      /** @description Phone number */
+      phone_number: string;
+      position?: string | number;
+      photo_member_id?: components["schemas"]["FileUpload"];
+      /** @default false */
+      person_with_disability: boolean;
+      /** @description PWD registration number */
+      pwd_number?: string;
+      certificate_disability?: components["schemas"]["FileUpload"];
+    };
+    FileUpload:
+      | number
+      | string
+      | {
+          /**
+           * @description File name
+           * @example certificate.pdf
+           */
+          filename: string;
+          /**
+           * Format: base64
+           * @description Base64 encoded file content
+           */
+          data: string;
+        };
+    ApplicationPostResponse: {
+      /** @example true */
+      success?: boolean;
+      /** @example Application created successfully */
+      message?: string;
+      data?: {
+        /** @description Entity ID */
+        id?: number;
+        /**
+         * Format: uuid
+         * @description Entity UUID
+         */
+        uuid?: string;
+        /**
+         * @description Application ID
+         * @example APP-20240115-abc12
+         */
+        application_id?: string;
+        /** @description Application status */
+        status?: string;
+        /** @description Group name */
+        group_name?: string;
+        /** @description Creation timestamp */
+        created?: number;
+        /** @description Last modified timestamp */
+        changed?: number;
+      };
     };
     /**
      * Text Block Mapper
@@ -808,7 +1486,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp: number;
               /**
@@ -878,7 +1556,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp: number;
               /**
@@ -953,7 +1631,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp?: number;
               /**
@@ -1008,7 +1686,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp?: number;
               /**
@@ -1098,7 +1776,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp?: number;
               /**
@@ -1155,7 +1833,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp?: number;
               /**
@@ -1222,7 +1900,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp?: number;
               /**
@@ -1290,7 +1968,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp?: number;
               /**
@@ -1359,7 +2037,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1752171455
+               * @example 1753009095
                */
               timestamp?: number;
               /**
@@ -1381,6 +2059,170 @@ export interface operations {
             /** @example Authentication error: Invalid or expired JWT token. */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  "api_auth.otp_request": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Phone number in international format (e.g., +254712345678)
+           * @example +254712345678
+           */
+          phone_number: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OTP request successful */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            data?: components["schemas"]["OtpRequest"];
+            meta?: {
+              /**
+               * @description Unix timestamp of when the response was generated
+               * @example 1753009095
+               */
+              timestamp?: number;
+              /**
+               * @description API version
+               * @example v1
+               */
+              version?: string;
+            };
+          };
+        };
+      };
+      /** @description Invalid request parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Too many attempts - rate limit exceeded */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  "api_auth.otp_verify": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Request ID from the OTP request response
+           * @example req_abc123def456
+           */
+          request_id: string;
+          /**
+           * @description The OTP code received via SMS
+           * @example 123456
+           */
+          otp_code: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OTP verification successful */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            data?: components["schemas"]["OtpVerifyResponse"];
+            meta?: {
+              /**
+               * @description Unix timestamp of when the response was generated
+               * @example 1753009095
+               */
+              timestamp?: number;
+              /**
+               * @description API version
+               * @example v1
+               */
+              version?: string;
+            };
+          };
+        };
+      };
+      /** @description Invalid request parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Invalid OTP code or request ID */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Too many attempts - rate limit exceeded */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  "api_application.taxonomy_vocabularies_get": {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description The language code for the response (e.g., "en", "sw") */
+        "X-Language"?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Taxonomy vocabularies retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @description Taxonomy vocabularies data */
+            data: components["schemas"]["TaxonomyVocabulary"];
+            meta: components["schemas"]["TaxonomyVocabulariesMeta"];
+          };
+        };
+      };
+      /** @description Invalid language code provided */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
     };
@@ -1444,6 +2286,107 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  getApplication: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Application identifier (entity ID, UUID, or application_id) */
+        application_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Application details retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApplicationDetailResponse"];
+        };
+      };
+      /** @description Unauthorized - invalid or missing API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Application not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  createApplication: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ApplicationPostRequest"];
+      };
+    };
+    responses: {
+      /** @description Application created or updated successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApplicationPostResponse"];
+        };
+      };
+      /** @description Bad request - validation failed */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized - invalid or missing API key */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
     };

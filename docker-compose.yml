@@ -7,16 +7,16 @@ services:
     restart: unless-stopped
     ports:
       - 8080
-    networks:
-      - monitoring
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    labels:
-      - "promtail.enable=true"
-      - "promtail.job=uwezo-app"
+    # networks:
+    #   - monitoring
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "10m"
+    #     max-file: "3"
+    # labels:
+    #   - "promtail.enable=true"
+    #   - "promtail.job=uwezo-app"
 
   docs:
     build:
@@ -25,66 +25,65 @@ services:
     restart: unless-stopped
     ports:
       - 80
-    networks:
-      - monitoring
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    labels:
-      - "promtail.enable=true"
-      - "promtail.job=docs-app"
+    # networks:
+    #   - monitoring
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "10m"
+    #     max-file: "3"
+    # labels:
+    #   - "promtail.enable=true"
+    #   - "promtail.job=docs-app"
 
-  # Log storage and processing
-  loki:
-    image: grafana/loki:2.9.0
-    ports:
-      - "3101:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - monitoring
-    volumes:
-      - loki-data:/loki
-    restart: unless-stopped
+  # # Log storage and processing
+  # loki:
+  #   image: grafana/loki:2.9.0
+  #   ports:
+  #     - "3100:3100"
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   networks:
+  #     - monitoring
+  #   volumes:
+  #     - loki-data:/loki
+  #   restart: unless-stopped
 
-  # Log collection agent
-  promtail:
-    image: grafana/promtail:2.9.0
-    volumes:
-      - /var/log:/var/log:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
-    command: -config.file=/etc/promtail/config.yml
-    networks:
-      - monitoring
-    restart: unless-stopped
-    depends_on:
-      - loki
+  # # Log collection agent
+  # promtail:
+  #   image: grafana/promtail:2.9.0
+  #   volumes:
+  #     - /var/log:/var/log:ro
+  #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #     - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
+  #   command: -config.file=/etc/promtail/config.yml
+  #   networks:
+  #     - monitoring
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - loki
 
-  # Log visualization dashboard
-  grafana:
-    image: grafana/grafana:10.0.0
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-      - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./monitoring/dashboards:/var/lib/grafana/dashboards
-    networks:
-      - monitoring
-    restart: unless-stopped
-    depends_on:
-      - loki
+  # # Log visualization dashboard
+  # grafana:
+  #   image: grafana/grafana:10.0.0
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin123
+  #     - GF_USERS_ALLOW_SIGN_UP=false
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #     - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+  #     - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+  #     - ./monitoring/dashboards:/var/lib/grafana/dashboards
+  #   networks:
+  #     - monitoring
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - loki
+# networks:
+#   monitoring:
+#     driver: bridge
 
-networks:
-  monitoring:
-    driver: bridge
-
-volumes:
-  loki-data:
-  grafana-data:
+# volumes:
+#   loki-data:
+#   grafana-data:
