@@ -160,6 +160,88 @@ class ApiAuthSettingsForm extends ConfigFormBase {
       ],
     ];
 
+    // OTP Authentication Settings.
+    $form['otp'] = [
+      '#type' => 'details',
+      '#title' => $this->t('OTP Authentication Settings'),
+      '#open' => FALSE,
+    ];
+
+    $form['otp']['otp_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable OTP Authentication'),
+      '#default_value' => $config->get('otp.enabled') ?? TRUE,
+      '#description' => $this->t('Enable phone number + OTP code authentication.'),
+    ];
+
+    $form['otp']['otp_length'] = [
+      '#type' => 'number',
+      '#title' => $this->t('OTP Code Length'),
+      '#default_value' => $config->get('otp.length') ?? 6,
+      '#min' => 4,
+      '#max' => 8,
+      '#description' => $this->t('Length of the OTP code (4-8 digits).'),
+    ];
+
+    $form['otp']['otp_expiry'] = [
+      '#type' => 'number',
+      '#title' => $this->t('OTP Expiration Time (seconds)'),
+      '#default_value' => $config->get('otp.expiry') ?? 300,
+      '#min' => 60,
+      '#max' => 1800,
+      '#description' => $this->t('How long OTP codes remain valid (60-1800 seconds).'),
+    ];
+
+    $form['otp']['otp_max_attempts'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Maximum Verification Attempts'),
+      '#default_value' => $config->get('otp.max_attempts') ?? 3,
+      '#min' => 1,
+      '#max' => 10,
+      '#description' => $this->t('Maximum number of verification attempts per OTP.'),
+    ];
+
+    $form['otp']['otp_rate_limit'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Phone Rate Limit (requests per hour)'),
+      '#default_value' => $config->get('otp.rate_limit') ?? 5,
+      '#min' => 1,
+      '#max' => 60,
+      '#description' => $this->t('Maximum OTP requests per phone number per hour.'),
+    ];
+
+    $form['otp']['otp_ip_rate_limit'] = [
+      '#type' => 'number',
+      '#title' => $this->t('IP Rate Limit (requests per hour)'),
+      '#default_value' => $config->get('otp.ip_rate_limit') ?? 20,
+      '#min' => 1,
+      '#max' => 200,
+      '#description' => $this->t('Maximum OTP requests per IP address per hour.'),
+    ];
+
+    $form['otp']['otp_message_template'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('SMS Message Template'),
+      '#default_value' => $config->get('otp.message_template') ?? 'Your login code is: [code]',
+      '#description' => $this->t('SMS message template. Use [code] as placeholder for the OTP code.'),
+      '#required' => TRUE,
+    ];
+
+    $form['otp']['otp_user_phone_field'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('User Phone Number Field'),
+      '#default_value' => $config->get('otp.user_phone_field') ?? 'field_phone_number',
+      '#description' => $this->t('Machine name of the phone number field on user entities.'),
+      '#required' => TRUE,
+    ];
+
+    $form['otp']['otp_username_prefix'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Username Prefix for New Users'),
+      '#default_value' => $config->get('otp.username_prefix') ?? 'user_',
+      '#description' => $this->t('Prefix for auto-generated usernames (e.g., user_254712345678).'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -205,6 +287,15 @@ class ApiAuthSettingsForm extends ConfigFormBase {
       ->set('jwt_revoke_tokens_on_password_change', $form_state->getValue('jwt_revoke_tokens_on_password_change'))
       ->set('jwt_store_tokens', $form_state->getValue('jwt_store_tokens'))
       ->set('jwt_token_limit_per_user', $form_state->getValue('jwt_token_limit_per_user'))
+      ->set('otp.enabled', $form_state->getValue('otp_enabled'))
+      ->set('otp.length', $form_state->getValue('otp_length'))
+      ->set('otp.expiry', $form_state->getValue('otp_expiry'))
+      ->set('otp.max_attempts', $form_state->getValue('otp_max_attempts'))
+      ->set('otp.rate_limit', $form_state->getValue('otp_rate_limit'))
+      ->set('otp.ip_rate_limit', $form_state->getValue('otp_ip_rate_limit'))
+      ->set('otp.message_template', $form_state->getValue('otp_message_template'))
+      ->set('otp.user_phone_field', $form_state->getValue('otp_user_phone_field'))
+      ->set('otp.username_prefix', $form_state->getValue('otp_username_prefix'))
       ->save();
 
     // If secrets changed, remove all tokens.

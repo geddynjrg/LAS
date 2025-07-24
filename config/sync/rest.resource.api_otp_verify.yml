@@ -1,0 +1,18 @@
+uuid: 9bdc77fa-8600-48bd-bed4-0a7cc9ed6e03
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_auth
+    - serialization
+id: api_otp_verify
+plugin_id: api_otp_verify
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie
+    - anonymous
