@@ -6,7 +6,7 @@ export const ConfirmedMemberInfoSchema = z.object({
   name: z.string().describe("Member name"),
   phone_number: z.string().describe("Member phone number"),
   confirmation_status: z
-    .enum(["confirmed", "declined"])
+    .enum(["confirmed", "declined", "pending", "sent"])
     .describe("Updated confirmation status"),
   confirmation_confirmed_at: z.coerce
     .number()
@@ -29,7 +29,7 @@ export const MemberConfirmationDataSchema = z.object({
   member: ConfirmedMemberInfoSchema,
   application: ConfirmedApplicationInfoSchema,
   action: z
-    .enum(["confirmed", "declined"])
+    .enum(["confirmed", "declined", "pending", "sent"])
     .optional()
     .describe("The action that was taken"),
   confirmation_timestamp: z.coerce
