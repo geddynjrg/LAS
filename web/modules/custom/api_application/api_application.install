@@ -701,3 +701,101 @@ function api_application_update_11010() {
 
   return t('Group credit history field has been added to the Application entity.');
 }
+
+/**
+ * Add SMS confirmation fields to Group Member entity.
+ */
+function api_application_update_11012() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add confirmation_status field.
+  $confirmation_status = BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Confirmation Status'))
+    ->setDescription(t('The SMS confirmation status of the member.'))
+    ->setDefaultValue('pending')
+    ->setSetting('allowed_values', [
+      'pending' => t('Pending'),
+      'sent' => t('SMS Sent'),
+      'confirmed' => t('Confirmed'),
+      'failed' => t('Failed'),
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'list_default',
+      'weight' => 10,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => 10,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_status', 'group_member', 'api_application', $confirmation_status);
+
+  // Add confirmation_token field.
+  $confirmation_token = BaseFieldDefinition::create('string')
+    ->setLabel(t('Confirmation Token'))
+    ->setDescription(t('Unique token for SMS confirmation link.'))
+    ->setSettings([
+      'max_length' => 255,
+      'text_processing' => 0,
+    ])
+    ->setDisplayConfigurable('view', FALSE)
+    ->setDisplayConfigurable('form', FALSE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_token', 'group_member', 'api_application', $confirmation_token);
+
+  // Add confirmation_sent_at field.
+  $confirmation_sent_at = BaseFieldDefinition::create('timestamp')
+    ->setLabel(t('Confirmation Sent At'))
+    ->setDescription(t('Timestamp when the confirmation SMS was sent.'))
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'timestamp',
+      'weight' => 11,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', FALSE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_sent_at', 'group_member', 'api_application', $confirmation_sent_at);
+
+  // Add confirmation_confirmed_at field.
+  $confirmation_confirmed_at = BaseFieldDefinition::create('timestamp')
+    ->setLabel(t('Confirmation Confirmed At'))
+    ->setDescription(t('Timestamp when the member confirmed via SMS.'))
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'timestamp',
+      'weight' => 12,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', FALSE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_confirmed_at', 'group_member', 'api_application', $confirmation_confirmed_at);
+
+  return t('SMS confirmation fields have been added to the Group Member entity.');
+}
+
+/**
+ * Add declined status option to confirmation_status field.
+ */
+function api_application_update_11013() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // Get the current field storage definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('confirmation_status', 'group_member');
+
+  if ($field_storage_definition) {
+    // Update the allowed values to include 'declined'.
+    $allowed_values = $field_storage_definition->getSetting('allowed_values');
+    if (!isset($allowed_values['declined'])) {
+      $allowed_values['declined'] = t('Declined');
+      $field_storage_definition->setSetting('allowed_values', $allowed_values);
+      $update_manager->updateFieldStorageDefinition($field_storage_definition);
+    }
+  }
+
+  return t('Added declined status option to confirmation_status field.');
+}

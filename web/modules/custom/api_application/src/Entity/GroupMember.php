@@ -267,6 +267,62 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
       ])
       ->setDisplayConfigurable('view', TRUE);
 
+    // SMS Confirmation fields.
+    $fields['confirmation_status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Confirmation Status'))
+      ->setDescription(t('The SMS confirmation status of the member.'))
+      ->setDefaultValue('pending')
+      ->setSetting('allowed_values', [
+        'pending' => t('Pending'),
+        'sent' => t('SMS Sent'),
+        'confirmed' => t('Confirmed'),
+        'declined' => t('Declined'),
+        'failed' => t('Failed'),
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 10,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['confirmation_token'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Confirmation Token'))
+      ->setDescription(t('Unique token for SMS confirmation link.'))
+      ->setSettings([
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setDisplayConfigurable('view', FALSE)
+      ->setDisplayConfigurable('form', FALSE);
+
+    $fields['confirmation_sent_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Confirmation Sent At'))
+      ->setDescription(t('Timestamp when the confirmation SMS was sent.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 11,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', FALSE);
+
+    $fields['confirmation_confirmed_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Confirmation Confirmed At'))
+      ->setDescription(t('Timestamp when the member confirmed via SMS.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 12,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', FALSE);
+
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('The time that the member was created.'));
@@ -396,6 +452,82 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
   public function setApplication(ApplicationInterface $application) {
     $this->set('application', $application->id());
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationStatus() {
+    return $this->get('confirmation_status')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationStatus($status) {
+    $this->set('confirmation_status', $status);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationToken() {
+    return $this->get('confirmation_token')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationToken($token) {
+    $this->set('confirmation_token', $token);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationSentAt() {
+    return $this->get('confirmation_sent_at')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationSentAt($timestamp) {
+    $this->set('confirmation_sent_at', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationConfirmedAt() {
+    return $this->get('confirmation_confirmed_at')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationConfirmedAt($timestamp) {
+    $this->set('confirmation_confirmed_at', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isConfirmed() {
+    return $this->getConfirmationStatus() === 'confirmed';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function generateConfirmationToken() {
+    $token = bin2hex(random_bytes(32));
+    $this->setConfirmationToken($token);
+    return $token;
   }
 
 }

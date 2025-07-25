@@ -221,6 +221,7 @@ function template_preprocess_application(array &$variables) {
         $member = $member_item->entity;
         $position = $member->get('position')->entity;
         $variables['application']['group_members'][] = [
+          'id' => $member->id(),
           'name' => $member->getName(),
           'id_number' => $member->getIdNumber(),
           'gender' => $member->getGender(),
@@ -228,6 +229,10 @@ function template_preprocess_application(array &$variables) {
           'position' => $position ? $position->getName() : '',
           'is_pwd' => $member->isPersonWithDisability(),
           'pwd_number' => $member->getPwdNumber(),
+          'confirmation_status' => $member->getConfirmationStatus(),
+          'confirmation_sent_at' => $member->getConfirmationSentAt(),
+          'confirmation_confirmed_at' => $member->getConfirmationConfirmedAt(),
+          'is_confirmed' => $member->isConfirmed(),
         ];
       }
     }
@@ -426,6 +431,30 @@ function template_preprocess_application(array &$variables) {
     ];
     $variables['application']['rejection_reason_label'] = $rejection_reasons[$variables['application']['rejection_reason']] ?? $variables['application']['rejection_reason'];
   }
+
+  // SMS Confirmation data.
+  $sms_confirmation_service = \Drupal::service('api_application.sms_confirmation');
+  $confirmation_stats = $sms_confirmation_service->getConfirmationStats($application);
+  $variables['confirmation_stats'] = $confirmation_stats;
+  $variables['all_members_confirmed'] = $sms_confirmation_service->areAllMembersConfirmed($application);
+
+  // Generate URLs for SMS actions if user has access.
+  if ($variables['can_update']) {
+    $variables['send_sms_url'] = Url::fromRoute(
+      'api_application.send_confirmation_sms',
+      ['application' => $application->id()]
+    )->toString();
+  }
+
+  // SMS confirmation status labels.
+  $confirmation_status_labels = [
+    'pending' => t('Pending'),
+    'sent' => t('SMS Sent'),
+    'confirmed' => t('Confirmed'),
+    'declined' => t('Declined'),
+    'failed' => t('Failed'),
+  ];
+  $variables['confirmation_status_labels'] = $confirmation_status_labels;
 
   // Helpful $content variable for templates.
   $variables['content'] = [];

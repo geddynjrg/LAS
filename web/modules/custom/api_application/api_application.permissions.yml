@@ -23,3 +23,11 @@ administer group members:
   title: 'Administer group members'
   description: 'Full administrative access to group members.'
   restrict access: true
+
+send sms confirmations:
+  title: 'Send SMS confirmations'
+  description: 'Send SMS confirmation messages to group members.'
+
+view confirmation status:
+  title: 'View confirmation status'
+  description: 'View SMS confirmation status of group members.'

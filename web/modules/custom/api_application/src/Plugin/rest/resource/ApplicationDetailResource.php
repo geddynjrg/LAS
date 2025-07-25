@@ -12,6 +12,7 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Path\PathMatcherInterface;
 use Drupal\path_alias\AliasManagerInterface;
 use Drupal\rest_framework\Service\RestFrameworkFieldMapper;
+use Drupal\api_application\Service\SmsConfirmationService;
 use Drupal\file\FileInterface;
 
 /**
@@ -35,6 +36,13 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
   protected $entityTypeManager;
 
   /**
+   * The SMS confirmation service.
+   *
+   * @var \Drupal\api_application\Service\SmsConfirmationService
+   */
+  protected $smsConfirmationService;
+
+  /**
    * Constructs a new ApplicationDetailResource object.
    */
   public function __construct(
@@ -48,9 +56,11 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
     LanguageManagerInterface $language_manager,
     AliasManagerInterface $alias_manager,
     EntityTypeManagerInterface $entity_type_manager,
+    SmsConfirmationService $sms_confirmation_service,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger, $path_matcher, $field_mapper, $language_manager, $alias_manager);
     $this->entityTypeManager = $entity_type_manager;
+    $this->smsConfirmationService = $sms_confirmation_service;
   }
 
   /**
@@ -67,7 +77,8 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       $container->get('rest_framework.field_mapper'),
       $container->get('language_manager'),
       $container->get('path_alias.manager'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('api_application.sms_confirmation')
     );
   }
 
@@ -295,6 +306,18 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'position' => $this->getTaxonomyData($member->get('position'), TRUE),
       'photo_member_id' => $this->getFileData($member->get('photo_member_id')->entity),
       'person_with_disability' => $member->isPersonWithDisability(),
+      'confirmation' => [
+        'status' => $member->getConfirmationStatus(),
+        'sent_at' => $member->getConfirmationSentAt(),
+        'confirmed_at' => $member->getConfirmationConfirmedAt(),
+        'is_confirmed' => $member->isConfirmed(),
+        'is_declined' => $member->getConfirmationStatus() === 'declined',
+        'urls' => [
+          'api' => $this->smsConfirmationService->getApiConfirmationUrl($member),
+          'frontend' => $this->smsConfirmationService->getFrontendConfirmationUrl($member),
+          'sms' => $this->smsConfirmationService->getFrontendConfirmationUrl($member),
+        ],
+      ],
     ];
 
     if ($member->isPersonWithDisability()) {

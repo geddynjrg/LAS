@@ -164,4 +164,96 @@ interface GroupMemberInterface extends ContentEntityInterface, EntityChangedInte
    */
   public function setApplication(ApplicationInterface $application);
 
+  /**
+   * Gets the confirmation status.
+   *
+   * @return string
+   *   The confirmation status (pending, sent, confirmed, failed).
+   */
+  public function getConfirmationStatus();
+
+  /**
+   * Sets the confirmation status.
+   *
+   * @param string $status
+   *   The confirmation status.
+   *
+   * @return \Drupal\api_application\Entity\GroupMemberInterface
+   *   The called Group Member entity.
+   */
+  public function setConfirmationStatus($status);
+
+  /**
+   * Gets the confirmation token.
+   *
+   * @return string|null
+   *   The confirmation token or NULL if not set.
+   */
+  public function getConfirmationToken();
+
+  /**
+   * Sets the confirmation token.
+   *
+   * @param string $token
+   *   The confirmation token.
+   *
+   * @return \Drupal\api_application\Entity\GroupMemberInterface
+   *   The called Group Member entity.
+   */
+  public function setConfirmationToken($token);
+
+  /**
+   * Gets the timestamp when confirmation SMS was sent.
+   *
+   * @return int|null
+   *   The timestamp or NULL if not sent.
+   */
+  public function getConfirmationSentAt();
+
+  /**
+   * Sets the timestamp when confirmation SMS was sent.
+   *
+   * @param int $timestamp
+   *   The timestamp.
+   *
+   * @return \Drupal\api_application\Entity\GroupMemberInterface
+   *   The called Group Member entity.
+   */
+  public function setConfirmationSentAt($timestamp);
+
+  /**
+   * Gets the timestamp when member confirmed.
+   *
+   * @return int|null
+   *   The timestamp or NULL if not confirmed.
+   */
+  public function getConfirmationConfirmedAt();
+
+  /**
+   * Sets the timestamp when member confirmed.
+   *
+   * @param int $timestamp
+   *   The timestamp.
+   *
+   * @return \Drupal\api_application\Entity\GroupMemberInterface
+   *   The called Group Member entity.
+   */
+  public function setConfirmationConfirmedAt($timestamp);
+
+  /**
+   * Checks if the member is confirmed.
+   *
+   * @return bool
+   *   TRUE if the member is confirmed.
+   */
+  public function isConfirmed();
+
+  /**
+   * Generates a new confirmation token.
+   *
+   * @return string
+   *   The generated token.
+   */
+  public function generateConfirmationToken();
+
 }
