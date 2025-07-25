@@ -8,7 +8,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
-use Drupal\Core\Datetime\TimeInterface;
+use Drupal\Component\Datetime\TimeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\sms_providers\Service\SmsServiceInterface;
 use Drupal\api_application\Entity\GroupMemberInterface;
@@ -58,7 +58,7 @@ class SmsConfirmationService {
   /**
    * The time service.
    *
-   * @var \Drupal\Core\Datetime\TimeInterface
+   * @var \Drupal\Component\Datetime\TimeInterface
    */
   protected $time;
 
@@ -82,7 +82,7 @@ class SmsConfirmationService {
    *   The config factory.
    * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
    *   The cache tags invalidator.
-   * @param \Drupal\Core\Datetime\TimeInterface $time
+   * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time service.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
