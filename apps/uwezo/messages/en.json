@@ -24,6 +24,49 @@
       "actions": "Actions"
     }
   },
+  "ConfirmationPage": {
+    "title": "Loan Application Confirmation",
+    "description": "Please confirm or decline your participation in this loan application",
+    "pageTitle": "Confirm Loan Application",
+    "pageDescription": "Confirm or decline your loan application membership",
+    "memberInformation": "Member Information",
+    "applicationInformation": "Application Information",
+    "memberName": "Name",
+    "phoneNumber": "Phone Number",
+    "currentStatus": "Current Status",
+    "confirmedAt": "Confirmed At",
+    "applicationId": "Application ID",
+    "groupName": "Group Name",
+    "confirmationPrompt": "Do you want to confirm your participation in this loan application?",
+    "confirmationInstructions": "Please review the information above and choose whether to confirm or decline your participation.",
+    "confirmButton": "Confirm",
+    "declineButton": "Decline",
+    "processing": "Processing your response...",
+    "confirmationSuccess": "Confirmation Successful",
+    "declineSuccess": "Declined Successfully",
+    "processedAt": "Processed at",
+    "validatingToken": "Validating confirmation link",
+    "validatingDescription": "Please wait while we verify your confirmation link...",
+    "tryAgain": "Try Again",
+    "tryingAgain": "Trying again...",
+    "errorTitle": "Error",
+    "alreadyResponded": {
+      "title": "Response Already Recorded",
+      "confirmedMessage": "You have already confirmed your participation in this loan application.",
+      "declinedMessage": "You have already declined participation in this loan application.",
+      "thankYou": "Thank you for your response."
+    },
+    "invalidToken": "Invalid or expired confirmation token",
+    "errors": {
+      "invalidTokenFormat": "This confirmation link appears to be invalid. Please check the link and try again.",
+      "tokenExpired": "This confirmation link has expired or is no longer valid. Please request a new confirmation link.",
+      "alreadyProcessed": "You have already responded to this loan application.",
+      "unauthorized": "You are not authorized to access this confirmation.",
+      "networkError": "We're having trouble connecting to our servers. Please check your internet connection and try again.",
+      "unknownError": "We're unable to process your request right now. Please try again or contact support if the problem persists.",
+      "serverError": "We received an unexpected response from our servers. Please try again."
+    }
+  },
   "Common": {
     "menu": "Menu",
     "close": "Close",
@@ -48,6 +91,11 @@
     "myApplications": "My Applications",
     "adminDashboard": "Admin Dashboard",
     "signOut": "Sign out",
+    "status": {
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "pending": "Pending"
+    },
     "resend": "Resend",
     "remove": "Remove",
     "edit": "Edit",

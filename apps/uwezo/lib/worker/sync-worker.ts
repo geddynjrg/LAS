@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db/prisma";
 
 const SYNC_INTERVAL_MINUTES = parseInt(
   process.env.SYNC_INTERVAL_MINUTES || "5",
-  10
+  10,
 );
 
 class SyncWorker {
@@ -11,15 +11,17 @@ class SyncWorker {
   private isProcessing = false;
 
   async start() {
-    console.log(`[SyncWorker] Starting sync worker with ${SYNC_INTERVAL_MINUTES} minute interval`);
-    
+    console.log(
+      `[SyncWorker] Starting sync worker with ${SYNC_INTERVAL_MINUTES} minute interval`,
+    );
+
     // Process immediately on start
     await this.processQueue();
-    
+
     // Set up interval
     this.interval = setInterval(
       () => this.processQueue(),
-      SYNC_INTERVAL_MINUTES * 60 * 1000
+      SYNC_INTERVAL_MINUTES * 60 * 1000,
     );
 
     // Handle graceful shutdown
@@ -29,7 +31,7 @@ class SyncWorker {
 
   async stop() {
     console.log("[SyncWorker] Stopping sync worker...");
-    
+
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = null;
@@ -37,7 +39,7 @@ class SyncWorker {
 
     // Wait for current processing to finish
     while (this.isProcessing) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     await prisma.$disconnect();
@@ -55,8 +57,10 @@ class SyncWorker {
     const startTime = Date.now();
 
     try {
-      console.log(`[SyncWorker] Starting queue processing at ${new Date().toISOString()}`);
-      
+      console.log(
+        `[SyncWorker] Starting queue processing at ${new Date().toISOString()}`,
+      );
+
       // Check for stuck items first
       const stuckItems = await prisma.syncQueue.count({
         where: {
@@ -68,7 +72,9 @@ class SyncWorker {
       });
 
       if (stuckItems > 0) {
-        console.log(`[SyncWorker] Found ${stuckItems} stuck items, resetting...`);
+        console.log(
+          `[SyncWorker] Found ${stuckItems} stuck items, resetting...`,
+        );
         await prisma.syncQueue.updateMany({
           where: {
             status: "PROCESSING",
@@ -85,9 +91,11 @@ class SyncWorker {
 
       // Process the queue
       const result = await processSyncQueue();
-      
+
       const duration = Date.now() - startTime;
-      console.log(`[SyncWorker] Processed ${result.processed} items in ${duration}ms`);
+      console.log(
+        `[SyncWorker] Processed ${result.processed} items in ${duration}ms`,
+      );
 
       // Log statistics
       const stats = await prisma.syncQueue.groupBy({
@@ -95,10 +103,13 @@ class SyncWorker {
         _count: true,
       });
 
-      const statusCounts = stats.reduce((acc, curr) => {
-        acc[curr.status] = curr._count;
-        return acc;
-      }, {} as Record<string, number>);
+      const statusCounts = stats.reduce(
+        (acc, curr) => {
+          acc[curr.status] = curr._count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
       console.log("[SyncWorker] Queue status:", statusCounts);
     } catch (error) {
@@ -115,7 +126,7 @@ const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 
 if (isMainModule) {
   const worker = new SyncWorker();
-  worker.start().catch(error => {
+  worker.start().catch((error) => {
     console.error("[SyncWorker] Failed to start:", error);
     process.exit(1);
   });

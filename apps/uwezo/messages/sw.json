@@ -24,6 +24,49 @@
       "actions": "Vitu"
     }
   },
+  "ConfirmationPage": {
+    "title": "Uthibitisho wa Ombi la Mkopo",
+    "description": "Tafadhali thibitisha au kataa kushiriki katika ombi hili la mkopo",
+    "pageTitle": "Thibitisha Ombi la Mkopo",
+    "pageDescription": "Thibitisha au kataa uanachama wako wa ombi la mkopo",
+    "memberInformation": "Maelezo ya Mshiriki",
+    "applicationInformation": "Maelezo ya Ombi",
+    "memberName": "Jina",
+    "phoneNumber": "Namba ya Simu",
+    "currentStatus": "Hali ya Sasa",
+    "confirmedAt": "Ilithibitishwa",
+    "applicationId": "Namba ya Ombi",
+    "groupName": "Jina la Kikundi",
+    "confirmationPrompt": "Je, ungependa kuthibitisha ushiriki wako katika ombi hili la mkopo?",
+    "confirmationInstructions": "Tafadhali kagua maelezo hapo juu na uchague kuthibitisha au kukataa ushiriki wako.",
+    "confirmButton": "Thibitisha",
+    "declineButton": "Kataa",
+    "processing": "Inachakata jibu lako...",
+    "confirmationSuccess": "Uthibitisho Umefanikiwa",
+    "declineSuccess": "Umekataa Kwa Ufanisi",
+    "processedAt": "Imechakatwa",
+    "validatingToken": "Inathibitisha kiungo cha uthibitisho",
+    "validatingDescription": "Tafadhali subiri tunahakiki kiungo chako cha uthibitisho...",
+    "tryAgain": "Jaribu Tena",
+    "tryingAgain": "Inajaribu tena...",
+    "errorTitle": "Hitilafu",
+    "alreadyResponded": {
+      "title": "Jibu Tayari Limepokelewa",
+      "confirmedMessage": "Tayari umethibitisha ushiriki wako katika ombi hili la mkopo.",
+      "declinedMessage": "Tayari umekataa kushiriki katika ombi hili la mkopo.",
+      "thankYou": "Asante kwa jibu lako."
+    },
+    "invalidToken": "Ishara batili au imeisha muda",
+    "errors": {
+      "invalidTokenFormat": "Kiungo hiki cha uthibitisho kinaonekana kuwa batili. Tafadhali angalia kiungo na ujaribu tena.",
+      "tokenExpired": "Kiungo hiki cha uthibitisho kimeisha muda au hakitumiki tena. Tafadhali omba kiungo kipya cha uthibitisho.",
+      "alreadyProcessed": "Tayari umejibu ombi hili la mkopo.",
+      "unauthorized": "Haunaruhusa ya kufikia uthibitisho huu.",
+      "networkError": "Tunashida kuunganisha na seva zetu. Tafadhali angalia muunganisho wako wa intaneti na ujaribu tena.",
+      "unknownError": "Hatuwezi kuchakata ombi lako kwa sasa. Tafadhali jaribu tena au wasiliana na msaada ikiwa tatizo linaendelea.",
+      "serverError": "Tulipokea jibu lisilotarajiwa kutoka seva zetu. Tafadhali jaribu tena."
+    }
+  },
   "Common": {
     "menu": "Menyu",
     "close": "Funga",
@@ -48,6 +91,11 @@
     "myApplications": "Maombi Yangu",
     "adminDashboard": "Dashibodi ya Admin",
     "signOut": "Ondoka",
+    "status": {
+      "confirmed": "Imethibitishwa",
+      "declined": "Imekataliwa",
+      "pending": "Inasubiri"
+    },
     "resend": "Tuma tena",
     "remove": "Ondoa",
     "edit": "Hariri",
