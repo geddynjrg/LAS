@@ -103,7 +103,11 @@
     "confirm": "Thibitisha",
     "youCanAddMultipleFiles": "Unaweza kuongeza faili nyingi",
     "mustBeValidNumber": "Lazima iwe nambari halali",
-    "pleaseAgreeToTheTerms": "Tafadhali kubali masharti"
+    "pleaseAgreeToTheTerms": "Tafadhali kubali masharti",
+    "loading": {
+      "creatingApplication": "Inaunda ombi lako...",
+      "creatingApplicationDescription": "Tafadhali subiri tukiandaa fomu ya ombi lako."
+    }
   },
 
   "Footer": {

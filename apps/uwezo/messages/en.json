@@ -103,7 +103,11 @@
     "confirm": "Confirm",
     "youCanAddMultipleFiles": "You can add multiple files",
     "mustBeValidNumber": "Must be a valid number",
-    "pleaseAgreeToTheTerms": "Please agree to the terms"
+    "pleaseAgreeToTheTerms": "Please agree to the terms",
+    "loading": {
+      "creatingApplication": "Creating your application...",
+      "creatingApplicationDescription": "Please wait while we prepare your application form."
+    }
   },
 
   "Footer": {
