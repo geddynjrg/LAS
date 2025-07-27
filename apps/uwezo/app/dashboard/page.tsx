@@ -168,8 +168,6 @@ const GroupDetails: FC<GroupDetailsProps> = ({
 
   const contact = siteInfo?.data?.site?.contact || defaultContact;
 
-  console.log(status);
-
   return (
     <Card
       variant="success"
