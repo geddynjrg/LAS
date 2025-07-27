@@ -142,7 +142,11 @@ export async function getApplications() {
         groupData: true,
         members: true,
         loanConditions: true,
-        proposedBusiness: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
         confirmations: true,
       },
       orderBy: { createdAt: "desc" },
@@ -165,7 +169,11 @@ export async function getApplicationById(id: string) {
         groupData: true,
         members: true,
         loanConditions: true,
-        proposedBusiness: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
         confirmations: true,
       },
     });
@@ -466,7 +474,13 @@ export async function updateApplicationProposedBusinessData(
 
     const application = await prisma.application.findUnique({
       where: { applicationId: id },
-      include: { proposedBusiness: true },
+      include: { 
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
+      },
     });
 
     if (!application) {
@@ -489,19 +503,42 @@ export async function updateApplicationProposedBusinessData(
       transportForBusinessStock: data.transportForBusinessStock,
     };
 
+    let proposedBusinessId: string;
+
     // Update or create proposed business
     if (application.proposedBusiness) {
       await prisma.proposedBusiness.update({
         where: { id: application.proposedBusiness.id },
         data: proposedBusinessData,
       });
+      proposedBusinessId = application.proposedBusiness.id;
     } else {
-      await prisma.proposedBusiness.create({
+      const createdProposedBusiness = await prisma.proposedBusiness.create({
         data: {
           ...proposedBusinessData,
           applicationId: application.id,
         },
       });
+      proposedBusinessId = createdProposedBusiness.id;
+    }
+
+    // Handle custom expenses
+    if (data.customExpenses) {
+      // Delete existing custom expenses
+      await prisma.customExpense.deleteMany({
+        where: { proposedBusinessId },
+      });
+
+      // Create new custom expenses
+      if (data.customExpenses.length > 0) {
+        await prisma.customExpense.createMany({
+          data: data.customExpenses.map((expense) => ({
+            proposedBusinessId,
+            name: expense.name,
+            amount: expense.amount,
+          })),
+        });
+      }
     }
 
     // Update application progress
@@ -798,6 +835,10 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
       rentForBusiness: pb.rentForBusiness,
       salaries: pb.salaries,
       transportForBusinessStock: pb.transportForBusinessStock,
+      customExpenses: pb.customExpenses?.map((expense: any) => ({
+        name: expense.name,
+        amount: expense.amount,
+      })) || [],
     };
   }
 

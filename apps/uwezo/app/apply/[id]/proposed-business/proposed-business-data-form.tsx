@@ -1,9 +1,10 @@
 "use client";
 
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconTrash, IconX } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type FC } from "react";
 
+import { Button } from "@workspace/ui/components/button";
 import {
   ButtonGroup,
   ButtonGroupItem,
@@ -19,7 +20,7 @@ import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
 
 import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
 import {
-  proposedBusinessDataSchema,
+  proposedBusinessFormSchema,
   type ProposedBusinessData,
 } from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
 import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
@@ -44,7 +45,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
   const t = useTranslations();
   const [state, formAction, isPending] = useForm(
     action,
-    proposedBusinessDataSchema,
+    proposedBusinessFormSchema,
     {
       averageIncome: applicationBusinessData?.averageIncome,
       businessType: applicationBusinessData?.businessType,
@@ -55,6 +56,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
       transportForBusinessStock:
         applicationBusinessData?.transportForBusinessStock,
       yearsInBusiness: applicationBusinessData?.yearsInBusiness,
+      customExpenses: applicationBusinessData?.customExpenses,
     },
   );
 
@@ -74,21 +76,31 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
     state.values?.transportForBusinessStock,
   );
 
+  const [customExpenses, setCustomExpenses] = useState<
+    { name: string; amount: number }[]
+  >(applicationBusinessData?.customExpenses || []);
+
   const [surplusDeficit, setSurplusDeficit] = useState(
     (averageIncome ?? 0) -
       (costOfGoods ?? 0) -
       (rentForBusiness ?? 0) -
       (salaries ?? 0) -
-      (transportForBusinessStock ?? 0),
+      (transportForBusinessStock ?? 0) -
+      customExpenses.reduce((sum, expense) => sum + expense.amount, 0),
   );
 
   useEffect(() => {
+    const customExpensesTotal = customExpenses.reduce(
+      (sum, expense) => sum + expense.amount,
+      0,
+    );
     setSurplusDeficit(
       (averageIncome ?? 0) -
         (costOfGoods ?? 0) -
         (rentForBusiness ?? 0) -
         (salaries ?? 0) -
-        (transportForBusinessStock ?? 0),
+        (transportForBusinessStock ?? 0) -
+        customExpensesTotal,
     );
   }, [
     averageIncome,
@@ -96,13 +108,18 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
     salaries,
     transportForBusinessStock,
     costOfGoods,
+    customExpenses,
   ]);
 
   const prevUrl = `/apply/${id}/loan-conditions`;
   const nextUrl = `/apply/${id}/confirmations`;
 
   return (
-    <Form action={formAction} autoComplete="on">
+    <Form
+      action={formAction}
+      className="grow-1 flex flex-col justify-between space-y-6"
+      autoComplete="on"
+    >
       <Container className="space-y-8">
         <FormCard
           title={t(
@@ -304,16 +321,92 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
               )}
             />
 
-            {/* TODO: add the option to add custom field, currently missing design */}
-            {/* TODO: Look into how to use button here, currently button ghost adds unneeded styles */}
-            <Underline className="border-b-primary text-primary hover:text-primary hover:cursor-pointer">
-              <IconPlus className="!text-primary" size={20} />
-              <p className="typo-body-medium">
-                {t(
-                  "ApplicationDetailsPage.proposedBusiness.businessPerformance.addCustomField",
-                )}
-              </p>
-            </Underline>
+            {/* Custom Expenses */}
+            {customExpenses.map((expense, index) => (
+              <div key={index} className="flex items-end gap-2">
+                <div className="flex-1">
+                  <Field
+                    name={`customExpense-${index}-name`}
+                    label={t(
+                      "ApplicationDetailsPage.proposedBusiness.businessPerformance.expenseName",
+                    )}
+                    control={(props) => (
+                      <Input
+                        {...props}
+                        value={expense.name}
+                        onValueChange={(value) => {
+                          const updatedExpenses = [...customExpenses];
+                          updatedExpenses[index] = { ...expense, name: value };
+                          setCustomExpenses(updatedExpenses);
+                        }}
+                        placeholder={t(
+                          "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterExpenseName",
+                        )}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Field
+                    name={`customExpense-${index}-amount`}
+                    label={t(
+                      "ApplicationDetailsPage.proposedBusiness.businessPerformance.amount",
+                    )}
+                    control={(props) => (
+                      <Input
+                        {...props}
+                        defaultValue={expense.amount.toString()}
+                        type="tel"
+                        endDecorator="KES"
+                        onValueChange={(value) => {
+                          const updatedExpenses = [...customExpenses];
+                          updatedExpenses[index] = {
+                            ...expense,
+                            amount: parseNumber(value),
+                          };
+                          setCustomExpenses(updatedExpenses);
+                        }}
+                        placeholder={t(
+                          "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                        )}
+                      />
+                    )}
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  onClick={() => {
+                    const updatedExpenses = customExpenses.filter(
+                      (_, i) => i !== index,
+                    );
+                    setCustomExpenses(updatedExpenses);
+                  }}
+                  className="mt-6 p-2"
+                >
+                  <IconTrash className="text-destructive" size={20} />
+                </Button>
+              </div>
+            ))}
+
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={() => {
+                setCustomExpenses([...customExpenses, { name: "", amount: 0 }]);
+              }}
+              className="flex items-center gap-2 p-0"
+            >
+              <Underline className="border-b-primary text-primary hover:text-primary hover:cursor-pointer">
+                <IconPlus className="!text-primary" size={20} />
+                <p className="typo-body-medium">
+                  {t(
+                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.addCustomField",
+                  )}
+                </p>
+              </Underline>
+            </Button>
           </div>
 
           <div className="overflow-hidden border-t border-neutral-400">
@@ -332,6 +425,19 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
       </Container>
 
       <input type="hidden" name="id" value={id} />
+
+      <input
+        type="hidden"
+        name="customExpenses"
+        value={JSON.stringify(
+          customExpenses
+            .filter((expense) => expense.name.trim() !== "")
+            .map((expense) => ({
+              name: expense.name,
+              amount: expense.amount.toString(),
+            })),
+        )}
+      />
 
       <input type="hidden" name="redirectTo" value={nextUrl} />
 

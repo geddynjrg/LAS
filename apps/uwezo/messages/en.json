@@ -395,7 +395,10 @@
         "enterAmount": "Enter amount",
         "goodsServicesCost": "Cost of goods/services per month",
         "rendForBusiness": "Rent for business",
-        "addCustomField": "Add custom field"
+        "addCustomField": "Add custom field",
+        "expenseName": "Expense Name",
+        "enterExpenseName": "Enter expense name",
+        "amount": "Amount"
       }
     }
   },

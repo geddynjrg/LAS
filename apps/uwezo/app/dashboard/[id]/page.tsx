@@ -55,7 +55,14 @@ export default async function Page({ params }: Props) {
       <ApplicationReviewGroupData groupData={data.groupData} />
 
       <ApplicationReviewProposedBusiness
-        businessDetails={data.proposedBusiness}
+        businessDetails={
+          data.proposedBusiness
+            ? {
+                ...data.proposedBusiness,
+                customExpenses: data.proposedBusiness.customExpenses || [],
+              }
+            : undefined
+        }
       />
     </Container>
   );

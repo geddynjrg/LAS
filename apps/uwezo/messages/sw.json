@@ -393,7 +393,10 @@
         "enterAmount": "Ingiza kiasi",
         "goodsServicesCost": "Gharama ya bidhaa/huduma kwa mwezi",
         "rentForBusiness": "Kodi ya biashara",
-        "addCustomField": "Ongeza sehemu maalum"
+        "addCustomField": "Ongeza sehemu maalum",
+        "expenseName": "Jina la Gharama",
+        "enterExpenseName": "Ingiza jina la gharama",
+        "amount": "Kiasi"
       }
     }
   },

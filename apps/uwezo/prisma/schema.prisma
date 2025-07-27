@@ -120,21 +120,35 @@ model LoanConditions {
 }
 
 model ProposedBusiness {
-  id                        String      @id @default(cuid())
-  applicationId             String      @unique
+  id                        String          @id @default(cuid())
+  applicationId             String          @unique
   natureOfBusiness          String
-  businessType              String      @db.LongText
+  businessType              String          @db.LongText
   yearsInBusiness           Int
   averageIncome             Float
   costOfGoods               Float
   rentForBusiness           Float
   salaries                  Float
   transportForBusinessStock Float
-  createdAt                 DateTime    @default(now())
-  updatedAt                 DateTime    @updatedAt
-  application               Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  createdAt                 DateTime        @default(now())
+  updatedAt                 DateTime        @updatedAt
+  application               Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  customExpenses            CustomExpense[]
 
   @@map("proposed_business")
+}
+
+model CustomExpense {
+  id                  String           @id @default(cuid())
+  proposedBusinessId  String
+  name                String
+  amount              Float
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  proposedBusiness    ProposedBusiness @relation(fields: [proposedBusinessId], references: [id], onDelete: Cascade)
+
+  @@index([proposedBusinessId])
+  @@map("custom_expenses")
 }
 
 model Confirmations {
