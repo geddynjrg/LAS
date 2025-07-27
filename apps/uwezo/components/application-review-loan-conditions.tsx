@@ -34,7 +34,15 @@ export const ApplicationReviewLoanConditions: FC<
           <AccordionContent>
             <div className="grid gap-4">
               <DataNode label={t("loan.purposeOfTheLoan")}>
-                {loanConditionsData.purposeOfLoan}
+                {Array.isArray(loanConditionsData.purposeOfLoan) ? (
+                  <div className="space-y-1">
+                    {loanConditionsData.purposeOfLoan.map((purpose, index) => (
+                      <div key={index}>{purpose}</div>
+                    ))}
+                  </div>
+                ) : (
+                  loanConditionsData.purposeOfLoan
+                )}
               </DataNode>
               <DataNode label={t("loan.loanType")}>
                 {loanConditionsData.loanType}

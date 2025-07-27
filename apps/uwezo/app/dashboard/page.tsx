@@ -58,6 +58,7 @@ export default async function Page() {
               groupName={application.groupData?.basics.groupName}
               loanAmount={application.loanConditions?.loanAmount}
               status={application.generalDetails.status}
+              siteInfo={siteInfo}
             />
           ))}
         </div>
@@ -147,6 +148,7 @@ interface GroupDetailsProps extends PropsWithChildren {
   groupName?: string;
   loanAmount?: number;
   status: Status;
+  siteInfo: SiteInformationResponse | null;
 }
 
 const GroupDetails: FC<GroupDetailsProps> = ({
@@ -154,8 +156,19 @@ const GroupDetails: FC<GroupDetailsProps> = ({
   groupName,
   loanAmount,
   status,
+  siteInfo,
 }) => {
   const t = useTranslations("DashboardPage");
+
+  // Fallback contact info (same as footer)
+  const defaultContact = {
+    phone: "+254 0776 154 215",
+    email: "info@uwezo.go.ke",
+  };
+
+  const contact = siteInfo?.data?.site?.contact || defaultContact;
+
+  console.log(status);
 
   return (
     <Card
@@ -221,24 +234,25 @@ const GroupDetails: FC<GroupDetailsProps> = ({
             )}
 
             {/* PENDING */}
-            {status === "PENDING" && (
-              <>
-                <p>{t("stepDescription.pending")}</p>
-                <Link href="#">
-                  <Underline
-                    variant="primary"
-                    className="text-primary hover:cursor-pointer"
-                  >
-                    <p className="mt-4 flex items-center gap-1">
-                      {t.rich("stepDescription.readMorePending", {
-                        lineBreak: () => <br />,
-                      })}
-                      <IconChevronRight width={20} height={20} />
-                    </p>
-                  </Underline>
-                </Link>
-              </>
-            )}
+            {status === "PENDING" ||
+              (status === "SUBMITTED" && (
+                <>
+                  <p>{t("stepDescription.pending")}</p>
+                  <Link href="#">
+                    <Underline
+                      variant="primary"
+                      className="text-primary hover:cursor-pointer"
+                    >
+                      <p className="mt-4 flex items-center gap-1">
+                        {t.rich("stepDescription.readMorePending", {
+                          lineBreak: () => <br />,
+                        })}
+                        <IconChevronRight width={20} height={20} />
+                      </p>
+                    </Underline>
+                  </Link>
+                </>
+              ))}
           </div>
         </div>
       )}
@@ -252,22 +266,24 @@ const GroupDetails: FC<GroupDetailsProps> = ({
           {status === "IN_REVIEW" && <p>{t("processTimeline.inReview")}</p>}
 
           {/* PENDING */}
-          {status === "PENDING" && <p>{t("processTimeline.pending")}</p>}
+          {(status === "PENDING" || status === "SUBMITTED") && (
+            <p>{t("processTimeline.pending")}</p>
+          )}
         </div>
       )}
 
       <div className="mt-4 grid gap-4 border-t border-neutral-400 py-4">
         <h2 className="typo-h5">{t("questions.title")}</h2>
-        <Link href="mailto:mail@mail.com">
+        <Link href={`mailto:${contact.email}`}>
           <Underline variant="primary" className="text-primary gap-x-1">
             <IconMail />
-            <p>email@email.com</p>
+            <p>{contact.email}</p>
           </Underline>
         </Link>
-        <Link href="tel:+254000000000">
+        <Link href={`tel:${contact.phone}`}>
           <Underline variant="primary" className="text-primary gap-x-1">
             <IconPhone />
-            <p>+254 000 000000</p>
+            <p>{contact.phone}</p>
           </Underline>
         </Link>
       </div>

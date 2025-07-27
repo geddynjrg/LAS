@@ -37,7 +37,15 @@ export const ApplicationReviewProposedBusiness: FC<{
                 {businessDetails.natureOfBusiness}
               </DataNode>
               <DataNode label={t("proposedBusiness.businessInfo.businessType")}>
-                {businessDetails.businessType}
+                {Array.isArray(businessDetails.businessType) ? (
+                  <div className="space-y-1">
+                    {businessDetails.businessType.map((type, index) => (
+                      <div key={index}>{type}</div>
+                    ))}
+                  </div>
+                ) : (
+                  businessDetails.businessType
+                )}
               </DataNode>
               <DataNode
                 label={t("proposedBusiness.businessInfo.operationPeriod")}
