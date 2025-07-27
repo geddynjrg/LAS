@@ -93,7 +93,11 @@ async function processSyncItem(queueItemId: string) {
         groupData: true,
         members: true,
         loanConditions: true,
-        proposedBusiness: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
         confirmations: true,
       },
     });
@@ -765,6 +769,17 @@ export async function syncApplication(applicationId: string) {
   try {
     const application = await prisma.application.findUnique({
       where: { applicationId },
+      include: {
+        groupData: true,
+        members: true,
+        loanConditions: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
+        confirmations: true,
+      },
     });
 
     if (!application) {

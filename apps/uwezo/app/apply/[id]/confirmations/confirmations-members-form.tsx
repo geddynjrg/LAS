@@ -115,7 +115,15 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
             <ApplicationReviewGroupData groupData={application.groupData} />
 
             <ApplicationReviewProposedBusiness
-              businessDetails={application.proposedBusiness}
+              businessDetails={
+                application.proposedBusiness
+                  ? {
+                      ...application.proposedBusiness,
+                      customExpenses:
+                        application.proposedBusiness.customExpenses || [],
+                    }
+                  : undefined
+              }
             />
           </FormCard>
         </Container>

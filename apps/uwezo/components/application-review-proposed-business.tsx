@@ -98,6 +98,11 @@ export const ApplicationReviewProposedBusiness: FC<{
                   currency="KES"
                 />
               </DataNode>
+              {businessDetails.customExpenses?.map((expense) => (
+                <DataNode key={expense.name} label={expense.name}>
+                  <Currency amount={expense.amount} currency="KES" />
+                </DataNode>
+              ))}
               <DataNode
                 label={t("proposedBusiness.businessPerformance.netSurplus")}
               >
@@ -107,7 +112,11 @@ export const ApplicationReviewProposedBusiness: FC<{
                     (businessDetails.costOfGoods ?? 0) -
                     (businessDetails.rentForBusiness ?? 0) -
                     (businessDetails.salaries ?? 0) -
-                    (businessDetails.transportForBusinessStock ?? 0)
+                    (businessDetails.transportForBusinessStock ?? 0) -
+                    (businessDetails.customExpenses?.reduce(
+                      (sum, expense) => sum + expense.amount,
+                      0,
+                    ) ?? 0)
                   }
                   currency="KES"
                   signDisplay="always"
