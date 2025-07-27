@@ -7,15 +7,12 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { requireAdmin } from "@/lib/auth/guards";
 
 export interface AdminLayoutProps {
   children?: ReactNode;
 }
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
-  await requireAdmin();
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-50">

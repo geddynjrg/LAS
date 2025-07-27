@@ -73,11 +73,12 @@ export type PasswordResetResponseType = z.infer<
 export const UserProfileResponseSchema = z.object({
   data: z
     .object({
-      email: z.string().optional(),
-      name: z.string().optional(),
+      email: z.string().nullable().optional().transform(val => val ?? undefined),
+      phoneNumber: z.string().nullable().optional().transform(val => val ?? undefined),
+      name: z.string().nullable().optional().transform(val => val ?? undefined),
       roles: z.array(z.string()).optional(),
-      created: z.string().optional(),
-      last_access: z.string().optional(),
+      created: z.string().nullable().optional().transform(val => val ?? undefined),
+      last_access: z.string().nullable().optional().transform(val => val ?? undefined),
     })
     .optional(),
   meta: z

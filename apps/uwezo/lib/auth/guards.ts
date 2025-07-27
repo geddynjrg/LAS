@@ -17,23 +17,29 @@ export async function requireAuth() {
 export async function requireAdmin() {
   const session = await requireAuth();
 
+  // Separate profile fetching from authorization logic
+  let isAdmin = false;
+  
   try {
     // Get user profile from API to check roles
     const profile = await getProfile();
     const roles = profile.data?.roles || [];
 
     // Check if user has admin role (case-insensitive)
-    const isAdmin = roles.some(
+    isAdmin = roles.some(
       (role) =>
         role.toLowerCase() === "admin" ||
         role.toLowerCase() === "administrator",
     );
-
-    if (!isAdmin) {
-      redirect("/dashboard");
-    }
   } catch (error) {
+    // Only log actual profile fetching errors
     console.error("Failed to fetch user profile:", error);
+    // If we can't fetch profile, assume not admin for security
+    isAdmin = false;
+  }
+
+  // Handle authorization after profile fetching is complete
+  if (!isAdmin) {
     redirect("/dashboard");
   }
 
@@ -58,24 +64,29 @@ export async function requireAdminAPI(): Promise<{ session: string } | NextRespo
     return authResult;
   }
 
+  // Separate profile fetching from authorization logic
+  let isAdmin = false;
+
   try {
     // Get user profile from API to check roles
     const profile = await getProfile();
     const roles = profile.data?.roles || [];
 
     // Check if user has admin role (case-insensitive)
-    const isAdmin = roles.some(
+    isAdmin = roles.some(
       (role) =>
         role.toLowerCase() === "admin" ||
         role.toLowerCase() === "administrator",
     );
-
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
   } catch (error) {
+    // Log actual profile fetching errors
     console.error("Failed to fetch user profile:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+
+  // Handle authorization after profile fetching is complete
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   return authResult;

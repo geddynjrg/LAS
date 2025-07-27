@@ -14,6 +14,7 @@ export async function getProfile() {
       return {
         data: {
           email: undefined,
+          phoneNumber: undefined,
           name: undefined,
           roles: [],
           created: undefined,

@@ -33,24 +33,63 @@ async function getCurrentUser() {
 
   try {
     const profile = await getProfile();
-    const userEmail = profile.data?.email;
+    const profileData = profile.data;
 
-    if (!userEmail) {
-      throw new Error("User email not found in profile");
+    if (!profileData) {
+      throw new Error("No profile data found");
     }
 
-    // Get or create user in database
-    let user = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
+    // Priority order for user identification: email > phoneNumber > name
+    let user = null;
 
+    // Try to find user by email first
+    if (profileData.email) {
+      user = await prisma.user.findUnique({
+        where: { email: profileData.email },
+      });
+    }
+
+    // If not found by email, try by phone number
+    if (!user && profileData.phoneNumber) {
+      user = await prisma.user.findUnique({
+        where: { phoneNumber: profileData.phoneNumber },
+      });
+    }
+
+    // If not found by email or phone, try by name
+    if (!user && profileData.name) {
+      user = await prisma.user.findFirst({
+        where: { name: profileData.name },
+      });
+    }
+
+    // Create new user if not found
     if (!user) {
+      // Ensure we have at least one identifier
+      if (!profileData.email && !profileData.phoneNumber && !profileData.name) {
+        throw new Error("No valid user identifier found in profile");
+      }
+
       user = await prisma.user.create({
         data: {
-          email: userEmail,
-          name: profile.data?.name || userEmail,
+          email: profileData.email,
+          phoneNumber: profileData.phoneNumber,
+          name: profileData.name || profileData.email || profileData.phoneNumber || "Unknown User",
         },
       });
+    } else {
+      // Update existing user with any new information from profile
+      const updateData: any = {};
+      if (profileData.email && !user.email) updateData.email = profileData.email;
+      if (profileData.phoneNumber && !user.phoneNumber) updateData.phoneNumber = profileData.phoneNumber;
+      if (profileData.name && !user.name) updateData.name = profileData.name;
+
+      if (Object.keys(updateData).length > 0) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: updateData,
+        });
+      }
     }
 
     return user;

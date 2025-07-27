@@ -3,7 +3,7 @@
 import { IconUserCircle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useMemo, type FC } from "react";
+import { type FC } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -14,21 +14,14 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 
+import { useProfile } from "@/hooks/useProfile";
 import { useSession } from "@/hooks/useSession";
 
 export const ProfileMenu: FC = () => {
   const t = useTranslations("Common");
-  const { isAuthenticated, profile, logout, isLoading } = useSession();
-
-  const isAdmin = useMemo(() => {
-    if (!profile?.roles) return false;
-
-    return profile.roles.some(
-      (role) =>
-        role.toLowerCase() === "admin" ||
-        role.toLowerCase() === "administrator",
-    );
-  }, [profile?.roles]);
+  const { logout } = useSession();
+  const { profile, isAdmin, getDisplayName, isAuthenticated, isLoading } =
+    useProfile();
 
   if (!isAuthenticated || isLoading) {
     return null;
@@ -38,6 +31,8 @@ export const ProfileMenu: FC = () => {
     e.preventDefault();
     await logout();
   };
+
+  const displayName = getDisplayName();
 
   return (
     <DropdownMenu>
@@ -57,9 +52,7 @@ export const ProfileMenu: FC = () => {
       <DropdownMenuContent align="end">
         {profile?.name && (
           <>
-            <div className="px-2 py-1.5 text-sm font-medium">
-              {profile.name}
-            </div>
+            <div className="px-2 py-1.5 text-sm font-medium">{displayName}</div>
             <div className="text-muted-foreground px-2 pb-1.5 text-xs">
               {profile.email}
             </div>
