@@ -526,7 +526,32 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         control={(props) => (
           <Checkbox
             {...props}
-            onValueChange={(value) => setWithDisability(value)}
+            onValueChange={(value) => {
+              setWithDisability(value);
+              if (!value) {
+                // Clear disability data when checkbox is unchecked
+                setMember((member) => ({
+                  ...member,
+                  disability: undefined,
+                }));
+              } else {
+                // Initialize disability object when checkbox is checked
+                // Only initialize if there's no existing disability data
+                if (!member?.disability) {
+                  setMember((member) => ({
+                    ...member,
+                    disability: {
+                      certificateOfDisability: {
+                        fid: undefined,
+                        filename: "",
+                        url: "",
+                      },
+                      pwdNumber: "",
+                    },
+                  }));
+                }
+              }
+            }}
             defaultValue={withDisability}
           >
             {t("MembersPage.personWithDisability")}
@@ -551,6 +576,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                   setMember((member) => ({
                     ...member,
                     disability: {
+                      ...member?.disability,
                       certificateOfDisability: {
                         fid: files[0]?.fid
                           ? parseInt(files[0].fid, 10)
@@ -579,7 +605,12 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                   setMember((member) => ({
                     ...member,
                     disability: {
-                      certificateOfDisability: "",
+                      certificateOfDisability: member?.disability
+                        ?.certificateOfDisability || {
+                        fid: undefined,
+                        filename: "",
+                        url: "",
+                      },
                       pwdNumber: value,
                     },
                   }));
