@@ -221,13 +221,10 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
               <RadioGroup
                 {...props}
                 onValueChange={(val) => setSelectedBankName(val)}
-                options={
-                  taxonomyOptions?.bankName || [
-                    { label: "Bank 1", value: "Bank 1" },
-                    { label: "Better Bank", value: "Better Bank" },
-                    { label: t("Common.other"), value: "Other" },
-                  ]
-                }
+                options={[
+                  ...(taxonomyOptions?.bankName || []),
+                  { label: t("Common.other"), value: "Other" },
+                ]}
               />
             )}
           />
