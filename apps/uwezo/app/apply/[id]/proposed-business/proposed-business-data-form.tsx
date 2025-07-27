@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPlus, IconTrash, IconX } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type FC } from "react";
 
