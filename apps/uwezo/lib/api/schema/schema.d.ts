@@ -255,7 +255,7 @@ export interface paths {
     put?: never;
     /**
      * Create or update a loan application
-     * @description Creates a new loan application or updates an existing one if application_id or group_registration_number matches
+     * @description Creates a new loan application or updates an existing one if application_id or group_registration_number matches. Uses identifier_type with either owner_identifier (for EMAIL/NAME) or phoneNumber (for PHONE) to find or create the application owner in field_phone_number
      */
     post: operations["createApplication"];
     delete?: never;
@@ -356,7 +356,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753610300
+         * @example 1753626306
          */
         timestamp: number;
         /**
@@ -652,7 +652,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753610300
+         * @example 1753626306
          */
         timestamp: number;
         /**
@@ -827,7 +827,7 @@ export interface components {
        */
       timestamp?: number;
     };
-    /** @description Request body for creating or updating an application */
+    /** @description Request body for creating or updating an application. When identifier_type is EMAIL or NAME, use owner_identifier. When identifier_type is PHONE, use phoneNumber. */
     ApplicationPostRequest: {
       /**
        * @description Existing application ID for updates (optional)
@@ -835,11 +835,21 @@ export interface components {
        */
       application_id?: string;
       /**
-       * Format: email
-       * @description Email of the application owner
+       * @description Type of identifier used to identify the application owner
+       * @example EMAIL
+       * @enum {string}
+       */
+      identifier_type: "EMAIL" | "PHONE" | "NAME";
+      /**
+       * @description Identifier of the application owner (email or name, used when identifier_type is EMAIL or NAME)
        * @example user@example.com
        */
-      owner_email: string;
+      owner_identifier?: string;
+      /**
+       * @description Phone number of the application owner (used when identifier_type is PHONE)
+       * @example +254712345678
+       */
+      phone_number?: string;
       /**
        * @description Application status
        * @default draft
@@ -1229,7 +1239,7 @@ export interface components {
     TaxonomyVocabulariesMeta: {
       /**
        * @description Unix timestamp of when the response was generated
-       * @example 1753610300
+       * @example 1753626306
        */
       timestamp: number;
       /**
@@ -1539,7 +1549,7 @@ export interface components {
     SiteInformationMeta: {
       /**
        * @description Unix timestamp of the response
-       * @example 1753610300
+       * @example 1753626306
        */
       timestamp: number;
       /**
@@ -1772,7 +1782,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp: number;
               /**
@@ -1842,7 +1852,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp: number;
               /**
@@ -1917,7 +1927,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -1972,7 +1982,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2062,7 +2072,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2119,7 +2129,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2186,7 +2196,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2256,7 +2266,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2325,7 +2335,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2381,7 +2391,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2444,7 +2454,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753610300
+               * @example 1753626306
                */
               timestamp?: number;
               /**

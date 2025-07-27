@@ -24,6 +24,22 @@ import { handlePrismaError, prisma } from "@/lib/db/prisma";
 import { getSession } from "@/lib/session";
 import { createApplicationId } from "@/lib/util";
 
+// Helper function to safely store JSON data - prevents double encoding
+function safeJsonStringify(data: any): string {
+  // If it's already a string, check if it's valid JSON
+  if (typeof data === "string") {
+    try {
+      JSON.parse(data); // Test if it's valid JSON
+      return data; // Return as-is if it's already a valid JSON string
+    } catch {
+      // If it's not valid JSON, stringify it
+      return JSON.stringify(data);
+    }
+  }
+  // If it's not a string, stringify it
+  return JSON.stringify(data);
+}
+
 // Helper function to get the current authenticated user
 async function getCurrentUser() {
   const session = await getSession();
@@ -244,20 +260,20 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
       groupName: data.basics.groupName,
       groupRegistrationNumber: data.basics.groupRegistrationNumber,
       dateFormed: new Date(data.basics.dateFormed),
-      groupRegistrationCertificate: JSON.stringify(
+      groupRegistrationCertificate: safeJsonStringify(
         groupRegistrationCertificateJson,
       ),
-      listOfMembersOnCertificate: JSON.stringify(
+      listOfMembersOnCertificate: safeJsonStringify(
         listOfMembersOnCertificateJson,
       ),
-      purposeOfTheGroup: JSON.stringify(data.background.purposeOfTheGroup),
-      keyActivitiesOfTheGroup: JSON.stringify(
+      purposeOfTheGroup: safeJsonStringify(data.background.purposeOfTheGroup),
+      keyActivitiesOfTheGroup: safeJsonStringify(
         data.background.keyActivitiesOfTheGroup,
       ),
-      groupCreditHistory: JSON.stringify(groupCreditHistoryJson),
+      groupCreditHistory: safeJsonStringify(groupCreditHistoryJson),
       other: data.background.other,
       valueChain: data.background.valueChain
-        ? JSON.stringify(data.background.valueChain)
+        ? safeJsonStringify(data.background.valueChain)
         : undefined,
       tableBankingExperience:
         data.background.tableBanking?.tableBankingExperience,
@@ -342,9 +358,9 @@ export async function updateApplicationMembersData(
         gender: member.gender as any,
         type: member.type as any,
         phoneNumber: member.phoneNumber || "",
-        photoOfId: JSON.stringify((member.photoOfId as any) || {}),
+        photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
         certificateOfDisability: member.disability?.certificateOfDisability
-          ? JSON.stringify(member.disability.certificateOfDisability as any)
+          ? safeJsonStringify(member.disability.certificateOfDisability as any)
           : null,
         pwdNumber: member.disability?.pwdNumber || null,
         status:
@@ -398,7 +414,7 @@ export async function updateApplicationLoanConditionsData(
     }
 
     const loanConditionsData = {
-      purposeOfLoan: JSON.stringify(data.purposeOfLoan),
+      purposeOfLoan: safeJsonStringify(data.purposeOfLoan),
       loanType: data.loanType,
       loanAmount: data.loanAmount,
       repaymentPeriod: data.repaymentPeriod,
@@ -464,7 +480,7 @@ export async function updateApplicationProposedBusinessData(
 
     const proposedBusinessData = {
       natureOfBusiness: data.natureOfBusiness,
-      businessType: JSON.stringify(data.businessType),
+      businessType: safeJsonStringify(data.businessType),
       yearsInBusiness: data.yearsInBusiness,
       averageIncome: data.averageIncome,
       costOfGoods: data.costOfGoods,
