@@ -72,6 +72,7 @@ export const SidebarProvider: FC<SidebarProviderProps> = ({ children }) => {
 export interface SidebarProps {
   title: string;
   closeTitle?: string;
+  side?: "left" | "right";
   ref?: RefObject<HTMLDivElement>;
   className?: string;
   children?: ReactNode;
@@ -80,6 +81,7 @@ export interface SidebarProps {
 export const Sidebar: FC<SidebarProps> = ({
   title,
   closeTitle,
+  side = "right",
   className,
   children,
   ...props
@@ -96,7 +98,7 @@ export const Sidebar: FC<SidebarProps> = ({
           "bg-sidebar text-sidebar-foreground w-(--sidebar-width,15.5rem) top-0 p-0 [&>button]:hidden",
           className,
         )}
-        side="right"
+        side={side}
       >
         <div className="flex h-full w-full flex-col">
           <div className="border-sidebar-foreground flex min-h-12 justify-end border-b px-1 py-2">

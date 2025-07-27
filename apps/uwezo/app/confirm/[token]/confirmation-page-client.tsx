@@ -51,7 +51,11 @@ export function ConfirmationPageClient({ token }: ConfirmationPageClientProps) {
           result.errors.token?.[0]?.toString() || "Failed to validate token";
         // Check if it's a translation key
         const translatedMessage = errorMessage.startsWith("ConfirmationPage.")
-          ? t(errorMessage.replace("ConfirmationPage.", "") as any)
+          ? t(
+              errorMessage.replace("ConfirmationPage.", "") as Parameters<
+                typeof t
+              >[0],
+            )
           : errorMessage;
         setError(translatedMessage);
         setLoadingState("error");

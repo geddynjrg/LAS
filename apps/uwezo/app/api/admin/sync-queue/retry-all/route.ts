@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { retryAllFailedItems } from "@/lib/api/sync.service";
 import { requireAdmin } from "@/lib/auth/guards";
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Ensure user is admin
     await requireAdmin();

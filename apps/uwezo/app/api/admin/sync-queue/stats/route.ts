@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSyncQueueStatistics } from "@/lib/api/sync.service";
 import { requireAdmin } from "@/lib/auth/guards";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Ensure user is admin
     await requireAdmin();
