@@ -103,6 +103,7 @@ class AuthEndpointsProvider extends OpenApiSchemaProviderBase {
           'roles' => ['authenticated', 'student'],
           'created' => '2023-01-15T10:30:00+03:00',
           'last_access' => '2023-06-20T14:22:45+03:00',
+          'phone_number' => '+254712345678',
         ],
         'meta' => [
           'timestamp' => time(),
@@ -756,6 +757,10 @@ class AuthEndpointsProvider extends OpenApiSchemaProviderBase {
                           'type' => 'string',
                           'format' => 'date-time',
                           'description' => 'Last access date',
+                        ],
+                        'phoneNumber' => [
+                          'type' => 'string',
+                          'description' => 'Phone number',
                         ],
                       ],
                     ],

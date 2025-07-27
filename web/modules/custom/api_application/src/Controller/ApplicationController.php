@@ -424,22 +424,27 @@ class ApplicationController extends ControllerBase {
     $response = ['success' => FALSE];
 
     try {
-      $results = $this->smsConfirmationService->sendConfirmationSmsToAllMembers($application);
+      $results = $application->sendSmsConfirmation('manual_admin');
 
-      $response['success'] = TRUE;
-      $response['message'] = $this->t('SMS sent: @success successful, @failed failed', [
-        '@success' => $results['success'],
-        '@failed' => $results['failed'],
-      ]);
-      $response['results'] = $results;
+      if ($results !== FALSE) {
+        $response['success'] = TRUE;
+        $response['message'] = $this->t('SMS sent: @success successful, @failed failed', [
+          '@success' => $results['success'],
+          '@failed' => $results['failed'],
+        ]);
+        $response['results'] = $results;
 
-      // Log the action.
-      $this->getLogger('api_application')->notice('Confirmation SMS sent to all members of application @id by user @user. Success: @success, Failed: @failed', [
-        '@id' => $application->getApplicationId(),
-        '@user' => $this->currentUser()->getAccountName(),
-        '@success' => $results['success'],
-        '@failed' => $results['failed'],
-      ]);
+        // Log the action.
+        $this->getLogger('api_application')->notice('Confirmation SMS sent to all members of application @id by user @user. Success: @success, Failed: @failed', [
+          '@id' => $application->getApplicationId(),
+          '@user' => $this->currentUser()->getAccountName(),
+          '@success' => $results['success'],
+          '@failed' => $results['failed'],
+        ]);
+      }
+      else {
+        $response['message'] = $this->t('Failed to send SMS - check logs for details');
+      }
 
     }
     catch (\Exception $e) {

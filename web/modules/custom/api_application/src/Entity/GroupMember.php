@@ -2,10 +2,13 @@
 
 namespace Drupal\api_application\Entity;
 
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\file\FileInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * Defines the Group Member entity.
@@ -528,6 +531,89 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
     $token = bin2hex(random_bytes(32));
     $this->setConfirmationToken($token);
     return $token;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    // Handle file organization if not new and has application.
+    if (!$this->isNew() && $this->getApplication()) {
+      $this->organizeGroupMemberFiles();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    // Handle file organization for new group members.
+    if (!$update && $this->getApplication()) {
+      $this->organizeGroupMemberFiles();
+    }
+  }
+
+  /**
+   * Organize group member files into application-specific directories.
+   */
+  protected function organizeGroupMemberFiles() {
+    $application = $this->getApplication();
+
+    if (!$application) {
+      return;
+    }
+
+    $application_id = $application->getApplicationId();
+
+    if (empty($application_id)) {
+      return;
+    }
+
+    $file_fields = [
+      'photo_member_id' => 'member_ids',
+      'certificate_disability' => 'disability_certs',
+    ];
+
+    $file_system = \Drupal::service('file_system');
+    $file_storage = \Drupal::entityTypeManager()->getStorage('file');
+
+    foreach ($file_fields as $field_name => $subdirectory) {
+      if ($this->hasField($field_name) && !$this->get($field_name)->isEmpty()) {
+        $file_id = $this->get($field_name)->target_id;
+
+        if ($file_id) {
+          $file = $file_storage->load($file_id);
+
+          if ($file instanceof FileInterface) {
+            $current_uri = $file->getFileUri();
+
+            // Check if file is already in the correct directory.
+            $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
+
+            if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
+              // Move file to application-specific directory.
+              $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
+              $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
+
+              $filename = $file->getFilename();
+              $new_uri = $new_directory . '/' . $filename;
+
+              // Move the file.
+              $moved_uri = $file_system->move($current_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
+
+              if ($moved_uri) {
+                $file->setFileUri($moved_uri);
+                $file->save();
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
 }
