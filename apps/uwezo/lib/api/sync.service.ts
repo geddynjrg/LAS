@@ -739,7 +739,7 @@ export async function syncApplication(applicationId: string) {
             action: application.externalId
               ? SyncAction.UPDATE
               : SyncAction.CREATE,
-            payload: {},
+            payload: JSON.stringify({}),
             status: QueueStatus.PENDING,
             attempts: 0, // Reset attempts for manual retry
             maxAttempts: 5, // Give more attempts for manual retries
@@ -756,7 +756,7 @@ export async function syncApplication(applicationId: string) {
             action: application.externalId
               ? SyncAction.UPDATE
               : SyncAction.CREATE,
-            payload: {},
+            payload: JSON.stringify({}),
             status: QueueStatus.PENDING,
           },
         });
@@ -821,7 +821,7 @@ export async function addToSyncQueue(
       data: {
         applicationId,
         action,
-        payload: {},
+        payload: JSON.stringify(options || {}),
         status: QueueStatus.PENDING,
         maxAttempts: options?.maxAttempts || 3,
         scheduledFor: options?.priority ? new Date() : new Date(),

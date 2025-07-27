@@ -39,6 +39,16 @@ async function getCurrentUser() {
       throw new Error("No profile data found");
     }
 
+    // Helper function to determine identifier type based on priority
+    const getIdentifierType = (): "EMAIL" | "PHONE" | "NAME" => {
+      if (profileData.email) return "EMAIL";
+      if (profileData.phoneNumber) return "PHONE";
+      if (profileData.name) return "NAME";
+      throw new Error("No valid user identifier found in profile");
+    };
+
+    const identifierType = getIdentifierType();
+
     // Priority order for user identification: email > phoneNumber > name
     let user = null;
 
@@ -65,16 +75,12 @@ async function getCurrentUser() {
 
     // Create new user if not found
     if (!user) {
-      // Ensure we have at least one identifier
-      if (!profileData.email && !profileData.phoneNumber && !profileData.name) {
-        throw new Error("No valid user identifier found in profile");
-      }
-
       user = await prisma.user.create({
         data: {
           email: profileData.email,
           phoneNumber: profileData.phoneNumber,
           name: profileData.name || profileData.email || profileData.phoneNumber || "Unknown User",
+          identifierType: identifierType,
         },
       });
     } else {
@@ -83,6 +89,11 @@ async function getCurrentUser() {
       if (profileData.email && !user.email) updateData.email = profileData.email;
       if (profileData.phoneNumber && !user.phoneNumber) updateData.phoneNumber = profileData.phoneNumber;
       if (profileData.name && !user.name) updateData.name = profileData.name;
+      
+      // Update identifierType if it has changed (e.g., user now has email when they previously only had phone)
+      if (!user.identifierType || user.identifierType !== identifierType) {
+        updateData.identifierType = identifierType;
+      }
 
       if (Object.keys(updateData).length > 0) {
         user = await prisma.user.update({
@@ -172,7 +183,7 @@ export async function createApplication() {
     const generalDetails: GeneralDetails = {
       applicationId: application.applicationId,
       status: application.status as any,
-      user: user.email,
+      user: user.email || user.phoneNumber || user.name || user.id,
       applicationProgress: application.applicationProgress,
     };
 
@@ -227,13 +238,13 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
       groupName: data.basics.groupName,
       groupRegistrationNumber: data.basics.groupRegistrationNumber,
       dateFormed: new Date(data.basics.dateFormed),
-      groupRegistrationCertificate: groupRegistrationCertificateJson,
-      listOfMembersOnCertificate: listOfMembersOnCertificateJson,
-      purposeOfTheGroup: data.background.purposeOfTheGroup,
-      keyActivitiesOfTheGroup: data.background.keyActivitiesOfTheGroup,
-      groupCreditHistory: groupCreditHistoryJson,
+      groupRegistrationCertificate: JSON.stringify(groupRegistrationCertificateJson),
+      listOfMembersOnCertificate: JSON.stringify(listOfMembersOnCertificateJson),
+      purposeOfTheGroup: JSON.stringify(data.background.purposeOfTheGroup),
+      keyActivitiesOfTheGroup: JSON.stringify(data.background.keyActivitiesOfTheGroup),
+      groupCreditHistory: JSON.stringify(groupCreditHistoryJson),
       other: data.background.other,
-      valueChain: data.background.valueChain || undefined,
+      valueChain: data.background.valueChain ? JSON.stringify(data.background.valueChain) : undefined,
       tableBankingExperience:
         data.background.tableBanking?.tableBankingExperience,
       tableBankingShareContribution:
@@ -317,9 +328,11 @@ export async function updateApplicationMembersData(
         gender: member.gender as any,
         type: member.type as any,
         phoneNumber: member.phoneNumber || "",
-        photoOfId: (member.photoOfId as any) || {},
+        photoOfId: JSON.stringify((member.photoOfId as any) || {}),
         certificateOfDisability:
-          (member.disability?.certificateOfDisability as any) || null,
+          member.disability?.certificateOfDisability 
+            ? JSON.stringify(member.disability.certificateOfDisability as any)
+            : null,
         pwdNumber: member.disability?.pwdNumber || null,
         status:
           member.status === "confirmed"
@@ -372,7 +385,7 @@ export async function updateApplicationLoanConditionsData(
     }
 
     const loanConditionsData = {
-      purposeOfLoan: data.purposeOfLoan,
+      purposeOfLoan: JSON.stringify(data.purposeOfLoan),
       loanType: data.loanType,
       loanAmount: data.loanAmount,
       repaymentPeriod: data.repaymentPeriod,
@@ -438,7 +451,7 @@ export async function updateApplicationProposedBusinessData(
 
     const proposedBusinessData = {
       natureOfBusiness: data.natureOfBusiness,
-      businessType: data.businessType,
+      businessType: JSON.stringify(data.businessType),
       yearsInBusiness: data.yearsInBusiness,
       averageIncome: data.averageIncome,
       costOfGoods: data.costOfGoods,
@@ -647,15 +660,27 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         groupName: gd.groupName,
         groupRegistrationNumber: gd.groupRegistrationNumber,
         dateFormed: gd.dateFormed.toISOString().split("T")[0],
-        groupRegistrationCertificate: gd.groupRegistrationCertificate,
-        listOfMembersOnCertificate: gd.listOfMembersOnCertificate,
+        groupRegistrationCertificate: typeof gd.groupRegistrationCertificate === 'string' 
+          ? JSON.parse(gd.groupRegistrationCertificate) 
+          : gd.groupRegistrationCertificate,
+        listOfMembersOnCertificate: typeof gd.listOfMembersOnCertificate === 'string'
+          ? JSON.parse(gd.listOfMembersOnCertificate)
+          : gd.listOfMembersOnCertificate,
       },
       background: {
-        purposeOfTheGroup: gd.purposeOfTheGroup as string[],
-        keyActivitiesOfTheGroup: gd.keyActivitiesOfTheGroup as string[],
-        groupCreditHistory: gd.groupCreditHistory,
+        purposeOfTheGroup: typeof gd.purposeOfTheGroup === 'string' 
+          ? JSON.parse(gd.purposeOfTheGroup) 
+          : gd.purposeOfTheGroup as string[],
+        keyActivitiesOfTheGroup: typeof gd.keyActivitiesOfTheGroup === 'string'
+          ? JSON.parse(gd.keyActivitiesOfTheGroup)
+          : gd.keyActivitiesOfTheGroup as string[],
+        groupCreditHistory: typeof gd.groupCreditHistory === 'string'
+          ? JSON.parse(gd.groupCreditHistory)
+          : gd.groupCreditHistory,
         other: gd.other,
-        valueChain: gd.valueChain as string[] | null,
+        valueChain: gd.valueChain 
+          ? (typeof gd.valueChain === 'string' ? JSON.parse(gd.valueChain) : gd.valueChain as string[])
+          : null,
         tableBanking: {
           tableBankingExperience: gd.tableBankingExperience || undefined,
           tableBankingShareContribution:
@@ -686,10 +711,12 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         gender: m.gender,
         type: m.type,
         phoneNumber: m.phoneNumber,
-        photoOfId: m.photoOfId,
+        photoOfId: typeof m.photoOfId === 'string' ? JSON.parse(m.photoOfId) : m.photoOfId,
         disability: m.certificateOfDisability
           ? {
-              certificateOfDisability: m.certificateOfDisability,
+              certificateOfDisability: typeof m.certificateOfDisability === 'string' 
+                ? JSON.parse(m.certificateOfDisability) 
+                : m.certificateOfDisability,
               pwdNumber: m.pwdNumber,
             }
           : undefined,
@@ -702,7 +729,9 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
   if (dbApplication.loanConditions) {
     const lc = dbApplication.loanConditions;
     result.loanConditions = {
-      purposeOfLoan: lc.purposeOfLoan as string[],
+      purposeOfLoan: typeof lc.purposeOfLoan === 'string' 
+        ? JSON.parse(lc.purposeOfLoan) 
+        : lc.purposeOfLoan as string[],
       loanType: lc.loanType,
       loanAmount: lc.loanAmount,
       repaymentPeriod: lc.repaymentPeriod,
@@ -718,7 +747,9 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     const pb = dbApplication.proposedBusiness;
     result.proposedBusiness = {
       natureOfBusiness: pb.natureOfBusiness,
-      businessType: pb.businessType as string[],
+      businessType: typeof pb.businessType === 'string'
+        ? JSON.parse(pb.businessType)
+        : pb.businessType as string[],
       yearsInBusiness: pb.yearsInBusiness,
       averageIncome: pb.averageIncome,
       costOfGoods: pb.costOfGoods,
