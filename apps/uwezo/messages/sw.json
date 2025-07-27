@@ -274,6 +274,12 @@
     },
     "questions": {
       "title": "Una maswali?"
+    },
+    "emptyState": {
+      "title": "Anza Maombi Yako ya Kwanza",
+      "description": "Bado haujamanza maombi yoyote. Anza safari yako ya kupata msaada wa kifedha kwa kundi lako kwa kuunda maombi yako ya kwanza.",
+      "applyButton": "Anza Maombi Mapya",
+      "helpText": "Unahitaji msaada kuanza?"
     }
   },
   "ApplicationDetailsPage": {

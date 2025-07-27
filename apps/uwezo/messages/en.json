@@ -276,6 +276,12 @@
     },
     "questions": {
       "title": "Do you have questions?"
+    },
+    "emptyState": {
+      "title": "Start Your First Application",
+      "description": "You haven't started any applications yet. Begin your journey to access financial support for your group by creating your first application.",
+      "applyButton": "Start New Application",
+      "helpText": "Need help getting started?"
     }
   },
   "ApplicationDetailsPage": {
