@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getSyncQueueStatistics } from "@/lib/api/sync.service";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdminAPI } from "@/lib/auth/guards";
 
 export async function GET(_request: NextRequest) {
   try {
     // Ensure user is admin
-    await requireAdmin();
+    const authResult = await requireAdminAPI();
+    if (authResult instanceof NextResponse) {
+      return authResult;
+    }
 
     const stats = await getSyncQueueStatistics();
 
