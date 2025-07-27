@@ -14,4 +14,4 @@ export {
 } from "./admin-table";
 export { TablePagination } from "./table-pagination";
 export { TableBadge, StatusBadge, ActionBadge } from "./table-badges";
-export { TableLoadingOverlay } from "./table-loading-overlay"; 
+export { TableLoadingOverlay } from "./table-loading-overlay";

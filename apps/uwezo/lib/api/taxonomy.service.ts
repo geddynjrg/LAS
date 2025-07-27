@@ -189,23 +189,31 @@ export async function syncTaxonomyVocabularies() {
       // Second pass: Create all unique terms using upsert for safety
       for (const { term, vocabularyId } of uniqueTerms.values()) {
         // Transform and validate data before inserting - all fields must be valid JSON
-        const descriptionContent = typeof term.description === 'object' 
-          ? (term.description?.processed || term.description?.value || term.name || 'No description available')
-          : String(term.description || term.name || 'No description available');
-        
+        const descriptionContent =
+          typeof term.description === "object"
+            ? term.description?.processed ||
+              term.description?.value ||
+              term.name ||
+              "No description available"
+            : String(
+                term.description || term.name || "No description available",
+              );
+
         // Ensure description is not empty and convert to JSON string
-        const finalDescriptionContent = descriptionContent.trim() || term.name || 'No description available';
+        const finalDescriptionContent =
+          descriptionContent.trim() || term.name || "No description available";
         const description = JSON.stringify(finalDescriptionContent);
-        
-        const parentIds = Array.isArray(term.parent_ids) 
+
+        const parentIds = Array.isArray(term.parent_ids)
           ? JSON.stringify(term.parent_ids)
           : JSON.stringify(term.parent_ids || []);
-        
-        const languageContent = typeof term.language === 'object'
-          ? (term.language?.code || 'en')  // Default to 'en' if no code
-          : String(term.language || 'en');  // Default to 'en' if empty
+
+        const languageContent =
+          typeof term.language === "object"
+            ? term.language?.code || "en" // Default to 'en' if no code
+            : String(term.language || "en"); // Default to 'en' if empty
         const language = JSON.stringify(languageContent);
-        
+
         try {
           await tx.taxonomyTerm.upsert({
             where: { uuid: term.uuid },
@@ -234,19 +242,22 @@ export async function syncTaxonomyVocabularies() {
         } catch (termError) {
           console.error(`Failed to upsert term ${term.uuid}:`, {
             termData: { ...term, vocabularyId },
-            transformedData: { 
-              description: finalDescriptionContent, 
-              parentIds, 
+            transformedData: {
+              description: finalDescriptionContent,
+              parentIds,
               language: languageContent,
               descriptionLength: finalDescriptionContent.length,
               descriptionPreview: finalDescriptionContent.substring(0, 200),
               hasSpecialChars: /[^\x00-\x7F]/.test(finalDescriptionContent),
               encodingInfo: {
-                utf8Length: Buffer.from(finalDescriptionContent, 'utf8').length,
-                charCodes: finalDescriptionContent.split('').slice(0, 20).map((c: string) => c.charCodeAt(0))
-              }
+                utf8Length: Buffer.from(finalDescriptionContent, "utf8").length,
+                charCodes: finalDescriptionContent
+                  .split("")
+                  .slice(0, 20)
+                  .map((c: string) => c.charCodeAt(0)),
+              },
             },
-            error: termError
+            error: termError,
           });
           throw termError;
         }

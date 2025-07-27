@@ -12,12 +12,15 @@ const loggedOutRedirect = "/login";
 // Helper function to check if user has admin role
 async function isUserAdmin(session: string): Promise<boolean> {
   try {
-    const response = await fetch(`${process.env.NEXT_API_URL}/api/v1/user/profile`, {
-      headers: {
-        'Authorization': `Bearer ${session}`,
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${process.env.NEXT_API_URL}/api/v1/user/profile`,
+      {
+        headers: {
+          Authorization: `Bearer ${session}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       return false;
@@ -25,9 +28,11 @@ async function isUserAdmin(session: string): Promise<boolean> {
 
     const data = await response.json();
     const roles = data.data?.roles || [];
-    
-    return roles.some((role: string) => 
-      role.toLowerCase() === "admin" || role.toLowerCase() === "administrator"
+
+    return roles.some(
+      (role: string) =>
+        role.toLowerCase() === "admin" ||
+        role.toLowerCase() === "administrator",
     );
   } catch (error) {
     console.error("Error checking admin role in middleware:", error);
@@ -73,7 +78,7 @@ export async function middleware(request: NextRequest) {
   // Admin route protection - check roles at middleware level for fastest redirect
   if (isAdminRoute && session) {
     const isAdmin = await isUserAdmin(session);
-    
+
     if (!isAdmin) {
       return NextResponse.redirect(new URL(loggedInRedirect, request.nextUrl), {
         headers: requestHeaders,

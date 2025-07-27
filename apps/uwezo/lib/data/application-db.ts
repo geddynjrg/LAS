@@ -79,17 +79,23 @@ async function getCurrentUser() {
         data: {
           email: profileData.email,
           phoneNumber: profileData.phoneNumber,
-          name: profileData.name || profileData.email || profileData.phoneNumber || "Unknown User",
+          name:
+            profileData.name ||
+            profileData.email ||
+            profileData.phoneNumber ||
+            "Unknown User",
           identifierType: identifierType,
         },
       });
     } else {
       // Update existing user with any new information from profile
       const updateData: any = {};
-      if (profileData.email && !user.email) updateData.email = profileData.email;
-      if (profileData.phoneNumber && !user.phoneNumber) updateData.phoneNumber = profileData.phoneNumber;
+      if (profileData.email && !user.email)
+        updateData.email = profileData.email;
+      if (profileData.phoneNumber && !user.phoneNumber)
+        updateData.phoneNumber = profileData.phoneNumber;
       if (profileData.name && !user.name) updateData.name = profileData.name;
-      
+
       // Update identifierType if it has changed (e.g., user now has email when they previously only had phone)
       if (!user.identifierType || user.identifierType !== identifierType) {
         updateData.identifierType = identifierType;
@@ -238,13 +244,21 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
       groupName: data.basics.groupName,
       groupRegistrationNumber: data.basics.groupRegistrationNumber,
       dateFormed: new Date(data.basics.dateFormed),
-      groupRegistrationCertificate: JSON.stringify(groupRegistrationCertificateJson),
-      listOfMembersOnCertificate: JSON.stringify(listOfMembersOnCertificateJson),
+      groupRegistrationCertificate: JSON.stringify(
+        groupRegistrationCertificateJson,
+      ),
+      listOfMembersOnCertificate: JSON.stringify(
+        listOfMembersOnCertificateJson,
+      ),
       purposeOfTheGroup: JSON.stringify(data.background.purposeOfTheGroup),
-      keyActivitiesOfTheGroup: JSON.stringify(data.background.keyActivitiesOfTheGroup),
+      keyActivitiesOfTheGroup: JSON.stringify(
+        data.background.keyActivitiesOfTheGroup,
+      ),
       groupCreditHistory: JSON.stringify(groupCreditHistoryJson),
       other: data.background.other,
-      valueChain: data.background.valueChain ? JSON.stringify(data.background.valueChain) : undefined,
+      valueChain: data.background.valueChain
+        ? JSON.stringify(data.background.valueChain)
+        : undefined,
       tableBankingExperience:
         data.background.tableBanking?.tableBankingExperience,
       tableBankingShareContribution:
@@ -329,10 +343,9 @@ export async function updateApplicationMembersData(
         type: member.type as any,
         phoneNumber: member.phoneNumber || "",
         photoOfId: JSON.stringify((member.photoOfId as any) || {}),
-        certificateOfDisability:
-          member.disability?.certificateOfDisability 
-            ? JSON.stringify(member.disability.certificateOfDisability as any)
-            : null,
+        certificateOfDisability: member.disability?.certificateOfDisability
+          ? JSON.stringify(member.disability.certificateOfDisability as any)
+          : null,
         pwdNumber: member.disability?.pwdNumber || null,
         status:
           member.status === "confirmed"
@@ -660,26 +673,33 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         groupName: gd.groupName,
         groupRegistrationNumber: gd.groupRegistrationNumber,
         dateFormed: gd.dateFormed.toISOString().split("T")[0],
-        groupRegistrationCertificate: typeof gd.groupRegistrationCertificate === 'string' 
-          ? JSON.parse(gd.groupRegistrationCertificate) 
-          : gd.groupRegistrationCertificate,
-        listOfMembersOnCertificate: typeof gd.listOfMembersOnCertificate === 'string'
-          ? JSON.parse(gd.listOfMembersOnCertificate)
-          : gd.listOfMembersOnCertificate,
+        groupRegistrationCertificate:
+          typeof gd.groupRegistrationCertificate === "string"
+            ? JSON.parse(gd.groupRegistrationCertificate)
+            : gd.groupRegistrationCertificate,
+        listOfMembersOnCertificate:
+          typeof gd.listOfMembersOnCertificate === "string"
+            ? JSON.parse(gd.listOfMembersOnCertificate)
+            : gd.listOfMembersOnCertificate,
       },
       background: {
-        purposeOfTheGroup: typeof gd.purposeOfTheGroup === 'string' 
-          ? JSON.parse(gd.purposeOfTheGroup) 
-          : gd.purposeOfTheGroup as string[],
-        keyActivitiesOfTheGroup: typeof gd.keyActivitiesOfTheGroup === 'string'
-          ? JSON.parse(gd.keyActivitiesOfTheGroup)
-          : gd.keyActivitiesOfTheGroup as string[],
-        groupCreditHistory: typeof gd.groupCreditHistory === 'string'
-          ? JSON.parse(gd.groupCreditHistory)
-          : gd.groupCreditHistory,
+        purposeOfTheGroup:
+          typeof gd.purposeOfTheGroup === "string"
+            ? JSON.parse(gd.purposeOfTheGroup)
+            : (gd.purposeOfTheGroup as string[]),
+        keyActivitiesOfTheGroup:
+          typeof gd.keyActivitiesOfTheGroup === "string"
+            ? JSON.parse(gd.keyActivitiesOfTheGroup)
+            : (gd.keyActivitiesOfTheGroup as string[]),
+        groupCreditHistory:
+          typeof gd.groupCreditHistory === "string"
+            ? JSON.parse(gd.groupCreditHistory)
+            : gd.groupCreditHistory,
         other: gd.other,
-        valueChain: gd.valueChain 
-          ? (typeof gd.valueChain === 'string' ? JSON.parse(gd.valueChain) : gd.valueChain as string[])
+        valueChain: gd.valueChain
+          ? typeof gd.valueChain === "string"
+            ? JSON.parse(gd.valueChain)
+            : (gd.valueChain as string[])
           : null,
         tableBanking: {
           tableBankingExperience: gd.tableBankingExperience || undefined,
@@ -711,12 +731,16 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         gender: m.gender,
         type: m.type,
         phoneNumber: m.phoneNumber,
-        photoOfId: typeof m.photoOfId === 'string' ? JSON.parse(m.photoOfId) : m.photoOfId,
+        photoOfId:
+          typeof m.photoOfId === "string"
+            ? JSON.parse(m.photoOfId)
+            : m.photoOfId,
         disability: m.certificateOfDisability
           ? {
-              certificateOfDisability: typeof m.certificateOfDisability === 'string' 
-                ? JSON.parse(m.certificateOfDisability) 
-                : m.certificateOfDisability,
+              certificateOfDisability:
+                typeof m.certificateOfDisability === "string"
+                  ? JSON.parse(m.certificateOfDisability)
+                  : m.certificateOfDisability,
               pwdNumber: m.pwdNumber,
             }
           : undefined,
@@ -729,9 +753,10 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
   if (dbApplication.loanConditions) {
     const lc = dbApplication.loanConditions;
     result.loanConditions = {
-      purposeOfLoan: typeof lc.purposeOfLoan === 'string' 
-        ? JSON.parse(lc.purposeOfLoan) 
-        : lc.purposeOfLoan as string[],
+      purposeOfLoan:
+        typeof lc.purposeOfLoan === "string"
+          ? JSON.parse(lc.purposeOfLoan)
+          : (lc.purposeOfLoan as string[]),
       loanType: lc.loanType,
       loanAmount: lc.loanAmount,
       repaymentPeriod: lc.repaymentPeriod,
@@ -747,9 +772,10 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     const pb = dbApplication.proposedBusiness;
     result.proposedBusiness = {
       natureOfBusiness: pb.natureOfBusiness,
-      businessType: typeof pb.businessType === 'string'
-        ? JSON.parse(pb.businessType)
-        : pb.businessType as string[],
+      businessType:
+        typeof pb.businessType === "string"
+          ? JSON.parse(pb.businessType)
+          : (pb.businessType as string[]),
       yearsInBusiness: pb.yearsInBusiness,
       averageIncome: pb.averageIncome,
       costOfGoods: pb.costOfGoods,

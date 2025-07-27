@@ -19,7 +19,7 @@ export async function requireAdmin() {
 
   // Separate profile fetching from authorization logic
   let isAdmin = false;
-  
+
   try {
     // Get user profile from API to check roles
     const profile = await getProfile();
@@ -47,7 +47,9 @@ export async function requireAdmin() {
 }
 
 // API-specific guards that return NextResponse instead of redirects
-export async function requireAuthAPI(): Promise<{ session: string } | NextResponse> {
+export async function requireAuthAPI(): Promise<
+  { session: string } | NextResponse
+> {
   const session = await getSession();
 
   if (!session) {
@@ -57,9 +59,11 @@ export async function requireAuthAPI(): Promise<{ session: string } | NextRespon
   return { session };
 }
 
-export async function requireAdminAPI(): Promise<{ session: string } | NextResponse> {
+export async function requireAdminAPI(): Promise<
+  { session: string } | NextResponse
+> {
   const authResult = await requireAuthAPI();
-  
+
   if (authResult instanceof NextResponse) {
     return authResult;
   }
@@ -81,7 +85,10 @@ export async function requireAdminAPI(): Promise<{ session: string } | NextRespo
   } catch (error) {
     // Log actual profile fetching errors
     console.error("Failed to fetch user profile:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 
   // Handle authorization after profile fetching is complete
