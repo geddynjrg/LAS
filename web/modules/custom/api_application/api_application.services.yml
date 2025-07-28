@@ -6,3 +6,14 @@ services:
       - '@file_system'
       - '@logger.factory'
       - '@file.usage'
+
+  api_application.sms_confirmation:
+    class: Drupal\api_application\Service\SmsConfirmationService
+    arguments:
+      - '@entity_type.manager'
+      - '@sms_providers.sms_service'
+      - '@logger.factory'
+      - '@config.factory'
+      - '@cache_tags.invalidator'
+      - '@datetime.time'
+      - '@request_stack'

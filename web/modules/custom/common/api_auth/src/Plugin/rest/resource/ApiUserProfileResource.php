@@ -133,6 +133,10 @@ class ApiUserProfileResource extends ResourceBase {
         ],
       ];
 
+      if ($user->hasField('field_phone_number')) {
+        $response_data['data']['phoneNumber'] = $user->get('field_phone_number')->value;
+      }
+
       $this->logger->info('User profile retrieved for user @uid', [
         '@uid' => $user->id(),
       ]);

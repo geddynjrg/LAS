@@ -4,6 +4,11 @@ application_prefix: APP-
 api_key: 0eb29f8d-7dcc-48b2-aae9-1d21eeae3f4a
 max_file_size: 5MB
 allowed_extensions: 'pdf jpg jpeg png webp'
+sms_confirmation_enabled: true
+sms_confirmation_message: ''
+auto_send_sms: true
+frontend_base_url: 'https://uwezo.uwezo_e-services-fe-qa.fusion.adm.ee'
+frontend_confirmation_path: '/confirm/{token}'
 instructions:
   title: 'What you need to know before applying'
   body:

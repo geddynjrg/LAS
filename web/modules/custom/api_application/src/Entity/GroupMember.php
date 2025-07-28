@@ -2,10 +2,13 @@
 
 namespace Drupal\api_application\Entity;
 
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\file\FileInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * Defines the Group Member entity.
@@ -267,6 +270,62 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
       ])
       ->setDisplayConfigurable('view', TRUE);
 
+    // SMS Confirmation fields.
+    $fields['confirmation_status'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Confirmation Status'))
+      ->setDescription(t('The SMS confirmation status of the member.'))
+      ->setDefaultValue('pending')
+      ->setSetting('allowed_values', [
+        'pending' => t('Pending'),
+        'sent' => t('SMS Sent'),
+        'confirmed' => t('Confirmed'),
+        'declined' => t('Declined'),
+        'failed' => t('Failed'),
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'list_default',
+        'weight' => 10,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['confirmation_token'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Confirmation Token'))
+      ->setDescription(t('Unique token for SMS confirmation link.'))
+      ->setSettings([
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setDisplayConfigurable('view', FALSE)
+      ->setDisplayConfigurable('form', FALSE);
+
+    $fields['confirmation_sent_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Confirmation Sent At'))
+      ->setDescription(t('Timestamp when the confirmation SMS was sent.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 11,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', FALSE);
+
+    $fields['confirmation_confirmed_at'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Confirmation Confirmed At'))
+      ->setDescription(t('Timestamp when the member confirmed via SMS.'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 12,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', FALSE);
+
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('The time that the member was created.'));
@@ -396,6 +455,165 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
   public function setApplication(ApplicationInterface $application) {
     $this->set('application', $application->id());
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationStatus() {
+    return $this->get('confirmation_status')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationStatus($status) {
+    $this->set('confirmation_status', $status);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationToken() {
+    return $this->get('confirmation_token')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationToken($token) {
+    $this->set('confirmation_token', $token);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationSentAt() {
+    return $this->get('confirmation_sent_at')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationSentAt($timestamp) {
+    $this->set('confirmation_sent_at', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmationConfirmedAt() {
+    return $this->get('confirmation_confirmed_at')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfirmationConfirmedAt($timestamp) {
+    $this->set('confirmation_confirmed_at', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isConfirmed() {
+    return $this->getConfirmationStatus() === 'confirmed';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function generateConfirmationToken() {
+    $token = bin2hex(random_bytes(32));
+    $this->setConfirmationToken($token);
+    return $token;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    // Handle file organization if not new and has application.
+    if (!$this->isNew() && $this->getApplication()) {
+      $this->organizeGroupMemberFiles();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    // Handle file organization for new group members.
+    if (!$update && $this->getApplication()) {
+      $this->organizeGroupMemberFiles();
+    }
+  }
+
+  /**
+   * Organize group member files into application-specific directories.
+   */
+  protected function organizeGroupMemberFiles() {
+    $application = $this->getApplication();
+
+    if (!$application) {
+      return;
+    }
+
+    $application_id = $application->getApplicationId();
+
+    if (empty($application_id)) {
+      return;
+    }
+
+    $file_fields = [
+      'photo_member_id' => 'member_ids',
+      'certificate_disability' => 'disability_certs',
+    ];
+
+    $file_system = \Drupal::service('file_system');
+    $file_storage = \Drupal::entityTypeManager()->getStorage('file');
+
+    foreach ($file_fields as $field_name => $subdirectory) {
+      if ($this->hasField($field_name) && !$this->get($field_name)->isEmpty()) {
+        $file_id = $this->get($field_name)->target_id;
+
+        if ($file_id) {
+          $file = $file_storage->load($file_id);
+
+          if ($file instanceof FileInterface) {
+            $current_uri = $file->getFileUri();
+
+            // Check if file is already in the correct directory.
+            $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
+
+            if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
+              // Move file to application-specific directory.
+              $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
+              $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
+
+              $filename = $file->getFilename();
+              $new_uri = $new_directory . '/' . $filename;
+
+              // Move the file.
+              $moved_uri = $file_system->move($current_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
+
+              if ($moved_uri) {
+                $file->setFileUri($moved_uri);
+                $file->save();
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
 }

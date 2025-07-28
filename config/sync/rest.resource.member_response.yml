@@ -1,0 +1,18 @@
+uuid: 78929885-c52c-4657-95ba-4ff3fafaf34a
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+    - user
+id: member_response
+plugin_id: member_response
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie
