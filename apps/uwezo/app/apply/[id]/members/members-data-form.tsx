@@ -421,7 +421,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             {...props}
             defaultValue={member?.gender}
             type="single"
-            onValueChange={(value) => {
+            onValueChange={(value: string) => {
               setMember((member) => ({
                 ...member,
                 gender: value as GenderType,

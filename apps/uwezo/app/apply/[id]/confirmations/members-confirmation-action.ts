@@ -1,5 +1,7 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import type { FormAction } from "@workspace/ui/hooks/use-form";
 
 import { type MembersConfirmationData } from "@/app/apply/[id]/confirmations/members-confirmation-schema";
@@ -9,6 +11,7 @@ export const membersConfirmationDataAction: FormAction<
   MembersConfirmationData
 > = async (_prev, formData) => {
   const id = formData.get("id")?.toString();
+  const redirectTo = formData.get("redirectTo")?.toString();
 
   // currently unused but will leave for future use
   let membersConfirmation;
@@ -36,6 +39,10 @@ export const membersConfirmationDataAction: FormAction<
 
   /* Emulate members confirmations sent out and accepted */
   const members = await updateApplicationMembersConfirmationData(id);
+
+  if (redirectTo) {
+    redirect(redirectTo);
+  }
 
   return {
     success: true,

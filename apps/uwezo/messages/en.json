@@ -406,6 +406,7 @@
     "title": "Confirmations",
     "form-title-declarations": "Group declaration",
     "form-title-members": "Group confirmation",
+    "form-title-group": "Group confirmation",
     "confirmationDataForm": {
       "group-member": "We confirm we are members of this group",
       "declare-true-information": "Declare that the information provided herein is true to the best of our knowledge. We further authorize Uwezo Fund to verify the information given herein and make reference provided here in.",
@@ -417,6 +418,15 @@
       "progress-saved": "You can safely close the browser page and come back to it later. Your progress has been saved, <strong>you will be notified via SMS once enough members have confirmed to proceed.</strong>",
       "select-members": "Select members undertaking the loan",
       "select-all": "Select all members",
+      "send-to-members": "Send to members for confirmation",
+      "confirmed-members": "{confirmed}/{total} members have confirmed"
+    },
+    "groupConfirmationForm": {
+      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, the members undertaking the loan will be informed through their phones that they need to give consent. Once two thirds of them have given consent, you can move to the final step.",
+      "progress-saved": "You can safely close the browser page and come back to it later. Your progress has been saved, <strong>you will be notified via SMS once enough members have confirmed to proceed.</strong>",
+      "select-members": "Select members undertaking the loan",
+      "select-all": "Select all members",
+      "deselect-all": "Deselect all members",
       "send-to-members": "Send to members for confirmation",
       "confirmed-members": "{confirmed}/{total} members have confirmed"
     }

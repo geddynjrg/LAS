@@ -50,6 +50,11 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
       title: t("ApplicationDetailsPage.groupData.steps.confirmations"),
       path: "/confirmations",
     },
+    {
+      index: 6,
+      title: t("ReviewPage.title"),
+      path: "/review",
+    },
   ];
 
   return (

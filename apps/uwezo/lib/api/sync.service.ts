@@ -664,6 +664,7 @@ async function transformApplicationForExternalApi(
       certificate_disability: await transformSingleFile(
         member.certificateOfDisability,
       ),
+      requires_confirmation: member.requiresConfirmation || false,
     })),
   );
 
@@ -725,7 +726,11 @@ async function transformApplicationForExternalApi(
     loan_type: extractValue(application.loanConditions?.loanType),
     loan_amount: application.loanConditions?.loanAmount,
     proposed_repayment_period: application.loanConditions?.repaymentPeriod,
-    bank_name: extractValue(application.loanConditions?.bankName === "Other" ? application.loanConditions?.bankNameOther : application.loanConditions?.bankName),
+    bank_name: extractValue(
+      application.loanConditions?.bankName === "Other"
+        ? application.loanConditions?.bankNameOther
+        : application.loanConditions?.bankName,
+    ),
     bank_branch: application.loanConditions?.bankBranch,
     bank_account_number: application.loanConditions?.accountNumber,
 
@@ -749,12 +754,12 @@ async function transformApplicationForExternalApi(
                 // Convert expense name to a valid field name (snake_case, no spaces)
                 const fieldName = expense.name
                   .toLowerCase()
-                  .replace(/\s+/g, '_')
-                  .replace(/[^a-z0-9_]/g, '');
+                  .replace(/\s+/g, "_")
+                  .replace(/[^a-z0-9_]/g, "");
                 acc[fieldName] = expense.amount;
                 return acc;
               },
-              {}
+              {},
             ) || {}),
           },
         ]

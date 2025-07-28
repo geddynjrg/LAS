@@ -23,11 +23,13 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
   return (
     <ActionBar className="mt-8">
       <div className="mx-auto flex flex-row items-center gap-4">
-        <Button variant="secondary" asChild type="button">
-          <div>
-            <IconArrowLeft />
-            {t("Common.back")}
-          </div>
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={() => router.push(`/apply/${id}/confirmations`)}
+        >
+          <IconArrowLeft />
+          {t("Common.back")}
         </Button>
         <ModalButton
           onConfirm={async () => {

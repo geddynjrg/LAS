@@ -53,7 +53,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
           )}
         </Button>
         {!hideNext &&
-          (activeStep === 5 && nextUrl ? (
+          (activeStep === 6 && nextUrl ? (
             <Button disabled={disabled}>
               <Link
                 href={nextUrl}
@@ -62,7 +62,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
                   disabled && "text-neutral-400",
                 )}
               >
-                {activeStep === 5 ? t("Common.submit") : t("Common.next")}
+                {activeStep === 6 ? t("Common.submit") : t("Common.next")}
                 <IconArrowRight />
               </Link>
             </Button>

@@ -4,6 +4,7 @@ import { Container } from "@workspace/ui/components/container";
 import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import ConfirmationFormsWrapper from "@/app/apply/[id]/confirmations/confirmations-forms-wrapper";
+import GroupConfirmationWrapper from "@/app/apply/[id]/confirmations/group-confirmation-wrapper";
 import { getApplicationById } from "@/lib/data/application-db";
 
 export interface GroupDataPageProps {
@@ -36,7 +37,14 @@ export default async function Page({ params }: GroupDataPageProps) {
 
       <InfoPopover />
 
-      <ConfirmationFormsWrapper
+      {/* <ConfirmationFormsWrapper
+        id={id}
+        application={application}
+        applicationConfirmationData={application.confirmations}
+        members={application.members}
+      /> */}
+
+      <GroupConfirmationWrapper
         id={id}
         application={application}
         applicationConfirmationData={application.confirmations}

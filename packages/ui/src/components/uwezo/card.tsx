@@ -24,6 +24,8 @@ export const cardVariants = cva({
 export interface CardProps extends VariantProps<typeof cardVariants> {
   className?: string;
   children?: ReactNode;
+  variant?: "primary" | "blue" | "green";
+  radius?: "sm" | "lg";
 }
 
 export const Card: FC<CardProps> = ({

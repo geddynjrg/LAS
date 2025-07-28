@@ -25,6 +25,7 @@ export const GroupMemberInputSchema = z.object({
   person_with_disability: z.boolean().default(false),
   pwd_number: z.string().optional().describe("PWD registration number"),
   certificate_disability: FileUploadSchema.optional(),
+  requires_confirmation: z.boolean().default(false),
 });
 
 /**
