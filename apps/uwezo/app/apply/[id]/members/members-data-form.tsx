@@ -51,6 +51,17 @@ import {
 
 // import { dummyMembers } from "@/lib/data/dummy-data";
 
+// Helper function to extract error message from various error types
+const getErrorMessage = (error: any): string => {
+  if (typeof error === "string") {
+    return error;
+  }
+  if (error && typeof error === "object" && "message" in error) {
+    return error.message;
+  }
+  return "members_required"; // Return a flag for translation
+};
+
 export interface MembersDataProps {
   id: string;
   action: FormAction<MembersData>;
@@ -176,6 +187,20 @@ export const MembersDataForm: FC<MembersDataProps> = ({
           <p className="typo-body-large mx-auto font-bold">
             {t("MembersPage.membersInfoInserted", { count: members.length })}
           </p>
+
+          {state.errors?.members && (
+            <div className="text-destructive text-sm font-medium">
+              {(() => {
+                const errorMsg = Array.isArray(state.errors.members)
+                  ? getErrorMessage(state.errors.members[0])
+                  : getErrorMessage(state.errors.members);
+
+                return errorMsg === "members_required"
+                  ? t("MembersPage.errors.atLeastOneMemberRequired")
+                  : errorMsg;
+              })()}
+            </div>
+          )}
 
           {displayNewMemberForm && (
             <EditMemberFormFields
