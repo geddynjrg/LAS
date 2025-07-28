@@ -256,4 +256,23 @@ interface GroupMemberInterface extends ContentEntityInterface, EntityChangedInte
    */
   public function generateConfirmationToken();
 
+  /**
+   * Checks if the member requires confirmation.
+   *
+   * @return bool
+   *   TRUE if the member requires confirmation.
+   */
+  public function requiresConfirmation();
+
+  /**
+   * Sets whether the member requires confirmation.
+   *
+   * @param bool $value
+   *   TRUE if the member requires confirmation.
+   *
+   * @return \Drupal\api_application\Entity\GroupMemberInterface
+   *   The called Group Member entity.
+   */
+  public function setRequiresConfirmation($value);
+
 }

@@ -176,9 +176,12 @@
         <span class="count">({{ application.group_members_count }})</span>
         {% if confirmation_stats %}
           <span class="confirmation-summary">
-            - {{ 'Responses: @responded/@total'|t({'@responded': confirmation_stats.confirmed + confirmation_stats.declined, '@total': confirmation_stats.total}) }}
+            - {{ 'SMS Responses: @responded/@total'|t({'@responded': confirmation_stats.confirmed + confirmation_stats.declined, '@total': confirmation_stats.total}) }}
             {% if confirmation_stats.confirmed > 0 or confirmation_stats.declined > 0 %}
               ({{ 'Confirmed: @confirmed, Declined: @declined'|t({'@confirmed': confirmation_stats.confirmed, '@declined': confirmation_stats.declined}) }})
+            {% endif %}
+            {% if confirmation_stats.total < application.group_members_count %}
+              <small style="opacity: 0.7;">{{ '(some members do not require SMS)'|t }}</small>
             {% endif %}
           </span>
         {% endif %}
@@ -268,6 +271,16 @@
                     </span>
                   </span>
                 </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Requires SMS:'|t }}</span>
+                  <span class="value">
+                    {% if member.requires_confirmation %}
+                      <span class="tag">{{ 'Yes'|t }}</span>
+                    {% else %}
+                      <span class="tag" style="background: #f3f4f6; color: #6b7280;">{{ 'No'|t }}</span>
+                    {% endif %}
+                  </span>
+                </div>
                 {% if member.is_pwd %}
                   <div class="detail-row">
                     <span class="label">{{ 'PWD Number:'|t }}</span>
@@ -296,7 +309,7 @@
                   {% endif %}
 
                   {# Individual SMS action #}
-                  {% if can_update and member.confirmation_status not in ['confirmed', 'declined'] %}
+                  {% if can_update and member.requires_confirmation and member.confirmation_status not in ['confirmed', 'declined'] %}
                     <div class="member-actions">
                       <button type="button" class="button button--small send-member-sms"
                               data-member-id="{{ member.id }}"

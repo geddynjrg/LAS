@@ -799,3 +799,31 @@ function api_application_update_11013() {
 
   return t('Added declined status option to confirmation_status field.');
 }
+
+/**
+ * Add requires_confirmation field to Group Member entity.
+ */
+function api_application_update_11014() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add requires_confirmation field.
+  $requires_confirmation = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Requires Confirmation'))
+    ->setDescription(t('Whether this member requires SMS confirmation.'))
+    ->setDefaultValue(TRUE)
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'boolean',
+      'weight' => 13,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'weight' => 13,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('requires_confirmation', 'group_member', 'api_application', $requires_confirmation);
+
+  return t('Requires confirmation field has been added to the Group Member entity.');
+}

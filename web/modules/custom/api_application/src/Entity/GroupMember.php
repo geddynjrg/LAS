@@ -326,6 +326,22 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', FALSE);
 
+    $fields['requires_confirmation'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Requires Confirmation'))
+      ->setDescription(t('Whether this member requires SMS confirmation.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'boolean',
+        'weight' => 13,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 13,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('The time that the member was created.'));
@@ -531,6 +547,21 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
     $token = bin2hex(random_bytes(32));
     $this->setConfirmationToken($token);
     return $token;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function requiresConfirmation() {
+    return (bool) $this->get('requires_confirmation')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRequiresConfirmation($value) {
+    $this->set('requires_confirmation', $value);
+    return $this;
   }
 
   /**
