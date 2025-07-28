@@ -228,6 +228,7 @@ function template_preprocess_application(array &$variables) {
           'confirmation_sent_at' => $member->getConfirmationSentAt(),
           'confirmation_confirmed_at' => $member->getConfirmationConfirmedAt(),
           'is_confirmed' => $member->isConfirmed(),
+          'requires_confirmation' => $member->requiresConfirmation(),
         ];
       }
     }

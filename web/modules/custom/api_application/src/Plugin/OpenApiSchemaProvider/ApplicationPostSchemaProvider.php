@@ -271,6 +271,11 @@ class ApplicationPostSchemaProvider extends OpenApiSchemaProviderBase {
             'type' => 'boolean',
             'default' => FALSE,
           ],
+          'requires_confirmation' => [
+            'type' => 'boolean',
+            'default' => TRUE,
+            'description' => 'Whether this member requires SMS confirmation',
+          ],
           'pwd_number' => [
             'type' => 'string',
             'description' => 'PWD registration number',

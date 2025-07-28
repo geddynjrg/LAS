@@ -496,9 +496,18 @@ class SmsConfirmationService {
     ];
 
     $members = $application->getGroupMembers();
-    $stats['total'] = count($members);
 
+    // Filter to only count members who require confirmation.
+    $members_requiring_confirmation = [];
     foreach ($members as $member) {
+      if ($member->requiresConfirmation()) {
+        $members_requiring_confirmation[] = $member;
+      }
+    }
+
+    $stats['total'] = count($members_requiring_confirmation);
+
+    foreach ($members_requiring_confirmation as $member) {
       $status = $member->getConfirmationStatus();
       if (isset($stats[$status])) {
         $stats[$status]++;
@@ -521,6 +530,11 @@ class SmsConfirmationService {
     $members = $application->getGroupMembers();
 
     foreach ($members as $member) {
+      // Only check members who require confirmation.
+      if (!$member->requiresConfirmation()) {
+        continue;
+      }
+
       $status = $member->getConfirmationStatus();
       if (!in_array($status, ['confirmed', 'declined'])) {
         return FALSE;

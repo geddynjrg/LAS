@@ -1346,14 +1346,50 @@ class Application extends ContentEntityBase implements ApplicationInterface {
         return FALSE;
       }
 
-      $sms_confirmation_service = \Drupal::service('api_application.sms_confirmation');
-      $results = $sms_confirmation_service->sendConfirmationSmsToAllMembers($this);
+      // Filter members who require confirmation.
+      $members_requiring_confirmation = [];
+      foreach ($group_members as $member) {
+        if ($member->requiresConfirmation()) {
+          $members_requiring_confirmation[] = $member;
+        }
+      }
 
-      \Drupal::logger('api_application')->info('SMS confirmation sent for application @id (trigger: @trigger). Success: @success, Failed: @failed', [
+      if (empty($members_requiring_confirmation)) {
+        \Drupal::logger('api_application')->notice('No group members require confirmation for application @id. SMS not sent (trigger: @trigger).', [
+          '@id' => $this->getApplicationId(),
+          '@trigger' => $trigger,
+        ]);
+        return FALSE;
+      }
+
+      $sms_confirmation_service = \Drupal::service('api_application.sms_confirmation');
+
+      // Send SMS to each member who requires confirmation.
+      $success_count = 0;
+      $failed_count = 0;
+
+      foreach ($members_requiring_confirmation as $member) {
+        $result = $sms_confirmation_service->sendConfirmationSms($member);
+        if ($result) {
+          $success_count++;
+        }
+        else {
+          $failed_count++;
+        }
+      }
+
+      $results = [
+        'success' => $success_count,
+        'failed' => $failed_count,
+        'total' => count($members_requiring_confirmation),
+      ];
+
+      \Drupal::logger('api_application')->info('SMS confirmation sent for application @id (trigger: @trigger). Success: @success, Failed: @failed, Total requiring confirmation: @total', [
         '@id' => $this->getApplicationId(),
         '@trigger' => $trigger,
         '@success' => $results['success'],
         '@failed' => $results['failed'],
+        '@total' => $results['total'],
       ]);
 
       return $results;

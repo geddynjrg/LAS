@@ -306,6 +306,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'position' => $this->getTaxonomyData($member->get('position'), TRUE),
       'photo_member_id' => $this->getFileData($member->get('photo_member_id')->entity),
       'person_with_disability' => $member->isPersonWithDisability(),
+      'requires_confirmation' => $member->requiresConfirmation(),
       'confirmation' => [
         'status' => $member->getConfirmationStatus(),
         'sent_at' => $member->getConfirmationSentAt(),

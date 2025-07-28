@@ -282,6 +282,10 @@ class ApplicationDetailSchemaProvider extends OpenApiSchemaProviderBase {
           'person_with_disability' => [
             'type' => 'boolean',
           ],
+          'requires_confirmation' => [
+            'type' => 'boolean',
+            'description' => 'Whether this member requires SMS confirmation',
+          ],
           'pwd_number' => [
             'type' => 'string',
             'nullable' => TRUE,

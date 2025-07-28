@@ -936,6 +936,11 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $values['person_with_disability'] = (bool) $data['person_with_disability'];
     }
 
+    // Requires confirmation field.
+    if (isset($data['requires_confirmation'])) {
+      $values['requires_confirmation'] = (bool) $data['requires_confirmation'];
+    }
+
     // Optional text field.
     if (isset($data['pwd_number'])) {
       $values['pwd_number'] = $data['pwd_number'];
@@ -990,6 +995,11 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $member->set('person_with_disability', (bool) $data['person_with_disability']);
     }
 
+    // Requires confirmation field.
+    if (isset($data['requires_confirmation'])) {
+      $member->set('requires_confirmation', (bool) $data['requires_confirmation']);
+    }
+
     // File fields.
     if (isset($data['photo_member_id'])) {
       $fileId = $this->processFileField($data['photo_member_id'], $member->getApplication()->getApplicationId());
@@ -1041,6 +1051,11 @@ class ApplicationResource extends RestFrameworkResourceBase {
       // Boolean fields.
       if (isset($memberData['person_with_disability'])) {
         $values['person_with_disability'] = (bool) $memberData['person_with_disability'];
+      }
+
+      // Requires confirmation field.
+      if (isset($memberData['requires_confirmation'])) {
+        $values['requires_confirmation'] = (bool) $memberData['requires_confirmation'];
       }
 
       // Optional text field.

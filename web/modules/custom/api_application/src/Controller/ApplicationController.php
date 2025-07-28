@@ -476,6 +476,14 @@ class ApplicationController extends ControllerBase {
     $response = ['success' => FALSE];
 
     try {
+      // Check if this member requires confirmation.
+      if (!$group_member->requiresConfirmation()) {
+        $response['message'] = $this->t('@name does not require SMS confirmation', [
+          '@name' => $group_member->getName(),
+        ]);
+        return new JsonResponse($response);
+      }
+
       $result = $this->smsConfirmationService->sendConfirmationSms($group_member);
 
       if ($result) {
