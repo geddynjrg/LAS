@@ -356,7 +356,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753626306
+         * @example 1753706076
          */
         timestamp: number;
         /**
@@ -652,7 +652,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753626306
+         * @example 1753706076
          */
         timestamp: number;
         /**
@@ -963,6 +963,11 @@ export interface components {
       photo_member_id?: components["schemas"]["FileUpload"];
       /** @default false */
       person_with_disability: boolean;
+      /**
+       * @description Whether this member requires SMS confirmation
+       * @default true
+       */
+      requires_confirmation: boolean;
       /** @description PWD registration number */
       pwd_number?: string;
       certificate_disability?: components["schemas"]["FileUpload"];
@@ -1239,7 +1244,7 @@ export interface components {
     TaxonomyVocabulariesMeta: {
       /**
        * @description Unix timestamp of when the response was generated
-       * @example 1753626306
+       * @example 1753706076
        */
       timestamp: number;
       /**
@@ -1396,6 +1401,8 @@ export interface components {
       position?: components["schemas"]["TaxonomyTerm"];
       photo_member_id?: components["schemas"]["FileData"];
       person_with_disability?: boolean;
+      /** @description Whether this member requires SMS confirmation */
+      requires_confirmation?: boolean;
       pwd_number?: string | null;
       certificate_disability?: components["schemas"]["FileData"];
       confirmation?: components["schemas"]["MemberConfirmationInfo"];
@@ -1549,7 +1556,7 @@ export interface components {
     SiteInformationMeta: {
       /**
        * @description Unix timestamp of the response
-       * @example 1753626306
+       * @example 1753706076
        */
       timestamp: number;
       /**
@@ -1782,7 +1789,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp: number;
               /**
@@ -1852,7 +1859,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp: number;
               /**
@@ -1927,7 +1934,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -1982,7 +1989,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -2072,7 +2079,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -2129,7 +2136,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -2196,7 +2203,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -2266,7 +2273,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -2335,7 +2342,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -2391,7 +2398,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**
@@ -2454,7 +2461,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753626306
+               * @example 1753706076
                */
               timestamp?: number;
               /**

@@ -664,6 +664,7 @@ async function transformApplicationForExternalApi(
       certificate_disability: await transformSingleFile(
         member.certificateOfDisability,
       ),
+      requires_confirmation: member.requiresConfirmation || false,
     })),
   );
 
