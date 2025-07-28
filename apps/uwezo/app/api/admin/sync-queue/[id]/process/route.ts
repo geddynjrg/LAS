@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { processQueueItem } from "@/lib/api/sync.service";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdminAPI } from "@/lib/auth/guards";
 
 export async function POST(
   request: NextRequest,
@@ -9,7 +9,10 @@ export async function POST(
 ) {
   try {
     // Ensure user is admin
-    await requireAdmin();
+    const authResult = await requireAdminAPI();
+    if (authResult instanceof NextResponse) {
+      return authResult;
+    }
 
     const { id } = await params;
     const result = await processQueueItem(id);

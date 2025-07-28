@@ -46,7 +46,15 @@ export default async function Page({ params }: GroupDataPageProps) {
         <ApplicationReviewGroupData groupData={application.groupData} />
 
         <ApplicationReviewProposedBusiness
-          businessDetails={application.proposedBusiness}
+          businessDetails={
+            application.proposedBusiness
+              ? {
+                  ...application.proposedBusiness,
+                  customExpenses:
+                    application.proposedBusiness.customExpenses || [],
+                }
+              : undefined
+          }
         />
       </Container>
 

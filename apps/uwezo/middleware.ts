@@ -3,10 +3,42 @@ import { NextResponse, userAgent, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/session";
 
 const protectedRoutes = ["/dashboard", "/apply", "/admin"];
+const adminRoutes = ["/admin"];
 const publicRoutes = ["/login", "/signup", "/reset"];
 
 const loggedInRedirect = "/dashboard";
 const loggedOutRedirect = "/login";
+
+// Helper function to check if user has admin role
+async function isUserAdmin(session: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_API_URL}/api/v1/user/profile`,
+      {
+        headers: {
+          Authorization: `Bearer ${session}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = await response.json();
+    const roles = data.data?.roles || [];
+
+    return roles.some(
+      (role: string) =>
+        role.toLowerCase() === "admin" ||
+        role.toLowerCase() === "administrator",
+    );
+  } catch (error) {
+    console.error("Error checking admin role in middleware:", error);
+    return false;
+  }
+}
 
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
@@ -20,6 +52,7 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((r) => path.startsWith(r));
+  const isAdminRoute = adminRoutes.some((r) => path.startsWith(r));
   const isPublicRoute = publicRoutes.some((r) => path.startsWith(r));
   const session = await updateSession();
 
@@ -40,6 +73,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(newUrl, {
       headers: requestHeaders,
     });
+  }
+
+  // Admin route protection - check roles at middleware level for fastest redirect
+  if (isAdminRoute && session) {
+    const isAdmin = await isUserAdmin(session);
+
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL(loggedInRedirect, request.nextUrl), {
+        headers: requestHeaders,
+      });
+    }
   }
 
   // Redirect api requests to api route with correct headers

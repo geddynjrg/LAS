@@ -93,7 +93,11 @@ async function processSyncItem(queueItemId: string) {
         groupData: true,
         members: true,
         loanConditions: true,
-        proposedBusiness: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
         confirmations: true,
       },
     });
@@ -388,8 +392,20 @@ async function transformApplicationForExternalApi(
   const transformFile = async (file: any): Promise<FileUpload | undefined> => {
     if (!file) return undefined;
 
-    // If it's already a number or string (legacy format), return as is
-    if (typeof file === "number" || typeof file === "string") return file;
+    // If it's a JSON string, try to parse it first
+    if (typeof file === "string") {
+      try {
+        const parsed = JSON.parse(file);
+        // Recursively transform the parsed object
+        return transformFile(parsed);
+      } catch {
+        // If JSON parsing fails, treat as a legacy string format (file path or ID)
+        return file;
+      }
+    }
+
+    // If it's already a number (legacy format), return as is
+    if (typeof file === "number") return file;
 
     // If it's an object with url/filename, read the file and convert to base64
     if (file.url && file.filename) {
@@ -418,6 +434,18 @@ async function transformApplicationForExternalApi(
     files: any,
   ): Promise<FileUpload[] | FileUpload | undefined> => {
     if (!files) return undefined;
+
+    // If it's a JSON string, try to parse it first
+    if (typeof files === "string") {
+      try {
+        const parsed = JSON.parse(files);
+        // Recursively transform the parsed data
+        return transformFiles(parsed);
+      } catch {
+        // If JSON parsing fails, treat as a single file string
+        return transformFile(files);
+      }
+    }
 
     // If it's an array, transform each file
     if (Array.isArray(files)) {
@@ -503,7 +531,21 @@ async function transformApplicationForExternalApi(
   // Extract value from array or single value
   const extractValue = (value: any): string | number | undefined => {
     if (!value) return undefined;
-    if (typeof value === "string" || typeof value === "number") return value;
+
+    // If it's a string, try to parse as JSON first
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        // If parsed successfully, recursively extract value from parsed data
+        return extractValue(parsed);
+      } catch {
+        // If JSON parsing fails, return the string as is
+        return value;
+      }
+    }
+
+    if (typeof value === "number") return value;
+
     if (Array.isArray(value) && value.length > 0) {
       const firstItem = value[0];
       if (typeof firstItem === "object" && firstItem !== null) {
@@ -517,9 +559,11 @@ async function transformApplicationForExternalApi(
       }
       return firstItem;
     }
+
     if (typeof value === "object" && value !== null) {
       return value.name || value.label || value.value || value.id || value.tid;
     }
+
     return undefined;
   };
 
@@ -527,8 +571,27 @@ async function transformApplicationForExternalApi(
   const transformKeyActivities = (
     activities: any,
   ): ("value_chain" | "table_banking" | "other")[] | undefined => {
-    if (!activities || !Array.isArray(activities)) return undefined;
-    return activities
+    if (!activities) return undefined;
+
+    let activitiesArray: any[] = [];
+
+    // Handle JSON string parsing
+    if (typeof activities === "string") {
+      try {
+        const parsed = JSON.parse(activities);
+        activitiesArray = Array.isArray(parsed) ? parsed : [parsed];
+      } catch {
+        // If JSON parsing fails, treat as single string value
+        activitiesArray = [activities];
+      }
+    } else if (Array.isArray(activities)) {
+      activitiesArray = activities;
+    } else {
+      // For any other type, wrap in array
+      activitiesArray = [activities];
+    }
+
+    return activitiesArray
       .map((activity) => {
         if (typeof activity === "string") {
           const activityMap: Record<
@@ -549,6 +612,31 @@ async function transformApplicationForExternalApi(
   // Clean null values
   const cleanValue = <T>(value: T | null | undefined): T | undefined => {
     return value === null ? undefined : value;
+  };
+
+  // Helper function to safely parse JSON strings and ensure arrays
+  const parseToArray = (value: any): any[] | undefined => {
+    if (!value) return undefined;
+
+    // If it's already an array, return it
+    if (Array.isArray(value)) return value;
+
+    // If it's a string, try to parse it as JSON
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        // If parsed result is an array, return it
+        if (Array.isArray(parsed)) return parsed;
+        // If parsed result is not an array, wrap it in one
+        return [parsed];
+      } catch {
+        // If JSON parsing fails, wrap the string in an array
+        return [value];
+      }
+    }
+
+    // For any other type, wrap it in an array
+    return [value];
   };
 
   // Transform files
@@ -581,7 +669,9 @@ async function transformApplicationForExternalApi(
 
   return {
     application_id: application.applicationId,
-    owner_email: application.user.email,
+    identifier_type: application.user.identifierType,
+    owner_identifier: application.user.email || application.user.name,
+    phone_number: application.user.phoneNumber || "",
     status: mapStatus(application.status),
 
     // Group data
@@ -591,19 +681,11 @@ async function transformApplicationForExternalApi(
     date_registered: formatDate(application.groupData?.dateFormed),
     group_registration_certificate: groupRegistrationCertificate,
     list_of_members_certificate: listOfMembersOnCertificate,
-    group_background: application.groupData?.purposeOfTheGroup
-      ? Array.isArray(application.groupData.purposeOfTheGroup)
-        ? application.groupData.purposeOfTheGroup
-        : [application.groupData.purposeOfTheGroup]
-      : undefined,
+    group_background: parseToArray(application.groupData?.purposeOfTheGroup),
     key_activities: transformKeyActivities(
       application.groupData?.keyActivitiesOfTheGroup,
     ),
-    value_chain: application.groupData?.valueChain
-      ? Array.isArray(application.groupData.valueChain)
-        ? application.groupData.valueChain
-        : [application.groupData.valueChain]
-      : undefined,
+    value_chain: parseToArray(application.groupData?.valueChain),
     table_banking_duration:
       application.groupData?.tableBankingExperience !== null &&
       application.groupData?.tableBankingExperience !== undefined
@@ -643,7 +725,7 @@ async function transformApplicationForExternalApi(
     loan_type: extractValue(application.loanConditions?.loanType),
     loan_amount: application.loanConditions?.loanAmount,
     proposed_repayment_period: application.loanConditions?.repaymentPeriod,
-    bank_name: extractValue(application.loanConditions?.bankName),
+    bank_name: extractValue(application.loanConditions?.bankName === "Other" ? application.loanConditions?.bankNameOther : application.loanConditions?.bankName),
     bank_branch: application.loanConditions?.bankBranch,
     bank_account_number: application.loanConditions?.accountNumber,
 
@@ -651,11 +733,7 @@ async function transformApplicationForExternalApi(
     nature_of_business: mapNatureOfBusiness(
       application.proposedBusiness?.natureOfBusiness,
     ),
-    business_type: application.proposedBusiness?.businessType
-      ? Array.isArray(application.proposedBusiness.businessType)
-        ? application.proposedBusiness.businessType
-        : [application.proposedBusiness.businessType]
-      : undefined,
+    business_type: parseToArray(application.proposedBusiness?.businessType),
     years_in_operation: application.proposedBusiness?.yearsInBusiness,
     average_income: application.proposedBusiness?.averageIncome,
     expenses: application.proposedBusiness
@@ -665,6 +743,19 @@ async function transformApplicationForExternalApi(
             rent: application.proposedBusiness.rentForBusiness,
             salaries: application.proposedBusiness.salaries,
             transport: application.proposedBusiness.transportForBusinessStock,
+            // Add custom expenses as additional fields
+            ...(application.proposedBusiness.customExpenses?.reduce(
+              (acc: Record<string, number>, expense: any) => {
+                // Convert expense name to a valid field name (snake_case, no spaces)
+                const fieldName = expense.name
+                  .toLowerCase()
+                  .replace(/\s+/g, '_')
+                  .replace(/[^a-z0-9_]/g, '');
+                acc[fieldName] = expense.amount;
+                return acc;
+              },
+              {}
+            ) || {}),
           },
         ]
       : undefined,
@@ -678,6 +769,17 @@ export async function syncApplication(applicationId: string) {
   try {
     const application = await prisma.application.findUnique({
       where: { applicationId },
+      include: {
+        groupData: true,
+        members: true,
+        loanConditions: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
+        confirmations: true,
+      },
     });
 
     if (!application) {
@@ -739,7 +841,7 @@ export async function syncApplication(applicationId: string) {
             action: application.externalId
               ? SyncAction.UPDATE
               : SyncAction.CREATE,
-            payload: {},
+            payload: JSON.stringify({}),
             status: QueueStatus.PENDING,
             attempts: 0, // Reset attempts for manual retry
             maxAttempts: 5, // Give more attempts for manual retries
@@ -756,7 +858,7 @@ export async function syncApplication(applicationId: string) {
             action: application.externalId
               ? SyncAction.UPDATE
               : SyncAction.CREATE,
-            payload: {},
+            payload: JSON.stringify({}),
             status: QueueStatus.PENDING,
           },
         });
@@ -821,7 +923,7 @@ export async function addToSyncQueue(
       data: {
         applicationId,
         action,
-        payload: {},
+        payload: JSON.stringify(options || {}),
         status: QueueStatus.PENDING,
         maxAttempts: options?.maxAttempts || 3,
         scheduledFor: options?.priority ? new Date() : new Date(),

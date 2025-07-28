@@ -111,6 +111,10 @@ export interface ProposedBusinessData {
   rentForBusiness: number;
   salaries: number;
   transportForBusinessStock: number;
+  customExpenses?: Array<{
+    name: string;
+    amount: number;
+  }>;
 }
 
 export interface ConfirmationsData {

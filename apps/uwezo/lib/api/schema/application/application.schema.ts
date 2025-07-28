@@ -35,7 +35,21 @@ export const ApplicationPostRequestSchema = z.object({
     .string()
     .optional()
     .describe("Existing application ID for updates (optional)"),
-  owner_email: z.string().email().describe("Email of the application owner"),
+  identifier_type: z
+    .enum(["EMAIL", "PHONE", "NAME"])
+    .describe("Type of identifier used to identify the application owner"),
+  owner_identifier: z
+    .string()
+    .optional()
+    .describe(
+      "Identifier of the application owner (email or name, used when identifier_type is EMAIL or NAME)",
+    ),
+  phone_number: z
+    .string()
+    .optional()
+    .describe(
+      "Phone number of the application owner (used when identifier_type is PHONE)",
+    ),
   status: z
     .enum([
       "draft",

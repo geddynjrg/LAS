@@ -50,6 +50,7 @@ async function fetchProfile(): Promise<UserProfileResponseType["data"] | null> {
         // Return empty profile for new users
         return {
           email: undefined,
+          phoneNumber: undefined,
           name: undefined,
           roles: [],
           created: undefined,
@@ -97,11 +98,10 @@ export const SessionProvider: React.FC<{
   children?: ReactNode;
 }> = ({ initialSession, children }) => {
   const router = useRouter();
-  const pathname = usePathname();
   const [sessionData, setSessionData] = useState<SessionData>({
     isAuthenticated: initialSession,
     profile: null,
-    isLoading: initialSession, // Start loading if authenticated
+    isLoading: initialSession,
     error: null,
   });
 
@@ -168,10 +168,7 @@ export const SessionProvider: React.FC<{
     if (initialSession) {
       refreshProfile();
     }
-  }, [initialSession]); // Only run on mount
-
-  // Remove the route change effect - it's causing too many API calls
-  // Users can manually refresh profile if needed using refreshProfile()
+  }, [initialSession, refreshProfile]);
 
   const contextValue: SessionContextProps = {
     ...sessionData,

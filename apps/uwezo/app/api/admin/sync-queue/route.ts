@@ -2,12 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { QueueStatus, SyncAction } from "@/generated/prisma";
 import { getSyncQueueItems } from "@/lib/api/sync.service";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdminAPI } from "@/lib/auth/guards";
+
+interface SyncQueueFilters {
+  status?: QueueStatus[];
+  applicationId?: string;
+  action?: SyncAction;
+  dateFrom?: Date;
+  dateTo?: Date;
+}
 
 export async function GET(request: NextRequest) {
   try {
     // Ensure user is admin
-    await requireAdmin();
+    const authResult = await requireAdminAPI();
+    if (authResult instanceof NextResponse) {
+      return authResult;
+    }
 
     const searchParams = request.nextUrl.searchParams;
 
@@ -20,7 +31,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const pageSize = parseInt(searchParams.get("pageSize") || "20");
 
-    const filters: any = {};
+    const filters: SyncQueueFilters = {};
 
     if (status) {
       filters.status = status

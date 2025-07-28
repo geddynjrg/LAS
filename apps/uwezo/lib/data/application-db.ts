@@ -24,6 +24,22 @@ import { handlePrismaError, prisma } from "@/lib/db/prisma";
 import { getSession } from "@/lib/session";
 import { createApplicationId } from "@/lib/util";
 
+// Helper function to safely store JSON data - prevents double encoding
+function safeJsonStringify(data: any): string {
+  // If it's already a string, check if it's valid JSON
+  if (typeof data === "string") {
+    try {
+      JSON.parse(data); // Test if it's valid JSON
+      return data; // Return as-is if it's already a valid JSON string
+    } catch {
+      // If it's not valid JSON, stringify it
+      return JSON.stringify(data);
+    }
+  }
+  // If it's not a string, stringify it
+  return JSON.stringify(data);
+}
+
 // Helper function to get the current authenticated user
 async function getCurrentUser() {
   const session = await getSession();
@@ -33,24 +49,80 @@ async function getCurrentUser() {
 
   try {
     const profile = await getProfile();
-    const userEmail = profile.data?.email;
+    const profileData = profile.data;
 
-    if (!userEmail) {
-      throw new Error("User email not found in profile");
+    if (!profileData) {
+      throw new Error("No profile data found");
     }
 
-    // Get or create user in database
-    let user = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
+    // Helper function to determine identifier type based on priority
+    const getIdentifierType = (): "EMAIL" | "PHONE" | "NAME" => {
+      if (profileData.email) return "EMAIL";
+      if (profileData.phoneNumber) return "PHONE";
+      if (profileData.name) return "NAME";
+      throw new Error("No valid user identifier found in profile");
+    };
 
+    const identifierType = getIdentifierType();
+
+    // Priority order for user identification: email > phoneNumber > name
+    let user = null;
+
+    // Try to find user by email first
+    if (profileData.email) {
+      user = await prisma.user.findUnique({
+        where: { email: profileData.email },
+      });
+    }
+
+    // If not found by email, try by phone number
+    if (!user && profileData.phoneNumber) {
+      user = await prisma.user.findUnique({
+        where: { phoneNumber: profileData.phoneNumber },
+      });
+    }
+
+    // If not found by email or phone, try by name
+    if (!user && profileData.name) {
+      user = await prisma.user.findFirst({
+        where: { name: profileData.name },
+      });
+    }
+
+    // Create new user if not found
     if (!user) {
       user = await prisma.user.create({
         data: {
-          email: userEmail,
-          name: profile.data?.name || userEmail,
+          email: profileData.email,
+          phoneNumber: profileData.phoneNumber,
+          name:
+            profileData.name ||
+            profileData.email ||
+            profileData.phoneNumber ||
+            "Unknown User",
+          identifierType: identifierType,
         },
       });
+    } else {
+      // Update existing user with any new information from profile
+      const updateData: any = {};
+      if (profileData.email && !user.email)
+        updateData.email = profileData.email;
+      if (profileData.phoneNumber && !user.phoneNumber)
+        updateData.phoneNumber = profileData.phoneNumber;
+      if (profileData.name && !user.name) updateData.name = profileData.name;
+
+      // Update identifierType if it has changed (e.g., user now has email when they previously only had phone)
+      if (!user.identifierType || user.identifierType !== identifierType) {
+        updateData.identifierType = identifierType;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: updateData,
+        });
+      }
     }
 
     return user;
@@ -70,7 +142,11 @@ export async function getApplications() {
         groupData: true,
         members: true,
         loanConditions: true,
-        proposedBusiness: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
         confirmations: true,
       },
       orderBy: { createdAt: "desc" },
@@ -93,7 +169,11 @@ export async function getApplicationById(id: string) {
         groupData: true,
         members: true,
         loanConditions: true,
-        proposedBusiness: true,
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
         confirmations: true,
       },
     });
@@ -133,7 +213,7 @@ export async function createApplication() {
     const generalDetails: GeneralDetails = {
       applicationId: application.applicationId,
       status: application.status as any,
-      user: user.email,
+      user: user.email || user.phoneNumber || user.name || user.id,
       applicationProgress: application.applicationProgress,
     };
 
@@ -188,13 +268,21 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
       groupName: data.basics.groupName,
       groupRegistrationNumber: data.basics.groupRegistrationNumber,
       dateFormed: new Date(data.basics.dateFormed),
-      groupRegistrationCertificate: groupRegistrationCertificateJson,
-      listOfMembersOnCertificate: listOfMembersOnCertificateJson,
-      purposeOfTheGroup: data.background.purposeOfTheGroup,
-      keyActivitiesOfTheGroup: data.background.keyActivitiesOfTheGroup,
-      groupCreditHistory: groupCreditHistoryJson,
+      groupRegistrationCertificate: safeJsonStringify(
+        groupRegistrationCertificateJson,
+      ),
+      listOfMembersOnCertificate: safeJsonStringify(
+        listOfMembersOnCertificateJson,
+      ),
+      purposeOfTheGroup: safeJsonStringify(data.background.purposeOfTheGroup),
+      keyActivitiesOfTheGroup: safeJsonStringify(
+        data.background.keyActivitiesOfTheGroup,
+      ),
+      groupCreditHistory: safeJsonStringify(groupCreditHistoryJson),
       other: data.background.other,
-      valueChain: data.background.valueChain || undefined,
+      valueChain: data.background.valueChain
+        ? safeJsonStringify(data.background.valueChain)
+        : undefined,
       tableBankingExperience:
         data.background.tableBanking?.tableBankingExperience,
       tableBankingShareContribution:
@@ -278,9 +366,10 @@ export async function updateApplicationMembersData(
         gender: member.gender as any,
         type: member.type as any,
         phoneNumber: member.phoneNumber || "",
-        photoOfId: (member.photoOfId as any) || {},
-        certificateOfDisability:
-          (member.disability?.certificateOfDisability as any) || null,
+        photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
+        certificateOfDisability: member.disability?.certificateOfDisability
+          ? safeJsonStringify(member.disability.certificateOfDisability as any)
+          : null,
         pwdNumber: member.disability?.pwdNumber || null,
         status:
           member.status === "confirmed"
@@ -333,7 +422,7 @@ export async function updateApplicationLoanConditionsData(
     }
 
     const loanConditionsData = {
-      purposeOfLoan: data.purposeOfLoan,
+      purposeOfLoan: safeJsonStringify(data.purposeOfLoan),
       loanType: data.loanType,
       loanAmount: data.loanAmount,
       repaymentPeriod: data.repaymentPeriod,
@@ -385,7 +474,13 @@ export async function updateApplicationProposedBusinessData(
 
     const application = await prisma.application.findUnique({
       where: { applicationId: id },
-      include: { proposedBusiness: true },
+      include: { 
+        proposedBusiness: {
+          include: {
+            customExpenses: true,
+          },
+        },
+      },
     });
 
     if (!application) {
@@ -399,7 +494,7 @@ export async function updateApplicationProposedBusinessData(
 
     const proposedBusinessData = {
       natureOfBusiness: data.natureOfBusiness,
-      businessType: data.businessType,
+      businessType: safeJsonStringify(data.businessType),
       yearsInBusiness: data.yearsInBusiness,
       averageIncome: data.averageIncome,
       costOfGoods: data.costOfGoods,
@@ -408,19 +503,42 @@ export async function updateApplicationProposedBusinessData(
       transportForBusinessStock: data.transportForBusinessStock,
     };
 
+    let proposedBusinessId: string;
+
     // Update or create proposed business
     if (application.proposedBusiness) {
       await prisma.proposedBusiness.update({
         where: { id: application.proposedBusiness.id },
         data: proposedBusinessData,
       });
+      proposedBusinessId = application.proposedBusiness.id;
     } else {
-      await prisma.proposedBusiness.create({
+      const createdProposedBusiness = await prisma.proposedBusiness.create({
         data: {
           ...proposedBusinessData,
           applicationId: application.id,
         },
       });
+      proposedBusinessId = createdProposedBusiness.id;
+    }
+
+    // Handle custom expenses
+    if (data.customExpenses) {
+      // Delete existing custom expenses
+      await prisma.customExpense.deleteMany({
+        where: { proposedBusinessId },
+      });
+
+      // Create new custom expenses
+      if (data.customExpenses.length > 0) {
+        await prisma.customExpense.createMany({
+          data: data.customExpenses.map((expense) => ({
+            proposedBusinessId,
+            name: expense.name,
+            amount: expense.amount,
+          })),
+        });
+      }
     }
 
     // Update application progress
@@ -608,15 +726,34 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         groupName: gd.groupName,
         groupRegistrationNumber: gd.groupRegistrationNumber,
         dateFormed: gd.dateFormed.toISOString().split("T")[0],
-        groupRegistrationCertificate: gd.groupRegistrationCertificate,
-        listOfMembersOnCertificate: gd.listOfMembersOnCertificate,
+        groupRegistrationCertificate:
+          typeof gd.groupRegistrationCertificate === "string"
+            ? JSON.parse(gd.groupRegistrationCertificate)
+            : gd.groupRegistrationCertificate,
+        listOfMembersOnCertificate:
+          typeof gd.listOfMembersOnCertificate === "string"
+            ? JSON.parse(gd.listOfMembersOnCertificate)
+            : gd.listOfMembersOnCertificate,
       },
       background: {
-        purposeOfTheGroup: gd.purposeOfTheGroup as string[],
-        keyActivitiesOfTheGroup: gd.keyActivitiesOfTheGroup as string[],
-        groupCreditHistory: gd.groupCreditHistory,
+        purposeOfTheGroup:
+          typeof gd.purposeOfTheGroup === "string"
+            ? JSON.parse(gd.purposeOfTheGroup)
+            : (gd.purposeOfTheGroup as string[]),
+        keyActivitiesOfTheGroup:
+          typeof gd.keyActivitiesOfTheGroup === "string"
+            ? JSON.parse(gd.keyActivitiesOfTheGroup)
+            : (gd.keyActivitiesOfTheGroup as string[]),
+        groupCreditHistory:
+          typeof gd.groupCreditHistory === "string"
+            ? JSON.parse(gd.groupCreditHistory)
+            : gd.groupCreditHistory,
         other: gd.other,
-        valueChain: gd.valueChain as string[] | null,
+        valueChain: gd.valueChain
+          ? typeof gd.valueChain === "string"
+            ? JSON.parse(gd.valueChain)
+            : (gd.valueChain as string[])
+          : null,
         tableBanking: {
           tableBankingExperience: gd.tableBankingExperience || undefined,
           tableBankingShareContribution:
@@ -647,10 +784,16 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         gender: m.gender,
         type: m.type,
         phoneNumber: m.phoneNumber,
-        photoOfId: m.photoOfId,
+        photoOfId:
+          typeof m.photoOfId === "string"
+            ? JSON.parse(m.photoOfId)
+            : m.photoOfId,
         disability: m.certificateOfDisability
           ? {
-              certificateOfDisability: m.certificateOfDisability,
+              certificateOfDisability:
+                typeof m.certificateOfDisability === "string"
+                  ? JSON.parse(m.certificateOfDisability)
+                  : m.certificateOfDisability,
               pwdNumber: m.pwdNumber,
             }
           : undefined,
@@ -663,7 +806,10 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
   if (dbApplication.loanConditions) {
     const lc = dbApplication.loanConditions;
     result.loanConditions = {
-      purposeOfLoan: lc.purposeOfLoan as string[],
+      purposeOfLoan:
+        typeof lc.purposeOfLoan === "string"
+          ? JSON.parse(lc.purposeOfLoan)
+          : (lc.purposeOfLoan as string[]),
       loanType: lc.loanType,
       loanAmount: lc.loanAmount,
       repaymentPeriod: lc.repaymentPeriod,
@@ -679,13 +825,20 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     const pb = dbApplication.proposedBusiness;
     result.proposedBusiness = {
       natureOfBusiness: pb.natureOfBusiness,
-      businessType: pb.businessType as string[],
+      businessType:
+        typeof pb.businessType === "string"
+          ? JSON.parse(pb.businessType)
+          : (pb.businessType as string[]),
       yearsInBusiness: pb.yearsInBusiness,
       averageIncome: pb.averageIncome,
       costOfGoods: pb.costOfGoods,
       rentForBusiness: pb.rentForBusiness,
       salaries: pb.salaries,
       transportForBusinessStock: pb.transportForBusinessStock,
+      customExpenses: pb.customExpenses?.map((expense: any) => ({
+        name: expense.name,
+        amount: expense.amount,
+      })) || [],
     };
   }
 

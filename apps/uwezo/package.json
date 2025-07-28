@@ -9,7 +9,7 @@
     "start": "prisma migrate deploy && next start",
     "lint": "next lint",
     "check-types": "tsc --noEmit",
-    "schema": ". ./.env && openapi-typescript \"$NEXT_API_URL/api/docs/json\" -o ./lib/api/schema/schema.d.ts --prettier && echo 'Schema updated successfully'",
+    "schema": ". ./.env.local && openapi-typescript \"$NEXT_API_URL/api/docs/json\" -o ./lib/api/schema/schema.d.ts --prettier && echo 'Schema updated successfully'",
     "schema:dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run schema",
     "schema:validate": "tsc --noEmit --skipLibCheck ./lib/api/schema/schema.d.ts",
     "db:generate": "prisma generate",

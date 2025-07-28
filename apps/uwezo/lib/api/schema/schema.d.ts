@@ -224,26 +224,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/v1/application/taxonomy-vocabularies": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get all taxonomy vocabularies for Application forms
-     * @description Retrieves all taxonomy vocabularies and their terms used in Application entity forms.
-     */
-    get: operations["api_application.taxonomy_vocabularies_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/api/v1/application/instructions": {
     parameters: {
       query?: never;
@@ -275,9 +255,29 @@ export interface paths {
     put?: never;
     /**
      * Create or update a loan application
-     * @description Creates a new loan application or updates an existing one if application_id or group_registration_number matches
+     * @description Creates a new loan application or updates an existing one if application_id or group_registration_number matches. Uses identifier_type with either owner_identifier (for EMAIL/NAME) or phoneNumber (for PHONE) to find or create the application owner in field_phone_number
      */
     post: operations["createApplication"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/member/response/{token}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Process member response or get details
+     * @description Process a member's response (confirm/decline) or get their current status using SMS confirmation token. Use ?action=confirmed or ?action=declined to process response, or no action parameter to just get details.
+     */
+    get: operations["processMemberResponse"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -356,7 +356,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753044534
+         * @example 1753626306
          */
         timestamp: number;
         /**
@@ -646,201 +646,13 @@ export interface components {
         created?: boolean;
       };
     };
-    /**
-     * Taxonomy Vocabulary
-     * @description A taxonomy vocabulary with its terms
-     */
-    TaxonomyVocabulary: {
-      /**
-       * @description The machine name of the vocabulary
-       * @example group_background
-       */
-      vocabulary_id: string;
-      /**
-       * @description The human-readable label of the vocabulary
-       * @example Group Background
-       */
-      vocabulary_label: string;
-      /**
-       * @description The description of the vocabulary
-       * @example Categories for group background types
-       */
-      vocabulary_description: string;
-      /**
-       * @description The field name in the entity that references this vocabulary
-       * @example group_background
-       */
-      field_name: string;
-      /**
-       * @description The entity type that uses this vocabulary
-       * @example application
-       * @enum {string}
-       */
-      entity_type: "application" | "group_member";
-      /**
-       * @description Whether the field accepts single or multiple values
-       * @example multiple
-       * @enum {string}
-       */
-      cardinality: "single" | "multiple";
-      /**
-       * @description Whether new terms can be auto-created for this vocabulary
-       * @example false
-       */
-      auto_create: boolean;
-      /** @description Array of taxonomy terms in this vocabulary */
-      terms: components["schemas"]["TaxonomyTerm"][];
-      /**
-       * @description Total number of terms in this vocabulary
-       * @example 5
-       */
-      total_terms: number;
-    };
-    /**
-     * Taxonomy Term
-     * @description A taxonomy term
-     */
-    TaxonomyTerm: {
-      /**
-       * @description The term ID
-       * @example 1
-       */
-      tid: number;
-      /**
-       * @description The term UUID
-       * @example 550e8400-e29b-41d4-a716-446655440000
-       */
-      uuid: string;
-      /**
-       * @description The term name
-       * @example Youth Group
-       */
-      name: string;
-      /** @description The term description */
-      description: {
-        /**
-         * @description The raw description text
-         * @example Groups primarily composed of young people
-         */
-        value: string;
-        /**
-         * @description The text format
-         * @example basic_html
-         */
-        format: string;
-        /**
-         * @description The processed description HTML
-         * @example <p>Groups primarily composed of young people</p>
-         */
-        processed: string;
-      };
-      /**
-       * @description The term weight (for ordering)
-       * @example 0
-       */
-      weight: number;
-      /**
-       * @description Array of parent term IDs
-       * @example []
-       */
-      parent_ids: number[];
-      /**
-       * @description The absolute URL to the term
-       * @example https://example.com/taxonomy/term/1
-       */
-      url: string;
-      /** @description Language information for the term */
-      language: {
-        /**
-         * @description The language code
-         * @example en
-         */
-        code: string;
-        /**
-         * @description The language name
-         * @example English
-         */
-        name: string;
-      };
-    };
-    /**
-     * Taxonomy Vocabularies Meta
-     * @description Metadata for taxonomy vocabularies response
-     */
-    TaxonomyVocabulariesMeta: {
-      /**
-       * @description Unix timestamp of when the response was generated
-       * @example 1753009095
-       */
-      timestamp: number;
-      /**
-       * @description API version
-       * @example v1
-       */
-      version: string;
-      /**
-       * @description Total number of vocabularies in the response
-       * @example 9
-       */
-      total_vocabularies: number;
-      /** @description Language information */
-      language: {
-        /**
-         * @description Current language code
-         * @example en
-         */
-        current: string;
-        /**
-         * @description Default language code
-         * @example en
-         */
-        default: string;
-        /** @description Available languages */
-        available: {
-          [key: string]: {
-            /** @example en */
-            langcode: string;
-            /** @example English */
-            name: string;
-            /** @example https://example.com/api/v1/application/taxonomy-vocabularies */
-            url: string;
-            /** @example /api/v1/application/taxonomy-vocabularies */
-            path: string;
-          };
-        };
-      };
-    };
-    /**
-     * Error Response
-     * @description Error response structure
-     */
-    ErrorResponse: {
-      /**
-       * @description Error type
-       * @example Invalid language code
-       */
-      error: string;
-      /**
-       * @description Detailed error message
-       * @example Language code "xx" is not supported. Available languages: en, sw
-       */
-      message: string;
-      /**
-       * @description List of available language codes
-       * @example [
-       *       "en",
-       *       "sw"
-       *     ]
-       */
-      available_languages: string[];
-    };
     /** @description Response containing application instructions */
     ApplicationInstructionsResponse: {
       data: components["schemas"]["ApplicationInstructions"];
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753044534
+         * @example 1753626306
          */
         timestamp: number;
         /**
@@ -1015,7 +827,7 @@ export interface components {
        */
       timestamp?: number;
     };
-    /** @description Request body for creating or updating an application */
+    /** @description Request body for creating or updating an application. When identifier_type is EMAIL or NAME, use owner_identifier. When identifier_type is PHONE, use phoneNumber. */
     ApplicationPostRequest: {
       /**
        * @description Existing application ID for updates (optional)
@@ -1023,11 +835,21 @@ export interface components {
        */
       application_id?: string;
       /**
-       * Format: email
-       * @description Email of the application owner
+       * @description Type of identifier used to identify the application owner
+       * @example EMAIL
+       * @enum {string}
+       */
+      identifier_type: "EMAIL" | "PHONE" | "NAME";
+      /**
+       * @description Identifier of the application owner (email or name, used when identifier_type is EMAIL or NAME)
        * @example user@example.com
        */
-      owner_email: string;
+      owner_identifier?: string;
+      /**
+       * @description Phone number of the application owner (used when identifier_type is PHONE)
+       * @example +254712345678
+       */
+      phone_number?: string;
       /**
        * @description Application status
        * @default draft
@@ -1196,6 +1018,103 @@ export interface components {
       /** @description List of missing required fields */
       missing_fields?: string[];
     };
+    MemberConfirmationSuccessResponse: {
+      /**
+       * @description Indicates if the confirmation was successful
+       * @example true
+       */
+      success: boolean;
+      /**
+       * @description Human-readable success message
+       * @example Membership confirmed successfully
+       */
+      message: string;
+      data: components["schemas"]["MemberConfirmationData"];
+    };
+    MemberConfirmationData: {
+      member: components["schemas"]["ConfirmedMemberInfo"];
+      application: components["schemas"]["ConfirmedApplicationInfo"];
+      /**
+       * @description The action that was taken (only present in POST responses)
+       * @example confirmed
+       * @enum {string}
+       */
+      action?: "confirmed" | "declined";
+      /**
+       * @description Unix timestamp when confirmation was processed
+       * @example 1704067200
+       */
+      confirmation_timestamp: number;
+    };
+    ConfirmedMemberInfo: {
+      /**
+       * @description Member entity ID
+       * @example 123
+       */
+      id: number;
+      /**
+       * @description Member name
+       * @example John Doe
+       */
+      name: string;
+      /**
+       * @description Member phone number
+       * @example +254700123456
+       */
+      phone_number: string;
+      /**
+       * @description Updated confirmation status
+       * @example confirmed
+       * @enum {string}
+       */
+      confirmation_status: "confirmed" | "declined";
+      /**
+       * @description Unix timestamp when member confirmed
+       * @example 1704067200
+       */
+      confirmation_confirmed_at: number;
+    };
+    ConfirmedApplicationInfo: {
+      /**
+       * @description Application entity ID
+       * @example 456
+       */
+      id?: number | null;
+      /**
+       * @description Application identifier
+       * @example APP-20240101-abc12
+       */
+      application_id?: string | null;
+      /**
+       * @description Name of the group
+       * @example Savings Group Alpha
+       */
+      group_name?: string | null;
+    };
+    MemberConfirmationErrorResponse: {
+      /**
+       * @description Indicates the request failed
+       * @example false
+       */
+      success: boolean;
+      error: {
+        /**
+         * @description Error message
+         * @example Invalid or expired confirmation token
+         */
+        message: string;
+        /**
+         * @description HTTP status code
+         * @example 404
+         */
+        code: number;
+      };
+      /**
+       * @description Unix timestamp when error occurred
+       * @example 1704067200
+       */
+      timestamp: number;
+    };
     /**
      * Taxonomy Vocabulary
      * @description A taxonomy vocabulary with its terms
@@ -1320,7 +1239,7 @@ export interface components {
     TaxonomyVocabulariesMeta: {
       /**
        * @description Unix timestamp of when the response was generated
-       * @example 1753044534
+       * @example 1753626306
        */
       timestamp: number;
       /**
@@ -1479,6 +1398,55 @@ export interface components {
       person_with_disability?: boolean;
       pwd_number?: string | null;
       certificate_disability?: components["schemas"]["FileData"];
+      confirmation?: components["schemas"]["MemberConfirmationInfo"];
+    };
+    MemberConfirmationInfo: {
+      /**
+       * @description Current confirmation status
+       * @example pending
+       * @enum {string}
+       */
+      status: "pending" | "sent" | "confirmed" | "failed";
+      /**
+       * @description Unix timestamp when SMS was sent
+       * @example 1704067200
+       */
+      sent_at?: number | null;
+      /**
+       * @description Unix timestamp when member confirmed
+       * @example 1704067800
+       */
+      confirmed_at?: number | null;
+      /**
+       * @description Whether the member has confirmed
+       * @example false
+       */
+      is_confirmed: boolean;
+      /**
+       * @description Whether the member has declined
+       * @example false
+       */
+      is_declined: boolean;
+      urls: {
+        /**
+         * Format: uri
+         * @description REST API endpoint URL for programmatic confirmation
+         * @example https://example.com/api/v1/member/response/a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
+         */
+        api: string;
+        /**
+         * Format: uri
+         * @description Frontend application URL for user confirmation
+         * @example https://app.example.com/confirm/a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
+         */
+        frontend: string;
+        /**
+         * Format: uri
+         * @description URL that will be sent via SMS (same as frontend_url)
+         * @example https://app.example.com/confirm/a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
+         */
+        sms: string;
+      };
     };
     FileData: {
       /** @description File ID */
@@ -1581,7 +1549,7 @@ export interface components {
     SiteInformationMeta: {
       /**
        * @description Unix timestamp of the response
-       * @example 1753044534
+       * @example 1753626306
        */
       timestamp: number;
       /**
@@ -1814,7 +1782,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp: number;
               /**
@@ -1884,7 +1852,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp: number;
               /**
@@ -1959,7 +1927,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2014,7 +1982,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2104,7 +2072,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2161,7 +2129,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2228,7 +2196,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2292,11 +2260,13 @@ export interface operations {
                * @description Last access date
                */
               last_access?: string;
+              /** @description Phone number */
+              phoneNumber?: string;
             };
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2365,7 +2335,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753044534
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2421,7 +2391,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2484,7 +2454,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753009095
+               * @example 1753626306
                */
               timestamp?: number;
               /**
@@ -2516,42 +2486,6 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
-      };
-    };
-  };
-  "api_application.taxonomy_vocabularies_get": {
-    parameters: {
-      query?: never;
-      header?: {
-        /** @description The language code for the response (e.g., "en", "sw") */
-        "X-Language"?: string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Taxonomy vocabularies retrieved successfully */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            /** @description Taxonomy vocabularies data */
-            data: components["schemas"]["TaxonomyVocabulary"];
-            meta: components["schemas"]["TaxonomyVocabulariesMeta"];
-          };
-        };
-      };
-      /** @description Invalid language code provided */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ErrorResponse"];
-        };
       };
     };
   };
@@ -2665,6 +2599,59 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  processMemberResponse: {
+    parameters: {
+      query?: {
+        /** @description Action to take: "confirmed" to accept, "declined" to decline, or omit to just get details */
+        action?: "confirmed" | "declined";
+      };
+      header?: never;
+      path: {
+        /** @description SMS confirmation token (64-character hexadecimal string) */
+        token: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Success - either member details retrieved or response processed */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MemberConfirmationSuccessResponse"];
+        };
+      };
+      /** @description Invalid request - missing/malformed token or invalid action */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MemberConfirmationErrorResponse"];
+        };
+      };
+      /** @description Token not found or expired */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MemberConfirmationErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MemberConfirmationErrorResponse"];
         };
       };
     };
