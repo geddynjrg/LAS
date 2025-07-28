@@ -137,7 +137,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
               <ButtonGroup
                 {...props}
                 type="single"
-                onValueChange={(val) =>
+                onValueChange={(val: string) =>
                   setSelectedType(val as keyof typeof loanTypes)
                 }
               >

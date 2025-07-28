@@ -24,6 +24,7 @@ export interface CardProps extends VariantProps<typeof cardVariants> {
   statusLabel?: string;
   footer?: ReactNode;
   children?: ReactNode;
+  variant: "success" | "warning" | "danger";
 }
 
 export const Card: FC<CardProps> = ({

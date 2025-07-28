@@ -620,6 +620,62 @@ export async function updateApplicationDeclarationsData(
   }
 }
 
+export async function updateMemberConfirmationStatuses(
+  id: string,
+  selectedMemberIds: string[],
+) {
+  try {
+    const user = await getCurrentUser();
+
+    const application = await prisma.application.findUnique({
+      where: { applicationId: id },
+      include: { members: true },
+    });
+
+    if (!application) {
+      throw new Error("Application not found");
+    }
+
+    // Check if user owns the application
+    if (application.userId !== user.id) {
+      throw new Error("Access denied: You don't own this application");
+    }
+
+    const members = application.members || [];
+
+    // Extract indices from selected member IDs
+    // Format: "nationalIdCode-index" or "member-index-index"
+    const selectedIndices = selectedMemberIds.map(memberId => {
+      const lastDashIndex = memberId.lastIndexOf('-');
+      if (lastDashIndex > 0) {
+        const index = parseInt(memberId.substring(lastDashIndex + 1), 10);
+        return isNaN(index) ? -1 : index;
+      }
+      return -1;
+    }).filter(index => index >= 0);
+
+    // Update requiresConfirmation field for ALL members
+    await Promise.all(
+      members.map(async (member, index) => {
+        const requiresConfirmation = selectedIndices.includes(index);
+        
+        return prisma.memberData.update({
+          where: { id: member.id },
+          data: {
+            requiresConfirmation,
+          },
+        });
+      }),
+    );
+
+    const updatedApplication = await getApplicationById(id);
+    return updatedApplication?.members?.members;
+  } catch (error) {
+    const { message } = handlePrismaError(error);
+    throw new Error(message);
+  }
+}
+
 export async function updateApplicationMembersConfirmationData(id: string) {
   try {
     const user = await getCurrentUser();
@@ -798,6 +854,7 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
             }
           : undefined,
         status: m.status.toLowerCase(),
+        requiresConfirmation: m.requiresConfirmation || false,
       })),
     };
   }

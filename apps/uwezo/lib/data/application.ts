@@ -84,6 +84,7 @@ export interface Member {
     pwdNumber?: string;
   };
   status?: "confirmed" | "pending";
+  requiresConfirmation?: boolean;
 }
 
 export interface MembersData {

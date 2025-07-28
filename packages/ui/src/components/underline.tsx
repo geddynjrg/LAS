@@ -7,6 +7,7 @@ export interface UnderlineProps extends VariantProps<typeof underlineVariants> {
   children?: ReactNode;
   className?: string;
   asChild?: boolean;
+  variant?: "primary" | "link" | "white";
 }
 
 export const underlineVariants = cva({

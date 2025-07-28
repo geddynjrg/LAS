@@ -57,6 +57,15 @@ export interface ButtonProps extends VariantProps<typeof buttonVariants> {
   className?: string;
   children?: ReactNode;
   style?: CSSProperties;
+  variant?:
+    | "default"
+    | "secondary"
+    | "danger"
+    | "neutral"
+    | "ghost"
+    | "link"
+    | "shadow";
+  size?: "xs" | "sm" | "md" | "default" | "lg";
 }
 
 export const Button: FC<ButtonProps> = ({
