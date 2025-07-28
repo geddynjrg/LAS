@@ -11,18 +11,21 @@ import {
 } from "@/app/apply/[id]/confirmations/group-members-confirmation-schema";
 import { updateMemberConfirmationStatuses } from "@/lib/data/application-db";
 
-export const groupMembersConfirmationDataAction: FormAction<GroupMembersConfirmationData> = async (
-  _prev,
-  formData
-) => {
-    let id: string;
-    let selectedMembers: string[];
-    const redirectUrl = formData.get("redirectTo")?.toString();
-    
-    try {
+export const groupMembersConfirmationDataAction: FormAction<
+  GroupMembersConfirmationData
+> = async (_prev, formData) => {
+  let id: string;
+  let selectedMembers: string[];
+  const redirectUrl = formData.get("redirectTo")?.toString();
+
+  try {
     // Get form values and validate with schema (schema handles JSON parsing)
-    const values = getFormZodDataValues(formData, groupMembersConfirmationDataSchema);
-    const { success, data, error } = groupMembersConfirmationDataSchema.safeParse(values);
+    const values = getFormZodDataValues(
+      formData,
+      groupMembersConfirmationDataSchema,
+    );
+    const { success, data, error } =
+      groupMembersConfirmationDataSchema.safeParse(values);
 
     if (!success) {
       return {
@@ -44,21 +47,23 @@ export const groupMembersConfirmationDataAction: FormAction<GroupMembersConfirma
         values,
       };
     }
-
   } catch (error) {
     console.error("Error updating member confirmation statuses:", error);
-    
+
     return {
       success: false,
       message: "Failed to update member confirmation statuses",
       errors: {},
-      values: getFormZodDataValues(formData, groupMembersConfirmationDataSchema),
+      values: getFormZodDataValues(
+        formData,
+        groupMembersConfirmationDataSchema,
+      ),
     };
   }
-     
+
   // Update member confirmation statuses in the database
   await updateMemberConfirmationStatuses(id, selectedMembers);
-  
+
   const finalRedirectUrl = redirectUrl || `/apply/${id}/review`;
   redirect(finalRedirectUrl);
 };

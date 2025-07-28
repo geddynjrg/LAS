@@ -24,13 +24,14 @@ export const groupMembersConfirmationDataSchema = z.object({
       }
     })
     .pipe(
-      z.array(z.string().min(1, "Member ID cannot be empty"))
+      z
+        .array(z.string().min(1, "Member ID cannot be empty"))
         .min(1, "At least one member must be selected")
-        .max(50, "Too many members selected")
+        .max(50, "Too many members selected"),
     ),
   redirectTo: z.string().optional(),
 });
 
 export type GroupMembersConfirmationData = z.infer<
   typeof groupMembersConfirmationDataSchema
->; 
+>;

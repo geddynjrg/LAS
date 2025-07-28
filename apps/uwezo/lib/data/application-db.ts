@@ -474,7 +474,7 @@ export async function updateApplicationProposedBusinessData(
 
     const application = await prisma.application.findUnique({
       where: { applicationId: id },
-      include: { 
+      include: {
         proposedBusiness: {
           include: {
             customExpenses: true,
@@ -645,20 +645,22 @@ export async function updateMemberConfirmationStatuses(
 
     // Extract indices from selected member IDs
     // Format: "nationalIdCode-index" or "member-index-index"
-    const selectedIndices = selectedMemberIds.map(memberId => {
-      const lastDashIndex = memberId.lastIndexOf('-');
-      if (lastDashIndex > 0) {
-        const index = parseInt(memberId.substring(lastDashIndex + 1), 10);
-        return isNaN(index) ? -1 : index;
-      }
-      return -1;
-    }).filter(index => index >= 0);
+    const selectedIndices = selectedMemberIds
+      .map((memberId) => {
+        const lastDashIndex = memberId.lastIndexOf("-");
+        if (lastDashIndex > 0) {
+          const index = parseInt(memberId.substring(lastDashIndex + 1), 10);
+          return isNaN(index) ? -1 : index;
+        }
+        return -1;
+      })
+      .filter((index) => index >= 0);
 
     // Update requiresConfirmation field for ALL members
     await Promise.all(
       members.map(async (member, index) => {
         const requiresConfirmation = selectedIndices.includes(index);
-        
+
         return prisma.memberData.update({
           where: { id: member.id },
           data: {
@@ -892,10 +894,11 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
       rentForBusiness: pb.rentForBusiness,
       salaries: pb.salaries,
       transportForBusinessStock: pb.transportForBusinessStock,
-      customExpenses: pb.customExpenses?.map((expense: any) => ({
-        name: expense.name,
-        amount: expense.amount,
-      })) || [],
+      customExpenses:
+        pb.customExpenses?.map((expense: any) => ({
+          name: expense.name,
+          amount: expense.amount,
+        })) || [],
     };
   }
 

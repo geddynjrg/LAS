@@ -6,10 +6,10 @@ import type { FormAction } from "@workspace/ui/hooks/use-form";
 import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
-  proposedBusinessFormSchema,
   proposedBusinessDataSchema,
-  type ProposedBusinessData,
+  proposedBusinessFormSchema,
   type CustomExpense,
+  type ProposedBusinessData,
 } from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
 import { updateApplicationProposedBusinessData } from "@/lib/data/application-db";
 
