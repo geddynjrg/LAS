@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 
 import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
 
 import {
   membersDataSchema,
@@ -15,26 +14,33 @@ export const membersDataAction: FormAction<MembersData> = async (
   _prev,
   formData,
 ) => {
-  const values = getFormZodDataValues(formData, membersDataSchema);
   const redirectTo = formData.get("redirectTo")?.toString();
   const id = formData.get("id")?.toString();
-  let members;
 
-  try {
-    members = JSON.parse(formData.get("members")?.toString() || "[]");
-  } catch (error) {
-    // TODO: Validate members properly when form is capable of handling it
-    console.error("Error parsing members data", error);
-    members = [];
-  }
+  // Prepare data for validation including members
+  const formValues = {
+    natureOfGroup: formData.get("natureOfGroup")?.toString() || "",
+    members: formData.get("members")?.toString() || "[]", // This will be preprocessed by the schema
+  };
 
-  const { success, data, error } = membersDataSchema.safeParse(values);
+  const { success, data, error } = membersDataSchema.safeParse(formValues);
 
-  if (error) {
+  if (!success) {
+    // For error response, we need to parse members for proper typing
+    let parsedMembers;
+    try {
+      parsedMembers = JSON.parse(formValues.members);
+    } catch {
+      parsedMembers = [];
+    }
+
     return {
       success,
       errors: error.flatten().fieldErrors,
-      values,
+      values: {
+        natureOfGroup: formValues.natureOfGroup,
+        members: parsedMembers,
+      },
     };
   }
 
@@ -46,10 +52,10 @@ export const membersDataAction: FormAction<MembersData> = async (
     throw new Error("No application ID provided");
   }
 
-  /* Submit data to dummy data list */
+  /* Submit validated data */
   await updateApplicationMembersData(id, {
     natureOfTheGroup: data.natureOfGroup,
-    members,
+    members: data.members,
   });
 
   redirect(redirectTo);

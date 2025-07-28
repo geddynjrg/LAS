@@ -462,6 +462,9 @@
     "personWithDisability": "Mtu mwenye ulemavu",
     "certificateOfDisability": "Cheti cha ulemavu",
     "pwdNumber": "Nambari ya PWD",
-    "maxFileSize": "Ukubwa wa faili wa juu zaidi {size}"
+    "maxFileSize": "Ukubwa wa faili wa juu zaidi {size}",
+    "errors": {
+      "atLeastOneMemberRequired": "Angalau mwanachama mmoja anahitajika"
+    }
   }
 }

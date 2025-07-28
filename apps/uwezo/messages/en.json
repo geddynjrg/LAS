@@ -463,6 +463,9 @@
     "personWithDisability": "Person with disability",
     "certificateOfDisability": "Certificate of disability",
     "pwdNumber": "PWD number",
-    "maxFileSize": "Max file size {size}"
+    "maxFileSize": "Max file size {size}",
+    "errors": {
+      "atLeastOneMemberRequired": "At least one member is required"
+    }
   }
 }
