@@ -1,0 +1,11 @@
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx.crt:/etc/nginx/ssl/nginx.crt
+      - ./nginx.key:/etc/nginx/ssl/nginx.key
