@@ -207,7 +207,7 @@ export const GroupConfirmationMembersForm: FC<
       <ApplyFormActionBar
         disabled={isPending || selectedMembers.length === 0}
         nextUrl={`/apply/${id}/review`}
-        prevUrl={`/apply/${id}/confirmations`}
+        prevUrl={`/apply/${id}/proposed-business`}
       />
     </Form>
   );
