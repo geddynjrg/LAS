@@ -86,9 +86,9 @@ export default async function Page() {
         <>
           <HeroSection
             title={t.rich("title", {
-              title: (chunks) => <span className="typo-display">{chunks}</span>,
-              light: (chunks) => <span className="font-light">{chunks}</span>,
-              subTitle: (chunks) => <span className="typo-h4">{chunks}</span>,
+              title: (chunks: React.ReactNode) => <span className="typo-display">{chunks}</span>,
+              light: (chunks: React.ReactNode) => <span className="font-light">{chunks}</span>,
+              subTitle: (chunks: React.ReactNode) => <span className="typo-h4">{chunks}</span>,
               lineBreak: () => <br />,
             })}
             backgroundAlt={t("imageDescription")}
@@ -96,7 +96,7 @@ export default async function Page() {
           >
             <span className="typo-body-large">
               {t.rich("description", {
-                underline: (chunks) => (
+                underline: (chunks: React.ReactNode) => (
                   <span className="underline">{chunks}</span>
                 ),
               })}
@@ -141,16 +141,16 @@ async function StaticCriteriaSection() {
             </Card>
             <Card radius="lg" variant="primary">
               {t.rich("criteria.three", {
-                bold: (chunks) => (
+                bold: (chunks: React.ReactNode) => (
                   <>
                     <span className="font-bold">{chunks}</span>
                     <br />
                   </>
                 ),
-                ul: (chunks) => (
+                ul: (chunks: React.ReactNode) => (
                   <ul className="typo-list-bullet ml-7">{chunks}</ul>
                 ),
-                li: (chunks) => <li>{chunks}</li>,
+                li: (chunks: React.ReactNode) => <li>{chunks}</li>,
               })}
             </Card>
           </div>
@@ -190,16 +190,16 @@ function CriteriaSection() {
             </Card>
             <Card radius="lg" variant="primary">
               {t.rich("criteria.three", {
-                bold: (chunks) => (
+                bold: (chunks: React.ReactNode) => (
                   <>
                     <span className="font-bold">{chunks}</span>
                     <br />
                   </>
                 ),
-                ul: (chunks) => (
+                ul: (chunks: React.ReactNode) => (
                   <ul className="typo-list-bullet ml-7">{chunks}</ul>
                 ),
-                li: (chunks) => <li>{chunks}</li>,
+                li: (chunks: React.ReactNode) => <li>{chunks}</li>,
               })}
             </Card>
           </div>

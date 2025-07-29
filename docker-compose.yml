@@ -42,6 +42,7 @@ services:
     volumes:
       - drupal_files:/var/www/html/web/sites/default/files
       - drupal_private:/var/www/private
+      - drupal_web:/var/www/html/web
     environment:
       # Database configuration
       DRUPAL_DATABASE_HOST: db
@@ -98,7 +99,7 @@ services:
     volumes:
       - ./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./docker/nginx/certs:/etc/nginx/certs:ro
-      - ./admin/web:/var/www/html/web:ro
+      - drupal_web:/var/www/html/web:ro
       - certbot_www:/var/www/certbot:ro
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN:-localhost}
@@ -112,4 +113,5 @@ volumes:
   db_data:
   drupal_files:
   drupal_private:
+  drupal_web:
   certbot_www:

@@ -39,6 +39,7 @@
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.2",
     "@workspace/eslint-config": "workspace:^",
+    "eslint": "^9.23.0",
     "@workspace/typescript-config": "workspace:*",
     "openapi-typescript": "^7.6.1",
     "postcss": "^8.5.3",

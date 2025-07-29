@@ -22,6 +22,9 @@ dist/
 build/
 storybook-static/
 
+# Generated files
+**/generated/
+
 # SSL certificates (except examples)
 docker/nginx/certs/*.crt
 docker/nginx/certs/*.key

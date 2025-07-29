@@ -49,8 +49,6 @@ RUN --mount=type=cache,target=/tmp/composer \
     COMPOSER_CACHE_DIR=/tmp/composer \
     composer install \
         --no-dev \
-        --no-scripts \
-        --no-autoloader \
         --prefer-dist \
         --no-interaction \
         --optimize-autoloader
@@ -61,17 +59,17 @@ FROM deps AS production
 
 WORKDIR /var/www/html
 
-# Copy vendor dependencies from composer stage
-COPY --from=composer-deps --chown=www-data:www-data /var/www/html/vendor ./vendor
-
-# Copy application files
+# Copy application files first (excluding vendor to avoid overwriting)
 COPY --chown=www-data:www-data . .
+
+# Copy vendor dependencies from composer stage  
+COPY --from=composer-deps --chown=www-data:www-data /var/www/html/vendor ./vendor
 
 # Copy custom PHP configuration
 COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
-# Generate optimized autoloader
-RUN composer dump-autoload --optimize --no-dev
+# Complete the composer installation (install packages to proper locations)
+RUN composer install --no-dev --optimize-autoloader
 
 # Create necessary directories and set permissions
 RUN mkdir -p web/sites/default/files /var/www/private \

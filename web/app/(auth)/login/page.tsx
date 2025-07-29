@@ -30,12 +30,12 @@ export default async function Page({
           <p className="typo-body-medium">{t("description")}</p>
           <p className="typo-body-medium">
             {t.rich("flowDescription", {
-              bold: (chunk) => <strong>{chunk}</strong>,
+              bold: (chunk: React.ReactNode) => <strong>{chunk}</strong>,
             })}
           </p>
           <p className="typo-body-medium">
             {t.rich("submittedDescription", {
-              bold: (chunk) => <strong>{chunk}</strong>,
+              bold: (chunk: React.ReactNode) => <strong>{chunk}</strong>,
             })}
           </p>
         </header>

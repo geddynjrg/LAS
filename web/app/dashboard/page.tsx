@@ -214,7 +214,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
               <>
                 <ul className="list-disc pl-6">
                   {t.rich("stepDescription.inReview", {
-                    li: (chunk) => <li>{chunk}</li>,
+                    li: (chunk: React.ReactNode) => <li>{chunk}</li>,
                   })}
                 </ul>
                 <Link href="#">

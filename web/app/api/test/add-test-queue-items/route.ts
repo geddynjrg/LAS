@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       {
         applicationId: "APP-TEST-FAILED-001",
         action: SyncAction.CREATE,
-        payload: {},
+        payload: JSON.stringify({}),
         status: QueueStatus.FAILED,
         attempts: 3,
         maxAttempts: 3,
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       {
         applicationId: "APP-TEST-PROCESSING-001",
         action: SyncAction.UPDATE,
-        payload: {},
+        payload: JSON.stringify({}),
         status: QueueStatus.PROCESSING,
         attempts: 1,
         maxAttempts: 3,
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       {
         applicationId: "APP-TEST-PENDING-002",
         action: SyncAction.CREATE,
-        payload: {},
+        payload: JSON.stringify({}),
         status: QueueStatus.PENDING,
         attempts: 0,
         maxAttempts: 3,

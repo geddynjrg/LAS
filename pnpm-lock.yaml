@@ -327,6 +327,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
+      eslint:
+        specifier: ^9.23.0
+        version: 9.23.0(jiti@2.4.2)
       openapi-typescript:
         specifier: ^7.6.1
         version: 7.6.1(typescript@5.8.3)

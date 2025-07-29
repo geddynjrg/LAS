@@ -51,6 +51,9 @@ Then set `NODE_TLS_REJECT_UNAUTHORIZED=0` in your `.env` file to bypass SSL veri
 ### 3. Database Initialization
 
 ```bash
+# Build all services without cache for initial setup
+docker compose build --no-cache
+
 # Start database and admin services
 docker compose up -d db admin
 

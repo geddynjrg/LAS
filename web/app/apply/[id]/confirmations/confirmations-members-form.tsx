@@ -145,7 +145,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
           {confirmationSent && (
             <Card variant="green" className={cn("text-sm")}>
               {t.rich("ConfirmationsPage.confirmMembersForm.progress-saved", {
-                strong: (chunks) => <strong>{chunks}</strong>,
+                strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
               })}
             </Card>
           )}
