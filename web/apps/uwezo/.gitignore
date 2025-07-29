@@ -1,9 +1,0 @@
-node_modules
-# Keep environment variables out of version control
-.env
-
-/generated/prisma
-
-# Uploaded files should not be tracked
-public/uploads/
-uploads/

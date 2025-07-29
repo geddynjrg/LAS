@@ -22,7 +22,7 @@ export async function getMessages(locale: string) {
     import(`@/messages/${localeFileName}`),
     // `@workspace/ui/messages/${locale}` seems not to work
     // https://github.com/vercel/next.js/issues/63372
-    import(`../../../packages/ui/src/messages/${localeFileName}`),
+    import(`../../packages/ui/src/messages/${localeFileName}`),
   ]).catch((err) => {
     console.error("Failed to load messages", err);
 

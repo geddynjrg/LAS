@@ -1,4 +1,4 @@
-# TVET Auth API Module
+# UWEZO Auth API Module
 
 ## JWT Authentication
 
@@ -25,7 +25,7 @@ The JWT authentication system in this module implements the following security f
 
 ### Configuration
 
-JWT token settings can be configured at `/admin/config/services/tvet-auth`, including:
+JWT token settings can be configured at `/admin/config/services/uwezo-auth`, including:
 
 - Access and refresh token expiration times
 - Secret keys for signing tokens
@@ -34,7 +34,7 @@ JWT token settings can be configured at `/admin/config/services/tvet-auth`, incl
 
 ### Token Management
 
-The module provides a token management interface at `/admin/config/services/tvet-auth/tokens` that allows administrators to:
+The module provides a token management interface at `/admin/config/services/uwezo-auth/tokens` that allows administrators to:
 
 - View all tokens with detailed information (user, IP, expiration date, status)
 - Revoke individual tokens
@@ -141,7 +141,7 @@ When JWT secret keys are changed in the configuration, all existing tokens are a
 
 ## Configuration
 
-JWT settings can be configured at `/admin/config/services/tvet-auth`.
+JWT settings can be configured at `/admin/config/services/uwezo-auth`.
 
 ## Security Recommendations
 
@@ -186,31 +186,31 @@ The module provides several Drush commands for managing tokens from the command 
 
 | Command | Alias | Description |
 |---------|-------|-------------|
-| `drush tvet:token-stats` | `tvet-token-stats` | Display statistics about tokens in the database |
-| `drush tvet:purge-tokens` | `tvet-purge-tokens` | Remove all expired tokens from the database |
-| `drush tvet:remove-user-tokens [uid]` | `tvet-remove-user-tokens` | Remove all tokens for a specific user |
-| `drush tvet:remove-all-tokens` | `tvet-remove-all-tokens` | Remove all tokens from the database (with confirmation) |
+| `drush uwezo:token-stats` | `uwezo-token-stats` | Display statistics about tokens in the database |
+| `drush uwezo:purge-tokens` | `uwezo-purge-tokens` | Remove all expired tokens from the database |
+| `drush uwezo:remove-user-tokens [uid]` | `uwezo-remove-user-tokens` | Remove all tokens for a specific user |
+| `drush uwezo:remove-all-tokens` | `uwezo-remove-all-tokens` | Remove all tokens from the database (with confirmation) |
 
 ### Examples
 
 **View token statistics:**
 ```bash
-drush tvet:token-stats
+drush uwezo:token-stats
 ```
 
 **Purge expired tokens:**
 ```bash
-drush tvet:purge-tokens
+drush uwezo:purge-tokens
 ```
 
 **Remove tokens for a specific user:**
 ```bash
-drush tvet:remove-user-tokens 42
+drush uwezo:remove-user-tokens 42
 ```
 
 **Remove all tokens:**
 ```bash
-drush tvet:remove-all-tokens
+drush uwezo:remove-all-tokens
 ```
 
 ## Implementation Approach
@@ -219,7 +219,7 @@ This module implements a comprehensive JWT (JSON Web Token) authentication syste
 
 ### Database Structure
 
-Tokens are stored in a single database table (`tvet_active_tokens`) with fields for:
+Tokens are stored in a single database table (`uwezo_active_tokens`) with fields for:
 
 - Token identifier (jti)
 - User ID

@@ -1,7 +1,7 @@
-name: 'TVET General'
+name: 'UWEZO General'
 type: module
-description: 'General module for TVET.'
+description: 'General module for UWEZO.'
 core_version_requirement: ^10 || ^11
-package: TVET
+package: UWEZO
 dependencies:
   - drupal:user

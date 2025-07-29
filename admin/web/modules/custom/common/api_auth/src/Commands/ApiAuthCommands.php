@@ -72,7 +72,7 @@ class ApiAuthCommands extends DrushCommands implements ContainerInjectionInterfa
    *
    * @command api:purge-tokens
    *
-   * @aliases api-purge-tokens,tvet-rest:purge-tokens
+   * @aliases api-purge-tokens,uwezo-rest:purge-tokens
    *
    * @usage api:purge-tokens
    *   Purges all expired tokens from the database.
@@ -95,7 +95,7 @@ class ApiAuthCommands extends DrushCommands implements ContainerInjectionInterfa
    *
    * @command api:remove-all-tokens
    *
-   * @aliases api-remove-all-tokens,tvet-rest:remove-all-tokens
+   * @aliases api-remove-all-tokens,uwezo-rest:remove-all-tokens
    *
    * @usage api:remove-all-tokens
    *   Removes all tokens from the database.
@@ -123,7 +123,7 @@ class ApiAuthCommands extends DrushCommands implements ContainerInjectionInterfa
    *
    * @command api:remove-user-tokens
    *
-   * @aliases api-remove-user-tokens,tvet-rest:remove-user-tokens
+   * @aliases api-remove-user-tokens,uwezo-rest:remove-user-tokens
    *
    * @usage api:remove-user-tokens 123
    *   Removes all tokens for user with ID 123.
@@ -160,7 +160,7 @@ class ApiAuthCommands extends DrushCommands implements ContainerInjectionInterfa
    *
    * @command api:token-stats
    *
-   * @aliases api-token-stats,tvet-rest:token-stats
+   * @aliases api-token-stats,uwezo-rest:token-stats
    *
    * @usage api:token-stats
    *   Gets statistics about stored tokens.

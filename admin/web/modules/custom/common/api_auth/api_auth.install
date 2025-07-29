@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the TVET Auth module.
+ * Install, update and uninstall functions for the UWEZO Auth module.
  */
 
 use Drupal\Core\Database\Database;

@@ -856,6 +856,50 @@ $settings['migrate_node_migrate_type_classic'] = FALSE;
 # $settings['migrate_file_public_path'] = '';
 # $settings['migrate_file_private_path'] = '';
 
+// Environment variable configuration - available in all environments.
+// Local settings (DDEV, settings.local.php) will override these if needed.
+
+// Database configuration from environment variables.
+if (getenv('DRUPAL_DATABASE_PASSWORD')) {
+  $databases['default']['default'] = [
+    'database' => getenv('DRUPAL_DATABASE_NAME') ?: 'drupal',
+    'username' => getenv('DRUPAL_DATABASE_USER') ?: 'drupal',
+    'password' => getenv('DRUPAL_DATABASE_PASSWORD'),
+    'host' => getenv('DRUPAL_DATABASE_HOST') ?: 'db',
+    'port' => getenv('DRUPAL_DATABASE_PORT') ?: 3306,
+    'driver' => 'mysql',
+    'prefix' => '',
+    'charset' => 'utf8mb4',
+    'collation' => 'utf8mb4_unicode_ci',
+    'init_commands' => [
+      'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
+    ],
+  ];
+}
+
+// Hash salt from environment variable.
+if (getenv('DRUPAL_HASH_SALT')) {
+  $settings['hash_salt'] = getenv('DRUPAL_HASH_SALT');
+}
+
+// JWT Auth configuration from environment variables.
+if (getenv('JWT_SECRET') && getenv('JWT_REFRESH_SECRET')) {
+  $config['uwezo_auth.settings']['jwt_secret'] = getenv('JWT_SECRET');
+  $config['uwezo_auth.settings']['jwt_refresh_secret'] = getenv('JWT_REFRESH_SECRET');
+}
+
+// File system paths from environment variables.
+if (getenv('DRUPAL_ENV')) {
+  $settings['file_public_path'] = 'sites/default/files';
+  $settings['file_private_path'] = '/var/www/private';
+  $settings['file_temp_path'] = '/tmp';
+}
+
+// Web domain URL from environment variable.
+if (getenv('WEB_DOMAIN')) {
+  $settings['uwezo_ui_public_url'] = 'https://' . getenv('WEB_DOMAIN');
+}
+
 // Automatically generated include for settings managed by ddev.
 if (getenv('IS_DDEV_PROJECT') == 'true' && file_exists(__DIR__ . '/settings.ddev.php')) {
   include __DIR__ . '/settings.ddev.php';
@@ -973,8 +1017,6 @@ if (extension_loaded('redis')) {
 
 $settings['config_sync_directory'] = '../config/sync';
 
-// TVET UI public URL settings.
-$settings['api_ui_public_url'] = 'https://uwezo.e-services-fe.fusion.adm.ee';
 
 // Set the private files path.
 $settings['file_private_path'] = DRUPAL_ROOT . '/sites/default/files/private';

@@ -1,0 +1,285 @@
+# Shared nginx configuration for UWEZO with HTTPS
+# Routes admin.localhost to Drupal backend and localhost to Next.js web
+
+# Define allowed IPs for access control
+geo $allowed_ips {
+    default 0;
+    
+    # Docker networks - IMPORTANT: These are internal Docker IPs
+    # The real client IPs come through the Docker host
+    172.16.0.0/12 1;  # Docker default bridge networks
+    10.0.0.0/8 1;     # Docker custom networks
+    
+    # Allow localhost (when accessed directly on host)
+    127.0.0.1 1;
+    ::1 1;
+    
+    # Custom allowed IPs from environment
+    ${ALLOWED_IPS}
+}
+
+# Upstream for Next.js web
+upstream web_backend {
+    server web:3000;
+}
+
+# Upstream for Drupal admin
+upstream admin_backend {
+    server admin:9000;
+}
+
+# HTTP server for Let's Encrypt and redirect
+server {
+    listen 80;
+    server_name ${WEB_DOMAIN} ${ADMIN_DOMAIN};
+    
+    # Allow Let's Encrypt ACME challenge without IP restrictions
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        allow all;
+    }
+    
+    # IP whitelist check for all other requests
+    location / {
+        if ($allowed_ips = 0) {
+            return 403;
+        }
+        return 301 https://$host$request_uri;
+    }
+}
+
+# HTTPS Admin subdomain - Drupal backend
+server {
+    listen 443 ssl http2;
+    server_name ${ADMIN_DOMAIN};
+    root /var/www/html/web;
+    index index.php;
+    
+    # IP whitelist check
+    if ($allowed_ips = 0) {
+        return 403;
+    }
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/certs/uwezo.crt;
+    ssl_certificate_key /etc/nginx/certs/uwezo.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Request size limits
+    client_max_body_size 32M;
+    client_body_buffer_size 128k;
+    client_header_buffer_size 1k;
+    large_client_header_buffers 4 4k;
+
+    # Gzip compression settings
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+        application/atom+xml
+        application/geo+json
+        application/javascript
+        application/x-javascript
+        application/json
+        application/ld+json
+        application/manifest+json
+        application/rdf+xml
+        application/rss+xml
+        application/xhtml+xml
+        application/xml
+        font/eot
+        font/otf
+        font/ttf
+        image/svg+xml
+        text/css
+        text/javascript
+        text/plain
+        text/xml;
+
+    # Static asset caching
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header Vary "Accept-Encoding";
+        try_files $uri =404;
+    }
+
+    # Block access to sensitive files
+    location ~* \.(engine|inc|install|make|module|profile|po|sh|.*sql|theme|twig|tpl(\.php)?|xtmpl|yml)(~|\.sw[op]|\.bak|\.orig|\.save)?$|^(\.(?!well-known).*|Entries.*|Repository|Root|Tag|Template|composer\.(json|lock)|web\.config)$|^#.*#$|\.php(~|\.sw[op]|\.bak|\.orig|\.save)$ {
+        deny all;
+        return 404;
+    }
+
+    # Allow "Well-Known URIs" as per RFC 5785
+    location ~* ^/.well-known/ {
+        allow all;
+    }
+
+    # Block access to "hidden" files and directories
+    location ~ (^|/)\. {
+        return 403;
+    }
+
+    # Drupal files directory with caching
+    location ~ ^/sites/.*/files/ {
+        expires 1M;
+        add_header Cache-Control "public";
+        try_files $uri @drupal_rewrite;
+    }
+
+    # Handle PHP files with optimized FastCGI settings
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
+        try_files $fastcgi_script_name =404;
+        
+        fastcgi_pass admin_backend;
+        fastcgi_index index.php;
+        
+        # FastCGI optimizations
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+        fastcgi_connect_timeout 60s;
+        fastcgi_send_timeout 60s;
+        fastcgi_read_timeout 60s;
+        fastcgi_busy_buffers_size 32k;
+        fastcgi_temp_file_write_size 32k;
+        
+        # Security
+        fastcgi_param HTTP_PROXY "";
+        fastcgi_intercept_errors on;
+        
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param HTTPS on;
+    }
+
+    # Modern Drupal rewrite rules
+    location @drupal_rewrite {
+        rewrite ^/(.*)$ /index.php/$1;
+    }
+
+    # Main location with clean URLs
+    location / {
+        try_files $uri /index.php?$query_string;
+    }
+
+    # Image styles handling
+    location ~ ^/sites/.*/files/styles/ {
+        expires 1M;
+        add_header Cache-Control "public";
+        try_files $uri @drupal_rewrite;
+    }
+
+    # Handle private files through Drupal
+    location ~ ^(/[a-z\-]+)?/system/files/ {
+        try_files $uri /index.php?$query_string;
+    }
+
+    # API endpoints and admin paths
+    location ~ ^/(admin|user|node/add|api) {
+        try_files $uri /index.php?$query_string;
+    }
+
+    # Enforce clean URLs for language prefixes
+    location ~ ^/[a-z\-]+$ {
+        try_files $uri /index.php?$query_string;
+    }
+
+    # Health check endpoint for Drupal
+    location = /healthz {
+        access_log off;
+        try_files $uri /index.php?$query_string;
+    }
+}
+
+# HTTPS Main domain - Next.js web
+server {
+    listen 443 ssl http2;
+    server_name ${WEB_DOMAIN};
+    
+    # IP whitelist check
+    if ($allowed_ips = 0) {
+        return 403;
+    }
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/certs/uwezo.crt;
+    ssl_certificate_key /etc/nginx/certs/uwezo.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Request size limits
+    client_max_body_size 32M;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_comp_level 6;
+    gzip_types
+        application/javascript
+        application/json
+        application/xml
+        text/css
+        text/javascript
+        text/plain
+        text/xml
+        image/svg+xml;
+
+    # Static assets caching for Next.js
+    location /_next/static/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        proxy_pass http://web_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    # Next.js API routes and pages
+    location / {
+        proxy_pass http://web_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        
+        # WebSocket support for Next.js dev
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        # Timeouts
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # Health check endpoint for Next.js
+    location = /api/health {
+        access_log off;
+        proxy_pass http://web_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}

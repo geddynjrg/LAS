@@ -43,7 +43,7 @@ function api_auth_entity_update(EntityInterface $entity) {
     // Check if the password has changed.
     if ($original && $entity->getPassword() !== $original->getPassword()) {
       // Completely remove all tokens for this user.
-      /** @var \Drupal\api_auth\Service\TvetJwtService $jwt_service */
+      /** @var \Drupal\api_auth\Service\UwezoJwtService $jwt_service */
       $jwt_service = Drupal::service('api_auth.jwt_service');
       $count = $jwt_service->removeAllUserTokens($entity);
 

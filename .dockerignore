@@ -1,0 +1,31 @@
+# Version control
+.git/
+
+# Documentation
+*.md
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+
+# Environment files
+.env*
+
+# Node.js dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+storybook-static/
+
+# Testing
+coverage/
+tests/
+
+
+# Admin dependencies
+admin/vendor/
+.ddev/

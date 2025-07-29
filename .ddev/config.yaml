@@ -1,6 +1,7 @@
-name: uwezo-api
+name: uwezo
 type: drupal
-docroot: web
+docroot: admin/web
+composer_root: admin
 php_version: "8.3"
 webserver_type: nginx-fpm
 xdebug_enabled: false
@@ -11,9 +12,14 @@ database:
     version: "10.11"
 use_dns_when_possible: true
 composer_version: "2"
-web_environment: []
+web_environment:
+  - JWT_SECRET=N8iHmyQIV50F8iFVn4Op1pw8tOukJuLIJm8XmnalX5I=
+  - JWT_REFRESH_SECRET=Zlo2AjZo+cOYFGlqaQUL9dV3A2sNSti1rB9cbSu7+DE=
+  - DRUPAL_ENV=dev
+  # EbisCloud SMS configuration (set your actual values)
+  - EBISCLOUD_SMS_API_KEY=your_ebiscloud_api_key_here
+  - EBISCLOUD_SMS_API_URL=https://api.ebiscloud.com/sms/v1/send
 corepack_enable: true
-webimage_extra_packages: [make]
 
 
 # Key features of DDEV's config.yaml:

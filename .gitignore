@@ -1,2 +1,30 @@
-.claude
+# IDE files
 .idea/
+
+# Environment files
+.env
+
+# Claude Code local files
+CLAUDE.local.md
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.yarn/
+
+# Build outputs
+.next/
+dist/
+build/
+storybook-static/
+
+# SSL certificates (except examples)
+docker/nginx/certs/*.crt
+docker/nginx/certs/*.key
+docker/nginx/certs/*.pem
+!docker/nginx/certs/.gitkeep
+!docker/nginx/certs/README.md

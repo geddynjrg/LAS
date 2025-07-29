@@ -69,7 +69,7 @@ lint:
 
 ## Fix code style
 fix-style:
-	vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/custom -d memory_limit=512M --ignore=*/web/modules/custom/tvet_dashboard/js/react-app/*,*/node_modules/*
+	vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/custom -d memory_limit=512M --ignore=*/web/modules/custom/uwezo_dashboard/js/react-app/*,*/node_modules/*
 
 ## Run security checks
 security-check:

@@ -1,4 +1,4 @@
-# TVET REST DTO System
+# UWEZO REST DTO System
 
 ## Overview
 

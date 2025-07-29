@@ -1,6 +1,6 @@
-# TVET REST API Module
+# UWEZO REST API Module
 
-This module provides REST API endpoints for accessing TVET content with multilingual support, path resolution capabilities, and JWT authentication.
+This module provides REST API endpoints for accessing UWEZO content with multilingual support, path resolution capabilities, and JWT authentication.
 
 ## Endpoints
 
@@ -237,7 +237,7 @@ The API implements Drupal's cache system with:
 
 2. Configure permissions:
    - Go to Admin > People > Permissions
-   - Grant "Access TVET REST API" permission to appropriate roles
+   - Grant "Access UWEZO REST API" permission to appropriate roles
 
 ## Development
 

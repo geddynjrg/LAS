@@ -1,6 +1,6 @@
 {
-    "name": "adm/tvet-apo",
-    "description": "API Backend application for TVET",
+    "name": "adm/uwezo-apo",
+    "description": "API Backend application for UWEZO",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "homepage": "https://www.drupal.org/project/drupal",
