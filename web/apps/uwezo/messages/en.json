@@ -1,0 +1,471 @@
+{
+  "AdminDashboard": {
+    "title": "Admin Dashboard",
+    "description": "Manage all applications across the system",
+    "searchPlaceholder": "Search applications...",
+    "stats": {
+      "total": "Total Applications",
+      "unsubmitted": "Unsubmitted",
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "pending": "Pending",
+      "inReview": "In Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "table": {
+      "applicationId": "Application ID",
+      "user": "User",
+      "groupName": "Group Name",
+      "loanAmount": "Loan Amount",
+      "status": "Status",
+      "syncStatus": "Sync Status",
+      "createdAt": "Created",
+      "actions": "Actions"
+    }
+  },
+  "ConfirmationPage": {
+    "title": "Loan Application Confirmation",
+    "description": "Please confirm or decline your participation in this loan application",
+    "pageTitle": "Confirm Loan Application",
+    "pageDescription": "Confirm or decline your loan application membership",
+    "memberInformation": "Member Information",
+    "applicationInformation": "Application Information",
+    "memberName": "Name",
+    "phoneNumber": "Phone Number",
+    "currentStatus": "Current Status",
+    "confirmedAt": "Confirmed At",
+    "applicationId": "Application ID",
+    "groupName": "Group Name",
+    "confirmationPrompt": "Do you want to confirm your participation in this loan application?",
+    "confirmationInstructions": "Please review the information above and choose whether to confirm or decline your participation.",
+    "confirmButton": "Confirm",
+    "declineButton": "Decline",
+    "processing": "Processing your response...",
+    "confirmationSuccess": "Confirmation Successful",
+    "declineSuccess": "Declined Successfully",
+    "processedAt": "Processed at",
+    "validatingToken": "Validating confirmation link",
+    "validatingDescription": "Please wait while we verify your confirmation link...",
+    "tryAgain": "Try Again",
+    "tryingAgain": "Trying again...",
+    "errorTitle": "Error",
+    "alreadyResponded": {
+      "title": "Response Already Recorded",
+      "confirmedMessage": "You have already confirmed your participation in this loan application.",
+      "declinedMessage": "You have already declined participation in this loan application.",
+      "thankYou": "Thank you for your response."
+    },
+    "invalidToken": "Invalid or expired confirmation token",
+    "errors": {
+      "invalidTokenFormat": "This confirmation link appears to be invalid. Please check the link and try again.",
+      "tokenExpired": "This confirmation link has expired or is no longer valid. Please request a new confirmation link.",
+      "alreadyProcessed": "You have already responded to this loan application.",
+      "unauthorized": "You are not authorized to access this confirmation.",
+      "networkError": "We're having trouble connecting to our servers. Please check your internet connection and try again.",
+      "unknownError": "We're unable to process your request right now. Please try again or contact support if the problem persists.",
+      "serverError": "We received an unexpected response from our servers. Please try again."
+    }
+  },
+  "Common": {
+    "menu": "Menu",
+    "close": "Close",
+    "closeMenu": "Close menu",
+    "apply": "Apply",
+    "other": "Other",
+    "specify": "Specify",
+    "constituency": "Constituency",
+    "ward": "Ward",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "help": "Help",
+    "faq": "Frequently asked questions",
+    "monthCount": "{count, plural, =1 {# month} other {# months}}",
+    "trade": "Trade",
+    "service": "Service",
+    "manufacturing": "Manufacturing",
+    "agriculture": "Agriculture",
+    "home": "Home",
+    "myProfile": "My Profile",
+    "myApplications": "My Applications",
+    "adminDashboard": "Admin Dashboard",
+    "signOut": "Sign out",
+    "status": {
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "pending": "Pending"
+    },
+    "resend": "Resend",
+    "remove": "Remove",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "youCanAddMultipleFiles": "You can add multiple files",
+    "mustBeValidNumber": "Must be a valid number",
+    "pleaseAgreeToTheTerms": "Please agree to the terms",
+    "loading": {
+      "creatingApplication": "Creating your application...",
+      "creatingApplicationDescription": "Please wait while we prepare your application form."
+    }
+  },
+
+  "Footer": {
+    "relatedAgencies": "Related Agencies",
+    "usefulLinks": "Useful Links",
+    "quickContacts": "Quick Contacts"
+  },
+
+  "FrontPage": {
+    "title": "<title>Uwezo Fund’s</title> <lineBreak></lineBreak> <subTitle><light>aim is to enable</light> women, youth <light>and</light> persons with disabilities <light>to access finances to</light> promote businesses <light>and</light> enterprises <light>at the constituency level.</light></subTitle>",
+    "description": "Self-help groups that meet <underline>eligibility criteria</underline> can apply for a loan to advance their projects and enterprises.",
+    "imageDescription": "Image mesh",
+    "startApplying": "Start applying",
+    "criteria": {
+      "title": "Eligibility Criteria",
+      "one": "Group must be registered with the Department of Social Services, Cooperatives or the Registrar of Societies body with a valid group registration certificate",
+      "two": "Group membership must be as guided by the registering entity, membership should be between 10-15 members.",
+      "three": "<bold>Group Membership must be at least:</bold><ul> <li>For youth groups: membership at least 70% youth (18-35 years), and leadership 100% youth </li><li>For women’s groups: membership at least 70% women (18+ years), and leadership 100% women </li><li>For people with disabilities groups: membership at least 70% PWDs, and leadership 100% PWDs</li></ul>",
+      "four": "Group operates a table banking structure or any other group fund structure where members make monthly contribution according to the group’s internal guidelines",
+      "five": "Group holds a bank account in the name of the group",
+      "six": "Institutions are eligible if they have listed youth, women, and PWDs groups within them"
+    },
+    "fundDescription": {
+      "welcome": "Welcome To",
+      "title": "Uwezo Fund",
+      "description": "Uwezo Fund is a flagship programme for vision 2030 aimed at enabling women, youth and persons with disabilities access finances to promote businesses and enterprises at the constituency level, thereby enhancing economic growth towards the realization of the same and the Sustainable Development Goals No.1 (eradicate extreme poverty and hunger) and 3 (promote gender equality and empower women). The Fund is highly devolved and adopted the concept of bottom-up approach with decision making done at the grass-root level.",
+      "objectives": "The Fund is revolving in nature and its operations are based in the constituencies. The Objectives of the Fund are;",
+      "objectivesList": {
+        "one": "To expand access to finances for the youth, women and persons with disabilities at the constituency level for businesses and enterprises development;",
+        "two": "To generate gainful self- employment for the youth and women; and",
+        "three": "To model an alternative framework in funding community driven development initiatives."
+      }
+    },
+    "achievements": {
+      "successfulFunding": "Successful Funding",
+      "title": "Discover our incredible Achievements",
+      "womenGroup": "WOMEN GROUPS",
+      "youthGroup": "YOUTH GROUPS",
+      "pwdGroup": "PWD GROUPS",
+      "female": "FEMALE",
+      "male": "MALE",
+      "cumulativeDisbursement": "CUMULATIVE DISBURSEMENT (KSHS)"
+    },
+    "news": {
+      "title": "News & Activities Update",
+      "uwezoNewsAndEvents": "Uwezo News & Events"
+    }
+  },
+  "ApplyPage": {
+    "backToFrontPage": "Back to front page",
+    "needToKnowBefore": "What you need to know before applying",
+    "description": "In the application process you will be asked to provide documents and to confirm that all group members agree to the loan application.",
+    "validGroupSectionTitle": "Valid group registration certificate",
+    "validGroupMembersIdSectionTitle": "Group members’ national IDs",
+    "exampleOfNationalId": "Example of national ID",
+    "documentsRequired": "Documents required in the application:",
+    "example": "Example",
+    "moreInfoAboutTheCertificate": "More info about the certificate",
+    "groupCreditHistorySectionTitle": "Group credit history",
+    "groupCreditHistory": "Group credit history can be proven by several documents:",
+    "kindlyProvideAllRelatedToYourGroup": "Kindly provide all related to your group.",
+    "moreInfoAboutCredit": "More information about the credit history documents",
+    "creditHistoryList": {
+      "tableBankingLedger": "Table banking ledger",
+      "dischargeCertificate": "Discharge certificate",
+      "letterOfClearance": "Letter of clearance from another lender",
+      "others": "Others"
+    },
+    "Female": "More information about the credit history documents",
+    "nationalIdSectionTitle": "Group members national IDs",
+    "exampleId": "Example of national ID",
+    "membersMustBeInformed": "Applicant must provide copies of IDs of members and a list of members",
+    "beginFillingForm": "Begin filling the form",
+    "DonePage": {
+      "title": "Thank you for your application!",
+      "application-received-message": "It has successfully reached our systems and we will begin reviewing it as soon as possible.",
+      "download-application": "Download application",
+      "send-to-email": "Send to e-mail",
+      "tracking-hint": "You can also track the progress of your application on your account dashboard.",
+      "go-to-applications": "Go to my applications"
+    }
+  },
+  "LoginPage": {
+    "title": "Get started",
+    "description": "Log in or create and account to apply for the Uwezo Fund loan.",
+    "flowDescription": "The application will be <bold>saved at each step</bold> and you can return to filling it by <bold>logging in.</bold>",
+    "submittedDescription": "Once submitted, the progress of the application processing is <bold>available through your account.</bold>",
+    "doNotHaveAccount": "Don't have an account?",
+    "email": "E-mail",
+    "password": "Password",
+    "login": "Log in",
+    "signUp": "Sign up",
+    "or": "Or",
+    "loginFormHeading": "Login Form",
+    "LogInThroughECitizen": "Log in through eCitizen",
+    "ForgotPassword": "Forgot your password?",
+    "reset": "Reset",
+    "otpSent": "Code sent to your phone",
+    "unknownError": "Unknown error",
+    "invalidEmail": "Invalid email address",
+    "passwordRequired": "Password is required",
+    "provideValidCredentials": "Please provide valid credentials",
+    "invalidPhoneFormat": "Invalid phone number format",
+    "tooManyOtpRequests": "Too many OTP requests. Please try again later.",
+    "otpRequestFailed": "OTP request failed",
+    "phoneNumber": "Phone Number",
+    "sendOtp": "Send code",
+    "changePhoneNumber": "Change phone number",
+    "otpCode": "Login code",
+    "enterOtpSentTo": "Enter the 6-digit code sent to {phoneNumber}",
+    "countryCode": "Country",
+    "invalidOtpFormat": "Invalid OTP code format",
+    "invalidOrExpiredOtp": "Invalid or expired OTP code",
+    "tooManyVerificationAttempts": "Too many verification attempts. Please try again later.",
+    "otpVerificationFailed": "OTP verification failed"
+  },
+  "SignUpPage": {
+    "title": "Create an Account",
+    "description": "Fill in the details below to create your account.",
+    "email": "E-mail",
+    "password": "Password",
+    "passwordConfirm": "Confirm password",
+    "signUp": "Sign up",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "or": "Or",
+    "registerThroughECitizen": "Register through eCitizen"
+  },
+  "ResetPage": {
+    "title": "Reset Password",
+    "description": "Enter your e-mail address to reset your password.",
+    "email": "E-mail",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "reset": "Reset",
+    "backTo": "Back to",
+    "success": "Reset email sent",
+    "successDescription": "An email has been sent to your e-mail address with instructions on how to reset your password."
+  },
+  "DashboardPage": {
+    "myApplications": "My Applications",
+    "group": "Group",
+    "viewApplication": "View application",
+    "continueFillingApplication": "Continue filling application",
+    "status": {
+      "title": "Status",
+      "unsubmitted": "<bold>Unsubmitted:</bold> Not started",
+      "draft": "<bold>Step 1:</bold> In progress",
+      "submitted": "<bold>Step 2:</bold> Submitted",
+      "inReview": "<bold>Step 3:</bold> Being reviewed",
+      "pending": "<bold>Step 4:</bold> Committee decision pending",
+      "approved": "<bold>Approved:</bold> Loan approved",
+      "rejected": "<bold>Rejected:</bold> Application rejected"
+    },
+    "stepDescription": {
+      "title": "What is being done in this step?",
+      "inReview": "<li>The application will be checked on the local constituency level for any discrepancies.</li> <li>Verification with relevant offices (local chief, credit organisations, social service office, etc).</li> <li>If required, your group members will be contacted for an additional interview.</li>",
+      "readMoreInReview": "Read more about the reviewing step",
+      "pending": "Once 15 applications have passed the reviewing step, the Constituency Uwezo Fund Management Committee will gather to discuss the applications and make a recommendation about the loan application. The committee recommendations will be approved by the Uwezo Board.",
+      "readMorePending": "Read more about the committee <lineBreak></lineBreak> decision making process"
+    },
+    "processTimeline": {
+      "title": "How long will it take?",
+      "inReview": "Applications usually take a few days to get to the next step where these will be reviewed by the Constituency Uwezo Fund Management Committee. The whole process should take about a week.",
+      "pending": "Applications usually take a few days to get to the next step. The whole process should take about a week."
+    },
+    "questions": {
+      "title": "Do you have questions?"
+    },
+    "emptyState": {
+      "title": "Start Your First Application",
+      "description": "You haven't started any applications yet. Begin your journey to access financial support for your group by creating your first application.",
+      "applyButton": "Start New Application",
+      "helpText": "Need help getting started?"
+    }
+  },
+  "ApplicationDetailsPage": {
+    "backToDashboard": "Back to dashboard",
+    "applicationNotFound": "Application not found",
+    "status": "Status",
+    "numberMonths": "{month, plural, =1 {# month} other {# months}}",
+    "numberYears": "{year, plural, =1 {# year} other {# years}}",
+    "loan": {
+      "loanConditions": "Loan conditions",
+      "loanDetails": "Loan details",
+      "purposeOfTheLoan": "Purpose of the loan",
+      "loanType": "Loan type",
+      "loanAmount": "Loan amount",
+      "repaymentPeriod": "Proposed repayment period in months",
+      "bankAccountDetails": "Bank account details",
+      "groupsBankName": "Group Bank name",
+      "groupsBankBranch": "Group's Bank branch",
+      "bankAccountNumber": "Bank account number",
+      "LoanDescriptionWezesha": "Wezesha is for first time borrowers. Loan amount range is 50 000 KSh - 100 000 KSh. Maximum repayment period is 24 months.",
+      "LoanDescriptionEndeleza": "Endeleza is a subsequent loan for repeat borrowers. The Loan amount is up to Kshs. 500,000 upgraded as a percentage (150%  to not more than 200%) of the initial amount.",
+      "Interest": "The loan has a 1% interest rate.",
+      "maximumLoan": "Maximum amount is {count} KSh",
+      "bankName": "Group Bank name",
+      "bankBranch": "Group Bank branch",
+      "accountNumber": "Bank Account number",
+      "selectBank": "Select bank",
+      "invalidLoanAmount": "Invalid loan amount"
+    },
+    "members": {
+      "members": "Members",
+      "natureOfTheGroup": "Nature of the group",
+      "chairman": "Chairman",
+      "secretary": "Secretary",
+      "member": "Member"
+    },
+    "groupData": {
+      "groupData": "Group data",
+      "steps": {
+        "groupMembers": "Group members",
+        "confirmations": "Confirmations"
+      },
+      "basicInfo": {
+        "groupBasics": "Group basics",
+        "groupName": "Group name",
+        "registrationNumber": "registration number",
+        "dateFormed": "Date formed",
+        "groupRegistrationCert": "Group registration certificate",
+        "listOfMembersOnCert": "List of members on certificate",
+        "groupRegistrationNumber": "Group registration number",
+        "dateRegistered": "Date registered"
+      },
+      "locationInfo": {
+        "locationOfTheGroup": "Location of the group",
+        "countryOfOperation": "Country of operation",
+        "constituency": "Constituency",
+        "ward": "Ward",
+        "meetingPoint": "Meeting point/Physical location/Village",
+        "nearestLandmark": "Nearest landmark"
+      },
+      "groupBackground": {
+        "groupBackground": "Group background",
+        "purposeOfTheGroup": "Purpose of the group",
+        "keyActivitiesOfGroup": "Key activities of the group",
+        "creditHistory": "Group credit history",
+        "welfareIssues": "Welfare issues",
+        "incomeActivities": "Income generating activities",
+        "valueChain": "Value chain",
+        "tableBanking": "Table banking",
+        "leatherProducts": "Leather and leather products",
+        "cottonAndTextile": "Cotton and textiles",
+        "blueEconomy": "Blue economy",
+        "edibleOils": "Edible oils",
+        "constructionAndBuilding": "Construction and building materials",
+        "dairyProducts": "Dairy and dairy products",
+        "tableBankingPractice": "How long has the group practiced table banking?",
+        "monthlyShareContribution": "Total monthly share contribution",
+        "totalLoanedOut": "Total amount loaned out",
+        "totalRevolvingFund": "Total revolving fund",
+        "creditHistoryDocument": "Which documents can be used to show group credit history?",
+        "groupReferralContact": "The relevant sub-county chief will be contacted for a referral for the group",
+        "countyOfOperation": "County of Operation",
+        "chooseOrSearch": "Choose or search",
+        "enterWard": "Enter ward",
+        "meetingPointExamples": "e.g. social hall, school, etc.",
+        "nearestLandmarkExamples": "e.g. school, mosque, church",
+        "commonGroupProject": "Common group project"
+      }
+    },
+    "proposedBusiness": {
+      "proposedBusiness": "Proposed business",
+      "businessInfo": {
+        "businessInformation": "Business information",
+        "natureOfBusiness": "Nature of business",
+        "businessType": "Business type",
+        "operationPeriod": "How many years has been in operation?",
+        "startup": "Start-up",
+        "expansion": "Expansion",
+        "enterYears": "Enter years"
+      },
+      "businessPerformance": {
+        "businessPerformance": "Business performance",
+        "income": "Income",
+        "expenses": "Expenses",
+        "averageIncomePerMonth": "Average income per month",
+        "costOfGoods": "Cost of goods/service per month",
+        "rent": "Rent for your business",
+        "salaries": "Salaries/wages for workers",
+        "transportCosts": "Transport for business stock",
+        "netSurplus": "Net surplus/deficit",
+        "enterAmount": "Enter amount",
+        "goodsServicesCost": "Cost of goods/services per month",
+        "rendForBusiness": "Rent for business",
+        "addCustomField": "Add custom field",
+        "expenseName": "Expense Name",
+        "enterExpenseName": "Enter expense name",
+        "amount": "Amount"
+      }
+    }
+  },
+  "ConfirmationsPage": {
+    "title": "Confirmations",
+    "form-title-declarations": "Group declaration",
+    "form-title-members": "Group confirmation",
+    "form-title-group": "Group confirmation",
+    "confirmationDataForm": {
+      "group-member": "We confirm we are members of this group",
+      "declare-true-information": "Declare that the information provided herein is true to the best of our knowledge. We further authorize Uwezo Fund to verify the information given herein and make reference provided here in.",
+      "agree-to-repayment": "We agree that we are jointly and severally liable for repayment of loan in event of default and",
+      "no-additional-loans": "We shall not be eligible for additional loans unless the amount in default has been cleared in full"
+    },
+    "confirmMembersForm": {
+      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, the members undertaking the loan will be informed through their phones that they need to give consent. Once two thirds of them have given consent, you can move to the final step.",
+      "progress-saved": "You can safely close the browser page and come back to it later. Your progress has been saved, <strong>you will be notified via SMS once enough members have confirmed to proceed.</strong>",
+      "select-members": "Select members undertaking the loan",
+      "select-all": "Select all members",
+      "send-to-members": "Send to members for confirmation",
+      "confirmed-members": "{confirmed}/{total} members have confirmed"
+    },
+    "groupConfirmationForm": {
+      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, the members undertaking the loan will be informed through their phones that they need to give consent. Once two thirds of them have given consent, you can move to the final step.",
+      "progress-saved": "You can safely close the browser page and come back to it later. Your progress has been saved, <strong>you will be notified via SMS once enough members have confirmed to proceed.</strong>",
+      "select-members": "Select members undertaking the loan",
+      "select-all": "Select all members",
+      "deselect-all": "Deselect all members",
+      "send-to-members": "Send to members for confirmation",
+      "confirmed-members": "{confirmed}/{total} members have confirmed"
+    }
+  },
+  "ReviewPage": {
+    "title": "Final review",
+    "subTitle": "Review your data before submitting your application.",
+    "confirmationTitle": "Submit application?",
+    "confirmationDescription": "Are you sure all the information in the application is correct and you want to submit?"
+  },
+  "MembersPage": {
+    "title": "Group members",
+    "subTitle": "Group is eligible for Uwezo Fund loan, if there are 10-15 members",
+    "youth": "Youth",
+    "member": "Members",
+    "peopleWithDisabilities": "People with disabilities",
+    "women": "Women",
+    "addMember": "Add member",
+    "groupBasics": "Group basics",
+    "natureOfTheGroup": "Nature of the group",
+    "searchForMember": "Search for member",
+    "membersInfoInserted": "{count} members’ info inserted",
+    "enterNameOrNationalId": "Enter name or national ID number",
+    "idCode": "ID code",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "phoneNumber": "Phone number",
+    "capacity": "Capacity",
+    "memberName": "Member name",
+    "nationalIdCodeAlienId": "National ID code/Alien ID",
+    "positionOfMember": "Position of member",
+    "photoOfMemberId": "Photo of member ID",
+    "personWithDisability": "Person with disability",
+    "certificateOfDisability": "Certificate of disability",
+    "pwdNumber": "PWD number",
+    "maxFileSize": "Max file size {size}",
+    "errors": {
+      "atLeastOneMemberRequired": "At least one member is required"
+    }
+  }
+}

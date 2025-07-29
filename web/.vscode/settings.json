@@ -1,0 +1,74 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+
+  "search.exclude": {
+    "**/pnpm-lock.yaml": true,
+    "**/.vscode": true,
+    "**/package.json": true
+  },
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css",
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html"
+  },
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "classNames",
+    "ngClass",
+    "class:list"
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+
+  "cSpell.words": [
+    "Bahari",
+    "cmdk",
+    "Dagoretti",
+    "Dandora",
+    "Embla",
+    "Endeleza",
+    "Greenlight",
+    "Harambee",
+    "Kahawa",
+    "Kangemi",
+    "Kiwanja",
+    "M-Pesa",
+    "Mabatini",
+    "Makadara",
+    "Maringo",
+    "Mathare",
+    "Mathari",
+    "Mpesa",
+    "Ofafa",
+    "Roysambu",
+    "sbdocs",
+    "subcounty",
+    "tabler",
+    "Uwezo",
+    "Wezesha"
+  ],
+  "workbench.colorCustomizations": {
+    "gitlens.trailingLineForegroundColor": "#555555"
+  },
+  "search.useGlobalIgnoreFiles": false
+}
