@@ -1,0 +1,20 @@
+default:
+  subject: 'Status Update: [target_entity:label]'
+  body: |-
+    <p>Dear User,</p>
+
+    <p>We would like to inform you that there has been a <strong>status update</strong>.</p>
+
+    <p><strong>Details:</strong></p>
+    <ul>
+    <li>Reference: [target_entity:label]</li>
+    <li>Previous Status: [status_change:old-status:human]</li>
+    <li>New Status: <em>[status_change:new-status:human]</em></li>
+    <li>Date: [status_change:created]</li>
+    </ul>
+
+    <p>If you have any questions or require further assistance, please do not hesitate to contact us.</p>
+
+    <p>Best regards,<br />
+    [site:name]</p>
+  format: full_html

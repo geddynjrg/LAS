@@ -1,0 +1,8 @@
+name: SMS Providers
+type: module
+description: 'Plugin-based SMS provider system'
+package: Custom
+core_version_requirement: ^11
+dependencies:
+  - drupal:user
+  - drupal:system

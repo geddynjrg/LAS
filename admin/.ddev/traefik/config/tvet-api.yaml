@@ -1,0 +1,104 @@
+#ddev-generated
+# If you remove the ddev-generated line above you
+# are responsible for maintaining this file. DDEV will not then
+# update it, for example if you add `additional_hostnames`, etc.
+
+http:
+  routers:
+    tvet-api-phpmyadmin-80-http:
+      entrypoints:
+        - http-8036
+      rule: HostRegexp(`^tvet-api\.ddev\.site$`)
+      
+      service: "tvet-api-phpmyadmin-80"
+      ruleSyntax: v3
+      tls: false
+      # middlewares:
+      #   - "tvet-api-redirectHttps"
+    tvet-api-web-80-http:
+      entrypoints:
+        - http-80
+      rule: HostRegexp(`^tvet-api\.ddev\.site$`)
+      
+      service: "tvet-api-web-80"
+      ruleSyntax: v3
+      tls: false
+      # middlewares:
+      #   - "tvet-api-redirectHttps"
+    tvet-api-web-8025-http:
+      entrypoints:
+        - http-8025
+      rule: HostRegexp(`^tvet-api\.ddev\.site$`)
+      
+      service: "tvet-api-web-8025"
+      ruleSyntax: v3
+      tls: false
+      # middlewares:
+      #   - "tvet-api-redirectHttps"
+    
+    
+    tvet-api-phpmyadmin-80-https:
+      entrypoints:
+        - http-8037
+      rule: HostRegexp(`^tvet-api\.ddev\.site$`)
+      
+      service: "tvet-api-phpmyadmin-80"
+      ruleSyntax: v3
+      
+      tls: true
+      
+    
+    
+    tvet-api-web-80-https:
+      entrypoints:
+        - http-443
+      rule: HostRegexp(`^tvet-api\.ddev\.site$`)
+      
+      service: "tvet-api-web-80"
+      ruleSyntax: v3
+      
+      tls: true
+      
+    tvet-api-web-8025-https:
+      entrypoints:
+        - http-8026
+      rule: HostRegexp(`^tvet-api\.ddev\.site$`)
+      
+      service: "tvet-api-web-8025"
+      ruleSyntax: v3
+      
+      tls: true
+      
+    
+
+  middlewares:
+    tvet-api-redirectHttps:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    tvet-api-phpmyadmin-80:
+      loadbalancer:
+        servers:
+          - url: http://ddev-tvet-api-phpmyadmin:80
+        
+    
+    tvet-api-web-80:
+      loadbalancer:
+        servers:
+          - url: http://ddev-tvet-api-web:80
+        
+    tvet-api-web-8025:
+      loadbalancer:
+        servers:
+          - url: http://ddev-tvet-api-web:8025
+        
+    
+    
+    
+
+tls:
+  certificates:
+    - certFile: /mnt/ddev-global-cache/traefik/certs/tvet-api.crt
+      keyFile: /mnt/ddev-global-cache/traefik/certs/tvet-api.key

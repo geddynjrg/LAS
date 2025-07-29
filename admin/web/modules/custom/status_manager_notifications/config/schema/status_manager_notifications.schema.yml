@@ -1,0 +1,67 @@
+status_manager_notifications.settings:
+  type: config_object
+  label: 'Status Manager Notifications settings'
+  mapping:
+    email:
+      type: mapping
+      label: 'Email notification settings'
+      mapping:
+        active_provider:
+          type: string
+          label: 'Active email provider'
+        providers:
+          type: mapping
+          label: 'Email provider configurations'
+          mapping:
+            '[%key]':
+              type: mapping
+              label: 'Provider configuration'
+    sms:
+      type: mapping
+      label: 'SMS notification settings'
+      mapping:
+        active_provider:
+          type: string
+          label: 'Active SMS provider'
+        providers:
+          type: mapping
+          label: 'SMS provider configurations'
+          mapping:
+            '[%key]':
+              type: mapping
+              label: 'Provider configuration'
+
+status_manager_notifications.email_templates:
+  type: config_object
+  label: 'Email notification templates'
+  mapping:
+    templates:
+      type: mapping
+      label: 'Email templates'
+      mapping:
+        '[%key]':
+          type: mapping
+          label: 'Email template'
+          mapping:
+            subject:
+              type: string
+              label: 'Email subject'
+            body:
+              type: text
+              label: 'Email body'
+
+status_manager_notifications.sms_templates:
+  type: config_object
+  label: 'SMS notification templates'
+  mapping:
+    templates:
+      type: mapping
+      label: 'SMS templates'
+      mapping:
+        '[%key]':
+          type: mapping
+          label: 'SMS template'
+          mapping:
+            message:
+              type: text
+              label: 'SMS message' 

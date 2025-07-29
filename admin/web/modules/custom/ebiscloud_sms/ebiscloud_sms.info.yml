@@ -1,0 +1,7 @@
+name: 'EBISCloud SMS Provider'
+type: module
+description: 'Provides EBISCloud SMS provider plugin for the SMS providers framework'
+core_version_requirement: ^11
+package: 'SMS Providers'
+dependencies:
+  - sms_providers

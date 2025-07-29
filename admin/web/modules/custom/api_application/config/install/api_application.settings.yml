@@ -1,0 +1,4 @@
+min_group_members: 10
+max_group_members: 15
+max_file_size: '5MB'
+allowed_extensions: 'pdf jpg jpeg png' 

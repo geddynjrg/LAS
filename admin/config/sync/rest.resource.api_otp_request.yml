@@ -1,0 +1,18 @@
+uuid: 88cb4e3c-5110-4f94-944e-3d17988015ae
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_auth
+    - serialization
+id: api_otp_request
+plugin_id: api_otp_request
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie
+    - anonymous

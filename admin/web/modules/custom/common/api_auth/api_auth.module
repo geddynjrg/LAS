@@ -1,0 +1,150 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for API Auth module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\user\UserInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_help().
+ */
+function api_auth_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.api_auth':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('API Auth module provides JWT-based authentication for API endpoints.') . '</p>';
+
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_cache_flush().
+ */
+function api_auth_cache_flush() {
+  // Clear our custom cache bins when cache is flushed.
+  Drupal::cache('api_auth')->deleteAll();
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function api_auth_entity_update(EntityInterface $entity) {
+  // Check if this is a user and if tokens should be revoked on password change.
+  if ($entity instanceof UserInterface && Drupal::config('api_auth.settings')->get('jwt_revoke_tokens_on_password_change')) {
+    $original = $entity->original;
+
+    // Check if the password has changed.
+    if ($original && $entity->getPassword() !== $original->getPassword()) {
+      // Completely remove all tokens for this user.
+      /** @var \Drupal\api_auth\Service\TvetJwtService $jwt_service */
+      $jwt_service = Drupal::service('api_auth.jwt_service');
+      $count = $jwt_service->removeAllUserTokens($entity);
+
+      Drupal::logger('api_auth')->info('User @uid changed password. Removed @count JWT tokens.', [
+        '@uid' => $entity->id(),
+        '@count' => $count,
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function api_auth_cron() {
+  /** @var \Drupal\api_auth\Service\TokenStorageService $token_storage */
+  $token_storage = \Drupal::service('api_auth.token_storage');
+
+  // Clean up expired tokens.
+  $token_storage->purgeExpiredTokens();
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function api_auth_token_info() {
+  $types = [];
+  $tokens = [];
+
+  // Define token types.
+  $types['api_auth'] = [
+    'name' => t('API Auth'),
+    'description' => t('Tokens for API authentication.'),
+  ];
+
+  // Define individual tokens.
+  $tokens['api_auth'] = [
+    'api-one-time-login-url' => [
+      'name' => t('API One-time login URL'),
+      'description' => t('A one-time login URL for API access.'),
+    ],
+  ];
+
+  return [
+    'types' => $types,
+    'tokens' => $tokens,
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function api_auth_tokens($type, $tokens, array $data, array $options, $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type == 'api_auth') {
+    foreach ($tokens as $name => $original) {
+      if ($name == 'api-one-time-login-url') {
+        // Generate one-time login URL.
+        $account = $data['user'] ?? NULL;
+        if ($account) {
+          $settings = \Drupal::service('settings')->get('api_ui_public_url');
+          $base_url = $settings ?: \Drupal::request()->getSchemeAndHttpHost();
+          $timestamp = \Drupal::time()->getRequestTime();
+          $hash = user_pass_rehash($account, $timestamp);
+          $replacements[$original] = $base_url . "/user/reset/{$account->id()}/$timestamp/$hash/login";
+        }
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function api_auth_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add custom validation or modifications to user forms if needed.
+}
+
+/**
+ * Implements hook_user_presave().
+ */
+function api_auth_user_presave($account) {
+  // Optional: Handle user presave operations.
+}
+
+/**
+ * Implements hook_user_update().
+ */
+function api_auth_user_update($account) {
+  // Optional: Handle user update operations.
+}
+
+/**
+ * Implements hook_user_delete().
+ */
+function api_auth_user_delete($account) {
+  // Clean up tokens when user is deleted.
+  /** @var \Drupal\api_auth\Service\TokenStorageService $token_storage */
+  $token_storage = \Drupal::service('api_auth.token_storage');
+  $token_storage->revokeAllUserTokens($account->id());
+}

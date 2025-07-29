@@ -1,0 +1,5 @@
+services:
+  plugin.manager.health_check:
+    class: Drupal\healthcheck\HealthCheckPluginManager
+    parent: default_plugin_manager
+    arguments: ["@service_container", "@cache.default", "@module_handler"]

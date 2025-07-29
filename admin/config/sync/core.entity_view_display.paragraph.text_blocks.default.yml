@@ -1,0 +1,38 @@
+uuid: 84492a36-7ade-4e6b-8b96-cd18322bf26c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.text_blocks.field_blocks
+    - field.field.paragraph.text_blocks.field_button
+    - paragraphs.paragraphs_type.text_blocks
+  module:
+    - entity_reference_revisions
+    - link
+id: paragraph.text_blocks.default
+targetEntityType: paragraph
+bundle: text_blocks
+mode: default
+content:
+  field_blocks:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_button:
+    type: link
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden: {  }

@@ -1,0 +1,38 @@
+services:
+  plugin.manager.notification_provider:
+    class: Drupal\status_manager_notifications\Plugin\NotificationProviderManager
+    parent: default_plugin_manager
+
+  status_manager_notifications.notification_manager:
+    class: Drupal\status_manager_notifications\Service\NotificationManager
+    arguments: ['@config.factory', '@logger.factory', '@plugin.manager.notification_provider']
+    tags:
+      - { name: service_collector, tag: status_manager_notification_service, call: registerNotificationService }
+
+  status_manager_notifications.email_service:
+    class: Drupal\status_manager_notifications\Service\EmailNotificationService
+    arguments: ['@config.factory', '@plugin.manager.mail', '@logger.factory', '@status_manager_notifications.template_manager', '@status_manager_notifications.token_service']
+    tags:
+      - { name: status_manager_notification_service }
+
+  status_manager_notifications.sms_service:
+    class: Drupal\status_manager_notifications\Service\SmsNotificationService
+    arguments: ['@config.factory', '@logger.factory', '@status_manager_notifications.template_manager', '@status_manager_notifications.token_service', '@plugin.manager.notification_provider']
+    tags:
+      - { name: status_manager_notification_service }
+
+  status_manager_notifications.email_template_service:
+    class: Drupal\status_manager_notifications\Service\EmailTemplateService
+    arguments: ['@config.factory', '@entity_type.manager']
+
+  status_manager_notifications.sms_template_service:
+    class: Drupal\status_manager_notifications\Service\SmsTemplateService
+    arguments: ['@config.factory', '@entity_type.manager']
+
+  status_manager_notifications.template_manager:
+    class: Drupal\status_manager_notifications\Service\TemplateManager
+    arguments: ['@config.factory', '@entity_type.manager', '@logger.factory']
+
+  status_manager_notifications.token_service:
+    class: Drupal\status_manager_notifications\Service\TokenReplacementService
+    arguments: ['@token', '@entity_type.manager', '@date.formatter'] 

@@ -1,0 +1,133 @@
+grumphp:
+  hide_circumvention_tip: true
+  process_timeout: 170
+  stop_on_failure: false
+  ignore_unstaged_changes: false
+  fixer:
+    enabled: true
+  ascii:
+    failed: web/modules/contrib/clean_code/ascii/failed.txt
+    succeeded: web/modules/contrib/clean_code/ascii/succeeded.txt
+  tasks:
+    git_blacklist:
+      keywords: [die(, var_dump(), exit;, dd(, kint(, print_r(, debug(]
+      whitelist_patterns: 
+        - '/^web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
+      triggered_by: [php, module, theme, inc, phtml, php3, php4, php5]
+      regexp_type: G
+      match_word: false
+      ignore_patterns: ['#/tests#']
+    git_branch_name:
+      whitelist: ['/^(feat|fix|refactor|style|test|docs|build|ops|chore)\/([A-Z0-9\-]+)\/([a-zA-Z0-9\-]+)$/']
+      blacklist: [master, develop, production, staging]
+      allow_detached_head: false
+    git_commit_message:
+      allow_empty_message: false
+      enforce_capitalized_subject: false
+      enforce_no_subject_punctuations: true
+      enforce_no_subject_trailing_period: true
+      enforce_single_lined_subject: true
+      max_body_width: 72
+      max_subject_width: 60
+      matchers: ['/^(feat|fix|refactor|style|test|docs|build|ops|chore)\([A-Z0-9_-]+\): [a-zA-Z0-9 _()\-]+$|^Merge branch .+$|^Revert \\"[^\\"]+\\"$/']
+      case_insensitive: false
+      multiline: true
+      skip_on_merge_commit: true
+    phpcs:
+      standard: [Drupal, DrupalPractice]
+      severity: 5
+      error_severity: 5
+      warning_severity: 5
+      tab_width: null
+      report: full
+      report_width: 80
+      whitelist_patterns: 
+        - '/^web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
+      encoding: utf-8
+      ignore_patterns: [
+        '#/tests#',
+        '/web/sites/default/default.settings.php',
+        '/web/sites/default/settings.php',
+        '/web/sites/default/settings.*.php'
+      ]
+      sniffs: []
+      triggered_by: [php, module, theme, inc, phtml, php3, php4, php5]
+      exclude: []
+      show_sniffs_error_path: true
+    phplint:
+      exclude: []
+      jobs: 4
+      short_open_tag: true
+      ignore_patterns: [
+        '#/tests#',
+        '/web/sites/default/default.settings.php',
+        '/web/sites/default/settings.php',
+        '/web/sites/default/settings.*.php'
+      ]
+      triggered_by: [php, module, theme, inc, phtml, php3, php4, php5]
+    # phpmd:
+    #   whitelist_patterns: 
+    #     - '/^web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
+    #   exclude: [
+    #     'tests/*',
+    #     'web/sites/default/default.settings.php',
+    #     'web/sites/default/settings.php',
+    #     'web/sites/default/settings.*.php'
+    #   ]
+    #   report_format: text
+    #   ruleset: [cleancode, codesize, naming, controversial, design, unusedcode]
+    #   triggered_by: [php, module, theme, inc]
+    # phpstan:
+    #   autoload_file: null
+    #   configuration: phpstan.neon
+    #   level: 4
+    #   force_patterns: []
+    #   ignore_patterns: [
+    #     '#/tests#',
+    #     '.github',
+    #     '.gitlab',
+    #     '/config',
+    #     '/drush',
+    #     '/web/robots.txt',
+    #     'bower_components',
+    #     'node_modules',
+    #     '/vendor'
+    #   ]
+    #   triggered_by: [php, module, theme, inc]
+    #   memory_limit: '-1'
+    #   use_grumphp_paths: true
+    twigcs:
+      path: .
+      severity: warning
+      display: all
+      ruleset: FriendsOfTwig\Twigcs\Ruleset\Official
+      triggered_by: [twig]
+      exclude: ['#web/core#', '#web/modules/contrib#', '#web/themes/contrib#', '#web/libraries#']
+    twigcsfixer:
+      paths: []
+      level: null
+      config: null
+      report: text
+      no-cache: true
+      verbose: false
+      triggered_by: [twig]
+    yamllint:
+      whitelist_patterns:
+        - '/^web\/modules\/custom\/.+\.(yml|yaml)$/'
+      ignore_patterns: ['#/tests#']
+      object_support: false
+      exception_on_invalid_type: false
+      parse_constant: false
+      parse_custom_tags: false
+    # jsonlint:
+    #   ignore_patterns: ['#/tests#']
+    #   detect_key_conflicts: true
+    securitychecker_enlightn:
+      lockfile: composer.lock
+      run_always: true
+    # phpcsfixer:
+    #   config: '.php-cs-fixer.dist.php'
+    #   config_contains_finder: true
+    #   verbose: true
+    #   diff: true
+    #   triggered_by: ['php', 'module', 'inc', 'install', 'test', 'profile', 'theme']

@@ -1,0 +1,18 @@
+uuid: 67140e7c-613c-45af-bbbb-9d0ce7f1ea78
+langcode: en
+status: true
+dependencies:
+  module:
+    - rest_framework
+    - serialization
+    - user
+id: rest_framework_path_resource
+plugin_id: rest_framework_path_resource
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie

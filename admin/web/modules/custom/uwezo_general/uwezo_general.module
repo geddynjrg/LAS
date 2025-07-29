@@ -1,0 +1,55 @@
+<?php
+
+/**
+ * @file
+ * Contains hook implementations for the uwezo_general module.
+ */
+
+use Drupal\locale\SourceString;
+use Drupal\locale\StringStorageException;
+
+/**
+ * Add a user interface translation to the translation storage.
+ *
+ * Use this only when adding a string in a update hook. It is recommended to
+ * use *.po files.
+ *
+ * @param string $source_string
+ *   English string.
+ * @param string $langcode
+ *   Language to translate to.
+ * @param string $translated_string
+ *   Translated string.
+ * @param string|null $context
+ *   Context of the translation.
+ */
+function uwezo_general_add_translation(
+  string $source_string,
+  string $langcode,
+  string $translated_string,
+  ?string $context = NULL,
+): void {
+  try {
+    // Find existing source string.
+    $storage = Drupal::service('locale.storage');
+    $string = $storage->findString(['source' => $source_string, 'context' => $context ?: '']);
+
+    if ($string === NULL) {
+      $string = new SourceString();
+      $string->setString($source_string);
+      $string->setStorage($storage);
+      $string->setValues(['context' => $context]);
+      $string->save();
+    }
+    // Create translation. If one already exists, it will be replaced.
+    $translation = $storage->createTranslation([
+      'lid' => $string->lid,
+      'language' => $langcode,
+      'translation' => $translated_string,
+    ]);
+    $translation->save();
+  }
+  catch (StringStorageException $e) {
+    Drupal::logger('uwezo_general')->warning($e->getMessage());
+  }
+}

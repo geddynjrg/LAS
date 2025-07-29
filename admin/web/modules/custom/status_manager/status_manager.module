@@ -1,0 +1,326 @@
+<?php
+
+/**
+ * @file
+ * Contains status_manager.module.
+ */
+
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_entity_update().
+ */
+function status_manager_entity_update(EntityInterface $entity) {
+  // Get the status tracker service.
+  $status_tracker = \Drupal::service('status_manager.status_tracker');
+
+  // Check if auto-tracking is enabled.
+  $config = \Drupal::config('status_manager.settings');
+  if (!$config->get('general.auto_tracking_enabled')) {
+    return;
+  }
+
+  $entity_type_id = $entity->getEntityTypeId();
+  $tracking_mode = $config->get('general.tracking_mode') ?? 'both';
+  $tracked = FALSE;
+
+  // Get entity mappings from configuration.
+  $entity_mappings = $config->get('entity_mappings') ?? [];
+
+  // Mode 1: Check configured entities (for 'configured' and 'both' modes).
+  if (in_array($tracking_mode, ['configured', 'both'])) {
+    if (isset($entity_mappings[$entity_type_id]) && !empty($entity_mappings[$entity_type_id]['enabled'])) {
+      $tracked_fields = array_filter($entity_mappings[$entity_type_id]['tracked_fields'] ?? []);
+      $notification_type = $entity_mappings[$entity_type_id]['notification_type'] ?? 'none';
+
+      if (!empty($tracked_fields)) {
+        $status_tracker->autoTrackStatusChanges(
+          $entity,
+          $entity->original,
+          $tracked_fields,
+          'user',
+          $notification_type
+        );
+        $tracked = TRUE;
+      }
+    }
+  }
+
+  // Mode 2: Fallback to automatic detection (for 'fallback' and 'both' modes).
+  if (!$tracked && in_array($tracking_mode, ['fallback', 'both'])) {
+    $common_mappings = [
+      'application' => ['status', 'field_status', 'field_application_status'],
+      'node' => ['status', 'moderation_state'],
+      'user' => ['status'],
+    ];
+
+    if (isset($common_mappings[$entity_type_id])) {
+      $status_tracker->autoTrackStatusChanges(
+        $entity,
+        $entity->original,
+        $common_mappings[$entity_type_id],
+        'user',
+        'none'
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function status_manager_entity_insert(EntityInterface $entity) {
+  // Get the status tracker service.
+  $status_tracker = \Drupal::service('status_manager.status_tracker');
+
+  // Check if auto-tracking is enabled.
+  $config = \Drupal::config('status_manager.settings');
+  if (!$config->get('general.auto_tracking_enabled')) {
+    return;
+  }
+
+  // Log initial status for new entities.
+  $entity_type_id = $entity->getEntityTypeId();
+
+  // Get entity mappings from configuration.
+  $entity_mappings = $config->get('entity_mappings') ?? [];
+
+  if (isset($entity_mappings[$entity_type_id]) && !empty($entity_mappings[$entity_type_id]['enabled'])) {
+    $tracked_fields = array_filter($entity_mappings[$entity_type_id]['tracked_fields'] ?? []);
+    $notification_type = $entity_mappings[$entity_type_id]['notification_type'] ?? 'none';
+
+    foreach ($tracked_fields as $field_name) {
+      if ($entity->hasField($field_name) && !$entity->get($field_name)->isEmpty()) {
+        $current_value = $status_tracker->getFieldValue($entity, $field_name);
+        if ($current_value) {
+          $status_tracker->logStatusChange(
+            $entity,
+            $field_name,
+            // No old status for new entities.
+            NULL,
+            $current_value,
+            'system',
+            $notification_type,
+            'Initial status on entity creation'
+          );
+        }
+      }
+    }
+  }
+
+  // Fallback: Track common entity types.
+  $common_mappings = [
+    'application' => ['status', 'field_status', 'field_application_status'],
+    'node' => ['status', 'moderation_state'],
+  ];
+
+  if (isset($common_mappings[$entity_type_id])) {
+    foreach ($common_mappings[$entity_type_id] as $field_name) {
+      if ($entity->hasField($field_name) && !$entity->get($field_name)->isEmpty()) {
+        $field_value = $entity->get($field_name)->value;
+        if ($field_value) {
+          $status_tracker->logStatusChange(
+            $entity,
+            $field_name,
+            NULL,
+            $field_value,
+            'system',
+            'none',
+            'Initial status on entity creation'
+          );
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function status_manager_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'status_change_notification':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      break;
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function status_manager_entity_operation(EntityInterface $entity) {
+  $operations = [];
+
+  // Check if this entity type should have status history.
+  if (status_manager_entity_has_status_tracking($entity)) {
+    $operations['status_history'] = [
+      'title' => t('Status History'),
+      'url' => Url::fromRoute('status_manager.entity_history', [
+        'entity_type' => $entity->getEntityTypeId(),
+        'entity_id' => $entity->id(),
+      ]),
+      'weight' => 50,
+    ];
+  }
+
+  return $operations;
+}
+
+/**
+ * Implements hook_local_tasks_alter().
+ */
+function status_manager_local_tasks_alter(&$local_tasks) {
+  // We'll dynamically add status history tabs via hook_menu_local_tasks_alter.
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function status_manager_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableDependencyInterface &$cacheability) {
+  // Get current route match.
+  $route_match = \Drupal::routeMatch();
+
+  // Check if we're on an entity page that should have status history tab.
+  $entity = NULL;
+  $entity_type_id = NULL;
+
+  // Try to extract entity from route parameters.
+  foreach ($route_match->getParameters() as $parameter) {
+    if ($parameter instanceof EntityInterface) {
+      $entity = $parameter;
+      $entity_type_id = $entity->getEntityTypeId();
+      break;
+    }
+  }
+
+  // If we found an entity and it has status tracking, add the tab.
+  if ($entity && status_manager_entity_has_status_tracking($entity)) {
+    $data['tabs'][0]['status_manager.entity_history'] = [
+      '#theme' => 'menu_local_task',
+      '#link' => [
+        'title' => t('Status History'),
+        'url' => Url::fromRoute('status_manager.entity_history', [
+          'entity_type' => $entity_type_id,
+          'entity_id' => $entity->id(),
+        ]),
+        'localized_options' => [],
+      ],
+      '#active' => $route_name === 'status_manager.entity_history',
+      '#weight' => 100,
+      '#access' => \Drupal::currentUser()->hasPermission('view status changes') && $entity->access('view'),
+    ];
+  }
+}
+
+/**
+ * Helper function to check if an entity has status tracking enabled.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity to check.
+ *
+ * @return bool
+ *   TRUE if the entity has status tracking, FALSE otherwise.
+ */
+function status_manager_entity_has_status_tracking(EntityInterface $entity) {
+  $config = \Drupal::config('status_manager.settings');
+  $entity_type_id = $entity->getEntityTypeId();
+
+  // Check if explicitly configured.
+  $entity_mappings = $config->get('entity_mappings') ?? [];
+  if (isset($entity_mappings[$entity_type_id]) && !empty($entity_mappings[$entity_type_id]['enabled'])) {
+    return TRUE;
+  }
+
+  // Check common entity types.
+  $common_types = ['node', 'user', 'application'];
+  if (in_array($entity_type_id, $common_types)) {
+    // Check if entity has common status fields.
+    $status_fields = ['status', 'moderation_state', 'field_status', 'state'];
+    foreach ($status_fields as $field_name) {
+      if ($entity->hasField($field_name)) {
+        return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function status_manager_theme() {
+  return [
+    'status_change' => [
+      'render element' => 'elements',
+      'template' => 'status-change',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for status change templates.
+ *
+ * Default template: status-change.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the status change entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_status_change(array &$variables) {
+  $status_change = $variables['elements']['#status_change'];
+  $variables['status_change'] = $status_change;
+
+  // Add the default content.
+  $variables['content'] = $variables['elements'];
+
+  // Get the target entity.
+  $target_entity = $status_change->getTargetEntity();
+  $variables['target_entity'] = $target_entity;
+
+  // Add target entity URL if available.
+  $variables['target_entity_url'] = NULL;
+  if ($target_entity) {
+    if (method_exists($target_entity, 'hasLinkTemplate') && $target_entity->hasLinkTemplate('canonical')) {
+      try {
+        $variables['target_entity_url'] = $target_entity->toUrl('canonical')->toString();
+      }
+      catch (\Exception $e) {
+        // Ignore if URL generation fails.
+      }
+    }
+  }
+
+  // Add edit and delete URLs if user has access.
+  $variables['edit_url'] = NULL;
+  $variables['delete_url'] = NULL;
+
+  if ($status_change->access('update')) {
+    $variables['edit_url'] = Url::fromRoute('entity.status_change.edit_form', [
+      'status_change' => $status_change->id(),
+    ])->toString();
+  }
+
+  if ($status_change->access('delete')) {
+    $variables['delete_url'] = Url::fromRoute('entity.status_change.delete_form', [
+      'status_change' => $status_change->id(),
+    ])->toString();
+  }
+
+  // Add cache tags.
+  $variables['#cache']['tags'] = $status_change->getCacheTags();
+}
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ */
+function status_manager_entity_view_mode_alter(&$view_mode, EntityInterface $entity) {
+  // Ensure status_change entities use our custom template.
+  if ($entity->getEntityTypeId() === 'status_change' && $view_mode === 'full') {
+    // The template will be used automatically.
+  }
+}

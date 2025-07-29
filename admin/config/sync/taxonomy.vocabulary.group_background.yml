@@ -1,0 +1,9 @@
+uuid: a0d9e32a-9f09-418c-a8fd-b72dcb5f3ee4
+langcode: en
+status: true
+dependencies: {  }
+name: 'Group Background'
+vid: group_background
+description: 'Group Background vocabulary for loan applications.'
+weight: 0
+new_revision: false

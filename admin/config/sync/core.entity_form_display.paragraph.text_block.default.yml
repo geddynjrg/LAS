@@ -1,0 +1,35 @@
+uuid: cb7a59e2-0a80-4f1b-8c5a-1c03f48abe7f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.text_block.field_button
+    - field.field.paragraph.text_block.field_text
+    - paragraphs.paragraphs_type.text_block
+  module:
+    - link
+    - text
+id: paragraph.text_block.default
+targetEntityType: paragraph
+bundle: text_block
+mode: default
+content:
+  field_button:
+    type: link_default
+    weight: 1
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_text:
+    type: text_textarea
+    weight: 0
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

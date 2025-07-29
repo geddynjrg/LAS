@@ -1,0 +1,20 @@
+api_application.applications:
+  title: 'Applications'
+  route_name: entity.application.collection
+  description: 'List and manage loan applications'
+  parent: system.admin_content
+  weight: 10
+
+api_application.group_members:
+  title: 'Group Members'
+  route_name: entity.group_member.collection
+  description: 'List and manage group members'
+  parent: system.admin_content
+  weight: 20
+
+api_application.application_settings:
+  title: 'Application settings'
+  route_name: entity.application.settings
+  description: 'Configure loan application settings'
+  parent: system.admin_structure
+  weight: 10

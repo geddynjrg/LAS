@@ -1,0 +1,9 @@
+uuid: 5a0a9945-eaac-4d19-8c74-c467d0ca5d64
+langcode: en
+status: true
+dependencies: {  }
+name: 'Position of member'
+vid: position_of_member
+description: null
+weight: 0
+new_revision: false

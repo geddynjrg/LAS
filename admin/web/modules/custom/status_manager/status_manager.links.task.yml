@@ -1,0 +1,24 @@
+# Status Manager local tasks
+
+entity.status_change.canonical:
+  route_name: entity.status_change.canonical
+  base_route: entity.status_change.canonical
+  title: 'View'
+
+entity.status_change.edit_form:
+  route_name: entity.status_change.edit_form
+  base_route: entity.status_change.canonical
+  title: 'Edit'
+
+entity.status_change.delete_form:
+  route_name: entity.status_change.delete_form
+  base_route: entity.status_change.canonical
+  title: 'Delete'
+  weight: 10
+
+# Status History tabs for content entities
+status_manager.content_tab:
+  route_name: entity.status_change.collection
+  base_route: system.admin_content
+  title: 'Status Changes'
+  weight: 30
