@@ -17,9 +17,10 @@ import { Currency } from "@workspace/ui/components/currency";
 import { Underline } from "@workspace/ui/components/underline";
 
 import { ApplicationStatus } from "@/components/application-status";
+import { MemberSummary } from "@/components/member-summary";
 import type { SiteInformationResponse } from "@/lib/api/schema/site-info/site-info.schema";
 import { getSiteInfo } from "@/lib/api/site-info";
-import { type Status } from "@/lib/data/application";
+import { type MembersData, type Status } from "@/lib/data/application";
 import { getApplications } from "@/lib/data/application-db";
 
 export default async function Page() {
@@ -59,6 +60,7 @@ export default async function Page() {
               loanAmount={application.loanConditions?.loanAmount}
               status={application.generalDetails.status}
               siteInfo={siteInfo}
+              members={application.members}
             />
           ))}
         </div>
@@ -149,6 +151,7 @@ interface GroupDetailsProps extends PropsWithChildren {
   loanAmount?: number;
   status: Status;
   siteInfo: SiteInformationResponse | null;
+  members?: MembersData;
 }
 
 const GroupDetails: FC<GroupDetailsProps> = ({
@@ -157,6 +160,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
   loanAmount,
   status,
   siteInfo,
+  members,
 }) => {
   const t = useTranslations("DashboardPage");
 
@@ -178,11 +182,23 @@ const GroupDetails: FC<GroupDetailsProps> = ({
           <h2 className="typo-h3">{applicationId}</h2>
           <div className="flex justify-between">
             <p>
-              {t("group")} ”{groupName}”
+              {t("group")} &ldquo;{groupName}&rdquo;
             </p>
             {loanAmount && <Currency amount={loanAmount} currency="KES" />}
           </div>
         </div>
+
+        {/* Member Status Summary */}
+        {members && (
+          <div className="mb-4 border-t border-neutral-400 pt-4">
+            <MemberSummary
+              membersData={members}
+              variant="compact"
+              showProgress={true}
+            />
+          </div>
+        )}
+
         <Button variant="secondary" className="w-full text-neutral-700" asChild>
           <Link
             href={

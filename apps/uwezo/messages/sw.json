@@ -272,8 +272,25 @@
       "inReview": "Maombi kawaida huchukua siku chache kufika hatua inayofuata ambapo yatakaguliwa na Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge. Mchakato mzima unapaswa kuchukua takriban wiki moja.",
       "pending": "Maombi kawaida huchukua siku chache kufika hatua inayofuata. Mchakato mzima unapaswa kuchukua takriban wiki moja."
     },
+    "memberStatus": {
+      "title": "Wanachama",
+      "overview": "Muhtasari wa Hali ya Wanachama",
+      "confirmed": "wamethibitisha",
+      "confirmedShort": "wamethibitisha",
+      "confirmedLabel": "Wamethibitisha",
+      "pendingShort": "wanasubiri",
+      "pendingLabel": "Wanasubiri",
+      "progress": "wamethibitisha",
+      "totalMembers": "Jumla ya Wanachama",
+      "roleDistribution": "Mgawanyiko wa Majukumu",
+      "chairman": "Mwenyekiti",
+      "secretary": "Katibu",
+      "members": "Wanachama"
+    },
     "questions": {
-      "title": "Una maswali?"
+      "title": "Una maswali?",
+      "email": "Tutumie barua pepe",
+      "phone": "Tupigie simu"
     },
     "emptyState": {
       "title": "Anza Maombi Yako ya Kwanza",
@@ -314,7 +331,10 @@
       "natureOfTheGroup": "Asili ya kikundi",
       "chairman": "Mwenyekiti",
       "secretary": "Katibu",
-      "member": "Mwanachama"
+      "member": "Mwanachama",
+      "idLabel": "Kitambulisho",
+      "genderLabel": "Jinsia",
+      "confirmationRequired": "Uthibitisho Unahitajika"
     },
     "groupData": {
       "groupData": "Data za Kikundi",

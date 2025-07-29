@@ -274,8 +274,25 @@
       "inReview": "Applications usually take a few days to get to the next step where these will be reviewed by the Constituency Uwezo Fund Management Committee. The whole process should take about a week.",
       "pending": "Applications usually take a few days to get to the next step. The whole process should take about a week."
     },
+    "memberStatus": {
+      "title": "Members",
+      "overview": "Member Status Overview",
+      "confirmed": "confirmed",
+      "confirmedShort": "confirmed",
+      "confirmedLabel": "Confirmed",
+      "pendingShort": "pending",
+      "pendingLabel": "Pending",
+      "progress": "confirmed",
+      "totalMembers": "Total Members",
+      "roleDistribution": "Role Distribution",
+      "chairman": "Chairman",
+      "secretary": "Secretary",
+      "members": "Members"
+    },
     "questions": {
-      "title": "Do you have questions?"
+      "title": "Do you have questions?",
+      "email": "Email us",
+      "phone": "Call us"
     },
     "emptyState": {
       "title": "Start Your First Application",
@@ -316,7 +333,10 @@
       "natureOfTheGroup": "Nature of the group",
       "chairman": "Chairman",
       "secretary": "Secretary",
-      "member": "Member"
+      "member": "Member",
+      "idLabel": "ID",
+      "genderLabel": "Gender",
+      "confirmationRequired": "Confirmation Required"
     },
     "groupData": {
       "groupData": "Group data",
