@@ -214,4 +214,16 @@ interface ApplicationInterface extends ContentEntityInterface, EntityChangedInte
    */
   public function setTableBanking($value);
 
+  /**
+   * Send SMS confirmation to all group members.
+   *
+   * @param string $trigger
+   *   The trigger context for logging (e.g., 'manual', 'new_application',
+   *   'status_submitted').
+   *
+   * @return array|false
+   *   The SMS sending results array, or FALSE on failure.
+   */
+  public function sendSmsConfirmation($trigger = 'manual');
+
 }

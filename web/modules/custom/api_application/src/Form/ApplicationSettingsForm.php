@@ -141,6 +141,71 @@ class ApplicationSettingsForm extends ConfigFormBase {
       '#markup' => $this->t('<strong>Note:</strong> This API key is used for authenticating requests to the Application POST and GET endpoints. Keep this key secure and only share it with authorized systems.'),
     ];
 
+    // SMS Confirmation Settings.
+    $form['general_settings']['sms_settings'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('SMS Confirmation Settings'),
+    ];
+
+    $form['general_settings']['sms_settings']['sms_confirmation_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable SMS Confirmations'),
+      '#default_value' => $config->get('sms_confirmation_enabled') ?? TRUE,
+      '#description' => $this->t('Allow sending SMS confirmation messages to group members.'),
+    ];
+
+    $form['general_settings']['sms_settings']['sms_confirmation_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('SMS Confirmation Message Template'),
+      '#default_value' => $config->get('sms_confirmation_message') ?: '',
+      '#description' => $this->t('Custom message template for SMS confirmations. Use [member:name] for member name and [confirmation:url] for confirmation link. Leave empty to use default message.'),
+      '#rows' => 4,
+      '#states' => [
+        'visible' => [
+          ':input[name="general_settings[sms_settings][sms_confirmation_enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['general_settings']['sms_settings']['auto_send_sms'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Auto-send SMS on Application Submission'),
+      '#default_value' => $config->get('auto_send_sms') ?? FALSE,
+      '#description' => $this->t('Automatically send confirmation SMS to all members when an application is submitted.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="general_settings[sms_settings][sms_confirmation_enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['general_settings']['sms_settings']['frontend_base_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Frontend Base URL'),
+      '#default_value' => $config->get('frontend_base_url') ?: '',
+      '#description' => $this->t('Base URL of your frontend application (e.g., https://app.example.com). SMS links will direct users to this frontend instead of the backend confirmation page.'),
+      '#placeholder' => 'https://app.example.com',
+      '#element_validate' => ['::validateFrontendUrl'],
+      '#states' => [
+        'visible' => [
+          ':input[name="general_settings[sms_settings][sms_confirmation_enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['general_settings']['sms_settings']['frontend_confirmation_path'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Frontend Response Path'),
+      '#default_value' => $config->get('frontend_confirmation_path') ?: '/response/{token}',
+      '#description' => $this->t('Path on your frontend where members can accept or decline participation. Use {token} as placeholder for the confirmation token.'),
+      '#placeholder' => '/response/{token}',
+      '#states' => [
+        'visible' => [
+          ':input[name="general_settings[sms_settings][sms_confirmation_enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
     $form['general_settings']['file_settings'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('File Upload Settings'),
@@ -429,6 +494,41 @@ class ApplicationSettingsForm extends ConfigFormBase {
   }
 
   /**
+   * Validates the frontend URL field.
+   *
+   * @param array $element
+   *   The form element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public function validateFrontendUrl(array &$element, FormStateInterface $form_state) {
+    $value = $element['#value'];
+
+    // Allow empty values.
+    if (empty($value)) {
+      return;
+    }
+
+    // Basic URL format validation that allows underscores in domain names.
+    if (!preg_match('/^https?:\/\/[a-zA-Z0-9._-]+(?:\.[a-zA-Z]{2,})?(?::\d+)?(?:\/.*)?$/', $value)) {
+      $form_state->setError($element, $this->t('Please enter a valid URL starting with http:// or https://'));
+      return;
+    }
+
+    // Additional validation: ensure it's a proper URL structure.
+    $parsed = parse_url($value);
+    if (!$parsed || !isset($parsed['scheme']) || !isset($parsed['host'])) {
+      $form_state->setError($element, $this->t('Please enter a valid URL with a proper domain name.'));
+      return;
+    }
+
+    // Ensure scheme is http or https.
+    if (!in_array($parsed['scheme'], ['http', 'https'])) {
+      $form_state->setError($element, $this->t('URL must start with http:// or https://'));
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
@@ -456,7 +556,12 @@ class ApplicationSettingsForm extends ConfigFormBase {
       ->set('max_file_size', $general['file_settings']['max_file_size'])
       ->set('allowed_extensions', $general['file_settings']['allowed_extensions'])
       ->set('application_prefix', $general['application_settings']['application_prefix'])
-      ->set('api_key', $general['api_settings']['api_key']);
+      ->set('api_key', $general['api_settings']['api_key'])
+      ->set('sms_confirmation_enabled', $general['sms_settings']['sms_confirmation_enabled'])
+      ->set('sms_confirmation_message', $general['sms_settings']['sms_confirmation_message'])
+      ->set('auto_send_sms', $general['sms_settings']['auto_send_sms'])
+      ->set('frontend_base_url', $general['sms_settings']['frontend_base_url'])
+      ->set('frontend_confirmation_path', $general['sms_settings']['frontend_confirmation_path']);
 
     // Save instructions settings.
     $instructions = $values['instructions_tab']['instructions'];

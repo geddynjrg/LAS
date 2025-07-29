@@ -174,13 +174,78 @@
       <h2 class="section-title">
         {{ 'Group Members'|t }}
         <span class="count">({{ application.group_members_count }})</span>
+        {% if confirmation_stats %}
+          <span class="confirmation-summary">
+            - {{ 'SMS Responses: @responded/@total'|t({'@responded': confirmation_stats.confirmed + confirmation_stats.declined, '@total': confirmation_stats.total}) }}
+            {% if confirmation_stats.confirmed > 0 or confirmation_stats.declined > 0 %}
+              ({{ 'Confirmed: @confirmed, Declined: @declined'|t({'@confirmed': confirmation_stats.confirmed, '@declined': confirmation_stats.declined}) }})
+            {% endif %}
+            {% if confirmation_stats.total < application.group_members_count %}
+              <small style="opacity: 0.7;">{{ '(some members do not require SMS)'|t }}</small>
+            {% endif %}
+          </span>
+        {% endif %}
       </h2>
+
+      {# SMS Confirmation Controls #}
+      {% if can_update and send_sms_url %}
+        <div class="sms-confirmation-controls">
+          <h3>{{ 'SMS Confirmation'|t }}</h3>
+          <div class="confirmation-stats">
+            <div class="stats-grid">
+              <div class="stat-item confirmed">
+                <span class="count">{{ confirmation_stats.confirmed }}</span>
+                <span class="label">{{ 'Confirmed'|t }}</span>
+              </div>
+              <div class="stat-item declined">
+                <span class="count">{{ confirmation_stats.declined }}</span>
+                <span class="label">{{ 'Declined'|t }}</span>
+              </div>
+              <div class="stat-item sent">
+                <span class="count">{{ confirmation_stats.sent }}</span>
+                <span class="label">{{ 'SMS Sent'|t }}</span>
+              </div>
+              <div class="stat-item pending">
+                <span class="count">{{ confirmation_stats.pending }}</span>
+                <span class="label">{{ 'Pending'|t }}</span>
+              </div>
+              <div class="stat-item failed">
+                <span class="count">{{ confirmation_stats.failed }}</span>
+                <span class="label">{{ 'Failed'|t }}</span>
+              </div>
+            </div>
+          </div>
+
+          {% if not all_members_confirmed %}
+            <button type="button" class="button button--primary send-sms-all" data-url="{{ send_sms_url }}">
+              {{ 'Send Confirmation SMS to All Members'|t }}
+            </button>
+          {% else %}
+            <div class="confirmation-complete">
+              <div class="confirmation-complete-main">
+                <span class="icon">✓</span>
+                {{ 'All members have responded to their invitations'|t }}
+              </div>
+              {% if confirmation_stats.declined > 0 %}
+                <div class="confirmation-declined-note">
+                  <strong>{{ 'Note:'|t }}</strong> {{ '@count member(s) declined participation'|t({'@count': confirmation_stats.declined}) }}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
 
       {% if application.group_members %}
         <div class="members-grid">
           {% for member in application.group_members %}
-            <div class="member-card">
-              <h4>{{ member.name }}</h4>
+            <div class="member-card member-confirmation-{{ member.confirmation_status }}">
+              <h4>
+                {{ member.name }}
+                <span class="confirmation-badge confirmation-{{ member.confirmation_status }}">
+                  {{ confirmation_status_labels[member.confirmation_status] }}
+                </span>
+              </h4>
               <div class="member-details">
                 <div class="detail-row">
                   <span class="label">{{ 'ID Number:'|t }}</span>
@@ -198,12 +263,66 @@
                   <span class="label">{{ 'Phone:'|t }}</span>
                   <span class="value">{{ member.phone_number }}</span>
                 </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Status:'|t }}</span>
+                  <span class="value">
+                    <span class="confirmation-badge confirmation-{{ member.confirmation_status }}">
+                      {{ confirmation_status_labels[member.confirmation_status] }}
+                    </span>
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Requires SMS:'|t }}</span>
+                  <span class="value">
+                    {% if member.requires_confirmation %}
+                      <span class="tag">{{ 'Yes'|t }}</span>
+                    {% else %}
+                      <span class="tag" style="background: #f3f4f6; color: #6b7280;">{{ 'No'|t }}</span>
+                    {% endif %}
+                  </span>
+                </div>
                 {% if member.is_pwd %}
                   <div class="detail-row">
                     <span class="label">{{ 'PWD Number:'|t }}</span>
                     <span class="value">{{ member.pwd_number }}</span>
                   </div>
                 {% endif %}
+
+                {# Confirmation details #}
+                <div class="confirmation-details">
+                  {% if member.confirmation_confirmed_at %}
+                    <div class="detail-row">
+                      <span class="label">
+                        {% if member.confirmation_status == 'declined' %}
+                          {{ 'Declined:'|t }}
+                        {% else %}
+                          {{ 'Confirmed:'|t }}
+                        {% endif %}
+                      </span>
+                      <span class="value">{{ member.confirmation_confirmed_at|format_date('short') }}</span>
+                    </div>
+                  {% elseif member.confirmation_sent_at %}
+                    <div class="detail-row">
+                      <span class="label">{{ 'SMS Sent:'|t }}</span>
+                      <span class="value">{{ member.confirmation_sent_at|format_date('short') }}</span>
+                    </div>
+                  {% endif %}
+
+                  {# Individual SMS action #}
+                  {% if can_update and member.requires_confirmation and member.confirmation_status not in ['confirmed', 'declined'] %}
+                    <div class="member-actions">
+                      <button type="button" class="button button--small send-member-sms"
+                              data-member-id="{{ member.id }}"
+                              data-member-name="{{ member.name }}">
+                        {% if member.confirmation_status == 'failed' %}
+                          {{ 'Resend SMS'|t }}
+                        {% else %}
+                          {{ 'Send SMS'|t }}
+                        {% endif %}
+                      </button>
+                    </div>
+                  {% endif %}
+                </div>
               </div>
             </div>
           {% endfor %}

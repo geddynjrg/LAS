@@ -2,6 +2,8 @@
 
 namespace Drupal\api_application\Entity;
 
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\file\FileInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -1153,6 +1155,252 @@ class Application extends ContentEntityBase implements ApplicationInterface {
     // Generate application ID if it doesn't exist.
     if ($this->isNew() && empty($this->getApplicationId())) {
       $this->setApplicationId($this->generateApplicationId());
+    }
+
+    // Handle file organization if not new.
+    if (!$this->isNew()) {
+      $this->organizeApplicationFiles();
+    }
+
+    // Track changes for SMS triggering.
+    $this->trackChangesForSms();
+  }
+
+  /**
+   * Implements postSave to handle SMS notifications.
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    // Handle file organization for new applications.
+    if (!$update) {
+      $this->organizeApplicationFiles();
+    }
+
+    // Handle SMS notifications based on changes.
+    $this->handleSmsNotifications($update);
+  }
+
+  /**
+   * Organize application files into application-specific directories.
+   */
+  protected function organizeApplicationFiles() {
+    $application_id = $this->getApplicationId();
+
+    if (empty($application_id)) {
+      return;
+    }
+
+    $file_fields = [
+      'group_registration_certificate' => 'certificates',
+      'list_of_members_certificate' => 'members',
+    ];
+
+    $file_system = \Drupal::service('file_system');
+    $file_storage = \Drupal::entityTypeManager()->getStorage('file');
+
+    foreach ($file_fields as $field_name => $subdirectory) {
+      if ($this->hasField($field_name) && !$this->get($field_name)->isEmpty()) {
+        $file_id = $this->get($field_name)->target_id;
+
+        if ($file_id) {
+          $file = $file_storage->load($file_id);
+
+          if ($file instanceof FileInterface) {
+            $current_uri = $file->getFileUri();
+
+            // Check if file is already in the correct directory.
+            $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
+
+            if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
+              // Move file to application-specific directory.
+              $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
+              $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
+
+              $filename = $file->getFilename();
+              $new_uri = $new_directory . '/' . $filename;
+
+              // Move the file.
+              $moved_uri = $file_system->move(
+                $current_uri,
+                $new_uri,
+                FileSystemInterface::EXISTS_RENAME
+              );
+
+              if ($moved_uri) {
+                $file->setFileUri($moved_uri);
+                $file->save();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Handle multi-value file field (group_credit_history).
+    if ($this->hasField('group_credit_history') && !$this->get('group_credit_history')->isEmpty()) {
+      $credit_history_field = $this->get('group_credit_history');
+
+      foreach ($credit_history_field as $item) {
+        $file_id = $item->target_id;
+
+        if ($file_id) {
+          $file = $file_storage->load($file_id);
+
+          if ($file instanceof FileInterface) {
+            $current_uri = $file->getFileUri();
+
+            // Check if file is already in the correct directory.
+            $expected_dir_pattern = 'public://applications/' . $application_id . '/credit_history';
+
+            if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
+              // Move file to application-specific directory.
+              $new_directory = 'public://applications/' . $application_id . '/credit_history';
+              $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
+
+              $filename = $file->getFilename();
+              $new_uri = $new_directory . '/' . $filename;
+
+              // Move the file.
+              $moved_uri = $file_system->move($current_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
+
+              if ($moved_uri) {
+                $file->setFileUri($moved_uri);
+                $file->save();
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Track changes that should trigger SMS notifications.
+   */
+  protected function trackChangesForSms() {
+    $this->_sms_triggers = [];
+
+    if ($this->isNew()) {
+      // New application - will check for members in postSave.
+      $this->_sms_triggers[] = 'new_application';
+    }
+    else {
+      // Check for status change to submitted.
+      if ($this->original && $this->getStatus() !== $this->original->getStatus()) {
+        $original_status = $this->original->getStatus();
+        $new_status = $this->getStatus();
+
+        if ($original_status !== 'submitted' && $new_status === 'submitted') {
+          $this->_sms_triggers[] = 'status_submitted';
+        }
+      }
+
+      // Check if members were added.
+      if ($this->original) {
+        $original_members = $this->original->getGroupMembers();
+        $current_members = $this->getGroupMembers();
+
+        if (empty($original_members) && !empty($current_members)) {
+          $this->_sms_triggers[] = 'members_added';
+        }
+      }
+    }
+  }
+
+  /**
+   * Handle SMS notifications based on tracked changes.
+   */
+  protected function handleSmsNotifications($update = TRUE) {
+    if (empty($this->_sms_triggers)) {
+      return;
+    }
+
+    $config = \Drupal::config('api_application.settings');
+    $auto_send_enabled = $config->get('auto_send_sms') ?? FALSE;
+    $sms_confirmation_enabled = $config->get('sms_confirmation_enabled') ?? FALSE;
+
+    if (!$auto_send_enabled || !$sms_confirmation_enabled) {
+      return;
+    }
+
+    // Determine the trigger to use for logging.
+    $trigger = reset($this->_sms_triggers);
+
+    // Send SMS if we have members.
+    $this->sendSmsConfirmation($trigger);
+  }
+
+  /**
+   * Send SMS confirmation to all group members.
+   */
+  public function sendSmsConfirmation($trigger = 'manual') {
+    try {
+      $group_members = $this->getGroupMembers();
+
+      if (empty($group_members)) {
+        \Drupal::logger('api_application')->notice('No group members found for application @id. SMS not sent (trigger: @trigger).', [
+          '@id' => $this->getApplicationId(),
+          '@trigger' => $trigger,
+        ]);
+        return FALSE;
+      }
+
+      // Filter members who require confirmation.
+      $members_requiring_confirmation = [];
+      foreach ($group_members as $member) {
+        if ($member->requiresConfirmation()) {
+          $members_requiring_confirmation[] = $member;
+        }
+      }
+
+      if (empty($members_requiring_confirmation)) {
+        \Drupal::logger('api_application')->notice('No group members require confirmation for application @id. SMS not sent (trigger: @trigger).', [
+          '@id' => $this->getApplicationId(),
+          '@trigger' => $trigger,
+        ]);
+        return FALSE;
+      }
+
+      $sms_confirmation_service = \Drupal::service('api_application.sms_confirmation');
+
+      // Send SMS to each member who requires confirmation.
+      $success_count = 0;
+      $failed_count = 0;
+
+      foreach ($members_requiring_confirmation as $member) {
+        $result = $sms_confirmation_service->sendConfirmationSms($member);
+        if ($result) {
+          $success_count++;
+        }
+        else {
+          $failed_count++;
+        }
+      }
+
+      $results = [
+        'success' => $success_count,
+        'failed' => $failed_count,
+        'total' => count($members_requiring_confirmation),
+      ];
+
+      \Drupal::logger('api_application')->info('SMS confirmation sent for application @id (trigger: @trigger). Success: @success, Failed: @failed, Total requiring confirmation: @total', [
+        '@id' => $this->getApplicationId(),
+        '@trigger' => $trigger,
+        '@success' => $results['success'],
+        '@failed' => $results['failed'],
+        '@total' => $results['total'],
+      ]);
+
+      return $results;
+
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('api_application')->error('Failed to send SMS confirmation for application @id: @message', [
+        '@id' => $this->getApplicationId(),
+        '@message' => $e->getMessage(),
+      ]);
+      return FALSE;
     }
   }
 
