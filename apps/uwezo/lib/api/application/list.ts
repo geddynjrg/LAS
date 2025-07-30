@@ -1,11 +1,11 @@
-import { api, validate } from "@/lib/api/utils";
 import {
-  ApplicationsListResponseSchema,
   ApplicationsListErrorSchema,
-  type ApplicationsListResponse,
+  ApplicationsListResponseSchema,
   type ApplicationsListError,
   type ApplicationsListQuery,
+  type ApplicationsListResponse,
 } from "@/lib/api/schema/application/applications-list.schema";
+import { api, validate } from "@/lib/api/utils";
 
 /**
  * Fetch applications from the external API
@@ -25,7 +25,7 @@ export async function getApplicationsList(
 
     if (response.error) {
       console.error("API error:", response.response.status, response.error);
-      
+
       // Try to parse as ApplicationsListError
       try {
         const errorResult = ApplicationsListErrorSchema.parse(response.error);
@@ -33,7 +33,10 @@ export async function getApplicationsList(
       } catch {
         return {
           error: "api_error",
-          message: response.error?.message || response.error?.error || "Unknown API error",
+          message:
+            response.error?.message ||
+            response.error?.error ||
+            "Unknown API error",
         };
       }
     }
@@ -75,16 +78,19 @@ export async function getApplicationsWithFallback(
 ): Promise<ApplicationsListResponse> {
   try {
     const apiResult = await getApplicationsList(query);
-    
+
     // If API call was successful, return the data
     if ("data" in apiResult && apiResult.data) {
       return apiResult;
     }
-    
+
     // If API call failed, we'll need to fall back to local data for submitted+ applications
     // and combine with local draft applications
-    console.warn("API call failed, falling back to local data only:", apiResult);
-    
+    console.warn(
+      "API call failed, falling back to local data only:",
+      apiResult,
+    );
+
     // Return empty response structure - the dashboard will handle fallback logic
     return {
       success: false,
@@ -98,7 +104,7 @@ export async function getApplicationsWithFallback(
     };
   } catch (error) {
     console.error("Error in getApplicationsWithFallback:", error);
-    
+
     return {
       success: false,
       data: [],
