@@ -48,6 +48,8 @@ export function StatusBadge({
       IN_REVIEW: { variant: "info", label: "In Review" },
       APPROVED: { variant: "success", label: "Approved" },
       REJECTED: { variant: "danger", label: "Rejected" },
+      DISBURSED: { variant: "success", label: "Disbursed" },
+      CLOSED: { variant: "default", label: "Closed" },
 
       // Sync statuses
       IN_PROGRESS: { variant: "info", label: "In Progress" },

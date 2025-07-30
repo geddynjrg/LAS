@@ -304,6 +304,109 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/v1/applications": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get list of current user applications
+     * @description Retrieve a paginated list of applications for the authenticated user. Supports filtering by status and application ID.
+     */
+    get: {
+      parameters: {
+        query?: {
+          /**
+           * @description Filter applications by status
+           * @example submitted
+           */
+          status?:
+            | "draft"
+            | "submitted"
+            | "under_review"
+            | "approved"
+            | "rejected"
+            | "disbursed"
+            | "closed";
+          /**
+           * @description Filter applications by application ID
+           * @example APP-20240115-abc12
+           */
+          application_id?: string;
+          /**
+           * @description Number of applications to return per page
+           * @example 20
+           */
+          limit?: number;
+          /**
+           * @description Number of applications to skip
+           * @example 0
+           */
+          offset?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of applications retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ApplicationListResponse"];
+          };
+        };
+        /** @description Bad request - invalid parameters */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ApplicationListError"];
+          };
+        };
+        /** @description Authentication failed */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ApplicationListError"];
+          };
+        };
+        /** @description User entity not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ApplicationListError"];
+          };
+        };
+        /** @description Internal server error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ApplicationListError"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/v1/application/{application_id}": {
     parameters: {
       query?: never;
@@ -356,7 +459,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753706076
+         * @example 1753891088
          */
         timestamp: number;
         /**
@@ -652,7 +755,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1753706076
+         * @example 1753891088
          */
         timestamp: number;
         /**
@@ -1244,7 +1347,7 @@ export interface components {
     TaxonomyVocabulariesMeta: {
       /**
        * @description Unix timestamp of when the response was generated
-       * @example 1753706076
+       * @example 1753891088
        */
       timestamp: number;
       /**
@@ -1283,6 +1386,62 @@ export interface components {
           };
         };
       };
+    };
+    ApplicationListResponse: {
+      /** @example true */
+      success?: boolean;
+      data?: components["schemas"]["ApplicationDetail"][];
+      meta?: components["schemas"]["PaginationMeta"];
+      user?: components["schemas"]["UserInfo"];
+    };
+    PaginationMeta: {
+      /**
+       * @description Total number of applications
+       * @example 25
+       */
+      total_count?: number;
+      /**
+       * @description Number of items per page
+       * @example 20
+       */
+      limit?: number;
+      /**
+       * @description Number of items to skip
+       * @example 0
+       */
+      offset?: number;
+      /**
+       * @description Whether there are more items available
+       * @example true
+       */
+      has_more?: boolean;
+    };
+    UserInfo: {
+      /** @description User ID */
+      id?: number;
+      /**
+       * @description User name
+       * @example john.doe
+       */
+      name?: string;
+      /**
+       * Format: email
+       * @description User email
+       * @example john.doe@example.com
+       */
+      email?: string;
+    };
+    ApplicationListError: {
+      /**
+       * @description Error type
+       * @example Authentication failed
+       */
+      error?: string;
+      /**
+       * @description Error message
+       * @example Authentication required
+       */
+      message?: string;
     };
     ApplicationDetailResponse: {
       /** @example true */
@@ -1556,7 +1715,7 @@ export interface components {
     SiteInformationMeta: {
       /**
        * @description Unix timestamp of the response
-       * @example 1753706076
+       * @example 1753891088
        */
       timestamp: number;
       /**
@@ -1789,7 +1948,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp: number;
               /**
@@ -1859,7 +2018,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp: number;
               /**
@@ -1934,7 +2093,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -1989,7 +2148,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -2079,7 +2238,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -2136,7 +2295,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -2203,7 +2362,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -2273,7 +2432,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -2342,7 +2501,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -2398,7 +2557,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**
@@ -2461,7 +2620,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1753706076
+               * @example 1753891088
                */
               timestamp?: number;
               /**

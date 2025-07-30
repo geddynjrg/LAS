@@ -11,7 +11,9 @@
       "pending": "Inasubiri",
       "inReview": "Inakaguliwa",
       "approved": "Imeidhinishwa",
-      "rejected": "Imekataliwa"
+      "rejected": "Imekataliwa",
+      "disbursed": "Imetolewa",
+      "closed": "Imefungwa"
     },
     "table": {
       "applicationId": "Application ID",
@@ -258,14 +260,33 @@
       "inReview": "<bold>Hatua ya 3:</bold> Inakaguliwa",
       "pending": "<bold>Hatua ya 4:</bold> Uamuzi wa kamati unasubiriwa",
       "approved": "<bold>Imeidhinishwa:</bold> Mkopo umeidhinishwa",
-      "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa"
+      "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa",
+      "disbursed": "<bold>Imetolewa:</bold> Fedha za mkopo zimetolewa",
+      "closed": "<bold>Imefungwa:</bold> Ombi limefungwa"
+    },
+    "rejectionDetails": {
+      "reason": "Sababu ya Kukataliwa",
+      "message": "Maelezo ya Ziada"
+    },
+    "rejectionReasons": {
+      "incompleteInformation": "Maelezo Yasiyokamilika",
+      "missingDocuments": "Nyaraka Zinazokosekana",
+      "eligibilityCriteria": "Vigezo vya Ustahiki Havijatimizwa",
+      "duplicateApplication": "Ombi la Rudufu",
+      "insufficientCollateral": "Dhamana Isiyotosha",
+      "poorCreditHistory": "Historia Mbaya ya Mkopo",
+      "other": "Nyingine"
     },
     "stepDescription": {
       "title": "Nini kinafanyika katika hatua hii?",
       "inReview": "<li>Maombi yatakaguliwa katika ngazi ya eneo bunge kwa dosari zozote.</li> <li>Uhakiki na ofisi husika (chifu wa eneo, mashirika ya mikopo, ofisi ya huduma za kijamii, nk).</li> <li>Ikihitajika, wanachama wa kikundi chako watawasiliana kwa mahojiano ya ziada.</li>",
       "readMoreInReview": "Soma zaidi kuhusu hatua ya ukaguzi",
       "pending": "Mara tu maombi 15 yatakapopita hatua ya ukaguzi, Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge itakusanyika kujadili maombi na kutoa mapendekezo kuhusu ombi la mkopo. Mapendekezo ya kamati yatapitishwa na Bodi ya Uwezo.",
-      "readMorePending": "Soma zaidi kuhusu mchakato wa <lineBreak></lineBreak> kufanya maamuzi ya kamati"
+      "readMorePending": "Soma zaidi kuhusu mchakato wa <lineBreak></lineBreak> kufanya maamuzi ya kamati",
+      "approved": "Hongera! Ombi lako la mkopo limeidhinishwa na Kamati ya Usimamizi wa Mfuko wa Uwezo. Utawasiliana nao hivi karibuni kuhusu hatua zinazofuata za kutoa mkopo.",
+      "rejected": "Kwa bahati mbaya, ombi lako limekataliwa. Tafadhali angalia maelezo ya kukataliwa hapo juu kwa sababu maalumu. Unaweza kuwasilisha ombi jipya baada ya kushughulikia masuala yaliyotajwa.",
+      "disbursed": "Mkopo wako umetolewa kikamilifu kwenye akaunti ya benki ya kikundi chako. Tafadhali hakikisha unalipa kwa wakati kulingana na ratiba yenu iliyokubaliwa.",
+      "closed": "Ombi hili limefungwa. Hakuna kitendo kingine kinachohitajika. Ikiwa una maswali, tafadhali wasiliana na timu yetu ya usaidizi."
     },
     "processTimeline": {
       "title": "Itachukua muda gani?",
