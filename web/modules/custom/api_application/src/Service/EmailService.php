@@ -125,7 +125,7 @@ class EmailService {
       }
 
       // Get sender email.
-      $from_email = $options['from'] ?? $this->configFactory->get('system.site')->get('mail');
+      $from_email = $options['from'] ?? '<site>';
 
       // Create email using Symfony Mailer with EmailBuilder.
       $site_name = $this->configFactory->get('system.site')->get('name') ?: 'Uwezo Fund';
