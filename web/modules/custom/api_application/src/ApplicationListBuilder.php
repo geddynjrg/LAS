@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application;
 
+use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Link;
@@ -143,6 +144,38 @@ class ApplicationListBuilder extends EntityListBuilder {
       ];
     }
 
+    // Download PDF operation.
+    if ($entity->access('view')) {
+      $operations['download_pdf'] = [
+        'title' => $this->t('Download PDF'),
+        'weight' => 5,
+        'url' => Url::fromRoute(
+          'api_application.download_pdf',
+          ['application' => $entity->id()],
+          ['attributes' => ['class' => ['button', 'button--small', 'button--action-download']]]
+        ),
+      ];
+    }
+
+    // Send Email operation.
+    if ($entity->access('view')) {
+      $operations['send_email'] = [
+        'title' => $this->t('Send Email'),
+        'weight' => 6,
+        'url' => Url::fromRoute(
+          'api_application.send_email_form',
+          ['application' => $entity->id()],
+          [
+            'attributes' => [
+              'class' => ['button', 'button--small', 'button--action-email', 'use-ajax'],
+              'data-dialog-type' => 'modal',
+              'data-dialog-options' => json_encode(['width' => 500]),
+            ],
+          ]
+        ),
+      ];
+    }
+
     // Edit operation.
     if ($entity->access('update') && $entity->hasLinkTemplate('edit-form')) {
       $operations['edit'] = [
@@ -175,6 +208,10 @@ class ApplicationListBuilder extends EntityListBuilder {
 
     // Add custom CSS for styling.
     $build['#attached']['library'][] = 'api_application/admin';
+
+    // Add AJAX library for modal operations.
+    $build['#attached']['library'][] = 'core/drupal.ajax';
+    $build['#attached']['library'][] = 'core/drupal.dialog.ajax';
 
     // Add wrapper classes for better styling.
     $build['table']['#attributes']['class'][] = 'application-listing-table';

@@ -15,6 +15,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Drupal\api_application\Service\PdfGeneratorService;
 
 /**
  * Returns responses for Application routes.
@@ -53,6 +55,13 @@ class ApplicationController extends ControllerBase {
   protected $smsConfirmationService;
 
   /**
+   * The PDF generator service.
+   *
+   * @var \Drupal\api_application\Service\PdfGeneratorService
+   */
+  protected $pdfGenerator;
+
+  /**
    * Constructs a new ApplicationController object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -63,12 +72,15 @@ class ApplicationController extends ControllerBase {
    *   The current user.
    * @param \Drupal\api_application\Service\SmsConfirmationService $sms_confirmation_service
    *   The SMS confirmation service.
+   * @param \Drupal\api_application\Service\PdfGeneratorService $pdf_generator
+   *   The PDF generator service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, DateFormatterInterface $date_formatter, AccountProxyInterface $current_user, SmsConfirmationService $sms_confirmation_service) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, DateFormatterInterface $date_formatter, AccountProxyInterface $current_user, SmsConfirmationService $sms_confirmation_service, PdfGeneratorService $pdf_generator) {
     $this->entityTypeManager = $entity_type_manager;
     $this->dateFormatter = $date_formatter;
     $this->currentUser = $current_user;
     $this->smsConfirmationService = $sms_confirmation_service;
+    $this->pdfGenerator = $pdf_generator;
   }
 
   /**
@@ -79,7 +91,8 @@ class ApplicationController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('date.formatter'),
       $container->get('current_user'),
-      $container->get('api_application.sms_confirmation')
+      $container->get('api_application.sms_confirmation'),
+      $container->get('api_application.pdf_generator')
     );
   }
 
@@ -518,6 +531,45 @@ class ApplicationController extends ControllerBase {
     }
 
     return new JsonResponse($response);
+  }
+
+  /**
+   * Downloads an application as PDF.
+   *
+   * @param \Drupal\api_application\Entity\ApplicationInterface $application
+   *   The application entity.
+   *
+   * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+   *   The PDF file response or redirect on error.
+   */
+  public function downloadPdf(ApplicationInterface $application) {
+    try {
+      // Generate PDF.
+      $pdf_path = $this->pdfGenerator->generateApplicationPdf($application);
+
+      if (!file_exists($pdf_path)) {
+        $this->messenger()->addError($this->t('Unable to generate PDF for this application.'));
+        return $this->redirect('entity.application.canonical', ['application' => $application->id()]);
+      }
+
+      // Create binary file response.
+      $response = new BinaryFileResponse($pdf_path);
+      $response->setContentDisposition(
+        'attachment',
+        'application-' . $application->getApplicationId() . '.pdf'
+      );
+
+      return $response;
+
+    }
+    catch (\Exception $e) {
+      $this->getLogger('api_application')->error('PDF generation failed: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+
+      $this->messenger()->addError($this->t('An error occurred while generating the PDF.'));
+      return $this->redirect('entity.application.canonical', ['application' => $application->id()]);
+    }
   }
 
 }

@@ -123,6 +123,22 @@ function api_application_theme() {
       'render element' => 'elements',
       'template' => 'application',
     ],
+    'application_pdf' => [
+      'variables' => [
+        'application' => NULL,
+        'entity' => NULL,
+        'site_name' => NULL,
+      ],
+      'template' => 'application-pdf',
+    ],
+    'application_email' => [
+      'variables' => [
+        'application' => NULL,
+        'site_name' => NULL,
+        'recipient_email' => NULL,
+      ],
+      'template' => 'application-email',
+    ],
   ];
 }
 
