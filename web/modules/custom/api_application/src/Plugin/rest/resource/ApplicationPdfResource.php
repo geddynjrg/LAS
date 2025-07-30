@@ -135,16 +135,22 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
         ], 404);
       }
 
-      // Check if PDF download is requested.
-      $download = $request->query->get('download', 'false') === 'true';
+      // Check the requested format.
+      $format = $request->query->get('format', 'metadata');
+      switch ($format) {
+        case 'download':
+          // Generate and serve the PDF file.
+          return $this->servePdfFile($applicationEntity);
 
-      if ($download) {
-        // Generate and serve the PDF file.
-        return $this->servePdfFile($applicationEntity);
-      }
-      else {
-        // Return PDF metadata.
-        return $this->getPdfMetadata($applicationEntity);
+        case 'blob':
+        case 'base64':
+          // Return PDF as base64 encoded data.
+          return $this->getPdfBlob($applicationEntity);
+
+        case 'metadata':
+        default:
+          // Return PDF metadata.
+          return $this->getPdfMetadata($applicationEntity);
       }
 
     }
@@ -216,8 +222,10 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
       }
     }
 
-    $download_url = \Drupal::request()->getSchemeAndHttpHost() .
-                   \Drupal::request()->getRequestUri() . '?download=true';
+    $base_url = \Drupal::request()->getSchemeAndHttpHost() .
+                \Drupal::request()->getRequestUri();
+    $download_url = $base_url . '?format=download';
+    $blob_url = $base_url . '?format=blob';
 
     return $this->createModifiedResponse([
       'success' => TRUE,
@@ -225,9 +233,59 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
         'application_id' => $application->getApplicationId(),
         'pdf_available' => $pdf_exists,
         'download_url' => $download_url,
+        'blob_url' => $blob_url,
         'filename' => 'application-' . $application->getApplicationId() . '.pdf',
       ],
     ]);
+  }
+
+  /**
+   * Gets PDF as base64 encoded blob for frontend processing.
+   *
+   * @param \Drupal\api_application\Entity\ApplicationInterface $application
+   *   The application entity.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   The response object.
+   */
+  protected function getPdfBlob($application) {
+    try {
+      // Generate PDF.
+      $pdf_path = $this->pdfGenerator->generateApplicationPdf($application);
+
+      if (!file_exists($pdf_path)) {
+        return $this->createModifiedResponse([
+          'error' => 'File not found',
+          'message' => 'PDF file could not be generated',
+        ], 404);
+      }
+
+      // Read PDF content and encode as base64.
+      $pdf_content = file_get_contents($pdf_path);
+      $base64_content = base64_encode($pdf_content);
+
+      return $this->createModifiedResponse([
+        'success' => TRUE,
+        'data' => [
+          'application_id' => $application->getApplicationId(),
+          'filename' => 'application-' . $application->getApplicationId() . '.pdf',
+          'mime_type' => 'application/pdf',
+          'size' => strlen($pdf_content),
+          'content' => $base64_content,
+        ],
+      ]);
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('PDF blob generation failed: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+
+      return $this->createModifiedResponse([
+        'error' => 'PDF generation failed',
+        'message' => $e->getMessage(),
+      ], 500);
+    }
   }
 
   /**

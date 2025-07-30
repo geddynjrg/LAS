@@ -39,24 +39,39 @@ class ApplicationPdfSchemaProvider extends OpenApiSchemaProviderBase {
             ],
           ],
           [
+            'name' => 'format',
+            'in' => 'query',
+            'required' => FALSE,
+            'description' => 'Response format: metadata (default), download (file download), or blob (base64 encoded)',
+            'schema' => [
+              'type' => 'string',
+              'enum' => ['metadata', 'download', 'blob', 'base64'],
+              'default' => 'metadata',
+            ],
+          ],
+          [
             'name' => 'download',
             'in' => 'query',
             'required' => FALSE,
-            'description' => 'Set to true to download the PDF file directly',
+            'description' => 'Legacy parameter: set to true to download file (equivalent to format=download)',
             'schema' => [
               'type' => 'string',
               'enum' => ['true', 'false'],
               'default' => 'false',
             ],
+            'deprecated' => TRUE,
           ],
         ],
         'responses' => [
           '200' => [
-            'description' => 'PDF metadata or file download',
+            'description' => 'PDF response based on format parameter',
             'content' => [
               'application/json' => [
                 'schema' => [
-                  '$ref' => '#/components/schemas/PdfMetadataResponse',
+                  'oneOf' => [
+                    ['$ref' => '#/components/schemas/PdfMetadataResponse'],
+                    ['$ref' => '#/components/schemas/PdfBlobResponse'],
+                  ],
                 ],
               ],
               'application/pdf' => [
@@ -134,12 +149,58 @@ class ApplicationPdfSchemaProvider extends OpenApiSchemaProviderBase {
               'download_url' => [
                 'type' => 'string',
                 'description' => 'URL to download the PDF',
-                'example' => 'https://your-domain.com/api/v1/application/APP-123/pdf?download=true',
+                'example' => 'https://your-domain.com/api/v1/application/APP-123/pdf?format=download',
+              ],
+              'blob_url' => [
+                'type' => 'string',
+                'description' => 'URL to get PDF as base64 blob',
+                'example' => 'https://your-domain.com/api/v1/application/APP-123/pdf?format=blob',
               ],
               'filename' => [
                 'type' => 'string',
                 'description' => 'PDF filename',
                 'example' => 'application-APP-123.pdf',
+              ],
+            ],
+          ],
+        ],
+      ],
+      'PdfBlobResponse' => [
+        'type' => 'object',
+        'description' => 'PDF blob response with base64 encoded content',
+        'properties' => [
+          'success' => [
+            'type' => 'boolean',
+            'description' => 'Whether the operation was successful',
+            'example' => TRUE,
+          ],
+          'data' => [
+            'type' => 'object',
+            'properties' => [
+              'application_id' => [
+                'type' => 'string',
+                'description' => 'Application ID',
+                'example' => 'APP-123',
+              ],
+              'filename' => [
+                'type' => 'string',
+                'description' => 'PDF filename',
+                'example' => 'application-APP-123.pdf',
+              ],
+              'mime_type' => [
+                'type' => 'string',
+                'description' => 'MIME type of the PDF',
+                'example' => 'application/pdf',
+              ],
+              'size' => [
+                'type' => 'integer',
+                'description' => 'File size in bytes',
+                'example' => 1024000,
+              ],
+              'content' => [
+                'type' => 'string',
+                'description' => 'Base64 encoded PDF content',
+                'example' => 'JVBERi0xLjQKJdPr6eEKMSAwIG9iag...',
               ],
             ],
           ],
