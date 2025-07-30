@@ -41,7 +41,7 @@ function safeJsonStringify(data: any): string {
 }
 
 // Helper function to get the current authenticated user
-async function getCurrentUser() {
+export async function getCurrentUser() {
   const session = await getSession();
   if (!session) {
     throw new Error("Unauthorized");

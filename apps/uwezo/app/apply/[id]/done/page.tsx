@@ -3,11 +3,17 @@ import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
 import { Container } from "@workspace/ui/components/container";
-import { DataPair } from "@workspace/ui/components/data-pair";
 import { IconCheck } from "@workspace/ui/components/icon-check";
 import { cn } from "@workspace/ui/lib/utils";
 
-export default async function Page() {
+import { DonePageActions } from "./done-page-actions";
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function Page({ params }: PageProps) {
+  const { id } = await params;
   const t = await getTranslations();
 
   return (
@@ -21,26 +27,7 @@ export default async function Page() {
 
         <p>{t("ApplyPage.DonePage.application-received-message")}</p>
 
-        <DataPair className={cn("flex w-full flex-row gap-2")}>
-          <Button
-            className={cn("grow", "w-full max-w-[27rem] px-2")}
-            variant="secondary"
-            asChild
-          >
-            <Link href="#" download="Application" className="whitespace-nowrap">
-              {t("ApplyPage.DonePage.download-application")}
-            </Link>
-          </Button>
-          <Button
-            className={cn(
-              "grow",
-              "w-full max-w-[27rem] whitespace-nowrap px-2",
-            )}
-            variant="secondary"
-          >
-            {t("ApplyPage.DonePage.send-to-email")}
-          </Button>
-        </DataPair>
+        <DonePageActions applicationId={id} />
 
         <p className={cn("border-t border-solid border-neutral-400", "pt-7")}>
           {t("ApplyPage.DonePage.tracking-hint")}
