@@ -81,6 +81,7 @@
     "back": "Back",
     "next": "Next",
     "submit": "Submit",
+    "send": "Send",
     "help": "Help",
     "faq": "Frequently asked questions",
     "monthCount": "{count, plural, =1 {# month} other {# months}}",
@@ -109,7 +110,12 @@
     "loading": {
       "creatingApplication": "Creating your application...",
       "creatingApplicationDescription": "Please wait while we prepare your application form."
-    }
+    },
+    "downloading": "Downloading...",
+    "sending": "Sending...",
+    "email": "Email",
+    "email-placeholder": "Enter your email address",
+    "invalid-email": "Please enter a valid email address"
   },
 
   "Footer": {
@@ -189,7 +195,32 @@
       "download-application": "Download application",
       "send-to-email": "Send to e-mail",
       "tracking-hint": "You can also track the progress of your application on your account dashboard.",
-      "go-to-applications": "Go to my applications"
+      "go-to-applications": "Go to my applications",
+      "downloading": "Downloading...",
+      "sending": "Sending...",
+      "download-success": "Application downloaded successfully!",
+      "errors": {
+        "download-failed": "Failed to download application. Please try again.",
+        "email-failed": "Failed to send email. Please try again.",
+        "no-email": "No email address available.",
+        "email-required": "Email address is required.",
+        "invalid-email": "Please enter a valid email address."
+      },
+      "email": {
+        "subject": "Your Loan Application",
+        "body": "Please find your loan application attached to this email.",
+        "success": "Application sent successfully to {email}"
+      },
+      "modal": {
+        "title": "Enter Your Email Address",
+        "description": "Please provide your email address to receive the application document.",
+        "email-label": "Email Address",
+        "email-placeholder": "Enter your email address",
+        "send": "Send Application",
+        "cancel": "Cancel",
+        "valid-email": "Email address looks good!",
+        "privacy-note": "Your email will only be used to send the application document and will not be stored or shared with third parties."
+      }
     }
   },
   "LoginPage": {
