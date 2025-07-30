@@ -1,0 +1,330 @@
+{#
+/**
+ * @file
+ * Email template for loan application status changes - Mobile-responsive design.
+ *
+ * Available variables:
+ * - application: The application entity.
+ * - status_change: The status change entity.
+ * - site_name: The site name.
+ * - recipient_email: The recipient email address.
+ * - custom_body: Optional custom message body.
+ */
+#}
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<![endif]-->
+    <title>{{ application.getApplicationId() }} Status Update - {{ site_name }}</title>
+    <style>
+        /* Base styles for email clients */
+        .ReadMsgBody { width: 100%; }
+        .ExternalClass { width: 100%; }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+
+        /* Prevent iOS from making phone numbers clickable */
+        .ios-phone-number {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Table-specific mobile styles */
+        @media only screen and (max-width: 600px) {
+            /* Container adjustments */
+            table[class=body] .container {
+                padding: 0 !important;
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+
+            /* Main content area */
+            table[class=body] .main {
+                border-left-width: 0 !important;
+                border-radius: 0 !important;
+                border-right-width: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Content and wrapper padding */
+            table[class=body] .content {
+                padding: 0 !important;
+            }
+
+            table[class=body] .wrapper {
+                padding: 15px !important;
+            }
+
+            /* Typography scaling */
+            table[class=body] h1 {
+                font-size: 22px !important;
+                line-height: 26px !important;
+                margin-bottom: 15px !important;
+            }
+
+            table[class=body] h2 {
+                font-size: 18px !important;
+                line-height: 22px !important;
+                margin-bottom: 12px !important;
+            }
+
+            table[class=body] p,
+            table[class=body] td,
+            table[class=body] span {
+                font-size: 16px !important;
+                line-height: 22px !important;
+            }
+
+            /* Status badge mobile adjustments */
+            table[class=body] .status-badge {
+                display: inline-block !important;
+                margin-top: 4px !important;
+                font-size: 12px !important;
+                padding: 6px 10px !important;
+            }
+
+            /* Status box mobile padding */
+            table[class=body] .status-box {
+                padding: 15px !important;
+                margin: 10px 0 !important;
+            }
+
+            /* Header adjustments */
+            table[class=body] .header {
+                padding: 15px 0 !important;
+            }
+        }
+
+        /* Enhanced mobile styles for smaller screens */
+        @media only screen and (max-width: 480px) {
+            table[class=body] .wrapper {
+                padding: 12px !important;
+            }
+
+            table[class=body] .status-box {
+                padding: 12px !important;
+                border-radius: 8px !important;
+            }
+
+            table[class=body] h1 {
+                font-size: 20px !important;
+                line-height: 24px !important;
+            }
+
+            table[class=body] .status-badge {
+                font-size: 11px !important;
+                padding: 5px 8px !important;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .dark-mode-text {
+                color: #ffffff !important;
+            }
+            .dark-mode-bg {
+                background-color: #1a1a1a !important;
+            }
+        }
+
+        /* Gmail app mobile fix */
+        u + .body .gmail-fix {
+            display: none;
+        }
+
+        /* Windows Phone 8 fix */
+        .ExternalClass * {
+            line-height: 100%;
+        }
+    </style>
+    <!--[if mso]>
+    <style type="text/css">
+        .fallback-text {
+            font-family: Arial, sans-serif !important;
+        }
+        table {
+            border-collapse: collapse !important;
+        }
+        .status-badge {
+            mso-style-priority: 99 !important;
+            padding: 6px 12px !important;
+        }
+    </style>
+    <![endif]-->
+</head>
+<body class="body gmail-fix" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; background-color: #f6f6f6; width: 100%;" width="100%" bgcolor="#f6f6f6">
+        <tr>
+            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
+            <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; max-width: 580px; padding: 10px; width: 580px; Margin: 0 auto;" width="580" valign="top">
+
+                <!-- HEADER -->
+                <div class="header" style="padding: 20px 0;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;">
+                        <tr>
+                            <td class="align-center" width="100%" style="font-family: sans-serif; font-size: 14px; vertical-align: top; text-align: center;" valign="top" align="center">
+                                <h1 style="color: #47103f; font-size: 24px; margin: 0; font-weight: bold;">{{ site_name }}</h1>
+                                <p style="color: #666; font-size: 16px; margin: 5px 0 0 0;">{{ 'Application Status Update'|t }}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+
+                    <!-- MAIN CONTENT -->
+                    <table role="presentation" class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; background: #ffffff; border-radius: 3px; width: 100%;" width="100%">
+                        <tr>
+                            <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;" valign="top">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+
+                                    <!-- GREETING -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; line-height: 1.6;">{{ 'Dear Applicant,'|t }}</p>
+                                            {% if custom_body %}
+                                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; line-height: 1.6;">{{ custom_body }}</p>
+                                            {% else %}
+                                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; line-height: 1.6;">{{ 'Your loan application status has been updated. Please see the details below:'|t }}</p>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <!-- STATUS CHANGE NOTIFICATION -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="status-box" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%; background-color: #e6f4ea; border-left: 4px solid #47103f; border-radius: 4px; margin: 20px 0;" width="100%" bgcolor="#e6f4ea">
+                                                <tr>
+                                                    <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 20px;" valign="top">
+                                                        <h2 style="color: #47103f; font-size: 18px; margin: 0 0 15px 0; font-weight: bold;">{{ 'Status Update'|t }}</h2>
+
+                                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f; width: 40%;" valign="top" width="40%">{{ 'Application ID:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">{{ application.getApplicationId() }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'Previous Status:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">
+                                                                    {% if status_change.getOldStatus() %}
+                                                                        {{ status_change.getOldStatus()|replace({_: ' '})|title }}
+                                                                    {% else %}
+                                                                        {{ 'N/A'|t }}
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'New Status:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">
+                                                                    {% set status = status_change.getNewStatus() %}
+                                                                    {% set status_colors = {
+                                                                        draft: '#9ca3af',
+                                                                        pending: '#f59e0b',
+                                                                        submitted: '#8b5cf6',
+                                                                        under_review: '#3b82f6',
+                                                                        approved: '#47103f',
+                                                                        rejected: '#ef4444',
+                                                                        disbursed: 'rgb(183, 42, 159)',
+                                                                        closed: '#6b7280',
+                                                                    } %}
+                                                                    <span class="status-badge" style="background-color: {{ status_colors[status] ?: '#6c757d' }}; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block;">{{ status|replace({_: ' '})|title }}</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'Changed On:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">{{ status_change.getCreatedTime()|date('F j, Y - g:i A') }}</td>
+                                                            </tr>
+                                                            {% if status_change.getReason() %}
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'Reason:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">{{ status_change.getReason() }}</td>
+                                                            </tr>
+                                                            {% endif %}
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                    <!-- STATUS-SPECIFIC MESSAGE -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-top: 15px;" valign="top">
+                                            {% set status = status_change.getNewStatus() %}
+                                            {% if status == 'approved' %}
+                                                <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; padding: 15px; margin: 10px 0;">
+                                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 8px; color: #155724;">🎉 {{ 'Congratulations!'|t }}</p>
+                                                    <p style="font-family: sans-serif; font-size: 14px; margin: 0; color: #155724; line-height: 1.6;">{{ 'Your loan application has been approved! Our team will contact you with the next steps for loan disbursement.'|t }}</p>
+                                                </div>
+                                            {% elseif status == 'rejected' %}
+                                                <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 15px; margin: 10px 0;">
+                                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 8px; color: #721c24;">{{ 'Application Not Approved'|t }}</p>
+                                                    <p style="font-family: sans-serif; font-size: 14px; margin: 0; color: #721c24; line-height: 1.6;">{{ 'We regret to inform you that your loan application has not been approved at this time. You may reapply after addressing any concerns noted in your application.'|t }}</p>
+                                                </div>
+                                            {% elseif status == 'disbursed' %}
+                                                <div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 15px; margin: 10px 0;">
+                                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 8px; color: #0c5460;">💰 {{ 'Loan Disbursed'|t }}</p>
+                                                    <p style="font-family: sans-serif; font-size: 14px; margin: 0; color: #0c5460; line-height: 1.6;">{{ 'Your loan has been successfully disbursed. Please check your designated account and contact us if you have any questions.'|t }}</p>
+                                                </div>
+                                            {% elseif status == 'under_review' %}
+                                                <div style="background-color: #d4f0ff; border: 1px solid #bde7ff; border-radius: 4px; padding: 15px; margin: 10px 0;">
+                                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 8px; color: #084298;">📋 {{ 'Under Review'|t }}</p>
+                                                    <p style="font-family: sans-serif; font-size: 14px; margin: 0; color: #084298; line-height: 1.6;">{{ 'Your application is currently being reviewed by our loan assessment team. We will notify you of any updates or if additional information is required.'|t }}</p>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <!-- CONTACT INFO -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-top: 25px;" valign="top">
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; line-height: 1.6;">{{ 'If you have any questions about this status change or need additional information, please do not hesitate to contact us.'|t }}</p>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; line-height: 1.6;">
+                                                {{ 'Best regards,'|t }}<br>
+                                                <strong>{{ site_name }} {{ 'Team'|t }}</strong>
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+                            <tr>
+                                <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #9a9ea6; font-size: 12px; text-align: center;" valign="top" align="center">
+                                    <p style="font-family: sans-serif; font-size: 12px; font-weight: normal; margin: 0; color: #9a9ea6;">{{ 'This is an automated message. Please do not reply to this email.'|t }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #9a9ea6; font-size: 12px; text-align: center;" valign="top" align="center">
+                                    <p style="font-family: sans-serif; font-size: 12px; font-weight: normal; margin: 0; color: #9a9ea6;">{{ 'Generated on'|t }} {{ 'now'|date('F j, Y \\a\\t g:i A') }}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </td>
+            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
+        </tr>
+    </table>
+</body>
+</html>

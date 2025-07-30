@@ -215,4 +215,196 @@ class EmailService {
     return $html;
   }
 
+  /**
+   * Sends a status change notification email for an application.
+   *
+   * @param \Drupal\api_application\Entity\ApplicationInterface $application
+   *   The application entity.
+   * @param string $recipient_email
+   *   The recipient email address.
+   * @param \Drupal\status_manager\Entity\StatusChangeInterface $status_change
+   *   The status change entity.
+   * @param array $options
+   *   Optional email options:
+   *   - subject: Custom email subject.
+   *   - body: Custom email body.
+   *   - from: Sender email address.
+   *   - include_pdf: Whether to include PDF attachment (default: false).
+   *
+   * @return array
+   *   An array with 'success' (bool) and 'message' (string) keys.
+   */
+  public function sendApplicationStatusChangeEmail(ApplicationInterface $application, $recipient_email, $status_change, array $options = []) {
+    try {
+      // Validate email address.
+      if (!filter_var($recipient_email, FILTER_VALIDATE_EMAIL)) {
+        return [
+          'success' => FALSE,
+          'message' => 'Invalid email address provided',
+        ];
+      }
+
+      // Get sender email.
+      $from_email = $options['from'] ?? '<site>';
+
+      // Create email using Symfony Mailer with proper type.
+      $site_name = $this->configFactory->get('system.site')->get('name') ?: 'Uwezo Fund';
+      $email = $this->emailFactory->newTypedEmail('api_application', 'status_change', $application, $status_change, $site_name);
+
+      // Set basic email properties.
+      $email->setFrom($from_email);
+      $email->setTo($recipient_email);
+
+      // Set subject - either custom or default.
+      $subject = $options['subject'] ?? $this->getDefaultStatusChangeSubject($application, $status_change);
+      $email->setSubject($subject);
+
+      // Optionally include PDF attachment.
+      if (!empty($options['include_pdf'])) {
+        $pdf_path = $this->pdfGenerator->generateApplicationPdf($application);
+        if (file_exists($pdf_path)) {
+          $attachment_filename = 'application-' . $application->getApplicationId() . '.pdf';
+          $email->attachFromPath($pdf_path, $attachment_filename, 'application/pdf');
+        }
+      }
+
+      // Send the email.
+      $result = $email->send();
+
+      if ($result) {
+        $this->logger->info('Status change email sent successfully to @email for application @app_id (status: @status)', [
+          '@email' => $recipient_email,
+          '@app_id' => $application->getApplicationId(),
+          '@status' => $status_change->getNewStatus(),
+        ]);
+
+        return [
+          'success' => TRUE,
+          'message' => 'Status change email sent successfully',
+        ];
+      }
+      else {
+        $this->logger->error('Failed to send status change email to @email for application @app_id', [
+          '@email' => $recipient_email,
+          '@app_id' => $application->getApplicationId(),
+        ]);
+
+        return [
+          'success' => FALSE,
+          'message' => 'Failed to send status change email',
+        ];
+      }
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Exception while sending status change email: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+
+      return [
+        'success' => FALSE,
+        'message' => 'An error occurred while sending the status change email: ' . $e->getMessage(),
+      ];
+    }
+  }
+
+  /**
+   * Gets the default subject for status change emails.
+   *
+   * @param \Drupal\api_application\Entity\ApplicationInterface $application
+   *   The application entity.
+   * @param \Drupal\status_manager\Entity\StatusChangeInterface $status_change
+   *   The status change entity.
+   *
+   * @return string
+   *   The email subject.
+   */
+  protected function getDefaultStatusChangeSubject(ApplicationInterface $application, $status_change) {
+    $site_name = $this->configFactory->get('system.site')->get('name');
+    $status = ucfirst(str_replace('_', ' ', $status_change->getNewStatus()));
+
+    return $this->t('Your Loan Application @app_id has been @status - @site', [
+      '@app_id' => $application->getApplicationId(),
+      '@status' => $status,
+      '@site' => $site_name,
+    ]);
+  }
+
+  /**
+   * Sends a simple custom message email with consistent styling.
+   *
+   * @param string $recipient_email
+   *   The recipient email address.
+   * @param string $subject
+   *   The email subject.
+   * @param string $message
+   *   The email message content.
+   * @param array $options
+   *   Optional email options:
+   *   - from: Sender email address.
+   *
+   * @return array
+   *   An array with 'success' (bool) and 'message' (string) keys.
+   */
+  public function sendCustomMessage($recipient_email, $subject, $message, array $options = []) {
+    try {
+      // Validate email address.
+      if (!filter_var($recipient_email, FILTER_VALIDATE_EMAIL)) {
+        return [
+          'success' => FALSE,
+          'message' => 'Invalid email address provided',
+        ];
+      }
+
+      // Get sender email.
+      $from_email = $options['from'] ?? '<site>';
+
+      // Get site name.
+      $site_name = $this->configFactory->get('system.site')->get('name') ?: 'Uwezo Fund';
+
+      // Create email using Symfony Mailer with proper type.
+      $email = $this->emailFactory->newTypedEmail('api_application', 'custom_message', $message, $site_name);
+
+      // Set basic email properties.
+      $email->setFrom($from_email);
+      $email->setTo($recipient_email);
+      $email->setSubject($subject);
+
+      // Send the email.
+      $result = $email->send();
+
+      if ($result) {
+        $this->logger->info('Custom message email sent successfully to @email', [
+          '@email' => $recipient_email,
+        ]);
+
+        return [
+          'success' => TRUE,
+          'message' => 'Custom message email sent successfully',
+        ];
+      }
+      else {
+        $this->logger->error('Failed to send custom message email to @email', [
+          '@email' => $recipient_email,
+        ]);
+
+        return [
+          'success' => FALSE,
+          'message' => 'Failed to send custom message email',
+        ];
+      }
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Exception while sending custom message email: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+
+      return [
+        'success' => FALSE,
+        'message' => 'An error occurred while sending the custom message email: ' . $e->getMessage(),
+      ];
+    }
+  }
+
 }

@@ -95,20 +95,32 @@ class NotificationManager {
     $types_to_send = $notification_type === 'both' ? ['email', 'sms'] : [$notification_type];
 
     foreach ($types_to_send as $type) {
-      $config = $this->configFactory->get('status_manager_notifications.settings');
-      $active_provider_id = $config->get("{$type}.active_provider");
-
-      if (!$active_provider_id) {
+      // Get the target entity.
+      $entity = $status_change->getTargetEntity();
+      if (!$entity) {
         $results[$type] = [
           'success' => FALSE,
-          'message' => "No active {$type} provider configured.",
+          'message' => 'Target entity not found.',
         ];
         continue;
       }
 
+      // Check for entity-specific notification settings.
+      $entity_settings = $this->getEntityNotificationSettings($entity->getEntityTypeId(), $type);
+
+      if ($entity_settings['skip']) {
+        // Entity-specific settings indicate notifications should be skipped.
+        $results[$type] = [
+          'success' => FALSE,
+          'message' => $entity_settings['message'],
+        ];
+        continue;
+      }
+
+      $active_provider_id = $entity_settings['provider_id'];
+      $provider_config = $entity_settings['provider_config'];
+
       try {
-        // Load provider configuration.
-        $provider_config = $config->get("{$type}.providers.{$active_provider_id}") ?: [];
 
         /** @var \Drupal\status_manager_notifications\Plugin\NotificationProviderInterface $provider */
         $provider = $this->providerManager->createInstance($active_provider_id, $provider_config);
@@ -121,18 +133,13 @@ class NotificationManager {
           continue;
         }
 
-        // Get the target entity.
-        $entity = $status_change->getTargetEntity();
-        if (!$entity) {
-          $results[$type] = [
-            'success' => FALSE,
-            'message' => 'Target entity not found.',
-          ];
-          continue;
-        }
-
         // Send notification via provider.
-        $result = $provider->sendStatusChangeNotification($status_change);
+        // Pass entity settings as options for potential template overrides.
+        $notification_options = [
+          'entity_settings' => $entity_settings,
+        ];
+
+        $result = $provider->sendStatusChangeNotification($status_change, $notification_options);
         $results[$type] = $result;
 
         if ($result['success']) {
@@ -525,6 +532,78 @@ class NotificationManager {
     $contact_info['phone'] = array_unique($contact_info['phone']);
 
     return $contact_info;
+  }
+
+  /**
+   * Gets entity-specific notification settings.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   * @param string $notification_type
+   *   The notification type ('email' or 'sms').
+   *
+   * @return array
+   *   Array with keys:
+   *   - skip: (bool) Whether to skip notification.
+   *   - message: (string) Skip reason message.
+   *   - provider_id: (string) Provider ID to use.
+   *   - provider_config: (array) Provider configuration.
+   */
+  protected function getEntityNotificationSettings($entity_type_id, $notification_type) {
+    $notification_config = $this->configFactory->get('status_manager_notifications.settings');
+
+    // Check if entity-specific override is enabled.
+    $entity_settings = $notification_config->get("entities.{$entity_type_id}");
+
+    if (!empty($entity_settings['override_enabled'])) {
+      // Entity-specific settings are enabled, use those.
+      $provider_key = "{$notification_type}_provider";
+
+      if (isset($entity_settings[$provider_key])) {
+        $entity_provider_id = $entity_settings[$provider_key];
+
+        if (empty($entity_provider_id) || $entity_provider_id === 'none') {
+          // Entity-specific setting disables this notification type.
+          return [
+            'skip' => TRUE,
+            'message' => "Entity-specific {$notification_type} notifications disabled for {$entity_type_id}.",
+            'provider_id' => NULL,
+            'provider_config' => [],
+          ];
+        }
+
+        // Load entity-specific provider config.
+        $entity_provider_config = $notification_config->get("{$notification_type}.providers.{$entity_provider_id}") ?: [];
+
+        return [
+          'skip' => FALSE,
+          'message' => '',
+          'provider_id' => $entity_provider_id,
+          'provider_config' => $entity_provider_config,
+        ];
+      }
+    }
+
+    // Fall back to global settings.
+    $global_provider_id = $notification_config->get("{$notification_type}.active_provider");
+
+    if (!$global_provider_id) {
+      return [
+        'skip' => TRUE,
+        'message' => "No active {$notification_type} provider configured.",
+        'provider_id' => NULL,
+        'provider_config' => [],
+      ];
+    }
+
+    $global_provider_config = $notification_config->get("{$notification_type}.providers.{$global_provider_id}") ?: [];
+
+    return [
+      'skip' => FALSE,
+      'message' => '',
+      'provider_id' => $global_provider_id,
+      'provider_config' => $global_provider_config,
+    ];
   }
 
 }
