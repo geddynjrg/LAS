@@ -48,6 +48,9 @@ entity_mappings:
       person_with_disability: 0
       pwd_number: 0
       application: 0
+      confirmation_status: 0
+      confirmation_token: 0
+      requires_confirmation: 0
     notification_type: none
   block_content:
     enabled: 0
@@ -223,8 +226,8 @@ notifications:
     default_template: auto
   entity_settings:
     application:
-      override_enabled: 0
-      email_provider: ''
+      override_enabled: 1
+      email_provider: api_application_email
       email_template: ''
       sms_provider: ''
       sms_template: ''
