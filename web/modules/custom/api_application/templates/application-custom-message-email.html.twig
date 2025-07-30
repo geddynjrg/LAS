@@ -1,0 +1,185 @@
+{#
+/**
+ * @file
+ * Email template for custom messages - Mobile-responsive design.
+ *
+ * Available variables:
+ * - message: The custom message content.
+ * - site_name: The site name.
+ * - recipient_email: The recipient email address.
+ * - subject: The email subject.
+ */
+#}
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<![endif]-->
+    <title>{{ subject }} - {{ site_name }}</title>
+    <style>
+        /* Base styles for email clients */
+        .ReadMsgBody { width: 100%; }
+        .ExternalClass { width: 100%; }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+
+        /* Table-specific mobile styles */
+        @media only screen and (max-width: 600px) {
+            table[class=body] .container {
+                padding: 0 !important;
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+
+            table[class=body] .main {
+                border-left-width: 0 !important;
+                border-radius: 0 !important;
+                border-right-width: 0 !important;
+                margin: 0 !important;
+            }
+
+            table[class=body] .content {
+                padding: 0 !important;
+            }
+
+            table[class=body] .wrapper {
+                padding: 15px !important;
+            }
+
+            table[class=body] h1 {
+                font-size: 22px !important;
+                line-height: 26px !important;
+                margin-bottom: 15px !important;
+            }
+
+            table[class=body] p,
+            table[class=body] td,
+            table[class=body] span {
+                font-size: 16px !important;
+                line-height: 22px !important;
+            }
+
+            table[class=body] .header {
+                padding: 15px 0 !important;
+            }
+        }
+
+        /* Enhanced mobile styles for smaller screens */
+        @media only screen and (max-width: 480px) {
+            table[class=body] .wrapper {
+                padding: 12px !important;
+            }
+
+            table[class=body] h1 {
+                font-size: 20px !important;
+                line-height: 24px !important;
+            }
+        }
+
+        /* Gmail app mobile fix */
+        u + .body .gmail-fix {
+            display: none;
+        }
+
+        /* Windows Phone 8 fix */
+        .ExternalClass * {
+            line-height: 100%;
+        }
+    </style>
+    <!--[if mso]>
+    <style type="text/css">
+        .fallback-text {
+            font-family: Arial, sans-serif !important;
+        }
+        table {
+            border-collapse: collapse !important;
+        }
+    </style>
+    <![endif]-->
+</head>
+<body class="body gmail-fix" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; background-color: #f6f6f6; width: 100%;" width="100%" bgcolor="#f6f6f6">
+        <tr>
+            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
+            <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; max-width: 580px; padding: 10px; width: 580px; Margin: 0 auto;" width="580" valign="top">
+
+                <!-- HEADER -->
+                <div class="header" style="padding: 20px 0;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;">
+                        <tr>
+                            <td class="align-center" width="100%" style="font-family: sans-serif; font-size: 14px; vertical-align: top; text-align: center;" valign="top" align="center">
+                                <h1 style="color: #47103f; font-size: 24px; margin: 0; font-weight: bold;">{{ site_name }}</h1>
+                                <p style="color: #666; font-size: 16px; margin: 5px 0 0 0;">{{ 'Notification'|t }}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+
+                    <!-- MAIN CONTENT -->
+                    <table role="presentation" class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; background: #ffffff; border-radius: 3px; width: 100%;" width="100%">
+                        <tr>
+                            <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;" valign="top">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+
+                                    <!-- MESSAGE CONTENT -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                                            <div style="color: #333; line-height: 1.6; font-size: 16px;">
+                                                {{ message|nl2br }}
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- CONTACT INFO -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-top: 25px;" valign="top">
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; line-height: 1.6;">
+                                                {{ 'Best regards,'|t }}<br>
+                                                <strong>{{ site_name }} {{ 'Team'|t }}</strong>
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+                            <tr>
+                                <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #9a9ea6; font-size: 12px; text-align: center;" valign="top" align="center">
+                                    <p style="font-family: sans-serif; font-size: 12px; font-weight: normal; margin: 0; color: #9a9ea6;">{{ 'This is an automated message. Please do not reply to this email.'|t }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #9a9ea6; font-size: 12px; text-align: center;" valign="top" align="center">
+                                    <p style="font-family: sans-serif; font-size: 12px; font-weight: normal; margin: 0; color: #9a9ea6;">{{ 'Generated on'|t }} {{ 'now'|date('F j, Y \\a\\t g:i A') }}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </td>
+            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
+        </tr>
+    </table>
+</body>
+</html>

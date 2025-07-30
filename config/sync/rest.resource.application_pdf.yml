@@ -1,0 +1,18 @@
+uuid: 08372240-123b-4edd-8d8c-a67e83d58dd4
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - api_auth
+    - serialization
+id: application_pdf
+plugin_id: application_pdf
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - jwt_auth

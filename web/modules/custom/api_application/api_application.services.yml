@@ -17,3 +17,23 @@ services:
       - '@cache_tags.invalidator'
       - '@datetime.time'
       - '@request_stack'
+
+  api_application.pdf_generator:
+    class: Drupal\api_application\Service\PdfGeneratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@renderer'
+      - '@file_system'
+      - '@logger.factory'
+      - '@date.formatter'
+
+  api_application.email_service:
+    class: Drupal\api_application\Service\EmailService
+    arguments:
+      - '@config.factory'
+      - '@email_factory'
+      - '@renderer'
+      - '@logger.factory'
+      - '@file_system'
+      - '@api_application.pdf_generator'

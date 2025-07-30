@@ -123,6 +123,41 @@ function api_application_theme() {
       'render element' => 'elements',
       'template' => 'application',
     ],
+    'application_pdf' => [
+      'variables' => [
+        'application' => NULL,
+        'entity' => NULL,
+        'site_name' => NULL,
+      ],
+      'template' => 'application-pdf',
+    ],
+    'application_email' => [
+      'variables' => [
+        'application' => NULL,
+        'site_name' => NULL,
+        'recipient_email' => NULL,
+      ],
+      'template' => 'application-email',
+    ],
+    'application_status_change_email' => [
+      'variables' => [
+        'application' => NULL,
+        'status_change' => NULL,
+        'site_name' => NULL,
+        'recipient_email' => NULL,
+        'custom_body' => NULL,
+      ],
+      'template' => 'application-status-change-email',
+    ],
+    'application_custom_message_email' => [
+      'variables' => [
+        'message' => NULL,
+        'site_name' => NULL,
+        'recipient_email' => NULL,
+        'subject' => NULL,
+      ],
+      'template' => 'application-custom-message-email',
+    ],
   ];
 }
 

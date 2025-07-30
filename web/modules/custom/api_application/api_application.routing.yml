@@ -16,7 +16,7 @@ api_application.application_status_update:
 
 # Member response page route
 api_application.member_response:
-  path: '/member/respond/{token}'
+  path: '/member/response/{token}'
   defaults:
     _controller: '\Drupal\api_application\Controller\ApplicationController::showMemberResponsePage'
     _title: 'Respond to Membership'
@@ -67,3 +67,35 @@ api_application.send_member_confirmation_sms:
     parameters:
       group_member:
         type: entity:group_member
+
+# Download PDF route
+api_application.download_pdf:
+  path: '/admin/content/applications/{application}/download-pdf'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::downloadPdf'
+    _title: 'Download Application PDF'
+  requirements:
+    _entity_access: 'application.view'
+    application: \d+
+  methods: [GET]
+  options:
+    _admin_route: TRUE
+    parameters:
+      application:
+        type: entity:application
+
+# Send email form route
+api_application.send_email_form:
+  path: '/admin/content/applications/{application}/send-email'
+  defaults:
+    _form: '\Drupal\api_application\Form\SendEmailForm'
+    _title: 'Send Application via Email'
+  requirements:
+    _entity_access: 'application.view'
+    application: \d+
+  methods: [GET, POST]
+  options:
+    _admin_route: TRUE
+    parameters:
+      application:
+        type: entity:application
