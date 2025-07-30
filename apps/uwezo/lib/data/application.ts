@@ -39,6 +39,10 @@ export interface GeneralDetails {
   status: Status;
   user: string; // currently user email
   applicationProgress?: number;
+  rejectionDetails?: {
+    rejectionReason?: "incomplete_information" | "missing_documents" | "eligibility_criteria" | "duplicate_application" | "insufficient_collateral" | "poor_credit_history" | "other";
+    rejectionMessage?: string;
+  };
 }
 
 export interface GroupData {

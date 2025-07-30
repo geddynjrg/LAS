@@ -11,7 +11,9 @@
       "pending": "Pending",
       "inReview": "In Review",
       "approved": "Approved",
-      "rejected": "Rejected"
+      "rejected": "Rejected",
+      "disbursed": "Disbursed",
+      "closed": "Closed"
     },
     "table": {
       "applicationId": "Application ID",
@@ -260,14 +262,33 @@
       "inReview": "<bold>Step 3:</bold> Being reviewed",
       "pending": "<bold>Step 4:</bold> Committee decision pending",
       "approved": "<bold>Approved:</bold> Loan approved",
-      "rejected": "<bold>Rejected:</bold> Application rejected"
+      "rejected": "<bold>Rejected:</bold> Application rejected",
+      "disbursed": "<bold>Disbursed:</bold> Loan funds disbursed",
+      "closed": "<bold>Closed:</bold> Application closed"
+    },
+    "rejectionDetails": {
+      "reason": "Rejection Reason",
+      "message": "Additional Details"
+    },
+    "rejectionReasons": {
+      "incompleteInformation": "Incomplete Information",
+      "missingDocuments": "Missing Documents",
+      "eligibilityCriteria": "Eligibility Criteria Not Met",
+      "duplicateApplication": "Duplicate Application",
+      "insufficientCollateral": "Insufficient Collateral",
+      "poorCreditHistory": "Poor Credit History",
+      "other": "Other"
     },
     "stepDescription": {
       "title": "What is being done in this step?",
       "inReview": "<li>The application will be checked on the local constituency level for any discrepancies.</li> <li>Verification with relevant offices (local chief, credit organisations, social service office, etc).</li> <li>If required, your group members will be contacted for an additional interview.</li>",
       "readMoreInReview": "Read more about the reviewing step",
       "pending": "Once 15 applications have passed the reviewing step, the Constituency Uwezo Fund Management Committee will gather to discuss the applications and make a recommendation about the loan application. The committee recommendations will be approved by the Uwezo Board.",
-      "readMorePending": "Read more about the committee <lineBreak></lineBreak> decision making process"
+      "readMorePending": "Read more about the committee <lineBreak></lineBreak> decision making process",
+      "approved": "Congratulations! Your loan application has been approved by the Uwezo Fund Management Committee. You will be contacted soon regarding the next steps for loan disbursement.",
+      "rejected": "Unfortunately, your application has been rejected. Please review the rejection details above for specific reasons. You may submit a new application after addressing the issues mentioned.",
+      "disbursed": "Your loan has been successfully disbursed to your group's designated bank account. Please ensure timely repayments according to your agreed schedule.",
+      "closed": "This application has been closed. No further action is required. If you have questions, please contact our support team."
     },
     "processTimeline": {
       "title": "How long will it take?",
