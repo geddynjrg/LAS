@@ -937,8 +937,16 @@ class ApplicationResource extends RestFrameworkResourceBase {
     }
 
     // Requires confirmation field.
+    $requiresConfirmation = TRUE;
     if (isset($data['requires_confirmation'])) {
-      $values['requires_confirmation'] = (bool) $data['requires_confirmation'];
+      $requiresConfirmation = (bool) $data['requires_confirmation'];
+      $values['requires_confirmation'] = $requiresConfirmation;
+    }
+
+    // If confirmation is not required, automatically set as confirmed.
+    if (!$requiresConfirmation) {
+      $values['confirmation_status'] = 'confirmed';
+      $values['confirmation_confirmed_at'] = \Drupal::time()->getRequestTime();
     }
 
     // Optional text field.
@@ -997,7 +1005,14 @@ class ApplicationResource extends RestFrameworkResourceBase {
 
     // Requires confirmation field.
     if (isset($data['requires_confirmation'])) {
-      $member->set('requires_confirmation', (bool) $data['requires_confirmation']);
+      $requiresConfirmation = (bool) $data['requires_confirmation'];
+      $member->set('requires_confirmation', $requiresConfirmation);
+
+      // If confirmation is not required, automatically set as confirmed.
+      if (!$requiresConfirmation && $member->getConfirmationStatus() !== 'confirmed') {
+        $member->set('confirmation_status', 'confirmed');
+        $member->set('confirmation_confirmed_at', \Drupal::time()->getRequestTime());
+      }
     }
 
     // File fields.
@@ -1054,8 +1069,16 @@ class ApplicationResource extends RestFrameworkResourceBase {
       }
 
       // Requires confirmation field.
+      $requiresConfirmation = TRUE;
       if (isset($memberData['requires_confirmation'])) {
-        $values['requires_confirmation'] = (bool) $memberData['requires_confirmation'];
+        $requiresConfirmation = (bool) $memberData['requires_confirmation'];
+        $values['requires_confirmation'] = $requiresConfirmation;
+      }
+
+      // If confirmation is not required, automatically set as confirmed.
+      if (!$requiresConfirmation) {
+        $values['confirmation_status'] = 'confirmed';
+        $values['confirmation_confirmed_at'] = \Drupal::time()->getRequestTime();
       }
 
       // Optional text field.
