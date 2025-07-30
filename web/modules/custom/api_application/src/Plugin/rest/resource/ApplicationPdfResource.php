@@ -55,14 +55,14 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
    *   The available serialization formats.
    * @param \Psr\Log\LoggerInterface $logger
    *   A logger instance.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
-   *   The language manager.
    * @param \Drupal\Core\Path\PathMatcherInterface $path_matcher
    *   The path matcher service.
-   * @param \Drupal\path_alias\AliasManagerInterface $alias_manager
-   *   The alias manager service.
    * @param \Drupal\rest_framework\Service\RestFrameworkFieldMapper $field_mapper
    *   The REST framework field mapper.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager.
+   * @param \Drupal\path_alias\AliasManagerInterface $alias_manager
+   *   The alias manager service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\api_application\Service\PdfGeneratorService $pdf_generator
@@ -74,14 +74,14 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
     $plugin_definition,
     array $serializer_formats,
     LoggerInterface $logger,
-    LanguageManagerInterface $language_manager,
     PathMatcherInterface $path_matcher,
-    AliasManagerInterface $alias_manager,
     RestFrameworkFieldMapper $field_mapper,
+    LanguageManagerInterface $language_manager,
+    AliasManagerInterface $alias_manager,
     EntityTypeManagerInterface $entity_type_manager,
     PdfGeneratorService $pdf_generator,
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger, $language_manager, $path_matcher, $alias_manager, $field_mapper);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger, $path_matcher, $field_mapper, $language_manager, $alias_manager);
     $this->entityTypeManager = $entity_type_manager;
     $this->pdfGenerator = $pdf_generator;
   }
@@ -96,10 +96,10 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
       $plugin_definition,
       $container->getParameter('serializer.formats'),
       $container->get('logger.factory')->get('api_application'),
-      $container->get('language_manager'),
       $container->get('path.matcher'),
-      $container->get('path_alias.manager'),
       $container->get('rest_framework.field_mapper'),
+      $container->get('language_manager'),
+      $container->get('path_alias.manager'),
       $container->get('entity_type.manager'),
       $container->get('api_application.pdf_generator')
     );
@@ -118,15 +118,6 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
    */
   public function get(Request $request, $application = NULL): Response {
     try {
-      // Check authentication via API key header.
-      $apiKey = $request->headers->get('X-API-Key');
-      if (!$this->validateApiKey($apiKey)) {
-        return $this->createModifiedResponse([
-          'error' => 'Authentication failed',
-          'message' => 'Invalid or missing API key',
-        ], 401);
-      }
-
       if (empty($application)) {
         return $this->createModifiedResponse([
           'error' => 'Invalid request',
@@ -237,21 +228,6 @@ class ApplicationPdfResource extends RestFrameworkResourceBase {
         'filename' => 'application-' . $application->getApplicationId() . '.pdf',
       ],
     ]);
-  }
-
-  /**
-   * Validates the API key.
-   *
-   * @param string|null $apiKey
-   *   The API key to validate.
-   *
-   * @return bool
-   *   TRUE if valid, FALSE otherwise.
-   */
-  protected function validateApiKey($apiKey) {
-    // For now, we'll use a simple validation.
-    // In production, you should implement proper API key validation.
-    return !empty($apiKey);
   }
 
   /**
