@@ -11,7 +11,9 @@ dependencies:
     - rest.resource.api_token_refresh
     - rest.resource.api_user_profile
     - rest.resource.api_user_registration
+    - rest.resource.application_detail
     - rest.resource.application_instructions
+    - rest.resource.application_list
     - rest.resource.application_post
     - rest.resource.application_taxonomy_vocabularies
     - rest.resource.member_response
@@ -41,7 +43,9 @@ permissions:
   - 'delete own files'
   - 'post comments'
   - 'restful get api_user_profile'
+  - 'restful get application_detail'
   - 'restful get application_instructions'
+  - 'restful get application_list'
   - 'restful get application_taxonomy_vocabularies'
   - 'restful get member_response'
   - 'restful get rest_framework_node_resource'
