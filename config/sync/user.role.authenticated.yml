@@ -12,8 +12,10 @@ dependencies:
     - rest.resource.api_user_profile
     - rest.resource.api_user_registration
     - rest.resource.application_detail
+    - rest.resource.application_email
     - rest.resource.application_instructions
     - rest.resource.application_list
+    - rest.resource.application_pdf
     - rest.resource.application_post
     - rest.resource.application_taxonomy_vocabularies
     - rest.resource.member_response
@@ -46,6 +48,7 @@ permissions:
   - 'restful get application_detail'
   - 'restful get application_instructions'
   - 'restful get application_list'
+  - 'restful get application_pdf'
   - 'restful get application_taxonomy_vocabularies'
   - 'restful get member_response'
   - 'restful get rest_framework_node_resource'
@@ -57,6 +60,7 @@ permissions:
   - 'restful post api_password_reset_request'
   - 'restful post api_token_refresh'
   - 'restful post api_user_registration'
+  - 'restful post application_email'
   - 'restful post application_post'
   - 'search content'
   - 'skip comment approval'
