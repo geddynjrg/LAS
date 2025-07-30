@@ -68,26 +68,6 @@
   };
 
   /**
-   * Confirm dangerous actions.
-   */
-  Drupal.behaviors.applicationConfirmActions = {
-    attach: function (context, settings) {
-      const dangerButtons = once("confirm-action", ".button--danger", context);
-
-      dangerButtons.forEach(function (button) {
-        $(button).on("click", function (e) {
-          const message = Drupal.t(
-            "Are you sure you want to reject this application? This action cannot be undone."
-          );
-          if (!confirm(message)) {
-            e.preventDefault();
-          }
-        });
-      });
-    },
-  };
-
-  /**
    * Inline status update form.
    */
   Drupal.behaviors.applicationInlineStatusUpdate = {
