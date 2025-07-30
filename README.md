@@ -139,24 +139,73 @@ docker compose logs -f
 
 ### SSL Certificates with Let's Encrypt
 
-For production deployments with real domains:
+For production deployments with real domains, Let's Encrypt provides free SSL certificates.
 
-1. Set up your environment variables:
+#### Prerequisites
+
+1. **Domain names pointing to your server**
+   - Both `WEB_DOMAIN` and `ADMIN_DOMAIN` must have DNS A records pointing to your server's IP
+   - DNS propagation must be complete (can take up to 48 hours)
+
+2. **Port 80 accessible**
+   - Let's Encrypt validation requires HTTP access on port 80
+   - Ensure firewall allows incoming connections on port 80
+
+#### Initial Setup
+
+1. **Configure your domains in .env**:
    ```bash
-   LETSENCRYPT_EMAIL=your-email@example.com
-   WEB_DOMAIN=uwezo.example.com
-   ADMIN_DOMAIN=admin.uwezo.example.com
+   WEB_DOMAIN=app.yourdomain.com
+   ADMIN_DOMAIN=admin.yourdomain.com
+   LETSENCRYPT_EMAIL=your-email@domain.com
    ```
 
-2. Request certificates:
+2. **Run the initialization script**:
    ```bash
-   ./scripts/setup-letsencrypt.sh
+   ./scripts/init-letsencrypt.sh
    ```
 
-3. Enable automatic renewal:
+   This script will:
+   - Validate your configuration
+   - Create temporary self-signed certificates
+   - Start nginx
+   - Request Let's Encrypt certificates
+   - Configure nginx to use the new certificates
+
+#### Certificate Renewal
+
+Certificates are automatically renewed by the certbot container, which checks twice daily. Certificates renew when they have 30 days or less until expiration.
+
+To manually check renewal status:
+```bash
+docker compose run --rm certbot certificates
+```
+
+To manually renew:
+```bash
+docker compose run --rm certbot renew
+```
+
+#### Troubleshooting
+
+If certificate request fails:
+
+1. **Check DNS propagation**:
    ```bash
-   docker compose -f docker-compose.yml -f docker/letsencrypt/docker-compose.certbot.yml up -d
+   nslookup app.yourdomain.com
+   nslookup admin.yourdomain.com
    ```
+
+2. **Verify port 80 is accessible**:
+   - Check firewall rules
+   - Ensure no other service is using port 80
+
+3. **Check nginx logs**:
+   ```bash
+   docker compose logs nginx
+   ```
+
+4. **IP Whitelist**: If using `ALLOWED_IPS`, temporarily disable it during initial certificate setup as Let's Encrypt needs to access your server
 
 ### IP Whitelisting
 

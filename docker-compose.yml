@@ -101,6 +101,7 @@ services:
       - ./docker/nginx/certs:/etc/nginx/certs:ro
       - drupal_web:/var/www/html/web:ro
       - certbot_www:/var/www/certbot:ro
+      - certbot_conf:/etc/letsencrypt:ro
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN:-localhost}
       - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}
@@ -109,9 +110,19 @@ services:
       - admin
       - web
 
+  # Certbot for Let's Encrypt SSL certificates
+  certbot:
+    image: certbot/certbot:v2.11.0
+    restart: unless-stopped
+    volumes:
+      - certbot_www:/var/www/certbot:rw
+      - certbot_conf:/etc/letsencrypt:rw
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 volumes:
   db_data:
   drupal_files:
   drupal_private:
   drupal_web:
   certbot_www:
+  certbot_conf:
