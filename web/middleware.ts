@@ -13,7 +13,7 @@ const loggedOutRedirect = "/login";
 async function isUserAdmin(session: string): Promise<boolean> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_API_URL}/api/v1/user/profile`,
+      `${process.env.ADMIN_DOMAIN}/api/v1/user/profile`,
       {
         headers: {
           Authorization: `Bearer ${session}`,
@@ -103,7 +103,7 @@ export async function middleware(request: NextRequest) {
   if (path.startsWith("/api") && !isInternalRoute) {
     const newUrl = new URL(
       `${path}${request.nextUrl.search}`,
-      process.env.NEXT_API_URL,
+      process.env.ADMIN_DOMAIN,
     );
 
     if (session) {

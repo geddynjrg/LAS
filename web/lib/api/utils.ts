@@ -8,7 +8,7 @@ import { getSession } from "@/lib/session";
 import type { paths } from "./schema/schema";
 
 export const api = createClient<paths>({
-  baseUrl: process.env.NEXT_API_URL,
+  baseUrl: process.env.ADMIN_DOMAIN,
   fetch: (input: RequestInfo | URL, init?: RequestInit) => {
     // Bypass SSL certificate validation in development
     if (process.env.NODE_ENV === "development") {

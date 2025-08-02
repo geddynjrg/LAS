@@ -2,8 +2,8 @@
 
 import { cookies } from "next/headers";
 
-const REFRESH_TOKENS_URL = `${process.env.NEXT_API_URL}/api/v1/user/token/refresh`;
-const LOGOUT_URL = `${process.env.NEXT_API_URL}/api/v1/user/logout`;
+const REFRESH_TOKENS_URL = `${process.env.ADMIN_DOMAIN}/api/v1/user/token/refresh`;
+const LOGOUT_URL = `${process.env.ADMIN_DOMAIN}/api/v1/user/logout`;
 
 const ACCESS_TOKEN_COOKIE_NAME = "access-token";
 const REFRESH_TOKEN_COOKIE_NAME = "refresh-token";

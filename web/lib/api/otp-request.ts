@@ -13,9 +13,9 @@ export async function requestOtp(data: { phone: string }) {
   const t = await getTranslations("LoginPage");
 
   // Use direct fetch to avoid authentication headers for login endpoints
-  const apiUrl = process.env.NEXT_API_URL;
+  const apiUrl = process.env.ADMIN_DOMAIN;
   if (!apiUrl) {
-    throw new Error("NEXT_API_URL environment variable is required");
+    throw new Error("ADMIN_DOMAIN environment variable is required");
   }
   const OTP_REQUEST = `${apiUrl.replace(/\/$/, "")}/api/auth/otp/request`;
 
