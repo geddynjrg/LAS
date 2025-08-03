@@ -1,8 +1,8 @@
 # Shared nginx configuration for UWEZO with HTTPS
 # Routes admin.localhost to Drupal backend and localhost to Next.js web
 
-# Define allowed IPs for access control
-geo $allowed_ips {
+# Define allowed IPs for web domain access control
+geo $web_allowed_ips {
     default 0;
     
     # Docker networks - IMPORTANT: These are internal Docker IPs
@@ -14,8 +14,24 @@ geo $allowed_ips {
     127.0.0.1 1;
     ::1 1;
     
-    # Custom allowed IPs from environment
-    ${ALLOWED_IPS}
+    # Custom allowed IPs for web domain
+    ${WEB_ALLOWED_IPS}
+}
+
+# Define allowed IPs for admin domain access control
+geo $admin_allowed_ips {
+    default 0;
+    
+    # Docker networks
+    172.16.0.0/12 1;
+    10.0.0.0/8 1;
+    
+    # Allow localhost
+    127.0.0.1 1;
+    ::1 1;
+    
+    # Custom allowed IPs for admin domain (typically more restrictive)
+    ${ADMIN_ALLOWED_IPS}
 }
 
 # Upstream for Next.js web
@@ -41,7 +57,7 @@ server {
     
     # IP whitelist check for all other requests
     location / {
-        if ($allowed_ips = 0) {
+        if ($web_allowed_ips = 0) {
             return 403;
         }
         return 301 https://$host$request_uri;
@@ -56,7 +72,7 @@ server {
     index index.php;
     
     # IP whitelist check
-    if ($allowed_ips = 0) {
+    if ($admin_allowed_ips = 0) {
         return 403;
     }
 
@@ -209,7 +225,7 @@ server {
     server_name ${WEB_DOMAIN};
     
     # IP whitelist check
-    if ($allowed_ips = 0) {
+    if ($web_allowed_ips = 0) {
         return 403;
     }
 

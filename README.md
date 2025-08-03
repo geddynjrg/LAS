@@ -89,7 +89,7 @@ ddev drush updb
 
 For more DDEV commands and configuration options, see the [DDEV documentation](https://ddev.readthedocs.io/).
 
-## Staging Deployment
+## Deployment
 
 ### Prerequisites
 
@@ -97,37 +97,33 @@ For more DDEV commands and configuration options, see the [DDEV documentation](h
 
 ### Initial Server Setup
 
-1. **Create deployment directory on server**
+1. **Transfer initial files to server**
    ```bash
+   # Create deployment directory on server
    ssh user@server "mkdir -p /path/to/deployment"
-   ```
-
-2. **Create initial environment file**
-   ```bash
-   # Copy .env.example to server and edit credentials
-   scp .env.example user@server:/path/to/deployment/.env
    
-   # Edit environment file on server
-   ssh user@server "cd /path/to/deployment && nano .env"
-   # Set at minimum: DB_PASSWORD, DB_ROOT_PASSWORD
-   ```
-
-3. **Copy docker-compose.yml and start database**
-   ```bash
-   scp docker-compose.yml user@server:/path/to/deployment/
-   ssh user@server "cd /path/to/deployment && docker compose up -d db"
-   ```
-
-4. **Import database dump**
-   ```bash
-   # Copy dump to server
-   scp /path/to/dump.sql.gz user@server:/path/to/deployment/
+   # Copy necessary files to server
+   scp .env.example docker-compose.yml dump.sql.gz user@server:/path/to/deployment/
    
-   # Import database on server
-   ssh user@server "cd /path/to/deployment && zcat dump.sql.gz | docker compose exec -T db mariadb -u root -p\$DB_ROOT_PASSWORD drupal"
+   # SSH into the server
+   ssh user@server
+   cd /path/to/deployment
    ```
 
-5. **Configure GitHub Secrets and Variables**
+2. **Set up environment and database**
+   ```bash
+   # Create environment file from example
+   cp .env.example .env
+   nano .env  # Set at minimum: DB_PASSWORD, DB_ROOT_PASSWORD
+   
+   # Start database service
+   docker compose up -d db
+   
+   # Import database dump (uses MYSQL_ROOT_PASSWORD from container environment)
+   zcat dump.sql.gz | docker compose exec -T db sh -c 'mariadb -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
+   ```
+
+3. **Configure GitHub Secrets and Variables**
    
    In your GitHub repository settings, add these secrets:
    - `DEPLOY_HOST` - Server hostname
@@ -159,7 +155,7 @@ The project uses GitHub Actions for CI/CD. Automatic deployment to staging happe
 ### 1. Create certificates directory
 
 ```bash
-mkdir -p docker/nginx/certs
+mkdir -p certs
 ```
 
 ### 2. Add certificate volume to nginx service
@@ -171,7 +167,7 @@ services:
   nginx:
     volumes:
       - drupal_web:/var/www/html/web:ro
-      - ./docker/nginx/certs:/etc/nginx/certs:ro  # Add this line
+      - ./certs:/etc/nginx/certs:ro  # Add this line
 ```
 
 ### 3. Generate certificates
@@ -182,14 +178,14 @@ Install [mkcert](https://github.com/FiloSottile/mkcert) for locally-trusted cert
 
 ```bash
 mkcert -install
-mkcert -cert-file docker/nginx/certs/uwezo.crt -key-file docker/nginx/certs/uwezo.key localhost admin.localhost
+mkcert -cert-file certs/uwezo.crt -key-file certs/uwezo.key localhost admin.localhost
 ```
 
 **Option B: Self-signed certificates**
 
 ```bash
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout docker/nginx/certs/uwezo.key -out docker/nginx/certs/uwezo.crt \
+  -keyout certs/uwezo.key -out certs/uwezo.crt \
   -subj "/C=KE/ST=Nairobi/L=Nairobi/O=UWEZO/CN=localhost" \
   -addext "subjectAltName=DNS:localhost,DNS:admin.localhost"
 ```

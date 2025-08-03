@@ -25,9 +25,5 @@ storybook-static/
 # Generated files
 **/generated/
 
-# SSL certificates (except examples)
-docker/nginx/certs/*.crt
-docker/nginx/certs/*.key
-docker/nginx/certs/*.pem
-!docker/nginx/certs/.gitkeep
-!docker/nginx/certs/README.md
+# SSL certificates
+certs/

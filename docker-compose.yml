@@ -6,10 +6,14 @@ services:
       args:
         - NODE_VERSION=20
         - PROJECT=web
+        - DATABASE_URL=mysql://${DB_USER:-drupal}:${DB_PASSWORD}@db:3306/web
     environment:
       - NODE_ENV=${NODE_ENV:-${DRUPAL_ENV:-production}}
       - NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS:-}
       - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED:-}
+      - DATABASE_URL=mysql://${DB_USER:-drupal}:${DB_PASSWORD}@db:3306/web
+    env_file:
+      - .env
     volumes:
       - ${MKCERT_CA_PATH:-/dev/null}:/tmp/mkcert-ca.pem:ro
     extra_hosts:
@@ -100,12 +104,13 @@ services:
       - "${HTTPS_PORT:-443}:443"
     volumes:
       - drupal_web:/var/www/html/web:ro
-      - certbot_www:/var/www/certbot:ro
+      - certbot_www:/var/www/certbot:rw
       - certbot_conf:/etc/letsencrypt:ro
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN:-localhost}
       - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}
-      - ALLOWED_IPS=${ALLOWED_IPS:-}
+      - WEB_ALLOWED_IPS=${WEB_ALLOWED_IPS:-}
+      - ADMIN_ALLOWED_IPS=${ADMIN_ALLOWED_IPS:-}
     depends_on:
       - admin
       - web

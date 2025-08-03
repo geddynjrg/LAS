@@ -61,9 +61,10 @@ jobs:
         env:
           COMPOSE_PROJECT_NAME: uwezo
         run: |
-          docker compose build --parallel
+          chmod +x scripts/deploy.sh
+          ./scripts/deploy.sh staging --step build
           
-      - name: Save and transfer images
+      - name: Deploy application
         env:
           COMPOSE_PROJECT_NAME: uwezo
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -71,56 +72,13 @@ jobs:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          # Save SSH key
-          echo "$DEPLOY_KEY" > deploy_key
-          chmod 600 deploy_key
+          ./scripts/deploy.sh staging --step deploy
           
-          # Create deployment directory if it doesn't exist
-          ssh -i deploy_key -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST "mkdir -p $DEPLOY_PATH"
-          
-          # Get actual built image names using docker compose (standard approach)
-          echo "Getting built image names..."
-          
-          # Transfer built images (excluding external images like mariadb)
-          for SERVICE in web admin nginx; do
-            IMAGE_NAME="uwezo-${SERVICE}:latest"
-            echo "Transferring $IMAGE_NAME..."
-            
-            # Save image locally
-            docker save $IMAGE_NAME | gzip > /tmp/${SERVICE}-image.tar.gz
-            
-            # Transfer with scp
-            scp -i deploy_key -o StrictHostKeyChecking=no /tmp/${SERVICE}-image.tar.gz $DEPLOY_USER@$DEPLOY_HOST:/tmp/
-            
-            # Load on remote host and cleanup
-            ssh -i deploy_key -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST "zcat /tmp/${SERVICE}-image.tar.gz | docker load && rm /tmp/${SERVICE}-image.tar.gz && echo 'Loaded $IMAGE_NAME'"
-            
-            # Clean up local file
-            rm /tmp/${SERVICE}-image.tar.gz
-          done
-          
-          # Copy docker-compose and configs
-          scp -i deploy_key -o StrictHostKeyChecking=no docker-compose.yml .env $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
-          
-          # Deploy on server
-          ssh -i deploy_key -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && docker compose up -d --remove-orphans"
-          
-          # Cleanup
-          rm deploy_key
-          
-      - name: Run Drupal deployment tasks
+      - name: Run post-deployment tasks
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          # Save SSH key
-          echo "$DEPLOY_KEY" > deploy_key
-          chmod 600 deploy_key
-          
-          # Run drush deploy (config import, database updates, cache clear)
-          ssh -i deploy_key -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && docker compose exec -T admin /var/www/html/vendor/bin/drush deploy"
-          
-          # Cleanup
-          rm deploy_key
+          ./scripts/deploy.sh staging --step post-deploy
