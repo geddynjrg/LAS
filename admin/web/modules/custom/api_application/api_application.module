@@ -5,15 +5,10 @@
  * Contains api_application.module.
  */
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
-use Drupal\api_application\Entity\Application;
-use Drupal\api_application\Entity\GroupMember;
-use Drupal\file\FileInterface;
 use Drupal\gin\GinSettings;
 
 /**
@@ -128,6 +123,41 @@ function api_application_theme() {
       'render element' => 'elements',
       'template' => 'application',
     ],
+    'application_pdf' => [
+      'variables' => [
+        'application' => NULL,
+        'entity' => NULL,
+        'site_name' => NULL,
+      ],
+      'template' => 'application-pdf',
+    ],
+    'application_email' => [
+      'variables' => [
+        'application' => NULL,
+        'site_name' => NULL,
+        'recipient_email' => NULL,
+      ],
+      'template' => 'application-email',
+    ],
+    'application_status_change_email' => [
+      'variables' => [
+        'application' => NULL,
+        'status_change' => NULL,
+        'site_name' => NULL,
+        'recipient_email' => NULL,
+        'custom_body' => NULL,
+      ],
+      'template' => 'application-status-change-email',
+    ],
+    'application_custom_message_email' => [
+      'variables' => [
+        'message' => NULL,
+        'site_name' => NULL,
+        'recipient_email' => NULL,
+        'subject' => NULL,
+      ],
+      'template' => 'application-custom-message-email',
+    ],
   ];
 }
 
@@ -221,6 +251,7 @@ function template_preprocess_application(array &$variables) {
         $member = $member_item->entity;
         $position = $member->get('position')->entity;
         $variables['application']['group_members'][] = [
+          'id' => $member->id(),
           'name' => $member->getName(),
           'id_number' => $member->getIdNumber(),
           'gender' => $member->getGender(),
@@ -228,6 +259,11 @@ function template_preprocess_application(array &$variables) {
           'position' => $position ? $position->getName() : '',
           'is_pwd' => $member->isPersonWithDisability(),
           'pwd_number' => $member->getPwdNumber(),
+          'confirmation_status' => $member->getConfirmationStatus(),
+          'confirmation_sent_at' => $member->getConfirmationSentAt(),
+          'confirmation_confirmed_at' => $member->getConfirmationConfirmedAt(),
+          'is_confirmed' => $member->isConfirmed(),
+          'requires_confirmation' => $member->requiresConfirmation(),
         ];
       }
     }
@@ -427,6 +463,30 @@ function template_preprocess_application(array &$variables) {
     $variables['application']['rejection_reason_label'] = $rejection_reasons[$variables['application']['rejection_reason']] ?? $variables['application']['rejection_reason'];
   }
 
+  // SMS Confirmation data.
+  $sms_confirmation_service = \Drupal::service('api_application.sms_confirmation');
+  $confirmation_stats = $sms_confirmation_service->getConfirmationStats($application);
+  $variables['confirmation_stats'] = $confirmation_stats;
+  $variables['all_members_confirmed'] = $sms_confirmation_service->areAllMembersConfirmed($application);
+
+  // Generate URLs for SMS actions if user has access.
+  if ($variables['can_update']) {
+    $variables['send_sms_url'] = Url::fromRoute(
+      'api_application.send_confirmation_sms',
+      ['application' => $application->id()]
+    )->toString();
+  }
+
+  // SMS confirmation status labels.
+  $confirmation_status_labels = [
+    'pending' => t('Pending'),
+    'sent' => t('SMS Sent'),
+    'confirmed' => t('Confirmed'),
+    'declined' => t('Declined'),
+    'failed' => t('Failed'),
+  ];
+  $variables['confirmation_status_labels'] = $confirmation_status_labels;
+
   // Helpful $content variable for templates.
   $variables['content'] = [];
 
@@ -454,205 +514,6 @@ function api_application_preprocess_page(&$variables) {
           if (str_contains($block_name, 'page_title')
               || (isset($block['#plugin_id']) && str_contains($block['#plugin_id'], 'page_title'))) {
             unset($region[$block_name]);
-          }
-        }
-      }
-    }
-  }
-}
-
-/**
- * Implements hook_ENTITY_TYPE_presave() for application entities.
- */
-function api_application_application_presave(EntityInterface $entity) {
-  if ($entity instanceof Application && !$entity->isNew()) {
-    // Move files to application-specific directories when updating.
-    _api_application_organize_application_files($entity);
-  }
-}
-
-/**
- * Implements hook_ENTITY_TYPE_insert() for application entities.
- */
-function api_application_application_insert(EntityInterface $entity) {
-  if ($entity instanceof Application) {
-    // Move files to application-specific directories after creation.
-    _api_application_organize_application_files($entity);
-  }
-}
-
-/**
- * Implements hook_ENTITY_TYPE_presave() for group_member entities.
- */
-function api_application_group_member_presave(EntityInterface $entity) {
-  if ($entity instanceof GroupMember && !$entity->isNew()) {
-    // Move files to application-specific directories when updating.
-    _api_application_organize_group_member_files($entity);
-  }
-}
-
-/**
- * Implements hook_ENTITY_TYPE_insert() for group_member entities.
- */
-function api_application_group_member_insert(EntityInterface $entity) {
-  if ($entity instanceof GroupMember) {
-    // Move files to application-specific directories after creation.
-    _api_application_organize_group_member_files($entity);
-  }
-}
-
-/**
- * Organizes application files into application-specific directories.
- *
- * @param \Drupal\api_application\Entity\Application $application
- *   The application entity.
- */
-function _api_application_organize_application_files(Application $application) {
-  $application_id = $application->getApplicationId();
-
-  if (empty($application_id)) {
-    return;
-  }
-
-  $file_fields = [
-    'group_registration_certificate' => 'certificates',
-    'list_of_members_certificate' => 'members',
-  ];
-
-  $file_system = Drupal::service('file_system');
-  $file_storage = Drupal::entityTypeManager()->getStorage('file');
-
-  foreach ($file_fields as $field_name => $subdirectory) {
-    if ($application->hasField($field_name) && !$application->get($field_name)->isEmpty()) {
-      $file_id = $application->get($field_name)->target_id;
-
-      if ($file_id) {
-        $file = $file_storage->load($file_id);
-
-        if ($file instanceof FileInterface) {
-          $current_uri = $file->getFileUri();
-
-          // Check if file is already in the correct directory.
-          $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
-
-          if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
-            // Move file to application-specific directory.
-            $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
-            $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
-
-            $filename = $file->getFilename();
-            $new_uri = $new_directory . '/' . $filename;
-
-            // Move the file.
-            $moved_uri = $file_system->move(
-              $current_uri,
-              $new_uri,
-              FileSystemInterface::EXISTS_RENAME
-            );
-
-            if ($moved_uri) {
-              $file->setFileUri($moved_uri);
-              $file->save();
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Handle multi-value file field (group_credit_history).
-  if ($application->hasField('group_credit_history') && !$application->get('group_credit_history')->isEmpty()) {
-    $credit_history_field = $application->get('group_credit_history');
-
-    foreach ($credit_history_field as $item) {
-      $file_id = $item->target_id;
-
-      if ($file_id) {
-        $file = $file_storage->load($file_id);
-
-        if ($file instanceof FileInterface) {
-          $current_uri = $file->getFileUri();
-
-          // Check if file is already in the correct directory.
-          $expected_dir_pattern = 'public://applications/' . $application_id . '/credit_history';
-
-          if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
-            // Move file to application-specific directory.
-            $new_directory = 'public://applications/' . $application_id . '/credit_history';
-            $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
-
-            $filename = $file->getFilename();
-            $new_uri = $new_directory . '/' . $filename;
-
-            // Move the file.
-            $moved_uri = $file_system->move($current_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
-
-            if ($moved_uri) {
-              $file->setFileUri($moved_uri);
-              $file->save();
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-/**
- * Organizes group member files into application-specific directories.
- *
- * @param \Drupal\api_application\Entity\GroupMember $member
- *   The group member entity.
- */
-function _api_application_organize_group_member_files(GroupMember $member) {
-  $application = $member->getApplication();
-
-  if (!$application) {
-    return;
-  }
-
-  $application_id = $application->getApplicationId();
-
-  if (empty($application_id)) {
-    return;
-  }
-
-  $file_fields = [
-    'photo_member_id' => 'member_ids',
-    'certificate_disability' => 'disability_certs',
-  ];
-
-  $file_system = Drupal::service('file_system');
-  $file_storage = Drupal::entityTypeManager()->getStorage('file');
-
-  foreach ($file_fields as $field_name => $subdirectory) {
-    if ($member->hasField($field_name) && !$member->get($field_name)->isEmpty()) {
-      $file_id = $member->get($field_name)->target_id;
-
-      if ($file_id) {
-        $file = $file_storage->load($file_id);
-
-        if ($file instanceof FileInterface) {
-          $current_uri = $file->getFileUri();
-
-          // Check if file is already in the correct directory.
-          $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
-
-          if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
-            // Move file to application-specific directory.
-            $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
-            $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
-
-            $filename = $file->getFilename();
-            $new_uri = $new_directory . '/' . $filename;
-
-            // Move the file.
-            $moved_uri = $file_system->move($current_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
-
-            if ($moved_uri) {
-              $file->setFileUri($moved_uri);
-              $file->save();
-            }
           }
         }
       }

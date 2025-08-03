@@ -20,6 +20,21 @@ api_application.settings:
     allowed_extensions:
       type: string
       label: 'Allowed file extensions'
+    sms_confirmation_enabled:
+      type: boolean
+      label: 'Enable SMS confirmation'
+    sms_confirmation_message:
+      type: text
+      label: 'SMS confirmation message template'
+    auto_send_sms:
+      type: boolean
+      label: 'Auto-send SMS on application submission'
+    frontend_base_url:
+      type: string
+      label: 'Frontend base URL'
+    frontend_confirmation_path:
+      type: string
+      label: 'Frontend response path'
     instructions:
       type: mapping
       label: 'Instructions settings'

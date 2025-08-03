@@ -16,6 +16,7 @@
     ],
     "require": {
         "composer/installers": "^2.3",
+        "dompdf/dompdf": "^3.1",
         "drupal/address": "^2.0",
         "drupal/admin_toolbar": "^3.5",
         "drupal/autologout": "^2.0",
@@ -37,6 +38,7 @@
         "drupal/redis": "^1.9",
         "drupal/restui": "^1.22",
         "drupal/schemata": "^1.0",
+        "drupal/symfony_mailer": "^1.6",
         "drush/drush": "^13.3",
         "firebase/php-jwt": "^6.10"
     },

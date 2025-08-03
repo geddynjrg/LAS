@@ -21,19 +21,29 @@ class ApplicationPostSchemaProvider extends OpenApiSchemaProviderBase {
     return [
       'ApplicationPostRequest' => [
         'type' => 'object',
-        'description' => 'Request body for creating or updating an application',
-        'required' => ['group_name', 'group_registration_number', 'date_registered', 'owner_email'],
+        'description' => 'Request body for creating or updating an application. When identifier_type is EMAIL or NAME, use owner_identifier. When identifier_type is PHONE, use phoneNumber.',
+        'required' => ['group_name', 'group_registration_number', 'date_registered', 'identifier_type'],
         'properties' => [
           'application_id' => [
             'type' => 'string',
             'description' => 'Existing application ID for updates (optional)',
             'example' => 'APP-20240115-abc12',
           ],
-          'owner_email' => [
+          'identifier_type' => [
             'type' => 'string',
-            'format' => 'email',
-            'description' => 'Email of the application owner',
+            'description' => 'Type of identifier used to identify the application owner',
+            'enum' => ['EMAIL', 'PHONE', 'NAME'],
+            'example' => 'EMAIL',
+          ],
+          'owner_identifier' => [
+            'type' => 'string',
+            'description' => 'Identifier of the application owner (email or name, used when identifier_type is EMAIL or NAME)',
             'example' => 'user@example.com',
+          ],
+          'phone_number' => [
+            'type' => 'string',
+            'description' => 'Phone number of the application owner (used when identifier_type is PHONE)',
+            'example' => '+254712345678',
           ],
           'status' => [
             'type' => 'string',
@@ -261,6 +271,11 @@ class ApplicationPostSchemaProvider extends OpenApiSchemaProviderBase {
             'type' => 'boolean',
             'default' => FALSE,
           ],
+          'requires_confirmation' => [
+            'type' => 'boolean',
+            'default' => TRUE,
+            'description' => 'Whether this member requires SMS confirmation',
+          ],
           'pwd_number' => [
             'type' => 'string',
             'description' => 'PWD registration number',
@@ -378,7 +393,7 @@ class ApplicationPostSchemaProvider extends OpenApiSchemaProviderBase {
       '/api/v1/application' => [
         'post' => [
           'summary' => 'Create or update a loan application',
-          'description' => 'Creates a new loan application or updates an existing one if application_id or group_registration_number matches',
+          'description' => 'Creates a new loan application or updates an existing one if application_id or group_registration_number matches. Uses identifier_type with either owner_identifier (for EMAIL/NAME) or phoneNumber (for PHONE) to find or create the application owner in field_phone_number',
           'operationId' => 'createApplication',
           'tags' => ['Application'],
           'security' => [

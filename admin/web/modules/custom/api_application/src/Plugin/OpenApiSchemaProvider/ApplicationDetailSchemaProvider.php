@@ -282,6 +282,10 @@ class ApplicationDetailSchemaProvider extends OpenApiSchemaProviderBase {
           'person_with_disability' => [
             'type' => 'boolean',
           ],
+          'requires_confirmation' => [
+            'type' => 'boolean',
+            'description' => 'Whether this member requires SMS confirmation',
+          ],
           'pwd_number' => [
             'type' => 'string',
             'nullable' => TRUE,
@@ -289,7 +293,68 @@ class ApplicationDetailSchemaProvider extends OpenApiSchemaProviderBase {
           'certificate_disability' => [
             '$ref' => '#/components/schemas/FileData',
           ],
+          'confirmation' => [
+            '$ref' => '#/components/schemas/MemberConfirmationInfo',
+          ],
         ],
+      ],
+      'MemberConfirmationInfo' => [
+        'type' => 'object',
+        'properties' => [
+          'status' => [
+            'type' => 'string',
+            'enum' => ['pending', 'sent', 'confirmed', 'failed'],
+            'description' => 'Current confirmation status',
+            'example' => 'pending',
+          ],
+          'sent_at' => [
+            'type' => 'integer',
+            'nullable' => TRUE,
+            'description' => 'Unix timestamp when SMS was sent',
+            'example' => 1704067200,
+          ],
+          'confirmed_at' => [
+            'type' => 'integer',
+            'nullable' => TRUE,
+            'description' => 'Unix timestamp when member confirmed',
+            'example' => 1704067800,
+          ],
+          'is_confirmed' => [
+            'type' => 'boolean',
+            'description' => 'Whether the member has confirmed',
+            'example' => FALSE,
+          ],
+          'is_declined' => [
+            'type' => 'boolean',
+            'description' => 'Whether the member has declined',
+            'example' => FALSE,
+          ],
+          'urls' => [
+            'type' => 'object',
+            'properties' => [
+              'api' => [
+                'type' => 'string',
+                'format' => 'uri',
+                'description' => 'REST API endpoint URL for programmatic confirmation',
+                'example' => 'https://example.com/api/v1/member/response/a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
+              ],
+              'frontend' => [
+                'type' => 'string',
+                'format' => 'uri',
+                'description' => 'Frontend application URL for user confirmation',
+                'example' => 'https://app.example.com/confirm/a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
+              ],
+              'sms' => [
+                'type' => 'string',
+                'format' => 'uri',
+                'description' => 'URL that will be sent via SMS (same as frontend_url)',
+                'example' => 'https://app.example.com/confirm/a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
+              ],
+            ],
+            'required' => ['api', 'frontend', 'sms'],
+          ],
+        ],
+        'required' => ['status', 'is_confirmed', 'is_declined', 'urls'],
       ],
       'TaxonomyTerm' => [
         'type' => 'object',

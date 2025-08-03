@@ -18,3 +18,10 @@ sms:
     africas_talking_sms:
       enabled: false
   default_template: auto
+entities:
+  application:
+    override_enabled: 1
+    email_provider: api_application_email
+    email_template: ''
+    sms_provider: ''
+    sms_template: ''

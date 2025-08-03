@@ -68,26 +68,6 @@
   };
 
   /**
-   * Confirm dangerous actions.
-   */
-  Drupal.behaviors.applicationConfirmActions = {
-    attach: function (context, settings) {
-      const dangerButtons = once("confirm-action", ".button--danger", context);
-
-      dangerButtons.forEach(function (button) {
-        $(button).on("click", function (e) {
-          const message = Drupal.t(
-            "Are you sure you want to reject this application? This action cannot be undone."
-          );
-          if (!confirm(message)) {
-            e.preventDefault();
-          }
-        });
-      });
-    },
-  };
-
-  /**
    * Inline status update form.
    */
   Drupal.behaviors.applicationInlineStatusUpdate = {
@@ -350,6 +330,160 @@
         $modal.find(".modal-cancel").click();
         $(document).off("keyup.modal");
       }
+    });
+  }
+
+  /**
+   * SMS Confirmation handlers.
+   */
+  Drupal.behaviors.smsConfirmationHandlers = {
+    attach: function (context, settings) {
+      // Send SMS to all members handler
+      const sendAllButtons = once("send-sms-all", ".send-sms-all", context);
+      sendAllButtons.forEach(function (button) {
+        $(button).on("click", function (e) {
+          e.preventDefault();
+          const $button = $(this);
+          const url = $button.data("url");
+
+          if (!url) {
+            showAlertModal(Drupal.t("Invalid SMS URL"), "error");
+            return;
+          }
+
+          // Confirm action
+          showConfirmModal(
+            Drupal.t(
+              "Send confirmation SMS to all members who haven't confirmed yet?"
+            ),
+            function () {
+              sendSmsToAll($button, url);
+            }
+          );
+        });
+      });
+
+      // Send SMS to individual member handler
+      const sendMemberButtons = once(
+        "send-member-sms",
+        ".send-member-sms",
+        context
+      );
+      sendMemberButtons.forEach(function (button) {
+        $(button).on("click", function (e) {
+          e.preventDefault();
+          const $button = $(this);
+          const memberId = $button.data("member-id");
+          const memberName = $button.data("member-name");
+
+          if (!memberId) {
+            showAlertModal(Drupal.t("Invalid member ID"), "error");
+            return;
+          }
+
+          // Confirm action
+          showConfirmModal(
+            Drupal.t("Send confirmation SMS to @name?", {
+              "@name": memberName,
+            }),
+            function () {
+              sendSmsToMember($button, memberId, memberName);
+            }
+          );
+        });
+      });
+    },
+  };
+
+  /**
+   * Send SMS to all members.
+   */
+  function sendSmsToAll($button, url) {
+    const originalText = $button.text();
+
+    $button
+      .addClass("loading")
+      .prop("disabled", true)
+      .text(Drupal.t("Sending..."));
+
+    $.ajax({
+      url: url,
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": drupalSettings.csrf_token || "",
+      },
+      success: function (response) {
+        if (response.success) {
+          showAlertModal(response.message, "success", function () {
+            window.location.reload();
+          });
+        } else {
+          showAlertModal(
+            response.message || Drupal.t("Failed to send SMS messages"),
+            "error"
+          );
+        }
+      },
+      error: function () {
+        showAlertModal(
+          Drupal.t("An error occurred while sending SMS messages"),
+          "error"
+        );
+      },
+      complete: function () {
+        $button
+          .removeClass("loading")
+          .prop("disabled", false)
+          .text(originalText);
+      },
+    });
+  }
+
+  /**
+   * Send SMS to individual member.
+   */
+  function sendSmsToMember($button, memberId, memberName) {
+    const originalText = $button.text();
+    const url = `/admin/structure/member/${memberId}/send-sms`;
+
+    $button
+      .addClass("loading")
+      .prop("disabled", true)
+      .text(Drupal.t("Sending..."));
+
+    $.ajax({
+      url: url,
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": drupalSettings.csrf_token || "",
+      },
+      success: function (response) {
+        if (response.success) {
+          showAlertModal(response.message, "success", function () {
+            window.location.reload();
+          });
+        } else {
+          showAlertModal(
+            response.message ||
+              Drupal.t("Failed to send SMS to @name", { "@name": memberName }),
+            "error"
+          );
+        }
+      },
+      error: function () {
+        showAlertModal(
+          Drupal.t("An error occurred while sending SMS to @name", {
+            "@name": memberName,
+          }),
+          "error"
+        );
+      },
+      complete: function () {
+        $button
+          .removeClass("loading")
+          .prop("disabled", false)
+          .text(originalText);
+      },
     });
   }
 

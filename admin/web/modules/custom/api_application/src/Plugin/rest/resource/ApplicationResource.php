@@ -118,7 +118,7 @@ class ApplicationResource extends RestFrameworkResourceBase {
         'group_name',
         'group_registration_number',
         'date_registered',
-        'owner_email',
+        'identifier_type',
       ];
 
       $missingFields = [];
@@ -126,6 +126,48 @@ class ApplicationResource extends RestFrameworkResourceBase {
         if (empty($data[$field])) {
           $missingFields[] = $field;
         }
+      }
+
+      // Validate identifier_type.
+      $validIdentifierTypes = ['EMAIL', 'PHONE', 'NAME'];
+      if (!in_array(strtoupper($data['identifier_type']), $validIdentifierTypes)) {
+        return $this->createModifiedResponse([
+          'error' => 'Validation failed',
+          'message' => 'Invalid identifier_type. Must be one of: ' . implode(', ', $validIdentifierTypes),
+        ], 400);
+      }
+
+      // Validate identifier field based on type.
+      $identifierType = strtoupper($data['identifier_type']);
+      $identifier = NULL;
+
+      switch ($identifierType) {
+        case 'EMAIL':
+          if (empty($data['owner_identifier'])) {
+            $missingFields[] = 'owner_identifier';
+          }
+          else {
+            $identifier = $data['owner_identifier'];
+          }
+          break;
+
+        case 'PHONE':
+          if (empty($data['phone_number'])) {
+            $missingFields[] = 'phone_number';
+          }
+          else {
+            $identifier = $data['phone_number'];
+          }
+          break;
+
+        case 'NAME':
+          if (empty($data['owner_identifier'])) {
+            $missingFields[] = 'owner_identifier';
+          }
+          else {
+            $identifier = $data['owner_identifier'];
+          }
+          break;
       }
 
       if (!empty($missingFields)) {
@@ -137,11 +179,11 @@ class ApplicationResource extends RestFrameworkResourceBase {
       }
 
       // Find or create the owner user.
-      $owner = $this->findOrCreateUser($data['owner_email']);
+      $owner = $this->findOrCreateUser($identifier, $identifierType);
       if (!$owner) {
         return $this->createModifiedResponse([
           'error' => 'User error',
-          'message' => 'Could not find or create user with email: ' . $data['owner_email'],
+          'message' => 'Could not find or create user with ' . strtolower($identifierType) . ': ' . $identifier,
         ], 400);
       }
 
@@ -212,36 +254,95 @@ class ApplicationResource extends RestFrameworkResourceBase {
   }
 
   /**
-   * Finds or creates a user based on email.
+   * Finds or creates a user based on identifier and type.
    *
-   * @param string $email
-   *   The email address.
+   * @param string $identifier
+   *   The identifier value.
+   * @param string $identifierType
+   *   The identifier type (EMAIL, PHONE, NAME).
    *
    * @return \Drupal\user\UserInterface|null
    *   The user entity or NULL.
    */
-  protected function findOrCreateUser($email) {
+  protected function findOrCreateUser($identifier, $identifierType) {
     $userStorage = $this->entityTypeManager->getStorage('user');
 
-    // Try to find existing user.
-    $users = $userStorage->loadByProperties(['mail' => $email]);
+    // Try to find existing user based on identifier type.
+    switch ($identifierType) {
+      case 'EMAIL':
+        $users = $userStorage->loadByProperties(['mail' => $identifier]);
+        break;
+
+      case 'PHONE':
+        // Search by field_phone_number field.
+        $query = \Drupal::entityQuery('user')
+          ->condition('field_phone_number', $identifier)
+          ->accessCheck(FALSE);
+        $uids = $query->execute();
+
+        if (!empty($uids)) {
+          $users = $userStorage->loadMultiple($uids);
+        }
+        else {
+          $users = [];
+        }
+        break;
+
+      case 'NAME':
+        // Search by username/display name.
+        $users = $userStorage->loadByProperties(['name' => $identifier]);
+        break;
+
+      default:
+        return NULL;
+    }
+
     if (!empty($users)) {
       return reset($users);
     }
 
-    // Create new user.
+    // Create new user based on identifier type.
     try {
-      $user = $userStorage->create([
-        'name' => $email,
-        'mail' => $email,
+      $userData = [
         'status' => 1,
         'roles' => ['authenticated'],
-      ]);
+      ];
+
+      switch ($identifierType) {
+        case 'EMAIL':
+          $userData['name'] = $identifier;
+          $userData['mail'] = $identifier;
+          break;
+
+        case 'PHONE':
+          $userData['name'] = $identifier;
+          // For phone numbers, we might not have an email, so use a
+          // placeholder.
+          $userData['mail'] = $identifier . '@example.com';
+          $userData['field_phone_number'] = $identifier;
+          break;
+
+        case 'NAME':
+          $userData['name'] = $identifier;
+          // For names, use a placeholder email.
+          $userData['mail'] = strtolower(str_replace(' ', '.', $identifier)) . '@example.com';
+          break;
+      }
+
+      $user = $userStorage->create($userData);
       $user->save();
+
+      $this->logger->info('Created new user with @type identifier: @identifier', [
+        '@type' => $identifierType,
+        '@identifier' => $identifier,
+      ]);
+
       return $user;
     }
     catch (\Exception $e) {
-      $this->logger->error('Failed to create user: @message', [
+      $this->logger->error('Failed to create user with @type identifier @identifier: @message', [
+        '@type' => $identifierType,
+        '@identifier' => $identifier,
         '@message' => $e->getMessage(),
       ]);
       return NULL;
@@ -287,6 +388,13 @@ class ApplicationResource extends RestFrameworkResourceBase {
   protected function createApplication(array $data, UserInterface $owner) {
     $applicationStorage = $this->entityTypeManager->getStorage('application');
 
+    // Step 1: Create group members first (without application reference)
+    $memberIds = [];
+    if (!empty($data['group_members'])) {
+      $memberIds = $this->createGroupMembersFirst($data['group_members']);
+    }
+
+    // Step 2: Create the application.
     $values = [
       'uid' => $owner->id(),
       'status' => $data['status'] ?? 'draft',
@@ -298,7 +406,13 @@ class ApplicationResource extends RestFrameworkResourceBase {
     $application = $applicationStorage->create($values);
     $application->save();
 
-    // Now process files with the application ID.
+    // Step 3: Update group members with application reference and attach to
+    // application.
+    if (!empty($memberIds)) {
+      $this->linkMembersToApplication($application, $memberIds, $data['group_members'] ?? []);
+    }
+
+    // Step 4: Process files with the application ID and save again.
     $fileFields = [
       'group_registration_certificate',
       'list_of_members_certificate',
@@ -335,13 +449,10 @@ class ApplicationResource extends RestFrameworkResourceBase {
       }
     }
 
+    // Final save with files and members attached - this will trigger normal
+    // hooks with SMS.
     if ($hasFileUpdates) {
       $application->save();
-    }
-
-    // Handle group members if provided.
-    if (!empty($data['group_members'])) {
-      $this->processGroupMembers($application, $data['group_members']);
     }
 
     return $application;
@@ -372,6 +483,16 @@ class ApplicationResource extends RestFrameworkResourceBase {
       if ($application->hasField($field)) {
         $application->set($field, $value);
       }
+    }
+
+    // Handle status change.
+    if (isset($data['status']) && $application->getStatus() !== $data['status']) {
+      $new_status = $data['status'];
+      $application->setStatus($new_status);
+      $this->logger->info('Application status updated to @status for application @id', [
+        '@status' => $new_status,
+        '@id' => $application->getApplicationId(),
+      ]);
     }
 
     $application->save();
@@ -815,6 +936,19 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $values['person_with_disability'] = (bool) $data['person_with_disability'];
     }
 
+    // Requires confirmation field.
+    $requiresConfirmation = TRUE;
+    if (isset($data['requires_confirmation'])) {
+      $requiresConfirmation = (bool) $data['requires_confirmation'];
+      $values['requires_confirmation'] = $requiresConfirmation;
+    }
+
+    // If confirmation is not required, automatically set as confirmed.
+    if (!$requiresConfirmation) {
+      $values['confirmation_status'] = 'confirmed';
+      $values['confirmation_confirmed_at'] = \Drupal::time()->getRequestTime();
+    }
+
     // Optional text field.
     if (isset($data['pwd_number'])) {
       $values['pwd_number'] = $data['pwd_number'];
@@ -869,6 +1003,18 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $member->set('person_with_disability', (bool) $data['person_with_disability']);
     }
 
+    // Requires confirmation field.
+    if (isset($data['requires_confirmation'])) {
+      $requiresConfirmation = (bool) $data['requires_confirmation'];
+      $member->set('requires_confirmation', $requiresConfirmation);
+
+      // If confirmation is not required, automatically set as confirmed.
+      if (!$requiresConfirmation && $member->getConfirmationStatus() !== 'confirmed') {
+        $member->set('confirmation_status', 'confirmed');
+        $member->set('confirmation_confirmed_at', \Drupal::time()->getRequestTime());
+      }
+    }
+
     // File fields.
     if (isset($data['photo_member_id'])) {
       $fileId = $this->processFileField($data['photo_member_id'], $member->getApplication()->getApplicationId());
@@ -885,6 +1031,117 @@ class ApplicationResource extends RestFrameworkResourceBase {
     }
 
     $member->save();
+  }
+
+  /**
+   * Creates group members first without application reference.
+   *
+   * @param array $membersData
+   *   Array of member data.
+   *
+   * @return array
+   *   Array of created member IDs.
+   */
+  protected function createGroupMembersFirst(array $membersData) {
+    $groupMemberStorage = $this->entityTypeManager->getStorage('group_member');
+    $memberIds = [];
+
+    foreach ($membersData as $memberData) {
+      if (empty($memberData['id_number'])) {
+        continue;
+      }
+
+      $values = [
+        'name' => $memberData['name'],
+        'id_number' => $memberData['id_number'],
+        'gender' => $memberData['gender'],
+        'phone_number' => $memberData['phone_number'],
+      ];
+
+      // Handle position taxonomy reference.
+      if (isset($memberData['position'])) {
+        $values['position'] = $this->resolveTaxonomyReferences($memberData['position'], 'position_of_member');
+      }
+
+      // Boolean fields.
+      if (isset($memberData['person_with_disability'])) {
+        $values['person_with_disability'] = (bool) $memberData['person_with_disability'];
+      }
+
+      // Requires confirmation field.
+      $requiresConfirmation = TRUE;
+      if (isset($memberData['requires_confirmation'])) {
+        $requiresConfirmation = (bool) $memberData['requires_confirmation'];
+        $values['requires_confirmation'] = $requiresConfirmation;
+      }
+
+      // If confirmation is not required, automatically set as confirmed.
+      if (!$requiresConfirmation) {
+        $values['confirmation_status'] = 'confirmed';
+        $values['confirmation_confirmed_at'] = \Drupal::time()->getRequestTime();
+      }
+
+      // Optional text field.
+      if (isset($memberData['pwd_number'])) {
+        $values['pwd_number'] = $memberData['pwd_number'];
+      }
+
+      // Note: File fields will be processed later when we have application ID.
+      $member = $groupMemberStorage->create($values);
+      $member->save();
+      $memberIds[] = $member->id();
+    }
+
+    return $memberIds;
+  }
+
+  /**
+   * Links members to application and processes their files.
+   *
+   * @param \Drupal\api_application\Entity\ApplicationInterface $application
+   *   The application entity.
+   * @param array $memberIds
+   *   Array of member IDs to link.
+   * @param array $originalMembersData
+   *   The original group members data that was used to create the application.
+   */
+  protected function linkMembersToApplication($application, array $memberIds, array $originalMembersData) {
+    $groupMemberStorage = $this->entityTypeManager->getStorage('group_member');
+
+    $references = [];
+    foreach ($memberIds as $index => $memberId) {
+      $member = $groupMemberStorage->load($memberId);
+      if ($member) {
+        // Update with application reference.
+        $member->set('application', $application->id());
+
+        // Process file fields now that we have application ID.
+        if (isset($originalMembersData[$index])) {
+          $memberData = $originalMembersData[$index];
+
+          if (isset($memberData['photo_member_id'])) {
+            $fileId = $this->processFileField($memberData['photo_member_id'], $application->getApplicationId());
+            if ($fileId) {
+              $member->set('photo_member_id', $fileId);
+            }
+          }
+
+          if (isset($memberData['certificate_disability'])) {
+            $fileId = $this->processFileField($memberData['certificate_disability'], $application->getApplicationId());
+            if ($fileId) {
+              $member->set('certificate_disability', $fileId);
+            }
+          }
+        }
+
+        $member->save();
+        $references[] = ['target_id' => $memberId];
+      }
+    }
+
+    // Set group members on application.
+    $application->set('group_members', $references);
+    $application->save();
   }
 
 }
