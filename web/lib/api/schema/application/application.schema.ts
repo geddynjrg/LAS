@@ -192,6 +192,47 @@ export const ErrorResponseSchema = z.object({
 });
 
 // Type exports
+// Email request schemas
+export const EmailRequestSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  subject: z.string().optional(),
+  body: z.string().optional(),
+  from: z.string().email("Invalid sender email format").optional(),
+});
+
+export const EmailSuccessResponseSchema = z.object({
+  success: z.boolean().optional(),
+  message: z.string().optional(),
+  data: z.object({
+    application_id: z.string().optional(),
+    recipient_email: z.string().optional(),
+    sent_at: z.string().optional(),
+  }).optional(),
+});
+
+// PDF request/response schemas
+export const PdfMetadataResponseSchema = z.object({
+  success: z.boolean().optional(),
+  data: z.object({
+    application_id: z.string().optional(),
+    pdf_available: z.boolean().optional(),
+    download_url: z.string().optional(),
+    blob_url: z.string().optional(),
+    filename: z.string().optional(),
+  }).optional(),
+});
+
+export const PdfBlobResponseSchema = z.object({
+  success: z.boolean().optional(),
+  data: z.object({
+    application_id: z.string().optional(),
+    filename: z.string().optional(),
+    mime_type: z.string().optional(),
+    size: z.number().optional(),
+    content: z.string().optional(),
+  }).optional(),
+});
+
 export type ApplicationPostRequest = z.infer<
   typeof ApplicationPostRequestSchema
 >;
@@ -201,3 +242,7 @@ export type ApplicationPostResponse = z.infer<
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
 export type GroupMemberInput = z.infer<typeof GroupMemberInputSchema>;
 export type FileUpload = z.infer<typeof FileUploadSchema>;
+export type EmailRequest = z.infer<typeof EmailRequestSchema>;
+export type EmailSuccessResponse = z.infer<typeof EmailSuccessResponseSchema>;
+export type PdfMetadataResponse = z.infer<typeof PdfMetadataResponseSchema>;
+export type PdfBlobResponse = z.infer<typeof PdfBlobResponseSchema>;

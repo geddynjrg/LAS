@@ -484,8 +484,10 @@ async function transformApplicationForExternalApi(
   const mapStatus = (status: string): ApplicationPostRequest["status"] => {
     const statusMap: Record<string, ApplicationPostRequest["status"]> = {
       UNSUBMITTED: "draft",
+      DRAFT: "draft",
       SUBMITTED: "submitted",
-      UNDER_REVIEW: "under_review",
+      PENDING: "submitted",
+      IN_REVIEW: "under_review",
       APPROVED: "approved",
       REJECTED: "rejected",
       DISBURSED: "disbursed",

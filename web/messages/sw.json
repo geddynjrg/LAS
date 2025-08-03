@@ -11,7 +11,9 @@
       "pending": "Inasubiri",
       "inReview": "Inakaguliwa",
       "approved": "Imeidhinishwa",
-      "rejected": "Imekataliwa"
+      "rejected": "Imekataliwa",
+      "disbursed": "Imetolewa",
+      "closed": "Imefungwa"
     },
     "table": {
       "applicationId": "Application ID",
@@ -79,6 +81,7 @@
     "back": "Rudi",
     "next": "Ifuatayo",
     "submit": "Wasilisha",
+    "send": "Tuma",
     "help": "Msaada",
     "faq": "Maswali yanayoulizwa mara kwa mara",
     "monthCount": "{count, plural, =1 {# mwezi} other {# miezi}}",
@@ -107,7 +110,12 @@
     "loading": {
       "creatingApplication": "Inaunda ombi lako...",
       "creatingApplicationDescription": "Tafadhali subiri tukiandaa fomu ya ombi lako."
-    }
+    },
+    "downloading": "Inapakua...",
+    "sending": "Inatuma...",
+    "email": "Barua pepe",
+    "email-placeholder": "Weka anwani yako ya barua pepe",
+    "invalid-email": "Tafadhali weka anwani sahihi ya barua pepe"
   },
 
   "Footer": {
@@ -185,7 +193,32 @@
       "download-application": "Pakua maombi",
       "send-to-email": "Tuma kwa barua pepe",
       "tracking-hint": "Unaweza pia kufuatilia maendeleo ya maombi yako kwenye dashibodi ya akaunti yako.",
-      "go-to-applications": "Nenda kwenye maombi yangu"
+      "go-to-applications": "Nenda kwenye maombi yangu",
+      "downloading": "Inapakua...",
+      "sending": "Inatuma...",
+      "download-success": "Maombi yamepakuwa kwa mafanikio!",
+      "errors": {
+        "download-failed": "Imeshindikana kupakua maombi. Tafadhali jaribu tena.",
+        "email-failed": "Imeshindikana kutuma barua pepe. Tafadhali jaribu tena.",
+        "no-email": "Hakuna anwani ya barua pepe inayopatikana.",
+        "email-required": "Anwani ya barua pepe inahitajika.",
+        "invalid-email": "Tafadhali weka anwani halali ya barua pepe."
+      },
+      "email": {
+        "subject": "Maombi Yako ya Mkopo",
+        "body": "Tafadhali pata maombi yako ya mkopo yaliyoambatanishwa kwenye barua pepe hii.",
+        "success": "Maombi yametumwa kwa mafanikio kwa {email}"
+      },
+      "modal": {
+        "title": "Weka Anwani Yako ya Barua Pepe",
+        "description": "Tafadhali toa anwani yako ya barua pepe kupokea hati ya maombi.",
+        "email-label": "Anwani ya Barua Pepe",
+        "email-placeholder": "Weka anwani yako ya barua pepe",
+        "send": "Tuma Maombi",
+        "cancel": "Ghairi",
+        "valid-email": "Anwani ya barua pepe inaonekana nzuri!",
+        "privacy-note": "Anwani yako ya barua pepe itatumika tu kutuma hati ya maombi na haitahifadhiwa au kushirikiwa na wahusika wengine."
+      }
     }
   },
   "LoginPage": {
@@ -258,22 +291,58 @@
       "inReview": "<bold>Hatua ya 3:</bold> Inakaguliwa",
       "pending": "<bold>Hatua ya 4:</bold> Uamuzi wa kamati unasubiriwa",
       "approved": "<bold>Imeidhinishwa:</bold> Mkopo umeidhinishwa",
-      "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa"
+      "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa",
+      "disbursed": "<bold>Imetolewa:</bold> Fedha za mkopo zimetolewa",
+      "closed": "<bold>Imefungwa:</bold> Ombi limefungwa"
+    },
+    "rejectionDetails": {
+      "reason": "Sababu ya Kukataliwa",
+      "message": "Maelezo ya Ziada"
+    },
+    "rejectionReasons": {
+      "incompleteInformation": "Maelezo Yasiyokamilika",
+      "missingDocuments": "Nyaraka Zinazokosekana",
+      "eligibilityCriteria": "Vigezo vya Ustahiki Havijatimizwa",
+      "duplicateApplication": "Ombi la Rudufu",
+      "insufficientCollateral": "Dhamana Isiyotosha",
+      "poorCreditHistory": "Historia Mbaya ya Mkopo",
+      "other": "Nyingine"
     },
     "stepDescription": {
       "title": "Nini kinafanyika katika hatua hii?",
       "inReview": "<li>Maombi yatakaguliwa katika ngazi ya eneo bunge kwa dosari zozote.</li> <li>Uhakiki na ofisi husika (chifu wa eneo, mashirika ya mikopo, ofisi ya huduma za kijamii, nk).</li> <li>Ikihitajika, wanachama wa kikundi chako watawasiliana kwa mahojiano ya ziada.</li>",
       "readMoreInReview": "Soma zaidi kuhusu hatua ya ukaguzi",
       "pending": "Mara tu maombi 15 yatakapopita hatua ya ukaguzi, Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge itakusanyika kujadili maombi na kutoa mapendekezo kuhusu ombi la mkopo. Mapendekezo ya kamati yatapitishwa na Bodi ya Uwezo.",
-      "readMorePending": "Soma zaidi kuhusu mchakato wa <lineBreak></lineBreak> kufanya maamuzi ya kamati"
+      "readMorePending": "Soma zaidi kuhusu mchakato wa <lineBreak></lineBreak> kufanya maamuzi ya kamati",
+      "approved": "Hongera! Ombi lako la mkopo limeidhinishwa na Kamati ya Usimamizi wa Mfuko wa Uwezo. Utawasiliana nao hivi karibuni kuhusu hatua zinazofuata za kutoa mkopo.",
+      "rejected": "Kwa bahati mbaya, ombi lako limekataliwa. Tafadhali angalia maelezo ya kukataliwa hapo juu kwa sababu maalumu. Unaweza kuwasilisha ombi jipya baada ya kushughulikia masuala yaliyotajwa.",
+      "disbursed": "Mkopo wako umetolewa kikamilifu kwenye akaunti ya benki ya kikundi chako. Tafadhali hakikisha unalipa kwa wakati kulingana na ratiba yenu iliyokubaliwa.",
+      "closed": "Ombi hili limefungwa. Hakuna kitendo kingine kinachohitajika. Ikiwa una maswali, tafadhali wasiliana na timu yetu ya usaidizi."
     },
     "processTimeline": {
       "title": "Itachukua muda gani?",
       "inReview": "Maombi kawaida huchukua siku chache kufika hatua inayofuata ambapo yatakaguliwa na Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge. Mchakato mzima unapaswa kuchukua takriban wiki moja.",
       "pending": "Maombi kawaida huchukua siku chache kufika hatua inayofuata. Mchakato mzima unapaswa kuchukua takriban wiki moja."
     },
+    "memberStatus": {
+      "title": "Wanachama",
+      "overview": "Muhtasari wa Hali ya Wanachama",
+      "confirmed": "wamethibitisha",
+      "confirmedShort": "wamethibitisha",
+      "confirmedLabel": "Wamethibitisha",
+      "pendingShort": "wanasubiri",
+      "pendingLabel": "Wanasubiri",
+      "progress": "wamethibitisha",
+      "totalMembers": "Jumla ya Wanachama",
+      "roleDistribution": "Mgawanyiko wa Majukumu",
+      "chairman": "Mwenyekiti",
+      "secretary": "Katibu",
+      "members": "Wanachama"
+    },
     "questions": {
-      "title": "Una maswali?"
+      "title": "Una maswali?",
+      "email": "Tutumie barua pepe",
+      "phone": "Tupigie simu"
     },
     "emptyState": {
       "title": "Anza Maombi Yako ya Kwanza",
@@ -314,7 +383,10 @@
       "natureOfTheGroup": "Asili ya kikundi",
       "chairman": "Mwenyekiti",
       "secretary": "Katibu",
-      "member": "Mwanachama"
+      "member": "Mwanachama",
+      "idLabel": "Kitambulisho",
+      "genderLabel": "Jinsia",
+      "confirmationRequired": "Uthibitisho Unahitajika"
     },
     "groupData": {
       "groupData": "Data za Kikundi",

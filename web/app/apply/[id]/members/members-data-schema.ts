@@ -17,10 +17,12 @@ const memberSchema = z.object({
   ]),
   phoneNumber: z.string().min(1, "Phone number is required"),
   photoOfId: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
-  disability: z.object({
-    certificateOfDisability: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
-    pwdNumber: z.string().optional(),
-  }).optional(),
+  disability: z
+    .object({
+      certificateOfDisability: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
+      pwdNumber: z.string().optional(),
+    })
+    .optional(),
   status: z.union([z.literal("confirmed"), z.literal("pending")]).optional(),
   requiresConfirmation: z.boolean().optional(),
 });
@@ -39,7 +41,7 @@ export const membersDataSchema = z.object({
       }
       return val;
     },
-    z.array(memberSchema).min(1, "At least one member is required")
+    z.array(memberSchema).min(1, "At least one member is required"),
   ),
 });
 

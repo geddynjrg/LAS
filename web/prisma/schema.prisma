@@ -255,6 +255,8 @@ enum ApplicationStatus {
   IN_REVIEW
   APPROVED
   REJECTED
+  DISBURSED
+  CLOSED
   DRAFT
 }
 

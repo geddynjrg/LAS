@@ -11,7 +11,9 @@
       "pending": "Pending",
       "inReview": "In Review",
       "approved": "Approved",
-      "rejected": "Rejected"
+      "rejected": "Rejected",
+      "disbursed": "Disbursed",
+      "closed": "Closed"
     },
     "table": {
       "applicationId": "Application ID",
@@ -79,6 +81,7 @@
     "back": "Back",
     "next": "Next",
     "submit": "Submit",
+    "send": "Send",
     "help": "Help",
     "faq": "Frequently asked questions",
     "monthCount": "{count, plural, =1 {# month} other {# months}}",
@@ -107,7 +110,12 @@
     "loading": {
       "creatingApplication": "Creating your application...",
       "creatingApplicationDescription": "Please wait while we prepare your application form."
-    }
+    },
+    "downloading": "Downloading...",
+    "sending": "Sending...",
+    "email": "Email",
+    "email-placeholder": "Enter your email address",
+    "invalid-email": "Please enter a valid email address"
   },
 
   "Footer": {
@@ -187,7 +195,32 @@
       "download-application": "Download application",
       "send-to-email": "Send to e-mail",
       "tracking-hint": "You can also track the progress of your application on your account dashboard.",
-      "go-to-applications": "Go to my applications"
+      "go-to-applications": "Go to my applications",
+      "downloading": "Downloading...",
+      "sending": "Sending...",
+      "download-success": "Application downloaded successfully!",
+      "errors": {
+        "download-failed": "Failed to download application. Please try again.",
+        "email-failed": "Failed to send email. Please try again.",
+        "no-email": "No email address available.",
+        "email-required": "Email address is required.",
+        "invalid-email": "Please enter a valid email address."
+      },
+      "email": {
+        "subject": "Your Loan Application",
+        "body": "Please find your loan application attached to this email.",
+        "success": "Application sent successfully to {email}"
+      },
+      "modal": {
+        "title": "Enter Your Email Address",
+        "description": "Please provide your email address to receive the application document.",
+        "email-label": "Email Address",
+        "email-placeholder": "Enter your email address",
+        "send": "Send Application",
+        "cancel": "Cancel",
+        "valid-email": "Email address looks good!",
+        "privacy-note": "Your email will only be used to send the application document and will not be stored or shared with third parties."
+      }
     }
   },
   "LoginPage": {
@@ -260,22 +293,58 @@
       "inReview": "<bold>Step 3:</bold> Being reviewed",
       "pending": "<bold>Step 4:</bold> Committee decision pending",
       "approved": "<bold>Approved:</bold> Loan approved",
-      "rejected": "<bold>Rejected:</bold> Application rejected"
+      "rejected": "<bold>Rejected:</bold> Application rejected",
+      "disbursed": "<bold>Disbursed:</bold> Loan funds disbursed",
+      "closed": "<bold>Closed:</bold> Application closed"
+    },
+    "rejectionDetails": {
+      "reason": "Rejection Reason",
+      "message": "Additional Details"
+    },
+    "rejectionReasons": {
+      "incompleteInformation": "Incomplete Information",
+      "missingDocuments": "Missing Documents",
+      "eligibilityCriteria": "Eligibility Criteria Not Met",
+      "duplicateApplication": "Duplicate Application",
+      "insufficientCollateral": "Insufficient Collateral",
+      "poorCreditHistory": "Poor Credit History",
+      "other": "Other"
     },
     "stepDescription": {
       "title": "What is being done in this step?",
       "inReview": "<li>The application will be checked on the local constituency level for any discrepancies.</li> <li>Verification with relevant offices (local chief, credit organisations, social service office, etc).</li> <li>If required, your group members will be contacted for an additional interview.</li>",
       "readMoreInReview": "Read more about the reviewing step",
       "pending": "Once 15 applications have passed the reviewing step, the Constituency Uwezo Fund Management Committee will gather to discuss the applications and make a recommendation about the loan application. The committee recommendations will be approved by the Uwezo Board.",
-      "readMorePending": "Read more about the committee <lineBreak></lineBreak> decision making process"
+      "readMorePending": "Read more about the committee <lineBreak></lineBreak> decision making process",
+      "approved": "Congratulations! Your loan application has been approved by the Uwezo Fund Management Committee. You will be contacted soon regarding the next steps for loan disbursement.",
+      "rejected": "Unfortunately, your application has been rejected. Please review the rejection details above for specific reasons. You may submit a new application after addressing the issues mentioned.",
+      "disbursed": "Your loan has been successfully disbursed to your group's designated bank account. Please ensure timely repayments according to your agreed schedule.",
+      "closed": "This application has been closed. No further action is required. If you have questions, please contact our support team."
     },
     "processTimeline": {
       "title": "How long will it take?",
       "inReview": "Applications usually take a few days to get to the next step where these will be reviewed by the Constituency Uwezo Fund Management Committee. The whole process should take about a week.",
       "pending": "Applications usually take a few days to get to the next step. The whole process should take about a week."
     },
+    "memberStatus": {
+      "title": "Members",
+      "overview": "Member Status Overview",
+      "confirmed": "confirmed",
+      "confirmedShort": "confirmed",
+      "confirmedLabel": "Confirmed",
+      "pendingShort": "pending",
+      "pendingLabel": "Pending",
+      "progress": "confirmed",
+      "totalMembers": "Total Members",
+      "roleDistribution": "Role Distribution",
+      "chairman": "Chairman",
+      "secretary": "Secretary",
+      "members": "Members"
+    },
     "questions": {
-      "title": "Do you have questions?"
+      "title": "Do you have questions?",
+      "email": "Email us",
+      "phone": "Call us"
     },
     "emptyState": {
       "title": "Start Your First Application",
@@ -316,7 +385,10 @@
       "natureOfTheGroup": "Nature of the group",
       "chairman": "Chairman",
       "secretary": "Secretary",
-      "member": "Member"
+      "member": "Member",
+      "idLabel": "ID",
+      "genderLabel": "Gender",
+      "confirmationRequired": "Confirmation Required"
     },
     "groupData": {
       "groupData": "Group data",
