@@ -827,3 +827,18 @@ function api_application_update_11014() {
 
   return t('Requires confirmation field has been added to the Group Member entity.');
 }
+
+/**
+ * Enable the symfony_mailer module for email functionality.
+ */
+function api_application_update_11015() {
+  $module_handler = \Drupal::service('module_handler');
+  
+  if (!$module_handler->moduleExists('symfony_mailer')) {
+    $module_installer = \Drupal::service('module_installer');
+    $module_installer->install(['symfony_mailer']);
+    return t('Symfony Mailer module has been enabled.');
+  }
+  
+  return t('Symfony Mailer module was already enabled.');
+}
