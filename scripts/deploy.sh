@@ -151,9 +151,13 @@ setup_ssh() {
         SSH_KEY_ARG=""
     fi
     
+    # SSH options for automated deployment
+    SSH_OPTIONS="-o ConnectTimeout=30 -o ServerAliveInterval=10 -o StrictHostKeyChecking=no"
+    
     # Test SSH connection
-    if ! ssh $SSH_KEY_ARG -o ConnectTimeout=10 "$DEPLOY_USER@$DEPLOY_HOST" "echo 'SSH connection successful'" > /dev/null 2>&1; then
+    if ! ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" "echo 'SSH connection successful'" > /dev/null 2>&1; then
         log_error "Failed to connect to $DEPLOY_USER@$DEPLOY_HOST"
+        log_error "This might be due to high network latency or connectivity issues"
         exit 1
     fi
 }
@@ -205,7 +209,7 @@ check_images() {
 transfer_images() {
     
     # Create deployment directory if it doesn't exist
-    ssh $SSH_KEY_ARG "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p $DEPLOY_PATH"
+    ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p $DEPLOY_PATH"
     
     # Transfer each service image
     for SERVICE in "${SERVICES[@]}"; do
@@ -218,7 +222,7 @@ transfer_images() {
         scp $SSH_KEY_ARG "/tmp/${SERVICE}-image.tar.gz" "$DEPLOY_USER@$DEPLOY_HOST:/tmp/"
         
         # Load on remote host and cleanup
-        ssh $SSH_KEY_ARG "$DEPLOY_USER@$DEPLOY_HOST" \
+        ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
             "zcat /tmp/${SERVICE}-image.tar.gz | docker load && rm /tmp/${SERVICE}-image.tar.gz"
         
         # Clean up local file
@@ -235,14 +239,14 @@ transfer_configs() {
     # Transfer init-certs.sh script if it exists
     if [ -f "scripts/init-certs.sh" ]; then
         scp $SSH_KEY_ARG scripts/init-certs.sh "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
-        ssh $SSH_KEY_ARG "$DEPLOY_USER@$DEPLOY_HOST" "chmod +x $DEPLOY_PATH/init-certs.sh"
+        ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" "chmod +x $DEPLOY_PATH/init-certs.sh"
     fi
 }
 
 # Deploy application
 deploy_application() {
     
-    ssh $SSH_KEY_ARG "$DEPLOY_USER@$DEPLOY_HOST" \
+    ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
         "cd $DEPLOY_PATH && docker compose up -d --remove-orphans"
 }
 
@@ -252,7 +256,7 @@ post_deploy() {
     # Wait a moment for containers to be ready
     sleep 5
     
-    ssh $SSH_KEY_ARG "$DEPLOY_USER@$DEPLOY_HOST" \
+    ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
         "cd $DEPLOY_PATH && docker compose exec -T admin /var/www/html/vendor/bin/drush deploy"
 }
 
