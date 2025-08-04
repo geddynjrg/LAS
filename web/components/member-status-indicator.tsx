@@ -38,7 +38,7 @@ export const MemberStatusIndicator: FC<MemberStatusIndicatorProps> = ({
     if (isConfirmed) {
       return (
         <Badge
-          variant="success"
+          variant="default"
           className={cn("text-xs", {
             "px-1.5 py-0.5 text-[10px]": size === "sm",
             "text-xs": size === "md",
