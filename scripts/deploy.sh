@@ -49,47 +49,65 @@ parse_args() {
     STEP=${STEP:-all}
 }
 
-# Load environment variables from .env file
+# Load deployment configuration
 load_env_vars() {
-    if [[ -f ".env" ]]; then
-        # Source the .env file to load variables
+    if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+        # GitHub Actions: Variables should already be set in environment
+        # Use non-prefixed variables (DEPLOY_HOST, DEPLOY_USER, etc.)
+        DEPLOY_HOST="${DEPLOY_HOST:-}"
+        DEPLOY_USER="${DEPLOY_USER:-}"
+        DEPLOY_PATH="${DEPLOY_PATH:-}"
+        DEPLOY_KEY="${DEPLOY_KEY:-}"
+    else
+        # Local deployment: Load from .env file
+        if [[ ! -f ".env" ]]; then
+            log_error ".env file not found. Please create it with deployment configuration."
+            exit 1
+        fi
+        
+        # Source the .env file
         set -a
         source .env
         set +a
         
-        # Set deployment variables based on environment
+        # For local deployment, REQUIRE environment-prefixed variables
         local env_upper=$(echo "$ENVIRONMENT" | tr '[:lower:]' '[:upper:]')
         
-        # Set deployment variables from environment-prefixed values or fallback to non-prefixed
-        local deploy_host_var="${env_upper}_DEPLOY_HOST"
-        local deploy_user_var="${env_upper}_DEPLOY_USER"
-        local deploy_path_var="${env_upper}_DEPLOY_PATH"
-        local deploy_key_path_var="${env_upper}_DEPLOY_KEY_PATH"
+        DEPLOY_HOST="${env_upper}_DEPLOY_HOST"
+        DEPLOY_USER="${env_upper}_DEPLOY_USER"
+        DEPLOY_PATH="${env_upper}_DEPLOY_PATH"
+        DEPLOY_KEY_PATH="${env_upper}_DEPLOY_KEY_PATH"
         
-        DEPLOY_HOST="${!deploy_host_var:-${DEPLOY_HOST:-}}"
-        DEPLOY_USER="${!deploy_user_var:-${DEPLOY_USER:-}}"
-        DEPLOY_PATH="${!deploy_path_var:-${DEPLOY_PATH:-}}"
-        DEPLOY_KEY_PATH="${!deploy_key_path_var:-${DEPLOY_KEY_PATH:-}}"
-        
-        # For CI/CD, DEPLOY_KEY is still passed as environment variable
-        DEPLOY_KEY="${DEPLOY_KEY:-}"
-        
-        
-        # Check if required variables were found
-        local missing_vars=()
-        [[ -z "$DEPLOY_HOST" ]] && missing_vars+=("${deploy_host_var} or DEPLOY_HOST")
-        [[ -z "$DEPLOY_USER" ]] && missing_vars+=("${deploy_user_var} or DEPLOY_USER")
-        [[ -z "$DEPLOY_PATH" ]] && missing_vars+=("${deploy_path_var} or DEPLOY_PATH")
-        
-        if [[ ${#missing_vars[@]} -gt 0 ]]; then
-            log_error "Missing required deployment variables in .env file:"
+        # Get the actual values
+        DEPLOY_HOST="${!DEPLOY_HOST:-}"
+        DEPLOY_USER="${!DEPLOY_USER:-}"
+        DEPLOY_PATH="${!DEPLOY_PATH:-}"
+        DEPLOY_KEY_PATH="${!DEPLOY_KEY_PATH:-}"
+    fi
+    
+    # Check required variables (same for both local and GitHub Actions)
+    local missing_vars=()
+    [[ -z "$DEPLOY_HOST" ]] && missing_vars+=("DEPLOY_HOST")
+    [[ -z "$DEPLOY_USER" ]] && missing_vars+=("DEPLOY_USER")
+    [[ -z "$DEPLOY_PATH" ]] && missing_vars+=("DEPLOY_PATH")
+    
+    if [[ ${#missing_vars[@]} -gt 0 ]]; then
+        if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+            log_error "Missing required environment variables:"
             printf '  %s\n' "${missing_vars[@]}"
+            log_error "Please add them as GitHub secrets."
+        else
+            log_error "Missing required deployment variables:"
+            local env_upper=$(echo "$ENVIRONMENT" | tr '[:lower:]' '[:upper:]')
+            for var in "${missing_vars[@]}"; do
+                echo "  ${env_upper}_${var}"
+            done
             log_error "Please add them to your .env file. Example:"
             log_error "  ${env_upper}_DEPLOY_HOST=your-server.com"
             log_error "  ${env_upper}_DEPLOY_USER=deploy"
             log_error "  ${env_upper}_DEPLOY_PATH=/path/to/deployment"
-            exit 1
         fi
+        exit 1
     fi
 }
 
@@ -136,14 +154,6 @@ setup_ssh() {
     # Test SSH connection
     if ! ssh $SSH_KEY_ARG -o ConnectTimeout=10 "$DEPLOY_USER@$DEPLOY_HOST" "echo 'SSH connection successful'" > /dev/null 2>&1; then
         log_error "Failed to connect to $DEPLOY_USER@$DEPLOY_HOST"
-        exit 1
-    fi
-}
-
-# Check if .env file exists
-check_env_file() {
-    if [[ ! -f ".env" ]]; then
-        log_error ".env file not found. Please ensure it exists or run this from CI where it's generated."
         exit 1
     fi
 }
@@ -258,14 +268,12 @@ cleanup() {
 execute_step() {
     case "$STEP" in
         build)
-            check_env_file
             build_images
             log_success "Build completed successfully!"
             ;;
         deploy)
             load_env_vars
             setup_ssh
-            check_env_file
             check_images
             transfer_images
             transfer_configs
@@ -281,7 +289,6 @@ execute_step() {
         all)
             load_env_vars
             setup_ssh
-            check_env_file
             build_images
             transfer_images
             transfer_configs
@@ -323,20 +330,23 @@ show_help() {
     echo "  all                     - Run all steps (build, deploy, post-deploy)"
     echo
     echo "Configuration:"
-    echo "  The script reads deployment variables from the .env file using environment prefixes."
-    echo "  For environment 'ENV', it looks for ENV_* variables, falling back to non-prefixed ones."
     echo
-    echo "Required variables in .env file (replace ENV with your environment):"
-    echo "  ENV_DEPLOY_HOST         - SSH hostname"
-    echo "  ENV_DEPLOY_USER         - SSH username"
-    echo "  ENV_DEPLOY_PATH         - Remote deployment path"
-    echo "  ENV_DEPLOY_KEY_PATH     - Path to SSH private key (optional)"
+    echo "For LOCAL deployment (using .env file):"
+    echo "  Required variables MUST be prefixed with environment name:"
+    echo "    STAGING_DEPLOY_HOST     - SSH hostname for staging"
+    echo "    STAGING_DEPLOY_USER     - SSH username for staging" 
+    echo "    STAGING_DEPLOY_PATH     - Remote deployment path for staging"
+    echo "    STAGING_DEPLOY_KEY_PATH - SSH private key path (optional)"
     echo
-    echo "For GitHub Actions (secrets are without prefixes):"
-    echo "  DEPLOY_HOST             - SSH hostname"
-    echo "  DEPLOY_USER             - SSH username"
-    echo "  DEPLOY_PATH             - Remote deployment path"
-    echo "  DEPLOY_KEY              - SSH private key content"
+    echo "For GITHUB ACTIONS (using secrets):"
+    echo "  Variables should NOT be prefixed:"
+    echo "    DEPLOY_HOST             - SSH hostname"
+    echo "    DEPLOY_USER             - SSH username"
+    echo "    DEPLOY_PATH             - Remote deployment path"
+    echo "    DEPLOY_KEY              - SSH private key content"
+    echo
+    echo "IMPORTANT: The .env file is NOT transferred to the server during deployment."
+    echo "           You must manually create and maintain the application .env file on the server."
     echo
     echo "Example .env configuration:"
     echo "  STAGING_DEPLOY_HOST=server.example.com"
