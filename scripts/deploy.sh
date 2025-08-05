@@ -229,6 +229,11 @@ transfer_images() {
         rm "/tmp/${SERVICE}-image.tar.gz"
         
     done
+    
+    # Clean up dangling images on remote server
+    log_info "Cleaning up dangling Docker images..."
+    ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
+        "docker image prune -f || true"
 }
 
 # Transfer configuration files
