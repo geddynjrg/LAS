@@ -28,6 +28,10 @@ jobs:
       - name: Build images
         env:
           COMPOSE_PROJECT_NAME: uwezo
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           chmod +x scripts/deploy.sh
           ./scripts/deploy.sh staging --step build
