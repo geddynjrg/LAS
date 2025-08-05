@@ -247,7 +247,7 @@ transfer_configs() {
 deploy_application() {
     
     ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
-        "cd $DEPLOY_PATH && docker compose up -d --remove-orphans"
+        "cd $DEPLOY_PATH && docker compose up -d --remove-orphans --no-build"
 }
 
 # Run post-deployment tasks
