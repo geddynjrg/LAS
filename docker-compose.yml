@@ -1,3 +1,5 @@
+name: uwezo
+
 services:
   web:
     build:

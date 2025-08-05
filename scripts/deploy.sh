@@ -272,6 +272,8 @@ cleanup() {
 execute_step() {
     case "$STEP" in
         build)
+            load_env_vars
+            setup_ssh
             build_images
             log_success "Build completed successfully!"
             ;;
