@@ -152,7 +152,6 @@ if [ "$SELF_SIGNED" = true ]; then
     echo "These certificates will be valid for 365 days."
     echo ""
     
-    
     # Generate self-signed certificate
     docker compose exec nginx sh -c "
         openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -199,31 +198,6 @@ else
     echo "Verifying HTTP access to ACME challenge path..."
     TEST_URL="http://$WEB_DOMAIN/.well-known/acme-challenge/test.txt"
     echo "Testing URL: $TEST_URL"
-
-    # Try to fetch the test file
-    if command -v curl >/dev/null 2>&1; then
-        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "$TEST_URL" || echo "failed")
-    elif command -v wget >/dev/null 2>&1; then
-        RESPONSE=$(wget -q -O /dev/null --timeout=5 "$TEST_URL" && echo "200" || echo "failed")
-    else
-        echo "Warning: Neither curl nor wget found. Skipping HTTP test."
-        RESPONSE="skip"
-    fi
-
-    if [ "$RESPONSE" = "200" ]; then
-        echo "✅ ACME challenge path is accessible"
-    elif [ "$RESPONSE" = "403" ]; then
-        echo "❌ Error: ACME challenge path returned 403 Forbidden"
-        echo "   This might be due to IP whitelist restrictions."
-        echo "   Consider temporarily disabling ALLOWED_IPS in .env"
-        exit 1
-    elif [ "$RESPONSE" = "skip" ]; then
-        echo "⚠️  Could not test HTTP access (no curl/wget available)"
-    else
-        echo "❌ Error: Could not access ACME challenge path (HTTP $RESPONSE)"
-        echo "   Let's Encrypt needs HTTP access on port 80 to validate domain ownership"
-        exit 1
-    fi
 
     # Request certificates
     echo ""
