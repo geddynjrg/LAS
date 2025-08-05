@@ -22,7 +22,7 @@ export async function createOrUpdateApplication(
 
     // Direct fetch to avoid the redirect middleware in api utils
     const response = await fetch(
-      `${process.env.ADMIN_DOMAIN}/api/v1/application`,
+      `${process.env.API_URL}/api/v1/application`,
       {
         method: "POST",
         headers: {

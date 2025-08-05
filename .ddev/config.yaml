@@ -42,6 +42,8 @@ hooks:
         echo "DATABASE_URL=\"mysql://db:db@127.0.0.1:${DB_PORT}/web\"" >> web/.env
         # Update ADMIN_DOMAIN to use DDEV domain
         sed -i "s|^ADMIN_DOMAIN=.*|ADMIN_DOMAIN=${DDEV_DOMAIN}|" web/.env
+        # Add API_URL for the web app to use the DDEV domain with https
+        echo "API_URL=${DDEV_DOMAIN}" >> web/.env
 
 
 # Key features of DDEV's config.yaml:

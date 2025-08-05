@@ -24,9 +24,9 @@ export async function verifyOtp(data: {
   const t = await getTranslations("LoginPage");
 
   // Use direct fetch to avoid authentication headers for login endpoints
-  const apiUrl = process.env.ADMIN_DOMAIN;
+  const apiUrl = process.env.API_URL;
   if (!apiUrl) {
-    throw new Error("ADMIN_DOMAIN environment variable is required");
+    throw new Error("API_URL environment variable is required");
   }
   const OTP_VERIFY = `${apiUrl.replace(/\/$/, "")}/api/auth/otp/verify`;
 
