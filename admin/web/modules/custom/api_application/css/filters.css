@@ -1,0 +1,212 @@
+/* ==========================================================================
+   Filter Container
+   ========================================================================== */
+.application-filters-wrapper {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin: 2rem auto 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Filter Form */
+form.application-filters-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1.5rem 2rem;
+}
+
+/* Form Elements */
+.application-filters-form .form-item {
+  flex: 1 1 200px;
+  margin: 0;
+}
+
+.application-filters-form .form-item label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #6e6e73;
+  margin-bottom: 0.375rem;
+  letter-spacing: 0;
+}
+
+/* Input Fields */
+.application-filters-form input[type="text"],
+.application-filters-form input[type="date"],
+.application-filters-form select {
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.application-filters-form input[type="text"]:focus,
+.application-filters-form input[type="date"]:focus,
+.application-filters-form select:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+/* Search Field - Make it wider */
+.application-filters-form .js-form-item-search {
+  flex: 2 1 300px;
+}
+
+/* Date Fields */
+.application-filters-form .js-form-item-date-from,
+.application-filters-form .js-form-item-date-to {
+  max-width: 180px;
+}
+
+/* Actions Container */
+.application-filters-form .form-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Filter Buttons */
+.application-filters-form input[type="submit"],
+.application-filters-form .filter-clear {
+  padding: 0.625rem 1.25rem !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+  text-decoration: none !important;
+  border: 1px solid transparent !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.application-filters-form input[type="submit"] {
+  background: #0066cc !important;
+  color: #ffffff !important;
+}
+
+.application-filters-form input[type="submit"]:hover {
+  background: #0051a3 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 102, 204, 0.2);
+}
+
+.application-filters-form .filter-clear {
+  background: transparent !important;
+  color: #6e6e73 !important;
+  border-color: #e5e7eb !important;
+}
+
+.application-filters-form .filter-clear:hover {
+  background: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #1a1a1a !important;
+}
+
+/* Active Filters Indicator */
+.application-filters-form.has-active-filters .filter-clear {
+  color: #0066cc !important;
+  border-color: #0066cc !important;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .application-filters-wrapper {
+    margin: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .application-filters-wrapper {
+    margin: 1rem;
+    border-radius: 12px;
+  }
+
+  form.application-filters-form {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem 1.5rem;
+  }
+
+  .application-filters-form .form-item {
+    width: 100%;
+    flex: 1 1 auto;
+    margin-bottom: 1rem;
+  }
+
+  .application-filters-form .js-form-item-date-from,
+  .application-filters-form .js-form-item-date-to {
+    max-width: 100%;
+  }
+
+  .application-filters-form .form-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .application-filters-form input[type="submit"],
+  .application-filters-form .filter-clear {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  form.application-filters-form {
+    padding: 1rem;
+  }
+
+  .application-filters-form input[type="text"],
+  .application-filters-form input[type="date"],
+  .application-filters-form select {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .application-filters-form input[type="submit"],
+  .application-filters-form .filter-clear {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.8125rem !important;
+  }
+}
+
+/* ==========================================================================
+   Loading States
+   ========================================================================== */
+form.application-filters-form.is-loading {
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Drupal Form Overrides
+   ========================================================================== */
+.application-filters-form .form-item .description {
+  display: none;
+}
+
+.application-filters-form .form-required {
+  display: none;
+}
+
+.application-filters-form .form-item input,
+.application-filters-form .form-item select {
+  margin: 0;
+}
+
+.application-filters-form .form-actions {
+  margin: 0;
+}
+
+.application-filters-form fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.application-filters-form legend {
+  display: none;
+}

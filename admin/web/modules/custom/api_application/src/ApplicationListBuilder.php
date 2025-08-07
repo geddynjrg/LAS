@@ -208,6 +208,7 @@ class ApplicationListBuilder extends EntityListBuilder {
 
     // Add custom CSS for styling.
     $build['#attached']['library'][] = 'api_application/admin';
+    $build['#attached']['library'][] = 'api_application/filters';
 
     // Add AJAX library for modal operations.
     $build['#attached']['library'][] = 'core/drupal.ajax';
@@ -217,6 +218,15 @@ class ApplicationListBuilder extends EntityListBuilder {
     $build['table']['#attributes']['class'][] = 'application-listing-table';
     $build['#prefix'] = '<div class="application-listing-wrapper">';
     $build['#suffix'] = '</div>';
+
+    // Add filter form using Drupal Form API.
+    $filter_form = \Drupal::formBuilder()->getForm('Drupal\api_application\Form\ApplicationFilterForm');
+    $build['filters'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['application-filters-wrapper']],
+      '#weight' => -20,
+      'form' => $filter_form,
+    ];
 
     // Add summary information with status breakdown.
     $total_count = $this->getStorage()->getQuery()->accessCheck(TRUE)->count()->execute();
@@ -269,15 +279,35 @@ class ApplicationListBuilder extends EntityListBuilder {
     // Add filters if they exist in the request.
     $request = \Drupal::request();
 
+    // Status filter.
     if ($status = $request->query->get('status')) {
       $query->condition('status', $status);
     }
 
+    // Search filter - fixed for better searching.
     if ($search = $request->query->get('search')) {
-      $group = $query->orConditionGroup()
-        ->condition('group_name', $search, 'CONTAINS')
-        ->condition('group_registration_number', $search, 'CONTAINS');
-      $query->condition($group);
+      $search = trim($search);
+      if (!empty($search)) {
+        $group = $query->orConditionGroup()
+          ->condition('group_name', '%' . $search . '%', 'LIKE')
+          ->condition('group_registration_number', '%' . $search . '%', 'LIKE');
+        $query->condition($group);
+      }
+    }
+
+    // Date range filters (using created date as submission date proxy).
+    if ($date_from = $request->query->get('date_from')) {
+      $timestamp_from = strtotime($date_from . ' 00:00:00');
+      if ($timestamp_from) {
+        $query->condition('created', $timestamp_from, '>=');
+      }
+    }
+
+    if ($date_to = $request->query->get('date_to')) {
+      $timestamp_to = strtotime($date_to . ' 23:59:59');
+      if ($timestamp_to) {
+        $query->condition('created', $timestamp_to, '<=');
+      }
     }
 
     // Always add pager with default limit of 50 if not specified.

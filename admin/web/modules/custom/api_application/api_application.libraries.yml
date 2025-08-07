@@ -10,3 +10,15 @@ admin:
     - core/drupal
     - core/drupalSettings
     - core/once
+
+filters:
+  version: 1.x
+  css:
+    theme:
+      css/filters.css: {}
+  js:
+    js/filters.js: {}
+  dependencies:
+    - core/jquery
+    - core/once
+    - core/drupal
