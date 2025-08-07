@@ -40,6 +40,8 @@ ddev drush uli
 pnpm install
 
 # Set up database schema for web app (uses separate 'web' database)
+pnpm --filter web db:generate
+pnpm --filter web db:push
 
 # Start development server (from project root)
 pnpm --filter web dev

@@ -7,6 +7,7 @@
 
 use Drupal\locale\SourceString;
 use Drupal\locale\StringStorageException;
+use Drupal\Core\Url;
 
 /**
  * Add a user interface translation to the translation storage.
@@ -51,5 +52,39 @@ function uwezo_general_add_translation(
   }
   catch (StringStorageException $e) {
     Drupal::logger('uwezo_general')->warning($e->getMessage());
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function uwezo_general_user_login($account) {
+  $current_route = Drupal::routeMatch()->getRouteName();
+  $request = Drupal::request();
+
+  // Only redirect for HTML requests.
+  if ($request->getRequestFormat() !== 'html') {
+    return;
+  }
+
+  // Check if there's already a destination parameter set.
+  $destination = $request->query->get('destination');
+  if ($destination && $destination != '/user/login') {
+    return;
+  }
+
+  // Don't redirect if coming from password reset routes.
+  if (in_array($current_route, ['user.reset', 'user.reset.login'])) {
+    return;
+  }
+
+  // Check if user has admin permissions.
+  if ($account->hasPermission('administer loan applications') ||
+      $account->hasPermission('access administration pages')) {
+
+    // Redirect admin users to the applications page.
+    $applications_url = Url::fromRoute('entity.application.collection')->toString();
+    Drupal::service('request_stack')
+      ->getCurrentRequest()->query->set('destination', $applications_url);
   }
 }

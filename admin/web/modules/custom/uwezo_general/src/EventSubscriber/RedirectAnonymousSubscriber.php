@@ -64,6 +64,7 @@ class RedirectAnonymousSubscriber implements EventSubscriberInterface {
       '/user/login',
       '/user/logout',
       '/user/password',
+      '/user/register',
       '/healthz',
       '/metrics/web',
       '/docs',
@@ -73,7 +74,9 @@ class RedirectAnonymousSubscriber implements EventSubscriberInterface {
       '/api/docs/json',
     ];
 
-    if ($this->currentUser->isAnonymous() && !\in_array($request->getPathInfo(), $allowed_paths, TRUE) && !str_starts_with($request->getPathInfo(), '/api')) {
+    $path_info = $request->getPathInfo();
+
+    if ($this->currentUser->isAnonymous() && !\in_array($path_info, $allowed_paths, TRUE) && !str_starts_with($path_info, '/api') && !str_starts_with($path_info, '/user/reset/')) {
       $url_object = Url::fromRoute('user.login', [], ['absolute' => TRUE]);
       /** @var string $url */
       $url = $url_object->toString();
