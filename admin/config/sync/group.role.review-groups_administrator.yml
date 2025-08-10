@@ -1,0 +1,24 @@
+uuid: c93aa6cf-71ab-4ec3-b872-c21c34b7ee6b
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.review
+    - user.role.groups_administrator
+id: review-groups_administrator
+label: 'Groups Administrator'
+weight: 1
+admin: false
+scope: outsider
+global_role: groups_administrator
+group_type: review
+permissions:
+  - 'access content overview'
+  - 'administer members'
+  - 'delete group'
+  - 'edit group'
+  - 'join group'
+  - 'view any unpublished group'
+  - 'view group'
+  - 'view group_membership relationship'
+  - 'view own unpublished group'

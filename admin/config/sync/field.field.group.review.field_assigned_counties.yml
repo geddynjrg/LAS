@@ -1,0 +1,29 @@
+uuid: 3317a0ee-d443-462b-baf9-2629352dacdb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.group.field_assigned_counties
+    - group.type.review
+    - taxonomy.vocabulary.counties
+id: group.review.field_assigned_counties
+field_name: field_assigned_counties
+entity_type: group
+bundle: review
+label: 'Assigned Counties & Constituencies'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      counties: counties
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

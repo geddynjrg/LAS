@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Uwezo Groups module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function uwezo_groups_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.uwezo_groups':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Uwezo Groups module provides group management functionality for the Uwezo application using the Group module.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function uwezo_groups_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  // Debug: Log all group-related form IDs to help identify the correct one
+  if (strpos($form_id, 'group') !== FALSE) {
+    \Drupal::logger('uwezo_groups')->info('Form ID: @form_id', ['@form_id' => $form_id]);
+  }
+  
+  // Handle group entity forms
+  $group_entity_form_ids = [
+    'group_review_add_form',
+    'group_review_edit_form',
+  ];
+  
+  // Handle group membership forms
+  $group_membership_form_ids = [
+    'group_relationship_review-group_membership_add_form',
+    'group_relationship_review-group_membership_edit_form',
+  ];
+  
+  if (in_array($form_id, $group_entity_form_ids)) {
+    // Hide revision information fields
+    if (isset($form['revision_information'])) {
+      $form['revision_information']['#access'] = FALSE;
+    }
+    if (isset($form['revision_log'])) {
+      $form['revision_log']['#access'] = FALSE;
+    }
+    if (isset($form['revision'])) {
+      $form['revision']['#access'] = FALSE;
+    }
+    
+    // Change "Published" label to "Enabled"
+    if (isset($form['status'])) {
+      $form['status']['#title'] = t('Enabled');
+      // Also check for nested title
+      if (isset($form['status']['widget'])) {
+        $form['status']['widget']['#title'] = t('Enabled');
+      }
+      if (isset($form['status']['widget']['value'])) {
+        $form['status']['widget']['value']['#title'] = t('Enabled');
+      }
+    }
+    
+    // Disable "generate automatic url alias" by default
+    if (isset($form['path'])) {
+      if (isset($form['path']['widget'][0]['pathauto'])) {
+        $form['path']['widget'][0]['pathauto']['#default_value'] = FALSE;
+      }
+      // Alternative path structure
+      if (isset($form['path']['pathauto'])) {
+        $form['path']['pathauto']['#default_value'] = FALSE;
+      }
+    }
+  }
+  
+  // Handle group membership forms
+  if (in_array($form_id, $group_membership_form_ids)) {
+    // Hide the entire URL alias section and disable automatic generation
+    if (isset($form['path'])) {
+      $form['path']['#access'] = FALSE;
+      // Also disable pathauto to prevent automatic URL generation
+      if (isset($form['path']['widget'][0]['pathauto'])) {
+        $form['path']['widget'][0]['pathauto']['#default_value'] = FALSE;
+      }
+      if (isset($form['path']['pathauto'])) {
+        $form['path']['pathauto']['#default_value'] = FALSE;
+      }
+    }
+  }
+}
+

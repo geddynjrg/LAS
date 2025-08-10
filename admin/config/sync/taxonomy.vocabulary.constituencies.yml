@@ -1,9 +1,0 @@
-uuid: 530bc8cb-4027-4434-bef3-48b05b3ed7a5
-langcode: en
-status: true
-dependencies: {  }
-name: Constituencies
-vid: constituencies
-description: 'Constituencies vocabulary for loan applications.'
-weight: 0
-new_revision: false

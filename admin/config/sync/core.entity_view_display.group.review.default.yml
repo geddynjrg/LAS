@@ -1,0 +1,33 @@
+uuid: 7247f1c6-89bd-4c33-9ed7-770aa45f1e65
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.group.review.field_assigned_counties
+    - group.type.review
+id: group.review.default
+targetEntityType: group
+bundle: review
+mode: default
+content:
+  field_assigned_counties:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: -4
+    region: content
+  label:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -5
+    region: content
+hidden:
+  changed: true
+  created: true
+  langcode: true
+  uid: true
