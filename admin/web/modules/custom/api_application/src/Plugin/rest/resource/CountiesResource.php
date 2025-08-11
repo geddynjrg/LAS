@@ -138,65 +138,113 @@ class CountiesResource extends RestFrameworkResourceBase {
     }
 
     $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-    $vocabulary = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->load('counties');
+    $vocabulary_storage = $this->entityTypeManager->getStorage('taxonomy_vocabulary');
+    
+    $counties_vocabulary = $vocabulary_storage->load('counties');
+    $constituencies_vocabulary = $vocabulary_storage->load('constituencies');
 
-    if (!$vocabulary) {
+    if (!$counties_vocabulary) {
       return $this->createModifiedResponse([
         'error' => 'Counties vocabulary not found',
         'message' => 'The counties vocabulary has not been created or imported yet.',
       ], 404);
     }
+    
+    if (!$constituencies_vocabulary) {
+      return $this->createModifiedResponse([
+        'error' => 'Constituencies vocabulary not found',
+        'message' => 'The constituencies vocabulary has not been created or imported yet.',
+      ], 404);
+    }
 
-    // Get all terms from counties vocabulary
-    $query = $term_storage->getQuery()
+    // Get all county terms
+    $counties_query = $term_storage->getQuery()
       ->condition('vid', 'counties')
       ->condition('status', 1)
       ->sort('weight', 'ASC')
       ->sort('name', 'ASC')
       ->accessCheck(TRUE);
 
-    $term_ids = $query->execute();
-    $all_terms = $term_storage->loadMultiple($term_ids);
+    $county_term_ids = $counties_query->execute();
+    $county_terms = $term_storage->loadMultiple($county_term_ids);
+    
+    // Get all constituency terms
+    $constituencies_query = $term_storage->getQuery()
+      ->condition('vid', 'constituencies')
+      ->condition('status', 1)
+      ->sort('name', 'ASC')
+      ->accessCheck(TRUE);
 
-    // Separate counties and constituencies
+    $constituency_term_ids = $constituencies_query->execute();
+    $constituency_terms = $term_storage->loadMultiple($constituency_term_ids);
+
+    // Build counties array
     $counties = [];
     $constituencies_by_parent = [];
 
-    foreach ($all_terms as $term) {
-      if ($term->hasTranslation($current_language->getId())) {
-        $term = $term->getTranslation($current_language->getId());
+    // Process county terms
+    foreach ($county_terms as $county_term) {
+      if ($county_term->hasTranslation($current_language->getId())) {
+        $county_term = $county_term->getTranslation($current_language->getId());
       }
 
-      $parents = $term->get('parent')->getValue();
-      $parent_id = !empty($parents) && !empty($parents[0]['target_id']) ? $parents[0]['target_id'] : 0;
-
       $term_data = [
-        'tid' => (int) $term->id(),
-        'uuid' => $term->uuid(),
-        'name' => $term->getName(),
+        'tid' => (int) $county_term->id(),
+        'uuid' => $county_term->uuid(),
+        'name' => $county_term->getName(),
         'description' => [
-          'value' => $term->getDescription(),
-          'format' => $term->get('description')->format,
-          'processed' => $term->get('description')->processed,
+          'value' => $county_term->getDescription(),
+          'format' => $county_term->get('description')->format,
+          'processed' => $county_term->get('description')->processed,
         ],
-        'weight' => (int) $term->getWeight(),
-        'url' => $term->toUrl()->setAbsolute()->toString(),
+        'weight' => (int) $county_term->getWeight(),
+        'url' => $county_term->toUrl()->setAbsolute()->toString(),
         'language' => [
-          'code' => $term->language()->getId(),
-          'name' => $term->language()->getName(),
+          'code' => $county_term->language()->getId(),
+          'name' => $county_term->language()->getName(),
         ],
+        'constituencies' => [], // Will be populated below
       ];
 
-      if ($parent_id === 0) {
-        // This is a county
-        $term_data['constituencies'] = []; // Will be populated below
-        $counties[$term->id()] = $term_data;
-      } else {
-        // This is a constituency
-        if (!isset($constituencies_by_parent[$parent_id])) {
-          $constituencies_by_parent[$parent_id] = [];
+      $counties[$county_term->id()] = $term_data;
+    }
+    
+    // Process constituency terms and group by parent county
+    foreach ($constituency_terms as $constituency_term) {
+      if ($constituency_term->hasTranslation($current_language->getId())) {
+        $constituency_term = $constituency_term->getTranslation($current_language->getId());
+      }
+      
+      // Get the parent county reference
+      $parent_county_field = $constituency_term->get('field_parent_county');
+      $parent_county_id = null;
+      
+      if (!$parent_county_field->isEmpty()) {
+        $parent_county_id = $parent_county_field->target_id;
+      }
+
+      $constituency_data = [
+        'tid' => (int) $constituency_term->id(),
+        'uuid' => $constituency_term->uuid(),
+        'name' => $constituency_term->getName(),
+        'description' => [
+          'value' => $constituency_term->getDescription(),
+          'format' => $constituency_term->get('description')->format,
+          'processed' => $constituency_term->get('description')->processed,
+        ],
+        'weight' => (int) $constituency_term->getWeight(),
+        'url' => $constituency_term->toUrl()->setAbsolute()->toString(),
+        'language' => [
+          'code' => $constituency_term->language()->getId(),
+          'name' => $constituency_term->language()->getName(),
+        ],
+      ];
+      
+      if ($parent_county_id && isset($counties[$parent_county_id])) {
+        if (!isset($constituencies_by_parent[$parent_county_id])) {
+          $constituencies_by_parent[$parent_county_id] = [];
         }
-        $constituencies_by_parent[$parent_id][] = $term_data;
+        $constituencies_by_parent[$parent_county_id][] = $constituency_data;
       }
     }
 
@@ -225,7 +273,7 @@ class CountiesResource extends RestFrameworkResourceBase {
         'timestamp' => \Drupal::time()->getCurrentTime(),
         'version' => 'v1',
         'total_counties' => count($counties),
-        'total_constituencies' => array_sum(array_map('count', $constituencies_by_parent)),
+        'total_constituencies' => count($constituency_terms),
         'language' => [
           'current' => $current_language->getId(),
           'default' => $default_language->getId(),

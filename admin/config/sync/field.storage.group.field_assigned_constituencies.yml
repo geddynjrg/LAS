@@ -1,12 +1,12 @@
-uuid: 2630d6ed-1611-43fa-b24c-31a8179e977e
+uuid: 2630d6ed-1611-43fa-b24c-31a8179e977f
 langcode: en
 status: true
 dependencies:
   module:
     - group
     - taxonomy
-id: group.field_assigned_counties
-field_name: field_assigned_counties
+id: group.field_assigned_constituencies
+field_name: field_assigned_constituencies
 entity_type: group
 type: entity_reference
 settings:

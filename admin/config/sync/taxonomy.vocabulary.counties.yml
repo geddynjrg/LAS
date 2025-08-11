@@ -2,7 +2,7 @@ uuid: 5b25f588-cb08-41e1-b025-c5dc52c8a36b
 langcode: en
 status: true
 dependencies: {  }
-name: 'Counties & Constituencies'
+name: Counties
 vid: counties
 description: 'Counties vocabulary for loan applications.'
 weight: 0

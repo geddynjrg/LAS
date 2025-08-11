@@ -21,6 +21,12 @@ class ApplicationHtmlRouteProvider extends AdminHtmlRouteProvider {
     $collection = parent::getRoutes($entity_type);
 
     $entity_type_id = $entity_type->id();
+    
+    // Override the collection route to allow viewing with listing permission.
+    if ($collection_route = $collection->get("entity.{$entity_type_id}.collection")) {
+      // Change the permission requirement to allow admin, view all, or just listing access.
+      $collection_route->setRequirement('_permission', 'administer loan applications+view loan applications+access loan applications listing');
+    }
 
     // @phpcs:disable
     // @todo Implement multi-step forms

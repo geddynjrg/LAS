@@ -1,0 +1,5 @@
+services:
+  uwezo_groups.group_manager:
+    class: Drupal\uwezo_groups\Service\GroupManager
+    arguments:
+      - '@entity_type.manager'

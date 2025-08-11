@@ -3,14 +3,14 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.group.review.field_assigned_counties
+    - field.field.group.review.field_assigned_constituencies
     - group.type.review
 id: group.review.default
 targetEntityType: group
 bundle: review
 mode: default
 content:
-  field_assigned_counties:
+  field_assigned_constituencies:
     type: entity_reference_autocomplete
     weight: 1
     region: content

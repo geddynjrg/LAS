@@ -1,16 +1,16 @@
-uuid: 3317a0ee-d443-462b-baf9-2629352dacdb
+uuid: 3317a0ee-d443-462b-baf9-2629352dacdc
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.group.field_assigned_counties
+    - field.storage.group.field_assigned_constituencies
     - group.type.review
-    - taxonomy.vocabulary.counties
-id: group.review.field_assigned_counties
-field_name: field_assigned_counties
+    - taxonomy.vocabulary.constituencies
+id: group.review.field_assigned_constituencies
+field_name: field_assigned_constituencies
 entity_type: group
 bundle: review
-label: 'Assigned Counties & Constituencies'
+label: 'Assigned Constituencies'
 description: ''
 required: true
 translatable: false
@@ -20,7 +20,7 @@ settings:
   handler: 'default:taxonomy_term'
   handler_settings:
     target_bundles:
-      counties: counties
+      constituencies: constituencies
     sort:
       field: name
       direction: asc
