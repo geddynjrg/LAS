@@ -11,6 +11,8 @@ import {
   type GroupData,
 } from "@/app/apply/[id]/group-data/group-data-schema";
 import { ApplicationStatus } from "@/generated/prisma";
+import { getConstituenciesForCountyName } from "@/lib/api/counties.service";
+import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
 import {
   updateApplicationGroupData,
   updateApplicationStatus,
@@ -108,3 +110,12 @@ export const groupDataAction: FormAction<GroupData> = async (
     throw error;
   }
 };
+
+export async function getConstituenciesForCountyAction(countyName: string): Promise<TaxonomyOption[]> {
+  try {
+    return await getConstituenciesForCountyName(countyName);
+  } catch (error) {
+    console.error("Error fetching constituencies for county:", error);
+    return [];
+  }
+}

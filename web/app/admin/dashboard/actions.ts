@@ -2,6 +2,7 @@
 
 import { syncApplication as syncApplicationService } from "@/lib/api/sync.service";
 import { syncTaxonomyVocabularies } from "@/lib/api/taxonomy.service";
+import { syncCountiesData } from "@/lib/api/counties.service";
 import { requireAdmin } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db/prisma";
 
@@ -47,13 +48,37 @@ export async function syncTaxonomyAction() {
   await requireAdmin();
 
   try {
-    await syncTaxonomyVocabularies();
+    // Sync both taxonomy vocabularies and counties/constituencies
+    await Promise.all([
+      syncTaxonomyVocabularies(),
+      syncCountiesData(),
+    ]);
+    
     return {
       success: true,
-      message: "Taxonomy vocabularies synced successfully",
+      message: "Taxonomy vocabularies and counties synced successfully",
     };
   } catch (error) {
-    console.error("Error syncing taxonomy vocabularies:", error);
+    console.error("Error syncing taxonomy data:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function syncCountiesAction() {
+  // Ensure user is admin
+  await requireAdmin();
+
+  try {
+    await syncCountiesData();
+    return {
+      success: true,
+      message: "Counties and constituencies synced successfully",
+    };
+  } catch (error) {
+    console.error("Error syncing counties data:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",

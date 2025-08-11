@@ -190,19 +190,7 @@ class CountiesResource extends RestFrameworkResourceBase {
 
       $term_data = [
         'tid' => (int) $county_term->id(),
-        'uuid' => $county_term->uuid(),
         'name' => $county_term->getName(),
-        'description' => [
-          'value' => $county_term->getDescription(),
-          'format' => $county_term->get('description')->format,
-          'processed' => $county_term->get('description')->processed,
-        ],
-        'weight' => (int) $county_term->getWeight(),
-        'url' => $county_term->toUrl()->setAbsolute()->toString(),
-        'language' => [
-          'code' => $county_term->language()->getId(),
-          'name' => $county_term->language()->getName(),
-        ],
         'constituencies' => [], // Will be populated below
       ];
 
@@ -225,19 +213,7 @@ class CountiesResource extends RestFrameworkResourceBase {
 
       $constituency_data = [
         'tid' => (int) $constituency_term->id(),
-        'uuid' => $constituency_term->uuid(),
         'name' => $constituency_term->getName(),
-        'description' => [
-          'value' => $constituency_term->getDescription(),
-          'format' => $constituency_term->get('description')->format,
-          'processed' => $constituency_term->get('description')->processed,
-        ],
-        'weight' => (int) $constituency_term->getWeight(),
-        'url' => $constituency_term->toUrl()->setAbsolute()->toString(),
-        'language' => [
-          'code' => $constituency_term->language()->getId(),
-          'name' => $constituency_term->language()->getName(),
-        ],
       ];
       
       if ($parent_county_id && isset($counties[$parent_county_id])) {
@@ -255,30 +231,12 @@ class CountiesResource extends RestFrameworkResourceBase {
       }
     }
 
-    // Build available languages.
-    $available_languages = [];
-    foreach ($language_manager->getLanguages() as $langcode => $language) {
-      $available_languages[$langcode] = [
-        'langcode' => $langcode,
-        'name' => $language->getName(),
-        'url' => $request->getSchemeAndHttpHost() . $request->getPathInfo(),
-        'path' => $request->getPathInfo(),
-      ];
-    }
-
     // Build the complete response.
     $response_data = [
       'data' => array_values($counties), // Reset keys to be sequential
       'meta' => [
-        'timestamp' => \Drupal::time()->getCurrentTime(),
-        'version' => 'v1',
         'total_counties' => count($counties),
         'total_constituencies' => count($constituency_terms),
-        'language' => [
-          'current' => $current_language->getId(),
-          'default' => $default_language->getId(),
-          'available' => $available_languages,
-        ],
       ],
     ];
 

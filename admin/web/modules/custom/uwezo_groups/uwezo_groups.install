@@ -150,4 +150,3 @@ function uwezo_groups_cleanup_old_constituencies() {
     $term->delete();
   }
 }
-

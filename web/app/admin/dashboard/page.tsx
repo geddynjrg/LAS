@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import { LoadingState, SearchFilterBar, StatCard } from "@/components/admin";
 import { getApplicationsData } from "./actions";
 import { ApplicationsTable } from "./applications-table";
-import { TaxonomySyncButton } from "./taxonomy-sync-button";
+import { DataSyncButton } from "./data-sync-button";
 
 interface Application {
   id: string;
@@ -175,7 +175,7 @@ export default function AdminDashboardPage() {
           isSearching={searching}
           actions={
             <div className="flex gap-2">
-              <TaxonomySyncButton />
+              <DataSyncButton />
             </div>
           }
         />

@@ -3,7 +3,7 @@
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useState, type FC } from "react";
+import { useState, useCallback, type FC } from "react";
 
 import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
 import { Container } from "@workspace/ui/components/container";
@@ -25,9 +25,9 @@ import {
   type GroupData,
 } from "@/app/apply/[id]/group-data/group-data-schema";
 import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
+import { getConstituenciesForCountyName } from "@/lib/api/counties.service";
 import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
 import { GroupData as ApplicationGroupData } from "@/lib/data/application";
-import { dummyCounty } from "@/lib/data/dummy-data";
 
 export interface GroupDataProps {
   id: string;
@@ -38,6 +38,7 @@ export interface GroupDataProps {
     groupActivities: TaxonomyOption[];
     valueChain: TaxonomyOption[];
     county: TaxonomyOption[];
+    constituency: TaxonomyOption[];
   };
 }
 
@@ -47,6 +48,11 @@ export const GroupDataForm: FC<GroupDataProps> = ({
   applicationGroupData,
   taxonomyOptions,
 }) => {
+  // State for filtered constituencies based on selected county
+  const [filteredConstituencies, setFilteredConstituencies] = useState<TaxonomyOption[]>(
+    taxonomyOptions?.constituency || []
+  );
+
   const [state, formAction, isPending] = useForm(action, groupDataSchema, {
     groupName: applicationGroupData?.basics.groupName,
     groupRegistrationNumber:
@@ -86,9 +92,33 @@ export const GroupDataForm: FC<GroupDataProps> = ({
   const [chosenCounty, setChosenCounty] = useState(
     state.values?.countyOfOperation,
   );
+  const [isLoadingConstituencies, setIsLoadingConstituencies] = useState(false);
   const [chosenKeyActivities, setChosenKeyActivities] = useState(
     state.values?.groupActivities,
   );
+
+  // Update constituencies when county selection is made (not while typing)
+  const updateConstituenciesForCounty = useCallback(async (countyName: string) => {
+    // Only fetch if it's a valid county from our options list
+    const isValidCounty = taxonomyOptions?.county?.some(c => c.value === countyName || c.label === countyName);
+    
+    if (countyName && isValidCounty && countyName !== chosenCounty) {
+      console.log("Fetching constituencies for county:", countyName);
+      setIsLoadingConstituencies(true);
+      try {
+        const constituencies = await getConstituenciesForCountyName(countyName);
+        setFilteredConstituencies(constituencies);
+        console.log("Found constituencies:", constituencies.length);
+      } catch (error) {
+        console.error("Error fetching constituencies:", error);
+        setFilteredConstituencies([]);
+      } finally {
+        setIsLoadingConstituencies(false);
+      }
+    } else if (!countyName) {
+      setFilteredConstituencies(taxonomyOptions?.constituency || []);
+    }
+  }, [chosenCounty, taxonomyOptions?.county, taxonomyOptions?.constituency]);
 
   const prevUrl = `/apply`;
   const nextUrl = `/apply/${id}/members`;
@@ -446,18 +476,21 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             control={(props) => (
               <SearchInput
                 {...props}
-                onValueChange={setChosenCounty}
+                onValueChange={(value) => {
+                  setChosenCounty(value);
+                  if (value) {
+                    updateConstituenciesForCounty(value);
+                  } else {
+                    setFilteredConstituencies(taxonomyOptions?.constituency || []);
+                  }
+                }}
                 placeholder={t(
                   "ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch",
                 )}
-                options={dummyCounty.map((county) => ({
-                  label: county.name,
-                  value: county.name,
-                }))}
+                options={taxonomyOptions?.county || []}
               />
             )}
           />
-          {/* TODO: clear value when county changes */}
           <Field
             state={state}
             name="constituency"
@@ -469,12 +502,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                 placeholder={t(
                   "ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch",
                 )}
-                options={dummyCounty
-                  .find((county) => county.name === chosenCounty)
-                  ?.constituencies.map((c) => ({
-                    label: c,
-                    value: c,
-                  }))}
+                options={filteredConstituencies}
               />
             )}
           />
