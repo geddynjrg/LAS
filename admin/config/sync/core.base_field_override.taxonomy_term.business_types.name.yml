@@ -1,0 +1,18 @@
+uuid: 959c5ebf-cad8-4a73-8539-73e7e173f3a2
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.business_types
+id: taxonomy_term.business_types.name
+field_name: name
+entity_type: taxonomy_term
+bundle: business_types
+label: Name
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

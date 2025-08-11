@@ -1,0 +1,22 @@
+uuid: c902de38-12e5-422c-8bd9-8f2d6c25bd49
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.value_chain
+id: taxonomy_term.value_chain.status
+field_name: status
+entity_type: taxonomy_term
+bundle: value_chain
+label: Published
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

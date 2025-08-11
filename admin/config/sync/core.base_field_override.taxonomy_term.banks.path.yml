@@ -1,0 +1,20 @@
+uuid: 9083aab1-b02a-4375-bb39-d9b6ada2db8c
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.banks
+  module:
+    - path
+id: taxonomy_term.banks.path
+field_name: path
+entity_type: taxonomy_term
+bundle: banks
+label: 'URL alias'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: path

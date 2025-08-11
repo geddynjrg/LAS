@@ -1,0 +1,21 @@
+uuid: 72ce36fb-ef71-475b-a858-b80620361616
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.group_background
+  module:
+    - text
+id: taxonomy_term.group_background.description
+field_name: description
+entity_type: taxonomy_term
+bundle: group_background
+label: Description
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

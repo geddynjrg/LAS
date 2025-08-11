@@ -1,0 +1,22 @@
+uuid: 84533aaf-1b2c-4987-b6fa-a712b3036565
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.review
+id: group.review.status
+field_name: status
+entity_type: group
+bundle: review
+label: Published
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

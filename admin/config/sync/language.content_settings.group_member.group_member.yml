@@ -1,0 +1,11 @@
+uuid: 56af700d-9f4e-4f98-a11c-db76d8601e8d
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+id: group_member.group_member
+target_entity_type_id: group_member
+target_bundle: group_member
+default_langcode: site_default
+language_alterable: false

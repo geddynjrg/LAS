@@ -1,0 +1,18 @@
+uuid: f7472311-0bdf-42fc-b4ce-571a6d218bef
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.group_background
+id: taxonomy_term.group_background.name
+field_name: name
+entity_type: taxonomy_term
+bundle: group_background
+label: Name
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

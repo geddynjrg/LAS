@@ -1,0 +1,22 @@
+uuid: 785c5dcf-afae-421f-9405-2a93fb82b060
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.business_types
+id: taxonomy_term.business_types.status
+field_name: status
+entity_type: taxonomy_term
+bundle: business_types
+label: Published
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

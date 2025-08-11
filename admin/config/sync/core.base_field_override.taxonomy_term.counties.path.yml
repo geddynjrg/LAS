@@ -1,0 +1,20 @@
+uuid: 4b453a72-0907-41b6-8b9d-25cea93e1252
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.counties
+  module:
+    - path
+id: taxonomy_term.counties.path
+field_name: path
+entity_type: taxonomy_term
+bundle: counties
+label: 'URL alias'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: path
