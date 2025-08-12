@@ -24,6 +24,8 @@ RUN apk add --no-cache \
         curl \
         zip \
         unzip \
+        nginx \
+        supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) \
         pdo \
@@ -52,6 +54,12 @@ COPY --chown=www-data:www-data . .
 # Copy custom PHP configuration
 COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
+# Copy nginx configuration
+COPY docker/admin-nginx.conf /etc/nginx/nginx.conf
+
+# Copy supervisor configuration
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Install all dependencies and run scaffold scripts in one step
 RUN --mount=type=cache,target=/tmp/composer \
     COMPOSER_CACHE_DIR=/tmp/composer \
@@ -62,14 +70,15 @@ RUN --mount=type=cache,target=/tmp/composer \
         --optimize-autoloader
 
 # Create necessary directories and set permissions
-RUN mkdir -p web/sites/default/files /var/www/private \
+RUN mkdir -p web/sites/default/files /var/www/private /var/log/supervisor /run/nginx \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 web/sites/default \
     && chmod -R 775 web/sites/default/files
 
-# Switch to non-root user
-USER www-data
+# PHP-FPM configuration to run as www-data
+RUN sed -i 's/user = nobody/user = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/group = nobody/group = www-data/' /usr/local/etc/php-fpm.d/www.conf
 
-EXPOSE 9000
+EXPOSE 80
 
-CMD ["php-fpm"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
