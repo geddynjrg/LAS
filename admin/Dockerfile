@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # Multi-stage optimized Dockerfile for Drupal 11 with PHP 8.3
 ARG PHP_VERSION=8.3
 
@@ -37,14 +38,21 @@ RUN apk add --no-cache \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Composer dependencies stage
-FROM deps AS composer-deps
+# Production stage - single composer install
+FROM deps AS production
+
 WORKDIR /var/www/html
 
-# Copy composer files first for dependency caching
+# Copy composer files first for better caching
 COPY composer.json composer.lock ./
 
-# Install dependencies in separate layer (cached unless composer files change)
+# Copy all application files
+COPY --chown=www-data:www-data . .
+
+# Copy custom PHP configuration
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
+# Install all dependencies and run scaffold scripts in one step
 RUN --mount=type=cache,target=/tmp/composer \
     COMPOSER_CACHE_DIR=/tmp/composer \
     composer install \
@@ -52,24 +60,6 @@ RUN --mount=type=cache,target=/tmp/composer \
         --prefer-dist \
         --no-interaction \
         --optimize-autoloader
-
-# Production stage - final minimal image
-FROM deps AS production
-
-
-WORKDIR /var/www/html
-
-# Copy application files first (excluding vendor to avoid overwriting)
-COPY --chown=www-data:www-data . .
-
-# Copy vendor dependencies from composer stage  
-COPY --from=composer-deps --chown=www-data:www-data /var/www/html/vendor ./vendor
-
-# Copy custom PHP configuration
-COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
-
-# Complete the composer installation (install packages to proper locations)
-RUN composer install --no-dev --optimize-autoloader
 
 # Create necessary directories and set permissions
 RUN mkdir -p web/sites/default/files /var/www/private \
