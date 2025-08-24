@@ -1,3 +1,25 @@
+# Custom Applications admin overview route
+api_application.admin_overview:
+  path: '/admin/applications'
+  defaults:
+    _entity_list: 'application'
+    _title: 'Applications'
+  requirements:
+    _permission: 'administer applications'
+  options:
+    _admin_route: TRUE
+
+# Custom Applications admin settings route
+api_application.admin_settings:
+  path: '/admin/applications/settings'
+  defaults:
+    _form: '\Drupal\api_application\Form\ApplicationSettingsForm'
+    _title: 'Application Settings'
+  requirements:
+    _permission: 'administer applications'
+  options:
+    _admin_route: TRUE
+
 # AJAX status update route
 api_application.application_status_update:
   path: '/admin/structure/application/{application}/status-update'

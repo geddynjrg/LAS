@@ -70,23 +70,16 @@ class ApplicationSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('api_application.settings');
 
-    // Add vertical tabs.
     $form['#tree'] = TRUE;
     $form['#attached']['library'][] = 'api_application/admin';
 
     // Add class for proper form handling.
     $form['#attributes']['class'][] = 'api-application-settings';
 
-    $form['tabs'] = [
-      '#type' => 'vertical_tabs',
-      '#default_tab' => 'general_settings',
-    ];
-
-    // General Settings Tab.
+    // General Settings Section.
     $form['general_settings'] = [
       '#type' => 'details',
       '#title' => $this->t('General Settings'),
-      '#group' => 'tabs',
       '#open' => TRUE,
     ];
 
@@ -227,11 +220,10 @@ class ApplicationSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
-    // Instructions Tab.
+    // Instructions Section.
     $form['instructions_tab'] = [
       '#type' => 'details',
       '#title' => $this->t('Instructions'),
-      '#group' => 'tabs',
     ];
 
     // Include the instructions form elements.

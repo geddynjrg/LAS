@@ -45,30 +45,6 @@ function api_application_entity_type_build(array &$entity_types) {
 }
 
 /**
- * Implements hook_menu_local_tasks_alter().
- */
-function api_application_menu_local_tasks_alter(&$data, $route_name) {
-  // Add tabs to content page routes.
-  $content_routes = [
-    'system.admin_content',
-    'entity.application.collection',
-    'entity.group_member.collection',
-  ];
-
-  if (in_array($route_name, $content_routes, TRUE)) {
-    // Add Application tab.
-    if (isset($data['tabs'][0]['entity.application.collection'])) {
-      $data['tabs'][0]['entity.application.collection']['#weight'] = 20;
-    }
-
-    // Add Group Members tab.
-    if (isset($data['tabs'][0]['entity.group_member.collection'])) {
-      $data['tabs'][0]['entity.group_member.collection']['#weight'] = 30;
-    }
-  }
-}
-
-/**
  * Implements hook_theme_registry_alter().
  */
 function api_application_theme_registry_alter(&$theme_registry) {

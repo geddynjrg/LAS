@@ -1,20 +1,22 @@
+# Custom Applications admin section tabs
+api_application.admin_overview:
+  route_name: api_application.admin_overview
+  base_route: api_application.admin_overview
+  title: 'Overview'
+  weight: 0
+
+api_application.admin_settings:
+  route_name: api_application.admin_settings
+  base_route: api_application.admin_overview
+  title: 'Settings'
+  weight: 10
+
+# Content section tabs
 system.admin_content:
   route_name: system.admin_content
   base_route: system.admin_content
   title: 'Content'
   weight: -10
-
-entity.application.collection:
-  route_name: entity.application.collection
-  base_route: system.admin_content
-  title: 'Applications'
-  weight: 10
-
-entity.group_member.collection:
-  route_name: entity.group_member.collection
-  base_route: system.admin_content
-  title: 'Group Members'
-  weight: 11
 
 # Application entity tabs
 entity.application.canonical:

@@ -1,20 +1,18 @@
-api_application.applications:
+# Custom Applications section (separate from default entity.application.collection)
+api_application.admin:
   title: 'Applications'
-  route_name: entity.application.collection
-  description: 'List and manage loan applications'
-  parent: system.admin_content
-  weight: 10
+  route_name: api_application.admin_overview
+  description: 'Manage loan applications'
+  parent: system.admin
+  weight: -9
+  options:
+    attributes:
+      class: ['toolbar-icon-edit']
 
-api_application.group_members:
-  title: 'Group Members'
-  route_name: entity.group_member.collection
-  description: 'List and manage group members'
-  parent: system.admin_content
-  weight: 20
-
-api_application.application_settings:
-  title: 'Application settings'
-  route_name: entity.application.settings
-  description: 'Configure loan application settings'
+# Application entity under Structure
+api_application.entity_settings:
+  title: 'Applications'
+  route_name: entity.application.field_ui_fields
+  description: 'Manage fields and display settings for applications'
   parent: system.admin_structure
-  weight: 10
+  weight: 0
