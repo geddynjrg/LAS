@@ -1,5 +1,4 @@
 import {
-  IconBrandTwitterFilled,
   IconDeviceMobile,
   IconHomeFilled,
   IconMail,
@@ -9,7 +8,6 @@ import Link from "next/link";
 import { Children, FC, ReactNode } from "react";
 
 import { Container } from "@workspace/ui/components/container";
-import { IconFacebookInverted } from "@workspace/ui/components/icon/icon-facebook-inverted";
 import { cn } from "@workspace/ui/lib/utils";
 
 import type { SiteInformationResponse } from "@/lib/api/schema/site-info/site-info.schema";

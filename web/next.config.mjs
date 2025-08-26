@@ -9,12 +9,17 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "uwezo-api.ddev.site",
+        hostname: "uwezo.ddev.site",
       },
       {
         hostname: "uwezo-api-qa.fusion.adm.ee",
       },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "30mb",
+    },
   },
 };
 

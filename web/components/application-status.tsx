@@ -73,6 +73,7 @@ export const ApplicationStatus: FC<ApplicationStatusProps> = ({
       duplicate_application: t("rejectionReasons.duplicateApplication"),
       insufficient_collateral: t("rejectionReasons.insufficientCollateral"),
       poor_credit_history: t("rejectionReasons.poorCreditHistory"),
+      member_declined: t("rejectionReasons.memberDeclined"),
       other: t("rejectionReasons.other"),
     };
 

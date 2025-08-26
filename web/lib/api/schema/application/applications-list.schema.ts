@@ -223,6 +223,7 @@ export const ApplicationDetailSchema = z.object({
           "duplicate_application",
           "insufficient_collateral",
           "poor_credit_history",
+          "member_declined",
           "other",
         ])
         .optional(),
