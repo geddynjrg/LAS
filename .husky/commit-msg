@@ -1,0 +1,20 @@
+# husky
+
+# Get the commit message
+COMMIT_MSG_FILE=$1
+
+# Run GrumPHP commit message validation
+echo "📝 Validating commit message format..."
+cd admin && vendor/bin/grumphp git:commit-msg "$COMMIT_MSG_FILE"
+if [ $? -ne 0 ]; then
+  echo "❌ Commit message validation failed"
+  echo ""
+  echo "Expected format: type(SCOPE): description"
+  echo "Examples:"
+  echo "  feat(KEN-123): add user authentication"
+  echo "  fix(KEN-456): resolve login bug"
+  echo "  docs(KEN-789): update API documentation"
+  exit 1
+fi
+
+echo "✅ Commit message format is valid!"

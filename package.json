@@ -1,5 +1,11 @@
 {
   "name": "uwezo",
   "private": true,
-  "packageManager": "pnpm@10.7.1"
+  "packageManager": "pnpm@10.7.1",
+  "scripts": {
+    "quality": "./scripts/check-code-quality.sh",
+    "quality:php": "./scripts/check-code-quality.sh --php-only",
+    "quality:web": "./scripts/check-code-quality.sh --web-only",
+    "install:all": "cd admin && composer install && cd ../web && pnpm install"
+  }
 }

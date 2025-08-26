@@ -5,13 +5,16 @@ grumphp:
   ignore_unstaged_changes: false
   fixer:
     enabled: true
+  git_hook_variables:
+    EXEC_GRUMPHP_COMMAND: 'vendor/bin/grumphp'
+  hooks_dir: null  # Disable GrumPHP git hooks - managed by Husky
   ascii:
     failed: web/modules/contrib/clean_code/ascii/failed.txt
     succeeded: web/modules/contrib/clean_code/ascii/succeeded.txt
   tasks:
     git_blacklist:
       keywords: [die(, var_dump(), exit;, dd(, kint(, print_r(, debug(]
-      whitelist_patterns: 
+      whitelist_patterns:
         - '/^web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
       triggered_by: [php, module, theme, inc, phtml, php3, php4, php5]
       regexp_type: G
@@ -41,7 +44,7 @@ grumphp:
       tab_width: null
       report: full
       report_width: 80
-      whitelist_patterns: 
+      whitelist_patterns:
         - '/^web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
       encoding: utf-8
       ignore_patterns: [
@@ -66,7 +69,7 @@ grumphp:
       ]
       triggered_by: [php, module, theme, inc, phtml, php3, php4, php5]
     # phpmd:
-    #   whitelist_patterns: 
+    #   whitelist_patterns:
     #     - '/^web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
     #   exclude: [
     #     'tests/*',

@@ -16,6 +16,7 @@
     "find-deadcode": "ts-prune",
     "prepare": "cd .. && npx husky",
     "check-types": "tsc --noEmit",
+    "quality": "pnpm run lint && pnpm run prettier && pnpm run check-types",
     "schema": ". ./.env.local && openapi-typescript \"$API_URL/api/docs/json\" -o ./lib/api/schema/schema.d.ts --prettier && echo 'Schema updated successfully'",
     "schema:dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run schema",
     "schema:validate": "tsc --noEmit --skipLibCheck ./lib/api/schema/schema.d.ts",
