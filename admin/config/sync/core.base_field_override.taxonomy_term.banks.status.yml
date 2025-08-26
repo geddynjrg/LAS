@@ -1,0 +1,22 @@
+uuid: e5639e56-8e64-4129-a3f8-21e9a80b6ee4
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.banks
+id: taxonomy_term.banks.status
+field_name: status
+entity_type: taxonomy_term
+bundle: banks
+label: Published
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

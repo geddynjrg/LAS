@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the UWEZO General module.
+ */
+
+/**
+ * Install the Uwezo Groups module.
+ */
+function uwezo_general_update_10001() {
+  \Drupal::service('module_installer')->install(['group', 'uwezo_groups']);
+}

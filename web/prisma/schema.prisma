@@ -306,3 +306,54 @@ enum QueueStatus {
   COMPLETED
   FAILED
 }
+
+model CountiesCache {
+  id                   String         @id @default(cuid())
+  lastSyncedAt         DateTime       @default(now())
+  totalCounties        Int
+  totalConstituencies  Int
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  counties             County[]
+
+  @@map("counties_cache")
+}
+
+model County {
+  id             String         @id @default(cuid())
+  tid            Int
+  uuid           String         @unique
+  name           String
+  description    String         @db.LongText
+  weight         Int
+  url            String
+  language       String         @db.LongText
+  cacheId        String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  cache          CountiesCache  @relation(fields: [cacheId], references: [id], onDelete: Cascade)
+  constituencies Constituency[]
+
+  @@index([cacheId])
+  @@index([name])
+  @@map("counties")
+}
+
+model Constituency {
+  id          String   @id @default(cuid())
+  tid         Int
+  uuid        String   @unique
+  name        String
+  description String   @db.LongText
+  weight      Int
+  url         String
+  language    String   @db.LongText
+  countyId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  county      County   @relation(fields: [countyId], references: [id], onDelete: Cascade)
+
+  @@index([countyId])
+  @@index([name])
+  @@map("constituencies")
+}

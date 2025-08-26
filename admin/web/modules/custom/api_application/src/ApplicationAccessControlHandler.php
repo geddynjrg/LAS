@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\uwezo_groups\Service\GroupManager;
 
 /**
  * Access controller for the Application entity.
@@ -34,9 +35,14 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
             ->addCacheableDependency($entity);
         }
 
-        // Check view permission.
-        return AccessResult::allowedIfHasPermission($account, 'view loan applications')
-          ->cachePerPermissions();
+        // Check group-based access using the uwezo_groups service.
+        $group_manager = \Drupal::service(GroupManager::SERVICE_ID);
+        $group_access = $group_manager->checkAccess($entity, $operation, $account);
+        if ($group_access->isAllowed()) {
+          return $group_access;
+        }
+
+        return AccessResult::forbidden();
 
       case 'update':
         // Allow editing own draft applications.
@@ -46,9 +52,11 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
             ->addCacheableDependency($entity);
         }
 
-        // Check edit permission for staff.
-        if ($account->hasPermission('edit loan applications')) {
-          return AccessResult::allowed()->cachePerPermissions();
+        // Check group-based access using the uwezo_groups service.
+        $group_manager = \Drupal::service(GroupManager::SERVICE_ID);
+        $group_access = $group_manager->checkAccess($entity, $operation, $account);
+        if ($group_access->isAllowed()) {
+          return $group_access;
         }
 
         return AccessResult::forbidden()
@@ -70,6 +78,7 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
     // Unknown operation, no opinion.
     return AccessResult::neutral();
   }
+
 
   /**
    * {@inheritdoc}
@@ -107,5 +116,6 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
 
     return parent::checkFieldAccess($operation, $field_definition, $account, $items);
   }
+
 
 }

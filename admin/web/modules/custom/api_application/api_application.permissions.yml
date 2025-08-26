@@ -11,6 +11,10 @@ view loan applications:
   title: 'View loan applications'
   description: 'View any loan application.'
 
+access loan applications listing:
+  title: 'Access loan applications listing'
+  description: 'Access the loan applications listing page without viewing individual applications.'
+
 edit loan applications:
   title: 'Edit loan applications'
   description: 'Edit any loan application.'

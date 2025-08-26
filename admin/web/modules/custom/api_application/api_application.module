@@ -519,6 +519,7 @@ function template_preprocess_application(array &$variables) {
   }
 }
 
+
 /**
  * Implements hook_preprocess_page().
  */

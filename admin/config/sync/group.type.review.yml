@@ -1,0 +1,11 @@
+uuid: 332fb4ee-f5b9-4ae7-be17-80e9e5972f5c
+langcode: en
+status: true
+dependencies: {  }
+id: review
+label: 'Constituency Review Group'
+description: "A group type for managing constituency review groups\r\n"
+new_revision: false
+creator_membership: false
+creator_wizard: true
+creator_roles: {  }

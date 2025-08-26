@@ -1,0 +1,20 @@
+uuid: f464b822-b1f5-4664-8457-ad02bfcab863
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.loan_types
+  module:
+    - path
+id: taxonomy_term.loan_types.path
+field_name: path
+entity_type: taxonomy_term
+bundle: loan_types
+label: 'URL alias'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: path

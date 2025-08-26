@@ -1,0 +1,18 @@
+uuid: 34b3117b-c431-4178-a7ce-e4500c3a1d5e
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.value_chain
+id: taxonomy_term.value_chain.name
+field_name: name
+entity_type: taxonomy_term
+bundle: value_chain
+label: Name
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

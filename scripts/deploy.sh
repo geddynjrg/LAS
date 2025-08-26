@@ -182,7 +182,7 @@ build_images() {
         COMPOSE_CMD="docker-compose"
     fi
     
-    COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME" $COMPOSE_CMD build --parallel
+    COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME" $COMPOSE_CMD build --no-cache --parallel
 }
 
 # Check if Docker images exist

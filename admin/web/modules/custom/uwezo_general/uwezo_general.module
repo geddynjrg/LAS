@@ -56,6 +56,18 @@ function uwezo_general_add_translation(
 }
 
 /**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function uwezo_general_entity_base_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+  if ($entity_type->id() == 'user') {
+    // Make the email field optional for user accounts.
+    if (isset($fields['mail'])) {
+      $fields['mail']->setRequired(FALSE);
+    }
+  }
+}
+
+/**
  * Implements hook_user_login().
  */
 function uwezo_general_user_login($account) {

@@ -1,0 +1,18 @@
+uuid: ba967cbe-b416-48b9-a894-36b5c841ac3f
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.relationship_type.review-group_membership
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: false
+    bundle_settings:
+      untranslatable_fields_hide: '0'
+id: group_relationship.review-group_membership
+target_entity_type_id: group_relationship
+target_bundle: review-group_membership
+default_langcode: site_default
+language_alterable: false

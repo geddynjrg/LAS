@@ -1,0 +1,20 @@
+uuid: 23e36339-a97c-4687-8036-d2b05dcfffb9
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.business_types
+  module:
+    - path
+id: taxonomy_term.business_types.path
+field_name: path
+entity_type: taxonomy_term
+bundle: business_types
+label: 'URL alias'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: path

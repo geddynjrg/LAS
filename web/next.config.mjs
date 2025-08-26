@@ -8,12 +8,9 @@ const nextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
-      {
-        hostname: "uwezo.ddev.site",
-      },
-      {
-        hostname: "uwezo-api-qa.fusion.adm.ee",
-      },
+      ...(process.env.API_URL
+        ? [{ hostname: new URL(process.env.API_URL).hostname }]
+        : []),
     ],
   },
   experimental: {

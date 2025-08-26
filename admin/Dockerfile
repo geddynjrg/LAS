@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # Multi-stage optimized Dockerfile for Drupal 11 with PHP 8.3
 ARG PHP_VERSION=8.3
 
@@ -23,6 +24,8 @@ RUN apk add --no-cache \
         curl \
         zip \
         unzip \
+        nginx \
+        supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) \
         pdo \
@@ -37,14 +40,27 @@ RUN apk add --no-cache \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Composer dependencies stage
-FROM deps AS composer-deps
+# Production stage - single composer install
+FROM deps AS production
+
 WORKDIR /var/www/html
 
-# Copy composer files first for dependency caching
+# Copy composer files first for better caching
 COPY composer.json composer.lock ./
 
-# Install dependencies in separate layer (cached unless composer files change)
+# Copy all application files
+COPY --chown=www-data:www-data . .
+
+# Copy custom PHP configuration
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
+# Copy nginx configuration
+COPY docker/admin-nginx.conf /etc/nginx/nginx.conf
+
+# Copy supervisor configuration
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Install all dependencies and run scaffold scripts in one step
 RUN --mount=type=cache,target=/tmp/composer \
     COMPOSER_CACHE_DIR=/tmp/composer \
     composer install \
@@ -53,33 +69,16 @@ RUN --mount=type=cache,target=/tmp/composer \
         --no-interaction \
         --optimize-autoloader
 
-# Production stage - final minimal image
-FROM deps AS production
-
-
-WORKDIR /var/www/html
-
-# Copy application files first (excluding vendor to avoid overwriting)
-COPY --chown=www-data:www-data . .
-
-# Copy vendor dependencies from composer stage  
-COPY --from=composer-deps --chown=www-data:www-data /var/www/html/vendor ./vendor
-
-# Copy custom PHP configuration
-COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
-
-# Complete the composer installation (install packages to proper locations)
-RUN composer install --no-dev --optimize-autoloader
-
 # Create necessary directories and set permissions
-RUN mkdir -p web/sites/default/files /var/www/private \
+RUN mkdir -p web/sites/default/files /var/www/private /var/log/supervisor /run/nginx \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 web/sites/default \
     && chmod -R 775 web/sites/default/files
 
-# Switch to non-root user
-USER www-data
+# PHP-FPM configuration to run as www-data
+RUN sed -i 's/user = nobody/user = www-data/' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/group = nobody/group = www-data/' /usr/local/etc/php-fpm.d/www.conf
 
-EXPOSE 9000
+EXPOSE 80
 
-CMD ["php-fpm"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

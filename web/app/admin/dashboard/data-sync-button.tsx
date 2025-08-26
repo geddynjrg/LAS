@@ -8,7 +8,7 @@ import { Button } from "@workspace/ui/components/button";
 
 import { syncTaxonomyAction } from "./actions";
 
-export function TaxonomySyncButton() {
+export function DataSyncButton() {
   const t = useTranslations("Common");
   const [isSyncing, setIsSyncing] = useState(false);
   const [message, setMessage] = useState<{
@@ -26,7 +26,7 @@ export function TaxonomySyncButton() {
       if (result.success) {
         setMessage({
           type: "success",
-          text: "Taxonomy sync completed successfully",
+          text: result.message || "Sync completed successfully",
         });
         // Clear success message after 3 seconds
         setTimeout(() => setMessage(null), 3000);
@@ -50,7 +50,7 @@ export function TaxonomySyncButton() {
         className="flex items-center gap-2"
       >
         <IconRefresh className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
-        {isSyncing ? "Syncing..." : "Sync Taxonomy"}
+{isSyncing ? "Syncing..." : "Sync Data"}
       </Button>
 
       {message && (

@@ -5,6 +5,7 @@ import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
 
 import { groupDataAction } from "@/app/apply/[id]/group-data/group-data-action";
 import { GroupDataForm } from "@/app/apply/[id]/group-data/group-data-form";
+import { getCountyOptions, getConstituencyOptions } from "@/lib/api/counties.service";
 import { getFormFieldOptions } from "@/lib/api/taxonomy.service";
 import { getApplicationById } from "@/lib/data/application-db";
 
@@ -22,12 +23,14 @@ export default async function Page({ params }: GroupDataPageProps) {
     groupPurposeOptions,
     valueChainOptions,
     countyOptions,
+    constituencyOptions,
     groupActivitiesOptions,
   ] = await Promise.all([
     getApplicationById(id),
     getFormFieldOptions("purposeOfTheGroup"),
     getFormFieldOptions("valueChain"),
-    getFormFieldOptions("countyOfOperation"),
+    getCountyOptions(),
+    getConstituencyOptions(),
     getFormFieldOptions("keyActivitiesOfTheGroup"),
   ]);
 
@@ -35,6 +38,7 @@ export default async function Page({ params }: GroupDataPageProps) {
     groupPurpose: groupPurposeOptions,
     valueChain: valueChainOptions,
     county: countyOptions,
+    constituency: constituencyOptions,
     groupActivities: groupActivitiesOptions,
   };
 

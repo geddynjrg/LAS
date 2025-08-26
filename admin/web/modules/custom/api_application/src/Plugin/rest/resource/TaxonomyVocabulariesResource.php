@@ -90,6 +90,7 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
     );
   }
 
+
   /**
    * Responds to GET requests.
    *
@@ -146,20 +147,6 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
         'entity_type' => 'application',
         'cardinality' => 'multiple',
       ],
-      'counties' => [
-        'label' => 'Counties',
-        'description' => 'Counties of operations',
-        'field_name' => 'county',
-        'entity_type' => 'application',
-        'cardinality' => 'single',
-      ],
-      'constituencies' => [
-        'label' => 'Constituencies',
-        'description' => 'Constituencies within counties',
-        'field_name' => 'constituency',
-        'entity_type' => 'application',
-        'cardinality' => 'single',
-      ],
       'purpose_of_the_loan' => [
         'label' => 'Purpose of the Loan',
         'description' => 'Purposes for which loans can be requested',
@@ -206,7 +193,7 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
     $data = [];
 
     foreach ($vocabularies as $vocabulary_id => $vocabulary_info) {
-      // Load the vocabulary to get its label and description.
+      // Handle all vocabularies normally
       $vocabulary = $vocabulary_storage->load($vocabulary_id);
 
       if (!$vocabulary) {

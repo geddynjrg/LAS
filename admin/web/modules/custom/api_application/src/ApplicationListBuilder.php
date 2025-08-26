@@ -229,7 +229,10 @@ class ApplicationListBuilder extends EntityListBuilder {
     ];
 
     // Add summary information with status breakdown.
-    $total_count = $this->getStorage()->getQuery()->accessCheck(TRUE)->count()->execute();
+    $total_count = $this->getStorage()->getQuery()
+      ->accessCheck(TRUE)
+      ->count()
+      ->execute();
 
     // Get status counts.
     $status_counts = [];
@@ -275,6 +278,21 @@ class ApplicationListBuilder extends EntityListBuilder {
     $query = $this->getStorage()->getQuery()
       ->accessCheck(TRUE)
       ->sort('created', 'DESC');
+
+    // Add constituency-based filtering for non-admin users.
+    $account = \Drupal::currentUser();
+    if (!$account->hasPermission('administer loan applications')) {
+      $group_manager = \Drupal::service('uwezo_groups.group_manager');
+      $accessible_constituency_ids = $group_manager->getAccessibleConstituencyIds($account);
+      
+      if (empty($accessible_constituency_ids)) {
+        // If user has no accessible constituencies, return empty result.
+        return [];
+      }
+      
+      // Filter by accessible constituencies.
+      $query->condition('constituency', $accessible_constituency_ids, 'IN');
+    }
 
     // Add filters if they exist in the request.
     $request = \Drupal::request();

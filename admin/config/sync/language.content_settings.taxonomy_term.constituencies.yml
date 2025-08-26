@@ -1,0 +1,18 @@
+uuid: 610d51a6-c4b6-45b2-8ca8-2db2de542071
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.constituencies
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: false
+    bundle_settings:
+      untranslatable_fields_hide: '0'
+id: taxonomy_term.constituencies
+target_entity_type_id: taxonomy_term
+target_bundle: constituencies
+default_langcode: site_default
+language_alterable: false

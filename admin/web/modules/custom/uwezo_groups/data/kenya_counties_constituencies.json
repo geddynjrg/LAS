@@ -1,0 +1,626 @@
+{
+  "counties": [
+    {
+      "code": 1,
+      "name": "Mombasa",
+      "capital": "Mombasa City",
+      "constituencies": [
+        "Changamwe",
+        "Jomvu",
+        "Kisauni",
+        "Nyali",
+        "Likoni",
+        "Mvita"
+      ]
+    },
+    {
+      "code": 2,
+      "name": "Kwale",
+      "capital": "Kwale",
+      "constituencies": [
+        "Msambweni",
+        "Lunga Lunga",
+        "Matuga",
+        "Kinango"
+      ]
+    },
+    {
+      "code": 3,
+      "name": "Kilifi",
+      "capital": "Kilifi",
+      "constituencies": [
+        "Kilifi North",
+        "Kilifi South",
+        "Kaloleni",
+        "Rabai",
+        "Ganze",
+        "Malindi",
+        "Magarini"
+      ]
+    },
+    {
+      "code": 4,
+      "name": "Tana River",
+      "capital": "Hola",
+      "constituencies": [
+        "Garsen",
+        "Galole",
+        "Bura"
+      ]
+    },
+    {
+      "code": 5,
+      "name": "Lamu",
+      "capital": "Lamu",
+      "constituencies": [
+        "Lamu East",
+        "Lamu West"
+      ]
+    },
+    {
+      "code": 6,
+      "name": "Taita Taveta",
+      "capital": "Voi",
+      "constituencies": [
+        "Taveta",
+        "Wundanyi",
+        "Mwatate",
+        "Voi"
+      ]
+    },
+    {
+      "code": 7,
+      "name": "Garissa",
+      "capital": "Garissa",
+      "constituencies": [
+        "Garissa Township",
+        "Balambala",
+        "Lagdera",
+        "Dadaab",
+        "Fafi",
+        "Ijara"
+      ]
+    },
+    {
+      "code": 8,
+      "name": "Wajir",
+      "capital": "Wajir",
+      "constituencies": [
+        "Wajir North",
+        "Wajir East",
+        "Tarbaj",
+        "Wajir West",
+        "Eldas",
+        "Wajir South"
+      ]
+    },
+    {
+      "code": 9,
+      "name": "Mandera",
+      "capital": "Mandera",
+      "constituencies": [
+        "Mandera West",
+        "Banissa",
+        "Mandera North",
+        "Mandera South",
+        "Mandera East",
+        "Lafey"
+      ]
+    },
+    {
+      "code": 10,
+      "name": "Marsabit",
+      "capital": "Marsabit",
+      "constituencies": [
+        "Moyale",
+        "North Horr",
+        "Saku",
+        "Laisamis"
+      ]
+    },
+    {
+      "code": 11,
+      "name": "Isiolo",
+      "capital": "Isiolo",
+      "constituencies": [
+        "Isiolo North",
+        "Isiolo South"
+      ]
+    },
+    {
+      "code": 12,
+      "name": "Meru",
+      "capital": "Meru",
+      "constituencies": [
+        "Igembe South",
+        "Igembe Central",
+        "Igembe North",
+        "Tigania West",
+        "Tigania East",
+        "North Imenti",
+        "Buuri",
+        "Central Imenti",
+        "South Imenti"
+      ]
+    },
+    {
+      "code": 13,
+      "name": "Tharaka Nithi",
+      "capital": "Chuka",
+      "constituencies": [
+        "Maara",
+        "Chuka/Igambang'ombe",
+        "Tharaka"
+      ]
+    },
+    {
+      "code": 14,
+      "name": "Embu",
+      "capital": "Embu",
+      "constituencies": [
+        "Manyatta",
+        "Runyenjes",
+        "Mbeere South",
+        "Mbeere North"
+      ]
+    },
+    {
+      "code": 15,
+      "name": "Kitui",
+      "capital": "Kitui",
+      "constituencies": [
+        "Mwingi North",
+        "Mwingi West",
+        "Mwingi Central",
+        "Kitui West",
+        "Kitui Rural",
+        "Kitui Central",
+        "Kitui East",
+        "Kitui South"
+      ]
+    },
+    {
+      "code": 16,
+      "name": "Machakos",
+      "capital": "Machakos",
+      "constituencies": [
+        "Masinga",
+        "Yatta",
+        "Kangundo",
+        "Matungulu",
+        "Kathiani",
+        "Mavoko",
+        "Machakos Town",
+        "Mwala"
+      ]
+    },
+    {
+      "code": 17,
+      "name": "Makueni",
+      "capital": "Wote",
+      "constituencies": [
+        "Mbooni",
+        "Kilome",
+        "Kaiti",
+        "Makueni",
+        "Kibwezi West",
+        "Kibwezi East"
+      ]
+    },
+    {
+      "code": 18,
+      "name": "Nyandarua",
+      "capital": "Ol Kalou",
+      "constituencies": [
+        "Kinangop",
+        "Kipipiri",
+        "Ol Kalou",
+        "Ol Jorok",
+        "Ndaragwa"
+      ]
+    },
+    {
+      "code": 19,
+      "name": "Nyeri",
+      "capital": "Nyeri",
+      "constituencies": [
+        "Tetu",
+        "Kieni",
+        "Mathira",
+        "Othaya",
+        "Mukurweini",
+        "Nyeri Town"
+      ]
+    },
+    {
+      "code": 20,
+      "name": "Kirinyaga",
+      "capital": "Kerugoya/Kutus",
+      "constituencies": [
+        "Mwea",
+        "Gichugu",
+        "Ndia",
+        "Kirinyaga Central"
+      ]
+    },
+    {
+      "code": 21,
+      "name": "Murang'a",
+      "capital": "Murang'a",
+      "constituencies": [
+        "Kangema",
+        "Mathioya",
+        "Kiharu",
+        "Kigumo",
+        "Maragwa",
+        "Kandara",
+        "Gatanga"
+      ]
+    },
+    {
+      "code": 22,
+      "name": "Kiambu",
+      "capital": "Kiambu",
+      "constituencies": [
+        "Gatundu South",
+        "Gatundu North",
+        "Juja",
+        "Thika Town",
+        "Ruiru",
+        "Githunguri",
+        "Kiambu",
+        "Kiambaa",
+        "Kabete",
+        "Kikuyu",
+        "Limuru",
+        "Lari"
+      ]
+    },
+    {
+      "code": 23,
+      "name": "Turkana",
+      "capital": "Lodwar",
+      "constituencies": [
+        "Turkana North",
+        "Turkana West",
+        "Turkana Central",
+        "Loima",
+        "Turkana South",
+        "Turkana East"
+      ]
+    },
+    {
+      "code": 24,
+      "name": "West Pokot",
+      "capital": "Kapenguria",
+      "constituencies": [
+        "Kacheliba",
+        "Kapenguria",
+        "Sigor",
+        "Pokot South"
+      ]
+    },
+    {
+      "code": 25,
+      "name": "Samburu",
+      "capital": "Maralal",
+      "constituencies": [
+        "Samburu West",
+        "Samburu North",
+        "Samburu East"
+      ]
+    },
+    {
+      "code": 26,
+      "name": "Trans Nzoia",
+      "capital": "Kitale",
+      "constituencies": [
+        "Kwanza",
+        "Endebess",
+        "Saboti",
+        "Kiminini",
+        "Cherangany"
+      ]
+    },
+    {
+      "code": 27,
+      "name": "Uasin Gishu",
+      "capital": "Eldoret",
+      "constituencies": [
+        "Soy",
+        "Turbo",
+        "Moiben",
+        "Ainabkoi",
+        "Kapseret",
+        "Kesses"
+      ]
+    },
+    {
+      "code": 28,
+      "name": "Elgeyo Marakwet",
+      "capital": "Iten",
+      "constituencies": [
+        "Marakwet East",
+        "Marakwet West",
+        "Keiyo North",
+        "Keiyo South"
+      ]
+    },
+    {
+      "code": 29,
+      "name": "Nandi",
+      "capital": "Kapsabet",
+      "constituencies": [
+        "Tinderet",
+        "Aldai",
+        "Nandi Hills",
+        "Chesumei",
+        "Emgwen",
+        "Mosop"
+      ]
+    },
+    {
+      "code": 30,
+      "name": "Baringo",
+      "capital": "Kabarnet",
+      "constituencies": [
+        "Tiaty",
+        "Baringo North",
+        "Baringo Central",
+        "Baringo South",
+        "Mogotio",
+        "Eldama Ravine"
+      ]
+    },
+    {
+      "code": 31,
+      "name": "Laikipia",
+      "capital": "Nanyuki",
+      "constituencies": [
+        "Laikipia West",
+        "Laikipia East",
+        "Laikipia North"
+      ]
+    },
+    {
+      "code": 32,
+      "name": "Nakuru",
+      "capital": "Nakuru",
+      "constituencies": [
+        "Molo",
+        "Njoro",
+        "Naivasha",
+        "Gilgil",
+        "Kuresoi South",
+        "Kuresoi North",
+        "Subukia",
+        "Rongai",
+        "Bahati",
+        "Nakuru Town West",
+        "Nakuru Town East"
+      ]
+    },
+    {
+      "code": 33,
+      "name": "Narok",
+      "capital": "Narok",
+      "constituencies": [
+        "Kilgoris",
+        "Emurua Dikirr",
+        "Narok North",
+        "Narok East",
+        "Narok South",
+        "Narok West"
+      ]
+    },
+    {
+      "code": 34,
+      "name": "Kajiado",
+      "capital": "Kajiado",
+      "constituencies": [
+        "Kajiado North",
+        "Kajiado Central",
+        "Kajiado East",
+        "Kajiado West",
+        "Kajiado South"
+      ]
+    },
+    {
+      "code": 35,
+      "name": "Kericho",
+      "capital": "Kericho",
+      "constituencies": [
+        "Kipkelion East",
+        "Kipkelion West",
+        "Ainamoi",
+        "Bureti",
+        "Belgut",
+        "Sigowet/Soin"
+      ]
+    },
+    {
+      "code": 36,
+      "name": "Bomet",
+      "capital": "Bomet",
+      "constituencies": [
+        "Sotik",
+        "Chepalungu",
+        "Bomet East",
+        "Bomet Central",
+        "Konoin"
+      ]
+    },
+    {
+      "code": 37,
+      "name": "Kakamega",
+      "capital": "Kakamega",
+      "constituencies": [
+        "Lugari",
+        "Likuyani",
+        "Malava",
+        "Lurambi",
+        "Navakholo",
+        "Mumias West",
+        "Mumias East",
+        "Matungu",
+        "Butere",
+        "Khwisero",
+        "Shinyalu",
+        "Ikolomani"
+      ]
+    },
+    {
+      "code": 38,
+      "name": "Vihiga",
+      "capital": "Vihiga",
+      "constituencies": [
+        "Vihiga",
+        "Sabatia",
+        "Hamisi",
+        "Luanda",
+        "Emuhaya"
+      ]
+    },
+    {
+      "code": 39,
+      "name": "Bungoma",
+      "capital": "Bungoma",
+      "constituencies": [
+        "Mount Elgon",
+        "Sirisia",
+        "Kabuchai",
+        "Bumula",
+        "Kanduyi",
+        "Webuye East",
+        "Webuye West",
+        "Kimilili",
+        "Tongaren"
+      ]
+    },
+    {
+      "code": 40,
+      "name": "Busia",
+      "capital": "Busia",
+      "constituencies": [
+        "Teso North",
+        "Teso South",
+        "Nambale",
+        "Matayos",
+        "Butula",
+        "Funyula",
+        "Budalangi"
+      ]
+    },
+    {
+      "code": 41,
+      "name": "Siaya",
+      "capital": "Siaya",
+      "constituencies": [
+        "Ugenya",
+        "Ugunja",
+        "Alego Usonga",
+        "Gem",
+        "Bondo",
+        "Rarieda"
+      ]
+    },
+    {
+      "code": 42,
+      "name": "Kisumu",
+      "capital": "Kisumu",
+      "constituencies": [
+        "Kisumu East",
+        "Kisumu West",
+        "Kisumu Central",
+        "Seme",
+        "Nyando",
+        "Muhoroni",
+        "Nyakach"
+      ]
+    },
+    {
+      "code": 43,
+      "name": "Homa Bay",
+      "capital": "Homa Bay",
+      "constituencies": [
+        "Kasipul",
+        "Kabondo Kasipul",
+        "Karachuonyo",
+        "Rangwe",
+        "Homa Bay Town",
+        "Ndhiwa",
+        "Suba North",
+        "Suba South"
+      ]
+    },
+    {
+      "code": 44,
+      "name": "Migori",
+      "capital": "Migori",
+      "constituencies": [
+        "Rongo",
+        "Awendo",
+        "Suna East",
+        "Suna West",
+        "Uriri",
+        "Nyatike",
+        "Kuria West",
+        "Kuria East"
+      ]
+    },
+    {
+      "code": 45,
+      "name": "Kisii",
+      "capital": "Kisii",
+      "constituencies": [
+        "Bonchari",
+        "South Mugirango",
+        "Bomachoge Borabu",
+        "Bobasi",
+        "Bomachoge Chache",
+        "Nyaribari Masaba",
+        "Nyaribari Chache",
+        "Kitutu Chache North",
+        "Kitutu Chache South"
+      ]
+    },
+    {
+      "code": 46,
+      "name": "Nyamira",
+      "capital": "Nyamira",
+      "constituencies": [
+        "Kitutu Masaba",
+        "West Mugirango",
+        "North Mugirango",
+        "Borabu"
+      ]
+    },
+    {
+      "code": 47,
+      "name": "Nairobi",
+      "capital": "Nairobi City",
+      "constituencies": [
+        "Westlands",
+        "Dagoretti North",
+        "Dagoretti South",
+        "Langata",
+        "Kibra",
+        "Roysambu",
+        "Kasarani",
+        "Ruaraka",
+        "Embakasi South",
+        "Embakasi North",
+        "Embakasi Central",
+        "Embakasi East",
+        "Embakasi West",
+        "Makadara",
+        "Kamukunji",
+        "Starehe",
+        "Mathare"
+      ]
+    }
+  ],
+  "total_counties": 47,
+  "total_constituencies": 290,
+  "last_updated": "2025-01-10"
+}

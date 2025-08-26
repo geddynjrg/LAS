@@ -1,0 +1,22 @@
+uuid: 0985eeae-acdd-46b5-8b40-36730125ea23
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.group_background
+id: taxonomy_term.group_background.status
+field_name: status
+entity_type: taxonomy_term
+bundle: group_background
+label: Published
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

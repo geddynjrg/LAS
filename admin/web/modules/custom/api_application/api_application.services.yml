@@ -37,3 +37,10 @@ services:
       - '@logger.factory'
       - '@file_system'
       - '@api_application.pdf_generator'
+
+  api_application.access_policy:
+    class: Drupal\api_application\AccessPolicy\ApplicationAccessPolicy
+    arguments:
+      - '@uwezo_groups.group_manager'
+    tags:
+      - { name: access_policy, priority: 100 }

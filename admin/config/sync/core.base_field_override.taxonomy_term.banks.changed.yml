@@ -1,0 +1,18 @@
+uuid: a87b1519-159a-411d-b5b4-6e91d3df33a5
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.banks
+id: taxonomy_term.banks.changed
+field_name: changed
+entity_type: taxonomy_term
+bundle: banks
+label: Changed
+description: 'The time that the term was last edited.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: changed

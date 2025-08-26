@@ -1,0 +1,18 @@
+uuid: 3eb49204-6c42-454f-a8a2-6a6823831a52
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.counties
+id: taxonomy_term.counties.changed
+field_name: changed
+entity_type: taxonomy_term
+bundle: counties
+label: Changed
+description: 'The time that the term was last edited.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: changed
