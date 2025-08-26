@@ -1,7 +1,7 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { SiteInformationDataSchema } from "./site-info-data.schema";
-import { SiteInformationMetaSchema } from "./site-info-meta.schema";
+import { SiteInformationDataSchema } from './site-info-data.schema';
+import { SiteInformationMetaSchema } from './site-info-meta.schema';
 
 export const SiteInformationResponseSchema = z.object({
   data: SiteInformationDataSchema,
@@ -16,9 +16,9 @@ export type SiteInformationResponse = z.infer<
 export {
   SiteInformationDataSchema,
   type SiteInformationData,
-} from "./site-info-data.schema";
+} from './site-info-data.schema';
 export {
   SiteInformationMetaSchema,
   type SiteInformationMeta,
-} from "./site-info-meta.schema";
-export { UsefulLinkSchema, type UsefulLink } from "./useful-link.schema";
+} from './site-info-meta.schema';
+export { UsefulLinkSchema, type UsefulLink } from './useful-link.schema';

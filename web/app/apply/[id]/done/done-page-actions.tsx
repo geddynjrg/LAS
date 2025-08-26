@@ -1,26 +1,25 @@
-"use client";
+'use client';
 
-import { IconAlertCircle, IconLoader2, IconMail } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import React, { useEffect, useRef, useState, useTransition } from "react";
-
-import { Alert } from "@workspace/ui/components/alert";
-import { Button } from "@workspace/ui/components/button";
-import { DataPair } from "@workspace/ui/components/data-pair";
+import { IconAlertCircle, IconLoader2, IconMail } from '@tabler/icons-react';
+import { Alert } from '@workspace/ui/components/alert';
+import { Button } from '@workspace/ui/components/button';
+import { DataPair } from '@workspace/ui/components/data-pair';
 // import { Label } from "@workspace/ui/components/label";
 import {
   Modal,
   ModalContent,
   ModalFooter,
   ModalTitle,
-} from "@workspace/ui/components/modal";
-import { cn } from "@workspace/ui/lib/utils";
+} from '@workspace/ui/components/modal';
+import { cn } from '@workspace/ui/lib/utils';
+import { useTranslations } from 'next-intl';
+import React, { useEffect, useRef, useState, useTransition } from 'react';
 
 import {
   checkUserEmailAction,
   getPdfBlobAction,
   sendApplicationEmailAction,
-} from "./server-actions";
+} from './server-actions';
 
 interface DonePageActionsProps {
   applicationId: string;
@@ -31,7 +30,7 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
   const [isPendingPdf, startPdfTransition] = useTransition();
   const [isPendingEmail, startEmailTransition] = useTransition();
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const [emailInput, setEmailInput] = useState("");
+  const [emailInput, setEmailInput] = useState('');
   const [userHasEmail, setUserHasEmail] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -74,12 +73,12 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
               }
 
               const blob = new Blob([bytes], {
-                type: data.mimeType || "application/pdf",
+                type: data.mimeType || 'application/pdf',
               });
 
               // Create download link
               const url = URL.createObjectURL(blob);
-              const link = document.createElement("a");
+              const link = document.createElement('a');
               link.href = url;
               link.download =
                 data.filename || `Application-${applicationId}.pdf`;
@@ -90,22 +89,22 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
               // Clean up the URL object
               URL.revokeObjectURL(url);
 
-              setSuccessMessage(t("ApplyPage.DonePage.download-success"));
+              setSuccessMessage(t('ApplyPage.DonePage.download-success'));
             } catch (decodeError) {
-              console.error("Error decoding PDF content:", decodeError);
-              setError(t("ApplyPage.DonePage.errors.download-failed"));
+              console.error('Error decoding PDF content:', decodeError);
+              setError(t('ApplyPage.DonePage.errors.download-failed'));
             }
           } else {
-            setError(t("ApplyPage.DonePage.errors.download-failed"));
+            setError(t('ApplyPage.DonePage.errors.download-failed'));
           }
         } else {
           setError(
-            response.error || t("ApplyPage.DonePage.errors.download-failed"),
+            response.error || t('ApplyPage.DonePage.errors.download-failed'),
           );
         }
       } catch (error) {
-        console.error("Error downloading PDF:", error);
-        setError(t("ApplyPage.DonePage.errors.download-failed"));
+        console.error('Error downloading PDF:', error);
+        setError(t('ApplyPage.DonePage.errors.download-failed'));
       }
     });
   };
@@ -120,18 +119,18 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
 
         if (response.success) {
           setSuccessMessage(
-            response.message || t("ApplyPage.DonePage.email.success"),
+            response.message || t('ApplyPage.DonePage.email.success'),
           );
           setIsEmailModalOpen(false);
-          setEmailInput("");
+          setEmailInput('');
         } else {
           setError(
-            response.error || t("ApplyPage.DonePage.errors.email-failed"),
+            response.error || t('ApplyPage.DonePage.errors.email-failed'),
           );
         }
       } catch (error) {
-        console.error("Error sending email:", error);
-        setError(t("ApplyPage.DonePage.errors.email-failed"));
+        console.error('Error sending email:', error);
+        setError(t('ApplyPage.DonePage.errors.email-failed'));
       }
     });
   };
@@ -163,7 +162,7 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
     setEmailInput(value);
     setError(null); // Clear any previous errors
 
-    if (value.trim() === "") {
+    if (value.trim() === '') {
       setIsEmailValid(null);
     } else {
       setIsEmailValid(validateEmail(value));
@@ -171,7 +170,7 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && emailInput.trim() && isEmailValid) {
+    if (e.key === 'Enter' && emailInput.trim() && isEmailValid) {
       e.preventDefault();
       handleModalEmailSubmit();
     }
@@ -179,13 +178,13 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
 
   const handleModalEmailSubmit = () => {
     if (!emailInput.trim()) {
-      setError(t("ApplyPage.DonePage.errors.email-required"));
+      setError(t('ApplyPage.DonePage.errors.email-required'));
       emailInputRef.current?.focus();
       return;
     }
 
     if (!validateEmail(emailInput)) {
-      setError(t("ApplyPage.DonePage.errors.invalid-email"));
+      setError(t('ApplyPage.DonePage.errors.invalid-email'));
       emailInputRef.current?.focus();
       return;
     }
@@ -210,27 +209,27 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
       )}
 
       {/* Action Buttons */}
-      <DataPair className={cn("flex w-full flex-row gap-2")}>
+      <DataPair className={cn('flex w-full flex-row gap-2')}>
         <Button
-          className={cn("grow", "w-full max-w-[27rem] px-2")}
+          className={cn('grow', 'w-full max-w-[27rem] px-2')}
           variant="secondary"
           onClick={handleDownloadPdf}
           disabled={isPendingPdf}
         >
           {isPendingPdf
-            ? t("ApplyPage.DonePage.downloading")
-            : t("ApplyPage.DonePage.download-application")}
+            ? t('ApplyPage.DonePage.downloading')
+            : t('ApplyPage.DonePage.download-application')}
         </Button>
 
         <Button
-          className={cn("grow", "w-full max-w-[27rem] whitespace-nowrap px-2")}
+          className={cn('grow', 'w-full max-w-[27rem] whitespace-nowrap px-2')}
           variant="secondary"
           onClick={handleEmailButtonClick}
           disabled={isPendingEmail}
         >
           {isPendingEmail
-            ? t("ApplyPage.DonePage.sending")
-            : t("ApplyPage.DonePage.send-to-email")}
+            ? t('ApplyPage.DonePage.sending')
+            : t('ApplyPage.DonePage.send-to-email')}
         </Button>
       </DataPair>
 
@@ -243,10 +242,10 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
             </div>
             <div>
               <ModalTitle className="typo-h3 mb-1">
-                {t("ApplyPage.DonePage.modal.title")}
+                {t('ApplyPage.DonePage.modal.title')}
               </ModalTitle>
               <p className="text-sm text-neutral-600">
-                {t("ApplyPage.DonePage.modal.description")}
+                {t('ApplyPage.DonePage.modal.description')}
               </p>
             </div>
           </div>
@@ -264,16 +263,16 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
                 value={emailInput}
                 onChange={handleEmailInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={t("ApplyPage.DonePage.modal.email-placeholder")}
+                placeholder={t('ApplyPage.DonePage.modal.email-placeholder')}
                 className={`w-full rounded-md border px-3 py-2 pr-10 transition-colors ${
                   isEmailValid === false
-                    ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                    ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200'
                     : isEmailValid === true
-                      ? "border-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-200"
-                      : "focus:border-primary focus:ring-primary/20 border-neutral-300 focus:ring-2"
+                      ? 'border-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-200'
+                      : 'focus:border-primary focus:ring-primary/20 border-neutral-300 focus:ring-2'
                 } focus:outline-none`}
                 autoComplete="email"
-                aria-describedby={error ? "email-error" : undefined}
+                aria-describedby={error ? 'email-error' : undefined}
               />
 
               {/* Validation Icon */}
@@ -326,14 +325,14 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
                     />
                   </svg>
                 </div>
-                {t("ApplyPage.DonePage.modal.valid-email")}
+                {t('ApplyPage.DonePage.modal.valid-email')}
               </div>
             )}
           </div>
 
           <div className="mt-8 border-t border-neutral-200 pt-4">
             <div className="mb-4 text-xs text-neutral-500">
-              {t("ApplyPage.DonePage.modal.privacy-note")}
+              {t('ApplyPage.DonePage.modal.privacy-note')}
             </div>
 
             <ModalFooter className="gap-3 p-0">
@@ -341,14 +340,14 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
                 variant="secondary"
                 onClick={() => {
                   setIsEmailModalOpen(false);
-                  setEmailInput("");
+                  setEmailInput('');
                   setError(null);
                   setIsEmailValid(null);
                 }}
                 disabled={isPendingEmail}
                 className="flex-1"
               >
-                {t("ApplyPage.DonePage.modal.cancel")}
+                {t('ApplyPage.DonePage.modal.cancel')}
               </Button>
               <Button
                 onClick={handleModalEmailSubmit}
@@ -361,8 +360,8 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
                   <IconLoader2 className="h-4 w-4 animate-spin" />
                 )}
                 {isPendingEmail
-                  ? t("ApplyPage.DonePage.sending")
-                  : t("ApplyPage.DonePage.modal.send")}
+                  ? t('ApplyPage.DonePage.sending')
+                  : t('ApplyPage.DonePage.modal.send')}
               </Button>
             </ModalFooter>
           </div>

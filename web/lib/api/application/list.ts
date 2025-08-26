@@ -1,11 +1,11 @@
 import {
-  ApplicationsListErrorSchema,
-  ApplicationsListResponseSchema,
   type ApplicationsListError,
+  ApplicationsListErrorSchema,
   type ApplicationsListQuery,
   type ApplicationsListResponse,
-} from "@/lib/api/schema/application/applications-list.schema";
-import { api, validate } from "@/lib/api/utils";
+  ApplicationsListResponseSchema,
+} from '@/lib/api/schema/application/applications-list.schema';
+import { api, validate } from '@/lib/api/utils';
 
 /**
  * Fetch applications from the external API
@@ -17,14 +17,14 @@ export async function getApplicationsList(
   query?: ApplicationsListQuery,
 ): Promise<ApplicationsListResponse | ApplicationsListError> {
   try {
-    const response = await api.GET("/api/v1/applications", {
+    const response = await api.GET('/api/v1/applications', {
       params: {
         query: query || {},
       },
     });
 
     if (response.error) {
-      console.error("API error:", response.response.status, response.error);
+      console.error('API error:', response.response.status, response.error);
 
       // Try to parse as ApplicationsListError
       try {
@@ -32,11 +32,11 @@ export async function getApplicationsList(
         return errorResult;
       } catch {
         return {
-          error: "api_error",
+          error: 'api_error',
           message:
             response.error?.message ||
             response.error?.error ||
-            "Unknown API error",
+            'Unknown API error',
         };
       }
     }
@@ -47,22 +47,22 @@ export async function getApplicationsList(
       return successResult;
     } catch (validationError) {
       // If validation fails, return the raw data but log the error
-      console.warn("Response validation failed:", validationError);
+      console.warn('Response validation failed:', validationError);
       return response.data as ApplicationsListResponse;
     }
   } catch (error) {
-    console.error("Error fetching applications list:", error);
+    console.error('Error fetching applications list:', error);
 
     if (error instanceof Error) {
       return {
-        error: "request_error",
+        error: 'request_error',
         message: error.message,
       };
     }
 
     return {
-      error: "unknown_error",
-      message: "An unknown error occurred while fetching applications",
+      error: 'unknown_error',
+      message: 'An unknown error occurred while fetching applications',
     };
   }
 }
@@ -80,14 +80,14 @@ export async function getApplicationsWithFallback(
     const apiResult = await getApplicationsList(query);
 
     // If API call was successful, return the data
-    if ("data" in apiResult && apiResult.data) {
+    if ('data' in apiResult && apiResult.data) {
       return apiResult;
     }
 
     // If API call failed, we'll need to fall back to local data for submitted+ applications
     // and combine with local draft applications
     console.warn(
-      "API call failed, falling back to local data only:",
+      'API call failed, falling back to local data only:',
       apiResult,
     );
 
@@ -103,7 +103,7 @@ export async function getApplicationsWithFallback(
       },
     };
   } catch (error) {
-    console.error("Error in getApplicationsWithFallback:", error);
+    console.error('Error in getApplicationsWithFallback:', error);
 
     return {
       success: false,

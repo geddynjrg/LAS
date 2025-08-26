@@ -75,7 +75,7 @@ This will place the ui components in the `packages/ui/src/components` directory.
 To use the components in your app, import them from the `ui` package.
 
 ```tsx
-import { Button } from "@workspace/ui/components/ui/button";
+import { Button } from '@workspace/ui/components/ui/button';
 ```
 
 ## Production build

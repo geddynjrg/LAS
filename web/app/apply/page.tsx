@@ -1,49 +1,47 @@
-import { IconArrowLeft, IconPinEnd } from "@tabler/icons-react";
-import { getTranslations } from "next-intl/server";
-import Image from "next/image";
-import Link from "next/link";
-import type { FC, ReactNode } from "react";
-
-import { ActionBar } from "@workspace/ui/components/action-bar";
-import { Button } from "@workspace/ui/components/button";
+import { getApplicationInstructions } from '@/lib/api/application/instruction';
+import type { DocumentRequirement } from '@/lib/api/schema/application/instruction.schema';
+import { IconArrowLeft, IconPinEnd } from '@tabler/icons-react';
+import { ActionBar } from '@workspace/ui/components/action-bar';
+import { Button } from '@workspace/ui/components/button';
 import {
   Carousel,
   CarouselContent,
   CarouselControls,
   CarouselItem,
-} from "@workspace/ui/components/carousel";
-import { Container } from "@workspace/ui/components/container";
-import { Underline } from "@workspace/ui/components/underline";
-import { ApplySideLogo } from "@workspace/ui/components/uwezo/apply-side-logo";
-
-import { getApplicationInstructions } from "@/lib/api/application/instruction";
-import type { DocumentRequirement } from "@/lib/api/schema/application/instruction.schema";
+} from '@workspace/ui/components/carousel';
+import { Container } from '@workspace/ui/components/container';
+import { Underline } from '@workspace/ui/components/underline';
+import { ApplySideLogo } from '@workspace/ui/components/uwezo/apply-side-logo';
+import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
+import Link from 'next/link';
+import type { FC, ReactNode } from 'react';
 
 // Helper function to format image filename into a readable title
 function formatImageTitle(filename: string): string {
   return (
     filename
       // Remove file extension
-      .replace(/\.[^/.]+$/, "")
+      .replace(/\.[^/.]+$/, '')
       // Replace hyphens and underscores with spaces
-      .replace(/[-_]/g, " ")
+      .replace(/[-_]/g, ' ')
       // Capitalize first letter of each word
       .replace(/\b\w/g, (char) => char.toUpperCase())
   );
 }
 
 export default async function Page() {
-  const t = await getTranslations("ApplyPage");
+  const t = await getTranslations('ApplyPage');
 
   let data;
   try {
     const instructions = await getApplicationInstructions();
     data = instructions.data;
   } catch (error) {
-    console.error("Failed to fetch application instructions:", error);
+    console.error('Failed to fetch application instructions:', error);
     // Fallback data to prevent hydration issues
     data = {
-      title: "Application Instructions",
+      title: 'Application Instructions',
       body: null,
       documents_required: [],
     };
@@ -58,9 +56,9 @@ export default async function Page() {
             variant="secondary"
             className="self-start text-neutral-700 max-md:w-full"
           >
-            <Link href={"/"}>
+            <Link href={'/'}>
               <IconArrowLeft />
-              {t("backToFrontPage")}
+              {t('backToFrontPage')}
             </Link>
           </Button>
           <h1 className="typo-h2">{data.title}</h1>
@@ -69,14 +67,14 @@ export default async function Page() {
               className="typo-body-large"
               suppressHydrationWarning
               dangerouslySetInnerHTML={{
-                __html: data.body.processed || data.body.value || "",
+                __html: data.body.processed || data.body.value || '',
               }}
             />
           )}
         </div>
       </Container>
 
-      <h1 className="typo-h3 mb-8 px-4 md:mx-auto">{t("documentsRequired")}</h1>
+      <h1 className="typo-h3 mb-8 px-4 md:mx-auto">{t('documentsRequired')}</h1>
 
       <Container className="space-y-8 px-0 pb-8 md:max-w-[600px]">
         {data.documents_required.map((document, index) => (
@@ -90,7 +88,7 @@ export default async function Page() {
 
       <ActionBar>
         <Button className="px-22 mx-auto" asChild>
-          <Link href="/apply/create">{t("beginFillingForm")}</Link>
+          <Link href="/apply/create">{t('beginFillingForm')}</Link>
         </Button>
       </ActionBar>
     </div>
@@ -114,7 +112,7 @@ const DocumentRequirementSection: FC<{
               suppressHydrationWarning
               dangerouslySetInnerHTML={{
                 __html:
-                  document.subtitle.processed || document.subtitle.value || "",
+                  document.subtitle.processed || document.subtitle.value || '',
               }}
             />
           </div>
@@ -176,7 +174,7 @@ const DocumentRequirementSection: FC<{
             <div className="mt-2 flex flex-row gap-1">
               <Link
                 href={document.link.uri}
-                className={"text-primary typo-link"}
+                className={'text-primary typo-link'}
               >
                 <Underline
                   variant="primary"

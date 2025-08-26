@@ -1,14 +1,12 @@
-import { getTranslations } from "next-intl/server";
-
-import { Container } from "@workspace/ui/components/container";
-import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
-
-import { ReviewFooter } from "@/app/apply/[id]/review/review-footer";
-import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
-import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
-import { ApplicationReviewMembers } from "@/components/application-review-members";
-import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
-import { getApplicationById } from "@/lib/data/application-db";
+import { ReviewFooter } from '@/app/apply/[id]/review/review-footer';
+import { ApplicationReviewGroupData } from '@/components/application-review-group-data';
+import { ApplicationReviewLoanConditions } from '@/components/application-review-loan-conditions';
+import { ApplicationReviewMembers } from '@/components/application-review-members';
+import { ApplicationReviewProposedBusiness } from '@/components/application-review-proposed-business';
+import { getApplicationById } from '@/lib/data/application-db';
+import { Container } from '@workspace/ui/components/container';
+import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
+import { getTranslations } from 'next-intl/server';
 
 export interface GroupDataPageProps {
   params: Promise<{ id: string }>;
@@ -32,8 +30,8 @@ export default async function Page({ params }: GroupDataPageProps) {
         <div className="mt-4 flex flex-row justify-between">
           <div>
             <p>{id}</p>
-            <h2 className="typo-h2">{t("ReviewPage.title")}</h2>
-            <p>{t("ReviewPage.subTitle")}</p>
+            <h2 className="typo-h2">{t('ReviewPage.title')}</h2>
+            <p>{t('ReviewPage.subTitle')}</p>
           </div>
         </div>
 

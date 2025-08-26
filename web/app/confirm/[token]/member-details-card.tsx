@@ -1,18 +1,16 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-
-import { Badge } from "@workspace/ui/components/badge";
-
-import type { MemberConfirmationSuccessResponse } from "@/lib/api/schema/member-confirmation.schema";
+import type { MemberConfirmationSuccessResponse } from '@/lib/api/schema/member-confirmation.schema';
+import { Badge } from '@workspace/ui/components/badge';
+import { useTranslations } from 'next-intl';
 
 interface MemberDetailsCardProps {
   memberData: MemberConfirmationSuccessResponse;
 }
 
 export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
-  const t = useTranslations("ConfirmationPage");
-  const tCommon = useTranslations("Common");
+  const t = useTranslations('ConfirmationPage');
+  const tCommon = useTranslations('Common');
 
   const { member, application } = memberData.data;
 
@@ -22,21 +20,21 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case "confirmed":
-        return "default"; // Green-ish appearance for confirmed
-      case "declined":
-        return "destructive"; // Red appearance for declined
+      case 'confirmed':
+        return 'default'; // Green-ish appearance for confirmed
+      case 'declined':
+        return 'destructive'; // Red appearance for declined
       default:
-        return "secondary"; // Gray appearance for pending/other
+        return 'secondary'; // Gray appearance for pending/other
     }
   };
 
   const getStatusLabel = (status: string) => {
     // Try to get translation, fallback to the original status if not found
     try {
-      if (status === "confirmed") return tCommon("status.confirmed");
-      if (status === "declined") return tCommon("status.declined");
-      if (status === "pending") return tCommon("status.pending");
+      if (status === 'confirmed') return tCommon('status.confirmed');
+      if (status === 'declined') return tCommon('status.declined');
+      if (status === 'pending') return tCommon('status.pending');
     } catch {
       // If translation fails, fall through to default
     }
@@ -49,12 +47,12 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
       {/* Member Information */}
       <div className="p-4">
         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-700">
-          {t("memberInformation")}
+          {t('memberInformation')}
         </h3>
 
         <div className="space-y-2">
           <div className="flex justify-between border-b border-neutral-100 pb-2">
-            <span className="text-sm text-neutral-600">{t("memberName")}:</span>
+            <span className="text-sm text-neutral-600">{t('memberName')}:</span>
             <span className="text-sm font-medium text-neutral-900">
               {member.name}
             </span>
@@ -62,7 +60,7 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
 
           <div className="flex justify-between border-b border-neutral-100 pb-2">
             <span className="text-sm text-neutral-600">
-              {t("phoneNumber")}:
+              {t('phoneNumber')}:
             </span>
             <span className="text-sm font-medium text-neutral-900">
               {member.phone_number}
@@ -71,7 +69,7 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
 
           <div className="flex justify-between border-b border-neutral-100 pb-2">
             <span className="text-sm text-neutral-600">
-              {t("currentStatus")}:
+              {t('currentStatus')}:
             </span>
             <Badge
               variant={getStatusBadgeVariant(member.confirmation_status)}
@@ -84,7 +82,7 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
           {member.confirmation_confirmed_at && (
             <div className="flex justify-between">
               <span className="text-sm text-neutral-600">
-                {t("confirmedAt")}:
+                {t('confirmedAt')}:
               </span>
               <span className="text-sm font-medium text-neutral-900">
                 {formatDate(member.confirmation_confirmed_at)}
@@ -99,14 +97,14 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
         (application.application_id || application.group_name) && (
           <div className="p-4">
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-700">
-              {t("applicationInformation")}
+              {t('applicationInformation')}
             </h3>
 
             <div className="space-y-2">
               {application.application_id && (
                 <div className="flex justify-between border-b border-neutral-100 pb-2">
                   <span className="text-sm text-neutral-600">
-                    {t("applicationId")}:
+                    {t('applicationId')}:
                   </span>
                   <span className="font-mono text-xs font-medium text-neutral-900">
                     {application.application_id}
@@ -117,7 +115,7 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
               {application.group_name && (
                 <div className="flex justify-between">
                   <span className="text-sm text-neutral-600">
-                    {t("groupName")}:
+                    {t('groupName')}:
                   </span>
                   <span className="text-sm font-medium text-neutral-900">
                     {application.group_name}

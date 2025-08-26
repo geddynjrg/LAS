@@ -1,19 +1,4 @@
-"use client";
-
-import {
-  IconAlertCircle,
-  IconCheck,
-  IconChevronDown,
-  IconChevronUp,
-  IconEye,
-  IconRefresh,
-} from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-
-import { Button } from "@workspace/ui/components/button";
-import { Currency } from "@workspace/ui/components/currency";
+'use client';
 
 import {
   AdminTable,
@@ -25,8 +10,22 @@ import {
   StatusBadge,
   TableLoadingOverlay,
   TablePagination,
-} from "@/components/admin";
-import { syncApplicationAction } from "./actions";
+} from '@/components/admin';
+import {
+  IconAlertCircle,
+  IconCheck,
+  IconChevronDown,
+  IconChevronUp,
+  IconEye,
+  IconRefresh,
+} from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
+import { Currency } from '@workspace/ui/components/currency';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useCallback, useEffect, useState } from 'react';
+
+import { syncApplicationAction } from './actions';
 
 interface Application {
   id: string;
@@ -59,12 +58,12 @@ interface ApplicationsTableProps {
 }
 
 type SortField =
-  | "applicationId"
-  | "user"
-  | "groupName"
-  | "status"
-  | "createdAt";
-type SortOrder = "asc" | "desc";
+  | 'applicationId'
+  | 'user'
+  | 'groupName'
+  | 'status'
+  | 'createdAt';
+type SortOrder = 'asc' | 'desc';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -76,14 +75,14 @@ export function ApplicationsTable({
   totalCount = 0,
   onPageChange,
 }: ApplicationsTableProps) {
-  const t = useTranslations("AdminDashboard");
+  const t = useTranslations('AdminDashboard');
   const [applications, setApplications] = useState(initialApplications);
-  const [sortField, setSortField] = useState<SortField>("createdAt");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [sortField, setSortField] = useState<SortField>('createdAt');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
   const [syncMessage, setSyncMessage] = useState<{
     applicationId: string;
-    type: "success" | "error";
+    type: 'success' | 'error';
     message: string;
   } | null>(null);
 
@@ -94,10 +93,10 @@ export function ApplicationsTable({
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortOrder("asc");
+      setSortOrder('asc');
     }
   };
 
@@ -108,7 +107,7 @@ export function ApplicationsTable({
     try {
       const result = await syncApplicationAction(applicationId);
 
-      if (result.success && "application" in result && result.application) {
+      if (result.success && 'application' in result && result.application) {
         // Update the application in the local state
         const updatedApp = result.application;
         setApplications((prev) =>
@@ -126,25 +125,25 @@ export function ApplicationsTable({
 
         setSyncMessage({
           applicationId,
-          type: "success",
-          message: "Application synced successfully",
+          type: 'success',
+          message: 'Application synced successfully',
         });
       } else {
         const errorMessage =
-          "error" in result ? result.error : "Failed to sync application";
+          'error' in result ? result.error : 'Failed to sync application';
         setSyncMessage({
           applicationId,
-          type: "error",
-          message: errorMessage || "Failed to sync application",
+          type: 'error',
+          message: errorMessage || 'Failed to sync application',
         });
       }
     } catch (error) {
-      console.error("Failed to sync application:", error);
+      console.error('Failed to sync application:', error);
       setSyncMessage({
         applicationId,
-        type: "error",
+        type: 'error',
         message:
-          error instanceof Error ? error.message : "Failed to sync application",
+          error instanceof Error ? error.message : 'Failed to sync application',
       });
     } finally {
       setSyncingIds((prev) => {
@@ -168,40 +167,40 @@ export function ApplicationsTable({
     let bValue: string | Date | null | undefined;
 
     switch (sortField) {
-      case "applicationId":
+      case 'applicationId':
         aValue = a.applicationId;
         bValue = b.applicationId;
         break;
-      case "user":
+      case 'user':
         aValue = a.user.name || a.user.email;
         bValue = b.user.name || b.user.email;
         break;
-      case "groupName":
-        aValue = a.groupData?.groupName || "";
-        bValue = b.groupData?.groupName || "";
+      case 'groupName':
+        aValue = a.groupData?.groupName || '';
+        bValue = b.groupData?.groupName || '';
         break;
-      case "status":
+      case 'status':
         aValue = a.status;
         bValue = b.status;
         break;
-      case "createdAt":
+      case 'createdAt':
         aValue = a.createdAt;
         bValue = b.createdAt;
         break;
     }
 
     // Handle null/undefined values for comparison
-    const normalizedA = aValue ?? "";
-    const normalizedB = bValue ?? "";
+    const normalizedA = aValue ?? '';
+    const normalizedB = bValue ?? '';
 
-    if (normalizedA < normalizedB) return sortOrder === "asc" ? -1 : 1;
-    if (normalizedA > normalizedB) return sortOrder === "asc" ? 1 : -1;
+    if (normalizedA < normalizedB) return sortOrder === 'asc' ? -1 : 1;
+    if (normalizedA > normalizedB) return sortOrder === 'asc' ? 1 : -1;
     return 0;
   });
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
-    return sortOrder === "asc" ? (
+    return sortOrder === 'asc' ? (
       <IconChevronUp className="h-4 w-4" />
     ) : (
       <IconChevronDown className="h-4 w-4" />
@@ -212,16 +211,16 @@ export function ApplicationsTable({
     <div className="space-y-4">
       {syncMessage && (
         <div
-          className={`rounded-lg border p-4 ${syncMessage.type === "success" ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
+          className={`rounded-lg border p-4 ${syncMessage.type === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}
         >
           <div className="flex items-center gap-2">
-            {syncMessage.type === "success" ? (
+            {syncMessage.type === 'success' ? (
               <IconCheck className="h-5 w-5 text-green-600" />
             ) : (
               <IconAlertCircle className="h-5 w-5 text-red-600" />
             )}
             <p
-              className={`text-sm font-medium ${syncMessage.type === "success" ? "text-green-800" : "text-red-800"}`}
+              className={`text-sm font-medium ${syncMessage.type === 'success' ? 'text-green-800' : 'text-red-800'}`}
             >
               {syncMessage.message}
             </p>
@@ -236,46 +235,46 @@ export function ApplicationsTable({
           <AdminTableHeader>
             <AdminTableHeaderCell
               sortable
-              onClick={() => handleSort("applicationId")}
+              onClick={() => handleSort('applicationId')}
             >
               <div className="flex items-center gap-1">
-                {t("table.applicationId")}
+                {t('table.applicationId')}
                 <SortIcon field="applicationId" />
               </div>
             </AdminTableHeaderCell>
-            <AdminTableHeaderCell sortable onClick={() => handleSort("user")}>
+            <AdminTableHeaderCell sortable onClick={() => handleSort('user')}>
               <div className="flex items-center gap-1">
-                {t("table.user")}
+                {t('table.user')}
                 <SortIcon field="user" />
               </div>
             </AdminTableHeaderCell>
             <AdminTableHeaderCell
               sortable
-              onClick={() => handleSort("groupName")}
+              onClick={() => handleSort('groupName')}
             >
               <div className="flex items-center gap-1">
-                {t("table.groupName")}
+                {t('table.groupName')}
                 <SortIcon field="groupName" />
               </div>
             </AdminTableHeaderCell>
-            <AdminTableHeaderCell>{t("table.loanAmount")}</AdminTableHeaderCell>
-            <AdminTableHeaderCell sortable onClick={() => handleSort("status")}>
+            <AdminTableHeaderCell>{t('table.loanAmount')}</AdminTableHeaderCell>
+            <AdminTableHeaderCell sortable onClick={() => handleSort('status')}>
               <div className="flex items-center gap-1">
-                {t("table.status")}
+                {t('table.status')}
                 <SortIcon field="status" />
               </div>
             </AdminTableHeaderCell>
-            <AdminTableHeaderCell>{t("table.syncStatus")}</AdminTableHeaderCell>
+            <AdminTableHeaderCell>{t('table.syncStatus')}</AdminTableHeaderCell>
             <AdminTableHeaderCell
               sortable
-              onClick={() => handleSort("createdAt")}
+              onClick={() => handleSort('createdAt')}
             >
               <div className="flex items-center gap-1">
-                {t("table.createdAt")}
+                {t('table.createdAt')}
                 <SortIcon field="createdAt" />
               </div>
             </AdminTableHeaderCell>
-            <AdminTableHeaderCell>{t("table.actions")}</AdminTableHeaderCell>
+            <AdminTableHeaderCell>{t('table.actions')}</AdminTableHeaderCell>
           </AdminTableHeader>
 
           <AdminTableBody>
@@ -298,7 +297,7 @@ export function ApplicationsTable({
                 </AdminTableCell>
                 <AdminTableCell>
                   <span className="text-sm text-gray-900">
-                    {application.groupData?.groupName || "—"}
+                    {application.groupData?.groupName || '—'}
                   </span>
                 </AdminTableCell>
                 <AdminTableCell>
@@ -327,11 +326,11 @@ export function ApplicationsTable({
                 <AdminTableCell>
                   <span className="text-sm text-gray-600">
                     {new Date(application.createdAt).toLocaleDateString(
-                      "en-US",
+                      'en-US',
                       {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
                       },
                     )}
                   </span>
@@ -358,8 +357,8 @@ export function ApplicationsTable({
                       <IconRefresh
                         className={`h-4 w-4 ${
                           syncingIds.has(application.applicationId)
-                            ? "animate-spin"
-                            : ""
+                            ? 'animate-spin'
+                            : ''
                         }`}
                       />
                     </Button>

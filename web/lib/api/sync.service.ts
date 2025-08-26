@@ -1,15 +1,14 @@
-"use server";
+'use server';
 
-import { promises as fs } from "fs";
-import path from "path";
-
-import { QueueStatus, SyncAction, SyncStatus } from "@/generated/prisma";
-import { createOrUpdateApplication } from "@/lib/api/application/create";
+import { QueueStatus, SyncAction, SyncStatus } from '@/generated/prisma';
+import { createOrUpdateApplication } from '@/lib/api/application/create';
 import type {
   ApplicationPostRequest,
   FileUpload,
-} from "@/lib/api/schema/application/application.schema";
-import { prisma } from "@/lib/db/prisma";
+} from '@/lib/api/schema/application/application.schema';
+import { prisma } from '@/lib/db/prisma';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 interface ExternalApiResponse {
   success: boolean;
@@ -48,7 +47,7 @@ export async function processSyncQueue() {
         },
       },
       orderBy: {
-        scheduledFor: "asc",
+        scheduledFor: 'asc',
       },
       take: 10,
     });
@@ -61,7 +60,7 @@ export async function processSyncQueue() {
 
     return { processed: pendingItems.length };
   } catch (error) {
-    console.error("Error processing sync queue:", error);
+    console.error('Error processing sync queue:', error);
     throw error;
   }
 }
@@ -82,7 +81,7 @@ async function processSyncItem(queueItemId: string) {
     });
 
     if (!queueItem) {
-      throw new Error("Queue item not found");
+      throw new Error('Queue item not found');
     }
 
     // Get the full application data
@@ -103,19 +102,19 @@ async function processSyncItem(queueItemId: string) {
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     let result: ExternalApiResponse;
 
     switch (queueItem.action) {
-      case "CREATE":
+      case 'CREATE':
         result = await sendApplicationToExternalApi(application);
         break;
-      case "UPDATE":
+      case 'UPDATE':
         result = await updateApplicationInExternalApi(application);
         break;
-      case "DELETE":
+      case 'DELETE':
         result = await deleteApplicationInExternalApi(
           application.applicationId,
         );
@@ -145,7 +144,7 @@ async function processSyncItem(queueItemId: string) {
         },
       });
     } else {
-      throw new Error(result.error || "Unknown error");
+      throw new Error(result.error || 'Unknown error');
     }
   } catch (error) {
     console.error(`Error processing sync item ${queueItemId}:`, error);
@@ -159,13 +158,13 @@ async function processSyncItem(queueItemId: string) {
     const attempts = queueItem.attempts + 1;
     const maxAttempts = queueItem.maxAttempts || 3;
     const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+      error instanceof Error ? error.message : 'Unknown error';
 
     // Check if this is a permanent error that shouldn't be retried
     const isPermanentError =
-      errorMessage.includes("not found") ||
-      errorMessage.includes("invalid") ||
-      errorMessage.includes("unauthorized");
+      errorMessage.includes('not found') ||
+      errorMessage.includes('invalid') ||
+      errorMessage.includes('unauthorized');
 
     if (attempts >= maxAttempts || isPermanentError) {
       // Mark as failed
@@ -227,15 +226,15 @@ async function sendApplicationToExternalApi(
     const payload = await transformApplicationForExternalApi(application);
     const result = await createOrUpdateApplication(payload);
 
-    if ("error" in result && result.error) {
-      throw new Error(result.message || result.error || "Unknown error");
+    if ('error' in result && result.error) {
+      throw new Error(result.message || result.error || 'Unknown error');
     }
 
     // Check if it's a successful response
     if (
-      "success" in result &&
+      'success' in result &&
       result.success &&
-      "data" in result &&
+      'data' in result &&
       result.data
     ) {
       return {
@@ -245,19 +244,19 @@ async function sendApplicationToExternalApi(
     }
 
     // Handle other successful responses without explicit success field
-    if ("data" in result && result.data) {
+    if ('data' in result && result.data) {
       return {
         success: true,
         id: result.data.application_id,
       };
     }
 
-    throw new Error("Unexpected response format from API");
+    throw new Error('Unexpected response format from API');
   } catch (error) {
-    console.error("Error sending application to external API:", error);
+    console.error('Error sending application to external API:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -280,15 +279,15 @@ async function updateApplicationInExternalApi(
 
     const result = await createOrUpdateApplication(payload);
 
-    if ("error" in result && result.error) {
-      throw new Error(result.message || result.error || "Unknown error");
+    if ('error' in result && result.error) {
+      throw new Error(result.message || result.error || 'Unknown error');
     }
 
     // Check if it's a successful response
     if (
-      "success" in result &&
+      'success' in result &&
       result.success &&
-      "data" in result &&
+      'data' in result &&
       result.data
     ) {
       return {
@@ -298,7 +297,7 @@ async function updateApplicationInExternalApi(
     }
 
     // Handle other successful responses without explicit success field
-    if ("data" in result && result.data) {
+    if ('data' in result && result.data) {
       return {
         success: true,
         id: result.data.application_id,
@@ -307,10 +306,10 @@ async function updateApplicationInExternalApi(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating application in external API:", error);
+    console.error('Error updating application in external API:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -342,26 +341,26 @@ async function deleteApplicationInExternalApi(
     // Update the application status to "closed" instead of deleting
     const updatedApplication = {
       ...application,
-      status: "closed" as const,
+      status: 'closed' as const,
     };
 
     const payload =
       await transformApplicationForExternalApi(updatedApplication);
     payload.application_id = application.externalId;
-    payload.status = "closed";
+    payload.status = 'closed';
 
     const result = await createOrUpdateApplication(payload);
 
-    if ("error" in result && result.error) {
-      throw new Error(result.message || result.error || "Unknown error");
+    if ('error' in result && result.error) {
+      throw new Error(result.message || result.error || 'Unknown error');
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting application from external API:", error);
+    console.error('Error deleting application from external API:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -376,12 +375,12 @@ async function transformApplicationForExternalApi(
   const readFileAsBase64 = async (filePath: string): Promise<string | null> => {
     try {
       // Construct the full path - handle both relative and absolute paths
-      const fullPath = filePath.startsWith("/uploads/")
-        ? path.join(process.cwd(), "public", filePath)
+      const fullPath = filePath.startsWith('/uploads/')
+        ? path.join(process.cwd(), 'public', filePath)
         : filePath;
 
       const fileBuffer = await fs.readFile(fullPath);
-      return fileBuffer.toString("base64");
+      return fileBuffer.toString('base64');
     } catch (error) {
       console.error(`Error reading file ${filePath}:`, error);
       return null;
@@ -393,7 +392,7 @@ async function transformApplicationForExternalApi(
     if (!file) return undefined;
 
     // If it's a JSON string, try to parse it first
-    if (typeof file === "string") {
+    if (typeof file === 'string') {
       try {
         const parsed = JSON.parse(file);
         // Recursively transform the parsed object
@@ -405,7 +404,7 @@ async function transformApplicationForExternalApi(
     }
 
     // If it's already a number (legacy format), return as is
-    if (typeof file === "number") return file;
+    if (typeof file === 'number') return file;
 
     // If it's an object with url/filename, read the file and convert to base64
     if (file.url && file.filename) {
@@ -436,7 +435,7 @@ async function transformApplicationForExternalApi(
     if (!files) return undefined;
 
     // If it's a JSON string, try to parse it first
-    if (typeof files === "string") {
+    if (typeof files === 'string') {
       try {
         const parsed = JSON.parse(files);
         // Recursively transform the parsed data
@@ -473,7 +472,7 @@ async function transformApplicationForExternalApi(
     // If it's an array, return only the first file
     if (Array.isArray(result)) {
       console.warn(
-        "Multiple files provided where only one is expected. Using the first file.",
+        'Multiple files provided where only one is expected. Using the first file.',
       );
       return result[0];
     }
@@ -481,53 +480,53 @@ async function transformApplicationForExternalApi(
   };
 
   // Map status values
-  const mapStatus = (status: string): ApplicationPostRequest["status"] => {
-    const statusMap: Record<string, ApplicationPostRequest["status"]> = {
-      UNSUBMITTED: "draft",
-      DRAFT: "draft",
-      SUBMITTED: "submitted",
-      PENDING: "submitted",
-      IN_REVIEW: "under_review",
-      APPROVED: "approved",
-      REJECTED: "rejected",
-      DISBURSED: "disbursed",
-      CLOSED: "closed",
+  const mapStatus = (status: string): ApplicationPostRequest['status'] => {
+    const statusMap: Record<string, ApplicationPostRequest['status']> = {
+      UNSUBMITTED: 'draft',
+      DRAFT: 'draft',
+      SUBMITTED: 'submitted',
+      PENDING: 'submitted',
+      IN_REVIEW: 'under_review',
+      APPROVED: 'approved',
+      REJECTED: 'rejected',
+      DISBURSED: 'disbursed',
+      CLOSED: 'closed',
     };
-    return statusMap[status] || "draft";
+    return statusMap[status] || 'draft';
   };
 
   // Map gender values
-  const mapGender = (gender: string): "male" | "female" | "other" => {
-    const genderMap: Record<string, "male" | "female" | "other"> = {
-      Male: "male",
-      Female: "female",
-      Other: "other",
+  const mapGender = (gender: string): 'male' | 'female' | 'other' => {
+    const genderMap: Record<string, 'male' | 'female' | 'other'> = {
+      Male: 'male',
+      Female: 'female',
+      Other: 'other',
     };
     return (
-      genderMap[gender] || (gender.toLowerCase() as "male" | "female" | "other")
+      genderMap[gender] || (gender.toLowerCase() as 'male' | 'female' | 'other')
     );
   };
 
   // Map nature of business
   const mapNatureOfBusiness = (
     nature: string,
-  ): "startup" | "expansion" | undefined => {
+  ): 'startup' | 'expansion' | undefined => {
     if (!nature) return undefined;
-    const natureMap: Record<string, "startup" | "expansion"> = {
-      "Start-up": "startup",
-      Expansion: "expansion",
+    const natureMap: Record<string, 'startup' | 'expansion'> = {
+      'Start-up': 'startup',
+      Expansion: 'expansion',
     };
     return (
-      natureMap[nature] || (nature.toLowerCase() as "startup" | "expansion")
+      natureMap[nature] || (nature.toLowerCase() as 'startup' | 'expansion')
     );
   };
 
   // Format date
   const formatDate = (date: any): string => {
-    if (!date) return new Date().toISOString().split("T")[0]!;
-    if (date instanceof Date) return date.toISOString().split("T")[0]!;
-    if (typeof date === "string") return date;
-    return new Date().toISOString().split("T")[0]!;
+    if (!date) return new Date().toISOString().split('T')[0]!;
+    if (date instanceof Date) return date.toISOString().split('T')[0]!;
+    if (typeof date === 'string') return date;
+    return new Date().toISOString().split('T')[0]!;
   };
 
   // Extract value from array or single value
@@ -535,7 +534,7 @@ async function transformApplicationForExternalApi(
     if (!value) return undefined;
 
     // If it's a string, try to parse as JSON first
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       try {
         const parsed = JSON.parse(value);
         // If parsed successfully, recursively extract value from parsed data
@@ -546,11 +545,11 @@ async function transformApplicationForExternalApi(
       }
     }
 
-    if (typeof value === "number") return value;
+    if (typeof value === 'number') return value;
 
     if (Array.isArray(value) && value.length > 0) {
       const firstItem = value[0];
-      if (typeof firstItem === "object" && firstItem !== null) {
+      if (typeof firstItem === 'object' && firstItem !== null) {
         return (
           firstItem.name ||
           firstItem.label ||
@@ -562,7 +561,7 @@ async function transformApplicationForExternalApi(
       return firstItem;
     }
 
-    if (typeof value === "object" && value !== null) {
+    if (typeof value === 'object' && value !== null) {
       return value.name || value.label || value.value || value.id || value.tid;
     }
 
@@ -572,13 +571,13 @@ async function transformApplicationForExternalApi(
   // Transform key activities
   const transformKeyActivities = (
     activities: any,
-  ): ("value_chain" | "table_banking" | "other")[] | undefined => {
+  ): ('value_chain' | 'table_banking' | 'other')[] | undefined => {
     if (!activities) return undefined;
 
     let activitiesArray: any[] = [];
 
     // Handle JSON string parsing
-    if (typeof activities === "string") {
+    if (typeof activities === 'string') {
       try {
         const parsed = JSON.parse(activities);
         activitiesArray = Array.isArray(parsed) ? parsed : [parsed];
@@ -595,20 +594,20 @@ async function transformApplicationForExternalApi(
 
     return activitiesArray
       .map((activity) => {
-        if (typeof activity === "string") {
+        if (typeof activity === 'string') {
           const activityMap: Record<
             string,
-            "value_chain" | "table_banking" | "other"
+            'value_chain' | 'table_banking' | 'other'
           > = {
-            "Value chain": "value_chain",
-            "Table banking": "table_banking",
-            Other: "other",
+            'Value chain': 'value_chain',
+            'Table banking': 'table_banking',
+            Other: 'other',
           };
-          return activityMap[activity] || "other";
+          return activityMap[activity] || 'other';
         }
-        return "other";
+        return 'other';
       })
-      .filter(Boolean) as ("value_chain" | "table_banking" | "other")[];
+      .filter(Boolean) as ('value_chain' | 'table_banking' | 'other')[];
   };
 
   // Clean null values
@@ -624,7 +623,7 @@ async function transformApplicationForExternalApi(
     if (Array.isArray(value)) return value;
 
     // If it's a string, try to parse it as JSON
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       try {
         const parsed = JSON.parse(value);
         // If parsed result is an array, return it
@@ -655,10 +654,10 @@ async function transformApplicationForExternalApi(
   // Transform member files
   const transformedMembers = await Promise.all(
     (application.members || []).map(async (member: any) => ({
-      name: member.fullname || "",
-      id_number: member.nationalIdCode || "",
+      name: member.fullname || '',
+      id_number: member.nationalIdCode || '',
       gender: mapGender(member.gender),
-      phone_number: member.phoneNumber || "",
+      phone_number: member.phoneNumber || '',
       position: extractValue(member.type),
       photo_member_id: await transformSingleFile(member.photoOfId),
       person_with_disability: !!member.certificateOfDisability,
@@ -674,13 +673,13 @@ async function transformApplicationForExternalApi(
     application_id: application.applicationId,
     identifier_type: application.user.identifierType,
     owner_identifier: application.user.email || application.user.name,
-    phone_number: application.user.phoneNumber || "",
+    phone_number: application.user.phoneNumber || '',
     status: mapStatus(application.status),
 
     // Group data
-    group_name: application.groupData?.groupName || "",
+    group_name: application.groupData?.groupName || '',
     group_registration_number:
-      application.groupData?.groupRegistrationNumber || "",
+      application.groupData?.groupRegistrationNumber || '',
     date_registered: formatDate(application.groupData?.dateFormed),
     group_registration_certificate: groupRegistrationCertificate,
     list_of_members_certificate: listOfMembersOnCertificate,
@@ -713,9 +712,9 @@ async function transformApplicationForExternalApi(
     // Location
     county: extractValue(application.groupData?.countyOfOperation),
     constituency: extractValue(application.groupData?.constituency),
-    ward: application.groupData?.ward || "",
-    meeting_point: application.groupData?.meetingPoint || "",
-    nearest_landmark: application.groupData?.nearestLandmark || "",
+    ward: application.groupData?.ward || '',
+    meeting_point: application.groupData?.meetingPoint || '',
+    nearest_landmark: application.groupData?.nearestLandmark || '',
     nature_of_group: application.members?.[0]?.natureOfTheGroup,
 
     // Members
@@ -729,7 +728,7 @@ async function transformApplicationForExternalApi(
     loan_amount: application.loanConditions?.loanAmount,
     proposed_repayment_period: application.loanConditions?.repaymentPeriod,
     bank_name: extractValue(
-      application.loanConditions?.bankName === "Other"
+      application.loanConditions?.bankName === 'Other'
         ? application.loanConditions?.bankNameOther
         : application.loanConditions?.bankName,
     ),
@@ -756,8 +755,8 @@ async function transformApplicationForExternalApi(
                 // Convert expense name to a valid field name (snake_case, no spaces)
                 const fieldName = expense.name
                   .toLowerCase()
-                  .replace(/\s+/g, "_")
-                  .replace(/[^a-z0-9_]/g, "");
+                  .replace(/\s+/g, '_')
+                  .replace(/[^a-z0-9_]/g, '');
                 acc[fieldName] = expense.amount;
                 return acc;
               },
@@ -790,7 +789,7 @@ export async function syncApplication(applicationId: string) {
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if there's already a pending sync for this application
@@ -812,7 +811,7 @@ export async function syncApplication(applicationId: string) {
       if (existingQueueItem.status === QueueStatus.PROCESSING) {
         return {
           success: true,
-          message: "Application is currently being synced",
+          message: 'Application is currently being synced',
         };
       }
 
@@ -836,7 +835,7 @@ export async function syncApplication(applicationId: string) {
           status: QueueStatus.FAILED,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       });
 
@@ -877,10 +876,10 @@ export async function syncApplication(applicationId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error syncing application:", error);
+    console.error('Error syncing application:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -952,8 +951,8 @@ export async function addToSyncQueue(
  */
 export async function getSyncQueueItems(
   filters?: QueueFilters,
-  page: number = 1,
-  pageSize: number = 20,
+  page = 1,
+  pageSize = 20,
 ) {
   try {
     const where: any = {};
@@ -988,9 +987,9 @@ export async function getSyncQueueItems(
     const items = await prisma.syncQueue.findMany({
       where,
       orderBy: [
-        { status: "asc" },
-        { scheduledFor: "asc" },
-        { createdAt: "desc" },
+        { status: 'asc' },
+        { scheduledFor: 'asc' },
+        { createdAt: 'desc' },
       ],
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -1036,7 +1035,7 @@ export async function getSyncQueueItems(
       },
     };
   } catch (error) {
-    console.error("Error fetching sync queue items:", error);
+    console.error('Error fetching sync queue items:', error);
     throw error;
   }
 }
@@ -1048,7 +1047,7 @@ export async function getSyncQueueStatistics(): Promise<QueueStatistics> {
   try {
     // Get counts by status
     const statusCounts = await prisma.syncQueue.groupBy({
-      by: ["status"],
+      by: ['status'],
       _count: true,
     });
 
@@ -1062,7 +1061,7 @@ export async function getSyncQueueStatistics(): Promise<QueueStatistics> {
 
     // Get counts by action
     const actionCounts = await prisma.syncQueue.groupBy({
-      by: ["action"],
+      by: ['action'],
       _count: true,
     });
 
@@ -1107,7 +1106,7 @@ export async function getSyncQueueStatistics(): Promise<QueueStatistics> {
     // Get oldest pending item
     const oldestPending = await prisma.syncQueue.findFirst({
       where: { status: QueueStatus.PENDING },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
       select: { createdAt: true },
     });
 
@@ -1120,7 +1119,7 @@ export async function getSyncQueueStatistics(): Promise<QueueStatistics> {
       oldestPending: oldestPending?.createdAt,
     };
   } catch (error) {
-    console.error("Error getting sync queue statistics:", error);
+    console.error('Error getting sync queue statistics:', error);
     throw error;
   }
 }
@@ -1135,15 +1134,15 @@ export async function processQueueItem(queueItemId: string) {
     });
 
     if (!queueItem) {
-      throw new Error("Queue item not found");
+      throw new Error('Queue item not found');
     }
 
     if (queueItem.status === QueueStatus.PROCESSING) {
-      throw new Error("Item is already being processed");
+      throw new Error('Item is already being processed');
     }
 
     if (queueItem.status === QueueStatus.COMPLETED) {
-      throw new Error("Item has already been completed");
+      throw new Error('Item has already been completed');
     }
 
     // Process the item
@@ -1157,7 +1156,7 @@ export async function processQueueItem(queueItemId: string) {
     );
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -1172,11 +1171,11 @@ export async function releaseQueueItem(queueItemId: string) {
     });
 
     if (!queueItem) {
-      throw new Error("Queue item not found");
+      throw new Error('Queue item not found');
     }
 
     if (queueItem.status !== QueueStatus.PROCESSING) {
-      throw new Error("Item is not in processing state");
+      throw new Error('Item is not in processing state');
     }
 
     // Check if it's been processing for too long (e.g., > 5 minutes)
@@ -1195,7 +1194,7 @@ export async function releaseQueueItem(queueItemId: string) {
       data: {
         status: QueueStatus.PENDING,
         scheduledFor: new Date(),
-        error: "Released from stuck processing state",
+        error: 'Released from stuck processing state',
       },
     });
 
@@ -1204,7 +1203,7 @@ export async function releaseQueueItem(queueItemId: string) {
     console.error(`Error releasing queue item ${queueItemId}:`, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -1219,11 +1218,11 @@ export async function retryQueueItem(queueItemId: string) {
     });
 
     if (!queueItem) {
-      throw new Error("Queue item not found");
+      throw new Error('Queue item not found');
     }
 
     if (queueItem.status !== QueueStatus.FAILED) {
-      throw new Error("Only failed items can be retried");
+      throw new Error('Only failed items can be retried');
     }
 
     await prisma.syncQueue.update({
@@ -1251,7 +1250,7 @@ export async function retryQueueItem(queueItemId: string) {
     console.error(`Error retrying queue item ${queueItemId}:`, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -1266,22 +1265,22 @@ export async function cancelQueueItem(queueItemId: string) {
     });
 
     if (!queueItem) {
-      throw new Error("Queue item not found");
+      throw new Error('Queue item not found');
     }
 
     if (queueItem.status === QueueStatus.COMPLETED) {
-      throw new Error("Cannot cancel completed items");
+      throw new Error('Cannot cancel completed items');
     }
 
     if (queueItem.status === QueueStatus.PROCESSING) {
-      throw new Error("Cannot cancel items that are currently processing");
+      throw new Error('Cannot cancel items that are currently processing');
     }
 
     await prisma.syncQueue.update({
       where: { id: queueItemId },
       data: {
         status: QueueStatus.FAILED,
-        error: "Cancelled by admin",
+        error: 'Cancelled by admin',
         processedAt: new Date(),
       },
     });
@@ -1291,7 +1290,7 @@ export async function cancelQueueItem(queueItemId: string) {
       where: { applicationId: queueItem.applicationId },
       data: {
         syncStatus: SyncStatus.FAILED,
-        syncError: "Sync cancelled by admin",
+        syncError: 'Sync cancelled by admin',
       },
     });
 
@@ -1300,7 +1299,7 @@ export async function cancelQueueItem(queueItemId: string) {
     console.error(`Error cancelling queue item ${queueItemId}:`, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -1352,10 +1351,10 @@ export async function retryAllFailedItems() {
       count: result.count,
     };
   } catch (error) {
-    console.error("Error retrying all failed items:", error);
+    console.error('Error retrying all failed items:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }

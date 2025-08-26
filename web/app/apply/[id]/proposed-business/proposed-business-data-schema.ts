@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const customExpenseSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   amount: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Common.mustBeValidNumber")
+    .regex(/^\d+$/, 'Common.mustBeValidNumber')
     .transform((val) => Number(val)),
 });
 
@@ -22,45 +22,45 @@ export const proposedBusinessFormSchema = z.object({
     (v) =>
       Array.isArray(v)
         ? v
-        : typeof v === "string"
-          ? v.split(",").filter(Boolean)
+        : typeof v === 'string'
+          ? v.split(',').filter(Boolean)
           : [],
     z.array(z.string()).min(1),
   ),
   yearsInBusiness: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Common.mustBeValidNumber")
+    .regex(/^\d+$/, 'Common.mustBeValidNumber')
     .transform((val) => Number(val)),
 
   averageIncome: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Common.mustBeValidNumber")
+    .regex(/^\d+$/, 'Common.mustBeValidNumber')
     .transform((val) => Number(val)),
 
   costOfGoods: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Common.mustBeValidNumber")
+    .regex(/^\d+$/, 'Common.mustBeValidNumber')
     .transform((val) => Number(val)),
 
   rentForBusiness: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Common.mustBeValidNumber")
+    .regex(/^\d+$/, 'Common.mustBeValidNumber')
     .transform((val) => Number(val)),
 
   salaries: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Common.mustBeValidNumber")
+    .regex(/^\d+$/, 'Common.mustBeValidNumber')
     .transform((val) => Number(val)),
 
   transportForBusinessStock: z
     .string()
     .nonempty()
-    .regex(/^\d+$/, "Common.mustBeValidNumber")
+    .regex(/^\d+$/, 'Common.mustBeValidNumber')
     .transform((val) => Number(val)),
 });
 

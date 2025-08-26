@@ -1,5 +1,5 @@
-import { PasswordResetResponseSchema } from "@/lib/api/schema/response/auth-response.schema";
-import { api, validate } from "@/lib/api/utils";
+import { PasswordResetResponseSchema } from '@/lib/api/schema/response/auth-response.schema';
+import { api, validate } from '@/lib/api/utils';
 
 export async function passwordReset(data: {
   uid: string;
@@ -7,7 +7,7 @@ export async function passwordReset(data: {
   hash: string;
   new_password: string;
 }) {
-  const res = await api.POST("/api/v1/user/password/reset", {
+  const res = await api.POST('/api/v1/user/password/reset', {
     body: {
       uid: data.uid,
       timestamp: data.timestamp,

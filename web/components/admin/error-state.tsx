@@ -1,6 +1,5 @@
-import { IconAlertCircle } from "@tabler/icons-react";
-
-import { Container } from "@workspace/ui/components/container";
+import { IconAlertCircle } from '@tabler/icons-react';
+import { Container } from '@workspace/ui/components/container';
 
 interface ErrorStateProps {
   title?: string;
@@ -10,10 +9,10 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = "Error",
+  title = 'Error',
   message,
   onRetry,
-  retryLabel = "Retry",
+  retryLabel = 'Retry',
 }: ErrorStateProps) {
   return (
     <Container className="py-8">

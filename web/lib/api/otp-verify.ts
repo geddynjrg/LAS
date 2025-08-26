@@ -1,5 +1,5 @@
-import { getTranslations } from "next-intl/server";
-import { z } from "zod";
+import { getTranslations } from 'next-intl/server';
+import { z } from 'zod';
 
 const OtpVerifyResponseSchema = z.object({
   success: z.boolean(),
@@ -21,27 +21,27 @@ export async function verifyOtp(data: {
   request_id: string;
   otp_code: string;
 }) {
-  const t = await getTranslations("LoginPage");
+  const t = await getTranslations('LoginPage');
 
   // Use direct fetch to avoid authentication headers for login endpoints
   const apiUrl = process.env.API_URL;
   if (!apiUrl) {
-    throw new Error("API_URL environment variable is required");
+    throw new Error('API_URL environment variable is required');
   }
-  const OTP_VERIFY = `${apiUrl.replace(/\/$/, "")}/api/auth/otp/verify`;
+  const OTP_VERIFY = `${apiUrl.replace(/\/$/, '')}/api/auth/otp/verify`;
 
   let response: Response;
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     // In development, temporarily set the environment variable for this specific request
     const originalValue = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
     try {
       response = await fetch(OTP_VERIFY, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           request_id: data.request_id,
@@ -58,9 +58,9 @@ export async function verifyOtp(data: {
     }
   } else {
     response = await fetch(OTP_VERIFY, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         request_id: data.request_id,
@@ -71,15 +71,15 @@ export async function verifyOtp(data: {
 
   if (!response.ok) {
     if (response.status === 400) {
-      throw new Error(t("invalidOtpFormat"));
+      throw new Error(t('invalidOtpFormat'));
     }
     if (response.status === 401) {
-      throw new Error(t("invalidOrExpiredOtp"));
+      throw new Error(t('invalidOrExpiredOtp'));
     }
     if (response.status === 429) {
-      throw new Error(t("tooManyVerificationAttempts"));
+      throw new Error(t('tooManyVerificationAttempts'));
     }
-    throw new Error(t("otpVerificationFailed"));
+    throw new Error(t('otpVerificationFailed'));
   }
 
   const responseData = await response.json();
@@ -87,7 +87,7 @@ export async function verifyOtp(data: {
 
   if (!validation.success) {
     console.warn(
-      "[OTP Verify] Response Schema Error:",
+      '[OTP Verify] Response Schema Error:',
       validation.error.toString(),
       responseData,
     );

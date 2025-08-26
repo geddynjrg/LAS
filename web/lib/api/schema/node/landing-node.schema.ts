@@ -1,13 +1,12 @@
-import { z } from "zod";
-
-import { DescriptionSchema } from "@/lib/api/schema/description.schema";
-import { AvailableLanguagesSchema } from "@/lib/api/schema/language-availability.schema";
-import { BlockSchema } from "@/lib/api/types";
+import { DescriptionSchema } from '@/lib/api/schema/description.schema';
+import { AvailableLanguagesSchema } from '@/lib/api/schema/language-availability.schema';
+import { BlockSchema } from '@/lib/api/types';
+import { z } from 'zod';
 
 export const LandingNodeSchema = z.object({
   data: z.object({
     id: z.string(),
-    type: z.literal("landing"),
+    type: z.literal('landing'),
     uuid: z.string(),
     title: z.string(),
     language: z

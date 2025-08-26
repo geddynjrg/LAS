@@ -1,13 +1,14 @@
-import { getTranslations } from "next-intl/server";
-
-import { Container } from "@workspace/ui/components/container";
-import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
-
-import { groupDataAction } from "@/app/apply/[id]/group-data/group-data-action";
-import { GroupDataForm } from "@/app/apply/[id]/group-data/group-data-form";
-import { getCountyOptions, getConstituencyOptions } from "@/lib/api/counties.service";
-import { getFormFieldOptions } from "@/lib/api/taxonomy.service";
-import { getApplicationById } from "@/lib/data/application-db";
+import { groupDataAction } from '@/app/apply/[id]/group-data/group-data-action';
+import { GroupDataForm } from '@/app/apply/[id]/group-data/group-data-form';
+import {
+  getConstituencyOptions,
+  getCountyOptions,
+} from '@/lib/api/counties.service';
+import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
+import { getApplicationById } from '@/lib/data/application-db';
+import { Container } from '@workspace/ui/components/container';
+import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
+import { getTranslations } from 'next-intl/server';
 
 export interface GroupDataPageProps {
   params: Promise<{ id: string }>;
@@ -27,11 +28,11 @@ export default async function Page({ params }: GroupDataPageProps) {
     groupActivitiesOptions,
   ] = await Promise.all([
     getApplicationById(id),
-    getFormFieldOptions("purposeOfTheGroup"),
-    getFormFieldOptions("valueChain"),
+    getFormFieldOptions('purposeOfTheGroup'),
+    getFormFieldOptions('valueChain'),
     getCountyOptions(),
     getConstituencyOptions(),
-    getFormFieldOptions("keyActivitiesOfTheGroup"),
+    getFormFieldOptions('keyActivitiesOfTheGroup'),
   ]);
 
   const taxonomyOptions = {
@@ -49,7 +50,7 @@ export default async function Page({ params }: GroupDataPageProps) {
           <div>
             <p>{id}</p>
             <h2 className="typo-h2">
-              {t("ApplicationDetailsPage.groupData.groupData")}
+              {t('ApplicationDetailsPage.groupData.groupData')}
             </h2>
           </div>
         </div>

@@ -1,11 +1,9 @@
-"use client";
+'use client';
 
-import { ThemeProvider as NextThemesProvider } from "next-themes";
-import * as React from "react";
-
-import { SidebarProvider } from "@workspace/ui/components/sidebar";
-
-import { SessionProvider } from "@/hooks/useSession";
+import { SessionProvider } from '@/hooks/useSession';
+import { SidebarProvider } from '@workspace/ui/components/sidebar';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import * as React from 'react';
 
 export function Providers({
   children,

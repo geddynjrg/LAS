@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-
-import { processSyncQueue } from "@/lib/api/sync.service";
-import { prisma } from "@/lib/db/prisma";
+import { processSyncQueue } from '@/lib/api/sync.service';
+import { prisma } from '@/lib/db/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface CronLogEntry {
   timestamp: Date;
   processed: number;
   duration: number;
   errors?: string[];
-  status: "success" | "partial" | "failed";
+  status: 'success' | 'partial' | 'failed';
 }
 
 export async function GET(request: NextRequest) {
@@ -17,25 +16,25 @@ export async function GET(request: NextRequest) {
     timestamp: new Date(),
     processed: 0,
     duration: 0,
-    status: "success",
+    status: 'success',
   };
 
   try {
     // Verify cron secret for security
-    const authHeader = request.headers.get("authorization");
+    const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
 
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      console.error("[CRON] Unauthorized access attempt");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      console.error('[CRON] Unauthorized access attempt');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log("[CRON] Starting sync job at", new Date().toISOString());
+    console.log('[CRON] Starting sync job at', new Date().toISOString());
 
     // Check for stuck items (processing for too long)
     const stuckItems = await prisma.syncQueue.count({
       where: {
-        status: "PROCESSING",
+        status: 'PROCESSING',
         updatedAt: {
           lt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes
         },
@@ -49,14 +48,14 @@ export async function GET(request: NextRequest) {
       // Reset stuck items to pending
       await prisma.syncQueue.updateMany({
         where: {
-          status: "PROCESSING",
+          status: 'PROCESSING',
           updatedAt: {
             lt: new Date(Date.now() - 10 * 60 * 1000),
           },
         },
         data: {
-          status: "PENDING",
-          error: "Reset from stuck processing state by cron job",
+          status: 'PENDING',
+          error: 'Reset from stuck processing state by cron job',
         },
       });
     }
@@ -67,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     // Get queue statistics
     const stats = await prisma.syncQueue.groupBy({
-      by: ["status"],
+      by: ['status'],
       _count: true,
     });
 
@@ -82,7 +81,7 @@ export async function GET(request: NextRequest) {
     const duration = Date.now() - startTime;
     logEntry.duration = duration;
 
-    console.log("[CRON] Sync job completed:", {
+    console.log('[CRON] Sync job completed:', {
       processed: result.processed,
       duration: `${duration}ms`,
       queueStatus: statusCounts,
@@ -91,14 +90,14 @@ export async function GET(request: NextRequest) {
     // Check if there are failed items
     const failedCount = statusCounts.FAILED || 0;
     if (failedCount > 0) {
-      logEntry.status = "partial";
+      logEntry.status = 'partial';
       console.warn(`[CRON] ${failedCount} items in failed state`);
     }
 
     // Store cron run log (optional - you could save this to a database)
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === 'production') {
       // You could store this in a CronLog table for monitoring
-      console.log("[CRON] Run log:", JSON.stringify(logEntry));
+      console.log('[CRON] Run log:', JSON.stringify(logEntry));
     }
 
     return NextResponse.json({
@@ -111,19 +110,19 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     const duration = Date.now() - startTime;
-    logEntry.status = "failed";
+    logEntry.status = 'failed';
     logEntry.duration = duration;
     logEntry.errors = [
-      error instanceof Error ? error.message : "Unknown error",
+      error instanceof Error ? error.message : 'Unknown error',
     ];
 
-    console.error("[CRON] Error in sync cron job:", error);
+    console.error('[CRON] Error in sync cron job:', error);
 
     // Send alert (you could integrate with monitoring services)
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === 'production') {
       // Example: Send to monitoring service
-      console.error("[CRON] CRITICAL: Sync job failed", {
-        error: error instanceof Error ? error.message : "Unknown error",
+      console.error('[CRON] CRITICAL: Sync job failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
       });
     }
@@ -131,7 +130,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: error instanceof Error ? error.message : 'Unknown error',
         duration,
         timestamp: new Date().toISOString(),
       },

@@ -1,8 +1,7 @@
-import { z } from "zod";
-
-import { DescriptionSchema } from "@/lib/api/schema/description.schema";
-import { AvailableLanguagesSchema } from "@/lib/api/schema/language-availability.schema";
-import { LanguageSchema } from "@/lib/api/schema/language.schema";
+import { DescriptionSchema } from '@/lib/api/schema/description.schema';
+import { AvailableLanguagesSchema } from '@/lib/api/schema/language-availability.schema';
+import { LanguageSchema } from '@/lib/api/schema/language.schema';
+import { z } from 'zod';
 
 // Schema for example images
 export const ExampleImageSchema = z.object({

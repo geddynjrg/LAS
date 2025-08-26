@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const SiteInformationMetaSchema = z.object({
   timestamp: z.number(),
@@ -11,7 +11,7 @@ export const SiteInformationMetaSchema = z.object({
       z.object({
         langcode: z.string().optional(),
         name: z.string().optional(),
-        direction: z.enum(["ltr", "rtl"]).optional(),
+        direction: z.enum(['ltr', 'rtl']).optional(),
       }),
     ),
   }),

@@ -1,6 +1,5 @@
-import { z } from "zod";
-
-import { loanTypeValues } from "@/lib/constants";
+import { loanTypeValues } from '@/lib/constants';
+import { z } from 'zod';
 
 export const loanConditionsDataSchema = z
   .object({
@@ -8,8 +7,8 @@ export const loanConditionsDataSchema = z
       (v) =>
         Array.isArray(v)
           ? v
-          : typeof v === "string"
-            ? v.split(",").filter(Boolean)
+          : typeof v === 'string'
+            ? v.split(',').filter(Boolean)
             : [],
       z.array(z.string()).min(1),
     ),
@@ -17,15 +16,15 @@ export const loanConditionsDataSchema = z
     loanAmount: z
       .string()
       .nonempty()
-      .transform((value) => value.replace(/[\s,]+/g, ""))
+      .transform((value) => value.replace(/[\s,]+/g, ''))
       .pipe(
         z
           .string()
-          .regex(/^-?\d+(\.\d+)?$/, "Common.mustBeValidNumber") // ensures only numbers
+          .regex(/^-?\d+(\.\d+)?$/, 'Common.mustBeValidNumber') // ensures only numbers
           .transform((val) => Number(val))
           .refine(
             (val) => val > 0,
-            "ApplicationDetailsPage.loan.invalidLoanAmount",
+            'ApplicationDetailsPage.loan.invalidLoanAmount',
           ),
       ),
     repaymentPeriod: z.coerce.number().min(1).max(12),
@@ -42,8 +41,8 @@ export const loanConditionsDataSchema = z
         if (data.loanAmount > loanTypeValues.Endeleza.maxLoanAmount) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            path: ["loanAmount"],
-            message: "ApplicationDetailsPage.loan.maximumLoan",
+            path: ['loanAmount'],
+            message: 'ApplicationDetailsPage.loan.maximumLoan',
             params: { count: loanTypeValues.Endeleza.maxLoanAmount },
           });
         }
@@ -53,8 +52,8 @@ export const loanConditionsDataSchema = z
         if (data.loanAmount > loanTypeValues.Wezesha.maxLoanAmount) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            path: ["loanAmount"],
-            message: "ApplicationDetailsPage.loan.maximumLoan",
+            path: ['loanAmount'],
+            message: 'ApplicationDetailsPage.loan.maximumLoan',
             params: { count: loanTypeValues.Wezesha.maxLoanAmount },
           });
         }

@@ -1,8 +1,8 @@
-import { processSyncQueue } from "@/lib/api/sync.service";
-import { prisma } from "@/lib/db/prisma";
+import { processSyncQueue } from '@/lib/api/sync.service';
+import { prisma } from '@/lib/db/prisma';
 
 const SYNC_INTERVAL_MINUTES = parseInt(
-  process.env.SYNC_INTERVAL_MINUTES || "5",
+  process.env.SYNC_INTERVAL_MINUTES || '5',
   10,
 );
 
@@ -25,12 +25,12 @@ class SyncWorker {
     );
 
     // Handle graceful shutdown
-    process.on("SIGTERM", () => this.stop());
-    process.on("SIGINT", () => this.stop());
+    process.on('SIGTERM', () => this.stop());
+    process.on('SIGINT', () => this.stop());
   }
 
   async stop() {
-    console.log("[SyncWorker] Stopping sync worker...");
+    console.log('[SyncWorker] Stopping sync worker...');
 
     if (this.interval) {
       clearInterval(this.interval);
@@ -43,13 +43,13 @@ class SyncWorker {
     }
 
     await prisma.$disconnect();
-    console.log("[SyncWorker] Sync worker stopped");
+    console.log('[SyncWorker] Sync worker stopped');
     process.exit(0);
   }
 
   private async processQueue() {
     if (this.isProcessing) {
-      console.log("[SyncWorker] Already processing, skipping this run");
+      console.log('[SyncWorker] Already processing, skipping this run');
       return;
     }
 
@@ -64,7 +64,7 @@ class SyncWorker {
       // Check for stuck items first
       const stuckItems = await prisma.syncQueue.count({
         where: {
-          status: "PROCESSING",
+          status: 'PROCESSING',
           updatedAt: {
             lt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes
           },
@@ -77,14 +77,14 @@ class SyncWorker {
         );
         await prisma.syncQueue.updateMany({
           where: {
-            status: "PROCESSING",
+            status: 'PROCESSING',
             updatedAt: {
               lt: new Date(Date.now() - 10 * 60 * 1000),
             },
           },
           data: {
-            status: "PENDING",
-            error: "Reset from stuck processing state by worker",
+            status: 'PENDING',
+            error: 'Reset from stuck processing state by worker',
           },
         });
       }
@@ -99,7 +99,7 @@ class SyncWorker {
 
       // Log statistics
       const stats = await prisma.syncQueue.groupBy({
-        by: ["status"],
+        by: ['status'],
         _count: true,
       });
 
@@ -111,9 +111,9 @@ class SyncWorker {
         {} as Record<string, number>,
       );
 
-      console.log("[SyncWorker] Queue status:", statusCounts);
+      console.log('[SyncWorker] Queue status:', statusCounts);
     } catch (error) {
-      console.error("[SyncWorker] Error processing queue:", error);
+      console.error('[SyncWorker] Error processing queue:', error);
     } finally {
       this.isProcessing = false;
     }
@@ -127,7 +127,7 @@ const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 if (isMainModule) {
   const worker = new SyncWorker();
   worker.start().catch((error) => {
-    console.error("[SyncWorker] Failed to start:", error);
+    console.error('[SyncWorker] Failed to start:', error);
     process.exit(1);
   });
 }

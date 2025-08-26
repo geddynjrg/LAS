@@ -1,34 +1,32 @@
-"use server";
-
-import { redirect } from "next/navigation";
-
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
+'use server';
 
 import {
-  proposedBusinessDataSchema,
-  proposedBusinessFormSchema,
   type CustomExpense,
   type ProposedBusinessData,
-} from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
-import { updateApplicationProposedBusinessData } from "@/lib/data/application-db";
+  proposedBusinessDataSchema,
+  proposedBusinessFormSchema,
+} from '@/app/apply/[id]/proposed-business/proposed-business-data-schema';
+import { updateApplicationProposedBusinessData } from '@/lib/data/application-db';
+import type { FormAction } from '@workspace/ui/hooks/use-form';
+import { getFormZodDataValues } from '@workspace/ui/lib/utils';
+import { redirect } from 'next/navigation';
 
 export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
   _prev,
   formData,
 ) => {
   const values = getFormZodDataValues(formData, proposedBusinessFormSchema);
-  const redirectTo = formData.get("redirectTo")?.toString();
-  const id = formData.get("id")?.toString();
+  const redirectTo = formData.get('redirectTo')?.toString();
+  const id = formData.get('id')?.toString();
 
   let customExpenses: CustomExpense[] = [];
   try {
-    const customExpensesData = formData.get("customExpenses")?.toString();
+    const customExpensesData = formData.get('customExpenses')?.toString();
     if (customExpensesData) {
       customExpenses = JSON.parse(customExpensesData);
     }
   } catch (error) {
-    console.error("Error parsing custom expenses data", error);
+    console.error('Error parsing custom expenses data', error);
     customExpenses = [];
   }
 
@@ -46,11 +44,11 @@ export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
   }
 
   if (!redirectTo) {
-    throw new Error("No redirect URL provided");
+    throw new Error('No redirect URL provided');
   }
 
   if (!id) {
-    throw new Error("No application ID provided");
+    throw new Error('No application ID provided');
   }
 
   /* Submit data to dummy data list */

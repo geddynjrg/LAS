@@ -1,20 +1,19 @@
-"use server";
-
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
+'use server';
 
 import {
-  confirmationDataSchema,
   type ConfirmationData,
-} from "@/app/apply/[id]/confirmations/confirmation-data-schema";
-import { updateApplicationDeclarationsData } from "@/lib/data/application-db";
+  confirmationDataSchema,
+} from '@/app/apply/[id]/confirmations/confirmation-data-schema';
+import { updateApplicationDeclarationsData } from '@/lib/data/application-db';
+import type { FormAction } from '@workspace/ui/hooks/use-form';
+import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 
 export const confirmationDataAction: FormAction<ConfirmationData> = async (
   _prev,
   formData,
 ) => {
   const values = getFormZodDataValues(formData, confirmationDataSchema);
-  const id = formData.get("id")?.toString();
+  const id = formData.get('id')?.toString();
 
   const { success, data, error } = confirmationDataSchema.safeParse(values);
 
@@ -27,7 +26,7 @@ export const confirmationDataAction: FormAction<ConfirmationData> = async (
   }
 
   if (!id) {
-    throw new Error("No application ID provided");
+    throw new Error('No application ID provided');
   }
 
   /* Submit data to dummy data list */

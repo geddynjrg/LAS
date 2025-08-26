@@ -1,5 +1,5 @@
-import { getTranslations } from "next-intl/server";
-import { z } from "zod";
+import { getTranslations } from 'next-intl/server';
+import { z } from 'zod';
 
 const OtpRequestResponseSchema = z.object({
   success: z.boolean(),
@@ -10,27 +10,27 @@ const OtpRequestResponseSchema = z.object({
 });
 
 export async function requestOtp(data: { phone: string }) {
-  const t = await getTranslations("LoginPage");
+  const t = await getTranslations('LoginPage');
 
   // Use direct fetch to avoid authentication headers for login endpoints
   const apiUrl = process.env.API_URL;
   if (!apiUrl) {
-    throw new Error("API_URL environment variable is required");
+    throw new Error('API_URL environment variable is required');
   }
-  const OTP_REQUEST = `${apiUrl.replace(/\/$/, "")}/api/auth/otp/request`;
+  const OTP_REQUEST = `${apiUrl.replace(/\/$/, '')}/api/auth/otp/request`;
 
   let response: Response;
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     // In development, temporarily set the environment variable for this specific request
     const originalValue = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
     try {
       response = await fetch(OTP_REQUEST, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           phone_number: data.phone,
@@ -46,9 +46,9 @@ export async function requestOtp(data: { phone: string }) {
     }
   } else {
     response = await fetch(OTP_REQUEST, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         phone_number: data.phone,
@@ -58,12 +58,12 @@ export async function requestOtp(data: { phone: string }) {
 
   if (!response.ok) {
     if (response.status === 400) {
-      throw new Error(t("invalidPhoneFormat"));
+      throw new Error(t('invalidPhoneFormat'));
     }
     if (response.status === 429) {
-      throw new Error(t("tooManyOtpRequests"));
+      throw new Error(t('tooManyOtpRequests'));
     }
-    throw new Error(t("otpRequestFailed"));
+    throw new Error(t('otpRequestFailed'));
   }
 
   const responseData = await response.json();
@@ -71,7 +71,7 @@ export async function requestOtp(data: { phone: string }) {
 
   if (!validation.success) {
     console.warn(
-      "[OTP Request] Response Schema Error:",
+      '[OTP Request] Response Schema Error:',
       validation.error.toString(),
       responseData,
     );

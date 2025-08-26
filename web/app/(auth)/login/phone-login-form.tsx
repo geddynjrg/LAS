@@ -1,20 +1,18 @@
-"use client";
-
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, type FC } from "react";
-
-import { Alert } from "@workspace/ui/components/alert";
-import { Field, Form, SubmitButton } from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
-import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
+'use client';
 
 import {
-  phoneLoginSchema,
   type PhoneLogin,
-} from "@/app/(auth)/login/login-schema";
+  phoneLoginSchema,
+} from '@/app/(auth)/login/login-schema';
+import { Alert } from '@workspace/ui/components/alert';
+import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
+import { Input } from '@workspace/ui/components/input';
+import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { type FC, useEffect, useState } from 'react';
 
-type PhoneLoginState = "phone_input" | "otp_input";
+type PhoneLoginState = 'phone_input' | 'otp_input';
 
 export interface PhoneLoginFormProps {
   action: FormAction<PhoneLogin>;
@@ -25,16 +23,16 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   action,
   redirectTo,
 }) => {
-  const t = useTranslations("LoginPage");
+  const t = useTranslations('LoginPage');
   const router = useRouter();
   const [state, formAction, isPending] = useForm(action, phoneLoginSchema);
   const [phoneLoginState, setPhoneLoginState] =
-    useState<PhoneLoginState>("phone_input");
-  const [otpRequestId, setOtpRequestId] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
+    useState<PhoneLoginState>('phone_input');
+  const [otpRequestId, setOtpRequestId] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
 
   // Hardcoded to Kenya until multi-country support is needed
-  const COUNTRY_CODE = "+254";
+  const COUNTRY_CODE = '+254';
 
   // Navigate on successful final login completion (not OTP request)
   useEffect(() => {
@@ -42,7 +40,7 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     if (state.success && !stateWithOtp.otpRequestId) {
       // Only redirect if success is true AND we don't have an OTP request ID
       // (meaning this is final login, not just OTP sent)
-      router.replace(redirectTo ?? "/dashboard");
+      router.replace(redirectTo ?? '/dashboard');
     }
   }, [redirectTo, router, state.success, state]);
 
@@ -51,24 +49,24 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     const stateWithOtp = state as typeof state & { otpRequestId?: string };
     if (stateWithOtp.otpRequestId) {
       setOtpRequestId(stateWithOtp.otpRequestId);
-      setPhoneLoginState("otp_input");
+      setPhoneLoginState('otp_input');
     }
   }, [state]);
 
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">
       {state.message && (
-        <Alert variant={state.success ? "success" : "error"} className="mb-4">
+        <Alert variant={state.success ? 'success' : 'error'} className="mb-4">
           {state.message}
         </Alert>
       )}
 
       {/* Phone Input - Step 1 */}
-      {phoneLoginState === "phone_input" && (
+      {phoneLoginState === 'phone_input' && (
         <Field
           state={state}
           name="phone"
-          label={t("phoneNumber")}
+          label={t('phoneNumber')}
           required
           control={(props) => (
             <Input
@@ -85,18 +83,18 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
       )}
 
       {/* OTP Input - Step 2 */}
-      {phoneLoginState === "otp_input" && (
+      {phoneLoginState === 'otp_input' && (
         <>
           <div className="space-y-2">
             <p className="typo-body-medium text-neutral-600">
-              {t("enterOtpSentTo", {
+              {t('enterOtpSentTo', {
                 phoneNumber: `${COUNTRY_CODE}${phoneNumber}`,
               })}
             </p>
             <Field
               state={state}
               name="otp_code"
-              label={t("otpCode")}
+              label={t('otpCode')}
               required
               control={(props) => (
                 <Input
@@ -112,12 +110,12 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
             <button
               type="button"
               onClick={() => {
-                setPhoneLoginState("phone_input");
-                setOtpRequestId("");
+                setPhoneLoginState('phone_input');
+                setOtpRequestId('');
               }}
               className="text-primary typo-body-medium cursor-pointer border-0 bg-transparent p-0 underline"
             >
-              {t("changePhoneNumber")}
+              {t('changePhoneNumber')}
             </button>
           </div>
         </>
@@ -134,7 +132,7 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
       )}
 
       <SubmitButton className="w-full" disabled={isPending}>
-        {phoneLoginState === "phone_input" ? t("sendOtp") : t("login")}
+        {phoneLoginState === 'phone_input' ? t('sendOtp') : t('login')}
       </SubmitButton>
     </Form>
   );

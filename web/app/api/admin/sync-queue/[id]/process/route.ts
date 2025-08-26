@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-
-import { processQueueItem } from "@/lib/api/sync.service";
-import { requireAdminAPI } from "@/lib/auth/guards";
+import { processQueueItem } from '@/lib/api/sync.service';
+import { requireAdminAPI } from '@/lib/auth/guards';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(
   request: NextRequest,
@@ -23,15 +22,15 @@ export async function POST(
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error processing queue item:", error);
+    console.error('Error processing queue item:', error);
 
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
     );

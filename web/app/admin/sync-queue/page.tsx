@@ -1,31 +1,4 @@
-"use client";
-
-import {
-  IconAlertCircle,
-  IconCheck,
-  IconChevronDown,
-  IconClock,
-  IconClockHour4,
-  IconFiles,
-  IconLoader,
-  IconPlayerPlay,
-  IconRefresh,
-  IconSearch,
-  IconX,
-} from "@tabler/icons-react";
-import { useCallback, useEffect, useState } from "react";
-
-import { Button } from "@workspace/ui/components/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { Label } from "@workspace/ui/components/label";
-import { Select } from "@workspace/ui/components/select";
+'use client';
 
 import {
   ActionBadge,
@@ -41,8 +14,33 @@ import {
   StatCard,
   StatusBadge,
   TablePagination,
-} from "@/components/admin";
-import type { QueueStatistics } from "@/lib/api/sync.service";
+} from '@/components/admin';
+import type { QueueStatistics } from '@/lib/api/sync.service';
+import {
+  IconAlertCircle,
+  IconCheck,
+  IconChevronDown,
+  IconClock,
+  IconClockHour4,
+  IconFiles,
+  IconLoader,
+  IconPlayerPlay,
+  IconRefresh,
+  IconSearch,
+  IconX,
+} from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@workspace/ui/components/dropdown-menu';
+import { Label } from '@workspace/ui/components/label';
+import { Select } from '@workspace/ui/components/select';
+import { useCallback, useEffect, useState } from 'react';
 
 interface QueueItem {
   id: string;
@@ -85,8 +83,8 @@ export default function SyncQueuePage() {
   const [processingItems, setProcessingItems] = useState<Set<string>>(
     new Set(),
   );
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,45 +94,45 @@ export default function SyncQueuePage() {
       setRefreshing(true);
 
       const params = new URLSearchParams();
-      if (selectedStatus !== "all") {
-        params.append("status", selectedStatus);
+      if (selectedStatus !== 'all') {
+        params.append('status', selectedStatus);
       }
       if (searchQuery) {
-        params.append("applicationId", searchQuery);
+        params.append('applicationId', searchQuery);
       }
-      params.append("page", currentPage.toString());
-      params.append("pageSize", "20");
+      params.append('page', currentPage.toString());
+      params.append('pageSize', '20');
 
-      console.log("[SyncQueue] Fetching with params:", params.toString());
+      console.log('[SyncQueue] Fetching with params:', params.toString());
       const response = await fetch(`/api/admin/sync-queue?${params}`);
 
       if (!response.ok) {
         console.error(
-          "[SyncQueue] Response not OK:",
+          '[SyncQueue] Response not OK:',
           response.status,
           response.statusText,
         );
         const errorText = await response.text();
-        console.error("[SyncQueue] Error response:", errorText);
+        console.error('[SyncQueue] Error response:', errorText);
 
         if (response.status === 401) {
-          setError("You need to be logged in as an admin to view this page");
-          throw new Error("Unauthorized");
+          setError('You need to be logged in as an admin to view this page');
+          throw new Error('Unauthorized');
         } else if (response.status === 404) {
           setError(
-            "API endpoint not found. Please check the server is running correctly.",
+            'API endpoint not found. Please check the server is running correctly.',
           );
-          throw new Error("Not found");
+          throw new Error('Not found');
         }
 
-        throw new Error("Failed to fetch queue data");
+        throw new Error('Failed to fetch queue data');
       }
 
       const data = await response.json();
-      console.log("[SyncQueue] Received data:", data);
+      console.log('[SyncQueue] Received data:', data);
       setQueueData(data);
     } catch (error) {
-      console.error("Error fetching queue data:", error);
+      console.error('Error fetching queue data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -144,19 +142,19 @@ export default function SyncQueuePage() {
   // Fetch statistics
   const fetchStatistics = useCallback(async () => {
     try {
-      console.log("[SyncQueue] Fetching statistics...");
-      const response = await fetch("/api/admin/sync-queue/stats");
+      console.log('[SyncQueue] Fetching statistics...');
+      const response = await fetch('/api/admin/sync-queue/stats');
 
       if (!response.ok) {
-        console.error("[SyncQueue] Stats response not OK:", response.status);
-        throw new Error("Failed to fetch statistics");
+        console.error('[SyncQueue] Stats response not OK:', response.status);
+        throw new Error('Failed to fetch statistics');
       }
 
       const data = await response.json();
-      console.log("[SyncQueue] Statistics data:", data);
+      console.log('[SyncQueue] Statistics data:', data);
       setStatistics(data);
     } catch (error) {
-      console.error("Error fetching statistics:", error);
+      console.error('Error fetching statistics:', error);
     }
   }, []);
 
@@ -177,7 +175,7 @@ export default function SyncQueuePage() {
 
   const handleQueueAction = async (
     itemId: string,
-    action: "process" | "release" | "retry" | "cancel",
+    action: 'process' | 'release' | 'retry' | 'cancel',
   ) => {
     setProcessingItems((prev) => new Set(prev).add(itemId));
 
@@ -185,13 +183,13 @@ export default function SyncQueuePage() {
       const response = await fetch(
         `/api/admin/sync-queue/${itemId}/${action}`,
         {
-          method: "POST",
+          method: 'POST',
         },
       );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Action failed");
+        throw new Error(error.error || 'Action failed');
       }
 
       // Refresh data
@@ -199,7 +197,7 @@ export default function SyncQueuePage() {
       await fetchStatistics();
     } catch (error) {
       console.error(`Error performing ${action}:`, error);
-      alert(error instanceof Error ? error.message : "Action failed");
+      alert(error instanceof Error ? error.message : 'Action failed');
     } finally {
       setProcessingItems((prev) => {
         const newSet = new Set(prev);
@@ -210,17 +208,17 @@ export default function SyncQueuePage() {
   };
 
   const handleRetryAll = async () => {
-    if (!confirm("Are you sure you want to retry all failed items?")) {
+    if (!confirm('Are you sure you want to retry all failed items?')) {
       return;
     }
 
     try {
-      const response = await fetch("/api/admin/sync-queue/retry-all", {
-        method: "POST",
+      const response = await fetch('/api/admin/sync-queue/retry-all', {
+        method: 'POST',
       });
 
       if (!response.ok) {
-        throw new Error("Failed to retry all items");
+        throw new Error('Failed to retry all items');
       }
 
       const result = await response.json();
@@ -230,8 +228,8 @@ export default function SyncQueuePage() {
       await fetchQueueData();
       await fetchStatistics();
     } catch (error) {
-      console.error("Error retrying all:", error);
-      alert("Failed to retry all items");
+      console.error('Error retrying all:', error);
+      alert('Failed to retry all items');
     }
   };
 
@@ -270,7 +268,7 @@ export default function SyncQueuePage() {
             title="Pending Items"
             value={statistics.byStatus.PENDING || 0}
             subtitle="Waiting to process"
-            variant={statistics.byStatus.PENDING > 10 ? "warning" : "default"}
+            variant={statistics.byStatus.PENDING > 10 ? 'warning' : 'default'}
             icon={<IconClock className="h-4 w-4" />}
           />
 
@@ -278,7 +276,7 @@ export default function SyncQueuePage() {
             title="Failed Items"
             value={statistics.byStatus.FAILED || 0}
             subtitle="Need attention"
-            variant={statistics.byStatus.FAILED > 0 ? "danger" : "success"}
+            variant={statistics.byStatus.FAILED > 0 ? 'danger' : 'success'}
             icon={<IconAlertCircle className="h-4 w-4" />}
           />
 
@@ -304,15 +302,15 @@ export default function SyncQueuePage() {
                     if (diffHours > 0) return `${diffHours}h ${diffMins}m`;
                     return `${diffMins}m`;
                   })()
-                : "None"
+                : 'None'
             }
             subtitle="Age of oldest item"
             variant={
               statistics.oldestPending &&
               Date.now() - new Date(statistics.oldestPending).getTime() >
                 3600000 // 1 hour
-                ? "warning"
-                : "default"
+                ? 'warning'
+                : 'default'
             }
             icon={<IconClockHour4 className="h-4 w-4" />}
           />
@@ -336,7 +334,7 @@ export default function SyncQueuePage() {
               className="h-9"
             >
               <IconRefresh
-                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+                className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
               />
               <span className="ml-1.5">Refresh</span>
             </Button>
@@ -365,11 +363,11 @@ export default function SyncQueuePage() {
             value={selectedStatus}
             onValueChange={setSelectedStatus}
             options={[
-              { value: "all", label: "All Statuses" },
-              { value: "PENDING", label: "Pending" },
-              { value: "PROCESSING", label: "Processing" },
-              { value: "COMPLETED", label: "Completed" },
-              { value: "FAILED", label: "Failed" },
+              { value: 'all', label: 'All Statuses' },
+              { value: 'PENDING', label: 'Pending' },
+              { value: 'PROCESSING', label: 'Processing' },
+              { value: 'COMPLETED', label: 'Completed' },
+              { value: 'FAILED', label: 'Failed' },
             ]}
             placeholder="Select status"
             className="mt-1 w-full sm:w-40"
@@ -381,14 +379,14 @@ export default function SyncQueuePage() {
       {searchQuery && queueData && (
         <div className="mb-4 flex items-center justify-between text-sm text-gray-600">
           <div>
-            Found{" "}
+            Found{' '}
             <span className="font-medium">
               {queueData.pagination.totalCount}
             </span>
-            {queueData.pagination.totalCount === 1 ? " item" : " items"}
+            {queueData.pagination.totalCount === 1 ? ' item' : ' items'}
             {searchQuery && (
               <>
-                {" "}
+                {' '}
                 matching &ldquo;
                 <span className="font-medium">{searchQuery}</span>&rdquo;
               </>
@@ -439,7 +437,7 @@ export default function SyncQueuePage() {
                 <StatusBadge
                   status={item.status}
                   icon={
-                    item.status === "PROCESSING" ? (
+                    item.status === 'PROCESSING' ? (
                       <IconLoader className="h-3.5 w-3.5" />
                     ) : undefined
                   }
@@ -452,11 +450,11 @@ export default function SyncQueuePage() {
               </AdminTableCell>
               <AdminTableCell className="whitespace-nowrap">
                 <span className="text-sm text-gray-600">
-                  {new Date(item.scheduledFor).toLocaleString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
+                  {new Date(item.scheduledFor).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </span>
               </AdminTableCell>
@@ -497,16 +495,16 @@ export default function SyncQueuePage() {
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
 
-                    {item.status === "PENDING" && (
+                    {item.status === 'PENDING' && (
                       <>
                         <DropdownMenuItem
-                          onClick={() => handleQueueAction(item.id, "process")}
+                          onClick={() => handleQueueAction(item.id, 'process')}
                         >
                           <IconPlayerPlay className="mr-2 h-4 w-4" />
                           Process Now
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleQueueAction(item.id, "cancel")}
+                          onClick={() => handleQueueAction(item.id, 'cancel')}
                           className="text-red-600"
                         >
                           <IconX className="mr-2 h-4 w-4" />
@@ -515,25 +513,25 @@ export default function SyncQueuePage() {
                       </>
                     )}
 
-                    {item.status === "PROCESSING" && (
+                    {item.status === 'PROCESSING' && (
                       <DropdownMenuItem
-                        onClick={() => handleQueueAction(item.id, "release")}
+                        onClick={() => handleQueueAction(item.id, 'release')}
                       >
                         <IconRefresh className="mr-2 h-4 w-4" />
                         Release Lock
                       </DropdownMenuItem>
                     )}
 
-                    {item.status === "FAILED" && (
+                    {item.status === 'FAILED' && (
                       <>
                         <DropdownMenuItem
-                          onClick={() => handleQueueAction(item.id, "retry")}
+                          onClick={() => handleQueueAction(item.id, 'retry')}
                         >
                           <IconRefresh className="mr-2 h-4 w-4" />
                           Retry
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleQueueAction(item.id, "cancel")}
+                          onClick={() => handleQueueAction(item.id, 'cancel')}
                           className="text-red-600"
                         >
                           <IconX className="mr-2 h-4 w-4" />
@@ -542,7 +540,7 @@ export default function SyncQueuePage() {
                       </>
                     )}
 
-                    {item.status === "COMPLETED" && (
+                    {item.status === 'COMPLETED' && (
                       <DropdownMenuItem disabled className="text-gray-400">
                         <IconCheck className="mr-2 h-4 w-4" />
                         No actions available
@@ -578,7 +576,7 @@ export default function SyncQueuePage() {
                 Try adjusting your search terms or clearing the search
               </p>
               <button
-                onClick={() => setSearchQuery("")}
+                onClick={() => setSearchQuery('')}
                 className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Clear search

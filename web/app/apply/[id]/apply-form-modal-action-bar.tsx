@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import type { FC } from "react";
-
-import { ActionBar } from "@workspace/ui/components/action-bar";
-import { Button } from "@workspace/ui/components/button";
-import { ModalButton } from "@workspace/ui/components/modal-button";
+import { ActionBar } from '@workspace/ui/components/action-bar';
+import { Button } from '@workspace/ui/components/button';
+import { ModalButton } from '@workspace/ui/components/modal-button';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import type { FC } from 'react';
 
 interface ApplyFormActionBarProps {
   prevUrl?: string;
@@ -26,9 +25,9 @@ export const ApplyFormModalActionBar: FC<ApplyFormActionBarProps> = ({
       <div className="mx-auto flex flex-row items-center gap-4">
         <Button variant="secondary" asChild onClick={onBack} type="button">
           {onBack && !prevUrl ? (
-            <div>{t("Common.back")}</div>
+            <div>{t('Common.back')}</div>
           ) : (
-            <Link href={prevUrl || "#"}>{t("Common.back")}</Link>
+            <Link href={prevUrl || '#'}>{t('Common.back')}</Link>
           )}
         </Button>
         <ModalButton

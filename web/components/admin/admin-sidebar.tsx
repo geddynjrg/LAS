@@ -1,15 +1,12 @@
-"use client";
+'use client';
 
 import {
   IconDashboard,
   IconDatabase,
   IconLogout,
   IconSettings,
-} from "@tabler/icons-react";
-import { usePathname } from "next/navigation";
-import type { FC } from "react";
-
-import { NavLink } from "@workspace/ui/components/nav-link";
+} from '@tabler/icons-react';
+import { NavLink } from '@workspace/ui/components/nav-link';
 import {
   Sidebar,
   SidebarContent,
@@ -17,23 +14,25 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-} from "@workspace/ui/components/sidebar";
+} from '@workspace/ui/components/sidebar';
+import { usePathname } from 'next/navigation';
+import type { FC } from 'react';
 
 export const AdminSidebar: FC = () => {
   const pathname = usePathname();
 
   const navigationItems = [
     {
-      href: "/admin/dashboard",
-      label: "Dashboard",
+      href: '/admin/dashboard',
+      label: 'Dashboard',
       icon: IconDashboard,
-      isActive: pathname.startsWith("/admin/dashboard"),
+      isActive: pathname.startsWith('/admin/dashboard'),
     },
     {
-      href: "/admin/sync-queue",
-      label: "Sync Queue",
+      href: '/admin/sync-queue',
+      label: 'Sync Queue',
       icon: IconDatabase,
-      isActive: pathname.startsWith("/admin/sync-queue"),
+      isActive: pathname.startsWith('/admin/sync-queue'),
     },
   ];
 

@@ -1,31 +1,29 @@
-"use client";
+'use client';
 
-import { IconPlus, IconTrash } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState, type FC } from "react";
-
-import { Button } from "@workspace/ui/components/button";
+import { ApplyFormActionBar } from '@/app/apply/[id]/apply-form-action-bar';
+import {
+  type ProposedBusinessData,
+  proposedBusinessFormSchema,
+} from '@/app/apply/[id]/proposed-business/proposed-business-data-schema';
+import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
+import { ProposedBusinessData as ApplicationProposedBusinessData } from '@/lib/data/application';
+import { parseNumber } from '@/lib/util';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
 import {
   ButtonGroup,
   ButtonGroupItem,
-} from "@workspace/ui/components/button-group";
-import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
-import { Container } from "@workspace/ui/components/container";
-import { Currency } from "@workspace/ui/components/currency";
-import { Field, Form } from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
-import { Underline } from "@workspace/ui/components/underline";
-import { FormCard } from "@workspace/ui/components/uwezo/form-card";
-import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
-import {
-  proposedBusinessFormSchema,
-  type ProposedBusinessData,
-} from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
-import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
-import { ProposedBusinessData as ApplicationProposedBusinessData } from "@/lib/data/application";
-import { parseNumber } from "@/lib/util";
+} from '@workspace/ui/components/button-group';
+import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
+import { Container } from '@workspace/ui/components/container';
+import { Currency } from '@workspace/ui/components/currency';
+import { Field, Form } from '@workspace/ui/components/form';
+import { Input } from '@workspace/ui/components/input';
+import { Underline } from '@workspace/ui/components/underline';
+import { FormCard } from '@workspace/ui/components/uwezo/form-card';
+import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { useTranslations } from 'next-intl';
+import { type FC, useEffect, useState } from 'react';
 
 export interface ProposedBusinessDataProps {
   id: string;
@@ -123,7 +121,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
       <Container className="space-y-8">
         <FormCard
           title={t(
-            "ApplicationDetailsPage.proposedBusiness.businessInfo.businessInformation",
+            'ApplicationDetailsPage.proposedBusiness.businessInfo.businessInformation',
           )}
           className="space-y-4"
         >
@@ -131,19 +129,19 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             state={state}
             name="natureOfBusiness"
             label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessInfo.natureOfBusiness",
+              'ApplicationDetailsPage.proposedBusiness.businessInfo.natureOfBusiness',
             )}
             required
             control={(props) => (
               <ButtonGroup {...props} type="single" className="flex flex-row">
                 <ButtonGroupItem value="Start-up" className="grow px-1">
                   {t(
-                    "ApplicationDetailsPage.proposedBusiness.businessInfo.startup",
+                    'ApplicationDetailsPage.proposedBusiness.businessInfo.startup',
                   )}
                 </ButtonGroupItem>
                 <ButtonGroupItem value="Expansion" className="grow px-1">
                   {t(
-                    "ApplicationDetailsPage.proposedBusiness.businessInfo.expansion",
+                    'ApplicationDetailsPage.proposedBusiness.businessInfo.expansion',
                   )}
                 </ButtonGroupItem>
               </ButtonGroup>
@@ -154,7 +152,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             state={state}
             name="businessType"
             label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessInfo.businessType",
+              'ApplicationDetailsPage.proposedBusiness.businessInfo.businessType',
             )}
             required
             control={(props) => (
@@ -162,14 +160,14 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                 {...props}
                 options={
                   taxonomyOptions?.businessType || [
-                    { label: t("Common.trade"), value: "Trade" },
-                    { label: t("Common.service"), value: "Service" },
+                    { label: t('Common.trade'), value: 'Trade' },
+                    { label: t('Common.service'), value: 'Service' },
                     {
-                      label: t("Common.manufacturing"),
-                      value: "Manufacturing",
+                      label: t('Common.manufacturing'),
+                      value: 'Manufacturing',
                     },
-                    { label: t("Common.agriculture"), value: "Agriculture" },
-                    { label: t("Common.other"), value: "Other" },
+                    { label: t('Common.agriculture'), value: 'Agriculture' },
+                    { label: t('Common.other'), value: 'Other' },
                   ]
                 }
               />
@@ -180,14 +178,14 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             state={state}
             name="yearsInBusiness"
             label={t(
-              "ApplicationDetailsPage.proposedBusiness.businessInfo.operationPeriod",
+              'ApplicationDetailsPage.proposedBusiness.businessInfo.operationPeriod',
             )}
             required
             control={(props) => (
               <Input
                 defaultValue={props.defaultValue?.toString()}
                 placeholder={t(
-                  "ApplicationDetailsPage.proposedBusiness.businessInfo.enterYears",
+                  'ApplicationDetailsPage.proposedBusiness.businessInfo.enterYears',
                 )}
                 type="tel"
               />
@@ -197,28 +195,28 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
 
         <FormCard
           title={t(
-            "ApplicationDetailsPage.proposedBusiness.businessPerformance.businessPerformance",
+            'ApplicationDetailsPage.proposedBusiness.businessPerformance.businessPerformance',
           )}
           className="space-y-4"
         >
           <div className="grid gap-4">
             <h2 className="typo-h5">
               {t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.income",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.income',
               )}
             </h2>
             <Field
               state={state}
               name="averageIncome"
               label={t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.averageIncomePerMonth",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.averageIncomePerMonth',
               )}
               required
               control={(props) => (
                 <Input
                   defaultValue={props.defaultValue?.toString()}
                   placeholder={t(
-                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                    'ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount',
                   )}
                   type="tel"
                   endDecorator="KES"
@@ -232,21 +230,21 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <div className="grid gap-4 border-t border-neutral-400">
             <h2 className="typo-h5 pt-4">
               {t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.expenses",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.expenses',
               )}
             </h2>
             <Field
               state={state}
               name="costOfGoods"
               label={t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.costOfGoods",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.costOfGoods',
               )}
               required
               control={(props) => (
                 <Input
                   defaultValue={props.defaultValue?.toString()}
                   placeholder={t(
-                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                    'ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount',
                   )}
                   type="tel"
                   endDecorator="KES"
@@ -261,14 +259,14 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
               state={state}
               name="rentForBusiness"
               label={t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.rent",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.rent',
               )}
               required
               control={(props) => (
                 <Input
                   defaultValue={props.defaultValue?.toString()}
                   placeholder={t(
-                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                    'ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount',
                   )}
                   type="tel"
                   endDecorator="KES"
@@ -283,14 +281,14 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
               state={state}
               name="salaries"
               label={t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.salaries",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.salaries',
               )}
               required
               control={(props) => (
                 <Input
                   defaultValue={props.defaultValue?.toString()}
                   placeholder={t(
-                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                    'ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount',
                   )}
                   type="tel"
                   endDecorator="KES"
@@ -303,14 +301,14 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
               state={state}
               name="transportForBusinessStock"
               label={t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.transportCosts",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.transportCosts',
               )}
               required
               control={(props) => (
                 <Input
                   defaultValue={props.defaultValue?.toString()}
                   placeholder={t(
-                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                    'ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount',
                   )}
                   type="tel"
                   endDecorator="KES"
@@ -328,7 +326,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                   <Field
                     name={`customExpense-${index}-name`}
                     label={t(
-                      "ApplicationDetailsPage.proposedBusiness.businessPerformance.expenseName",
+                      'ApplicationDetailsPage.proposedBusiness.businessPerformance.expenseName',
                     )}
                     control={(props) => (
                       <Input
@@ -340,7 +338,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                           setCustomExpenses(updatedExpenses);
                         }}
                         placeholder={t(
-                          "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterExpenseName",
+                          'ApplicationDetailsPage.proposedBusiness.businessPerformance.enterExpenseName',
                         )}
                       />
                     )}
@@ -350,7 +348,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                   <Field
                     name={`customExpense-${index}-amount`}
                     label={t(
-                      "ApplicationDetailsPage.proposedBusiness.businessPerformance.amount",
+                      'ApplicationDetailsPage.proposedBusiness.businessPerformance.amount',
                     )}
                     control={(props) => (
                       <Input
@@ -367,7 +365,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                           setCustomExpenses(updatedExpenses);
                         }}
                         placeholder={t(
-                          "ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount",
+                          'ApplicationDetailsPage.proposedBusiness.businessPerformance.enterAmount',
                         )}
                       />
                     )}
@@ -394,7 +392,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
               variant="ghost"
               type="button"
               onClick={() => {
-                setCustomExpenses([...customExpenses, { name: "", amount: 0 }]);
+                setCustomExpenses([...customExpenses, { name: '', amount: 0 }]);
               }}
               className="flex items-center gap-2 p-0"
             >
@@ -402,7 +400,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                 <IconPlus className="!text-primary" size={20} />
                 <p className="typo-body-medium">
                   {t(
-                    "ApplicationDetailsPage.proposedBusiness.businessPerformance.addCustomField",
+                    'ApplicationDetailsPage.proposedBusiness.businessPerformance.addCustomField',
                   )}
                 </p>
               </Underline>
@@ -412,7 +410,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
           <div className="overflow-hidden border-t border-neutral-400">
             <h2 className="typo-h5 py-4">
               {t(
-                "ApplicationDetailsPage.proposedBusiness.businessPerformance.netSurplus",
+                'ApplicationDetailsPage.proposedBusiness.businessPerformance.netSurplus',
               )}
             </h2>
             <Currency
@@ -431,7 +429,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
         name="customExpenses"
         value={JSON.stringify(
           customExpenses
-            .filter((expense) => expense.name.trim() !== "")
+            .filter((expense) => expense.name.trim() !== '')
             .map((expense) => ({
               name: expense.name,
               amount: expense.amount.toString(),

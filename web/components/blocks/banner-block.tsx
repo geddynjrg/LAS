@@ -1,9 +1,7 @@
-import { type FC } from "react";
-
-import { HeroSection } from "@workspace/ui/components/uwezo/hero-section";
-
-import { ApplyButton } from "@/components/apply-button";
-import type { BannerBlock } from "@/lib/api/schema";
+import { ApplyButton } from '@/components/apply-button';
+import type { BannerBlock } from '@/lib/api/schema';
+import { HeroSection } from '@workspace/ui/components/uwezo/hero-section';
+import { type FC } from 'react';
 
 export interface BannerBlockComponentProps {
   data: BannerBlock;
@@ -25,7 +23,7 @@ export const BannerBlockComponent: FC<BannerBlockComponentProps> = ({
               <span
                 className="typo-h4 font-normal"
                 dangerouslySetInnerHTML={{
-                  __html: text.processed || text.value || "",
+                  __html: text.processed || text.value || '',
                 }}
               />
             </>
@@ -41,7 +39,7 @@ export const BannerBlockComponent: FC<BannerBlockComponentProps> = ({
         <span
           className="typo-body-large"
           dangerouslySetInnerHTML={{
-            __html: help_text.processed || help_text.value || "",
+            __html: help_text.processed || help_text.value || '',
           }}
         />
       )}

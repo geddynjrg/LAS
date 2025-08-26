@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const membersConfirmationDataSchema = z.object({
   members: z
@@ -7,13 +7,13 @@ export const membersConfirmationDataSchema = z.object({
         fullname: z.string().optional(),
         nationalIdCode: z.string().optional(),
         gender: z
-          .union([z.literal("Male"), z.literal("Female"), z.literal("Other")])
+          .union([z.literal('Male'), z.literal('Female'), z.literal('Other')])
           .optional(),
         type: z
           .union([
-            z.literal("Chairman"),
-            z.literal("Secretary"),
-            z.literal("Member"),
+            z.literal('Chairman'),
+            z.literal('Secretary'),
+            z.literal('Member'),
           ])
           .optional(),
         phoneNumber: z.string().optional(),
@@ -25,7 +25,7 @@ export const membersConfirmationDataSchema = z.object({
           })
           .optional(),
         status: z
-          .union([z.literal("confirmed"), z.literal("pending")])
+          .union([z.literal('confirmed'), z.literal('pending')])
           .optional(),
       }),
     )

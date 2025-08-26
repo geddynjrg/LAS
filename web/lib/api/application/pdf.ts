@@ -1,14 +1,14 @@
-import { api, validate } from "@/lib/api/utils";
-import { 
-  PdfMetadataResponseSchema, 
-  PdfBlobResponseSchema 
-} from "@/lib/api/schema/application/application.schema";
+import {
+  PdfBlobResponseSchema,
+  PdfMetadataResponseSchema,
+} from '@/lib/api/schema/application/application.schema';
+import { api, validate } from '@/lib/api/utils';
 
 export async function getApplicationPdfBlob(applicationId: string) {
-  const res = await api.GET("/api/v1/application/{application}/pdf", {
+  const res = await api.GET('/api/v1/application/{application}/pdf', {
     params: {
       path: { application: applicationId },
-      query: { format: "blob" },
+      query: { format: 'blob' },
     },
   });
 
@@ -20,10 +20,10 @@ export async function getApplicationPdfBlob(applicationId: string) {
 }
 
 export async function downloadApplicationPdf(applicationId: string) {
-  const res = await api.GET("/api/v1/application/{application}/pdf", {
+  const res = await api.GET('/api/v1/application/{application}/pdf', {
     params: {
       path: { application: applicationId },
-      query: { format: "download" },
+      query: { format: 'download' },
     },
   });
 
@@ -33,14 +33,14 @@ export async function downloadApplicationPdf(applicationId: string) {
 
   // For PDF download, return the blob directly
   const blob = new Blob([await res.response.arrayBuffer()], {
-    type: "application/pdf",
+    type: 'application/pdf',
   });
-  
+
   return blob;
 }
 
 export async function getApplicationPdfMetadata(applicationId: string) {
-  const res = await api.GET("/api/v1/application/{application}/pdf", {
+  const res = await api.GET('/api/v1/application/{application}/pdf', {
     params: {
       path: { application: applicationId },
     },

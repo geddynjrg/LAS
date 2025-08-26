@@ -1,12 +1,10 @@
-import { getTranslations } from "next-intl/server";
-
-import { Container } from "@workspace/ui/components/container";
-import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
-
-import { proposedBusinessAction } from "@/app/apply/[id]/proposed-business/proposed-business-action";
-import { ProposedBusinessDataForm } from "@/app/apply/[id]/proposed-business/proposed-business-data-form";
-import { getFormFieldOptions } from "@/lib/api/taxonomy.service";
-import { getApplicationById } from "@/lib/data/application-db";
+import { proposedBusinessAction } from '@/app/apply/[id]/proposed-business/proposed-business-action';
+import { ProposedBusinessDataForm } from '@/app/apply/[id]/proposed-business/proposed-business-data-form';
+import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
+import { getApplicationById } from '@/lib/data/application-db';
+import { Container } from '@workspace/ui/components/container';
+import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
+import { getTranslations } from 'next-intl/server';
 
 export interface ProposedBusinessPageProps {
   params: Promise<{ id: string }>;
@@ -18,7 +16,7 @@ export default async function Page({ params }: ProposedBusinessPageProps) {
 
   const [application, businessTypeOptions] = await Promise.all([
     getApplicationById(id),
-    getFormFieldOptions("businessType"),
+    getFormFieldOptions('businessType'),
   ]);
 
   const taxonomyOptions = {
@@ -32,7 +30,7 @@ export default async function Page({ params }: ProposedBusinessPageProps) {
           <div>
             <p>{id}</p>
             <h2 className="typo-h2">
-              {t("ApplicationDetailsPage.proposedBusiness.proposedBusiness")}
+              {t('ApplicationDetailsPage.proposedBusiness.proposedBusiness')}
             </h2>
           </div>
         </div>

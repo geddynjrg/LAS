@@ -1,10 +1,9 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import type { FC } from "react";
-
-import { Container } from "@workspace/ui/components/container";
-import { Stepper, type Step } from "@workspace/ui/components/stepper";
+import { Container } from '@workspace/ui/components/container';
+import { type Step, Stepper } from '@workspace/ui/components/stepper';
+import { usePathname } from 'next/navigation';
+import type { FC } from 'react';
 
 export interface ApplyFormStepperProps {
   steps: Step[];
@@ -20,7 +19,7 @@ export const ApplyFormStepper: FC<ApplyFormStepperProps> = ({
   const pathname = usePathname();
 
   const activeStep = steps.find((step) =>
-    pathname.includes(step.path ?? ""),
+    pathname.includes(step.path ?? ''),
   )?.index;
 
   if (!activeStep) {

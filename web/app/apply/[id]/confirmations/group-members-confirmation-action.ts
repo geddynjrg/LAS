@@ -1,22 +1,20 @@
-"use server";
-
-import { redirect } from "next/navigation";
-
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
+'use server';
 
 import {
-  groupMembersConfirmationDataSchema,
   type GroupMembersConfirmationData,
-} from "@/app/apply/[id]/confirmations/group-members-confirmation-schema";
-import { updateMemberConfirmationStatuses } from "@/lib/data/application-db";
+  groupMembersConfirmationDataSchema,
+} from '@/app/apply/[id]/confirmations/group-members-confirmation-schema';
+import { updateMemberConfirmationStatuses } from '@/lib/data/application-db';
+import type { FormAction } from '@workspace/ui/hooks/use-form';
+import { getFormZodDataValues } from '@workspace/ui/lib/utils';
+import { redirect } from 'next/navigation';
 
 export const groupMembersConfirmationDataAction: FormAction<
   GroupMembersConfirmationData
 > = async (_prev, formData) => {
   let id: string;
   let selectedMembers: string[];
-  const redirectUrl = formData.get("redirectTo")?.toString();
+  const redirectUrl = formData.get('redirectTo')?.toString();
 
   try {
     // Get form values and validate with schema (schema handles JSON parsing)
@@ -40,19 +38,19 @@ export const groupMembersConfirmationDataAction: FormAction<
     if (!id) {
       return {
         success: false,
-        message: "No application ID provided",
+        message: 'No application ID provided',
         errors: {
-          id: ["Application ID is required"],
+          id: ['Application ID is required'],
         },
         values,
       };
     }
   } catch (error) {
-    console.error("Error updating member confirmation statuses:", error);
+    console.error('Error updating member confirmation statuses:', error);
 
     return {
       success: false,
-      message: "Failed to update member confirmation statuses",
+      message: 'Failed to update member confirmation statuses',
       errors: {},
       values: getFormZodDataValues(
         formData,

@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { UsefulLinkSchema } from "./useful-link.schema";
+import { UsefulLinkSchema } from './useful-link.schema';
 
 export const SiteInformationDataSchema = z.object({
   site: z.object({

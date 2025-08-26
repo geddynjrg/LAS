@@ -1,21 +1,19 @@
-import { useFormatter, useTranslations } from "next-intl";
-import type { FC } from "react";
-
+import type { GroupData } from '@/lib/data/application';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@workspace/ui/components/accordion";
-import { DataNode } from "@workspace/ui/components/data-node";
-import type { ValidFile } from "@workspace/ui/lib/zod";
-
-import type { GroupData } from "@/lib/data/application";
+} from '@workspace/ui/components/accordion';
+import { DataNode } from '@workspace/ui/components/data-node';
+import type { ValidFile } from '@workspace/ui/lib/zod';
+import { useFormatter, useTranslations } from 'next-intl';
+import type { FC } from 'react';
 
 export const ApplicationReviewGroupData: FC<{
   groupData?: GroupData;
 }> = ({ groupData }) => {
-  const t = useTranslations("ApplicationDetailsPage");
+  const t = useTranslations('ApplicationDetailsPage');
   const format = useFormatter();
 
   if (!groupData?.basics && !groupData?.location && !groupData?.background) {
@@ -24,34 +22,34 @@ export const ApplicationReviewGroupData: FC<{
 
   return (
     <div className="mt-6 grid">
-      <h4 className="typo-h4 pb-2">{t("groupData.groupData")}</h4>
+      <h4 className="typo-h4 pb-2">{t('groupData.groupData')}</h4>
       <Accordion type="multiple" className="space-y-2">
         {groupData.basics && (
           <AccordionItem value="basics">
             <AccordionTrigger>
-              {t("groupData.basicInfo.groupBasics")}
+              {t('groupData.basicInfo.groupBasics')}
             </AccordionTrigger>
             <AccordionContent>
               <div className="grid gap-4">
-                <DataNode label={t("groupData.basicInfo.groupName")}>
+                <DataNode label={t('groupData.basicInfo.groupName')}>
                   {groupData.basics.groupName}
                 </DataNode>
-                <DataNode label={t("groupData.basicInfo.registrationNumber")}>
+                <DataNode label={t('groupData.basicInfo.registrationNumber')}>
                   {groupData.basics.groupRegistrationNumber}
                 </DataNode>
-                <DataNode label={t("groupData.basicInfo.dateFormed")}>
+                <DataNode label={t('groupData.basicInfo.dateFormed')}>
                   {format.dateTime(new Date(groupData.basics.dateFormed), {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
                   })}
                 </DataNode>
                 <DataNode
-                  label={t("groupData.basicInfo.groupRegistrationCert")}
+                  label={t('groupData.basicInfo.groupRegistrationCert')}
                 >
                   {getFileName(groupData.basics.groupRegistrationCertificate)}
                 </DataNode>
-                <DataNode label={t("groupData.basicInfo.listOfMembersOnCert")}>
+                <DataNode label={t('groupData.basicInfo.listOfMembersOnCert')}>
                   {getFileName(groupData.basics.listOfMembersOnCertificate)}
                 </DataNode>
               </div>
@@ -62,25 +60,25 @@ export const ApplicationReviewGroupData: FC<{
         {groupData.location && (
           <AccordionItem value="location">
             <AccordionTrigger>
-              {t("groupData.locationInfo.locationOfTheGroup")}
+              {t('groupData.locationInfo.locationOfTheGroup')}
             </AccordionTrigger>
             <AccordionContent>
               <div className="grid gap-4">
                 <DataNode
-                  label={t("groupData.locationInfo.countryOfOperation")}
+                  label={t('groupData.locationInfo.countryOfOperation')}
                 >
                   {groupData.location.countyOfOperation}
                 </DataNode>
-                <DataNode label={t("groupData.locationInfo.constituency")}>
+                <DataNode label={t('groupData.locationInfo.constituency')}>
                   {groupData.location.constituency}
                 </DataNode>
-                <DataNode label={t("groupData.locationInfo.ward")}>
+                <DataNode label={t('groupData.locationInfo.ward')}>
                   {groupData.location.ward}
                 </DataNode>
-                <DataNode label={t("groupData.locationInfo.meetingPoint")}>
+                <DataNode label={t('groupData.locationInfo.meetingPoint')}>
                   {groupData.location.meetingPoint}
                 </DataNode>
-                <DataNode label={t("groupData.locationInfo.nearestLandmark")}>
+                <DataNode label={t('groupData.locationInfo.nearestLandmark')}>
                   {groupData.location.nearestLandmark}
                 </DataNode>
               </div>
@@ -91,19 +89,19 @@ export const ApplicationReviewGroupData: FC<{
         {groupData.background && (
           <AccordionItem value="background">
             <AccordionTrigger>
-              {t("groupData.groupBackground.groupBackground")}
+              {t('groupData.groupBackground.groupBackground')}
             </AccordionTrigger>
             <AccordionContent>
               <div className="grid gap-4">
                 <DataNode
-                  label={t("groupData.groupBackground.purposeOfTheGroup")}
+                  label={t('groupData.groupBackground.purposeOfTheGroup')}
                 >
                   {groupData.background.purposeOfTheGroup.map((purpose) => (
                     <span key={purpose}>{purpose}</span>
                   ))}
                 </DataNode>
                 <DataNode
-                  label={t("groupData.groupBackground.keyActivitiesOfGroup")}
+                  label={t('groupData.groupBackground.keyActivitiesOfGroup')}
                 >
                   {groupData.background.keyActivitiesOfTheGroup.map(
                     (activity) => (
@@ -111,11 +109,11 @@ export const ApplicationReviewGroupData: FC<{
                     ),
                   )}
                 </DataNode>
-                <DataNode label={t("groupData.groupBackground.creditHistory")}>
+                <DataNode label={t('groupData.groupBackground.creditHistory')}>
                   {Array.isArray(groupData.background.groupCreditHistory)
                     ? groupData.background.groupCreditHistory
                         .map((file) => getFileName(file))
-                        .join(", ")
+                        .join(', ')
                     : getFileName(groupData.background.groupCreditHistory)}
                 </DataNode>
               </div>
@@ -128,9 +126,9 @@ export const ApplicationReviewGroupData: FC<{
 };
 
 function getFileName(file: ValidFile) {
-  if (typeof File !== "undefined" && file instanceof File) {
+  if (typeof File !== 'undefined' && file instanceof File) {
     return file.name;
   }
 
-  return (file as { filename?: string }).filename || "Unknown file";
+  return (file as { filename?: string }).filename || 'Unknown file';
 }

@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { getCounties } from "@/lib/api/application/counties";
-import { prisma } from "@/lib/db/prisma";
+import { getCounties } from '@/lib/api/application/counties';
+import { prisma } from '@/lib/db/prisma';
 
 export interface TaxonomyOption {
   label: string;
@@ -35,21 +35,27 @@ export async function getCountyOptions(): Promise<CountyOption[]> {
     });
 
     // Check if cache is still valid
-    if (cached && Date.now() - cached.lastSyncedAt.getTime() < CACHE_DURATION) {
+    if (
+      cached &&
+      Date.now() - cached.lastSyncedAt.getTime() < CACHE_DURATION &&
+      cached.counties.length > 0
+    ) {
       return cached.counties
         .sort((a: any, b: any) => a.weight - b.weight)
         .map((county: any) => ({
           label: county.name,
           value: county.name,
         }));
+    } else {
+      try {
+        await syncCountiesData();
+      } catch (syncError) {
+        console.warn(`Failed to sync counties data: ${syncError}`);
+        // Continue with cached data if available
+      }
     }
 
-    // Data is stale - return cached data if available and let admin manually sync
-    if (cached) {
-      console.warn('Counties data is stale, returning cached data. Admin can manually sync.');
-    }
-
-    // Get updated data
+    // Get updated data (either from successful sync or cached)
     const updated = await prisma.countiesCache.findFirst({
       orderBy: { lastSyncedAt: 'desc' },
       include: { counties: { include: { constituencies: true } } },
@@ -86,7 +92,7 @@ export async function getConstituencyOptions(): Promise<ConstituencyOption[]> {
     // Check if cache is still valid
     if (cached && Date.now() - cached.lastSyncedAt.getTime() < CACHE_DURATION) {
       const constituencies: ConstituencyOption[] = [];
-      
+
       cached.counties.forEach((county: any) => {
         county.constituencies.forEach((constituency: any) => {
           constituencies.push({
@@ -97,16 +103,24 @@ export async function getConstituencyOptions(): Promise<ConstituencyOption[]> {
           });
         });
       });
-      
+
       return constituencies.sort((a, b) => a.label.localeCompare(b.label));
     }
 
-    // Data is stale - return cached data if available and let admin manually sync
-    if (cached) {
-      console.warn('Counties data is stale, returning cached data. Admin can manually sync.');
+    // Data is stale or missing - try to sync automatically
+    if (
+      !cached ||
+      Date.now() - cached.lastSyncedAt.getTime() >= CACHE_DURATION
+    ) {
+      try {
+        await syncCountiesData();
+      } catch (syncError) {
+        console.warn(`Failed to sync counties data: ${syncError}`);
+        // Continue with cached data if available
+      }
     }
 
-    // Get updated data
+    // Get updated data (either from successful sync or cached)
     const updated = await prisma.countiesCache.findFirst({
       orderBy: { lastSyncedAt: 'desc' },
       include: { counties: { include: { constituencies: true } } },
@@ -118,7 +132,7 @@ export async function getConstituencyOptions(): Promise<ConstituencyOption[]> {
     }
 
     const constituencies: ConstituencyOption[] = [];
-    
+
     updated.counties.forEach((county: any) => {
       county.constituencies.forEach((constituency: any) => {
         constituencies.push({
@@ -129,7 +143,7 @@ export async function getConstituencyOptions(): Promise<ConstituencyOption[]> {
         });
       });
     });
-    
+
     return constituencies.sort((a, b) => a.label.localeCompare(b.label));
   } catch (error) {
     console.error('Error fetching constituency options:', error);
@@ -140,27 +154,34 @@ export async function getConstituencyOptions(): Promise<ConstituencyOption[]> {
 /**
  * Get constituencies filtered by county name from all constituency options
  */
-export async function getConstituenciesForCountyName(countyName: string): Promise<TaxonomyOption[]> {
+export async function getConstituenciesForCountyName(
+  countyName: string,
+): Promise<TaxonomyOption[]> {
   try {
     const allConstituencies = await getConstituencyOptions();
-    
+
     // Debug logging
     console.log(`Filtering constituencies for county: "${countyName}"`);
     console.log(`Total constituencies available: ${allConstituencies.length}`);
-    
+
     // Get unique county names for debugging
-    const uniqueCounties = [...new Set(allConstituencies.map(c => c.countyName))];
+    const uniqueCounties = [
+      ...new Set(allConstituencies.map((c) => c.countyName)),
+    ];
     console.log(`Available counties in data:`, uniqueCounties);
-    
+
     const filtered = allConstituencies
-      .filter(c => c.countyName === countyName)
-      .map(c => ({ label: c.label, value: c.value }));
-    
+      .filter((c) => c.countyName === countyName)
+      .map((c) => ({ label: c.label, value: c.value }));
+
     console.log(`Found ${filtered.length} constituencies for "${countyName}"`);
-    
+
     return filtered;
   } catch (error) {
-    console.error(`Error filtering constituencies for county ${countyName}:`, error);
+    console.error(
+      `Error filtering constituencies for county ${countyName}:`,
+      error,
+    );
     return [];
   }
 }
@@ -168,17 +189,42 @@ export async function getConstituenciesForCountyName(countyName: string): Promis
 /**
  * Get constituencies for a specific county
  */
-export async function getConstituenciesForCounty(countyName: string): Promise<ConstituencyOption[]> {
+export async function getConstituenciesForCounty(
+  countyName: string,
+): Promise<ConstituencyOption[]> {
   try {
-    const cached = await prisma.countiesCache.findFirst({
+    let cached = await prisma.countiesCache.findFirst({
       orderBy: { lastSyncedAt: 'desc' },
-      include: { 
-        counties: { 
+      include: {
+        counties: {
           where: { name: countyName },
-          include: { constituencies: true } 
-        } 
+          include: { constituencies: true },
+        },
       },
     });
+
+    // If no cached data or data is stale, try to sync automatically
+    if (
+      !cached ||
+      Date.now() - cached.lastSyncedAt.getTime() >= CACHE_DURATION
+    ) {
+      try {
+        await syncCountiesData();
+        // Re-fetch after sync
+        cached = await prisma.countiesCache.findFirst({
+          orderBy: { lastSyncedAt: 'desc' },
+          include: {
+            counties: {
+              where: { name: countyName },
+              include: { constituencies: true },
+            },
+          },
+        });
+      } catch (syncError) {
+        console.warn(`Failed to sync counties data: ${syncError}`);
+        // Continue with cached data if available
+      }
+    }
 
     if (!cached || cached.counties.length === 0) {
       return [];
@@ -188,7 +234,7 @@ export async function getConstituenciesForCounty(countyName: string): Promise<Co
     if (!county) {
       return [];
     }
-    
+
     return county.constituencies
       .sort((a: any, b: any) => a.name.localeCompare(b.name))
       .map((constituency: any) => ({
@@ -198,7 +244,10 @@ export async function getConstituenciesForCounty(countyName: string): Promise<Co
         countyName: county.name,
       }));
   } catch (error) {
-    console.error(`Error fetching constituencies for county ${countyName}:`, error);
+    console.error(
+      `Error fetching constituencies for county ${countyName}:`,
+      error,
+    );
     return [];
   }
 }
@@ -208,12 +257,12 @@ export async function getConstituenciesForCounty(countyName: string): Promise<Co
  */
 export async function syncCountiesData() {
   try {
-    console.log("Syncing counties data...");
+    console.log('Syncing counties data...');
 
     const response = await getCounties();
 
     if (!response || !response.data) {
-      console.warn("No valid data received from counties API", response);
+      console.warn('No valid data received from counties API', response);
       return;
     }
 
@@ -264,9 +313,11 @@ export async function syncCountiesData() {
       }
     });
 
-    console.log(`Successfully synced ${response.data.length} counties with ${response.meta.total_constituencies} constituencies`);
+    console.log(
+      `Successfully synced ${response.data.length} counties with ${response.meta.total_constituencies} constituencies`,
+    );
   } catch (error) {
-    console.error("Error syncing counties data:", error);
+    console.error('Error syncing counties data:', error);
     throw error;
   }
 }

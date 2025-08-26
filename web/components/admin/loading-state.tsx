@@ -1,4 +1,4 @@
-import { IconLoader } from "@tabler/icons-react";
+import { IconLoader } from '@tabler/icons-react';
 
 interface LoadingStateProps {
   message?: string;
@@ -6,8 +6,8 @@ interface LoadingStateProps {
 }
 
 export function LoadingState({
-  message = "Loading...",
-  className = "min-h-screen",
+  message = 'Loading...',
+  className = 'min-h-screen',
 }: LoadingStateProps) {
   return (
     <div className={`flex items-center justify-center bg-gray-50 ${className}`}>

@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-
-import { retryAllFailedItems } from "@/lib/api/sync.service";
-import { requireAdminAPI } from "@/lib/auth/guards";
+import { retryAllFailedItems } from '@/lib/api/sync.service';
+import { requireAdminAPI } from '@/lib/auth/guards';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(_request: NextRequest) {
   try {
@@ -19,15 +18,15 @@ export async function POST(_request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error retrying all failed items:", error);
+    console.error('Error retrying all failed items:', error);
 
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
     );

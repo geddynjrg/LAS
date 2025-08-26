@@ -1,7 +1,7 @@
 name: 'CI'
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
     types: [opened, synchronize]
 jobs:
@@ -30,13 +30,12 @@ jobs:
         run: pnpm install
 
       # eun code quality scripts
-      - name: "lint"
+      - name: 'lint'
         run: pnpm lint
         continue-on-error: true
-        
-      - name: "check types"
+
+      - name: 'check types'
         run: pnpm check-types
-        
-      - name: "format code"
+
+      - name: 'format code'
         run: pnpm format
-        

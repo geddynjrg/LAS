@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * File data schema for uploaded documents
@@ -8,16 +8,16 @@ export const FileDataSchema = z
   .object({
     fid: z
       .union([z.number(), z.string()])
-      .describe("File ID (can be number or string)"),
-    uuid: z.string().optional().describe("File UUID"),
-    filename: z.string().optional().describe("Original filename"),
-    uri: z.string().optional().describe("File URI"),
-    url: z.string().optional().describe("Public URL to access the file"),
-    filemime: z.string().optional().describe("MIME type of the file"),
+      .describe('File ID (can be number or string)'),
+    uuid: z.string().optional().describe('File UUID'),
+    filename: z.string().optional().describe('Original filename'),
+    uri: z.string().optional().describe('File URI'),
+    url: z.string().optional().describe('Public URL to access the file'),
+    filemime: z.string().optional().describe('MIME type of the file'),
     filesize: z
       .union([z.number(), z.string()])
       .optional()
-      .describe("File size in bytes"),
+      .describe('File size in bytes'),
   })
   .passthrough(); // Allow additional fields
 
@@ -29,11 +29,11 @@ export const TaxonomyTermSchema = z
   .object({
     tid: z
       .union([z.number(), z.string()])
-      .describe("Term ID (can be number or string)"),
-    name: z.string().describe("Term name"),
-    vid: z.union([z.number(), z.string()]).optional().describe("Vocabulary ID"),
-    description: z.string().nullable().optional().describe("Term description"),
-    uuid: z.string().optional().describe("Term UUID"),
+      .describe('Term ID (can be number or string)'),
+    name: z.string().describe('Term name'),
+    vid: z.union([z.number(), z.string()]).optional().describe('Vocabulary ID'),
+    description: z.string().nullable().optional().describe('Term description'),
+    uuid: z.string().optional().describe('Term UUID'),
   })
   .passthrough(); // Allow additional fields
 
@@ -42,29 +42,29 @@ export const TaxonomyTermSchema = z
  */
 export const MemberConfirmationInfoSchema = z.object({
   status: z
-    .enum(["pending", "sent", "confirmed", "failed"])
-    .describe("Current confirmation status"),
+    .enum(['pending', 'sent', 'confirmed', 'failed'])
+    .describe('Current confirmation status'),
   sent_at: z
     .union([z.number(), z.string()])
     .nullable()
     .optional()
-    .describe("Unix timestamp when SMS was sent (can be number or string)"),
+    .describe('Unix timestamp when SMS was sent (can be number or string)'),
   confirmed_at: z
     .union([z.number(), z.string()])
     .nullable()
     .optional()
-    .describe("Unix timestamp when member confirmed (can be number or string)"),
-  is_confirmed: z.boolean().describe("Whether the member has confirmed"),
-  is_declined: z.boolean().describe("Whether the member has declined"),
+    .describe('Unix timestamp when member confirmed (can be number or string)'),
+  is_confirmed: z.boolean().describe('Whether the member has confirmed'),
+  is_declined: z.boolean().describe('Whether the member has declined'),
   urls: z.object({
     api: z
       .string()
       .url()
-      .describe("REST API endpoint URL for programmatic confirmation"),
+      .describe('REST API endpoint URL for programmatic confirmation'),
     frontend: z
       .string()
       .url()
-      .describe("Frontend application URL for user confirmation"),
+      .describe('Frontend application URL for user confirmation'),
   }),
 });
 
@@ -76,10 +76,10 @@ export const GroupMemberDetailSchema = z.object({
   id: z
     .union([z.number(), z.string()])
     .optional()
-    .describe("Member entity ID (can be number or string)"),
+    .describe('Member entity ID (can be number or string)'),
   name: z.string().optional(),
   id_number: z.string().optional(),
-  gender: z.enum(["male", "female", "other"]).optional(),
+  gender: z.enum(['male', 'female', 'other']).optional(),
   phone_number: z.string().optional(),
   position: TaxonomyTermSchema.optional(),
   photo_member_id: FileDataSchema.optional(),
@@ -87,7 +87,7 @@ export const GroupMemberDetailSchema = z.object({
   requires_confirmation: z
     .boolean()
     .optional()
-    .describe("Whether this member requires SMS confirmation"),
+    .describe('Whether this member requires SMS confirmation'),
   pwd_number: z.string().nullable().optional(),
   certificate_disability: FileDataSchema.optional(),
   confirmation: MemberConfirmationInfoSchema.optional(),
@@ -101,42 +101,42 @@ export const ApplicationDetailSchema = z.object({
   id: z
     .union([z.number(), z.string()])
     .optional()
-    .describe("Entity ID (can be number or string)"),
-  uuid: z.string().optional().describe("Entity UUID"),
-  application_id: z.string().optional().describe("Application ID"),
+    .describe('Entity ID (can be number or string)'),
+  uuid: z.string().optional().describe('Entity UUID'),
+  application_id: z.string().optional().describe('Application ID'),
   status: z
     .enum([
-      "draft",
-      "submitted",
-      "under_review",
-      "approved",
-      "rejected",
-      "disbursed",
-      "closed",
+      'draft',
+      'submitted',
+      'under_review',
+      'approved',
+      'rejected',
+      'disbursed',
+      'closed',
     ])
     .optional()
-    .describe("Application status"),
+    .describe('Application status'),
   created: z
     .union([z.number(), z.string()])
     .optional()
-    .describe("Creation timestamp (unix timestamp or string)"),
+    .describe('Creation timestamp (unix timestamp or string)'),
   changed: z
     .union([z.number(), z.string()])
     .optional()
-    .describe("Last modified timestamp (unix timestamp or string)"),
+    .describe('Last modified timestamp (unix timestamp or string)'),
   owner: z
     .object({
       id: z
         .union([z.number(), z.string()])
         .optional()
-        .describe("User ID (can be number or string)"),
+        .describe('User ID (can be number or string)'),
       email: z
         .string()
         .email()
         .nullable()
         .optional()
-        .describe("User email (can be null)"),
-      name: z.string().optional().describe("User name"),
+        .describe('User email (can be null)'),
+      name: z.string().optional().describe('User name'),
     })
     .optional(),
   group_data: z
@@ -146,7 +146,7 @@ export const ApplicationDetailSchema = z.object({
       date_registered: z
         .string()
         .optional()
-        .describe("Date in YYYY-MM-DD format"),
+        .describe('Date in YYYY-MM-DD format'),
       group_registration_certificate: FileDataSchema.optional(),
       list_of_members_certificate: FileDataSchema.optional(),
       group_background: z.array(TaxonomyTermSchema).optional(),
@@ -169,7 +169,7 @@ export const ApplicationDetailSchema = z.object({
       group_credit_history: z
         .array(FileDataSchema)
         .optional()
-        .describe("Group credit history documents"),
+        .describe('Group credit history documents'),
     })
     .optional(),
   location: z
@@ -181,7 +181,7 @@ export const ApplicationDetailSchema = z.object({
       nearest_landmark: z.string().optional(),
     })
     .optional(),
-  nature_of_group: z.enum(["youth", "pwd", "women"]).optional(),
+  nature_of_group: z.enum(['youth', 'pwd', 'women']).optional(),
   group_members: z.array(GroupMemberDetailSchema).optional(),
   loan_conditions: z
     .object({
@@ -200,7 +200,7 @@ export const ApplicationDetailSchema = z.object({
   proposed_business: z
     .object({
       nature_of_business: z
-        .enum(["startup", "expansion"])
+        .enum(['startup', 'expansion'])
         .nullable()
         .optional(),
       business_type: z.array(TaxonomyTermSchema).optional(),
@@ -208,7 +208,7 @@ export const ApplicationDetailSchema = z.object({
         .union([z.number(), z.string()])
         .nullable()
         .optional()
-        .describe("Years in operation (can be number or string)"),
+        .describe('Years in operation (can be number or string)'),
       average_income: z.union([z.number(), z.string()]).nullable().optional(),
       expenses: z.array(z.record(z.unknown())).optional(),
     })
@@ -217,14 +217,14 @@ export const ApplicationDetailSchema = z.object({
     .object({
       rejection_reason: z
         .enum([
-          "incomplete_information",
-          "missing_documents",
-          "eligibility_criteria",
-          "duplicate_application",
-          "insufficient_collateral",
-          "poor_credit_history",
-          "member_declined",
-          "other",
+          'incomplete_information',
+          'missing_documents',
+          'eligibility_criteria',
+          'duplicate_application',
+          'insufficient_collateral',
+          'poor_credit_history',
+          'member_declined',
+          'other',
         ])
         .optional(),
       rejection_message: z.string().optional(),
@@ -237,13 +237,13 @@ export const ApplicationDetailSchema = z.object({
  * Pagination metadata schema
  */
 export const PaginationMetaSchema = z.object({
-  total_count: z.number().optional().describe("Total number of applications"),
-  limit: z.number().optional().describe("Number of items per page"),
-  offset: z.number().optional().describe("Number of items to skip"),
+  total_count: z.number().optional().describe('Total number of applications'),
+  limit: z.number().optional().describe('Number of items per page'),
+  offset: z.number().optional().describe('Number of items to skip'),
   has_more: z
     .boolean()
     .optional()
-    .describe("Whether there are more items available"),
+    .describe('Whether there are more items available'),
 });
 
 /**
@@ -254,14 +254,14 @@ export const UserInfoSchema = z.object({
   id: z
     .union([z.number(), z.string()])
     .optional()
-    .describe("User ID (can be number or string)"),
-  name: z.string().optional().describe("User name"),
+    .describe('User ID (can be number or string)'),
+  name: z.string().optional().describe('User name'),
   email: z
     .string()
     .email()
     .nullable()
     .optional()
-    .describe("User email (can be null)"),
+    .describe('User email (can be null)'),
 });
 
 /**
@@ -271,21 +271,21 @@ export const ApplicationsListResponseSchema = z.object({
   success: z
     .boolean()
     .optional()
-    .describe("Whether the request was successful"),
+    .describe('Whether the request was successful'),
   data: z
     .array(ApplicationDetailSchema)
     .optional()
-    .describe("Array of application details"),
-  meta: PaginationMetaSchema.optional().describe("Pagination metadata"),
-  user: UserInfoSchema.optional().describe("User information"),
+    .describe('Array of application details'),
+  meta: PaginationMetaSchema.optional().describe('Pagination metadata'),
+  user: UserInfoSchema.optional().describe('User information'),
 });
 
 /**
  * Applications list error schema
  */
 export const ApplicationsListErrorSchema = z.object({
-  error: z.string().optional().describe("Error type"),
-  message: z.string().optional().describe("Error message"),
+  error: z.string().optional().describe('Error type'),
+  message: z.string().optional().describe('Error message'),
 });
 
 /**
@@ -294,25 +294,25 @@ export const ApplicationsListErrorSchema = z.object({
 export const ApplicationsListQuerySchema = z.object({
   status: z
     .enum([
-      "draft",
-      "submitted",
-      "under_review",
-      "approved",
-      "rejected",
-      "disbursed",
-      "closed",
+      'draft',
+      'submitted',
+      'under_review',
+      'approved',
+      'rejected',
+      'disbursed',
+      'closed',
     ])
     .optional()
-    .describe("Filter applications by status"),
+    .describe('Filter applications by status'),
   application_id: z
     .string()
     .optional()
-    .describe("Filter applications by application ID"),
+    .describe('Filter applications by application ID'),
   limit: z
     .number()
     .optional()
-    .describe("Number of applications to return per page"),
-  offset: z.number().optional().describe("Number of applications to skip"),
+    .describe('Number of applications to return per page'),
+  offset: z.number().optional().describe('Number of applications to skip'),
 });
 
 // Export types

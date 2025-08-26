@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient } from '@/generated/prisma';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -9,10 +9,10 @@ export const prisma =
   global.prisma ||
   new PrismaClient({
     //   log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   });
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
 }
 
@@ -23,25 +23,25 @@ export function handlePrismaError(error: unknown): {
 } {
   if (error instanceof Error) {
     // Prisma specific errors
-    if ("code" in error) {
+    if ('code' in error) {
       const prismaError = error as any;
       switch (prismaError.code) {
-        case "P2002":
+        case 'P2002':
           return {
-            message: "A record with this value already exists.",
-            code: "DUPLICATE",
+            message: 'A record with this value already exists.',
+            code: 'DUPLICATE',
           };
-        case "P2025":
-          return { message: "Record not found.", code: "NOT_FOUND" };
-        case "P2003":
-          return { message: "Invalid reference.", code: "INVALID_REFERENCE" };
-        case "P2021":
-          return { message: "Table does not exist.", code: "TABLE_NOT_FOUND" };
+        case 'P2025':
+          return { message: 'Record not found.', code: 'NOT_FOUND' };
+        case 'P2003':
+          return { message: 'Invalid reference.', code: 'INVALID_REFERENCE' };
+        case 'P2021':
+          return { message: 'Table does not exist.', code: 'TABLE_NOT_FOUND' };
         default:
           return { message: prismaError.message, code: prismaError.code };
       }
     }
     return { message: error.message };
   }
-  return { message: "An unknown error occurred" };
+  return { message: 'An unknown error occurred' };
 }

@@ -1,23 +1,21 @@
-import { IconPhone } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import type { FC } from "react";
-
+import { MemberStatusIndicator } from '@/components/member-status-indicator';
+// import { MemberSummary } from "@/components/member-summary";
+import type { MembersData } from '@/lib/data/application';
+import { IconPhone } from '@tabler/icons-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@workspace/ui/components/accordion";
-import { DataNode } from "@workspace/ui/components/data-node";
-
-import { MemberStatusIndicator } from "@/components/member-status-indicator";
-// import { MemberSummary } from "@/components/member-summary";
-import type { MembersData } from "@/lib/data/application";
+} from '@workspace/ui/components/accordion';
+import { DataNode } from '@workspace/ui/components/data-node';
+import { useTranslations } from 'next-intl';
+import type { FC } from 'react';
 
 export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
   membersData,
 }) => {
-  const t = useTranslations("ApplicationDetailsPage");
+  const t = useTranslations('ApplicationDetailsPage');
 
   if (!membersData?.members) {
     return null;
@@ -26,17 +24,17 @@ export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
   // Group members by role
   const groupedMembers = {
     Chairman: membersData.members.filter(
-      (member) => member.type === "Chairman",
+      (member) => member.type === 'Chairman',
     ),
     Secretary: membersData.members.filter(
-      (member) => member.type === "Secretary",
+      (member) => member.type === 'Secretary',
     ),
-    Member: membersData.members.filter((member) => member.type === "Member"),
+    Member: membersData.members.filter((member) => member.type === 'Member'),
   };
 
   return (
     <div className="mt-6 grid">
-      <h4 className="typo-h4 pb-2">{t("members.members")}</h4>
+      <h4 className="typo-h4 pb-2">{t('members.members')}</h4>
 
       {/* Member Statistics Summary */}
       {/* <MemberSummary
@@ -49,7 +47,7 @@ export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
       <Accordion collapsible type="single" className="space-y-2">
         <AccordionItem value="members">
           <AccordionTrigger>
-            {t("members.members")} ({membersData.members.length})
+            {t('members.members')} ({membersData.members.length})
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-6">
@@ -70,14 +68,14 @@ export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
                             <div className="mb-2 flex items-start justify-between">
                               <div className="flex items-center gap-2">
                                 <DataNode
-                                  label={member.fullname ?? ""}
+                                  label={member.fullname ?? ''}
                                   className="mb-0"
                                 >
                                   {member.type}
                                 </DataNode>
                               </div>
                               <MemberStatusIndicator
-                                status={member.status || "pending"}
+                                status={member.status || 'pending'}
                                 variant="badge"
                                 size="sm"
                               />
@@ -86,13 +84,13 @@ export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
                             <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-neutral-600">
                               <div className="flex items-center gap-1">
                                 <span className="font-medium">
-                                  {t("members.idLabel")}:
+                                  {t('members.idLabel')}:
                                 </span>
                                 <span>{member.nationalIdCode}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <span className="font-medium">
-                                  {t("members.genderLabel")}:
+                                  {t('members.genderLabel')}:
                                 </span>
                                 <span>{member.gender}</span>
                               </div>
@@ -103,12 +101,12 @@ export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
                               {member.requiresConfirmation && (
                                 <div className="flex items-center gap-1">
                                   <MemberStatusIndicator
-                                    status={member.status || "pending"}
+                                    status={member.status || 'pending'}
                                     variant="icon"
                                     size="sm"
                                   />
                                   <span className="text-xs">
-                                    {t("members.confirmationRequired")}
+                                    {t('members.confirmationRequired')}
                                   </span>
                                 </div>
                               )}

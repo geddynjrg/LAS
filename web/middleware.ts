@@ -1,26 +1,22 @@
-import { NextResponse, userAgent, type NextRequest } from "next/server";
+import { updateSession } from '@/lib/session';
+import { type NextRequest, NextResponse, userAgent } from 'next/server';
 
-import { updateSession } from "@/lib/session";
+const protectedRoutes = ['/dashboard', '/apply', '/admin'];
+const adminRoutes = ['/admin'];
+const publicRoutes = ['/login', '/signup', '/reset'];
 
-const protectedRoutes = ["/dashboard", "/apply", "/admin"];
-const adminRoutes = ["/admin"];
-const publicRoutes = ["/login", "/signup", "/reset"];
-
-const loggedInRedirect = "/dashboard";
-const loggedOutRedirect = "/login";
+const loggedInRedirect = '/dashboard';
+const loggedOutRedirect = '/login';
 
 // Helper function to check if user has admin role
 async function isUserAdmin(session: string): Promise<boolean> {
   try {
-    const response = await fetch(
-      `${process.env.API_URL}/api/v1/user/profile`,
-      {
-        headers: {
-          Authorization: `Bearer ${session}`,
-          "Content-Type": "application/json",
-        },
+    const response = await fetch(`${process.env.API_URL}/api/v1/user/profile`, {
+      headers: {
+        Authorization: `Bearer ${session}`,
+        'Content-Type': 'application/json',
       },
-    );
+    });
 
     if (!response.ok) {
       return false;
@@ -31,11 +27,11 @@ async function isUserAdmin(session: string): Promise<boolean> {
 
     return roles.some(
       (role: string) =>
-        role.toLowerCase() === "admin" ||
-        role.toLowerCase() === "administrator",
+        role.toLowerCase() === 'admin' ||
+        role.toLowerCase() === 'administrator',
     );
   } catch (error) {
-    console.error("Error checking admin role in middleware:", error);
+    console.error('Error checking admin role in middleware:', error);
     return false;
   }
 }
@@ -44,11 +40,11 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
   const { device } = userAgent(request);
-  const deviceType = device.type === "mobile" ? "mobile" : "desktop";
+  const deviceType = device.type === 'mobile' ? 'mobile' : 'desktop';
 
   // Add new request headers
-  requestHeaders.set("x-path", request.nextUrl.pathname);
-  requestHeaders.set("x-device-type", deviceType);
+  requestHeaders.set('x-path', request.nextUrl.pathname);
+  requestHeaders.set('x-device-type', deviceType);
 
   const path = request.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some((r) => path.startsWith(r));
@@ -68,7 +64,7 @@ export async function middleware(request: NextRequest) {
     const newUrl = new URL(loggedOutRedirect, request.nextUrl);
     // Include the full path with search params
     const callbackUrl = request.nextUrl.pathname + request.nextUrl.search;
-    newUrl.searchParams.set("callbackUrl", callbackUrl);
+    newUrl.searchParams.set('callbackUrl', callbackUrl);
 
     return NextResponse.redirect(newUrl, {
       headers: requestHeaders,
@@ -89,25 +85,25 @@ export async function middleware(request: NextRequest) {
   // Redirect api requests to api route with correct headers
   // Exclude internal Next.js API routes
   const internalApiRoutes = [
-    "/api/profile",
-    "/api/logout",
-    "/api/upload",
-    "/api/admin/sync-queue",
-    "/api/cron/sync-applications",
-    "/api/test",
+    '/api/profile',
+    '/api/logout',
+    '/api/upload',
+    '/api/admin/sync-queue',
+    '/api/cron/sync-applications',
+    '/api/test',
   ];
   const isInternalRoute = internalApiRoutes.some((route) =>
     path.startsWith(route),
   );
 
-  if (path.startsWith("/api") && !isInternalRoute) {
+  if (path.startsWith('/api') && !isInternalRoute) {
     const newUrl = new URL(
       `${path}${request.nextUrl.search}`,
       process.env.API_URL,
     );
 
     if (session) {
-      requestHeaders.set("authorization", `Bearer ${session}`);
+      requestHeaders.set('authorization', `Bearer ${session}`);
     }
 
     return NextResponse.rewrite(newUrl, { headers: requestHeaders });
@@ -125,6 +121,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

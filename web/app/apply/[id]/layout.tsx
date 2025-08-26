@@ -1,12 +1,10 @@
-import { getTranslations } from "next-intl/server";
-import { redirect } from "next/navigation";
-import { ReactNode } from "react";
-
-import type { Step } from "@workspace/ui/components/stepper";
-
-import { ApplyFormStepper } from "@/app/apply/[id]/apply-form-stepper";
-import { getApplicationById } from "@/lib/data/application-db";
-import { getSession } from "@/lib/session";
+import { ApplyFormStepper } from '@/app/apply/[id]/apply-form-stepper';
+import { getApplicationById } from '@/lib/data/application-db';
+import { getSession } from '@/lib/session';
+import type { Step } from '@workspace/ui/components/stepper';
+import { getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
+import { ReactNode } from 'react';
 
 export interface ApplyLayoutProps {
   params: Promise<{ id: string }>;
@@ -27,33 +25,33 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
   const steps: Step[] = [
     {
       index: 1,
-      title: t("ApplicationDetailsPage.groupData.groupData"),
-      path: "/group-data",
+      title: t('ApplicationDetailsPage.groupData.groupData'),
+      path: '/group-data',
     },
     {
       index: 2,
-      title: t("ApplicationDetailsPage.groupData.steps.groupMembers"),
-      path: "/members",
+      title: t('ApplicationDetailsPage.groupData.steps.groupMembers'),
+      path: '/members',
     },
     {
       index: 3,
-      title: t("ApplicationDetailsPage.loan.loanConditions"),
-      path: "/loan-conditions",
+      title: t('ApplicationDetailsPage.loan.loanConditions'),
+      path: '/loan-conditions',
     },
     {
       index: 4,
-      title: t("ApplicationDetailsPage.proposedBusiness.proposedBusiness"),
-      path: "/proposed-business",
+      title: t('ApplicationDetailsPage.proposedBusiness.proposedBusiness'),
+      path: '/proposed-business',
     },
     {
       index: 5,
-      title: t("ApplicationDetailsPage.groupData.steps.confirmations"),
-      path: "/confirmations",
+      title: t('ApplicationDetailsPage.groupData.steps.confirmations'),
+      path: '/confirmations',
     },
     {
       index: 6,
-      title: t("ReviewPage.title"),
-      path: "/review",
+      title: t('ReviewPage.title'),
+      path: '/review',
     },
   ];
 

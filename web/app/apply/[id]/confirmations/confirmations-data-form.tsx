@@ -1,21 +1,19 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useEffect, type FC } from "react";
-
-import { Checkbox } from "@workspace/ui/components/checkbox";
-import { Container } from "@workspace/ui/components/container";
-import { Field, Form } from "@workspace/ui/components/form";
-import { FormCard } from "@workspace/ui/components/uwezo/form-card";
-import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-import { cn } from "@workspace/ui/lib/utils";
-
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+import { ApplyFormActionBar } from '@/app/apply/[id]/apply-form-action-bar';
 import {
-  confirmationDataSchema,
   type ConfirmationData,
-} from "@/app/apply/[id]/confirmations/confirmation-data-schema";
-import type { DeclarationsData } from "@/lib/data/application";
+  confirmationDataSchema,
+} from '@/app/apply/[id]/confirmations/confirmation-data-schema';
+import type { DeclarationsData } from '@/lib/data/application';
+import { Checkbox } from '@workspace/ui/components/checkbox';
+import { Container } from '@workspace/ui/components/container';
+import { Field, Form } from '@workspace/ui/components/form';
+import { FormCard } from '@workspace/ui/components/uwezo/form-card';
+import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { cn } from '@workspace/ui/lib/utils';
+import { useTranslations } from 'next-intl';
+import { type FC, useEffect } from 'react';
 
 export interface ConfirmationsDataProps {
   id: string;
@@ -55,11 +53,11 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
     <Form
       action={formAction}
       autoComplete="on"
-      className={cn("grow-1 flex flex-col justify-between")}
+      className={cn('grow-1 flex flex-col justify-between')}
     >
-      <Container className={cn("space-y-8")}>
+      <Container className={cn('space-y-8')}>
         <FormCard
-          title={t("ConfirmationsPage.form-title-declarations")}
+          title={t('ConfirmationsPage.form-title-declarations')}
           className="space-y-4"
         >
           <Field
@@ -68,7 +66,7 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
             required
             control={(props) => (
               <Checkbox {...props}>
-                {t("ConfirmationsPage.confirmationDataForm.group-member")}
+                {t('ConfirmationsPage.confirmationDataForm.group-member')}
               </Checkbox>
             )}
           />
@@ -79,7 +77,7 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
             control={(props) => (
               <Checkbox {...props}>
                 {t(
-                  "ConfirmationsPage.confirmationDataForm.declare-true-information",
+                  'ConfirmationsPage.confirmationDataForm.declare-true-information',
                 )}
               </Checkbox>
             )}
@@ -90,7 +88,7 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
             required
             control={(props) => (
               <Checkbox {...props}>
-                {t("ConfirmationsPage.confirmationDataForm.agree-to-repayment")}
+                {t('ConfirmationsPage.confirmationDataForm.agree-to-repayment')}
               </Checkbox>
             )}
           />
@@ -101,7 +99,7 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
             control={(props) => (
               <Checkbox {...props}>
                 {t(
-                  "ConfirmationsPage.confirmationDataForm.no-additional-loans",
+                  'ConfirmationsPage.confirmationDataForm.no-additional-loans',
                 )}
               </Checkbox>
             )}
