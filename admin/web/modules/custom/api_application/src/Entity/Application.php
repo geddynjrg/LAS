@@ -127,6 +127,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
         'duplicate_application' => t('Duplicate application'),
         'insufficient_collateral' => t('Insufficient collateral'),
         'poor_credit_history' => t('Poor credit history'),
+        'member_declined' => t('Group member(s) declined participation'),
         'other' => t('Other reason'),
       ])
       ->setDisplayOptions('view', [
@@ -1181,16 +1182,16 @@ class Application extends ContentEntityBase implements ApplicationInterface {
     // Handle SMS notifications based on changes.
     $this->handleSmsNotifications($update);
 
-    // Handle automatic transition from submitted to unassigned.
-    // This must be done in postSave to ensure the submitted status is saved
-    // first and notifications are triggered before transitioning to unassigned.
+    // Handle immediate transition if no members require confirmation.
+    // This handles the case where SMS confirmation flow won't be triggered.
     if ($update && $this->original) {
       $original_status = $this->original->getStatus();
       $new_status = $this->getStatus();
 
-      // Automatically transition from submitted to unassigned.
+      // Check if transitioning to submitted and no members require
+      // confirmation.
       if ($original_status !== 'submitted' && $new_status === 'submitted') {
-        $this->triggerDelayedStatusTransition('unassigned', 'automatic_transition');
+        $this->checkIfImmediateTransitionNeeded();
       }
     }
   }
@@ -1432,80 +1433,57 @@ class Application extends ContentEntityBase implements ApplicationInterface {
   }
 
   /**
-   * Triggers a delayed status transition to avoid save loops.
+   * Check if immediate status transition is required.
    *
-   * @param string $new_status
-   *   The status to transition to.
-   * @param string $reason
-   *   The reason for the transition.
+   * If no group members require SMS confirmation, the application should
+   * immediately transition from 'submitted' to 'unassigned' since the
+   * SMS confirmation flow won't be triggered.
    */
-  protected function triggerDelayedStatusTransition($new_status, $reason = '') {
-    // Use a static flag to prevent infinite loops during status transitions.
-    static $transitioning = [];
-    $key = $this->id() . ':' . $new_status;
-
-    if (isset($transitioning[$key])) {
-      // Already transitioning this application to this status, avoid loop.
-      return;
-    }
-
-    $transitioning[$key] = TRUE;
-    $application_id = $this->id();
-    $app_id_display = $this->getApplicationId();
-
+  protected function checkIfImmediateTransitionNeeded() {
     try {
-      // Use register_shutdown_function to perform the transition after
-      // the current save operation completes and notifications are sent.
-      register_shutdown_function(function () use ($application_id, $new_status, $reason, $key, $app_id_display, &$transitioning) {
-        if (isset($transitioning[$key])) {
-          unset($transitioning[$key]);
-          // Static method to perform the transition without object reference.
-          static::performDelayedStatusTransition($application_id, $new_status, $reason, $app_id_display);
+      $group_members = $this->getGroupMembers();
+      $requires_confirmation = FALSE;
+
+      // Check if any members require confirmation.
+      foreach ($group_members as $member) {
+        if ($member->requiresConfirmation()) {
+          $requires_confirmation = TRUE;
+          break;
         }
-      });
-    }
-    catch (\Exception $e) {
-      // Clean up the flag if something goes wrong.
-      unset($transitioning[$key]);
-    }
-  }
-
-  /**
-   * Performs a delayed status transition for an application.
-   *
-   * @param int $application_id
-   *   The application entity ID.
-   * @param string $new_status
-   *   The status to transition to.
-   * @param string $reason
-   *   The reason for the transition.
-   * @param string $app_id_display
-   *   The application ID for display/logging purposes.
-   */
-  protected static function performDelayedStatusTransition($application_id, $new_status, $reason = '', $app_id_display = '') {
-    try {
-      // Reload the entity to ensure we have the latest state.
-      $storage = \Drupal::entityTypeManager()->getStorage('application');
-      $application = $storage->load($application_id);
-
-      if (!$application || $application->getStatus() !== 'submitted') {
-        // Application no longer exists or status has already changed.
-        return;
       }
 
-      // Set the new status and save.
-      $application->setStatus($new_status);
-      $application->save();
+      // If no members require confirmation, immediately transition to
+      // unassigned.
+      if (!$requires_confirmation) {
+        // Use a shutdown function to avoid recursive saves and allow
+        // notifications.
+        $application_id = $this->id();
+        $app_id_display = $this->getApplicationId();
+
+        register_shutdown_function(function () use ($application_id, $app_id_display) {
+          try {
+            $storage = \Drupal::entityTypeManager()->getStorage('application');
+            $application = $storage->load($application_id);
+
+            if ($application && $application->getStatus() === 'submitted') {
+              $application->setStatus('unassigned');
+              $application->save();
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('api_application')->error('Failed to auto-transition application @id to unassigned: @message', [
+              '@id' => $app_id_display,
+              '@message' => $e->getMessage(),
+            ]);
+          }
+        });
+      }
     }
     catch (\Exception $e) {
-      \Drupal::logger('api_application')->error(
-        'Failed to automatically transition application @id to @status: @error',
-        [
-          '@id' => $app_id_display ?: "ID-$application_id",
-          '@status' => $new_status,
-          '@error' => $e->getMessage(),
-        ]
-      );
+      \Drupal::logger('api_application')->error('Error checking immediate transition for application @id: @message', [
+        '@id' => $this->getApplicationId(),
+        '@message' => $e->getMessage(),
+      ]);
     }
   }
 

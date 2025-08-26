@@ -330,6 +330,9 @@ class SmsConfirmationService {
       '@action' => $action,
     ]);
 
+    // Check if application status should be updated based on member responses.
+    $this->checkApplicationStatusAfterMemberResponse($member);
+
     return $member;
   }
 
@@ -556,6 +559,125 @@ class SmsConfirmationService {
       $this->cacheTagsInvalidator->invalidateTags([
         'application:' . $application->id(),
       ]);
+    }
+  }
+
+  /**
+   * Check if application status should be updated after a member response.
+   *
+   * This method checks the confirmation status of all required group members
+   * and transitions the application to the appropriate status:
+   * - If all required members confirmed: transition to 'unassigned'
+   * - If any required member declined: transition to 'rejected'
+   * - Otherwise: keep as 'submitted' (waiting for more confirmations)
+   *
+   * @param \Drupal\api_application\Entity\GroupMemberInterface $member
+   *   The member that just responded.
+   */
+  protected function checkApplicationStatusAfterMemberResponse(GroupMemberInterface $member) {
+    $application = $member->getApplication();
+
+    if (!$application) {
+      return;
+    }
+
+    // Only check if application is currently submitted.
+    if ($application->getStatus() !== 'submitted') {
+      return;
+    }
+
+    try {
+      $group_members = $application->getGroupMembers();
+      $required_members = [];
+      $declined_members = [];
+      $confirmed_count = 0;
+
+      // Filter to only members who require confirmation.
+      foreach ($group_members as $group_member) {
+        if ($group_member->requiresConfirmation()) {
+          $required_members[] = $group_member;
+          $status = $group_member->getConfirmationStatus();
+
+          if ($status === 'declined') {
+            $declined_members[] = $group_member;
+          }
+          elseif ($status === 'confirmed') {
+            $confirmed_count++;
+          }
+        }
+      }
+
+      // If no members require confirmation, proceed to unassigned.
+      if (empty($required_members)) {
+        $application->setStatus('unassigned');
+        $application->save();
+        $this->logger->notice(
+          'Application @id transitioned to unassigned (no members require confirmation)',
+          ['@id' => $application->getApplicationId()]
+        );
+        return;
+      }
+
+      // If any required member declined, reject the application.
+      if (!empty($declined_members)) {
+        $member_names = array_map(function ($group_member) {
+          return $group_member->getName();
+        }, $declined_members);
+
+        $rejection_message = $this->t('Application declined by group member(s): @members', [
+          '@members' => implode(', ', $member_names),
+        ]);
+
+        $application->setStatus('rejected');
+        $application->set('rejection_reason', 'member_declined');
+        $application->set('rejection_message', $rejection_message);
+        $application->save();
+
+        $this->logger->notice(
+          'Application @id transitioned to rejected (declined by: @members)',
+          [
+            '@id' => $application->getApplicationId(),
+            '@members' => implode(', ', $member_names),
+          ]
+        );
+        return;
+      }
+
+      // If all required members confirmed, transition to unassigned.
+      if ($confirmed_count === count($required_members)) {
+        $application->setStatus('unassigned');
+        $application->save();
+
+        $this->logger->notice(
+          'Application @id transitioned to unassigned (all members confirmed: @count/@total)',
+          [
+            '@id' => $application->getApplicationId(),
+            '@count' => $confirmed_count,
+            '@total' => count($required_members),
+          ]
+        );
+        return;
+      }
+
+      // Otherwise, keep as submitted (waiting for more confirmations).
+      $this->logger->info(
+        'Application @id remains submitted (confirmed: @count/@total, waiting for more responses)',
+        [
+          '@id' => $application->getApplicationId(),
+          '@count' => $confirmed_count,
+          '@total' => count($required_members),
+        ]
+      );
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error(
+        'Failed to check application status after member response for application @id: @error',
+        [
+          '@id' => $application ? $application->getApplicationId() : 'unknown',
+          '@error' => $e->getMessage(),
+        ]
+      );
     }
   }
 

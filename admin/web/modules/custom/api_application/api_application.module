@@ -449,6 +449,7 @@ function template_preprocess_application(array &$variables) {
       'duplicate_application' => t('Duplicate application'),
       'insufficient_collateral' => t('Insufficient collateral'),
       'poor_credit_history' => t('Poor credit history'),
+      'member_declined' => t('Group member(s) declined participation'),
       'other' => t('Other reason'),
     ];
     $variables['rejection_reasons'] = $rejection_reasons;
@@ -480,6 +481,7 @@ function template_preprocess_application(array &$variables) {
       'duplicate_application' => t('Duplicate application'),
       'insufficient_collateral' => t('Insufficient collateral'),
       'poor_credit_history' => t('Poor credit history'),
+      'member_declined' => t('Group member(s) declined participation'),
       'other' => t('Other reason'),
     ];
     $variables['application']['rejection_reason_label'] = $rejection_reasons[$variables['application']['rejection_reason']] ?? $variables['application']['rejection_reason'];
