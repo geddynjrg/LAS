@@ -39,7 +39,7 @@ export default [
     },
 
     rules: {
-      'no-unused-vars': 'warn',
+      'no-unused-vars': 'error',
       'no-control-regex': 'off',
       'import/no-anonymous-default-export': 'off',
       '@typescript-eslint/no-unused-vars': ['off'],
