@@ -158,11 +158,3 @@ function uwezo_groups_update_110001() {
   uwezo_groups_cleanup_old_constituencies();
   uwezo_groups_import_kenya_data();
 }
-
-/**
- * Re-import Kenya counties and constituencies data.
- */
-function uwezo_groups_update_110002() {
-  uwezo_groups_cleanup_old_constituencies();
-  uwezo_groups_import_kenya_data();
-}
