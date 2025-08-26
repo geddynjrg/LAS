@@ -1,12 +1,10 @@
-import { getTranslations } from "next-intl/server";
-
-import { Container } from "@workspace/ui/components/container";
-import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
-
-import { loanConditionsAction } from "@/app/apply/[id]/loan-conditions/loan-conditions-action";
-import { LoanConditionsDataForm } from "@/app/apply/[id]/loan-conditions/loan-conditions-data-form";
-import { getFormFieldOptions } from "@/lib/api/taxonomy.service";
-import { getApplicationById } from "@/lib/data/application-db";
+import { loanConditionsAction } from '@/app/apply/[id]/loan-conditions/loan-conditions-action';
+import { LoanConditionsDataForm } from '@/app/apply/[id]/loan-conditions/loan-conditions-data-form';
+import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
+import { getApplicationById } from '@/lib/data/application-db';
+import { Container } from '@workspace/ui/components/container';
+import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
+import { getTranslations } from 'next-intl/server';
 
 export interface LoanConditionsPageProps {
   params: Promise<{ id: string }>;
@@ -20,9 +18,9 @@ export default async function Page({ params }: LoanConditionsPageProps) {
   const [application, bankNameOptions, purposeOfLoanOptions, loanTypeOptions] =
     await Promise.all([
       getApplicationById(id),
-      getFormFieldOptions("bankName"),
-      getFormFieldOptions("purposeOfLoan"),
-      getFormFieldOptions("loanType"),
+      getFormFieldOptions('bankName'),
+      getFormFieldOptions('purposeOfLoan'),
+      getFormFieldOptions('loanType'),
     ]);
 
   const taxonomyOptions = {
@@ -38,7 +36,7 @@ export default async function Page({ params }: LoanConditionsPageProps) {
           <div>
             <p>{id}</p>
             <h2 className="typo-h2">
-              {t("ApplicationDetailsPage.loan.loanConditions")}
+              {t('ApplicationDetailsPage.loan.loanConditions')}
             </h2>
           </div>
         </div>

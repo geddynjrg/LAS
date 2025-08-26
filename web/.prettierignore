@@ -1,0 +1,14 @@
+# Generated files
+generated/
+.next/
+node_modules/
+build/
+dist/
+
+# Prisma generated files
+prisma/generated/
+
+# Dependencies
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

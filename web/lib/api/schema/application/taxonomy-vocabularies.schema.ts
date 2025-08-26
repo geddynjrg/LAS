@@ -1,8 +1,7 @@
-import { z } from "zod";
-
-import { DescriptionSchema } from "@/lib/api/schema/description.schema";
-import { AvailableLanguagesSchema } from "@/lib/api/schema/language-availability.schema";
-import { LanguageSchema } from "@/lib/api/schema/language.schema";
+import { DescriptionSchema } from '@/lib/api/schema/description.schema';
+import { AvailableLanguagesSchema } from '@/lib/api/schema/language-availability.schema';
+import { LanguageSchema } from '@/lib/api/schema/language.schema';
+import { z } from 'zod';
 
 // Schema for taxonomy term
 export const TaxonomyTermSchema = z.object({
@@ -22,8 +21,8 @@ export const TaxonomyVocabularySchema = z.object({
   vocabulary_label: z.string(),
   vocabulary_description: z.string(),
   field_name: z.string(),
-  entity_type: z.enum(["application", "group_member"]),
-  cardinality: z.enum(["single", "multiple"]),
+  entity_type: z.enum(['application', 'group_member']),
+  cardinality: z.enum(['single', 'multiple']),
   auto_create: z.boolean(),
   terms: z.array(TaxonomyTermSchema),
   total_terms: z.number(),

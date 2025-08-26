@@ -1,23 +1,21 @@
-"use server";
-
-import { redirect } from "next/navigation";
-
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
+'use server';
 
 import {
-  loanConditionsDataSchema,
   type LoanConditionsData,
-} from "@/app/apply/[id]/loan-conditions/loan-conditions-schema";
-import { updateApplicationLoanConditionsData } from "@/lib/data/application-db";
+  loanConditionsDataSchema,
+} from '@/app/apply/[id]/loan-conditions/loan-conditions-schema';
+import { updateApplicationLoanConditionsData } from '@/lib/data/application-db';
+import type { FormAction } from '@workspace/ui/hooks/use-form';
+import { getFormZodDataValues } from '@workspace/ui/lib/utils';
+import { redirect } from 'next/navigation';
 
 export const loanConditionsAction: FormAction<LoanConditionsData> = async (
   _prev,
   formData,
 ) => {
   const values = getFormZodDataValues(formData, loanConditionsDataSchema);
-  const redirectTo = formData.get("redirectTo")?.toString();
-  const id = formData.get("id")?.toString();
+  const redirectTo = formData.get('redirectTo')?.toString();
+  const id = formData.get('id')?.toString();
 
   const { success, data, error } = loanConditionsDataSchema.safeParse(values);
 
@@ -30,11 +28,11 @@ export const loanConditionsAction: FormAction<LoanConditionsData> = async (
   }
 
   if (!redirectTo) {
-    throw new Error("No redirect URL provided");
+    throw new Error('No redirect URL provided');
   }
 
   if (!id) {
-    throw new Error("No application ID provided");
+    throw new Error('No application ID provided');
   }
 
   /* Submit data to dummy data list */

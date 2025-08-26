@@ -1,12 +1,11 @@
-"use server";
-
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { getFormZodDataValues } from "@workspace/ui/lib/utils";
+'use server';
 
 import {
-  memberSchema,
   type Member,
-} from "@/app/apply/[id]/members/member-schema";
+  memberSchema,
+} from '@/app/apply/[id]/members/member-schema';
+import type { FormAction } from '@workspace/ui/hooks/use-form';
+import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 
 export const memberAction: FormAction<Member> = async (_prev, formData) => {
   const values = getFormZodDataValues(formData, memberSchema);

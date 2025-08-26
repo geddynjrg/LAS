@@ -1,24 +1,22 @@
-"use client";
+'use client';
 
-import { IconUserCircle } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { type FC } from "react";
-
-import { Button } from "@workspace/ui/components/button";
+import { useProfile } from '@/hooks/useProfile';
+import { useSession } from '@/hooks/useSession';
+import { IconUserCircle } from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-
-import { useProfile } from "@/hooks/useProfile";
-import { useSession } from "@/hooks/useSession";
+} from '@workspace/ui/components/dropdown-menu';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { type FC } from 'react';
 
 export const ProfileMenu: FC = () => {
-  const t = useTranslations("Common");
+  const t = useTranslations('Common');
   const { logout } = useSession();
   const { profile, isAdmin, getDisplayName, isAuthenticated, isLoading } =
     useProfile();
@@ -44,7 +42,7 @@ export const ProfileMenu: FC = () => {
           <IconUserCircle />
 
           <span className="text-nowrap text-xs font-normal">
-            {t("myProfile")}
+            {t('myProfile')}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -62,7 +60,7 @@ export const ProfileMenu: FC = () => {
 
         <DropdownMenuItem asChild>
           <Link href="/dashboard" className="text-foreground">
-            {t("myApplications")}
+            {t('myApplications')}
           </Link>
         </DropdownMenuItem>
 
@@ -71,7 +69,7 @@ export const ProfileMenu: FC = () => {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/admin/dashboard" className="text-foreground">
-                {t("adminDashboard")}
+                {t('adminDashboard')}
               </Link>
             </DropdownMenuItem>
           </>
@@ -79,7 +77,7 @@ export const ProfileMenu: FC = () => {
 
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-          {t("signOut")}
+          {t('signOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

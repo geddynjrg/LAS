@@ -1,5 +1,5 @@
-import { IconSearch, IconX } from "@tabler/icons-react";
-import { ReactNode } from "react";
+import { IconSearch, IconX } from '@tabler/icons-react';
+import { ReactNode } from 'react';
 
 interface SearchFilterBarProps {
   searchValue: string;
@@ -14,11 +14,11 @@ interface SearchFilterBarProps {
 export function SearchFilterBar({
   searchValue,
   onSearchChange,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = 'Search...',
   isSearching = false,
   children,
   actions,
-  className = "",
+  className = '',
 }: SearchFilterBarProps) {
   return (
     <div
@@ -35,12 +35,12 @@ export function SearchFilterBar({
                 value={searchValue}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className={`h-9 w-full rounded-lg border border-gray-300 bg-white pl-9 text-sm placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
-                  searchValue ? "pr-10" : "pr-3"
+                  searchValue ? 'pr-10' : 'pr-3'
                 }`}
               />
               {searchValue && (
                 <button
-                  onClick={() => onSearchChange("")}
+                  onClick={() => onSearchChange('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                   aria-label="Clear search"
                 >

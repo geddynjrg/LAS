@@ -1,7 +1,7 @@
-import type { FC } from "react";
+import type { BlockType } from '@/lib/api/types';
+import type { FC } from 'react';
 
-import type { BlockType } from "@/lib/api/types";
-import { PageComponentRenderer } from "./page-components-renderer";
+import { PageComponentRenderer } from './page-components-renderer';
 
 export interface PageComponentsProps {
   node_id?: string;

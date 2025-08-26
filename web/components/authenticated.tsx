@@ -1,10 +1,8 @@
-"use client";
+'use client';
 
-import { type FC, type ReactNode } from "react";
-
-import { Loader } from "@workspace/ui/components/loader";
-
-import { useRequireAuth } from "@/hooks/useSession";
+import { useRequireAuth } from '@/hooks/useSession';
+import { Loader } from '@workspace/ui/components/loader';
+import { type FC, type ReactNode } from 'react';
 
 export interface AuthenticatedProps {
   children?: ReactNode;
@@ -13,7 +11,7 @@ export interface AuthenticatedProps {
 
 export const Authenticated: FC<AuthenticatedProps> = ({
   children,
-  redirectTo = "/login",
+  redirectTo = '/login',
 }) => {
   const { isAuthenticated, isLoading } = useRequireAuth(redirectTo);
 

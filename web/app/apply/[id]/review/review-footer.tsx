@@ -1,17 +1,15 @@
-"use client";
+'use client';
 
-import { IconArrowLeft } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { type FC } from "react";
-
-import { ActionBar } from "@workspace/ui/components/action-bar";
-import { Button } from "@workspace/ui/components/button";
-import { ModalButton } from "@workspace/ui/components/modal-button";
-
-import { updateApplicationStatusById } from "@/app/apply/[id]/review/update-application-status-by-id-action";
-import { ApplicationStatus } from "@/generated/prisma";
-import { syncApplication } from "@/lib/api/sync.service";
+import { updateApplicationStatusById } from '@/app/apply/[id]/review/update-application-status-by-id-action';
+import { ApplicationStatus } from '@/generated/prisma';
+import { syncApplication } from '@/lib/api/sync.service';
+import { IconArrowLeft } from '@tabler/icons-react';
+import { ActionBar } from '@workspace/ui/components/action-bar';
+import { Button } from '@workspace/ui/components/button';
+import { ModalButton } from '@workspace/ui/components/modal-button';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { type FC } from 'react';
 
 export interface ReviewDataProps {
   id: string;
@@ -30,7 +28,7 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
           onClick={() => router.push(`/apply/${id}/confirmations`)}
         >
           <IconArrowLeft />
-          {t("Common.back")}
+          {t('Common.back')}
         </Button>
         <ModalButton
           onConfirm={async () => {
@@ -40,15 +38,15 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
             await syncApplication(id);
             router.push(`/apply/${id}/done`);
           }}
-          cancelTitle={t("Common.back")}
-          confirmTitle={t("Common.submit")}
-          modalText={t("ReviewPage.confirmationDescription")}
-          modalTitle={t("ReviewPage.confirmationTitle")}
-          cancelButtonProps={{ variant: "secondary" }}
-          contentProps={{ size: "sm" }}
+          cancelTitle={t('Common.back')}
+          confirmTitle={t('Common.submit')}
+          modalText={t('ReviewPage.confirmationDescription')}
+          modalTitle={t('ReviewPage.confirmationTitle')}
+          cancelButtonProps={{ variant: 'secondary' }}
+          contentProps={{ size: 'sm' }}
           titleUnderline
         >
-          {t("Common.submit")}
+          {t('Common.submit')}
         </ModalButton>
       </div>
     </ActionBar>

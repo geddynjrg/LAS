@@ -1,10 +1,10 @@
 import {
-  MemberConfirmationErrorResponseSchema,
-  MemberConfirmationResponseSchema,
   type MemberConfirmationErrorResponse,
+  MemberConfirmationErrorResponseSchema,
   type MemberConfirmationResponse,
-} from "@/lib/api/schema/member-confirmation.schema";
-import { api } from "@/lib/api/utils";
+  MemberConfirmationResponseSchema,
+} from '@/lib/api/schema/member-confirmation.schema';
+import { api } from '@/lib/api/utils';
 
 /**
  * Convert technical error messages to translation keys
@@ -13,36 +13,36 @@ function getErrorTranslationKey(technicalMessage: string): string {
   const message = technicalMessage.toLowerCase();
 
   if (
-    message.includes("invalid token format") ||
-    message.includes("malformed token")
+    message.includes('invalid token format') ||
+    message.includes('malformed token')
   ) {
-    return "ConfirmationPage.errors.invalidTokenFormat";
+    return 'ConfirmationPage.errors.invalidTokenFormat';
   }
 
   if (
-    message.includes("token not found") ||
-    message.includes("token expired")
+    message.includes('token not found') ||
+    message.includes('token expired')
   ) {
-    return "ConfirmationPage.errors.tokenExpired";
+    return 'ConfirmationPage.errors.tokenExpired';
   }
 
   if (
-    message.includes("already confirmed") ||
-    message.includes("already processed")
+    message.includes('already confirmed') ||
+    message.includes('already processed')
   ) {
-    return "ConfirmationPage.errors.alreadyProcessed";
+    return 'ConfirmationPage.errors.alreadyProcessed';
   }
 
-  if (message.includes("unauthorized") || message.includes("permission")) {
-    return "ConfirmationPage.errors.unauthorized";
+  if (message.includes('unauthorized') || message.includes('permission')) {
+    return 'ConfirmationPage.errors.unauthorized';
   }
 
-  if (message.includes("network") || message.includes("connection")) {
-    return "ConfirmationPage.errors.networkError";
+  if (message.includes('network') || message.includes('connection')) {
+    return 'ConfirmationPage.errors.networkError';
   }
 
   // For unknown errors, provide a generic key
-  return "ConfirmationPage.errors.unknownError";
+  return 'ConfirmationPage.errors.unknownError';
 }
 
 /**
@@ -53,7 +53,7 @@ function getErrorTranslationKey(technicalMessage: string): string {
 export async function getMemberDetails(
   token: string,
 ): Promise<MemberConfirmationResponse> {
-  const res = await api.GET("/api/v1/member/response/{token}", {
+  const res = await api.GET('/api/v1/member/response/{token}', {
     params: {
       path: { token },
       // No query params means just get details
@@ -62,7 +62,7 @@ export async function getMemberDetails(
 
   // Handle API errors first
   if (res.error) {
-    console.warn("[API] Error:", res.response.status, res.error);
+    console.warn('[API] Error:', res.response.status, res.error);
 
     // Try to parse the error response
     const errorValidation = MemberConfirmationErrorResponseSchema.safeParse(
@@ -85,7 +85,7 @@ export async function getMemberDetails(
     // Fallback error response
     const originalMessage =
       ((res.error as Record<string, unknown>)?.message as string) ||
-      "Failed to fetch member details";
+      'Failed to fetch member details';
     const errorResponse: MemberConfirmationErrorResponse = {
       success: false,
       error: {
@@ -100,11 +100,11 @@ export async function getMemberDetails(
   // Validate successful response
   const validation = MemberConfirmationResponseSchema.safeParse(res.data);
   if (!validation.success) {
-    console.warn("[API] Response validation failed:", validation.error);
+    console.warn('[API] Response validation failed:', validation.error);
     return {
       success: false,
       error: {
-        message: "ConfirmationPage.errors.serverError",
+        message: 'ConfirmationPage.errors.serverError',
         code: 500,
       },
       timestamp: Math.floor(Date.now() / 1000),
@@ -122,9 +122,9 @@ export async function getMemberDetails(
  */
 export async function processMemberConfirmation(
   token: string,
-  action: "confirmed" | "declined",
+  action: 'confirmed' | 'declined',
 ): Promise<MemberConfirmationResponse> {
-  const res = await api.GET("/api/v1/member/response/{token}", {
+  const res = await api.GET('/api/v1/member/response/{token}', {
     params: {
       path: { token },
       query: { action },
@@ -133,7 +133,7 @@ export async function processMemberConfirmation(
 
   // Handle API errors first
   if (res.error) {
-    console.warn("[API] Error:", res.response.status, res.error);
+    console.warn('[API] Error:', res.response.status, res.error);
 
     // Try to parse the error response
     const errorValidation = MemberConfirmationErrorResponseSchema.safeParse(
@@ -156,7 +156,7 @@ export async function processMemberConfirmation(
     // Fallback error response
     const originalMessage =
       ((res.error as Record<string, unknown>)?.message as string) ||
-      "Failed to process confirmation";
+      'Failed to process confirmation';
     const errorResponse: MemberConfirmationErrorResponse = {
       success: false,
       error: {
@@ -171,11 +171,11 @@ export async function processMemberConfirmation(
   // Validate successful response
   const validation = MemberConfirmationResponseSchema.safeParse(res.data);
   if (!validation.success) {
-    console.warn("[API] Response validation failed:", validation.error);
+    console.warn('[API] Response validation failed:', validation.error);
     return {
       success: false,
       error: {
-        message: "ConfirmationPage.errors.serverError",
+        message: 'ConfirmationPage.errors.serverError',
         code: 500,
       },
       timestamp: Math.floor(Date.now() / 1000),

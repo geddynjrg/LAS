@@ -1,10 +1,8 @@
-"use client";
+'use client';
 
-import { type FC, type ReactNode } from "react";
-
-import { Loader } from "@workspace/ui/components/loader";
-
-import { useRequireAuth } from "@/hooks/useSession";
+import { useRequireAuth } from '@/hooks/useSession';
+import { Loader } from '@workspace/ui/components/loader';
+import { type FC, type ReactNode } from 'react';
 
 export interface AuthGuardProps {
   children?: ReactNode;
@@ -14,7 +12,7 @@ export interface AuthGuardProps {
 
 export const AuthGuard: FC<AuthGuardProps> = ({
   children,
-  redirectTo = "/login",
+  redirectTo = '/login',
   fallback,
 }) => {
   const { isAuthenticated, isLoading } = useRequireAuth(redirectTo);

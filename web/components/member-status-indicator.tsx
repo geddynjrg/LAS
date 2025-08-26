@@ -1,37 +1,36 @@
-import { IconClock, IconUserCheck } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { FC } from "react";
-
-import { Badge } from "@workspace/ui/components/badge";
-import { cn } from "@workspace/ui/lib/utils";
+import { IconClock, IconUserCheck } from '@tabler/icons-react';
+import { Badge } from '@workspace/ui/components/badge';
+import { cn } from '@workspace/ui/lib/utils';
+import { useTranslations } from 'next-intl';
+import { FC } from 'react';
 
 interface MemberStatusIndicatorProps {
   status: string;
-  variant?: "badge" | "icon" | "full";
-  size?: "sm" | "md" | "lg";
+  variant?: 'badge' | 'icon' | 'full';
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 export const MemberStatusIndicator: FC<MemberStatusIndicatorProps> = ({
   status,
-  variant = "full",
-  size = "md",
-  className = "",
+  variant = 'full',
+  size = 'md',
+  className = '',
 }) => {
-  const t = useTranslations("DashboardPage");
-  const isConfirmed = status === "confirmed";
+  const t = useTranslations('DashboardPage');
+  const isConfirmed = status === 'confirmed';
 
   const iconSize = {
-    sm: "h-3 w-3",
-    md: "h-4 w-4",
-    lg: "h-5 w-5",
+    sm: 'h-3 w-3',
+    md: 'h-4 w-4',
+    lg: 'h-5 w-5',
   }[size];
 
   const getStatusIcon = () => {
     if (isConfirmed) {
-      return <IconUserCheck className={cn(iconSize, "text-green-600")} />;
+      return <IconUserCheck className={cn(iconSize, 'text-green-600')} />;
     }
-    return <IconClock className={cn(iconSize, "text-amber-600")} />;
+    return <IconClock className={cn(iconSize, 'text-amber-600')} />;
   };
 
   const getStatusBadge = () => {
@@ -39,60 +38,60 @@ export const MemberStatusIndicator: FC<MemberStatusIndicatorProps> = ({
       return (
         <Badge
           variant="default"
-          className={cn("text-xs", {
-            "px-1.5 py-0.5 text-[10px]": size === "sm",
-            "text-xs": size === "md",
-            "text-sm": size === "lg",
+          className={cn('text-xs', {
+            'px-1.5 py-0.5 text-[10px]': size === 'sm',
+            'text-xs': size === 'md',
+            'text-sm': size === 'lg',
           })}
         >
-          {t("memberStatus.confirmedLabel")}
+          {t('memberStatus.confirmedLabel')}
         </Badge>
       );
     }
     return (
       <Badge
         variant="secondary"
-        className={cn("text-xs", {
-          "px-1.5 py-0.5 text-[10px]": size === "sm",
-          "text-xs": size === "md",
-          "text-sm": size === "lg",
+        className={cn('text-xs', {
+          'px-1.5 py-0.5 text-[10px]': size === 'sm',
+          'text-xs': size === 'md',
+          'text-sm': size === 'lg',
         })}
       >
-        {t("memberStatus.pendingLabel")}
+        {t('memberStatus.pendingLabel')}
       </Badge>
     );
   };
 
   const getStatusText = () => {
     return isConfirmed
-      ? t("memberStatus.confirmedLabel")
-      : t("memberStatus.pendingLabel");
+      ? t('memberStatus.confirmedLabel')
+      : t('memberStatus.pendingLabel');
   };
 
-  if (variant === "icon") {
+  if (variant === 'icon') {
     return (
-      <div className={cn("flex items-center", className)}>
+      <div className={cn('flex items-center', className)}>
         {getStatusIcon()}
       </div>
     );
   }
 
-  if (variant === "badge") {
+  if (variant === 'badge') {
     return (
-      <div className={cn("flex items-center", className)}>
+      <div className={cn('flex items-center', className)}>
         {getStatusBadge()}
       </div>
     );
   }
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn('flex items-center gap-2', className)}>
       {getStatusIcon()}
       <span
-        className={cn("text-neutral-700", {
-          "text-xs": size === "sm",
-          "text-sm": size === "md",
-          "text-base": size === "lg",
+        className={cn('text-neutral-700', {
+          'text-xs': size === 'sm',
+          'text-sm': size === 'md',
+          'text-base': size === 'lg',
         })}
       >
         {getStatusText()}

@@ -1,29 +1,27 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useState, type FC } from "react";
-
+import { ApplyFormActionBar } from '@/app/apply/[id]/apply-form-action-bar';
+import {
+  type LoanConditionsData,
+  loanConditionsDataSchema,
+} from '@/app/apply/[id]/loan-conditions/loan-conditions-schema';
+import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
+import { LoanConditionsData as ApplicationLoanConditionsData } from '@/lib/data/application';
 import {
   ButtonGroup,
   ButtonGroupItem,
-} from "@workspace/ui/components/button-group";
-import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
-import { Container } from "@workspace/ui/components/container";
-import { Field, Form } from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
-import { RadioGroup } from "@workspace/ui/components/radio-group";
-import { Slider } from "@workspace/ui/components/slider";
-import { Card } from "@workspace/ui/components/uwezo/card";
-import { FormCard } from "@workspace/ui/components/uwezo/form-card";
-import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
-import {
-  loanConditionsDataSchema,
-  type LoanConditionsData,
-} from "@/app/apply/[id]/loan-conditions/loan-conditions-schema";
-import type { TaxonomyOption } from "@/lib/api/taxonomy.service";
-import { LoanConditionsData as ApplicationLoanConditionsData } from "@/lib/data/application";
+} from '@workspace/ui/components/button-group';
+import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
+import { Container } from '@workspace/ui/components/container';
+import { Field, Form } from '@workspace/ui/components/form';
+import { Input } from '@workspace/ui/components/input';
+import { RadioGroup } from '@workspace/ui/components/radio-group';
+import { Slider } from '@workspace/ui/components/slider';
+import { Card } from '@workspace/ui/components/uwezo/card';
+import { FormCard } from '@workspace/ui/components/uwezo/form-card';
+import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { useTranslations } from 'next-intl';
+import { type FC, useState } from 'react';
 
 export interface LoanConditionsDataProps {
   id: string;
@@ -69,19 +67,19 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
 
   const loanTypes = {
     Endeleza: {
-      title: "Endeleza",
-      maxLoanAmount: "500 000",
+      title: 'Endeleza',
+      maxLoanAmount: '500 000',
       content: {
-        title: t("ApplicationDetailsPage.loan.LoanDescriptionEndeleza"),
-        underText: t("ApplicationDetailsPage.loan.Interest"),
+        title: t('ApplicationDetailsPage.loan.LoanDescriptionEndeleza'),
+        underText: t('ApplicationDetailsPage.loan.Interest'),
       },
     },
     Wezesha: {
-      title: "Wezesha",
-      maxLoanAmount: "100 000",
+      title: 'Wezesha',
+      maxLoanAmount: '100 000',
       content: {
-        title: t("ApplicationDetailsPage.loan.LoanDescriptionWezesha"),
-        underText: t("ApplicationDetailsPage.loan.Interest"),
+        title: t('ApplicationDetailsPage.loan.LoanDescriptionWezesha'),
+        underText: t('ApplicationDetailsPage.loan.Interest'),
       },
     },
   };
@@ -97,13 +95,13 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
     <Form action={formAction} autoComplete="on">
       <Container className="space-y-8">
         <FormCard
-          title={t("ApplicationDetailsPage.loan.loanDetails")}
+          title={t('ApplicationDetailsPage.loan.loanDetails')}
           className="space-y-4"
         >
           <Field
             state={state}
             name="purposeOfLoan"
-            label={t("ApplicationDetailsPage.loan.purposeOfTheLoan")}
+            label={t('ApplicationDetailsPage.loan.purposeOfTheLoan')}
             required
             control={(props) => (
               <CheckboxGroup
@@ -112,15 +110,15 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
                   taxonomyOptions?.purposeOfLoan || [
                     {
                       label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.tableBanking",
+                        'ApplicationDetailsPage.groupData.groupBackground.tableBanking',
                       ),
-                      value: "Table banking",
+                      value: 'Table banking',
                     },
                     {
                       label: t(
-                        "ApplicationDetailsPage.groupData.groupBackground.commonGroupProject",
+                        'ApplicationDetailsPage.groupData.groupBackground.commonGroupProject',
                       ),
-                      value: "Common group project",
+                      value: 'Common group project',
                     },
                   ]
                 }
@@ -131,7 +129,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="loanType"
-            label={t("ApplicationDetailsPage.loan.loanType")}
+            label={t('ApplicationDetailsPage.loan.loanType')}
             required
             control={(props) => (
               <ButtonGroup
@@ -170,14 +168,14 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="loanAmount"
-            label={t("ApplicationDetailsPage.loan.loanAmount")}
+            label={t('ApplicationDetailsPage.loan.loanAmount')}
             required
             description={
               maxAmount
-                ? t("ApplicationDetailsPage.loan.maximumLoan", {
+                ? t('ApplicationDetailsPage.loan.maximumLoan', {
                     count: maxAmount,
                   })
-                : ""
+                : ''
             }
             control={(props) => (
               <Input
@@ -191,14 +189,14 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="repaymentPeriod"
-            label={t("ApplicationDetailsPage.loan.repaymentPeriod")}
+            label={t('ApplicationDetailsPage.loan.repaymentPeriod')}
             required
             control={(props) => (
               <Slider
-                startDecorator={t("Common.monthCount", { count: 1 })}
-                endDecorator={t("Common.monthCount", { count: 12 })}
+                startDecorator={t('Common.monthCount', { count: 1 })}
+                endDecorator={t('Common.monthCount', { count: 12 })}
                 thumbLabel={(value) =>
-                  value ? t("Common.monthCount", { count: value }) : undefined
+                  value ? t('Common.monthCount', { count: value }) : undefined
                 }
                 {...props}
                 min={1}
@@ -209,13 +207,13 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
         </FormCard>
 
         <FormCard
-          title={t("ApplicationDetailsPage.loan.bankAccountDetails")}
+          title={t('ApplicationDetailsPage.loan.bankAccountDetails')}
           className="space-y-4"
         >
           <Field
             state={state}
             name="bankName"
-            label={t("ApplicationDetailsPage.loan.bankName")}
+            label={t('ApplicationDetailsPage.loan.bankName')}
             required
             control={(props) => (
               <RadioGroup
@@ -223,13 +221,13 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
                 onValueChange={(val) => setSelectedBankName(val)}
                 options={[
                   ...(taxonomyOptions?.bankName || []),
-                  { label: t("Common.other"), value: "Other" },
+                  { label: t('Common.other'), value: 'Other' },
                 ]}
               />
             )}
           />
 
-          {selectedBankName === "Other" && (
+          {selectedBankName === 'Other' && (
             <Field
               state={state}
               name="bankNameOther"
@@ -238,7 +236,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
                 <Input
                   {...props}
                   defaultValue={props.defaultValue ?? undefined}
-                  placeholder={t("ApplicationDetailsPage.loan.bankName")}
+                  placeholder={t('ApplicationDetailsPage.loan.bankName')}
                 />
               )}
             />
@@ -247,7 +245,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="bankBranch"
-            label={t("ApplicationDetailsPage.loan.bankBranch")}
+            label={t('ApplicationDetailsPage.loan.bankBranch')}
             required
             control={(props) => <Input {...props} />}
           />
@@ -255,7 +253,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           <Field
             state={state}
             name="accountNumber"
-            label={t("ApplicationDetailsPage.loan.accountNumber")}
+            label={t('ApplicationDetailsPage.loan.accountNumber')}
             required
             control={(props) => <Input {...props} />}
           />

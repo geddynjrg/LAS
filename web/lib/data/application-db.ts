@@ -1,6 +1,4 @@
-"use server";
-
-import { isFileUpload } from "@workspace/ui/lib/utils";
+'use server';
 
 import {
   ApplicationStatus,
@@ -8,9 +6,9 @@ import {
   QueueStatus,
   SyncAction,
   SyncStatus,
-} from "@/generated/prisma";
-import { getProfile } from "@/lib/api/profile";
-import { addToSyncQueue } from "@/lib/api/sync.service";
+} from '@/generated/prisma';
+import { getProfile } from '@/lib/api/profile';
+import { addToSyncQueue } from '@/lib/api/sync.service';
 import type {
   ApplicationData,
   DeclarationsData,
@@ -19,15 +17,16 @@ import type {
   LoanConditionsData,
   MembersData,
   ProposedBusinessData,
-} from "@/lib/data/application";
-import { handlePrismaError, prisma } from "@/lib/db/prisma";
-import { getSession } from "@/lib/session";
-import { createApplicationId } from "@/lib/util";
+} from '@/lib/data/application';
+import { handlePrismaError, prisma } from '@/lib/db/prisma';
+import { getSession } from '@/lib/session';
+import { createApplicationId } from '@/lib/util';
+import { isFileUpload } from '@workspace/ui/lib/utils';
 
 // Helper function to safely store JSON data - prevents double encoding
 function safeJsonStringify(data: any): string {
   // If it's already a string, check if it's valid JSON
-  if (typeof data === "string") {
+  if (typeof data === 'string') {
     try {
       JSON.parse(data); // Test if it's valid JSON
       return data; // Return as-is if it's already a valid JSON string
@@ -44,7 +43,7 @@ function safeJsonStringify(data: any): string {
 export async function getCurrentUser() {
   const session = await getSession();
   if (!session) {
-    throw new Error("Unauthorized");
+    throw new Error('Unauthorized');
   }
 
   try {
@@ -52,15 +51,15 @@ export async function getCurrentUser() {
     const profileData = profile.data;
 
     if (!profileData) {
-      throw new Error("No profile data found");
+      throw new Error('No profile data found');
     }
 
     // Helper function to determine identifier type based on priority
-    const getIdentifierType = (): "EMAIL" | "PHONE" | "NAME" => {
-      if (profileData.email) return "EMAIL";
-      if (profileData.phoneNumber) return "PHONE";
-      if (profileData.name) return "NAME";
-      throw new Error("No valid user identifier found in profile");
+    const getIdentifierType = (): 'EMAIL' | 'PHONE' | 'NAME' => {
+      if (profileData.email) return 'EMAIL';
+      if (profileData.phoneNumber) return 'PHONE';
+      if (profileData.name) return 'NAME';
+      throw new Error('No valid user identifier found in profile');
     };
 
     const identifierType = getIdentifierType();
@@ -99,7 +98,7 @@ export async function getCurrentUser() {
             profileData.name ||
             profileData.email ||
             profileData.phoneNumber ||
-            "Unknown User",
+            'Unknown User',
           identifierType: identifierType,
         },
       });
@@ -127,8 +126,8 @@ export async function getCurrentUser() {
 
     return user;
   } catch (error) {
-    console.error("Error getting current user:", error);
-    throw new Error("Failed to authenticate user");
+    console.error('Error getting current user:', error);
+    throw new Error('Failed to authenticate user');
   }
 }
 
@@ -149,7 +148,7 @@ export async function getApplications() {
         },
         confirmations: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
 
     return applications.map(transformApplicationFromDb);
@@ -234,7 +233,7 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -343,7 +342,7 @@ export async function updateApplicationMembersData(
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -361,18 +360,18 @@ export async function updateApplicationMembersData(
       data.members.map(async (member) => ({
         applicationId: application.id,
         natureOfTheGroup: data.natureOfTheGroup,
-        fullname: member.fullname || "",
-        nationalIdCode: member.nationalIdCode || "",
+        fullname: member.fullname || '',
+        nationalIdCode: member.nationalIdCode || '',
         gender: member.gender as any,
         type: member.type as any,
-        phoneNumber: member.phoneNumber || "",
+        phoneNumber: member.phoneNumber || '',
         photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
         certificateOfDisability: member.disability?.certificateOfDisability
           ? safeJsonStringify(member.disability.certificateOfDisability as any)
           : null,
         pwdNumber: member.disability?.pwdNumber || null,
         status:
-          member.status === "confirmed"
+          member.status === 'confirmed'
             ? MemberStatus.CONFIRMED
             : MemberStatus.PENDING,
       })),
@@ -413,7 +412,7 @@ export async function updateApplicationLoanConditionsData(
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -484,7 +483,7 @@ export async function updateApplicationProposedBusinessData(
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -572,7 +571,7 @@ export async function updateApplicationDeclarationsData(
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -581,10 +580,10 @@ export async function updateApplicationDeclarationsData(
     }
 
     const confirmationsData = {
-      membersConfirm: data.membersConfirm === "on",
-      correctInformationConfirm: data.correctInformationConfirm === "on",
-      liabilityConfirm: data.liabilityConfirm === "on",
-      fundsEligibleConfirm: data.fundsEligibleConfirm === "on",
+      membersConfirm: data.membersConfirm === 'on',
+      correctInformationConfirm: data.correctInformationConfirm === 'on',
+      liabilityConfirm: data.liabilityConfirm === 'on',
+      fundsEligibleConfirm: data.fundsEligibleConfirm === 'on',
     };
 
     // Update or create confirmations
@@ -633,7 +632,7 @@ export async function updateMemberConfirmationStatuses(
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -647,7 +646,7 @@ export async function updateMemberConfirmationStatuses(
     // Format: "nationalIdCode-index" or "member-index-index"
     const selectedIndices = selectedMemberIds
       .map((memberId) => {
-        const lastDashIndex = memberId.lastIndexOf("-");
+        const lastDashIndex = memberId.lastIndexOf('-');
         if (lastDashIndex > 0) {
           const index = parseInt(memberId.substring(lastDashIndex + 1), 10);
           return isNaN(index) ? -1 : index;
@@ -688,7 +687,7 @@ export async function updateApplicationMembersConfirmationData(id: string) {
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -734,7 +733,7 @@ export async function updateApplicationStatus(
     });
 
     if (!application) {
-      throw new Error("Application not found");
+      throw new Error('Application not found');
     }
 
     // Check if user owns the application
@@ -770,7 +769,7 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
   const generalDetails: GeneralDetails = {
     applicationId: dbApplication.applicationId,
     status: dbApplication.status,
-    user: dbApplication.user?.email || "",
+    user: dbApplication.user?.email || '',
     applicationProgress: dbApplication.applicationProgress,
   };
 
@@ -783,32 +782,32 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
       basics: {
         groupName: gd.groupName,
         groupRegistrationNumber: gd.groupRegistrationNumber,
-        dateFormed: gd.dateFormed.toISOString().split("T")[0],
+        dateFormed: gd.dateFormed.toISOString().split('T')[0],
         groupRegistrationCertificate:
-          typeof gd.groupRegistrationCertificate === "string"
+          typeof gd.groupRegistrationCertificate === 'string'
             ? JSON.parse(gd.groupRegistrationCertificate)
             : gd.groupRegistrationCertificate,
         listOfMembersOnCertificate:
-          typeof gd.listOfMembersOnCertificate === "string"
+          typeof gd.listOfMembersOnCertificate === 'string'
             ? JSON.parse(gd.listOfMembersOnCertificate)
             : gd.listOfMembersOnCertificate,
       },
       background: {
         purposeOfTheGroup:
-          typeof gd.purposeOfTheGroup === "string"
+          typeof gd.purposeOfTheGroup === 'string'
             ? JSON.parse(gd.purposeOfTheGroup)
             : (gd.purposeOfTheGroup as string[]),
         keyActivitiesOfTheGroup:
-          typeof gd.keyActivitiesOfTheGroup === "string"
+          typeof gd.keyActivitiesOfTheGroup === 'string'
             ? JSON.parse(gd.keyActivitiesOfTheGroup)
             : (gd.keyActivitiesOfTheGroup as string[]),
         groupCreditHistory:
-          typeof gd.groupCreditHistory === "string"
+          typeof gd.groupCreditHistory === 'string'
             ? JSON.parse(gd.groupCreditHistory)
             : gd.groupCreditHistory,
         other: gd.other,
         valueChain: gd.valueChain
-          ? typeof gd.valueChain === "string"
+          ? typeof gd.valueChain === 'string'
             ? JSON.parse(gd.valueChain)
             : (gd.valueChain as string[])
           : null,
@@ -843,13 +842,13 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         type: m.type,
         phoneNumber: m.phoneNumber,
         photoOfId:
-          typeof m.photoOfId === "string"
+          typeof m.photoOfId === 'string'
             ? JSON.parse(m.photoOfId)
             : m.photoOfId,
         disability: m.certificateOfDisability
           ? {
               certificateOfDisability:
-                typeof m.certificateOfDisability === "string"
+                typeof m.certificateOfDisability === 'string'
                   ? JSON.parse(m.certificateOfDisability)
                   : m.certificateOfDisability,
               pwdNumber: m.pwdNumber,
@@ -866,7 +865,7 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     const lc = dbApplication.loanConditions;
     result.loanConditions = {
       purposeOfLoan:
-        typeof lc.purposeOfLoan === "string"
+        typeof lc.purposeOfLoan === 'string'
           ? JSON.parse(lc.purposeOfLoan)
           : (lc.purposeOfLoan as string[]),
       loanType: lc.loanType,
@@ -885,7 +884,7 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     result.proposedBusiness = {
       natureOfBusiness: pb.natureOfBusiness,
       businessType:
-        typeof pb.businessType === "string"
+        typeof pb.businessType === 'string'
           ? JSON.parse(pb.businessType)
           : (pb.businessType as string[]),
       yearsInBusiness: pb.yearsInBusiness,
@@ -907,10 +906,10 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     const c = dbApplication.confirmations;
     result.confirmations = {
       declarations: {
-        membersConfirm: c.membersConfirm ? "on" : null,
-        correctInformationConfirm: c.correctInformationConfirm ? "on" : null,
-        liabilityConfirm: c.liabilityConfirm ? "on" : null,
-        fundsEligibleConfirm: c.fundsEligibleConfirm ? "on" : null,
+        membersConfirm: c.membersConfirm ? 'on' : null,
+        correctInformationConfirm: c.correctInformationConfirm ? 'on' : null,
+        liabilityConfirm: c.liabilityConfirm ? 'on' : null,
+        fundsEligibleConfirm: c.fundsEligibleConfirm ? 'on' : null,
       },
     };
   }

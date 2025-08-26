@@ -1,11 +1,11 @@
-import createNextIntlPlugin from "next-intl/plugin";
+import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@workspace/ui"],
-  output: "standalone",
+  transpilePackages: ['@workspace/ui'],
+  output: 'standalone',
   images: {
     remotePatterns: [
       ...(process.env.API_URL
@@ -15,7 +15,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "30mb",
+      bodySizeLimit: '30mb',
     },
   },
 };

@@ -1,0 +1,5 @@
+# Check if package.json or package-lock.json changed in web directory
+if git diff-tree -r --name-only --no-commit-id HEAD~1 HEAD | grep -E "web/(package\.json|pnpm-lock\.yaml)"; then
+  echo "📦 Web package files changed, running pnpm install..."
+  cd web && pnpm install
+fi

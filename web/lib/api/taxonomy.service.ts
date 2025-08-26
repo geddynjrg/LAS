@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { getTaxonomyVocabularies } from "@/lib/api/application/taxonomy-vocabularies";
-import { prisma } from "@/lib/db/prisma";
+import { getTaxonomyVocabularies } from '@/lib/api/application/taxonomy-vocabularies';
+import { prisma } from '@/lib/db/prisma';
 
 // import type { TaxonomyVocabulary, TaxonomyTerm } from "@/lib/api/schema/application/taxonomy-vocabularies.schema";
 
@@ -103,7 +103,7 @@ export async function getTaxonomyOptionsByVocabularyId(
  * Get all taxonomy vocabularies for a specific entity type
  */
 export async function getTaxonomyVocabulariesByEntity(
-  entityType: "application" | "group_member",
+  entityType: 'application' | 'group_member',
 ) {
   try {
     const vocabularies = await prisma.taxonomyVocabulary.findMany({
@@ -126,12 +126,12 @@ export async function getTaxonomyVocabulariesByEntity(
  */
 export async function syncTaxonomyVocabularies() {
   try {
-    console.log("Syncing taxonomy vocabularies...");
+    console.log('Syncing taxonomy vocabularies...');
 
     const response = await getTaxonomyVocabularies();
 
-    if (!response || !response.data || typeof response.data !== "object") {
-      console.warn("No valid data received from taxonomy API", response);
+    if (!response || !response.data || typeof response.data !== 'object') {
+      console.warn('No valid data received from taxonomy API', response);
       return;
     }
 
@@ -190,18 +190,18 @@ export async function syncTaxonomyVocabularies() {
       for (const { term, vocabularyId } of uniqueTerms.values()) {
         // Transform and validate data before inserting - all fields must be valid JSON
         const descriptionContent =
-          typeof term.description === "object"
+          typeof term.description === 'object'
             ? term.description?.processed ||
               term.description?.value ||
               term.name ||
-              "No description available"
+              'No description available'
             : String(
-                term.description || term.name || "No description available",
+                term.description || term.name || 'No description available',
               );
 
         // Ensure description is not empty and convert to JSON string
         const finalDescriptionContent =
-          descriptionContent.trim() || term.name || "No description available";
+          descriptionContent.trim() || term.name || 'No description available';
         const description = JSON.stringify(finalDescriptionContent);
 
         const parentIds = Array.isArray(term.parent_ids)
@@ -209,9 +209,9 @@ export async function syncTaxonomyVocabularies() {
           : JSON.stringify(term.parent_ids || []);
 
         const languageContent =
-          typeof term.language === "object"
-            ? term.language?.code || "en" // Default to 'en' if no code
-            : String(term.language || "en"); // Default to 'en' if empty
+          typeof term.language === 'object'
+            ? term.language?.code || 'en' // Default to 'en' if no code
+            : String(term.language || 'en'); // Default to 'en' if empty
         const language = JSON.stringify(languageContent);
 
         try {
@@ -250,9 +250,9 @@ export async function syncTaxonomyVocabularies() {
               descriptionPreview: finalDescriptionContent.substring(0, 200),
               hasSpecialChars: /[^\x00-\x7F]/.test(finalDescriptionContent),
               encodingInfo: {
-                utf8Length: Buffer.from(finalDescriptionContent, "utf8").length,
+                utf8Length: Buffer.from(finalDescriptionContent, 'utf8').length,
                 charCodes: finalDescriptionContent
-                  .split("")
+                  .split('')
                   .slice(0, 20)
                   .map((c: string) => c.charCodeAt(0)),
               },
@@ -268,7 +268,7 @@ export async function syncTaxonomyVocabularies() {
       `Successfully synced ${Object.keys(response.data).length} vocabularies`,
     );
   } catch (error) {
-    console.error("Error syncing taxonomy vocabularies:", error);
+    console.error('Error syncing taxonomy vocabularies:', error);
     throw error;
   }
 }
@@ -279,25 +279,25 @@ export async function syncTaxonomyVocabularies() {
  */
 const taxonomyFieldMapping = {
   // Group data mappings
-  purposeOfTheGroup: "group_background",
-  keyActivitiesOfTheGroup: "group_activities",
-  valueChain: "value_chain",
-  countyOfOperation: "county",
-  constituency: "constituency",
+  purposeOfTheGroup: 'group_background',
+  keyActivitiesOfTheGroup: 'group_activities',
+  valueChain: 'value_chain',
+  countyOfOperation: 'county',
+  constituency: 'constituency',
 
   // Member data mappings
-  natureOfTheGroup: "group_nature",
-  gender: "gender",
-  memberType: "member_position",
+  natureOfTheGroup: 'group_nature',
+  gender: 'gender',
+  memberType: 'member_position',
 
   // Loan conditions mappings
-  purposeOfLoan: "purpose_of_loan",
-  loanType: "loan_type",
-  bankName: "bank_name",
+  purposeOfLoan: 'purpose_of_loan',
+  loanType: 'loan_type',
+  bankName: 'bank_name',
 
   // Proposed business mappings
-  businessType: "business_type",
-  natureOfBusiness: "business_nature",
+  businessType: 'business_type',
+  natureOfBusiness: 'business_nature',
 };
 
 /**

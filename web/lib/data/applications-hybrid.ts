@@ -1,33 +1,33 @@
-"use server";
+'use server';
 
-import { ApplicationStatus, MemberStatus } from "@/generated/prisma";
-import { getApplicationsWithFallback } from "@/lib/api/application/list";
+import { ApplicationStatus, MemberStatus } from '@/generated/prisma';
+import { getApplicationsWithFallback } from '@/lib/api/application/list';
 import type {
   ApplicationDetail,
   ApplicationsListQuery,
-} from "@/lib/api/schema/application/applications-list.schema";
-import type { ApplicationData } from "@/lib/data/application";
-import { getApplications as getLocalApplications } from "@/lib/data/application-db";
-import { prisma } from "@/lib/db/prisma";
+} from '@/lib/api/schema/application/applications-list.schema';
+import type { ApplicationData } from '@/lib/data/application';
+import { getApplications as getLocalApplications } from '@/lib/data/application-db';
+import { prisma } from '@/lib/db/prisma';
 
 /**
  * Maps API status to local ApplicationStatus enum
  */
 function mapApiStatusToLocal(apiStatus?: string): ApplicationStatus {
   switch (apiStatus) {
-    case "draft":
+    case 'draft':
       return ApplicationStatus.DRAFT;
-    case "submitted":
+    case 'submitted':
       return ApplicationStatus.SUBMITTED;
-    case "under_review":
+    case 'under_review':
       return ApplicationStatus.IN_REVIEW;
-    case "approved":
+    case 'approved':
       return ApplicationStatus.APPROVED;
-    case "rejected":
+    case 'rejected':
       return ApplicationStatus.REJECTED;
-    case "disbursed":
+    case 'disbursed':
       return ApplicationStatus.DISBURSED;
-    case "closed":
+    case 'closed':
       return ApplicationStatus.CLOSED;
     default:
       return ApplicationStatus.DRAFT;
@@ -38,8 +38,8 @@ function mapApiStatusToLocal(apiStatus?: string): ApplicationStatus {
  * Helper function to safely convert timestamp to number
  */
 function parseTimestamp(timestamp?: string | number): number {
-  if (typeof timestamp === "number") return timestamp;
-  if (typeof timestamp === "string") {
+  if (typeof timestamp === 'number') return timestamp;
+  if (typeof timestamp === 'string') {
     const parsed = parseInt(timestamp, 10);
     return isNaN(parsed) ? Date.now() / 1000 : parsed;
   }
@@ -50,8 +50,8 @@ function parseTimestamp(timestamp?: string | number): number {
  * Helper function to safely convert string/number to number
  */
 function parseNumber(value?: string | number | null): number | undefined {
-  if (typeof value === "number") return value;
-  if (typeof value === "string") {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
     const parsed = parseFloat(value);
     return isNaN(parsed) ? undefined : parsed;
   }
@@ -62,8 +62,8 @@ function parseNumber(value?: string | number | null): number | undefined {
  * Helper function to safely convert string/number to integer
  */
 function parseInteger(value?: string | number | null): number | undefined {
-  if (typeof value === "number") return Math.round(value);
-  if (typeof value === "string") {
+  if (typeof value === 'number') return Math.round(value);
+  if (typeof value === 'string') {
     const parsed = parseInt(value, 10);
     return isNaN(parsed) ? undefined : parsed;
   }
@@ -79,14 +79,14 @@ function parseFileData(
   if (!fileData) return {};
 
   // If it's already a ValidFile object structure, return as is
-  if (typeof fileData === "object" && !fileData.fid) {
+  if (typeof fileData === 'object' && !fileData.fid) {
     return fileData;
   }
 
   // Convert API file data to ValidFile format
   return {
     fid:
-      typeof fileData.fid === "string"
+      typeof fileData.fid === 'string'
         ? parseInt(fileData.fid as string, 10)
         : fileData.fid,
     filename: fileData.filename || fileData.originalName,
@@ -107,7 +107,7 @@ function mapApiApplicationToLocal(
       generalDetails: {
         applicationId: apiApp.application_id,
         status: mapApiStatusToLocal(apiApp.status),
-        user: apiApp.owner?.email || apiApp.owner?.name || "",
+        user: apiApp.owner?.email || apiApp.owner?.name || '',
         applicationProgress: 5, // Assume completed if from API
         rejectionDetails: apiApp.rejection_details
           ? {
@@ -123,10 +123,10 @@ function mapApiApplicationToLocal(
       const gd = apiApp.group_data;
       result.groupData = {
         basics: {
-          groupName: gd.group_name || "",
-          groupRegistrationNumber: gd.group_registration_number || "",
+          groupName: gd.group_name || '',
+          groupRegistrationNumber: gd.group_registration_number || '',
           dateFormed: (gd.date_registered ||
-            new Date().toISOString().split("T")[0]) as string,
+            new Date().toISOString().split('T')[0]) as string,
           groupRegistrationCertificate: parseFileData(
             gd.group_registration_certificate,
           ),
@@ -154,11 +154,11 @@ function mapApiApplicationToLocal(
             : undefined,
         },
         location: {
-          countyOfOperation: apiApp.location?.county?.name || "",
-          constituency: apiApp.location?.constituency?.name || "",
-          ward: apiApp.location?.ward || "",
-          meetingPoint: apiApp.location?.meeting_point || "",
-          nearestLandmark: apiApp.location?.nearest_landmark || "",
+          countyOfOperation: apiApp.location?.county?.name || '',
+          constituency: apiApp.location?.constituency?.name || '',
+          ward: apiApp.location?.ward || '',
+          meetingPoint: apiApp.location?.meeting_point || '',
+          nearestLandmark: apiApp.location?.nearest_landmark || '',
         },
       };
     }
@@ -166,15 +166,15 @@ function mapApiApplicationToLocal(
     // Transform members
     if (apiApp.group_members && apiApp.group_members.length > 0) {
       result.members = {
-        natureOfTheGroup: apiApp.nature_of_group || "",
+        natureOfTheGroup: apiApp.nature_of_group || '',
         members: apiApp.group_members.map((member) => ({
-          fullname: member.name || "",
-          nationalIdCode: member.id_number || "",
-          gender: (member.gender as "Male" | "Female" | "Other") || "Other",
+          fullname: member.name || '',
+          nationalIdCode: member.id_number || '',
+          gender: (member.gender as 'Male' | 'Female' | 'Other') || 'Other',
           type:
-            (member.position?.name as "Chairman" | "Secretary" | "Member") ||
-            "Member",
-          phoneNumber: member.phone_number || "",
+            (member.position?.name as 'Chairman' | 'Secretary' | 'Member') ||
+            'Member',
+          phoneNumber: member.phone_number || '',
           photoOfId: parseFileData(member.photo_member_id),
           disability: member.person_with_disability
             ? {
@@ -184,7 +184,7 @@ function mapApiApplicationToLocal(
                 pwdNumber: member.pwd_number || undefined,
               }
             : undefined,
-          status: member.confirmation?.is_confirmed ? "confirmed" : "pending",
+          status: member.confirmation?.is_confirmed ? 'confirmed' : 'pending',
           requiresConfirmation: member.requires_confirmation || false,
         })),
       };
@@ -197,12 +197,12 @@ function mapApiApplicationToLocal(
         purposeOfLoan: lc.purpose_of_loan?.name
           ? [lc.purpose_of_loan.name]
           : [],
-        loanType: lc.loan_type?.name || "",
+        loanType: lc.loan_type?.name || '',
         loanAmount: parseNumber(lc.loan_amount) || 0,
         repaymentPeriod: parseInteger(lc.proposed_repayment_period) || 0,
-        bankName: lc.bank_name?.name || "",
-        bankBranch: lc.bank_branch || "",
-        accountNumber: lc.bank_account_number || "",
+        bankName: lc.bank_name?.name || '',
+        bankBranch: lc.bank_branch || '',
+        accountNumber: lc.bank_account_number || '',
       };
     }
 
@@ -210,7 +210,7 @@ function mapApiApplicationToLocal(
     if (apiApp.proposed_business) {
       const pb = apiApp.proposed_business;
       result.proposedBusiness = {
-        natureOfBusiness: pb.nature_of_business || "startup",
+        natureOfBusiness: pb.nature_of_business || 'startup',
         businessType: pb.business_type?.map((bt) => bt.name) || [],
         yearsInBusiness: parseNumber(pb.years_in_operation) || 0,
         averageIncome: parseNumber(pb.average_income) || 0,
@@ -220,7 +220,7 @@ function mapApiApplicationToLocal(
         transportForBusinessStock: 0, // Not available in API
         customExpenses:
           pb.expenses?.map((expense: Record<string, unknown>) => ({
-            name: (expense.name as string) || "Unknown",
+            name: (expense.name as string) || 'Unknown',
             amount: parseNumber(expense.amount as string | number) || 0,
           })) || [],
       };
@@ -228,7 +228,7 @@ function mapApiApplicationToLocal(
 
     return result;
   } catch (error) {
-    console.error("Error mapping API application to local format:", error);
+    console.error('Error mapping API application to local format:', error);
     return null;
   }
 }
@@ -238,11 +238,11 @@ function mapApiApplicationToLocal(
  */
 function mapApiMemberStatusToLocal(apiStatus?: string): MemberStatus {
   switch (apiStatus) {
-    case "confirmed":
+    case 'confirmed':
       return MemberStatus.CONFIRMED;
-    case "pending":
-    case "sent":
-    case "failed":
+    case 'pending':
+    case 'sent':
+    case 'failed':
     default:
       return MemberStatus.PENDING;
   }
@@ -289,7 +289,7 @@ async function syncApplicationDataChanges(
         }
 
         console.log(
-          `Syncing application data for ${apiApp.application_id}: ${changes.join(", ")}`,
+          `Syncing application data for ${apiApp.application_id}: ${changes.join(', ')}`,
         );
 
         await prisma.application.update({
@@ -407,7 +407,7 @@ export async function getHybridApplications(
         await syncMemberStatusChanges(apiApplications);
       }
     } catch (error) {
-      console.warn("API call failed, using local data only:", error);
+      console.warn('API call failed, using local data only:', error);
     }
 
     // If API call was successful, combine API data with local drafts
@@ -445,13 +445,13 @@ export async function getHybridApplications(
     // If API call failed or returned no data, return local applications only
     return localApplications;
   } catch (error) {
-    console.error("Error in getHybridApplications:", error);
+    console.error('Error in getHybridApplications:', error);
 
     // Fallback to local applications only
     try {
       return await getLocalApplications();
     } catch (localError) {
-      console.error("Error getting local applications:", localError);
+      console.error('Error getting local applications:', localError);
       return [];
     }
   }
@@ -492,31 +492,31 @@ export async function getApplicationsStats(): Promise<{
     applications.forEach((app) => {
       const status = app.generalDetails.status.toLowerCase();
       switch (status) {
-        case "draft":
+        case 'draft':
           stats.draft++;
           break;
-        case "unsubmitted":
+        case 'unsubmitted':
           stats.unsubmitted++;
           break;
-        case "submitted":
+        case 'submitted':
           stats.submitted++;
           break;
-        case "pending":
+        case 'pending':
           stats.pending++;
           break;
-        case "in_review":
+        case 'in_review':
           stats.under_review++;
           break;
-        case "approved":
+        case 'approved':
           stats.approved++;
           break;
-        case "rejected":
+        case 'rejected':
           stats.rejected++;
           break;
-        case "disbursed":
+        case 'disbursed':
           stats.disbursed++;
           break;
-        case "closed":
+        case 'closed':
           stats.closed++;
           break;
       }
@@ -524,7 +524,7 @@ export async function getApplicationsStats(): Promise<{
 
     return stats;
   } catch (error) {
-    console.error("Error getting application stats:", error);
+    console.error('Error getting application stats:', error);
     return {
       total: 0,
       draft: 0,

@@ -1,8 +1,6 @@
-import { z } from "zod";
-
-import { validFile } from "@workspace/ui/lib/zod";
-
-import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
+import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
+import { validFile } from '@workspace/ui/lib/zod';
+import { z } from 'zod';
 
 export const groupDataSchema = z
   .object({
@@ -16,8 +14,8 @@ export const groupDataSchema = z
       (v) =>
         Array.isArray(v)
           ? v
-          : typeof v === "string"
-            ? v.split(",").filter(Boolean)
+          : typeof v === 'string'
+            ? v.split(',').filter(Boolean)
             : [],
       z.array(z.string()).min(1),
     ),
@@ -26,8 +24,8 @@ export const groupDataSchema = z
       (v) =>
         Array.isArray(v)
           ? v
-          : typeof v === "string"
-            ? v.split(",").filter(Boolean)
+          : typeof v === 'string'
+            ? v.split(',').filter(Boolean)
             : [],
       z.array(z.string()).min(1),
     ),
@@ -36,8 +34,8 @@ export const groupDataSchema = z
         (v) =>
           Array.isArray(v)
             ? v
-            : typeof v === "string"
-              ? v.split(",").filter(Boolean)
+            : typeof v === 'string'
+              ? v.split(',').filter(Boolean)
               : [],
         z.array(z.string()),
       )
@@ -45,26 +43,26 @@ export const groupDataSchema = z
 
     tableBankingExperience: z
       .string()
-      .regex(/^\d+$/, "Common.mustBeValidNumber")
+      .regex(/^\d+$/, 'Common.mustBeValidNumber')
       .transform((val) => Number(val))
       .nullable()
       .optional(),
     tableBankingShareContribution: z
       .string()
-      .regex(/^\d+$/, "Common.mustBeValidNumber")
+      .regex(/^\d+$/, 'Common.mustBeValidNumber')
       .transform((val) => Number(val))
       .nullable()
       .optional(),
     tableBankingTotalLoanedOut: z
       .string()
-      .regex(/^\d+$/, "Common.mustBeValidNumber")
+      .regex(/^\d+$/, 'Common.mustBeValidNumber')
       .nullable()
       .transform((val) => Number(val))
 
       .optional(),
     tableBankingTotalRevolvingFund: z
       .string()
-      .regex(/^\d+$/, "Common.mustBeValidNumber")
+      .regex(/^\d+$/, 'Common.mustBeValidNumber')
       .transform((val) => Number(val))
       .nullable()
       .optional(),
@@ -84,65 +82,65 @@ export const groupDataSchema = z
   .superRefine((data, ctx) => {
     // if group activities include value chain, value chain should not be empty
     if (
-      data.groupActivities.includes("Value chain") &&
+      data.groupActivities.includes('Value chain') &&
       data.valueChain?.length === 0
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.too_small,
         minimum: 1,
-        type: "string",
+        type: 'string',
         inclusive: true,
-        path: ["valueChain"],
+        path: ['valueChain'],
       });
     }
 
     // table banking values required if table banking option is selected
-    if (data.groupActivities.includes("Table banking")) {
+    if (data.groupActivities.includes('Table banking')) {
       if (!data.tableBankingExperience) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
           minimum: 1,
-          type: "string",
+          type: 'string',
           inclusive: true,
-          path: ["tableBankingExperience"],
+          path: ['tableBankingExperience'],
         });
       }
       if (!data.tableBankingShareContribution) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
           minimum: 1,
-          type: "string",
+          type: 'string',
           inclusive: true,
-          path: ["tableBankingShareContribution"],
+          path: ['tableBankingShareContribution'],
         });
       }
       if (!data.tableBankingTotalLoanedOut) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
           minimum: 1,
-          type: "string",
+          type: 'string',
           inclusive: true,
-          path: ["tableBankingTotalLoanedOut"],
+          path: ['tableBankingTotalLoanedOut'],
         });
       }
       if (!data.tableBankingTotalRevolvingFund) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
           minimum: 1,
-          type: "string",
+          type: 'string',
           inclusive: true,
-          path: ["tableBankingTotalRevolvingFund"],
+          path: ['tableBankingTotalRevolvingFund'],
         });
       }
     }
     // Other field is required if other is selected
-    if (data.groupActivities.includes("Other") && !data.other) {
+    if (data.groupActivities.includes('Other') && !data.other) {
       ctx.addIssue({
         code: z.ZodIssueCode.too_small,
         minimum: 1,
-        type: "string",
+        type: 'string',
         inclusive: true,
-        path: ["other"],
+        path: ['other'],
       });
     }
   });

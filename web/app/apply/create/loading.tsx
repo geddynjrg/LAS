@@ -1,7 +1,7 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from 'next-intl/server';
 
 export default async function Loading() {
-  const t = await getTranslations("Common.loading");
+  const t = await getTranslations('Common.loading');
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -12,10 +12,10 @@ export default async function Loading() {
         </div>
         <div className="space-y-2">
           <p className="text-lg font-medium text-neutral-700">
-            {t("creatingApplication")}
+            {t('creatingApplication')}
           </p>
           <p className="mx-auto max-w-md text-sm text-neutral-500">
-            {t("creatingApplicationDescription")}
+            {t('creatingApplicationDescription')}
           </p>
         </div>
       </div>

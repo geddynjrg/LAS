@@ -1,13 +1,11 @@
-import Link from "next/link";
-import type { FC } from "react";
-
-import { Button } from "@workspace/ui/components/button";
-import { Card } from "@workspace/ui/components/uwezo/card";
-
-import type { TextBlocksContainer } from "@/lib/api/schema";
+import type { TextBlocksContainer } from '@/lib/api/schema';
+import { Button } from '@workspace/ui/components/button';
+import { Card } from '@workspace/ui/components/uwezo/card';
+import Link from 'next/link';
+import type { FC } from 'react';
 
 export interface TextBlockCardProps {
-  block: TextBlocksContainer["blocks"][0];
+  block: TextBlocksContainer['blocks'][0];
 }
 
 export const TextBlockCard: FC<TextBlockCardProps> = ({ block }) => {
@@ -17,7 +15,7 @@ export const TextBlockCard: FC<TextBlockCardProps> = ({ block }) => {
       <div
         className="flex-1"
         dangerouslySetInnerHTML={{
-          __html: block.text.processed || block.text.value || "",
+          __html: block.text.processed || block.text.value || '',
         }}
       />
 

@@ -1,15 +1,13 @@
-import { useTranslations } from "next-intl";
-import Image from "next/image";
-import Link from "next/link";
-import type { FC } from "react";
-
-import { Header } from "@workspace/ui/components/header";
-import { SidebarTrigger } from "@workspace/ui/components/sidebar";
-
-import { ProfileMenu } from "@/components/profile-menu";
+import { ProfileMenu } from '@/components/profile-menu';
+import { Header } from '@workspace/ui/components/header';
+import { SidebarTrigger } from '@workspace/ui/components/sidebar';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import Link from 'next/link';
+import type { FC } from 'react';
 
 export const AppHeader: FC = () => {
-  const t = useTranslations("Common");
+  const t = useTranslations('Common');
 
   return (
     <Header
@@ -21,7 +19,7 @@ export const AppHeader: FC = () => {
       className="bg-background"
       endDecorator={
         <>
-          <SidebarTrigger>{t("menu")}</SidebarTrigger>
+          <SidebarTrigger>{t('menu')}</SidebarTrigger>
           <ProfileMenu />
         </>
       }

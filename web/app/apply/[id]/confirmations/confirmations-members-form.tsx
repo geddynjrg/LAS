@@ -1,35 +1,33 @@
-"use client";
-
-import { IconCheck } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, type FC } from "react";
-
-import { Button } from "@workspace/ui/components/button";
-import { Checkbox } from "@workspace/ui/components/checkbox";
-import { Container } from "@workspace/ui/components/container";
-import { DataNode } from "@workspace/ui/components/data-node";
-import { DataPair } from "@workspace/ui/components/data-pair";
-import { Field, Form } from "@workspace/ui/components/form";
-import { Loader } from "@workspace/ui/components/loader";
-import { ModalButton } from "@workspace/ui/components/modal-button";
-import { Card } from "@workspace/ui/components/uwezo/card";
-import { FormCard } from "@workspace/ui/components/uwezo/form-card";
-import { InfoPopover } from "@workspace/ui/components/uwezo/info-popover";
-import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-import { cn } from "@workspace/ui/lib/utils";
+'use client';
 
 import {
-  membersConfirmationDataSchema,
   type MembersConfirmationData,
-} from "@/app/apply/[id]/confirmations/members-confirmation-schema";
-import { ReviewFooter } from "@/app/apply/[id]/review/review-footer";
-import { updateApplicationStatusById } from "@/app/apply/[id]/review/update-application-status-by-id-action";
-import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
-import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
-import { ApplicationReviewMembers } from "@/components/application-review-members";
-import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
-import type { ApplicationData, Member } from "@/lib/data/application";
+  membersConfirmationDataSchema,
+} from '@/app/apply/[id]/confirmations/members-confirmation-schema';
+import { ReviewFooter } from '@/app/apply/[id]/review/review-footer';
+import { updateApplicationStatusById } from '@/app/apply/[id]/review/update-application-status-by-id-action';
+import { ApplicationReviewGroupData } from '@/components/application-review-group-data';
+import { ApplicationReviewLoanConditions } from '@/components/application-review-loan-conditions';
+import { ApplicationReviewMembers } from '@/components/application-review-members';
+import { ApplicationReviewProposedBusiness } from '@/components/application-review-proposed-business';
+import type { ApplicationData, Member } from '@/lib/data/application';
+import { IconCheck } from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
+import { Checkbox } from '@workspace/ui/components/checkbox';
+import { Container } from '@workspace/ui/components/container';
+import { DataNode } from '@workspace/ui/components/data-node';
+import { DataPair } from '@workspace/ui/components/data-pair';
+import { Field, Form } from '@workspace/ui/components/form';
+import { Loader } from '@workspace/ui/components/loader';
+import { ModalButton } from '@workspace/ui/components/modal-button';
+import { Card } from '@workspace/ui/components/uwezo/card';
+import { FormCard } from '@workspace/ui/components/uwezo/form-card';
+import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
+import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { cn } from '@workspace/ui/lib/utils';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { type FC, useEffect, useState } from 'react';
 
 export interface ConfirmMembersFormProps {
   id: string;
@@ -57,11 +55,11 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
   const [membersList, setMembersList] = useState<Member[]>(members);
   const [isBelowConfirmThreshold, setIsBelowConfirmThreshold] = useState(
     Math.ceil(members.length * 0.7) >
-      members.map((member) => member.status === "confirmed").length,
+      members.map((member) => member.status === 'confirmed').length,
   );
 
   const confirmedMembers = membersList.filter(
-    (member) => member.status === "confirmed",
+    (member) => member.status === 'confirmed',
   ).length;
 
   // manage confirmation state after successful submission
@@ -71,7 +69,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       setConfirmationSent(true);
       setIsBelowConfirmThreshold(
         Math.ceil(membersList.length * 0.7) >
-          membersList.map((member) => member.status === "confirmed").length,
+          membersList.map((member) => member.status === 'confirmed').length,
       );
     }
   }, [state, membersList]);
@@ -94,15 +92,15 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
     <Form
       action={formAction}
       autoComplete="on"
-      className={cn("grow-1 flex flex-col justify-between")}
+      className={cn('grow-1 flex flex-col justify-between')}
     >
       <div className="grow-1 flex flex-col justify-between">
         <Container className="pb-7">
-          <FormCard title={t("ReviewPage.title")}>
+          <FormCard title={t('ReviewPage.title')}>
             <div className="mt-4 flex flex-row justify-between">
               <div>
                 {/* <h2 className="typo-h3">{t("ReviewPage.title")}</h2> */}
-                <p>{t("ReviewPage.subTitle")}</p>
+                <p>{t('ReviewPage.subTitle')}</p>
               </div>
             </div>
 
@@ -131,42 +129,42 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
         <InfoPopover />
       </div>
 
-      <Container className={cn("space-y-8")}>
+      <Container className={cn('space-y-8')}>
         <FormCard
-          title={t("ConfirmationsPage.form-title-members")}
+          title={t('ConfirmationsPage.form-title-members')}
           className="space-y-4"
         >
-          <Card variant="blue" className={cn("text-sm")}>
+          <Card variant="blue" className={cn('text-sm')}>
             {t(
-              "ConfirmationsPage.confirmMembersForm.confirmation-instructions",
+              'ConfirmationsPage.confirmMembersForm.confirmation-instructions',
             )}
           </Card>
 
           {confirmationSent && (
-            <Card variant="green" className={cn("text-sm")}>
-              {t.rich("ConfirmationsPage.confirmMembersForm.progress-saved", {
+            <Card variant="green" className={cn('text-sm')}>
+              {t.rich('ConfirmationsPage.confirmMembersForm.progress-saved', {
                 strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
               })}
             </Card>
           )}
 
           {confirmationSent ? (
-            <h5 className={cn("typo-h5 text-center")}>
-              {t("ConfirmationsPage.confirmMembersForm.confirmed-members", {
+            <h5 className={cn('typo-h5 text-center')}>
+              {t('ConfirmationsPage.confirmMembersForm.confirmed-members', {
                 confirmed: confirmedMembers,
                 total: membersList.length,
               })}
             </h5>
           ) : (
-            <h5 className={cn("typo-h5")}>
-              {t("ConfirmationsPage.confirmMembersForm.select-members")}
+            <h5 className={cn('typo-h5')}>
+              {t('ConfirmationsPage.confirmMembersForm.select-members')}
             </h5>
           )}
 
           {!confirmationSent && (
-            <div className={cn("max-sm:flex max-sm:justify-center")}>
+            <div className={cn('max-sm:flex max-sm:justify-center')}>
               <Button
-                className={cn("max-sm:w-full max-sm:max-w-[27rem]")}
+                className={cn('max-sm:w-full max-sm:max-w-[27rem]')}
                 variant="secondary"
                 type="button"
                 onClick={() => {
@@ -174,29 +172,29 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                     checkedMembers.length === membersList.length
                       ? []
                       : membersList.map(
-                          (member) => member.nationalIdCode ?? "",
+                          (member) => member.nationalIdCode ?? '',
                         ),
                   );
                   setAllChecked(!allChecked);
                 }}
               >
-                {t("ConfirmationsPage.confirmMembersForm.select-all")}
+                {t('ConfirmationsPage.confirmMembersForm.select-all')}
               </Button>
             </div>
           )}
 
-          <div key={allChecked ? "on" : "off"} className={cn("space-y-3")}>
+          <div key={allChecked ? 'on' : 'off'} className={cn('space-y-3')}>
             {membersList.map((member, index) => (
               <DataPair
                 key={index}
                 className={cn(
-                  "w-full",
-                  "border-t border-solid border-neutral-400",
-                  "pt-3",
+                  'w-full',
+                  'border-t border-solid border-neutral-400',
+                  'pt-3',
                 )}
               >
                 {confirmationSent || isPending ? (
-                  <DataNode label={member.fullname ?? ""}>
+                  <DataNode label={member.fullname ?? ''}>
                     {member.type}
                   </DataNode>
                 ) : (
@@ -207,13 +205,13 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                       <Checkbox
                         {...props}
                         defaultValue={checkedMembers.includes(
-                          member.nationalIdCode ?? "",
+                          member.nationalIdCode ?? '',
                         )}
                         onValueChange={(value) => {
                           if (value) {
                             const newCheckedList = [
                               ...checkedMembers,
-                              member.nationalIdCode ?? "",
+                              member.nationalIdCode ?? '',
                             ];
 
                             setCheckedMembers(newCheckedList);
@@ -233,7 +231,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                           }
                         }}
                       >
-                        <DataNode label={member.fullname ?? ""}>
+                        <DataNode label={member.fullname ?? ''}>
                           {member.type}
                         </DataNode>
                       </Checkbox>
@@ -241,13 +239,13 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                   />
                 )}
                 {confirmationSent && !isPending && (
-                  <div className={cn("flex items-center gap-2")}>
-                    {member.status === "confirmed" ? (
-                      <IconCheck className={cn("text-green-400", "h-8 w-8")} />
+                  <div className={cn('flex items-center gap-2')}>
+                    {member.status === 'confirmed' ? (
+                      <IconCheck className={cn('text-green-400', 'h-8 w-8')} />
                     ) : (
                       <>
                         <Button variant="secondary" size="sm" type="submit">
-                          {t("Common.resend")}
+                          {t('Common.resend')}
                         </Button>
                         <Loader size={32} animation="strong" />
                       </>
@@ -256,10 +254,10 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                 )}
 
                 {isPending &&
-                  (member.status === "confirmed" ? (
-                    <IconCheck className={cn("text-green-400", "h-8 w-8")} />
+                  (member.status === 'confirmed' ? (
+                    <IconCheck className={cn('text-green-400', 'h-8 w-8')} />
                   ) : (
-                    <div className={cn("flex items-center gap-2")}>
+                    <div className={cn('flex items-center gap-2')}>
                       <Loader size={32} animation="strong" />
                     </div>
                   ))}
@@ -267,9 +265,9 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
             ))}
             <div
               className={cn(
-                "border-t border-solid border-neutral-400",
-                "pt-4",
-                "flex justify-center",
+                'border-t border-solid border-neutral-400',
+                'pt-4',
+                'flex justify-center',
               )}
             >
               <ModalButton
@@ -278,16 +276,16 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                   updateApplicationStatusById(id);
                   router.push(`/apply/${id}/done`);
                 }}
-                cancelTitle={t("Common.back")}
-                confirmTitle={t("Common.submit")}
-                modalText={t("ReviewPage.confirmationDescription")}
-                modalTitle={t("ReviewPage.confirmationTitle")}
-                cancelButtonProps={{ variant: "secondary" }}
-                contentProps={{ size: "sm" }}
+                cancelTitle={t('Common.back')}
+                confirmTitle={t('Common.submit')}
+                modalText={t('ReviewPage.confirmationDescription')}
+                modalTitle={t('ReviewPage.confirmationTitle')}
+                cancelButtonProps={{ variant: 'secondary' }}
+                contentProps={{ size: 'sm' }}
                 titleUnderline
-                className={cn("w-full max-w-[27rem]")}
+                className={cn('w-full max-w-[27rem]')}
               >
-                {t("ConfirmationsPage.confirmMembersForm.send-to-members")}
+                {t('ConfirmationsPage.confirmMembersForm.send-to-members')}
               </ModalButton>
             </div>
           </div>
@@ -297,7 +295,7 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
       <input type="hidden" name="id" value={id} />
 
       {/* TODO: Currently pass empty list to server, one day if needed to only sent to accepted users then pass on users id in the list */}
-      <input type="hidden" name="membersConfirmation" value={"[]"} />
+      <input type="hidden" name="membersConfirmation" value={'[]'} />
 
       <ReviewFooter id={id} />
     </Form>

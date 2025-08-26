@@ -1,26 +1,24 @@
-"use client";
+'use client';
 
-import { IconCheck } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState, type FC } from "react";
-
-import { Button } from "@workspace/ui/components/button";
-import { Checkbox } from "@workspace/ui/components/checkbox";
-import { Container } from "@workspace/ui/components/container";
-import { DataNode } from "@workspace/ui/components/data-node";
-import { DataPair } from "@workspace/ui/components/data-pair";
-import { Field, Form } from "@workspace/ui/components/form";
-import { Card } from "@workspace/ui/components/uwezo/card";
-import { FormCard } from "@workspace/ui/components/uwezo/form-card";
-import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-import { cn } from "@workspace/ui/lib/utils";
-
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
+import { ApplyFormActionBar } from '@/app/apply/[id]/apply-form-action-bar';
 import {
-  groupMembersConfirmationDataSchema,
   type GroupMembersConfirmationData,
-} from "@/app/apply/[id]/confirmations/group-members-confirmation-schema";
-import type { Member } from "@/lib/data/application";
+  groupMembersConfirmationDataSchema,
+} from '@/app/apply/[id]/confirmations/group-members-confirmation-schema';
+import type { Member } from '@/lib/data/application';
+import { IconCheck } from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
+import { Checkbox } from '@workspace/ui/components/checkbox';
+import { Container } from '@workspace/ui/components/container';
+import { DataNode } from '@workspace/ui/components/data-node';
+import { DataPair } from '@workspace/ui/components/data-pair';
+import { Field, Form } from '@workspace/ui/components/form';
+import { Card } from '@workspace/ui/components/uwezo/card';
+import { FormCard } from '@workspace/ui/components/uwezo/form-card';
+import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { cn } from '@workspace/ui/lib/utils';
+import { useTranslations } from 'next-intl';
+import { type FC, useEffect, useState } from 'react';
 
 export interface GroupConfirmationMembersFormProps {
   id: string;
@@ -117,37 +115,37 @@ export const GroupConfirmationMembersForm: FC<
     <Form
       action={formAction}
       autoComplete="on"
-      className={cn("grow-1 flex flex-col justify-between")}
+      className={cn('grow-1 flex flex-col justify-between')}
     >
-      <Container className={cn("space-y-8")}>
+      <Container className={cn('space-y-8')}>
         <FormCard
-          title={t("ConfirmationsPage.form-title-group")}
+          title={t('ConfirmationsPage.form-title-group')}
           className="space-y-4"
         >
-          <Card variant="blue" className={cn("text-sm")}>
+          <Card variant="blue" className={cn('text-sm')}>
             {t(
-              "ConfirmationsPage.groupConfirmationForm.confirmation-instructions",
+              'ConfirmationsPage.groupConfirmationForm.confirmation-instructions',
             )}
           </Card>
 
-          <h5 className={cn("typo-h5")}>
-            {t("ConfirmationsPage.groupConfirmationForm.select-members")}
+          <h5 className={cn('typo-h5')}>
+            {t('ConfirmationsPage.groupConfirmationForm.select-members')}
           </h5>
 
-          <div className={cn("max-sm:flex max-sm:justify-center")}>
+          <div className={cn('max-sm:flex max-sm:justify-center')}>
             <Button
-              className={cn("max-sm:w-full max-sm:max-w-[27rem]")}
+              className={cn('max-sm:w-full max-sm:max-w-[27rem]')}
               variant="secondary"
               type="button"
               onClick={handleSelectAll}
             >
               {selectedMembers.length === membersList.length
-                ? t("ConfirmationsPage.groupConfirmationForm.deselect-all")
-                : t("ConfirmationsPage.groupConfirmationForm.select-all")}
+                ? t('ConfirmationsPage.groupConfirmationForm.deselect-all')
+                : t('ConfirmationsPage.groupConfirmationForm.select-all')}
             </Button>
           </div>
 
-          <div className={cn("space-y-3")}>
+          <div className={cn('space-y-3')}>
             {membersList.map((member, index) => {
               const memberId = `${member.nationalIdCode ?? `member-${index}`}-${index}`;
               const isSelected = checkboxStates.get(memberId) ?? false;
@@ -156,9 +154,9 @@ export const GroupConfirmationMembersForm: FC<
                 <DataPair
                   key={`member-${member.nationalIdCode || member.fullname || index}-${index}`}
                   className={cn(
-                    "w-full",
-                    "border-t border-solid border-neutral-400",
-                    "pt-3",
+                    'w-full',
+                    'border-t border-solid border-neutral-400',
+                    'pt-3',
                   )}
                 >
                   <div className="flex-1">
@@ -167,14 +165,14 @@ export const GroupConfirmationMembersForm: FC<
                       control={(props) => (
                         <Checkbox
                           {...props}
-                          key={`checkbox-${memberId}-${isSelected ? "checked" : "unchecked"}`}
+                          key={`checkbox-${memberId}-${isSelected ? 'checked' : 'unchecked'}`}
                           defaultValue={isSelected}
                           onValueChange={(value) => {
                             handleMemberSelection(memberId, !!value);
                           }}
                         >
                           <DataNode
-                            label={member.fullname ?? ""}
+                            label={member.fullname ?? ''}
                             key={`datanode-${member.nationalIdCode || index}-${index}`}
                           >
                             {member.type}
@@ -186,7 +184,7 @@ export const GroupConfirmationMembersForm: FC<
                   {isSelected && (
                     <IconCheck
                       key={`check-${member.nationalIdCode || index}-${index}`}
-                      className={cn("text-green-400", "h-8 w-8")}
+                      className={cn('text-green-400', 'h-8 w-8')}
                     />
                   )}
                 </DataPair>

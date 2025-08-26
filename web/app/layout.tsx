@@ -1,25 +1,22 @@
-import "@workspace/ui/globals.css";
-
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
-import { DM_Sans } from "next/font/google";
-import { headers } from "next/headers";
-import { userAgent } from "next/server";
-import { Suspense, type ReactNode } from "react";
-
-import { Loader } from "@workspace/ui/components/loader";
-import { SidebarInset } from "@workspace/ui/components/sidebar";
-
-import { AppFooter } from "@/components/app-footer";
-import { AppHeader } from "@/components/app-header";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Providers } from "@/components/providers";
-import { type Locale } from "@/i18n/config";
-import { getSession } from "@/lib/session";
+import { AppFooter } from '@/components/app-footer';
+import { AppHeader } from '@/components/app-header';
+import { AppSidebar } from '@/components/app-sidebar';
+import { Providers } from '@/components/providers';
+import { type Locale } from '@/i18n/config';
+import { getSession } from '@/lib/session';
+import { Loader } from '@workspace/ui/components/loader';
+import { SidebarInset } from '@workspace/ui/components/sidebar';
+import '@workspace/ui/globals.css';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
+import { DM_Sans } from 'next/font/google';
+import { headers } from 'next/headers';
+import { userAgent } from 'next/server';
+import { type ReactNode, Suspense } from 'react';
 
 const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
+  subsets: ['latin'],
+  variable: '--font-sans',
 });
 
 export interface RootLayoutProps {
@@ -65,5 +62,5 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 function getDeviceType(headers: Headers) {
   const { device } = userAgent({ headers });
 
-  return device.type === "mobile" ? "mobile" : "desktop";
+  return device.type === 'mobile' ? 'mobile' : 'desktop';
 }

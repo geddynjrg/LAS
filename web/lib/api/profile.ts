@@ -1,16 +1,16 @@
-import { UserProfileResponseSchema } from "@/lib/api/schema/response/auth-response.schema";
-import { api, validate } from "@/lib/api/utils";
+import { UserProfileResponseSchema } from '@/lib/api/schema/response/auth-response.schema';
+import { api, validate } from '@/lib/api/utils';
 
 export async function getProfile() {
-  const res = await api.GET("/api/v1/user/profile");
+  const res = await api.GET('/api/v1/user/profile');
 
   if (!res.response.ok) {
     if (res.response.status === 401) {
-      throw new Error("Authentication required");
+      throw new Error('Authentication required');
     }
     if (res.response.status === 404) {
       // Return a minimal profile structure for users without profiles
-      console.log("Profile not found, returning empty profile");
+      console.log('Profile not found, returning empty profile');
       return {
         data: {
           email: undefined,

@@ -1,21 +1,19 @@
-import { z } from "zod";
-
-import { validFile } from "@workspace/ui/lib/zod";
-
-import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
+import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
+import { validFile } from '@workspace/ui/lib/zod';
+import { z } from 'zod';
 
 // Member schema for validation within members array - matching existing Member interface
 // Essential fields are required for proper validation
 const memberSchema = z.object({
-  fullname: z.string().min(1, "Member name is required"),
-  nationalIdCode: z.string().min(1, "National ID is required"),
-  gender: z.union([z.literal("Male"), z.literal("Female"), z.literal("Other")]),
+  fullname: z.string().min(1, 'Member name is required'),
+  nationalIdCode: z.string().min(1, 'National ID is required'),
+  gender: z.union([z.literal('Male'), z.literal('Female'), z.literal('Other')]),
   type: z.union([
-    z.literal("Chairman"),
-    z.literal("Secretary"),
-    z.literal("Member"),
+    z.literal('Chairman'),
+    z.literal('Secretary'),
+    z.literal('Member'),
   ]),
-  phoneNumber: z.string().min(1, "Phone number is required"),
+  phoneNumber: z.string().min(1, 'Phone number is required'),
   photoOfId: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   disability: z
     .object({
@@ -23,16 +21,16 @@ const memberSchema = z.object({
       pwdNumber: z.string().optional(),
     })
     .optional(),
-  status: z.union([z.literal("confirmed"), z.literal("pending")]).optional(),
+  status: z.union([z.literal('confirmed'), z.literal('pending')]).optional(),
   requiresConfirmation: z.boolean().optional(),
 });
 
 export const membersDataSchema = z.object({
-  natureOfGroup: z.string().min(1, "Nature of group is required"),
+  natureOfGroup: z.string().min(1, 'Nature of group is required'),
   members: z.preprocess(
     (val) => {
       // Parse JSON string to array
-      if (typeof val === "string") {
+      if (typeof val === 'string') {
         try {
           return JSON.parse(val);
         } catch {
@@ -41,7 +39,7 @@ export const membersDataSchema = z.object({
       }
       return val;
     },
-    z.array(memberSchema).min(1, "At least one member is required"),
+    z.array(memberSchema).min(1, 'At least one member is required'),
   ),
 });
 

@@ -1,11 +1,11 @@
 import {
-  ApplicationPostRequestSchema,
-  ApplicationPostResponseSchema,
-  ErrorResponseSchema,
   type ApplicationPostRequest,
+  ApplicationPostRequestSchema,
   type ApplicationPostResponse,
+  ApplicationPostResponseSchema,
   type ErrorResponse,
-} from "@/lib/api/schema/application/application.schema";
+  ErrorResponseSchema,
+} from '@/lib/api/schema/application/application.schema';
 
 /**
  * Create or update an application via the external API
@@ -21,22 +21,19 @@ export async function createOrUpdateApplication(
     const validatedData = ApplicationPostRequestSchema.parse(data);
 
     // Direct fetch to avoid the redirect middleware in api utils
-    const response = await fetch(
-      `${process.env.API_URL}/api/v1/application`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": process.env.EXTERNAL_API_KEY || "",
-        },
-        body: JSON.stringify(validatedData),
+    const response = await fetch(`${process.env.API_URL}/api/v1/application`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': process.env.EXTERNAL_API_KEY || '',
       },
-    );
+      body: JSON.stringify(validatedData),
+    });
 
     const result = await response.json();
 
     if (!response.ok) {
-      console.error("API error:", response.status, result);
+      console.error('API error:', response.status, result);
 
       // Try to parse as ErrorResponse
       try {
@@ -44,8 +41,8 @@ export async function createOrUpdateApplication(
         return errorResult;
       } catch {
         return {
-          error: "api_error",
-          message: result.message || result.error || "Unknown API error",
+          error: 'api_error',
+          message: result.message || result.error || 'Unknown API error',
         };
       }
     }
@@ -56,22 +53,22 @@ export async function createOrUpdateApplication(
       return successResult;
     } catch (validationError) {
       // If validation fails, return the raw data but log the error
-      console.warn("Response validation failed:", validationError);
+      console.warn('Response validation failed:', validationError);
       return result as ApplicationPostResponse;
     }
   } catch (error) {
-    console.error("Error creating/updating application:", error);
+    console.error('Error creating/updating application:', error);
 
     if (error instanceof Error) {
       return {
-        error: "validation_error",
+        error: 'validation_error',
         message: error.message,
       };
     }
 
     return {
-      error: "unknown_error",
-      message: "An unknown error occurred",
+      error: 'unknown_error',
+      message: 'An unknown error occurred',
     };
   }
 }

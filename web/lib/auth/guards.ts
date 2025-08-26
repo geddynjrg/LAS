@@ -1,14 +1,13 @@
-import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
-
-import { getProfile } from "@/lib/api/profile";
-import { getSession } from "@/lib/session";
+import { getProfile } from '@/lib/api/profile';
+import { getSession } from '@/lib/session';
+import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';
 
 export async function requireAuth() {
   const session = await getSession();
 
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
 
   return session;
@@ -28,19 +27,19 @@ export async function requireAdmin() {
     // Check if user has admin role (case-insensitive)
     isAdmin = roles.some(
       (role) =>
-        role.toLowerCase() === "admin" ||
-        role.toLowerCase() === "administrator",
+        role.toLowerCase() === 'admin' ||
+        role.toLowerCase() === 'administrator',
     );
   } catch (error) {
     // Only log actual profile fetching errors
-    console.error("Failed to fetch user profile:", error);
+    console.error('Failed to fetch user profile:', error);
     // If we can't fetch profile, assume not admin for security
     isAdmin = false;
   }
 
   // Handle authorization after profile fetching is complete
   if (!isAdmin) {
-    redirect("/dashboard");
+    redirect('/dashboard');
   }
 
   return session;
@@ -53,7 +52,7 @@ export async function requireAuthAPI(): Promise<
   const session = await getSession();
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   return { session };
@@ -79,21 +78,21 @@ export async function requireAdminAPI(): Promise<
     // Check if user has admin role (case-insensitive)
     isAdmin = roles.some(
       (role) =>
-        role.toLowerCase() === "admin" ||
-        role.toLowerCase() === "administrator",
+        role.toLowerCase() === 'admin' ||
+        role.toLowerCase() === 'administrator',
     );
   } catch (error) {
     // Log actual profile fetching errors
-    console.error("Failed to fetch user profile:", error);
+    console.error('Failed to fetch user profile:', error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: 'Internal Server Error' },
       { status: 500 },
     );
   }
 
   // Handle authorization after profile fetching is complete
   if (!isAdmin) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   return authResult;
@@ -110,7 +109,7 @@ export async function getCurrentUserRoles() {
     const profile = await getProfile();
     return profile.data?.roles || [];
   } catch (error) {
-    console.error("Failed to fetch user roles:", error);
+    console.error('Failed to fetch user roles:', error);
     return [];
   }
 }
@@ -119,6 +118,6 @@ export async function isAdmin() {
   const roles = await getCurrentUserRoles();
   return roles.some(
     (role) =>
-      role.toLowerCase() === "admin" || role.toLowerCase() === "administrator",
+      role.toLowerCase() === 'admin' || role.toLowerCase() === 'administrator',
   );
 }

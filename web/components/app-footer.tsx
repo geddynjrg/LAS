@@ -1,59 +1,57 @@
+import type { SiteInformationResponse } from '@/lib/api/schema/site-info/site-info.schema';
+import { getSiteInfo } from '@/lib/api/site-info';
 import {
   IconDeviceMobile,
   IconHomeFilled,
   IconMail,
-} from "@tabler/icons-react";
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-import { Children, FC, ReactNode } from "react";
-
-import { Container } from "@workspace/ui/components/container";
-import { cn } from "@workspace/ui/lib/utils";
-
-import type { SiteInformationResponse } from "@/lib/api/schema/site-info/site-info.schema";
-import { getSiteInfo } from "@/lib/api/site-info";
+} from '@tabler/icons-react';
+import { Container } from '@workspace/ui/components/container';
+import { cn } from '@workspace/ui/lib/utils';
+import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
+import { Children, FC, ReactNode } from 'react';
 
 export const AppFooter: FC = async () => {
-  const t = await getTranslations("Footer");
+  const t = await getTranslations('Footer');
 
   let siteInfo: SiteInformationResponse | null = null;
 
   try {
     siteInfo = await getSiteInfo();
   } catch (error) {
-    console.error("Failed to fetch site info:", error);
+    console.error('Failed to fetch site info:', error);
     // Fallback to hardcoded values if API fails
   }
 
   // Fallback data
   const defaultSiteData = {
     site: {
-      name: "Uwezo Fund",
+      name: 'Uwezo Fund',
       contact: {
-        address: "Lonrho House, 16th Floor, Standard Street",
-        po_box: "P. O. Box 42009 – 00100, Nairobi",
-        phone: "+254 0776 154 215",
-        email: "info@uwezo.go.ke",
+        address: 'Lonrho House, 16th Floor, Standard Street',
+        po_box: 'P. O. Box 42009 – 00100, Nairobi',
+        phone: '+254 0776 154 215',
+        email: 'info@uwezo.go.ke',
       },
     },
     useful_links: [
       {
-        id: "1",
-        title: "Staff Mail",
-        url: "https://mail.kenya.go.ke",
+        id: '1',
+        title: 'Staff Mail',
+        url: 'https://mail.kenya.go.ke',
         external: true,
       },
-      { id: "2", title: "MyGov", url: "https://mygov.go.ke", external: true },
+      { id: '2', title: 'MyGov', url: 'https://mygov.go.ke', external: true },
       {
-        id: "3",
-        title: "eCitizen",
-        url: "https://ecitizen.go.ke",
+        id: '3',
+        title: 'eCitizen',
+        url: 'https://ecitizen.go.ke',
         external: true,
       },
       {
-        id: "4",
-        title: "Public Service Jobs",
-        url: "https://psckenyajobs.go.ke",
+        id: '4',
+        title: 'Public Service Jobs',
+        url: 'https://psckenyajobs.go.ke',
         external: true,
       },
     ],
@@ -64,7 +62,7 @@ export const AppFooter: FC = async () => {
   return (
     <footer className="bg-primary text-primary-foreground">
       <Container className="flex basis-1/3 flex-col pt-8 md:flex-row md:justify-center md:gap-8">
-        <FooterNavGroup title={t("usefulLinks")}>
+        <FooterNavGroup title={t('usefulLinks')}>
           {data.useful_links.map((link, index) => (
             <FooterNavItem
               key={link.id || index}
@@ -76,7 +74,7 @@ export const AppFooter: FC = async () => {
             </FooterNavItem>
           ))}
         </FooterNavGroup>
-        <FooterNavGroup title={t("quickContacts")}>
+        <FooterNavGroup title={t('quickContacts')}>
           <FooterNavItem>
             <IconHomeFilled size={20} />
             {data.site.name}
@@ -145,17 +143,17 @@ const FooterNavItem: FC<FooterNavItemProps> = ({
   hasBorder = true,
   isExternal = false,
 }) => {
-  const Comp = href ? Link : "div";
+  const Comp = href ? Link : 'div';
   const linkProps = isExternal
-    ? { target: "_blank", rel: "noopener noreferrer" }
+    ? { target: '_blank', rel: 'noopener noreferrer' }
     : {};
 
   return (
     <Comp
       href={href as string}
       className={cn(
-        "border-primary-foreground/10 text-primary-foreground typo-body-small flex max-w-[380px] flex-row gap-2.5 pb-1",
-        hasBorder && "border-b",
+        'border-primary-foreground/10 text-primary-foreground typo-body-small flex max-w-[380px] flex-row gap-2.5 pb-1',
+        hasBorder && 'border-b',
       )}
       {...(href ? linkProps : {})}
     >

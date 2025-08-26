@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Schema for individual language availability
 export const LanguageAvailabilitySchema = z.object({

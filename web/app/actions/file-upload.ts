@@ -1,33 +1,32 @@
-"use server";
+'use server';
 
-import crypto from "crypto";
-import { promises as fs } from "fs";
-import path from "path";
-
-import type { FormAction } from "@workspace/ui/hooks/use-form";
-import { isFileUpload } from "@workspace/ui/lib/utils";
+import type { FormAction } from '@workspace/ui/hooks/use-form';
+import { isFileUpload } from '@workspace/ui/lib/utils';
+import crypto from 'crypto';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // File storage configuration
 const UPLOAD_DIR =
-  process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
-const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || "10485760"); // 10MB default
+  process.env.UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads');
+const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || '10485760'); // 10MB default
 
 const ALLOWED_MIME_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-  "image/bmp",
-  "image/svg+xml",
-  "application/pdf",
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/bmp',
+  'image/svg+xml',
+  'application/pdf',
 ];
 
 // Generate a unique filename with the original extension
 function generateUniqueFilename(originalName: string): string {
   const ext = path.extname(originalName);
   const timestamp = Date.now();
-  const randomString = crypto.randomBytes(8).toString("hex");
+  const randomString = crypto.randomBytes(8).toString('hex');
   return `${timestamp}-${randomString}${ext}`;
 }
 
@@ -36,8 +35,8 @@ async function ensureUploadDir(dirPath: string) {
   try {
     await fs.mkdir(dirPath, { recursive: true });
   } catch (error) {
-    console.error("Error creating upload directory:", error);
-    throw new Error("Failed to create upload directory");
+    console.error('Error creating upload directory:', error);
+    throw new Error('Failed to create upload directory');
   }
 }
 
@@ -60,12 +59,12 @@ export const uploadFileAction: FormAction<{
   files: File[];
   applicationId?: string;
 }> = async (_prev, formData) => {
-  const applicationId = formData.get("applicationId")?.toString();
+  const applicationId = formData.get('applicationId')?.toString();
   const files: File[] = [];
 
   // Extract all files from form data
   for (const [key, value] of formData.entries()) {
-    if (key === "file" || key.startsWith("files")) {
+    if (key === 'file' || key.startsWith('files')) {
       if (isFileUpload(value)) {
         files.push(value as File);
       }
@@ -78,7 +77,7 @@ export const uploadFileAction: FormAction<{
     if (files.length === 0) {
       return {
         success: false,
-        errors: { files: ["No files provided"] },
+        errors: { files: ['No files provided'] },
         values,
       };
     }
@@ -147,7 +146,7 @@ export const uploadFileAction: FormAction<{
         console.error(`Error uploading file ${file.name}:`, error);
         errors[fieldKey] = [
           `Failed to upload file "${file.name}": ${
-            error instanceof Error ? error.message : "Unknown error"
+            error instanceof Error ? error.message : 'Unknown error'
           }`,
         ];
       }
@@ -168,16 +167,16 @@ export const uploadFileAction: FormAction<{
       errors:
         Object.keys(errors).length > 0
           ? errors
-          : { files: ["Failed to upload any files"] },
+          : { files: ['Failed to upload any files'] },
       values,
     };
   } catch (error) {
-    console.error("Error in uploadFileAction:", error);
+    console.error('Error in uploadFileAction:', error);
     return {
       success: false,
       errors: {
         files: [
-          `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         ],
       },
       values,
@@ -189,15 +188,15 @@ export const uploadSingleFileAction: FormAction<{
   file: File;
   applicationId?: string;
 }> = async (_prev, formData) => {
-  const applicationId = formData.get("applicationId")?.toString();
-  const file = formData.get("file") as File;
+  const applicationId = formData.get('applicationId')?.toString();
+  const file = formData.get('file') as File;
   const values = { file, applicationId };
 
   try {
     if (!file || !isFileUpload(file)) {
       return {
         success: false,
-        errors: { file: ["No file provided"] },
+        errors: { file: ['No file provided'] },
         values,
       };
     }
@@ -261,12 +260,12 @@ export const uploadSingleFileAction: FormAction<{
       files: [uploadResult],
     };
   } catch (error) {
-    console.error("Error in uploadSingleFileAction:", error);
+    console.error('Error in uploadSingleFileAction:', error);
     return {
       success: false,
       errors: {
         file: [
-          `Upload failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+          `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         ],
       },
       values,

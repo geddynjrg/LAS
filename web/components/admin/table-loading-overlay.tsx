@@ -1,4 +1,4 @@
-import { IconLoader } from "@tabler/icons-react";
+import { IconLoader } from '@tabler/icons-react';
 
 interface TableLoadingOverlayProps {
   isLoading: boolean;
@@ -7,7 +7,7 @@ interface TableLoadingOverlayProps {
 
 export function TableLoadingOverlay({
   isLoading,
-  message = "Loading...",
+  message = 'Loading...',
 }: TableLoadingOverlayProps) {
   if (!isLoading) return null;
 

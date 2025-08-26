@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-
-import { confirmationDataAction } from "@/app/apply/[id]/confirmations/confirmation-data-action";
-import { ConfirmationsDataForm } from "@/app/apply/[id]/confirmations/confirmations-data-form";
-import { ConfirmationsMembersForm } from "@/app/apply/[id]/confirmations/confirmations-members-form";
-import { membersConfirmationDataAction } from "@/app/apply/[id]/confirmations/members-confirmation-action";
+import { confirmationDataAction } from '@/app/apply/[id]/confirmations/confirmation-data-action';
+import { ConfirmationsDataForm } from '@/app/apply/[id]/confirmations/confirmations-data-form';
+import { ConfirmationsMembersForm } from '@/app/apply/[id]/confirmations/confirmations-members-form';
+import { membersConfirmationDataAction } from '@/app/apply/[id]/confirmations/members-confirmation-action';
 import type {
   ApplicationData,
   ConfirmationsData,
   MembersData,
-} from "@/lib/data/application";
+} from '@/lib/data/application';
+import { useState } from 'react';
 
 export interface GroupDataPageProps {
   id: string;
@@ -25,28 +24,28 @@ export default function ConfirmationFormsWrapper({
   members,
   application,
 }: GroupDataPageProps) {
-  const [step, setStep] = useState<"declaration" | "confirmation">(
-    applicationConfirmationData?.declarations.correctInformationConfirm === "on" // all fields have to be checked so we can just check one and decide what view to show
-      ? "confirmation"
-      : "declaration",
+  const [step, setStep] = useState<'declaration' | 'confirmation'>(
+    applicationConfirmationData?.declarations.correctInformationConfirm === 'on' // all fields have to be checked so we can just check one and decide what view to show
+      ? 'confirmation'
+      : 'declaration',
   );
 
   return (
     <>
-      {step === "declaration" && (
+      {step === 'declaration' && (
         <ConfirmationsDataForm
           id={id}
           action={confirmationDataAction}
-          onSuccess={() => setStep("confirmation")}
+          onSuccess={() => setStep('confirmation')}
           declarationsData={applicationConfirmationData?.declarations}
         />
       )}
-      {step === "confirmation" && (
+      {step === 'confirmation' && (
         <ConfirmationsMembersForm
           id={id}
           application={application}
           action={membersConfirmationDataAction}
-          onBack={() => setStep("declaration")}
+          onBack={() => setStep('declaration')}
           members={members.members}
         />
       )}

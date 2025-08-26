@@ -1,65 +1,63 @@
-"use client";
+'use client';
 
+import { uploadSingleFileAction } from '@/app/actions/file-upload';
+import { ApplyFormActionBar } from '@/app/apply/[id]/apply-form-action-bar';
+import { memberAction } from '@/app/apply/[id]/members/member-action';
+import { memberSchema } from '@/app/apply/[id]/members/member-schema';
+import {
+  type MembersData,
+  membersDataSchema,
+} from '@/app/apply/[id]/members/members-data-schema';
+import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
+import {
+  MembersData as ApplicationMembersData,
+  type GenderType,
+  type Member,
+} from '@/lib/data/application';
 import {
   IconCheck,
   IconPencil,
   IconPlus,
   IconTrash,
   IconX,
-} from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { FC, useState } from "react";
-
-import { Button } from "@workspace/ui/components/button";
+} from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
 import {
   ButtonGroup,
   ButtonGroupItem,
-} from "@workspace/ui/components/button-group";
-import { Checkbox } from "@workspace/ui/components/checkbox";
-import { Container } from "@workspace/ui/components/container";
-import { DataNode } from "@workspace/ui/components/data-node";
-import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
-import { Field, Form } from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
+} from '@workspace/ui/components/button-group';
+import { Checkbox } from '@workspace/ui/components/checkbox';
+import { Container } from '@workspace/ui/components/container';
+import { DataNode } from '@workspace/ui/components/data-node';
+import { FileUploadInput } from '@workspace/ui/components/file-upload-input';
+import { Field, Form } from '@workspace/ui/components/form';
+import { Input } from '@workspace/ui/components/input';
 // import { SearchInput } from "@workspace/ui/components/search-input";
-import { Select } from "@workspace/ui/components/select";
-import { Underline } from "@workspace/ui/components/underline";
-import { FormCard } from "@workspace/ui/components/uwezo/form-card";
+import { Select } from '@workspace/ui/components/select';
+import { Underline } from '@workspace/ui/components/underline';
+import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import {
   PersonAccordion,
   PersonAccordionContent,
   PersonAccordionItem,
   PersonAccordionTrigger,
-} from "@workspace/ui/components/uwezo/personAccordion";
-import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
-import { formatBytes } from "@workspace/ui/lib/utils";
-
-import { uploadSingleFileAction } from "@/app/actions/file-upload";
-import { ApplyFormActionBar } from "@/app/apply/[id]/apply-form-action-bar";
-import { memberAction } from "@/app/apply/[id]/members/member-action";
-import { memberSchema } from "@/app/apply/[id]/members/member-schema";
-import {
-  membersDataSchema,
-  type MembersData,
-} from "@/app/apply/[id]/members/members-data-schema";
-import { FILE_ACCEPT, MAX_FILE_SIZE } from "@/lib/constants";
-import {
-  MembersData as ApplicationMembersData,
-  type GenderType,
-  type Member,
-} from "@/lib/data/application";
+} from '@workspace/ui/components/uwezo/personAccordion';
+import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { formatBytes } from '@workspace/ui/lib/utils';
+import { useTranslations } from 'next-intl';
+import { FC, useState } from 'react';
 
 // import { dummyMembers } from "@/lib/data/dummy-data";
 
 // Helper function to extract error message from various error types
 const getErrorMessage = (error: any): string => {
-  if (typeof error === "string") {
+  if (typeof error === 'string') {
     return error;
   }
-  if (error && typeof error === "object" && "message" in error) {
+  if (error && typeof error === 'object' && 'message' in error) {
     return error.message;
   }
-  return "members_required"; // Return a flag for translation
+  return 'members_required'; // Return a flag for translation
 };
 
 export interface MembersDataProps {
@@ -103,12 +101,12 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       autoComplete="on"
     >
       <Container>
-        <FormCard title={t("MembersPage.member")} className="mt-7 grid gap-4">
+        <FormCard title={t('MembersPage.member')} className="mt-7 grid gap-4">
           <Field
             className="border-b border-neutral-400 pb-4"
             state={state}
             name="natureOfGroup"
-            label={t("MembersPage.natureOfTheGroup")}
+            label={t('MembersPage.natureOfTheGroup')}
             required
             control={(props) => (
               <ButtonGroup
@@ -120,19 +118,19 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                   value="youth"
                   className="typo-body-small-bold grow px-1"
                 >
-                  {t("MembersPage.youth")}
+                  {t('MembersPage.youth')}
                 </ButtonGroupItem>
                 <ButtonGroupItem
                   value="pwd"
                   className="typo-body-small-bold grow px-1"
                 >
-                  {t("MembersPage.peopleWithDisabilities")}
+                  {t('MembersPage.peopleWithDisabilities')}
                 </ButtonGroupItem>
                 <ButtonGroupItem
                   value="women"
                   className="typo-body-small-bold grow px-1"
                 >
-                  {t("MembersPage.women")}
+                  {t('MembersPage.women')}
                 </ButtonGroupItem>
               </ButtonGroup>
             )}
@@ -182,10 +180,10 @@ export const MembersDataForm: FC<MembersDataProps> = ({
               !displayNewMemberForm && setDisplayNewMemberForm(true)
             }
           >
-            <IconPlus /> {t("MembersPage.addMember")}
+            <IconPlus /> {t('MembersPage.addMember')}
           </Button>
           <p className="typo-body-large mx-auto font-bold">
-            {t("MembersPage.membersInfoInserted", { count: members.length })}
+            {t('MembersPage.membersInfoInserted', { count: members.length })}
           </p>
 
           {state.errors?.members && (
@@ -195,8 +193,8 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                   ? getErrorMessage(state.errors.members[0])
                   : getErrorMessage(state.errors.members);
 
-                return errorMsg === "members_required"
-                  ? t("MembersPage.errors.atLeastOneMemberRequired")
+                return errorMsg === 'members_required'
+                  ? t('MembersPage.errors.atLeastOneMemberRequired')
                   : errorMsg;
               })()}
             </div>
@@ -248,7 +246,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                   return (
                     <PersonAccordionItem
                       key={index}
-                      value={member.fullname || ""}
+                      value={member.fullname || ''}
                     >
                       <PersonAccordionTrigger>
                         {member.fullname}
@@ -256,28 +254,28 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                       <PersonAccordionContent className="space-y-3">
                         <DataNode
                           orientation="horizontal"
-                          label={t("MembersPage.idCode")}
+                          label={t('MembersPage.idCode')}
                         >
-                          {member.nationalIdCode ?? "N/A"}
+                          {member.nationalIdCode ?? 'N/A'}
                         </DataNode>
 
                         <DataNode
                           orientation="horizontal"
-                          label={t("MembersPage.gender")}
+                          label={t('MembersPage.gender')}
                         >
-                          {member.gender ?? "N/A"}
+                          {member.gender ?? 'N/A'}
                         </DataNode>
                         <DataNode
                           orientation="horizontal"
-                          label={t("MembersPage.phoneNumber")}
+                          label={t('MembersPage.phoneNumber')}
                         >
-                          {member.phoneNumber ?? "N/A"}
+                          {member.phoneNumber ?? 'N/A'}
                         </DataNode>
                         <DataNode
                           orientation="horizontal"
-                          label={t("MembersPage.capacity")}
+                          label={t('MembersPage.capacity')}
                         >
-                          {member.type ?? "N/A"}
+                          {member.type ?? 'N/A'}
                         </DataNode>
                       </PersonAccordionContent>
                       <MemberAccordionFooter
@@ -334,7 +332,7 @@ const MemberAccordionFooter = ({
         <div>
           <Underline className="text-destructive border-b-destructive hover:text-destructive">
             <IconTrash className="!text-destructive" />
-            {t("Common.remove")}
+            {t('Common.remove')}
           </Underline>
         </div>
       </Button>
@@ -347,7 +345,7 @@ const MemberAccordionFooter = ({
         <div>
           <Underline className="border-b-blue-400 text-blue-400">
             <IconPencil />
-            {t("Common.edit")}
+            {t('Common.edit')}
           </Underline>
         </div>
       </Button>
@@ -376,7 +374,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     gender: existingMember?.gender,
     phoneNumber: existingMember?.phoneNumber,
     type: existingMember?.type,
-    disability: existingMember?.disability ? "on" : null,
+    disability: existingMember?.disability ? 'on' : null,
     certificateOfDisability:
       existingMember?.disability?.certificateOfDisability,
     pwdNumber: existingMember?.disability?.pwdNumber,
@@ -398,7 +396,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       <Field
         state={state}
         name="fullname"
-        label={t("MembersPage.memberName")}
+        label={t('MembersPage.memberName')}
         required
         editable={isNew}
         control={(props) => (
@@ -418,7 +416,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       <Field
         state={state}
         name="nationalIdCode"
-        label={t("MembersPage.nationalIdCodeAlienId")}
+        label={t('MembersPage.nationalIdCodeAlienId')}
         required
         editable={isNew}
         control={(props) => (
@@ -438,7 +436,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       <Field
         state={state}
         name="gender"
-        label={t("MembersPage.gender")}
+        label={t('MembersPage.gender')}
         required
         editable={isNew}
         control={(props) => (
@@ -454,18 +452,18 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             }}
           >
             <ButtonGroupItem value="Male">
-              {t("MembersPage.male")}
+              {t('MembersPage.male')}
             </ButtonGroupItem>
             <ButtonGroupItem value="Female">
-              {t("MembersPage.female")}
+              {t('MembersPage.female')}
             </ButtonGroupItem>
-            <ButtonGroupItem value="Other">{t("Common.other")}</ButtonGroupItem>
+            <ButtonGroupItem value="Other">{t('Common.other')}</ButtonGroupItem>
           </ButtonGroup>
         )}
       />
       <Field
         name="phone"
-        label={t("MembersPage.phoneNumber")}
+        label={t('MembersPage.phoneNumber')}
         required
         control={(props) => (
           <Input
@@ -485,22 +483,22 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
       <Field
         name="position"
-        label={t("MembersPage.positionOfMember")}
+        label={t('MembersPage.positionOfMember')}
         required
         control={(props) => (
           <Select
             options={[
               {
-                label: t("ApplicationDetailsPage.members.chairman"),
-                value: "Chairman",
+                label: t('ApplicationDetailsPage.members.chairman'),
+                value: 'Chairman',
               },
               {
-                label: t("ApplicationDetailsPage.members.secretary"),
-                value: "Secretary",
+                label: t('ApplicationDetailsPage.members.secretary'),
+                value: 'Secretary',
               },
               {
-                label: t("ApplicationDetailsPage.members.member"),
-                value: "Member",
+                label: t('ApplicationDetailsPage.members.member'),
+                value: 'Member',
               },
             ]}
             {...props}
@@ -518,7 +516,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       <Field
         state={state}
         name="photoOfId"
-        label={t("MembersPage.photoOfMemberId")}
+        label={t('MembersPage.photoOfMemberId')}
         required
         control={(props) => (
           <FileUploadInput
@@ -539,7 +537,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             {...props}
           />
         )}
-        description={t("MembersPage.maxFileSize", {
+        description={t('MembersPage.maxFileSize', {
           size: formatBytes(MAX_FILE_SIZE),
         })}
       />
@@ -568,10 +566,10 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                     disability: {
                       certificateOfDisability: {
                         fid: undefined,
-                        filename: "",
-                        url: "",
+                        filename: '',
+                        url: '',
                       },
-                      pwdNumber: "",
+                      pwdNumber: '',
                     },
                   }));
                 }
@@ -579,7 +577,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             }}
             defaultValue={withDisability}
           >
-            {t("MembersPage.personWithDisability")}
+            {t('MembersPage.personWithDisability')}
           </Checkbox>
         )}
       />
@@ -589,7 +587,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <Field
             state={state}
             name="certificateOfDisability"
-            label={t("MembersPage.certificateOfDisability")}
+            label={t('MembersPage.certificateOfDisability')}
             required
             control={(props) => (
               <FileUploadInput
@@ -621,7 +619,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <Field
             state={state}
             name="pwdNumber"
-            label={t("MembersPage.pwdNumber")}
+            label={t('MembersPage.pwdNumber')}
             control={(props) => (
               <Input
                 {...props}
@@ -633,8 +631,8 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                       certificateOfDisability: member?.disability
                         ?.certificateOfDisability || {
                         fid: undefined,
-                        filename: "",
-                        url: "",
+                        filename: '',
+                        url: '',
                       },
                       pwdNumber: value,
                     },
@@ -656,7 +654,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <div>
             <Underline className="text-destructive border-b-destructive hover:text-destructive">
               <IconX className="!text-destructive" />
-              {t("Common.cancel")}
+              {t('Common.cancel')}
             </Underline>
           </div>
         </Button>
@@ -669,7 +667,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <div>
             <Underline className="border-b-green-400 text-green-400">
               <IconCheck className="!text-green-400" />
-              {t("Common.confirm")}
+              {t('Common.confirm')}
             </Underline>
           </div>
         </Button>

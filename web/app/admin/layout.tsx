@@ -1,12 +1,10 @@
-import { ReactNode } from "react";
-
-import { Container } from "@workspace/ui/components/container";
+import { AdminSidebar } from '@/components/admin/admin-sidebar';
+import { Container } from '@workspace/ui/components/container';
 import {
   SidebarProvider,
   SidebarTrigger,
-} from "@workspace/ui/components/sidebar";
-
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
+} from '@workspace/ui/components/sidebar';
+import { ReactNode } from 'react';
 
 export interface AdminLayoutProps {
   children?: ReactNode;

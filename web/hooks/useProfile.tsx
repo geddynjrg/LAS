@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import type { UserProfileResponseType } from '@/lib/api/schema/response/auth-response.schema';
+import { useMemo } from 'react';
 
-import type { UserProfileResponseType } from "@/lib/api/schema/response/auth-response.schema";
-import { useSession } from "./useSession";
+import { useSession } from './useSession';
 
 interface UserIdentification {
   identifier: string;
-  identifierType: "email" | "phone" | "name";
+  identifierType: 'email' | 'phone' | 'name';
 }
 
 interface UseProfileReturn {
-  profile: UserProfileResponseType["data"];
+  profile: UserProfileResponseType['data'];
   userIdentification: UserIdentification | null;
   isAdmin: boolean;
   getDisplayName: () => string;
@@ -30,21 +30,21 @@ export function useProfile(): UseProfileReturn {
     if (profile.email) {
       return {
         identifier: profile.email,
-        identifierType: "email",
+        identifierType: 'email',
       };
     }
 
     if (profile.phoneNumber) {
       return {
         identifier: profile.phoneNumber,
-        identifierType: "phone",
+        identifierType: 'phone',
       };
     }
 
     if (profile.name) {
       return {
         identifier: profile.name,
-        identifierType: "name",
+        identifierType: 'name',
       };
     }
 
@@ -55,28 +55,28 @@ export function useProfile(): UseProfileReturn {
     if (!profile?.roles) return false;
     return profile.roles.some(
       (role: string) =>
-        role.toLowerCase() === "admin" ||
-        role.toLowerCase() === "administrator",
+        role.toLowerCase() === 'admin' ||
+        role.toLowerCase() === 'administrator',
     );
   }, [profile?.roles]);
 
   const getDisplayName = useMemo(
     () => () => {
-      if (!profile) return "User";
+      if (!profile) return 'User';
 
       // Priority: name > email > phoneNumber
       if (profile.name) return profile.name;
       if (profile.email) return profile.email;
       if (profile.phoneNumber) return profile.phoneNumber;
 
-      return "User";
+      return 'User';
     },
     [profile],
   );
 
   const getContactInfo = useMemo(
     () => () => {
-      if (!profile) return "";
+      if (!profile) return '';
 
       // Return the best contact information available
       const contactMethods = [];
@@ -84,7 +84,7 @@ export function useProfile(): UseProfileReturn {
       if (profile.phoneNumber)
         contactMethods.push(`Phone: ${profile.phoneNumber}`);
 
-      return contactMethods.join(" • ");
+      return contactMethods.join(' • ');
     },
     [profile],
   );

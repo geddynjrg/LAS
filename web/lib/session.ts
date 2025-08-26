@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { cookies } from "next/headers";
+import { cookies } from 'next/headers';
 
 const REFRESH_TOKENS_URL = `${process.env.API_URL}/api/v1/user/token/refresh`;
 const LOGOUT_URL = `${process.env.API_URL}/api/v1/user/logout`;
 
-const ACCESS_TOKEN_COOKIE_NAME = "access-token";
-const REFRESH_TOKEN_COOKIE_NAME = "refresh-token";
+const ACCESS_TOKEN_COOKIE_NAME = 'access-token';
+const REFRESH_TOKEN_COOKIE_NAME = 'refresh-token';
 
 export async function createSession(data: {
   accessToken: string;
@@ -20,15 +20,15 @@ export async function createSession(data: {
   cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, data.accessToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
-    path: "/",
+    sameSite: 'lax',
+    path: '/',
   });
   cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, data.refreshToken, {
     httpOnly: true,
     secure: true,
     expires: refreshTokenExpiresAt,
-    sameSite: "lax",
-    path: "/",
+    sameSite: 'lax',
+    path: '/',
   });
 }
 
@@ -72,15 +72,15 @@ export async function invalidateSession() {
   if (accessToken) {
     try {
       await fetch(LOGOUT_URL, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
         },
       });
     } catch (error) {
       // Ignore logout API errors - we still want to clear local session
-      console.warn("[Session] Failed to logout on server:", error);
+      console.warn('[Session] Failed to logout on server:', error);
     }
   }
 
@@ -91,17 +91,17 @@ export async function invalidateSession() {
 async function deleteCookies() {
   const cookieStore = await cookies();
 
-  cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, "", { expires: new Date(0) });
-  cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, "", { expires: new Date(0) });
+  cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, '', { expires: new Date(0) });
+  cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, '', { expires: new Date(0) });
 }
 
 function isTokenExpired(token: unknown) {
-  if (typeof token !== "string") {
+  if (typeof token !== 'string') {
     return true; // Invalid token type
   }
 
   try {
-    const tokenPayloadBase64 = token.split(".")[1];
+    const tokenPayloadBase64 = token.split('.')[1];
 
     if (!tokenPayloadBase64) {
       return true; // invalid token format
@@ -128,14 +128,14 @@ async function getNewTokens() {
   const currentRefreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE_NAME)?.value;
 
   const res = await fetch(REFRESH_TOKENS_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: currentRefreshToken }),
   });
 
   if (!res.ok) {
     console.warn(
-      "[Session] Failed to refresh tokens:",
+      '[Session] Failed to refresh tokens:',
       res.status,
       res.statusText,
     );
@@ -148,8 +148,8 @@ async function getNewTokens() {
   const accessToken = resJson?.data?.access_token;
   const refreshToken = resJson?.data?.refresh_token;
 
-  if (typeof accessToken !== "string" || typeof refreshToken !== "string") {
-    console.warn("[Session] Invalid tokens:", resJson);
+  if (typeof accessToken !== 'string' || typeof refreshToken !== 'string') {
+    console.warn('[Session] Invalid tokens:', resJson);
     return null;
   }
 

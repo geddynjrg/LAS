@@ -1,30 +1,28 @@
-import { IconArrowLeft } from "@tabler/icons-react";
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-
-import { Button } from "@workspace/ui/components/button";
-import { Container } from "@workspace/ui/components/container";
-
-import { ApplicationReviewGroupData } from "@/components/application-review-group-data";
-import { ApplicationReviewLoanConditions } from "@/components/application-review-loan-conditions";
-import { ApplicationReviewMembers } from "@/components/application-review-members";
-import { ApplicationReviewProposedBusiness } from "@/components/application-review-proposed-business";
-import { ApplicationStatus } from "@/components/application-status";
-import { getApplicationById } from "@/lib/data/application-db";
+import { ApplicationReviewGroupData } from '@/components/application-review-group-data';
+import { ApplicationReviewLoanConditions } from '@/components/application-review-loan-conditions';
+import { ApplicationReviewMembers } from '@/components/application-review-members';
+import { ApplicationReviewProposedBusiness } from '@/components/application-review-proposed-business';
+import { ApplicationStatus } from '@/components/application-status';
+import { getApplicationById } from '@/lib/data/application-db';
+import { IconArrowLeft } from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
+import { Container } from '@workspace/ui/components/container';
+import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export default async function Page({ params }: Props) {
-  const t = await getTranslations("ApplicationDetailsPage");
+  const t = await getTranslations('ApplicationDetailsPage');
 
   const { id } = await params;
 
   const data = await getApplicationById(id);
 
   if (!data) {
-    return <div>{t("applicationNotFound")}</div>;
+    return <div>{t('applicationNotFound')}</div>;
   }
 
   return (
@@ -36,13 +34,13 @@ export default async function Page({ params }: Props) {
       >
         <Link href={`/dashboard`}>
           <IconArrowLeft />
-          {t("backToDashboard")}
+          {t('backToDashboard')}
         </Link>
       </Button>
 
       <div className="mt-6 space-y-2">
         <h2 className="typo-h2">{data.generalDetails.applicationId}</h2>
-        <p className="font-bold">{t("status")}</p>
+        <p className="font-bold">{t('status')}</p>
         <ApplicationStatus
           status={data.generalDetails.status}
           rejectionDetails={data.generalDetails.rejectionDetails}

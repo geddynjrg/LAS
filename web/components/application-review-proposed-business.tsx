@@ -1,21 +1,19 @@
-import { useTranslations } from "next-intl";
-import { type FC } from "react";
-
+import type { ProposedBusinessData } from '@/app/apply/[id]/proposed-business/proposed-business-data-schema';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@workspace/ui/components/accordion";
-import { Currency } from "@workspace/ui/components/currency";
-import { DataNode } from "@workspace/ui/components/data-node";
-
-import type { ProposedBusinessData } from "@/app/apply/[id]/proposed-business/proposed-business-data-schema";
+} from '@workspace/ui/components/accordion';
+import { Currency } from '@workspace/ui/components/currency';
+import { DataNode } from '@workspace/ui/components/data-node';
+import { useTranslations } from 'next-intl';
+import { type FC } from 'react';
 
 export const ApplicationReviewProposedBusiness: FC<{
   businessDetails?: ProposedBusinessData;
 }> = ({ businessDetails }) => {
-  const t = useTranslations("ApplicationDetailsPage");
+  const t = useTranslations('ApplicationDetailsPage');
 
   if (!businessDetails) {
     return null;
@@ -23,20 +21,20 @@ export const ApplicationReviewProposedBusiness: FC<{
 
   return (
     <div className="mt-6 grid">
-      <h4 className="typo-h4 pb-2">{t("proposedBusiness.proposedBusiness")}</h4>
+      <h4 className="typo-h4 pb-2">{t('proposedBusiness.proposedBusiness')}</h4>
       <Accordion type="multiple" className="space-y-2">
         <AccordionItem value="proposed-business-information">
           <AccordionTrigger>
-            {t("proposedBusiness.businessInfo.businessInformation")}
+            {t('proposedBusiness.businessInfo.businessInformation')}
           </AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-4">
               <DataNode
-                label={t("proposedBusiness.businessInfo.natureOfBusiness")}
+                label={t('proposedBusiness.businessInfo.natureOfBusiness')}
               >
                 {businessDetails.natureOfBusiness}
               </DataNode>
-              <DataNode label={t("proposedBusiness.businessInfo.businessType")}>
+              <DataNode label={t('proposedBusiness.businessInfo.businessType')}>
                 {Array.isArray(businessDetails.businessType) ? (
                   <div className="space-y-1">
                     {businessDetails.businessType.map((type, index) => (
@@ -48,9 +46,9 @@ export const ApplicationReviewProposedBusiness: FC<{
                 )}
               </DataNode>
               <DataNode
-                label={t("proposedBusiness.businessInfo.operationPeriod")}
+                label={t('proposedBusiness.businessInfo.operationPeriod')}
               >
-                {t("numberYears", {
+                {t('numberYears', {
                   year: businessDetails.yearsInBusiness,
                 })}
               </DataNode>
@@ -60,13 +58,13 @@ export const ApplicationReviewProposedBusiness: FC<{
 
         <AccordionItem value="proposed-business-performance">
           <AccordionTrigger>
-            {t("proposedBusiness.businessPerformance.businessPerformance")}
+            {t('proposedBusiness.businessPerformance.businessPerformance')}
           </AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-4">
               <DataNode
                 label={t(
-                  "proposedBusiness.businessPerformance.averageIncomePerMonth",
+                  'proposedBusiness.businessPerformance.averageIncomePerMonth',
                 )}
               >
                 <Currency
@@ -75,23 +73,23 @@ export const ApplicationReviewProposedBusiness: FC<{
                 />
               </DataNode>
               <DataNode
-                label={t("proposedBusiness.businessPerformance.costOfGoods")}
+                label={t('proposedBusiness.businessPerformance.costOfGoods')}
               >
                 <Currency amount={businessDetails.costOfGoods} currency="KES" />
               </DataNode>
-              <DataNode label={t("proposedBusiness.businessPerformance.rent")}>
+              <DataNode label={t('proposedBusiness.businessPerformance.rent')}>
                 <Currency
                   amount={businessDetails.rentForBusiness}
                   currency="KES"
                 />
               </DataNode>
               <DataNode
-                label={t("proposedBusiness.businessPerformance.salaries")}
+                label={t('proposedBusiness.businessPerformance.salaries')}
               >
                 <Currency amount={businessDetails.salaries} currency="KES" />
               </DataNode>
               <DataNode
-                label={t("proposedBusiness.businessPerformance.transportCosts")}
+                label={t('proposedBusiness.businessPerformance.transportCosts')}
               >
                 <Currency
                   amount={businessDetails.transportForBusinessStock}
@@ -104,7 +102,7 @@ export const ApplicationReviewProposedBusiness: FC<{
                 </DataNode>
               ))}
               <DataNode
-                label={t("proposedBusiness.businessPerformance.netSurplus")}
+                label={t('proposedBusiness.businessPerformance.netSurplus')}
               >
                 <Currency
                   amount={

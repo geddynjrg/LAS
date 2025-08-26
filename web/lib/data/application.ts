@@ -1,12 +1,11 @@
-"use server";
+'use server';
 
-import { isFileUpload } from "@workspace/ui/lib/utils";
-import type { ValidFile } from "@workspace/ui/lib/zod";
-
-import { ApplicationStatus } from "@/generated/prisma";
+import { ApplicationStatus } from '@/generated/prisma';
 // import { auth } from "@/lib/auth";
-import { dummyApplications } from "@/lib/data/dummy-data";
-import { createApplicationId } from "@/lib/util";
+import { dummyApplications } from '@/lib/data/dummy-data';
+import { createApplicationId } from '@/lib/util';
+import { isFileUpload } from '@workspace/ui/lib/utils';
+import type { ValidFile } from '@workspace/ui/lib/zod';
 
 declare global {
   /* eslint no-var: off */
@@ -21,9 +20,9 @@ const dummyApplicationsTest = globalThis.dummyApplicationsTest;
 
 export type Status = ApplicationStatus;
 
-export type MemberType = "Chairman" | "Secretary" | "Member";
+export type MemberType = 'Chairman' | 'Secretary' | 'Member';
 
-export type GenderType = "Male" | "Female" | "Other";
+export type GenderType = 'Male' | 'Female' | 'Other';
 
 export interface ApplicationData {
   generalDetails: GeneralDetails;
@@ -41,14 +40,14 @@ export interface GeneralDetails {
   applicationProgress?: number;
   rejectionDetails?: {
     rejectionReason?:
-      | "incomplete_information"
-      | "missing_documents"
-      | "eligibility_criteria"
-      | "duplicate_application"
-      | "insufficient_collateral"
-      | "poor_credit_history"
-      | "member_declined"
-      | "other";
+      | 'incomplete_information'
+      | 'missing_documents'
+      | 'eligibility_criteria'
+      | 'duplicate_application'
+      | 'insufficient_collateral'
+      | 'poor_credit_history'
+      | 'member_declined'
+      | 'other';
     rejectionMessage?: string;
   };
 }
@@ -95,7 +94,7 @@ export interface Member {
     certificateOfDisability: ValidFile;
     pwdNumber?: string;
   };
-  status?: "confirmed" | "pending";
+  status?: 'confirmed' | 'pending';
   requiresConfirmation?: boolean;
 }
 
@@ -135,10 +134,10 @@ export interface ConfirmationsData {
 }
 
 export interface DeclarationsData {
-  membersConfirm: "on" | null;
-  correctInformationConfirm: "on" | null;
-  liabilityConfirm: "on" | null;
-  fundsEligibleConfirm: "on" | null;
+  membersConfirm: 'on' | null;
+  correctInformationConfirm: 'on' | null;
+  liabilityConfirm: 'on' | null;
+  fundsEligibleConfirm: 'on' | null;
 }
 
 export async function getApplications() {
@@ -163,7 +162,7 @@ export async function createApplication() {
   const generalDetails: GeneralDetails = {
     applicationId: createApplicationId(),
     status: ApplicationStatus.UNSUBMITTED,
-    user: "test@test.com",
+    user: 'test@test.com',
     applicationProgress: 1,
   };
   dummyApplicationsTest.push({ generalDetails });
@@ -180,7 +179,7 @@ async function getApplication(id: string) {
 
   /* this should not happen */
   if (applicationIndex === -1 || !application) {
-    throw new Error("Application not found");
+    throw new Error('Application not found');
   }
 
   return { application, applicationIndex };
@@ -348,9 +347,9 @@ export async function updateApplicationMembersConfirmationData(id: string) {
 
   const updatedMembers = members.map((member, index) => {
     if (index + 1 <= passThreshold) {
-      member.status = "confirmed";
+      member.status = 'confirmed';
     } else {
-      member.status = "pending";
+      member.status = 'pending';
     }
 
     return member;
@@ -359,7 +358,7 @@ export async function updateApplicationMembersConfirmationData(id: string) {
   const newApplicationData: ApplicationData = {
     ...application,
     members: {
-      natureOfTheGroup: application.members?.natureOfTheGroup || "",
+      natureOfTheGroup: application.members?.natureOfTheGroup || '',
       members: updatedMembers,
     },
   };
@@ -389,7 +388,7 @@ export async function updateApplicationStatus(id: string) {
 }
 
 function saveFile(file: File) {
-  console.log("save file", file);
+  console.log('save file', file);
   // TODO: if we want to store real files, we need to upload them to a server
 
   // Check if it's a file-like object
@@ -397,7 +396,7 @@ function saveFile(file: File) {
     const fileObject: ValidFile = {
       fid: Date.now() + Math.random(),
       filename: file.name,
-      url: typeof URL !== "undefined" ? URL.createObjectURL(file) : "",
+      url: typeof URL !== 'undefined' ? URL.createObjectURL(file) : '',
     };
     return fileObject;
   }
@@ -405,8 +404,8 @@ function saveFile(file: File) {
   // Fallback for server environment
   const fileObject: ValidFile = {
     fid: Date.now() + Math.random(),
-    filename: "unknown-file",
-    url: "/images/sample-file.jpg",
+    filename: 'unknown-file',
+    url: '/images/sample-file.jpg',
   };
 
   return fileObject;

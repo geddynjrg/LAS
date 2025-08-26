@@ -1,5 +1,5 @@
-import { getLocale } from "next-intl/server";
-import { z } from "zod";
+import { getLocale } from 'next-intl/server';
+import { z } from 'zod';
 
 // Schema for constituency
 const ConstituencySchema = z.object({
@@ -30,16 +30,16 @@ export type CountiesResponse = z.infer<typeof CountiesResponseSchema>;
 export async function getCounties() {
   const locale = await getLocale();
   const apiUrl = process.env.API_URL;
-  
+
   if (!apiUrl) {
-    throw new Error("API_URL environment variable is not configured");
+    throw new Error('API_URL environment variable is not configured');
   }
-  
+
   const response = await fetch(`${apiUrl}/api/v1/application/counties`, {
-    method: "GET",
+    method: 'GET',
     headers: {
-      "Content-Type": "application/json",
-      "X-Language": locale,
+      'Content-Type': 'application/json',
+      'X-Language': locale,
     },
   });
 

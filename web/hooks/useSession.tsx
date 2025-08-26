@@ -1,21 +1,20 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter } from "next/navigation";
+import type { UserProfileResponseType } from '@/lib/api/schema/response/auth-response.schema';
+import { usePathname, useRouter } from 'next/navigation';
 import React, {
-  createContext,
   ReactNode,
+  createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
-} from "react";
-
-import type { UserProfileResponseType } from "@/lib/api/schema/response/auth-response.schema";
+} from 'react';
 
 // Enhanced session type that includes user profile data
 type SessionData = {
   isAuthenticated: boolean;
-  profile: UserProfileResponseType["data"] | null;
+  profile: UserProfileResponseType['data'] | null;
   isLoading: boolean;
   error: string | null;
 };
@@ -32,21 +31,21 @@ const SessionContext = createContext<SessionContextProps | undefined>(
 );
 
 // Client-side API calls
-async function fetchProfile(): Promise<UserProfileResponseType["data"] | null> {
+async function fetchProfile(): Promise<UserProfileResponseType['data'] | null> {
   try {
-    const response = await fetch("/api/profile", {
-      method: "GET",
-      credentials: "include",
+    const response = await fetch('/api/profile', {
+      method: 'GET',
+      credentials: 'include',
     });
 
     if (!response.ok) {
       if (response.status === 401) {
-        console.log("Profile fetch: User not authenticated");
+        console.log('Profile fetch: User not authenticated');
         return null; // Not authenticated
       }
 
       if (response.status === 404) {
-        console.log("Profile fetch: Profile not found (new user?)");
+        console.log('Profile fetch: Profile not found (new user?)');
         // Return empty profile for new users
         return {
           email: undefined,
@@ -62,7 +61,7 @@ async function fetchProfile(): Promise<UserProfileResponseType["data"] | null> {
         `Profile fetch error: ${response.status} ${response.statusText}`,
       );
       const errorData = await response.json().catch(() => ({}));
-      console.error("Error response:", errorData);
+      console.error('Error response:', errorData);
 
       // Don't throw for non-critical errors, just return null
       return null;
@@ -71,7 +70,7 @@ async function fetchProfile(): Promise<UserProfileResponseType["data"] | null> {
     const data = await response.json();
     return data.data || null;
   } catch (error) {
-    console.error("Error fetching profile:", error);
+    console.error('Error fetching profile:', error);
     // Don't throw, return null to indicate no profile data
     return null;
   }
@@ -79,16 +78,16 @@ async function fetchProfile(): Promise<UserProfileResponseType["data"] | null> {
 
 async function logoutUser(): Promise<void> {
   try {
-    const response = await fetch("/api/logout", {
-      method: "POST",
-      credentials: "include",
+    const response = await fetch('/api/logout', {
+      method: 'POST',
+      credentials: 'include',
     });
 
     if (!response.ok) {
       throw new Error(`Logout failed: ${response.statusText}`);
     }
   } catch (error) {
-    console.error("Error during logout:", error);
+    console.error('Error during logout:', error);
     throw error;
   }
 }
@@ -129,7 +128,7 @@ export const SessionProvider: React.FC<{
         ...prev,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : "Failed to fetch profile",
+          error instanceof Error ? error.message : 'Failed to fetch profile',
       }));
     }
   }, [sessionData.isAuthenticated]);
@@ -148,12 +147,12 @@ export const SessionProvider: React.FC<{
       });
 
       // Redirect to login page
-      router.push("/login");
+      router.push('/login');
     } catch (error) {
       setSessionData((prev) => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : "Logout failed",
+        error: error instanceof Error ? error.message : 'Logout failed',
       }));
     }
   }, [router]);
@@ -188,14 +187,14 @@ export const useSession = (): SessionContextProps => {
   const context = useContext(SessionContext);
 
   if (context === undefined) {
-    throw new Error("useSession must be used within a SessionProvider");
+    throw new Error('useSession must be used within a SessionProvider');
   }
 
   return context;
 };
 
 // Helper hook for requiring authentication
-export const useRequireAuth = (redirectTo = "/login") => {
+export const useRequireAuth = (redirectTo = '/login') => {
   const { isAuthenticated, isLoading } = useSession();
   const router = useRouter();
   const pathname = usePathname();

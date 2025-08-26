@@ -1,8 +1,8 @@
-import type { FC } from "react";
+import type { BlockType } from '@/lib/api/types';
+import { isBannerBlock, isTextBlocksContainer } from '@/lib/guards';
+import type { FC } from 'react';
 
-import type { BlockType } from "@/lib/api/types";
-import { isBannerBlock, isTextBlocksContainer } from "@/lib/guards";
-import { BannerBlockComponent, TextBlocksComponent } from "./blocks";
+import { BannerBlockComponent, TextBlocksComponent } from './blocks';
 
 export interface PageComponentRendererProps {
   component: BlockType;

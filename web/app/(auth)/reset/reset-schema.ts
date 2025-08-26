@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const resetSchema = z.object({
   email: z.string().nonempty().email(),

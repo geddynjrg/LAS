@@ -1,18 +1,16 @@
-"use client";
+'use client';
 
-import { IconCheck, IconLoader2, IconX } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
-
-import { Alert } from "@workspace/ui/components/alert";
-import { Button } from "@workspace/ui/components/button";
-import { useForm } from "@workspace/ui/hooks/use-form";
-
-import { confirmMemberAction } from "@/app/actions/member-confirmation";
+import { confirmMemberAction } from '@/app/actions/member-confirmation';
 import {
   ConfirmationActionSchema,
   type MemberConfirmationSuccessResponse,
-} from "@/lib/api/schema/member-confirmation.schema";
+} from '@/lib/api/schema/member-confirmation.schema';
+import { IconCheck, IconLoader2, IconX } from '@tabler/icons-react';
+import { Alert } from '@workspace/ui/components/alert';
+import { Button } from '@workspace/ui/components/button';
+import { useForm } from '@workspace/ui/hooks/use-form';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState, useTransition } from 'react';
 
 interface ConfirmationFormProps {
   token: string;
@@ -25,10 +23,10 @@ export function ConfirmationForm({
   token,
   onStatusUpdate,
 }: ConfirmationFormProps) {
-  const t = useTranslations("ConfirmationPage");
+  const t = useTranslations('ConfirmationPage');
   const [isPending, startTransition] = useTransition();
   const [processingAction, setProcessingAction] = useState<
-    "confirmed" | "declined" | null
+    'confirmed' | 'declined' | null
   >(null);
   const [result, setResult] =
     useState<MemberConfirmationSuccessResponse | null>(null);
@@ -54,14 +52,14 @@ export function ConfirmationForm({
     }
   }, [state, onStatusUpdate]);
 
-  const handleConfirmation = (action: "confirmed" | "declined") => {
+  const handleConfirmation = (action: 'confirmed' | 'declined') => {
     setResult(null);
     setProcessingAction(action);
 
     startTransition(() => {
       const formData = new FormData();
-      formData.append("token", token);
-      formData.append("action", action);
+      formData.append('token', token);
+      formData.append('action', action);
       formAction(formData);
     });
   };
@@ -69,10 +67,10 @@ export function ConfirmationForm({
   // Show success message if confirmation was processed
   if (result) {
     const { data } = result;
-    const isConfirmed = data.action === "confirmed";
+    const isConfirmed = data.action === 'confirmed';
 
     return (
-      <Alert variant={isConfirmed ? "success" : "error"}>
+      <Alert variant={isConfirmed ? 'success' : 'error'}>
         <div className="flex items-center gap-2">
           {isConfirmed ? (
             <IconCheck className="h-5 w-5 text-green-600" />
@@ -81,12 +79,12 @@ export function ConfirmationForm({
           )}
           <div>
             <h3 className="font-semibold">
-              {isConfirmed ? t("confirmationSuccess") : t("declineSuccess")}
+              {isConfirmed ? t('confirmationSuccess') : t('declineSuccess')}
             </h3>
             <p className="text-sm">{result.message}</p>
             {data.confirmation_timestamp && (
               <p className="mt-1 text-xs text-neutral-500">
-                {t("processedAt")}:{" "}
+                {t('processedAt')}:{' '}
                 {new Date(data.confirmation_timestamp * 1000).toLocaleString()}
               </p>
             )}
@@ -105,7 +103,7 @@ export function ConfirmationForm({
       <Alert variant="error">
         <IconX className="h-5 w-5" />
         <div>
-          <h3 className="font-semibold">{t("errorTitle")}</h3>
+          <h3 className="font-semibold">{t('errorTitle')}</h3>
           <p>{errorMessage}</p>
         </div>
       </Alert>
@@ -115,46 +113,46 @@ export function ConfirmationForm({
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="mb-2 font-semibold">{t("confirmationPrompt")}</h3>
+        <h3 className="mb-2 font-semibold">{t('confirmationPrompt')}</h3>
         <p className="mb-4 text-sm text-neutral-600">
-          {t("confirmationInstructions")}
+          {t('confirmationInstructions')}
         </p>
       </div>
 
       <div className="flex justify-center gap-4">
         <Button
-          onClick={() => handleConfirmation("confirmed")}
-          disabled={isPending && processingAction === "confirmed"}
+          onClick={() => handleConfirmation('confirmed')}
+          disabled={isPending && processingAction === 'confirmed'}
           className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700"
           size="lg"
         >
-          {isPending && processingAction === "confirmed" ? (
+          {isPending && processingAction === 'confirmed' ? (
             <IconLoader2 className="h-5 w-5 animate-spin" />
           ) : (
             <IconCheck className="h-5 w-5" />
           )}
-          {t("confirmButton")}
+          {t('confirmButton')}
         </Button>
 
         <Button
-          onClick={() => handleConfirmation("declined")}
-          disabled={isPending && processingAction === "declined"}
+          onClick={() => handleConfirmation('declined')}
+          disabled={isPending && processingAction === 'declined'}
           variant="danger"
           className="flex items-center gap-2"
           size="lg"
         >
-          {isPending && processingAction === "declined" ? (
+          {isPending && processingAction === 'declined' ? (
             <IconLoader2 className="h-5 w-5 animate-spin" />
           ) : (
             <IconX className="h-5 w-5" />
           )}
-          {t("declineButton")}
+          {t('declineButton')}
         </Button>
       </div>
 
       {isPending && processingAction && (
         <div className="text-center">
-          <p className="text-sm text-neutral-600">{t("processing")}</p>
+          <p className="text-sm text-neutral-600">{t('processing')}</p>
         </div>
       )}
     </div>

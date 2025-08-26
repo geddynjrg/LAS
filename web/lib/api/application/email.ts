@@ -1,15 +1,18 @@
-import { api, validate } from "@/lib/api/utils";
-import { 
-  EmailRequestSchema, 
+import {
+  type EmailRequest,
+  EmailRequestSchema,
   EmailSuccessResponseSchema,
-  type EmailRequest
-} from "@/lib/api/schema/application/application.schema";
+} from '@/lib/api/schema/application/application.schema';
+import { api, validate } from '@/lib/api/utils';
 
-export async function sendApplicationEmail(applicationId: string, emailData: EmailRequest) {
+export async function sendApplicationEmail(
+  applicationId: string,
+  emailData: EmailRequest,
+) {
   // Validate the request data
   const validatedData = EmailRequestSchema.parse(emailData);
 
-  const res = await api.POST("/api/v1/application/{application}/email", {
+  const res = await api.POST('/api/v1/application/{application}/email', {
     params: {
       path: { application: applicationId },
     },

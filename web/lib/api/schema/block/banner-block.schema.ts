@@ -1,10 +1,9 @@
-import { z } from "zod";
-
-import { DescriptionSchema } from "@/lib/api/schema/description.schema";
-import { LinkButtonSchema } from "@/lib/api/schema/link-button.schema";
+import { DescriptionSchema } from '@/lib/api/schema/description.schema';
+import { LinkButtonSchema } from '@/lib/api/schema/link-button.schema';
+import { z } from 'zod';
 
 export const BannerBlockSchema = z.object({
-  block_type: z.literal("banner"),
+  block_type: z.literal('banner'),
   title: z.string(),
   text: DescriptionSchema.optional(),
   help_text: DescriptionSchema.optional(),

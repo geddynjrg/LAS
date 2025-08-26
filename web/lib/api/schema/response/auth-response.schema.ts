@@ -1,6 +1,5 @@
-import { z } from "zod";
-
-import { AuthTokensSchema } from "@/lib/api/schema/auth-tokens.schema";
+import { AuthTokensSchema } from '@/lib/api/schema/auth-tokens.schema';
+import { z } from 'zod';
 
 // Login response schema
 export const LoginResponseSchema = z.object({

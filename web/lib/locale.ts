@@ -1,10 +1,9 @@
-"use server";
+'use server';
 
-import { cookies } from "next/headers";
+import { type Locale, defaultLocale, locales } from '@/i18n/config';
+import { cookies } from 'next/headers';
 
-import { defaultLocale, locales, type Locale } from "@/i18n/config";
-
-const COOKIE_NAME = "i18n_locale";
+const COOKIE_NAME = 'i18n_locale';
 
 export async function getUserLocale() {
   return ((await cookies()).get(COOKIE_NAME)?.value as Locale) || defaultLocale;
@@ -24,7 +23,7 @@ export async function getMessages(locale: string) {
     // https://github.com/vercel/next.js/issues/63372
     import(`../../packages/ui/src/messages/${localeFileName}`),
   ]).catch((err) => {
-    console.error("Failed to load messages", err);
+    console.error('Failed to load messages', err);
 
     return [{}, {}];
   });

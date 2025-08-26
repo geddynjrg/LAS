@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 interface AdminTableProps {
   children: ReactNode;
@@ -24,7 +24,7 @@ interface AdminTableCellProps {
   isHeader?: boolean;
 }
 
-export function AdminTable({ children, className = "" }: AdminTableProps) {
+export function AdminTable({ children, className = '' }: AdminTableProps) {
   return (
     <div
       className={`overflow-hidden rounded-lg border border-gray-200 bg-white ${className}`}
@@ -52,26 +52,26 @@ export function AdminTableBody({ children }: AdminTableBodyProps) {
 
 export function AdminTableRow({
   children,
-  className = "",
+  className = '',
 }: AdminTableRowProps) {
   return <tr className={`hover:bg-gray-50 ${className}`}>{children}</tr>;
 }
 
 export function AdminTableCell({
   children,
-  className = "",
+  className = '',
   isHeader = false,
 }: AdminTableCellProps) {
   const baseClasses = isHeader
-    ? "px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-    : "px-4 py-3";
+    ? 'px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500'
+    : 'px-4 py-3';
 
   return <td className={`${baseClasses} ${className}`}>{children}</td>;
 }
 
 export function AdminTableHeaderCell({
   children,
-  className = "",
+  className = '',
   onClick,
   sortable = false,
 }: {
@@ -81,7 +81,7 @@ export function AdminTableHeaderCell({
   sortable?: boolean;
 }) {
   const cellClasses = `px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 ${
-    sortable ? "cursor-pointer hover:text-gray-700" : ""
+    sortable ? 'cursor-pointer hover:text-gray-700' : ''
   } ${className}`;
 
   return (

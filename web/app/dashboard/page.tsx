@@ -1,31 +1,29 @@
+import { ApplicationStatus } from '@/components/application-status';
+import { MemberSummary } from '@/components/member-summary';
+import type { SiteInformationResponse } from '@/lib/api/schema/site-info/site-info.schema';
+import { getSiteInfo } from '@/lib/api/site-info';
+import {
+  type GeneralDetails,
+  type MembersData,
+  type Status,
+} from '@/lib/data/application';
+import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import {
   IconChevronRight,
   IconFileText,
   IconMail,
   IconPhone,
   IconPlus,
-} from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-import type { FC, PropsWithChildren, ReactNode } from "react";
-
-import { Button } from "@workspace/ui/components/button";
-import { Card } from "@workspace/ui/components/card";
-import { Container } from "@workspace/ui/components/container";
-import { Currency } from "@workspace/ui/components/currency";
-import { Underline } from "@workspace/ui/components/underline";
-
-import { ApplicationStatus } from "@/components/application-status";
-import { MemberSummary } from "@/components/member-summary";
-import type { SiteInformationResponse } from "@/lib/api/schema/site-info/site-info.schema";
-import { getSiteInfo } from "@/lib/api/site-info";
-import {
-  type GeneralDetails,
-  type MembersData,
-  type Status,
-} from "@/lib/data/application";
-import { getHybridApplications } from "@/lib/data/applications-hybrid";
+} from '@tabler/icons-react';
+import { Button } from '@workspace/ui/components/button';
+import { Card } from '@workspace/ui/components/card';
+import { Container } from '@workspace/ui/components/container';
+import { Currency } from '@workspace/ui/components/currency';
+import { Underline } from '@workspace/ui/components/underline';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
+import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 // Status configuration for dynamic content rendering
 interface StatusConfig {
@@ -55,65 +53,65 @@ const STATUS_CONFIGS: Record<Status, StatusConfig> = {
     showStepDescription: true,
     showProcessTimeline: true,
     stepDescription: {
-      key: "stepDescription.pending",
+      key: 'stepDescription.pending',
       hasReadMore: true,
-      readMoreKey: "stepDescription.readMorePending",
+      readMoreKey: 'stepDescription.readMorePending',
     },
     processTimeline: {
-      key: "processTimeline.pending",
+      key: 'processTimeline.pending',
     },
   },
   PENDING: {
     showStepDescription: true,
     showProcessTimeline: true,
     stepDescription: {
-      key: "stepDescription.pending",
+      key: 'stepDescription.pending',
       hasReadMore: true,
-      readMoreKey: "stepDescription.readMorePending",
+      readMoreKey: 'stepDescription.readMorePending',
     },
     processTimeline: {
-      key: "processTimeline.pending",
+      key: 'processTimeline.pending',
     },
   },
   IN_REVIEW: {
     showStepDescription: true,
     showProcessTimeline: true,
     stepDescription: {
-      key: "stepDescription.inReview",
+      key: 'stepDescription.inReview',
       hasReadMore: true,
-      readMoreKey: "stepDescription.readMoreInReview",
+      readMoreKey: 'stepDescription.readMoreInReview',
       richContent: true,
     },
     processTimeline: {
-      key: "processTimeline.inReview",
+      key: 'processTimeline.inReview',
     },
   },
   APPROVED: {
     showStepDescription: true,
     showProcessTimeline: false,
     stepDescription: {
-      key: "stepDescription.approved",
+      key: 'stepDescription.approved',
     },
   },
   REJECTED: {
     showStepDescription: true,
     showProcessTimeline: false,
     stepDescription: {
-      key: "stepDescription.rejected",
+      key: 'stepDescription.rejected',
     },
   },
   DISBURSED: {
     showStepDescription: true,
     showProcessTimeline: false,
     stepDescription: {
-      key: "stepDescription.disbursed",
+      key: 'stepDescription.disbursed',
     },
   },
   CLOSED: {
     showStepDescription: true,
     showProcessTimeline: false,
     stepDescription: {
-      key: "stepDescription.closed",
+      key: 'stepDescription.closed',
     },
   },
 };
@@ -131,7 +129,7 @@ const StepDescriptionSection: FC<{
 
   return (
     <div className="mt-4 border-t border-neutral-400 pt-4">
-      <h2 className="typo-h5">{t("stepDescription.title")}</h2>
+      <h2 className="typo-h5">{t('stepDescription.title')}</h2>
       <div className="mt-4">
         {richContent ? (
           // For content that needs rich formatting (like lists)
@@ -152,7 +150,7 @@ const StepDescriptionSection: FC<{
               className="text-primary hover:cursor-pointer"
             >
               <p className="mt-4 flex items-center gap-1">
-                {readMoreKey.includes("readMorePending")
+                {readMoreKey.includes('readMorePending')
                   ? t.rich(readMoreKey, {
                       lineBreak: () => <br />,
                     })
@@ -178,14 +176,14 @@ const ProcessTimelineSection: FC<{
 
   return (
     <div className="mt-4 grid gap-4 border-t border-neutral-400 py-4">
-      <h2 className="typo-h5">{t("processTimeline.title")}</h2>
+      <h2 className="typo-h5">{t('processTimeline.title')}</h2>
       <p>{t(config.processTimeline.key)}</p>
     </div>
   );
 };
 
 export default async function Page() {
-  const t = await getTranslations("DashboardPage");
+  const t = await getTranslations('DashboardPage');
   // const data = await getApplications();
   const data = await getHybridApplications();
 
@@ -195,14 +193,14 @@ export default async function Page() {
     try {
       siteInfo = await getSiteInfo();
     } catch (error) {
-      console.error("Failed to fetch site info:", error);
+      console.error('Failed to fetch site info:', error);
     }
   }
 
   return (
     <Container>
       <div className="flex items-center gap-4 pb-6 pt-8">
-        <h2 className="typo-h2">{t("myApplications")}</h2>
+        <h2 className="typo-h2">{t('myApplications')}</h2>
 
         {/* TODO: when data will come from API then replace this number */}
         <span className="typo-h6 text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full bg-neutral-500">
@@ -239,12 +237,12 @@ interface EmptyApplicationsStateProps {
 const EmptyApplicationsState: FC<EmptyApplicationsStateProps> = ({
   siteInfo,
 }) => {
-  const t = useTranslations("DashboardPage");
+  const t = useTranslations('DashboardPage');
 
   // Fallback contact info (same as footer)
   const defaultContact = {
-    phone: "+254 0776 154 215",
-    email: "info@uwezo.go.ke",
+    phone: '+254 0776 154 215',
+    email: 'info@uwezo.go.ke',
   };
 
   const contact = siteInfo?.data?.site?.contact || defaultContact;
@@ -262,24 +260,24 @@ const EmptyApplicationsState: FC<EmptyApplicationsStateProps> = ({
 
           {/* Heading */}
           <h3 className="typo-h2 mb-3 text-neutral-900">
-            {t("emptyState.title")}
+            {t('emptyState.title')}
           </h3>
 
           {/* Description */}
-          <p className="mb-8 text-neutral-600">{t("emptyState.description")}</p>
+          <p className="mb-8 text-neutral-600">{t('emptyState.description')}</p>
 
           {/* Apply Button */}
           <Button size="lg" className="mb-6 px-8" asChild>
             <Link href="/apply/create">
               <IconPlus className="mr-2 h-5 w-5" />
-              {t("emptyState.applyButton")}
+              {t('emptyState.applyButton')}
             </Link>
           </Button>
 
           {/* Additional Help */}
           <div className="border-t border-neutral-200 pt-6">
             <p className="mb-4 text-sm text-neutral-600">
-              {t("emptyState.helpText")}
+              {t('emptyState.helpText')}
             </p>
             <div className="flex items-center justify-center gap-6">
               <Link href={`mailto:${contact.email}`}>
@@ -315,7 +313,7 @@ interface GroupDetailsProps extends PropsWithChildren {
   status: Status;
   siteInfo: SiteInformationResponse | null;
   members?: MembersData;
-  rejectionDetails?: GeneralDetails["rejectionDetails"];
+  rejectionDetails?: GeneralDetails['rejectionDetails'];
 }
 
 const GroupDetails: FC<GroupDetailsProps> = ({
@@ -327,12 +325,12 @@ const GroupDetails: FC<GroupDetailsProps> = ({
   members,
   rejectionDetails,
 }) => {
-  const t = useTranslations("DashboardPage");
+  const t = useTranslations('DashboardPage');
 
   // Fallback contact info (same as footer)
   const defaultContact = {
-    phone: "+254 0776 154 215",
-    email: "info@uwezo.go.ke",
+    phone: '+254 0776 154 215',
+    email: 'info@uwezo.go.ke',
   };
 
   const contact = siteInfo?.data?.site?.contact || defaultContact;
@@ -347,7 +345,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
           <h2 className="typo-h3">{applicationId}</h2>
           <div className="flex justify-between">
             <p>
-              {t("group")} &ldquo;{groupName}&rdquo;
+              {t('group')} &ldquo;{groupName}&rdquo;
             </p>
             {loanAmount && <Currency amount={loanAmount} currency="KES" />}
           </div>
@@ -367,20 +365,20 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         <Button variant="secondary" className="w-full text-neutral-700" asChild>
           <Link
             href={
-              status === "UNSUBMITTED" || status === "DRAFT"
+              status === 'UNSUBMITTED' || status === 'DRAFT'
                 ? `/apply/${applicationId}/group-data`
                 : `/dashboard/${applicationId}`
             }
           >
-            {status === "UNSUBMITTED" || status === "DRAFT"
-              ? t("continueFillingApplication")
-              : t("viewApplication")}
+            {status === 'UNSUBMITTED' || status === 'DRAFT'
+              ? t('continueFillingApplication')
+              : t('viewApplication')}
           </Link>
         </Button>
       </div>
 
       <div className="mt-4 space-y-2 border-t border-neutral-400 pt-4">
-        <p className="font-bold">{t("status.title")}</p>
+        <p className="font-bold">{t('status.title')}</p>
         <ApplicationStatus
           status={status}
           rejectionDetails={rejectionDetails}
@@ -392,7 +390,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
       <ProcessTimelineSection config={STATUS_CONFIGS[status]} t={t} />
 
       <div className="mt-4 grid gap-4 border-t border-neutral-400 py-4">
-        <h2 className="typo-h5">{t("questions.title")}</h2>
+        <h2 className="typo-h5">{t('questions.title')}</h2>
         <Link href={`mailto:${contact.email}`}>
           <Underline variant="primary" className="text-primary gap-x-1">
             <IconMail />

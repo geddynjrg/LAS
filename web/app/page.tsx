@@ -1,28 +1,26 @@
-import { useTranslations } from "next-intl";
-import { getTranslations } from "next-intl/server";
-
+import { ApplyButton } from '@/components/apply-button';
+import { PageComponents } from '@/components/page-components';
+import { getLanding } from '@/lib/api/landing';
 import {
   Carousel,
   CarouselContent,
   CarouselControls,
   CarouselItem,
-} from "@workspace/ui/components/carousel";
-import { Container } from "@workspace/ui/components/container";
-import { Countup } from "@workspace/ui/components/countup";
-import { IconCash } from "@workspace/ui/components/icon/icon-cash";
-import { IconOkStar } from "@workspace/ui/components/icon/icon-ok-star";
-import { IconProfile } from "@workspace/ui/components/icon/icon-profile";
-import { IconStockGraph } from "@workspace/ui/components/icon/icon-stock-graph";
-import { IconUsers } from "@workspace/ui/components/icon/icon-users";
-import { LeadingSlash } from "@workspace/ui/components/leading-slash";
-import { Card } from "@workspace/ui/components/uwezo/card";
-import { HeroSection } from "@workspace/ui/components/uwezo/hero-section";
-import { MetricCard } from "@workspace/ui/components/uwezo/metric-card";
-import { NewsItem } from "@workspace/ui/components/uwezo/news-item";
-
-import { ApplyButton } from "@/components/apply-button";
-import { PageComponents } from "@/components/page-components";
-import { getLanding } from "@/lib/api/landing";
+} from '@workspace/ui/components/carousel';
+import { Container } from '@workspace/ui/components/container';
+import { Countup } from '@workspace/ui/components/countup';
+import { IconCash } from '@workspace/ui/components/icon/icon-cash';
+import { IconOkStar } from '@workspace/ui/components/icon/icon-ok-star';
+import { IconProfile } from '@workspace/ui/components/icon/icon-profile';
+import { IconStockGraph } from '@workspace/ui/components/icon/icon-stock-graph';
+import { IconUsers } from '@workspace/ui/components/icon/icon-users';
+import { LeadingSlash } from '@workspace/ui/components/leading-slash';
+import { Card } from '@workspace/ui/components/uwezo/card';
+import { HeroSection } from '@workspace/ui/components/uwezo/hero-section';
+import { MetricCard } from '@workspace/ui/components/uwezo/metric-card';
+import { NewsItem } from '@workspace/ui/components/uwezo/news-item';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 const NEWS_ITEMS: {
   date: Date;
@@ -32,39 +30,39 @@ const NEWS_ITEMS: {
 }[] = [
   {
     date: new Date(),
-    imageUrl: "/news/news-1.jpeg",
-    title: "National tree planting day",
-    category: "Uwezo news & events",
+    imageUrl: '/news/news-1.jpeg',
+    title: 'National tree planting day',
+    category: 'Uwezo news & events',
   },
   {
     date: new Date(),
-    imageUrl: "/news/news-2.jpeg",
-    title: "National tree planting day",
-    category: "Uwezo news & events",
+    imageUrl: '/news/news-2.jpeg',
+    title: 'National tree planting day',
+    category: 'Uwezo news & events',
   },
   {
     date: new Date(),
-    imageUrl: "/news/news-3.jpeg",
-    title: "National tree planting day",
-    category: "Uwezo news & events",
+    imageUrl: '/news/news-3.jpeg',
+    title: 'National tree planting day',
+    category: 'Uwezo news & events',
   },
   {
     date: new Date(),
-    imageUrl: "/news/news-1.jpeg",
-    title: "National tree planting day",
-    category: "Uwezo news & events",
+    imageUrl: '/news/news-1.jpeg',
+    title: 'National tree planting day',
+    category: 'Uwezo news & events',
   },
 ];
 
 export default async function Page() {
-  const t = await getTranslations("FrontPage");
+  const t = await getTranslations('FrontPage');
 
   // Fetch landing page data
   let pageData;
   try {
     pageData = await getLanding();
   } catch (error) {
-    console.error("Failed to fetch landing page data:", error);
+    console.error('Failed to fetch landing page data:', error);
     // Continue with static content if API fails
   }
 
@@ -85,17 +83,23 @@ export default async function Page() {
         /* Fallback to static content */
         <>
           <HeroSection
-            title={t.rich("title", {
-              title: (chunks: React.ReactNode) => <span className="typo-display">{chunks}</span>,
-              light: (chunks: React.ReactNode) => <span className="font-light">{chunks}</span>,
-              subTitle: (chunks: React.ReactNode) => <span className="typo-h4">{chunks}</span>,
+            title={t.rich('title', {
+              title: (chunks: React.ReactNode) => (
+                <span className="typo-display">{chunks}</span>
+              ),
+              light: (chunks: React.ReactNode) => (
+                <span className="font-light">{chunks}</span>
+              ),
+              subTitle: (chunks: React.ReactNode) => (
+                <span className="typo-h4">{chunks}</span>
+              ),
               lineBreak: () => <br />,
             })}
-            backgroundAlt={t("imageDescription")}
+            backgroundAlt={t('imageDescription')}
             actions={<ApplyButton />}
           >
             <span className="typo-body-large">
-              {t.rich("description", {
+              {t.rich('description', {
                 underline: (chunks: React.ReactNode) => (
                   <span className="underline">{chunks}</span>
                 ),
@@ -124,23 +128,23 @@ export default async function Page() {
 
 // Create a server component version of CriteriaSection
 async function StaticCriteriaSection() {
-  const t = await getTranslations("FrontPage");
+  const t = await getTranslations('FrontPage');
 
   return (
     <Container className="my-9" asChild>
       <section>
-        <h1 className="typo-h3 mb-4">{t("criteria.title")}</h1>
+        <h1 className="typo-h3 mb-4">{t('criteria.title')}</h1>
 
         <div className="border-primary typo-body-medium grid gap-4 border-t pt-4 md:grid-cols-2">
           <div className="grid gap-4">
             <Card radius="lg" variant="primary">
-              {t("criteria.one")}
+              {t('criteria.one')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t("criteria.two")}
+              {t('criteria.two')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t.rich("criteria.three", {
+              {t.rich('criteria.three', {
                 bold: (chunks: React.ReactNode) => (
                   <>
                     <span className="font-bold">{chunks}</span>
@@ -156,13 +160,13 @@ async function StaticCriteriaSection() {
           </div>
           <div className="grid gap-4">
             <Card radius="lg" variant="primary">
-              {t("criteria.four")}
+              {t('criteria.four')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t("criteria.five")}
+              {t('criteria.five')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t("criteria.six")}
+              {t('criteria.six')}
             </Card>
           </div>
         </div>
@@ -173,23 +177,23 @@ async function StaticCriteriaSection() {
 
 // Keep the original client components for reference (not used in server component)
 function CriteriaSection() {
-  const t = useTranslations("FrontPage");
+  const t = useTranslations('FrontPage');
 
   return (
     <Container className="my-9" asChild>
       <section>
-        <h1 className="typo-h3 mb-4">{t("criteria.title")}</h1>
+        <h1 className="typo-h3 mb-4">{t('criteria.title')}</h1>
 
         <div className="border-primary typo-body-medium grid gap-4 border-t pt-4 md:grid-cols-2">
           <div className="grid gap-4">
             <Card radius="lg" variant="primary">
-              {t("criteria.one")}
+              {t('criteria.one')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t("criteria.two")}
+              {t('criteria.two')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t.rich("criteria.three", {
+              {t.rich('criteria.three', {
                 bold: (chunks: React.ReactNode) => (
                   <>
                     <span className="font-bold">{chunks}</span>
@@ -205,13 +209,13 @@ function CriteriaSection() {
           </div>
           <div className="grid gap-4">
             <Card radius="lg" variant="primary">
-              {t("criteria.four")}
+              {t('criteria.four')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t("criteria.five")}
+              {t('criteria.five')}
             </Card>
             <Card radius="lg" variant="primary">
-              {t("criteria.six")}
+              {t('criteria.six')}
             </Card>
           </div>
         </div>
@@ -221,29 +225,29 @@ function CriteriaSection() {
 }
 
 function DescriptionSection() {
-  const t = useTranslations("FrontPage");
+  const t = useTranslations('FrontPage');
 
   return (
     <Container className="pt-15 mb-4.5 gap-7.5 flex flex-col lg:flex-row">
       <section>
         <h2 className="mb-4">
           <LeadingSlash className="mb-1">
-            {t("fundDescription.welcome")}
+            {t('fundDescription.welcome')}
           </LeadingSlash>
 
-          <div className="typo-h5">{t("fundDescription.title")}</div>
+          <div className="typo-h5">{t('fundDescription.title')}</div>
         </h2>
 
         <p className="typo-body-medium mb-5">
-          {t("fundDescription.description")}
+          {t('fundDescription.description')}
         </p>
         <p className="typo-body-medium mb-5">
-          {t("fundDescription.objectives")}
+          {t('fundDescription.objectives')}
         </p>
         <ul className="list-disc pl-8">
-          <li>{t("fundDescription.objectivesList.one")}</li>
-          <li>{t("fundDescription.objectivesList.two")}</li>
-          <li>{t("fundDescription.objectivesList.three")}</li>
+          <li>{t('fundDescription.objectivesList.one')}</li>
+          <li>{t('fundDescription.objectivesList.two')}</li>
+          <li>{t('fundDescription.objectivesList.three')}</li>
         </ul>
       </section>
 
@@ -266,43 +270,43 @@ function DescriptionSection() {
 }
 
 function AchievementsSection() {
-  const t = useTranslations("FrontPage");
+  const t = useTranslations('FrontPage');
 
   return (
     <section className="bg-theme-100 mt-8">
       <Container className="grid gap-4 py-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="mb-8">
-          <LeadingSlash>{t("achievements.successfulFunding")}</LeadingSlash>
+          <LeadingSlash>{t('achievements.successfulFunding')}</LeadingSlash>
           <h2 className="typo-h1-lg mt-2 leading-[2.8rem] lg:text-[2.1rem]">
-            {t("achievements.title")}
+            {t('achievements.title')}
           </h2>
         </div>
 
         <div className="space-y-5">
           <MetricCard
-            title={t("achievements.womenGroup")}
+            title={t('achievements.womenGroup')}
             count={50842}
             icon={<IconProfile width={18} height={18} />}
           />
           <MetricCard
-            title={t("achievements.youthGroup")}
+            title={t('achievements.youthGroup')}
             count={26409}
             icon={<IconUsers width={18} height={18} />}
           />
           <MetricCard
-            title={t("achievements.pwdGroup")}
+            title={t('achievements.pwdGroup')}
             count={2023}
             icon={<IconOkStar width={18} height={18} />}
           />
         </div>
         <div className="space-y-5">
           <MetricCard
-            title={t("achievements.female")}
+            title={t('achievements.female')}
             count={789277}
             icon={<IconProfile width={18} height={18} />}
           />
           <MetricCard
-            title={t("achievements.male")}
+            title={t('achievements.male')}
             count={337452}
             icon={<IconCash width={18} height={18} />}
           />
@@ -319,7 +323,7 @@ function AchievementsSection() {
             />
           </h1>
           <p className="typo-body-small text-center">
-            {t("achievements.cumulativeDisbursement")}
+            {t('achievements.cumulativeDisbursement')}
           </p>
         </div>
       </Container>
@@ -328,13 +332,13 @@ function AchievementsSection() {
 }
 
 function NewsSection() {
-  const t = useTranslations("FrontPage");
+  const t = useTranslations('FrontPage');
 
   return (
     <Container asChild>
       <section className="mt-8 flex flex-col items-center">
         <LeadingSlash className="mb-1">Uwezo</LeadingSlash>
-        <h2 className="typo-h5 mb-9">{t("news.title")}</h2>
+        <h2 className="typo-h5 mb-9">{t('news.title')}</h2>
 
         <Carousel autoPlay={5000} className="max-w-full">
           <CarouselContent>

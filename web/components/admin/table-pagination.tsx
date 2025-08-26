@@ -1,4 +1,4 @@
-import { Button } from "@workspace/ui/components/button";
+import { Button } from '@workspace/ui/components/button';
 
 interface TablePaginationProps {
   currentPage: number;
@@ -46,8 +46,8 @@ export function TablePagination({
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            Showing <span className="font-medium">{startItem}</span> to{" "}
-            <span className="font-medium">{endItem}</span> of{" "}
+            Showing <span className="font-medium">{startItem}</span> to{' '}
+            <span className="font-medium">{endItem}</span> of{' '}
             <span className="font-medium">{totalCount}</span> results
           </p>
         </div>
@@ -83,7 +83,7 @@ export function TablePagination({
                         <span className="px-2 text-gray-400">...</span>
                       )}
                       <Button
-                        variant={page === currentPage ? "default" : "ghost"}
+                        variant={page === currentPage ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => onPageChange(page)}
                         className="h-8 w-8 p-0"

@@ -1,16 +1,16 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Function to create schemas with translated messages
 export const createEmailLoginSchema = (t: (key: string) => string) =>
   z.object({
-    loginType: z.literal("email"),
-    email: z.string().email(t("invalidEmail")),
-    password: z.string().min(1, t("passwordRequired")),
+    loginType: z.literal('email'),
+    email: z.string().email(t('invalidEmail')),
+    password: z.string().min(1, t('passwordRequired')),
   });
 
 // Default schema for type inference
 export const emailLoginSchema = z.object({
-  loginType: z.literal("email"),
+  loginType: z.literal('email'),
   email: z.string().email(),
   password: z.string().min(1),
 });
@@ -19,7 +19,7 @@ export type EmailLogin = z.infer<typeof emailLoginSchema>;
 
 // Phone login base schema
 const phoneLoginBaseSchema = z.object({
-  loginType: z.literal("phone"),
+  loginType: z.literal('phone'),
   phone: z.string().optional(),
   otp_code: z.string().optional(),
   request_id: z.string().optional(),
@@ -37,7 +37,7 @@ export const createPhoneLoginSchema = (t: (key: string) => string) =>
       return data.phone && data.phone.length > 0;
     },
     {
-      message: t("provideValidCredentials"),
+      message: t('provideValidCredentials'),
     },
   );
 

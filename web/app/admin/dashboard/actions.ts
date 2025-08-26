@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { syncApplication as syncApplicationService } from "@/lib/api/sync.service";
-import { syncTaxonomyVocabularies } from "@/lib/api/taxonomy.service";
-import { syncCountiesData } from "@/lib/api/counties.service";
-import { requireAdmin } from "@/lib/auth/guards";
-import { prisma } from "@/lib/db/prisma";
+import { syncCountiesData } from '@/lib/api/counties.service';
+import { syncApplication as syncApplicationService } from '@/lib/api/sync.service';
+import { syncTaxonomyVocabularies } from '@/lib/api/taxonomy.service';
+import { requireAdmin } from '@/lib/auth/guards';
+import { prisma } from '@/lib/db/prisma';
 
 export async function syncApplicationAction(applicationId: string) {
   // Ensure user is admin
@@ -35,10 +35,10 @@ export async function syncApplicationAction(applicationId: string) {
 
     return result;
   } catch (error) {
-    console.error("Error syncing application:", error);
+    console.error('Error syncing application:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -49,20 +49,17 @@ export async function syncTaxonomyAction() {
 
   try {
     // Sync both taxonomy vocabularies and counties/constituencies
-    await Promise.all([
-      syncTaxonomyVocabularies(),
-      syncCountiesData(),
-    ]);
-    
+    await Promise.all([syncTaxonomyVocabularies(), syncCountiesData()]);
+
     return {
       success: true,
-      message: "Taxonomy vocabularies and counties synced successfully",
+      message: 'Taxonomy vocabularies and counties synced successfully',
     };
   } catch (error) {
-    console.error("Error syncing taxonomy data:", error);
+    console.error('Error syncing taxonomy data:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
@@ -75,21 +72,21 @@ export async function syncCountiesAction() {
     await syncCountiesData();
     return {
       success: true,
-      message: "Counties and constituencies synced successfully",
+      message: 'Counties and constituencies synced successfully',
     };
   } catch (error) {
-    console.error("Error syncing counties data:", error);
+    console.error('Error syncing counties data:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
 export async function getApplicationsData(
-  searchQuery: string = "",
-  page: number = 1,
-  pageSize: number = 10,
+  searchQuery = '',
+  page = 1,
+  pageSize = 10,
 ) {
   await requireAdmin();
 
@@ -163,7 +160,7 @@ export async function getApplicationsData(
       },
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
     skip: (page - 1) * pageSize,
     take: pageSize,
@@ -171,7 +168,7 @@ export async function getApplicationsData(
 
   // Get statistics (for all applications, not filtered)
   const stats = await prisma.application.groupBy({
-    by: ["status"],
+    by: ['status'],
     _count: {
       _all: true,
     },
