@@ -1,1 +1,81 @@
-cd web && npx lint-staged
+# husky
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Check if there are PHP files in admin directory
+PHP_FILES=$(echo "$STAGED_FILES" | grep "^admin/" | grep -E "\.(php|module|inc|install|test|profile|theme|twig|yml|yaml)$" || true)
+
+# Check if there are JS/TS files in web directory
+JS_FILES=$(echo "$STAGED_FILES" | grep "^web/" | grep -E "\.(js|jsx|ts|tsx|css|md)$" || true)
+
+echo "🔍 Analyzing staged files..."
+
+# Initialize exit status
+PHP_EXIT_CODE=0
+JS_EXIT_CODE=0
+
+echo "========================================="
+echo "🔍 UWEZO PRE-COMMIT QUALITY CHECKS"
+echo "========================================="
+
+# Run GrumPHP for admin PHP files
+if [ -n "$PHP_FILES" ]; then
+  echo ""
+  echo "📋 STEP 1/2: PHP Code Quality (GrumPHP)"
+  echo "---------------------------------------"
+  cd admin
+  vendor/bin/grumphp git:pre-commit
+  PHP_EXIT_CODE=$?
+  cd ..
+
+  if [ $PHP_EXIT_CODE -ne 0 ]; then
+    echo "❌ PHP code quality checks FAILED"
+  else
+    echo "✅ PHP code quality checks PASSED"
+  fi
+else
+  echo ""
+  echo "⏭️  STEP 1/2: No PHP files to check - SKIPPED"
+fi
+
+# Always run web checks if there are JS files
+if [ -n "$JS_FILES" ]; then
+  echo ""
+  echo "🎨 STEP 2/2: Web Code Quality (ESLint + Prettier)"
+  echo "------------------------------------------------"
+  cd web
+  npx lint-staged
+  JS_EXIT_CODE=$?
+  cd ..
+
+  if [ $JS_EXIT_CODE -ne 0 ]; then
+    echo "❌ Web code quality checks FAILED"
+  else
+    echo "✅ Web code quality checks PASSED"
+  fi
+else
+  echo ""
+  echo "⏭️  STEP 2/2: No web files to check - SKIPPED"
+fi
+
+echo ""
+echo "========================================="
+echo "📊 FINAL RESULTS"
+echo "========================================="
+
+# Final result
+if [ $PHP_EXIT_CODE -eq 0 ] && [ $JS_EXIT_CODE -eq 0 ]; then
+  echo "🎉 ALL CHECKS PASSED - Commit allowed!"
+else
+  echo "💥 SOME CHECKS FAILED - Commit blocked!"
+  echo ""
+  if [ $PHP_EXIT_CODE -ne 0 ]; then
+    echo "   ❌ PHP checks failed"
+  fi
+  if [ $JS_EXIT_CODE -ne 0 ]; then
+    echo "   ❌ Web checks failed"
+  fi
+  echo ""
+  exit 1
+fi
