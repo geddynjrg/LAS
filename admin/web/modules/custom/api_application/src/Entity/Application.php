@@ -1158,20 +1158,6 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       $this->setApplicationId($this->generateApplicationId());
     }
 
-    // Handle automatic transition from submitted to unassigned.
-    if (!$this->isNew() && $this->original) {
-      $original_status = $this->original->getStatus();
-      $new_status = $this->getStatus();
-
-      // Automatically transition from submitted to unassigned.
-      if ($original_status !== 'submitted' && $new_status === 'submitted') {
-        $this->setStatus('unassigned');
-        \Drupal::logger('api_application')->notice('Application @id automatically transitioned from submitted to unassigned', [
-          '@id' => $this->getApplicationId(),
-        ]);
-      }
-    }
-
     // Handle file organization if not new.
     if (!$this->isNew()) {
       $this->organizeApplicationFiles();
@@ -1194,6 +1180,19 @@ class Application extends ContentEntityBase implements ApplicationInterface {
 
     // Handle SMS notifications based on changes.
     $this->handleSmsNotifications($update);
+
+    // Handle automatic transition from submitted to unassigned.
+    // This must be done in postSave to ensure the submitted status is saved
+    // first and notifications are triggered before transitioning to unassigned.
+    if ($update && $this->original) {
+      $original_status = $this->original->getStatus();
+      $new_status = $this->getStatus();
+
+      // Automatically transition from submitted to unassigned.
+      if ($original_status !== 'submitted' && $new_status === 'submitted') {
+        $this->triggerDelayedStatusTransition('unassigned', 'automatic_transition');
+      }
+    }
   }
 
   /**
@@ -1430,6 +1429,84 @@ class Application extends ContentEntityBase implements ApplicationInterface {
     $prefix = $config->get('application_prefix') ?: 'APP-';
     $time = \Drupal::time()->getCurrentTime();
     return $prefix . date('Ymd', $time) . '-' . substr(uniqid(), -5);
+  }
+
+  /**
+   * Triggers a delayed status transition to avoid save loops.
+   *
+   * @param string $new_status
+   *   The status to transition to.
+   * @param string $reason
+   *   The reason for the transition.
+   */
+  protected function triggerDelayedStatusTransition($new_status, $reason = '') {
+    // Use a static flag to prevent infinite loops during status transitions.
+    static $transitioning = [];
+    $key = $this->id() . ':' . $new_status;
+
+    if (isset($transitioning[$key])) {
+      // Already transitioning this application to this status, avoid loop.
+      return;
+    }
+
+    $transitioning[$key] = TRUE;
+    $application_id = $this->id();
+    $app_id_display = $this->getApplicationId();
+
+    try {
+      // Use register_shutdown_function to perform the transition after
+      // the current save operation completes and notifications are sent.
+      register_shutdown_function(function () use ($application_id, $new_status, $reason, $key, $app_id_display, &$transitioning) {
+        if (isset($transitioning[$key])) {
+          unset($transitioning[$key]);
+          // Static method to perform the transition without object reference.
+          static::performDelayedStatusTransition($application_id, $new_status, $reason, $app_id_display);
+        }
+      });
+    }
+    catch (\Exception $e) {
+      // Clean up the flag if something goes wrong.
+      unset($transitioning[$key]);
+    }
+  }
+
+  /**
+   * Performs a delayed status transition for an application.
+   *
+   * @param int $application_id
+   *   The application entity ID.
+   * @param string $new_status
+   *   The status to transition to.
+   * @param string $reason
+   *   The reason for the transition.
+   * @param string $app_id_display
+   *   The application ID for display/logging purposes.
+   */
+  protected static function performDelayedStatusTransition($application_id, $new_status, $reason = '', $app_id_display = '') {
+    try {
+      // Reload the entity to ensure we have the latest state.
+      $storage = \Drupal::entityTypeManager()->getStorage('application');
+      $application = $storage->load($application_id);
+
+      if (!$application || $application->getStatus() !== 'submitted') {
+        // Application no longer exists or status has already changed.
+        return;
+      }
+
+      // Set the new status and save.
+      $application->setStatus($new_status);
+      $application->save();
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('api_application')->error(
+        'Failed to automatically transition application @id to @status: @error',
+        [
+          '@id' => $app_id_display ?: "ID-$application_id",
+          '@status' => $new_status,
+          '@error' => $e->getMessage(),
+        ]
+      );
+    }
   }
 
 }

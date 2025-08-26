@@ -431,6 +431,7 @@ function template_preprocess_application(array &$variables) {
     $allowed_transitions = [
       'draft' => ['submitted'],
       'submitted' => ['under_review', 'rejected'],
+      'unassigned' => ['under_review', 'rejected'],
       'under_review' => ['approved', 'rejected'],
       'approved' => ['disbursed'],
       'rejected' => ['under_review'],
@@ -457,6 +458,7 @@ function template_preprocess_application(array &$variables) {
   $status_options = [
     'draft' => t('Draft'),
     'submitted' => t('Submitted'),
+    'unassigned' => t('Unassigned'),
     'under_review' => t('Under Review'),
     'approved' => t('Approved'),
     'rejected' => t('Rejected'),
