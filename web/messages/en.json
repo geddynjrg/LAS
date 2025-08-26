@@ -308,6 +308,7 @@
       "duplicateApplication": "Duplicate Application",
       "insufficientCollateral": "Insufficient Collateral",
       "poorCreditHistory": "Poor Credit History",
+      "memberDeclined": "Group member(s) declined participation",
       "other": "Other"
     },
     "stepDescription": {

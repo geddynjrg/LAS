@@ -1,0 +1,356 @@
+{#
+/**
+ * @file
+ * Email template for admin action requests on loan applications.
+ *
+ * Available variables:
+ * - application: The application entity.
+ * - status_change: The status change entity.
+ * - site_name: The site name.
+ * - recipient_name: The admin user's display name.
+ * - recipient_email: The recipient email address.
+ */
+#}
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<![endif]-->
+    <title>Admin Action Required - {{ application.getApplicationId() }} - {{ site_name }}</title>
+    <style>
+        /* Base styles for email clients */
+        .ReadMsgBody { width: 100%; }
+        .ExternalClass { width: 100%; }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+
+        /* Action button styles */
+        .action-button {
+            background-color: #5a1f4f !important;
+            border: none !important;
+            border-radius: 8px !important;
+            color: #ffffff !important;
+            display: inline-block;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            line-height: 48px !important;
+            padding: 0 32px !important;
+            text-align: center;
+            text-decoration: none !important;
+            text-transform: none !important;
+            box-shadow: 0 2px 8px rgba(71, 16, 63, 0.24) !important;
+            transition: all 0.3s ease;
+            -webkit-text-size-adjust: none;
+            mso-style-priority: 100 !important;
+        }
+
+        .action-button:hover {
+            background-color: #6b2a5e !important;
+            box-shadow: 0 4px 12px rgba(71, 16, 63, 0.32) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Table-specific mobile styles */
+        @media only screen and (max-width: 600px) {
+            /* Container adjustments */
+            table[class=body] .container {
+                padding: 0 !important;
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+
+            /* Main content area */
+            table[class=body] .main {
+                border-left-width: 0 !important;
+                border-radius: 0 !important;
+                border-right-width: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Content and wrapper padding */
+            table[class=body] .content {
+                padding: 0 !important;
+            }
+
+            table[class=body] .wrapper {
+                padding: 15px !important;
+            }
+
+            /* Typography scaling */
+            table[class=body] h1 {
+                font-size: 22px !important;
+                line-height: 26px !important;
+                margin-bottom: 15px !important;
+            }
+
+            table[class=body] h2 {
+                font-size: 18px !important;
+                line-height: 22px !important;
+                margin-bottom: 12px !important;
+            }
+
+            table[class=body] p,
+            table[class=body] td,
+            table[class=body] span {
+                font-size: 16px !important;
+                line-height: 22px !important;
+            }
+
+            /* Status badge mobile adjustments */
+            table[class=body] .status-badge {
+                display: inline-block !important;
+                margin-top: 4px !important;
+                font-size: 12px !important;
+                padding: 6px 10px !important;
+            }
+
+            /* Alert box mobile padding */
+            table[class=body] .alert-box {
+                padding: 15px !important;
+                margin: 10px 0 !important;
+            }
+
+            /* Header adjustments */
+            table[class=body] .header {
+                padding: 15px 0 !important;
+            }
+
+            /* Action button mobile */
+            .action-button {
+                width: 100% !important;
+                max-width: 280px !important;
+                font-size: 15px !important;
+                line-height: 44px !important;
+                padding: 0 24px !important;
+                margin: 0 auto !important;
+                display: block !important;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .dark-mode-text {
+                color: #ffffff !important;
+            }
+            .dark-mode-bg {
+                background-color: #1a1a1a !important;
+            }
+        }
+    </style>
+    <!--[if mso]>
+    <style type="text/css">
+        .fallback-text {
+            font-family: Arial, sans-serif !important;
+        }
+        table {
+            border-collapse: collapse !important;
+        }
+        .action-button {
+            mso-style-priority: 100 !important;
+        }
+    </style>
+    <![endif]-->
+</head>
+<body class="body" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; background-color: #f6f6f6; width: 100%;" width="100%" bgcolor="#f6f6f6">
+        <tr>
+            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
+            <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; max-width: 580px; padding: 10px; width: 580px; Margin: 0 auto;" width="580" valign="top">
+
+                <!-- HEADER -->
+                <div class="header" style="padding: 20px 0;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;">
+                        <tr>
+                            <td class="align-center" width="100%" style="font-family: sans-serif; font-size: 14px; vertical-align: top; text-align: center;" valign="top" align="center">
+                                <h1 style="color: #47103f; font-size: 24px; margin: 0; font-weight: bold;">{{ site_name }}</h1>
+                                <p style="color: #666; font-size: 16px; margin: 5px 0 0 0;">{{ 'Admin Action Required'|t }}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+
+                    <!-- MAIN CONTENT -->
+                    <table role="presentation" class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; background: #ffffff; border-radius: 3px; width: 100%;" width="100%">
+                        <tr>
+                            <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;" valign="top">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+
+                                    <!-- GREETING -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; line-height: 1.6;">{{ 'Hello'|t }} {% if recipient_name %}{{ recipient_name }}{% else %}{{ 'Administrator'|t }}{% endif %},</p>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; line-height: 1.6;">{{ 'A loan application requires your attention and action.'|t }}</p>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ALERT BOX -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                                            {% set status = status_change.getNewStatus() %}
+                                            {% if status == 'unassigned' %}
+                                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="alert-box" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; margin: 20px 0;" width="100%" bgcolor="#fff3cd">
+                                                    <tr>
+                                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 20px;" valign="top">
+                                                            <h2 style="color: #856404; font-size: 18px; margin: 0 0 10px 0; font-weight: bold;">⚠️ {{ 'New Application Awaiting Assignment'|t }}</h2>
+                                                            <p style="font-family: sans-serif; font-size: 14px; margin: 0; color: #856404; line-height: 1.6;">{{ 'This application needs to be assigned to a reviewer for processing.'|t }}</p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            {% elseif status == 'pending' %}
+                                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="alert-box" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%; background-color: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 4px; margin: 20px 0;" width="100%" bgcolor="#d1ecf1">
+                                                    <tr>
+                                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 20px;" valign="top">
+                                                            <h2 style="color: #0c5460; font-size: 18px; margin: 0 0 10px 0; font-weight: bold;">⏳ {{ 'Application Pending Review'|t }}</h2>
+                                                            <p style="font-family: sans-serif; font-size: 14px; margin: 0; color: #0c5460; line-height: 1.6;">{{ 'This application is awaiting your review and decision.'|t }}</p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            {% elseif status == 'in_review' %}
+                                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="alert-box" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%; background-color: #d4f0ff; border-left: 4px solid #3b82f6; border-radius: 4px; margin: 20px 0;" width="100%" bgcolor="#d4f0ff">
+                                                    <tr>
+                                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 20px;" valign="top">
+                                                            <h2 style="color: #084298; font-size: 18px; margin: 0 0 10px 0; font-weight: bold;">📋 {{ 'Application Under Review'|t }}</h2>
+                                                            <p style="font-family: sans-serif; font-size: 14px; margin: 0; color: #084298; line-height: 1.6;">{{ 'This application has been assigned for review. Please complete your assessment.'|t }}</p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <!-- APPLICATION DETAILS -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                                            <h3 style="color: #333; font-size: 16px; margin: 20px 0 15px 0; font-weight: bold;">{{ 'Application Details'|t }}</h3>
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%; background-color: #f8f9fa; border-radius: 4px; padding: 15px;" width="100%" bgcolor="#f8f9fa">
+                                                <tr>
+                                                    <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 15px;" valign="top">
+                                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f; width: 40%;" valign="top" width="40%">{{ 'Application ID:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">{{ application.getApplicationId() }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'Applicant:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">
+                                                                    {% if application.getOwner() %}
+                                                                        {{ application.getOwner().getDisplayName() ?: application.getOwner().getEmail() }}
+                                                                    {% else %}
+                                                                        {{ 'Unknown'|t }}
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'Submitted:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">{{ application.getCreatedTime()|date('F j, Y - g:i A') }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'Current Status:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">
+                                                                    {% set status = status_change.getNewStatus() %}
+                                                                    {% set status_colors = {
+                                                                        unassigned: '#ffc107',
+                                                                        draft: '#9ca3af',
+                                                                        pending: '#f59e0b',
+                                                                        submitted: '#8b5cf6',
+                                                                        under_review: '#3b82f6',
+                                                                        in_review: '#3b82f6',
+                                                                        approved: '#47103f',
+                                                                        rejected: '#ef4444',
+                                                                        disbursed: 'rgb(183, 42, 159)',
+                                                                        closed: '#6b7280',
+                                                                    } %}
+                                                                    <span class="status-badge" style="background-color: {{ status_colors[status] ?: '#6c757d' }}; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block;">{{ status|replace({_: ' '})|title }}</span>
+                                                                </td>
+                                                            </tr>
+                                                            {% if status_change.getNotes() %}
+                                                            <tr>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0; font-weight: bold; color: #47103f;" valign="top">{{ 'Notes:'|t }}</td>
+                                                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding: 5px 0;" valign="top">{{ status_change.getNotes() }}</td>
+                                                            </tr>
+                                                            {% endif %}
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ACTION BUTTON -->
+                                    <tr>
+                                        <td align="center" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-top: 30px; padding-bottom: 30px;" valign="top">
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: auto;" width="auto">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="font-family: sans-serif; font-size: 16px; vertical-align: top; text-align: center;" valign="top" align="center">
+                                                            {% if application_url %}
+                                                                <a href="{{ application_url }}" class="action-button" target="_blank" style="display: inline-block; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 600; line-height: 48px; text-decoration: none; text-transform: none; background-color: #5a1f4f; color: #ffffff; border: none; border-radius: 8px; padding: 0 32px; box-shadow: 0 2px 8px rgba(71, 16, 63, 0.24); transition: all 0.3s ease; -webkit-text-size-adjust: none; mso-padding-alt: 0;">
+                                                                    <!--[if mso]><i style="letter-spacing: 32px; mso-font-width: -100%; mso-text-raise: 30pt;">&nbsp;</i><![endif]-->
+                                                                    <span style="mso-text-raise: 15pt;">{{ 'Review Application'|t }}</span>
+                                                                    <!--[if mso]><i style="letter-spacing: 32px; mso-font-width: -100%;">&nbsp;</i><![endif]-->
+                                                                </a>
+                                                            {% else %}
+                                                                <a href="{{ url('<front>', {}, {absolute: true}) }}/admin/content/applications" class="action-button" target="_blank" style="display: inline-block; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 600; line-height: 48px; text-decoration: none; text-transform: none; background-color: #5a1f4f; color: #ffffff; border: none; border-radius: 8px; padding: 0 32px; box-shadow: 0 2px 8px rgba(71, 16, 63, 0.24); transition: all 0.3s ease; -webkit-text-size-adjust: none; mso-padding-alt: 0;">
+                                                                    <!--[if mso]><i style="letter-spacing: 32px; mso-font-width: -100%; mso-text-raise: 30pt;">&nbsp;</i><![endif]-->
+                                                                    <span style="mso-text-raise: 15pt;">{{ 'Go to Applications'|t }}</span>
+                                                                    <!--[if mso]><i style="letter-spacing: 32px; mso-font-width: -100%;">&nbsp;</i><![endif]-->
+                                                                </a>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ADDITIONAL INFO -->
+                                    <tr>
+                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; line-height: 1.6; color: #666;">{{ 'Please review this application at your earliest convenience. Quick processing helps our applicants get the support they need.'|t }}</p>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- FOOTER -->
+                    <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; width: 100%;" width="100%">
+                            <tr>
+                                <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #9a9ea6; font-size: 12px; text-align: center;" valign="top" align="center">
+                                    <p style="font-family: sans-serif; font-size: 12px; font-weight: normal; margin: 0; color: #9a9ea6;">{{ 'This is an automated admin notification. You received this because you have the necessary permissions to review applications.'|t }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; color: #9a9ea6; font-size: 12px; text-align: center;" valign="top" align="center">
+                                    <p style="font-family: sans-serif; font-size: 12px; font-weight: normal; margin: 0; color: #9a9ea6;">{{ 'Generated on'|t }} {{ 'now'|date('F j, Y \\a\\t g:i A') }}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </td>
+            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -306,6 +306,7 @@
       "duplicateApplication": "Ombi la Rudufu",
       "insufficientCollateral": "Dhamana Isiyotosha",
       "poorCreditHistory": "Historia Mbaya ya Mkopo",
+      "memberDeclined": "Wanachama wa kikundi walikataa kushiriki",
       "other": "Nyingine"
     },
     "stepDescription": {

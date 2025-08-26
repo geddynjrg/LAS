@@ -158,6 +158,26 @@ function api_application_theme() {
       ],
       'template' => 'application-custom-message-email',
     ],
+    'application_admin_action_request_email' => [
+      'variables' => [
+        'application' => NULL,
+        'application_url' => NULL,
+        'status_change' => NULL,
+        'site_name' => NULL,
+        'recipient_name' => NULL,
+        'recipient_email' => NULL,
+      ],
+      'template' => 'application-admin-action-request-email',
+    ],
+    'application_admin_custom_message_email' => [
+      'variables' => [
+        'message' => NULL,
+        'site_name' => NULL,
+        'subject' => NULL,
+        'recipient_email' => NULL,
+      ],
+      'template' => 'application-admin-custom-message-email',
+    ],
   ];
 }
 
@@ -411,6 +431,7 @@ function template_preprocess_application(array &$variables) {
     $allowed_transitions = [
       'draft' => ['submitted'],
       'submitted' => ['under_review', 'rejected'],
+      'unassigned' => ['under_review', 'rejected'],
       'under_review' => ['approved', 'rejected'],
       'approved' => ['disbursed'],
       'rejected' => ['under_review'],
@@ -428,6 +449,7 @@ function template_preprocess_application(array &$variables) {
       'duplicate_application' => t('Duplicate application'),
       'insufficient_collateral' => t('Insufficient collateral'),
       'poor_credit_history' => t('Poor credit history'),
+      'member_declined' => t('Group member(s) declined participation'),
       'other' => t('Other reason'),
     ];
     $variables['rejection_reasons'] = $rejection_reasons;
@@ -437,6 +459,7 @@ function template_preprocess_application(array &$variables) {
   $status_options = [
     'draft' => t('Draft'),
     'submitted' => t('Submitted'),
+    'unassigned' => t('Unassigned'),
     'under_review' => t('Under Review'),
     'approved' => t('Approved'),
     'rejected' => t('Rejected'),
@@ -458,6 +481,7 @@ function template_preprocess_application(array &$variables) {
       'duplicate_application' => t('Duplicate application'),
       'insufficient_collateral' => t('Insufficient collateral'),
       'poor_credit_history' => t('Poor credit history'),
+      'member_declined' => t('Group member(s) declined participation'),
       'other' => t('Other reason'),
     ];
     $variables['application']['rejection_reason_label'] = $rejection_reasons[$variables['application']['rejection_reason']] ?? $variables['application']['rejection_reason'];

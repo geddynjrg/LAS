@@ -124,7 +124,8 @@ class ApplicationController extends ControllerBase {
     $current_status = $application->get('status')->value;
     $allowed_transitions = [
       'draft' => ['submitted'],
-      'submitted' => ['under_review', 'rejected'],
+      'submitted' => ['unassigned', 'under_review', 'rejected'],
+      'unassigned' => ['under_review', 'rejected'],
       'under_review' => ['approved', 'rejected'],
       'approved' => ['disbursed'],
       'rejected' => ['under_review'],

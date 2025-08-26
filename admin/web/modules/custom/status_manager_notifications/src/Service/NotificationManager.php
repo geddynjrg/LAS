@@ -91,6 +91,68 @@ class NotificationManager {
       return $results;
     }
 
+    // Get status notification mapper configuration.
+    $mapping_config = $this->getStatusNotificationMapperConfig($status_change);
+
+    // Determine recipients and notification types.
+    if ($mapping_config) {
+      // Use status-specific mapper configuration.
+      $results = $this->sendMappedNotifications($status_change, $mapping_config);
+    }
+    else {
+      // Fall back to original behavior.
+      $results = $this->sendStandardNotifications($status_change, $notification_type);
+    }
+
+    // Update the status change entity with notification results.
+    $this->updateNotificationStatus($status_change, $results);
+
+    return $results;
+  }
+
+  /**
+   * Sends notifications based on status mapper configuration.
+   *
+   * @param \Drupal\status_manager\Entity\StatusChangeInterface $status_change
+   *   The status change entity.
+   * @param array $mapping_config
+   *   The mapper configuration for this status.
+   *
+   * @return array
+   *   Array of results from each notification service.
+   */
+  protected function sendMappedNotifications(StatusChangeInterface $status_change, array $mapping_config) {
+    $results = [];
+
+    // Send to customer if configured.
+    if (!empty($mapping_config['send_to_customer'])) {
+      $customer_results = $this->sendNotificationToRecipientType($status_change, 'customer', $mapping_config);
+      $results = array_merge($results, $customer_results);
+    }
+
+    // Send to admin if configured.
+    if (!empty($mapping_config['send_to_admin'])) {
+      $admin_results = $this->sendNotificationToRecipientType($status_change, 'admin', $mapping_config);
+      $results = array_merge($results, $admin_results);
+    }
+
+    return $results;
+  }
+
+  /**
+   * Sends standard notifications (original behavior).
+   *
+   * @param \Drupal\status_manager\Entity\StatusChangeInterface $status_change
+   *   The status change entity.
+   * @param string $notification_type
+   *   The notification type from the status change.
+   *
+   * @return array
+   *   Array of results from each notification service.
+   */
+  protected function sendStandardNotifications(StatusChangeInterface $status_change, $notification_type) {
+    $results = [];
+
     // Handle 'both' notification type.
     $types_to_send = $notification_type === 'both' ? ['email', 'sms'] : [$notification_type];
 
@@ -172,10 +234,170 @@ class NotificationManager {
       }
     }
 
-    // Update the status change entity with notification results.
-    $this->updateNotificationStatus($status_change, $results);
+    return $results;
+  }
+
+  /**
+   * Sends notification to a specific recipient type.
+   *
+   * @param \Drupal\status_manager\Entity\StatusChangeInterface $status_change
+   *   The status change entity.
+   * @param string $recipient_type
+   *   The recipient type ('customer' or 'admin').
+   * @param array $mapping_config
+   *   The mapper configuration.
+   *
+   * @return array
+   *   Array of results from notification services.
+   */
+  protected function sendNotificationToRecipientType(StatusChangeInterface $status_change, $recipient_type, array $mapping_config) {
+    $results = [];
+    $entity = $status_change->getTargetEntity();
+
+    if (!$entity) {
+      $results["{$recipient_type}_notification"] = [
+        'success' => FALSE,
+        'message' => 'Target entity not found.',
+      ];
+      return $results;
+    }
+
+    // Determine notification types to send.
+    if (!empty($mapping_config["{$recipient_type}_notification_types"])) {
+      $notification_types = $mapping_config["{$recipient_type}_notification_types"];
+    }
+    else {
+      // Default to email only.
+      $notification_types = ['email'];
+    }
+
+    foreach ($notification_types as $type) {
+      // Determine provider based on recipient type.
+      $provider_id = NULL;
+
+      if ($recipient_type === 'admin') {
+        // Use application admin email provider.
+        $provider_id = 'application_admin_email';
+        $provider_config = $this->configFactory->get('status_manager_notifications.settings')
+          ->get("email.providers.application_admin_email") ?: [];
+      }
+      else {
+        // Use entity-specific settings for customer notifications.
+        $entity_settings = $this->getEntityNotificationSettings($entity->getEntityTypeId(), $type);
+
+        if ($entity_settings['skip']) {
+          $results["{$recipient_type}_{$type}"] = [
+            'success' => FALSE,
+            'message' => $entity_settings['message'],
+          ];
+          continue;
+        }
+
+        $provider_id = $entity_settings['provider_id'];
+        $provider_config = $entity_settings['provider_config'];
+      }
+
+      if (!$provider_id) {
+        continue;
+      }
+
+      try {
+        /** @var \Drupal\status_manager_notifications\Plugin\NotificationProviderInterface $provider */
+        $provider = $this->providerManager->createInstance($provider_id, $provider_config);
+
+        if (!$provider->isConfigured()) {
+          $results["{$recipient_type}_{$type}"] = [
+            'success' => FALSE,
+            'message' => "Provider {$provider_id} is not properly configured.",
+          ];
+          continue;
+        }
+
+        // Prepare notification options.
+        $notification_options = [
+          'recipient_type' => $recipient_type,
+          'mapping_config' => $mapping_config,
+        ];
+
+        if ($recipient_type === 'admin' && !empty($mapping_config['admin_roles'])) {
+          $notification_options['roles'] = $mapping_config['admin_roles'];
+        }
+
+        $result = $provider->sendStatusChangeNotification($status_change, $notification_options);
+        $results["{$recipient_type}_{$type}"] = $result;
+
+        if ($result['success']) {
+          $this->logger->info('@recipient_type @type notification sent via @provider for status change @id', [
+            '@recipient_type' => ucfirst($recipient_type),
+            '@type' => $type,
+            '@provider' => $provider_id,
+            '@id' => $status_change->id(),
+          ]);
+        }
+        else {
+          $this->logger->error('Failed to send @recipient_type @type notification via @provider for status change @id: @error', [
+            '@recipient_type' => $recipient_type,
+            '@type' => $type,
+            '@provider' => $provider_id,
+            '@id' => $status_change->id(),
+            '@error' => $result['message'] ?? 'Unknown error',
+          ]);
+        }
+      }
+      catch (\Exception $e) {
+        $results["{$recipient_type}_{$type}"] = [
+          'success' => FALSE,
+          'message' => $e->getMessage(),
+        ];
+
+        $this->logger->error('Exception sending @recipient_type @type notification for status change @id: @error', [
+          '@recipient_type' => $recipient_type,
+          '@type' => $type,
+          '@id' => $status_change->id(),
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
 
     return $results;
+  }
+
+  /**
+   * Gets status notification mapper configuration.
+   *
+   * @param \Drupal\status_manager\Entity\StatusChangeInterface $status_change
+   *   The status change entity.
+   *
+   * @return array|null
+   *   The mapper configuration or NULL if not found.
+   */
+  protected function getStatusNotificationMapperConfig(StatusChangeInterface $status_change) {
+    $config = $this->configFactory->get('status_manager_notifications.status_notification_mapper');
+    $entity = $status_change->getTargetEntity();
+
+    if (!$entity) {
+      return NULL;
+    }
+
+    $entity_type = $entity->getEntityTypeId();
+    $status_field = $status_change->getStatusField();
+    $new_status = $status_change->getNewStatus();
+
+    // Try different mapping keys from most specific to least specific.
+    $mapping_keys = [
+      "{$entity_type}.{$status_field}.{$new_status}",
+      "{$entity_type}.{$new_status}",
+      "default.{$new_status}",
+    ];
+
+    foreach ($mapping_keys as $key) {
+      $mapping = $config->get($key);
+      if ($mapping && is_array($mapping)) {
+        return $mapping;
+      }
+    }
+
+    return NULL;
   }
 
   /**

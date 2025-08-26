@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -133,6 +134,7 @@ class StatusManagerSettingsForm extends ConfigFormBase {
 
     $form['#tree'] = TRUE;
     $form['#attached']['library'][] = 'status_manager/admin';
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
     $form['#attributes']['class'][] = 'status-manager-settings-form';
 
     // General settings.
@@ -535,6 +537,33 @@ class StatusManagerSettingsForm extends ConfigFormBase {
 
     // Get notification config.
     $notification_config = $this->config('status_manager_notifications.settings');
+
+    // Add status notification mapper button.
+    $form['notifications']['status_mapper'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Status Notification Mapping'),
+      '#open' => TRUE,
+      '#weight' => -10,
+    ];
+
+    $form['notifications']['status_mapper']['description'] = [
+      '#markup' => '<p>' . $this->t('Configure which statuses send notifications to customers, admin users, or both.') . '</p>',
+    ];
+
+    $form['notifications']['status_mapper']['configure_button'] = [
+      '#type' => 'link',
+      '#title' => $this->t('Configure Status Notification Mapper'),
+      '#url' => Url::fromRoute('status_manager_notifications.status_notification_mapper'),
+      '#attributes' => [
+        'class' => ['button', 'button--primary', 'use-ajax'],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => json_encode([
+          'width' => '90%',
+          'height' => '80%',
+          'title' => $this->t('Status Notification Mapper'),
+        ]),
+      ],
+    ];
 
     // Email provider selection.
     $form['notifications']['email'] = [

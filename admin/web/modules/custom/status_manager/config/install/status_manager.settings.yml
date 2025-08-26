@@ -22,4 +22,4 @@ display:
 performance:
   batch_size: 100
   cache_enabled: true
-  cache_lifetime: 3600 
+  cache_lifetime: 3600

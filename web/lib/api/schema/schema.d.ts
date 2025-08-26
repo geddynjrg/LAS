@@ -1676,7 +1676,7 @@ export interface components {
             };
             rejection_details?: {
                 /** @enum {string} */
-                rejection_reason?: "incomplete_information" | "missing_documents" | "eligibility_criteria" | "duplicate_application" | "insufficient_collateral" | "poor_credit_history" | "other";
+                rejection_reason?: "incomplete_information" | "missing_documents" | "eligibility_criteria" | "duplicate_application" | "insufficient_collateral" | "poor_credit_history" | "member_declined" | "other";
                 rejection_message?: string;
             } | null;
         };

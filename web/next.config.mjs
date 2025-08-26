@@ -8,8 +8,15 @@ const nextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
-      ...(process.env.API_URL ? [{ hostname: new URL(process.env.API_URL).hostname }] : []),
+      ...(process.env.API_URL
+        ? [{ hostname: new URL(process.env.API_URL).hostname }]
+        : []),
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "30mb",
+    },
   },
 };
 

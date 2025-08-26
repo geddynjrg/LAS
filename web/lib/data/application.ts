@@ -47,6 +47,7 @@ export interface GeneralDetails {
       | "duplicate_application"
       | "insufficient_collateral"
       | "poor_credit_history"
+      | "member_declined"
       | "other";
     rejectionMessage?: string;
   };

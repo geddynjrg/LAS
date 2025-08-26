@@ -95,6 +95,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setSetting('allowed_values', [
         'draft' => t('Draft'),
         'submitted' => t('Submitted'),
+        'unassigned' => t('Unassigned'),
         'under_review' => t('Under Review'),
         'approved' => t('Approved'),
         'rejected' => t('Rejected'),
@@ -126,6 +127,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
         'duplicate_application' => t('Duplicate application'),
         'insufficient_collateral' => t('Insufficient collateral'),
         'poor_credit_history' => t('Poor credit history'),
+        'member_declined' => t('Group member(s) declined participation'),
         'other' => t('Other reason'),
       ])
       ->setDisplayOptions('view', [
@@ -1179,6 +1181,19 @@ class Application extends ContentEntityBase implements ApplicationInterface {
 
     // Handle SMS notifications based on changes.
     $this->handleSmsNotifications($update);
+
+    // Handle immediate transition if no members require confirmation.
+    // This handles the case where SMS confirmation flow won't be triggered.
+    if ($update && $this->original) {
+      $original_status = $this->original->getStatus();
+      $new_status = $this->getStatus();
+
+      // Check if transitioning to submitted and no members require
+      // confirmation.
+      if ($original_status !== 'submitted' && $new_status === 'submitted') {
+        $this->checkIfImmediateTransitionNeeded();
+      }
+    }
   }
 
   /**
@@ -1415,6 +1430,61 @@ class Application extends ContentEntityBase implements ApplicationInterface {
     $prefix = $config->get('application_prefix') ?: 'APP-';
     $time = \Drupal::time()->getCurrentTime();
     return $prefix . date('Ymd', $time) . '-' . substr(uniqid(), -5);
+  }
+
+  /**
+   * Check if immediate status transition is required.
+   *
+   * If no group members require SMS confirmation, the application should
+   * immediately transition from 'submitted' to 'unassigned' since the
+   * SMS confirmation flow won't be triggered.
+   */
+  protected function checkIfImmediateTransitionNeeded() {
+    try {
+      $group_members = $this->getGroupMembers();
+      $requires_confirmation = FALSE;
+
+      // Check if any members require confirmation.
+      foreach ($group_members as $member) {
+        if ($member->requiresConfirmation()) {
+          $requires_confirmation = TRUE;
+          break;
+        }
+      }
+
+      // If no members require confirmation, immediately transition to
+      // unassigned.
+      if (!$requires_confirmation) {
+        // Use a shutdown function to avoid recursive saves and allow
+        // notifications.
+        $application_id = $this->id();
+        $app_id_display = $this->getApplicationId();
+
+        register_shutdown_function(function () use ($application_id, $app_id_display) {
+          try {
+            $storage = \Drupal::entityTypeManager()->getStorage('application');
+            $application = $storage->load($application_id);
+
+            if ($application && $application->getStatus() === 'submitted') {
+              $application->setStatus('unassigned');
+              $application->save();
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('api_application')->error('Failed to auto-transition application @id to unassigned: @message', [
+              '@id' => $app_id_display,
+              '@message' => $e->getMessage(),
+            ]);
+          }
+        });
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('api_application')->error('Error checking immediate transition for application @id: @message', [
+        '@id' => $this->getApplicationId(),
+        '@message' => $e->getMessage(),
+      ]);
+    }
   }
 
 }

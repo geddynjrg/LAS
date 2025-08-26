@@ -15,4 +15,4 @@ send notifications:
 
 view notification logs:
   title: 'View notification logs'
-  description: 'View notification delivery logs and statistics' 
+  description: 'View notification delivery logs and statistics'

@@ -1,0 +1,6 @@
+unassigned:
+  enabled: true
+  type: role
+  email_provider: admin_email
+  roles:
+    - content_editor
