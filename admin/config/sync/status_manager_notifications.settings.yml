@@ -9,6 +9,12 @@ email:
       use_html: true
     sendgrid_email:
       enabled: false
+    application_admin_email:
+      enabled: true
+      from_name: 'Uwezo Admin'
+      from_email: admin@uwezo.com
+      reply_to: admin@uwezo.com
+      use_html: true
   default_template: auto
 sms:
   active_provider: ''

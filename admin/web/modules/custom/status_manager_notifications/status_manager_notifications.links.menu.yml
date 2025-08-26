@@ -24,4 +24,11 @@ status_manager_notifications.sms_templates:
   description: 'Manage SMS notification templates'
   route_name: status_manager_notifications.sms_templates
   parent: status_manager_notifications.settings
-  weight: 20 
+  weight: 20
+
+status_manager_notifications.status_notification_mapper:
+  title: 'Status Notification Mapper'
+  description: 'Configure which statuses send notifications to customers, admins, or both'
+  route_name: status_manager_notifications.status_notification_mapper
+  parent: status_manager_notifications.settings
+  weight: 30

@@ -95,6 +95,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setSetting('allowed_values', [
         'draft' => t('Draft'),
         'submitted' => t('Submitted'),
+        'unassigned' => t('Unassigned'),
         'under_review' => t('Under Review'),
         'approved' => t('Approved'),
         'rejected' => t('Rejected'),
@@ -1155,6 +1156,20 @@ class Application extends ContentEntityBase implements ApplicationInterface {
     // Generate application ID if it doesn't exist.
     if ($this->isNew() && empty($this->getApplicationId())) {
       $this->setApplicationId($this->generateApplicationId());
+    }
+
+    // Handle automatic transition from submitted to unassigned.
+    if (!$this->isNew() && $this->original) {
+      $original_status = $this->original->getStatus();
+      $new_status = $this->getStatus();
+
+      // Automatically transition from submitted to unassigned.
+      if ($original_status !== 'submitted' && $new_status === 'submitted') {
+        $this->setStatus('unassigned');
+        \Drupal::logger('api_application')->notice('Application @id automatically transitioned from submitted to unassigned', [
+          '@id' => $this->getApplicationId(),
+        ]);
+      }
     }
 
     // Handle file organization if not new.

@@ -357,6 +357,9 @@ class ApplicationListBuilder extends EntityListBuilder {
       'submitted' => [
         'label' => $this->t('Submitted'),
       ],
+      'unassigned' => [
+        'label' => $this->t('Unassigned'),
+      ],
       'under_review' => [
         'label' => $this->t('Under Review'),
       ],
@@ -392,6 +395,7 @@ class ApplicationListBuilder extends EntityListBuilder {
     $descriptions = [
       'draft' => $this->t('Application is being prepared and not yet submitted'),
       'submitted' => $this->t('Application has been submitted and is awaiting review'),
+      'unassigned' => $this->t('Application is awaiting assignment to a reviewer'),
       'under_review' => $this->t('Application is currently being reviewed by administrators'),
       'approved' => $this->t('Application has been approved and is ready for disbursement'),
       'rejected' => $this->t('Application has been rejected'),

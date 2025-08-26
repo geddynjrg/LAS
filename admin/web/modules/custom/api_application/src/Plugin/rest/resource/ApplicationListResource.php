@@ -263,7 +263,7 @@ class ApplicationListResource extends RestFrameworkResourceBase {
       'id' => $application->id(),
       'uuid' => $application->uuid(),
       'application_id' => $application->getApplicationId(),
-      'status' => $application->getStatus(),
+      'status' => $this->mapStatusForApi($application->getStatus()),
       'created' => $application->getCreatedTime(),
       'changed' => $application->getChangedTime(),
       'owner' => [
@@ -517,6 +517,7 @@ class ApplicationListResource extends RestFrameworkResourceBase {
     $statuses = [
       'draft' => 'Draft',
       'submitted' => 'Submitted',
+      'unassigned' => 'Unassigned',
       'under_review' => 'Under Review',
       'approved' => 'Approved',
       'rejected' => 'Rejected',
@@ -525,6 +526,25 @@ class ApplicationListResource extends RestFrameworkResourceBase {
     ];
 
     return $statuses[$status] ?? $status;
+  }
+
+  /**
+   * Maps internal status to API status.
+   *
+   * Hides the 'unassigned' status from the API by mapping it to 'submitted'.
+   *
+   * @param string $status
+   *   The internal status.
+   *
+   * @return string
+   *   The status to show in the API.
+   */
+  protected function mapStatusForApi($status) {
+    // Map 'unassigned' to 'submitted' for API responses.
+    if ($status === 'unassigned') {
+      return 'submitted';
+    }
+    return $status;
   }
 
 }

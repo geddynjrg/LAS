@@ -35,4 +35,4 @@ services:
 
   status_manager_notifications.token_service:
     class: Drupal\status_manager_notifications\Service\TokenReplacementService
-    arguments: ['@token', '@entity_type.manager', '@date.formatter'] 
+    arguments: ['@token', '@entity_type.manager', '@date.formatter']
