@@ -52,7 +52,6 @@ api.use({
 });
 
 export function validate<
-   
   TRes extends FetchResponse<any, any, any>,
   TSchema extends z.Schema,
 >(res: TRes, schema: TSchema) {
