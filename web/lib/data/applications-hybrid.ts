@@ -6,8 +6,8 @@ import type {
   ApplicationDetail,
   ApplicationsListQuery,
 } from '@/lib/api/schema/application/applications-list.schema';
-import type { ApplicationData } from '@/lib/data/application';
-import { getApplications as getLocalApplications } from '@/lib/data/application-db';
+import type { ApplicationData } from '@/lib/types/application.types';
+import { getApplications as getLocalApplications } from '@/lib/data/application';
 import { prisma } from '@/lib/db/prisma';
 
 /**
@@ -194,9 +194,6 @@ function mapApiApplicationToLocal(
     if (apiApp.loan_conditions) {
       const lc = apiApp.loan_conditions;
       result.loanConditions = {
-        purposeOfLoan: lc.purpose_of_loan?.name
-          ? [lc.purpose_of_loan.name]
-          : [],
         loanType: lc.loan_type?.name || '',
         loanAmount: parseNumber(lc.loan_amount) || 0,
         repaymentPeriod: parseInteger(lc.proposed_repayment_period) || 0,

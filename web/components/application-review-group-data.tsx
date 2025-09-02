@@ -1,18 +1,22 @@
-import type { GroupData } from '@/lib/data/application';
+import type { GroupData } from '@/lib/types/application.types';
+import { IconPencil } from '@tabler/icons-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@workspace/ui/components/accordion';
+import { Button } from '@workspace/ui/components/button';
 import { DataNode } from '@workspace/ui/components/data-node';
 import type { ValidFile } from '@workspace/ui/lib/zod';
 import { useFormatter, useTranslations } from 'next-intl';
+import Link from 'next/link';
 import type { FC } from 'react';
 
 export const ApplicationReviewGroupData: FC<{
   groupData?: GroupData;
-}> = ({ groupData }) => {
+  applicationId?: string;
+}> = ({ groupData, applicationId }) => {
   const t = useTranslations('ApplicationDetailsPage');
   const format = useFormatter();
 
@@ -22,7 +26,17 @@ export const ApplicationReviewGroupData: FC<{
 
   return (
     <div className="mt-6 grid">
-      <h4 className="typo-h4 pb-2">{t('groupData.groupData')}</h4>
+      <div className="flex items-center justify-between pb-2">
+        <h4 className="typo-h4">{t('groupData.groupData')}</h4>
+        {applicationId && (
+          <Button variant="secondary" size="sm" asChild>
+            <Link href={`/apply/${applicationId}/group-data`}>
+              <IconPencil className="h-4 w-4 mr-1" />
+              Edit
+            </Link>
+          </Button>
+        )}
+      </div>
       <Accordion type="multiple" className="space-y-2">
         {groupData.basics && (
           <AccordionItem value="basics">

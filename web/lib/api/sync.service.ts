@@ -721,9 +721,6 @@ async function transformApplicationForExternalApi(
     group_members: transformedMembers,
 
     // Loan details
-    purpose_of_loan: Array.isArray(application.loanConditions?.purposeOfLoan)
-      ? extractValue(application.loanConditions.purposeOfLoan[0])
-      : extractValue(application.loanConditions?.purposeOfLoan),
     loan_type: extractValue(application.loanConditions?.loanType),
     loan_amount: application.loanConditions?.loanAmount,
     proposed_repayment_period: application.loanConditions?.repaymentPeriod,

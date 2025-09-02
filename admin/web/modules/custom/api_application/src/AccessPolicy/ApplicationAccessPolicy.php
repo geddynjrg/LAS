@@ -30,7 +30,6 @@ final class ApplicationAccessPolicy extends AccessPolicyBase {
     $this->groupManager = $group_manager;
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -49,19 +48,23 @@ final class ApplicationAccessPolicy extends AccessPolicyBase {
 
       // Collect all permissions to grant.
       $permissions = [];
-      
+
       // Grant base permissions for any review group member.
       $permissions[] = 'view the administration theme';
-      $permissions[] = 'access loan applications listing';  // Only access to listing page
-      $permissions[] = 'access toolbar';  // Needed to see admin menu
-      $permissions[] = 'access administration pages';  // Needed to see admin menu items
-      $permissions[] = 'access content overview';  // Needed to see content menu section
-      
+      // Only access to listing page.
+      $permissions[] = 'access loan applications listing';
+      // Needed to see admin menu.
+      $permissions[] = 'access toolbar';
+      // Needed to see admin menu items.
+      $permissions[] = 'access administration pages';
+      // Needed to see content menu section.
+      $permissions[] = 'access content overview';
+
       // Grant specific admin permissions for each accessible constituency.
       foreach ($accessible_constituency_ids as $constituency_id) {
         $permissions[] = "administer constituency applications:$constituency_id";
       }
-      
+
       // Add all permissions at once.
       if (!empty($permissions)) {
         $calculated_permissions->addItem(new CalculatedPermissionsItem($permissions));
@@ -75,9 +78,8 @@ final class ApplicationAccessPolicy extends AccessPolicyBase {
    * {@inheritdoc}
    */
   public function getPersistentCacheContexts(): array {
-    // Use the Group module's cache context if available, otherwise fall back to user.
+    // Use the Group module's cache context, otherwise fall back to user.
     return ['user', 'user.roles'];
   }
-
 
 }

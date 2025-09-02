@@ -185,7 +185,6 @@ export const ApplicationDetailSchema = z.object({
   group_members: z.array(GroupMemberDetailSchema).optional(),
   loan_conditions: z
     .object({
-      purpose_of_loan: TaxonomyTermSchema.nullable().optional(),
       loan_type: TaxonomyTermSchema.nullable().optional(),
       loan_amount: z.union([z.number(), z.string()]).nullable().optional(),
       proposed_repayment_period: z

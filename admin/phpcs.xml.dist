@@ -28,8 +28,6 @@
   </rule>
 
   <file>web/modules/custom</file>
-  <file>web/themes/custom</file>
-  <file>tests</file>
 
   <exclude-pattern>*/tests/features</exclude-pattern>
   <exclude-pattern>*/tests/features</exclude-pattern>

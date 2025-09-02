@@ -8,7 +8,7 @@ import type {
   ApplicationData,
   ConfirmationsData,
   MembersData,
-} from '@/lib/data/application';
+} from '@/lib/types/application.types';
 import { useState } from 'react';
 
 export interface GroupDataPageProps {

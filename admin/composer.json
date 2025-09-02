@@ -105,6 +105,22 @@
             ]
         }
     },
+    "scripts": {
+        "lint": "phpcs",
+        "lint:fix": "phpcbf",
+        "analyze": "phpstan analyze",
+        "test:syntax": "parallel-lint web/modules/custom",
+        "security": "security-checker security:check",
+        "quality": [
+            "@lint",
+            "@analyze",
+            "@test:syntax"
+        ],
+        "quality:fix": [
+            "@lint:fix",
+            "@analyze"
+        ]
+    },
     "require-dev": {
         "drupal/coder": "^8.3",
         "drupol/phpcsfixer-configs-drupal": "^2.2",

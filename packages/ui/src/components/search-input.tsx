@@ -48,6 +48,8 @@ export const SearchInput: FC<SearchInputProps> = ({
     onValueChange?.(search);
   }, [onValueChange, search]);
 
+  const listboxId = `${id || 'search'}-listbox`;
+
   return (
     <Popover.Root open={isOpen}>
       <Command loop>
@@ -64,6 +66,11 @@ export const SearchInput: FC<SearchInputProps> = ({
             onValueChange={setSearch}
           >
             <Input
+              role="combobox"
+              aria-expanded={isOpen}
+              aria-controls={listboxId}
+              aria-autocomplete="list"
+              aria-haspopup="listbox"
               endDecorator={isLoading ? <IconLoader /> : <IconSearch />}
               {...props}
             />
@@ -76,7 +83,7 @@ export const SearchInput: FC<SearchInputProps> = ({
           onOpenAutoFocus={(e) => e.preventDefault()}
           className="w-(--radix-popover-trigger-width) z-20 mt-1 rounded-md border shadow-md"
         >
-          <CommandList>
+          <CommandList id={listboxId} role="listbox">
             {isLoading ? (
               <CommandPrimitive.Loading className="p-1">
                 <Skeleton className="w-full p-2">...</Skeleton>

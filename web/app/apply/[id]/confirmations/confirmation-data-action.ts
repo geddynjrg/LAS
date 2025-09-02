@@ -4,7 +4,7 @@ import {
   type ConfirmationData,
   confirmationDataSchema,
 } from '@/app/apply/[id]/confirmations/confirmation-data-schema';
-import { updateApplicationDeclarationsData } from '@/lib/data/application-db';
+import { updateApplicationDeclarationsData } from '@/lib/data/application';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 
@@ -29,7 +29,7 @@ export const confirmationDataAction: FormAction<ConfirmationData> = async (
     throw new Error('No application ID provided');
   }
 
-  /* Submit data to dummy data list */
+  /* Submit data to database */
   await updateApplicationDeclarationsData(id, data);
 
   return {

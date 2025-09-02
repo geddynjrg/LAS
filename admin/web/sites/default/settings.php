@@ -888,6 +888,16 @@ if (getenv('JWT_SECRET') && getenv('JWT_REFRESH_SECRET')) {
   $config['uwezo_auth.settings']['jwt_refresh_secret'] = getenv('JWT_REFRESH_SECRET');
 }
 
+// EBISCLOUD SMS configuration from environment variables.
+if (getenv('EBISCLOUD_SMS_API_KEY')) {
+  $settings['ebiscloud_sms'] = [
+    'api_key' => getenv('EBISCLOUD_SMS_API_KEY'),
+    'api_url' => getenv('EBISCLOUD_SMS_API_URL') ?: 'https://api.ebisclouderp.com/v1/sms/send',
+    'shortcode' => getenv('EBISCLOUD_SMS_SHORTCODE') ?: '',
+    'service_id' => getenv('EBISCLOUD_SMS_SERVICE_ID') ?: '',
+  ];
+}
+
 // File system paths from environment variables.
 if (getenv('DRUPAL_ENV')) {
   $settings['file_public_path'] = 'sites/default/files';
@@ -903,6 +913,16 @@ if (getenv('WEB_DOMAIN')) {
 // Automatically generated include for settings managed by ddev.
 if (getenv('IS_DDEV_PROJECT') == 'true' && file_exists(__DIR__ . '/settings.ddev.php')) {
   include __DIR__ . '/settings.ddev.php';
+}
+
+// SMTP configuration for production (overrides ddev settings)
+if (getenv('SMTP_HOST')) {
+  $config['symfony_mailer.settings']['default_transport'] = 'smtp';
+  $config['symfony_mailer.mailer_transport.smtp']['plugin'] = 'smtp';
+  $config['symfony_mailer.mailer_transport.smtp']['configuration']['host'] = getenv('SMTP_HOST');
+  $config['symfony_mailer.mailer_transport.smtp']['configuration']['port'] = getenv('SMTP_PORT');
+  $config['symfony_mailer.mailer_transport.smtp']['configuration']['user'] = getenv('SMTP_USER');
+  $config['symfony_mailer.mailer_transport.smtp']['configuration']['pass'] = getenv('SMTP_PASSWORD');
 }
 
 /**

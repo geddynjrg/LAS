@@ -12,7 +12,7 @@ import {
 import { getConstituenciesForCountyName } from '@/lib/api/counties.service';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
-import { GroupData as ApplicationGroupData } from '@/lib/data/application';
+import { GroupData as ApplicationGroupData } from '@/lib/types/application.types';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
 import { Container } from '@workspace/ui/components/container';
@@ -149,7 +149,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             )}
             required
             control={(props) => (
-              <Input type="tel" placeholder="Registration number" {...props} />
+              <Input type="text" placeholder="Registration number" {...props} />
             )}
           />
           <Field
@@ -428,10 +428,17 @@ export const GroupDataForm: FC<GroupDataProps> = ({
           <Field
             state={state}
             name="groupCreditHistory"
-            label={t(
-              'ApplicationDetailsPage.groupData.groupBackground.creditHistory',
-            )}
-            required
+            label={
+              <div>
+                <div>
+                  {t('ApplicationDetailsPage.groupData.groupBackground.creditHistory')}
+                  <span className="text-destructive">*</span>
+                </div>
+                <div className="typo-body-small text-foreground font-normal mt-1">
+                  {t('ApplicationDetailsPage.loan.creditHistoryDescription')}
+                </div>
+              </div>
+            }
             description={t('Common.youCanAddMultipleFiles')}
             control={(props) => (
               <FileUploadInput
@@ -446,19 +453,6 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             )}
           />
 
-          <Link href="#">
-            <Underline
-              variant="primary"
-              className="text-primary hover:cursor-pointer"
-            >
-              <p className="mt-4 flex items-center gap-1">
-                <IconInfoCircle />
-                {t(
-                  'ApplicationDetailsPage.groupData.groupBackground.creditHistoryDocument',
-                )}
-              </p>
-            </Underline>
-          </Link>
         </FormCard>
 
         <FormCard

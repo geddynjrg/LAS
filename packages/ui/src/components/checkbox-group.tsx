@@ -78,9 +78,9 @@ export const CheckboxGroup = <T extends string>({
     <fieldset
       className={cn(
         checkboxGroupVariants({ orientation, className }),
-        "focus-visible-ring",
       )}
-      tabIndex={0}
+      role="group"
+      aria-labelledby={id ? `${id}-legend` : undefined}
       {...props}
     >
       <input type="hidden" name={name} value={value?.join(",")} />

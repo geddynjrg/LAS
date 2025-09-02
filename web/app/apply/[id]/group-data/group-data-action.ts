@@ -10,7 +10,8 @@ import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import {
   updateApplicationGroupData,
   updateApplicationStatus,
-} from '@/lib/data/application-db';
+} from '@/lib/data/application';
+import { capitalizeWords } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 import { revalidatePath } from 'next/cache';
@@ -62,10 +63,10 @@ export const groupDataAction: FormAction<GroupData> = async (
       { fid: 0, filename: '', url: '' },
     ];
 
-    /* Submit data to dummy data list */
+    /* Submit data to database */
     await updateApplicationGroupData(id, {
       basics: {
-        groupName: data.groupName,
+        groupName: capitalizeWords(data.groupName),
         groupRegistrationNumber: data.groupRegistrationNumber,
         dateFormed: data.dateFormed,
         groupRegistrationCertificate,

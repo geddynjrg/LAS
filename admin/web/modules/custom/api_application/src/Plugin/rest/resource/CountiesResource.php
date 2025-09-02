@@ -139,7 +139,7 @@ class CountiesResource extends RestFrameworkResourceBase {
 
     $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
     $vocabulary_storage = $this->entityTypeManager->getStorage('taxonomy_vocabulary');
-    
+
     $counties_vocabulary = $vocabulary_storage->load('counties');
     $constituencies_vocabulary = $vocabulary_storage->load('constituencies');
 
@@ -149,7 +149,7 @@ class CountiesResource extends RestFrameworkResourceBase {
         'message' => 'The counties vocabulary has not been created or imported yet.',
       ], 404);
     }
-    
+
     if (!$constituencies_vocabulary) {
       return $this->createModifiedResponse([
         'error' => 'Constituencies vocabulary not found',
@@ -157,7 +157,7 @@ class CountiesResource extends RestFrameworkResourceBase {
       ], 404);
     }
 
-    // Get all county terms
+    // Get all county terms.
     $counties_query = $term_storage->getQuery()
       ->condition('vid', 'counties')
       ->condition('status', 1)
@@ -167,8 +167,8 @@ class CountiesResource extends RestFrameworkResourceBase {
 
     $county_term_ids = $counties_query->execute();
     $county_terms = $term_storage->loadMultiple($county_term_ids);
-    
-    // Get all constituency terms
+
+    // Get all constituency terms.
     $constituencies_query = $term_storage->getQuery()
       ->condition('vid', 'constituencies')
       ->condition('status', 1)
@@ -178,11 +178,11 @@ class CountiesResource extends RestFrameworkResourceBase {
     $constituency_term_ids = $constituencies_query->execute();
     $constituency_terms = $term_storage->loadMultiple($constituency_term_ids);
 
-    // Build counties array
+    // Build counties array.
     $counties = [];
     $constituencies_by_parent = [];
 
-    // Process county terms
+    // Process county terms.
     foreach ($county_terms as $county_term) {
       if ($county_term->hasTranslation($current_language->getId())) {
         $county_term = $county_term->getTranslation($current_language->getId());
@@ -191,22 +191,23 @@ class CountiesResource extends RestFrameworkResourceBase {
       $term_data = [
         'tid' => (int) $county_term->id(),
         'name' => $county_term->getName(),
-        'constituencies' => [], // Will be populated below
+      // Will be populated below.
+        'constituencies' => [],
       ];
 
       $counties[$county_term->id()] = $term_data;
     }
-    
-    // Process constituency terms and group by parent county
+
+    // Process constituency terms and group by parent county.
     foreach ($constituency_terms as $constituency_term) {
       if ($constituency_term->hasTranslation($current_language->getId())) {
         $constituency_term = $constituency_term->getTranslation($current_language->getId());
       }
-      
-      // Get the parent county reference
+
+      // Get the parent county reference.
       $parent_county_field = $constituency_term->get('field_parent_county');
-      $parent_county_id = null;
-      
+      $parent_county_id = NULL;
+
       if (!$parent_county_field->isEmpty()) {
         $parent_county_id = $parent_county_field->target_id;
       }
@@ -215,7 +216,7 @@ class CountiesResource extends RestFrameworkResourceBase {
         'tid' => (int) $constituency_term->id(),
         'name' => $constituency_term->getName(),
       ];
-      
+
       if ($parent_county_id && isset($counties[$parent_county_id])) {
         if (!isset($constituencies_by_parent[$parent_county_id])) {
           $constituencies_by_parent[$parent_county_id] = [];
@@ -224,7 +225,7 @@ class CountiesResource extends RestFrameworkResourceBase {
       }
     }
 
-    // Add constituencies to their parent counties
+    // Add constituencies to their parent counties.
     foreach ($constituencies_by_parent as $county_id => $constituencies) {
       if (isset($counties[$county_id])) {
         $counties[$county_id]['constituencies'] = $constituencies;
@@ -233,7 +234,8 @@ class CountiesResource extends RestFrameworkResourceBase {
 
     // Build the complete response.
     $response_data = [
-      'data' => array_values($counties), // Reset keys to be sequential
+    // Reset keys to be sequential.
+      'data' => array_values($counties),
       'meta' => [
         'total_counties' => count($counties),
         'total_constituencies' => count($constituency_terms),

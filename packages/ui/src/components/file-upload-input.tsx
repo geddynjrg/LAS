@@ -28,6 +28,13 @@ type ServerFile = { fid: string; filename: string; url: string };
 
 export type FileUploadInputValue = File | ServerFile | string;
 
+type UploadActionResult = {
+  success: boolean;
+  files?: ServerFile[];
+  error?: string;
+  errors?: Record<string, string[]>;
+};
+
 export interface FileUploadInputProps {
   accept: Accept;
   maxSize: number;
@@ -35,7 +42,6 @@ export interface FileUploadInputProps {
   multiple?: boolean;
   disabled?: boolean;
   defaultValue?: FileUploadInputValue | FileUploadInputValue[];
-  attachmentBgInverted?: boolean;
   "aria-invalid"?: boolean;
   "data-invalid"?: boolean;
   // Upload functionality props
@@ -43,9 +49,9 @@ export interface FileUploadInputProps {
   enableUpload?: boolean;
   onUploadProgress?: (progress: number) => void;
   onUploadError?: (error: string) => void;
-  onChange?: (value: any) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   // Server action props (modern approach)
-  uploadAction?: (prev: any, formData: FormData) => any;
+  uploadAction?: (prev: UploadActionResult | null, formData: FormData) => Promise<UploadActionResult>;
   onUploadComplete?: (files: ServerFile[]) => void;
   // Delete action prop
   deleteAction?: (
@@ -61,7 +67,6 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   multiple = false,
   disabled,
   defaultValue,
-  attachmentBgInverted = false,
   applicationId,
   enableUpload = false,
   onUploadProgress,
@@ -89,7 +94,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<ServerFile[]>([]);
+  const [_uploadedFiles, setUploadedFiles] = useState<ServerFile[]>([]);
   const [deletingFiles, setDeletingFiles] = useState<Set<number>>(new Set());
 
   // Server action state
@@ -511,12 +516,25 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         className="stagnation flex items-center justify-center gap-4"
         aria-invalid={props["aria-invalid"]}
         data-invalid={props["data-invalid"]}
+        aria-labelledby={name ? `${name}-legend` : undefined}
       >
         {isUploading || isPending ? (
           // Upload progress display
-          <div className="flex w-full flex-col items-center justify-center gap-2 p-4">
+          <div
+            className="flex w-full flex-col items-center justify-center gap-2 p-4"
+            role="status"
+            aria-live="polite"
+            aria-label="File upload progress"
+          >
             <div className="text-sm font-medium">Uploading...</div>
-            <div className="h-2 w-full rounded-full bg-gray-200">
+            <div
+              className="h-2 w-full rounded-full bg-gray-200"
+              role="progressbar"
+              aria-valuenow={isPending ? undefined : Math.round(uploadProgress)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Upload progress"
+            >
               {isPending ? (
                 <div className="h-2 w-full animate-pulse rounded-full bg-blue-600" />
               ) : (
@@ -567,13 +585,18 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
 
       {/* Upload Error Display */}
       {uploadError && (
-        <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-3">
+        <div
+          className="mt-2 rounded-md border border-red-200 bg-red-50 p-3"
+          role="alert"
+          aria-live="assertive"
+        >
           <div className="flex items-start justify-between">
             <div className="text-sm text-red-800">{uploadError}</div>
             <button
               type="button"
               onClick={() => setUploadError(null)}
               className="ml-2 font-medium text-red-600 hover:text-red-800"
+              aria-label="Dismiss error message"
             >
               ✕
             </button>
@@ -589,7 +612,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
           <ul className="space-y-3">
             {files.map((file, index) => {
               const fileName = getFileName(file);
-              const isServerFile =
+              const isFileServerFile =
                 typeof file === "object" && file !== null && "fid" in file;
               const hasUrl =
                 typeof file === "object" && "url" in file && file.url;
@@ -662,7 +685,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
                         {fileName}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {isServerFile
+                        {isFileServerFile
                           ? "Uploaded"
                           : file instanceof File
                             ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
@@ -673,13 +696,13 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
                       {/* View button */}
-                      {hasUrl && (
+                      {hasUrl && isServerFile(file) && (
                         <a
-                          href={(file as any).url}
+                          href={file.url}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors duration-200 hover:border-blue-300 hover:bg-blue-100"
-                          title="View file"
+                          aria-label={`View file ${fileName} in new tab`}
                         >
                           <svg
                             className="mr-1 h-4 w-4"
@@ -703,7 +726,11 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
                         onClick={() => handleDelete(index)}
                         disabled={deletingFiles.has(index)}
                         className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors duration-200 hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
-                        title="Remove file"
+                        aria-label={
+                          deletingFiles.has(index)
+                            ? `Removing file ${fileName}...`
+                            : `Remove file ${fileName}`
+                        }
                       >
                         {deletingFiles.has(index) ? (
                           <>

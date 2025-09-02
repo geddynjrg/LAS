@@ -1,7 +1,7 @@
 import { loanConditionsAction } from '@/app/apply/[id]/loan-conditions/loan-conditions-action';
 import { LoanConditionsDataForm } from '@/app/apply/[id]/loan-conditions/loan-conditions-data-form';
 import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
-import { getApplicationById } from '@/lib/data/application-db';
+import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
 import { getTranslations } from 'next-intl/server';
@@ -15,17 +15,15 @@ export default async function Page({ params }: LoanConditionsPageProps) {
   const t = await getTranslations();
 
   // Fetch application and taxonomy data in parallel
-  const [application, bankNameOptions, purposeOfLoanOptions, loanTypeOptions] =
+  const [application, bankNameOptions, loanTypeOptions] =
     await Promise.all([
       getApplicationById(id),
       getFormFieldOptions('bankName'),
-      getFormFieldOptions('purposeOfLoan'),
       getFormFieldOptions('loanType'),
     ]);
 
   const taxonomyOptions = {
     bankName: bankNameOptions,
-    purposeOfLoan: purposeOfLoanOptions,
     loanType: loanTypeOptions,
   };
 

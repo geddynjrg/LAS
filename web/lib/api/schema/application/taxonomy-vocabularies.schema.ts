@@ -13,6 +13,7 @@ export const TaxonomyTermSchema = z.object({
   parent_ids: z.array(z.number()),
   url: z.string(),
   language: LanguageSchema,
+  limited_role: z.boolean().optional(), // For position_of_member vocabulary terms
 });
 
 // Schema for taxonomy vocabulary

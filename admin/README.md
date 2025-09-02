@@ -22,12 +22,12 @@
 - Docker
 - DDEV
 - Composer
-- Make
 
 ### Key Files
 - `ddev/config.yaml` - DDEV configuration
-- `Makefile` - Development workflow automation
-- `grumphp.yml` - Code quality checks configuration
+- `composer.json` - Development workflow automation via scripts
+- `phpcs.xml.dist` - PHP CodeSniffer configuration
+- `phpstan.neon` - PHPStan static analysis configuration
 - `bitbucket-pipelines.yml` - CI/CD pipeline definition
 
 ### Development Commands
@@ -76,29 +76,25 @@ GrumPHP enforces code quality standards through git hooks and automated checks.
 - Scans custom modules only
 - UTF-8 encoding enforced
 
-### Makefile Commands
+### Code Quality Commands
 
-The Makefile provides shortcuts for common development tasks:
+#### Via DDEV (Recommended)
+- `ddev composer lint` - Run PHP CodeSniffer checks
+- `ddev composer lint:fix` - Auto-fix code style issues
+- `ddev composer analyze` - Run PHPStan static analysis
+- `ddev composer test:syntax` - Check PHP syntax
+- `ddev composer security` - Run security vulnerability checks
+- `ddev composer quality` - Run all quality checks (lint + analyze + syntax)
+- `ddev composer quality:fix` - Run fixable quality checks
 
-#### Setup Commands
-- `make install` - Install project dependencies
-- `make update` - Update dependencies
-
-#### Development Commands
-- `make clear-cache` - Clear Drupal caches
-- `make lint` - Run code style checks
-- `make fix` - Auto-fix code style issues
-- `make test` - Run all tests and checks
-- `make phpstan` - Run PHPStan analysis
-
-#### Other Commands
-- `make config-export` - Export configuration
-- `make config-import` - Import configuration
-- `make validate` - Validate composer.json
-
-#### Deployment Commands
-- `make deploy` - Deploy to specified environment
-- `make backup` - Create backup before deployment
+#### Direct Commands (Local/CI)
+- `composer lint` - Run PHP CodeSniffer checks
+- `composer lint:fix` - Auto-fix code style issues
+- `composer analyze` - Run PHPStan static analysis
+- `composer test:syntax` - Check PHP syntax
+- `composer security` - Run security vulnerability checks
+- `composer quality` - Run all quality checks
+- `composer quality:fix` - Run fixable quality checks
 
 ### CI/CD Pipeline
 

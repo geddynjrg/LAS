@@ -5,7 +5,7 @@ import {
   type ConfirmationData,
   confirmationDataSchema,
 } from '@/app/apply/[id]/confirmations/confirmation-data-schema';
-import type { DeclarationsData } from '@/lib/data/application';
+import type { DeclarationsData } from '@/lib/types/application.types';
 import { Checkbox } from '@workspace/ui/components/checkbox';
 import { Container } from '@workspace/ui/components/container';
 import { Field, Form } from '@workspace/ui/components/form';

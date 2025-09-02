@@ -5,7 +5,7 @@ import {
   getCountyOptions,
 } from '@/lib/api/counties.service';
 import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
-import { getApplicationById } from '@/lib/data/application-db';
+import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
 import { getTranslations } from 'next-intl/server';

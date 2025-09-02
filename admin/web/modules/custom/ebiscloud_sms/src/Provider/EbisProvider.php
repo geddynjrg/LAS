@@ -97,14 +97,11 @@ class EbisProvider implements SmsProviderInterface {
     // Check if all required settings are available.
     $has_api_key = !empty($settings[self::CONFIG_API_KEY]);
 
-    // Service ID can be '0' which is a valid value.
-    $has_service_id = isset($settings[self::CONFIG_SERVICE_ID]) && $settings[self::CONFIG_SERVICE_ID] !== '';
-
     $has_shortcode = !empty($settings[self::CONFIG_SHORTCODE]);
 
     $has_api_url = !empty($settings[self::CONFIG_API_URL]);
 
-    return $has_api_key && $has_service_id && $has_shortcode && $has_api_url;
+    return $has_api_key && $has_shortcode && $has_api_url;
   }
 
   /**
@@ -127,7 +124,7 @@ class EbisProvider implements SmsProviderInterface {
 
       $service_id = $settings[self::CONFIG_SERVICE_ID] ?? '';
       $shortcode = $settings[self::CONFIG_SHORTCODE] ?? '';
-      $api_url = $settings[self::CONFIG_API_URL] ?? 'https://bulk.ebisclouderp.com/api/sms/sendsms';
+      $api_url = $settings[self::CONFIG_API_URL] ?? '';
 
       // Prepare request data.
       // Note: $to is already normalized by SMS service to E.164 (+254XXXXXXXXX)
@@ -136,12 +133,14 @@ class EbisProvider implements SmsProviderInterface {
 
       $request_data = [
         'api_key' => $api_key,
-        'service_id' => $service_id,
         'mobile' => $mobile,
         'response_type' => 'json',
         'shortcode' => $shortcode,
         'message' => $message,
       ];
+
+      // Add service_id - default to 0 if not set.
+      $request_data['service_id'] = $service_id !== '' ? (int) $service_id : 0;
 
       // Make the API request.
       $response = $this->httpClient->request('POST', $api_url, [
@@ -149,7 +148,6 @@ class EbisProvider implements SmsProviderInterface {
         'timeout' => 30,
         'headers' => [
           'User-Agent' => 'Drupal-SMS-Providers/1.0',
-          'Accept' => 'application/json',
           'Content-Type' => 'application/json',
         ],
       ]);
@@ -216,25 +214,34 @@ class EbisProvider implements SmsProviderInterface {
    *   The response body.
    *
    * @return array
-   *   Parsed response array with 'success', 'message_id', and 'error' keys.
+   *   Parsed response array with 'success', 'message_id', 'cost', and
+   *   'error' keys.
    */
   protected function parseApiResponse(int $status_code, string $response_body): array {
     // Try to decode JSON response.
     $json_data = json_decode($response_body, TRUE);
 
     if ($status_code === 200) {
-      if ($json_data && isset($json_data['status_code'])) {
+      if ($json_data && isset($json_data['status'])) {
         // Handle EBIS Cloud JSON response format.
-        if ($json_data['status_code'] === self::RESPONSE_SUCCESS) {
-          return [
+        // Success status code is 1000 according to documentation.
+        if ((string) $json_data['status'] === self::RESPONSE_SUCCESS) {
+          $result = [
             'success' => TRUE,
-            'message_id' => $json_data['message_id'] ?? uniqid('ebis_'),
+            'message_id' => $json_data['data']['message_id'] ?? uniqid('ebis_'),
           ];
+
+          // Include cost if available.
+          if (isset($json_data['data']['cost'])) {
+            $result['cost'] = $json_data['data']['cost'];
+          }
+
+          return $result;
         }
 
         return [
           'success' => FALSE,
-          'error' => $json_data['status_desc'] ?? 'Unknown error from API',
+          'error' => $json_data['message'] ?? 'Unknown error from API',
         ];
       }
 

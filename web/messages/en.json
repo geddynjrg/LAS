@@ -71,6 +71,7 @@
   },
   "Common": {
     "menu": "Menu",
+    "login": "Log in",
     "close": "Close",
     "closeMenu": "Close menu",
     "apply": "Apply",
@@ -289,9 +290,11 @@
       "title": "Status",
       "unsubmitted": "<bold>Unsubmitted:</bold> Not started",
       "draft": "<bold>Step 1:</bold> In progress",
+      "groupMemberConfirmation": "<bold>Step 1.5:</bold> Waiting for group member confirmations",
       "submitted": "<bold>Step 2:</bold> Submitted",
-      "inReview": "<bold>Step 3:</bold> Being reviewed",
-      "pending": "<bold>Step 4:</bold> Committee decision pending",
+      "constituencyReview": "<bold>Step 3:</bold> Constituency review",
+      "approvedByConstituency": "<bold>Step 4:</bold> Approved by constituency",
+      "inReview": "<bold>Step 5:</bold> Being reviewed",
       "approved": "<bold>Approved:</bold> Loan approved",
       "rejected": "<bold>Rejected:</bold> Application rejected",
       "disbursed": "<bold>Disbursed:</bold> Loan funds disbursed",
@@ -363,7 +366,6 @@
     "loan": {
       "loanConditions": "Loan conditions",
       "loanDetails": "Loan details",
-      "purposeOfTheLoan": "Purpose of the loan",
       "loanType": "Loan type",
       "loanAmount": "Loan amount",
       "repaymentPeriod": "Proposed repayment period in months",
@@ -379,7 +381,8 @@
       "bankBranch": "Group Bank branch",
       "accountNumber": "Bank Account number",
       "selectBank": "Select bank",
-      "invalidLoanAmount": "Invalid loan amount"
+      "invalidLoanAmount": "Invalid loan amount",
+      "creditHistoryDescription": "e.g., Table banking ledger, Discharge certificate, Letter of clearance from another lender"
     },
     "members": {
       "members": "Members",
@@ -430,7 +433,7 @@
         "edibleOils": "Edible oils",
         "constructionAndBuilding": "Construction and building materials",
         "dairyProducts": "Dairy and dairy products",
-        "tableBankingPractice": "How long has the group practiced table banking?",
+        "tableBankingPractice": "How many years has the group practiced table banking?",
         "monthlyShareContribution": "Total monthly share contribution",
         "totalLoanedOut": "Total amount loaned out",
         "totalRevolvingFund": "Total revolving fund",
@@ -450,7 +453,7 @@
         "businessInformation": "Business information",
         "natureOfBusiness": "Nature of business",
         "businessType": "Business type",
-        "operationPeriod": "How many years has been in operation?",
+        "operationPeriod": "How many years has the group been in operation?",
         "startup": "Start-up",
         "expansion": "Expansion",
         "enterYears": "Enter years"
@@ -468,7 +471,7 @@
         "enterAmount": "Enter amount",
         "goodsServicesCost": "Cost of goods/services per month",
         "rendForBusiness": "Rent for business",
-        "addCustomField": "Add custom field",
+        "addCustomField": "Add expenses",
         "expenseName": "Expense Name",
         "enterExpenseName": "Enter expense name",
         "amount": "Amount"

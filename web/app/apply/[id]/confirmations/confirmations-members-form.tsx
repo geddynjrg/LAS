@@ -10,7 +10,7 @@ import { ApplicationReviewGroupData } from '@/components/application-review-grou
 import { ApplicationReviewLoanConditions } from '@/components/application-review-loan-conditions';
 import { ApplicationReviewMembers } from '@/components/application-review-members';
 import { ApplicationReviewProposedBusiness } from '@/components/application-review-proposed-business';
-import type { ApplicationData, Member } from '@/lib/data/application';
+import type { ApplicationData, Member } from '@/lib/types/application.types';
 import { IconCheck } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
 import { Checkbox } from '@workspace/ui/components/checkbox';

@@ -833,12 +833,182 @@ function api_application_update_11014() {
  */
 function api_application_update_11015() {
   $module_handler = \Drupal::service('module_handler');
-  
+
   if (!$module_handler->moduleExists('symfony_mailer')) {
     $module_installer = \Drupal::service('module_installer');
     $module_installer->install(['symfony_mailer']);
     return t('Symfony Mailer module has been enabled.');
   }
-  
+
   return t('Symfony Mailer module was already enabled.');
+}
+
+/**
+ * Add limited_role field to position_of_member taxonomy and create standard position terms.
+ */
+function api_application_update_11016() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_storage_config_storage = $entity_type_manager->getStorage('field_storage_config');
+  $field_config_storage = $entity_type_manager->getStorage('field_config');
+
+  // Create field storage for limited_role field.
+  $field_storage = $field_storage_config_storage->load('taxonomy_term.field_limited_role');
+  if (!$field_storage) {
+    $field_storage = $field_storage_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'type' => 'boolean',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+      'settings' => [],
+    ]);
+    $field_storage->save();
+  }
+
+  // Create field instance for position_of_member vocabulary.
+  $field_config = $field_config_storage->load('taxonomy_term.position_of_member.field_limited_role');
+  if (!$field_config) {
+    $field_config = $field_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'bundle' => 'position_of_member',
+      'label' => 'Limited Role',
+      'description' => 'Check this if only one member can have this role per application (e.g., Chairman, Secretary, Treasurer)',
+      'required' => FALSE,
+      'translatable' => FALSE,
+      'default_value' => [['value' => 0]],
+      'settings' => [
+        'on_label' => 'Limited (only one allowed)',
+        'off_label' => 'Unlimited',
+      ],
+    ]);
+    $field_config->save();
+  }
+
+  // Clear field cache.
+  $entity_field_manager->clearCachedFieldDefinitions();
+
+  // Create standard position terms with appropriate limited_role flags.
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+
+  $positions = [
+    'Chairman' => TRUE,     // Limited - only one allowed
+    'Secretary' => TRUE,    // Limited - only one allowed
+    'Treasurer' => TRUE,    // Limited - only one allowed
+    'Member' => FALSE,      // Unlimited - multiple allowed
+    'Other' => FALSE,       // Unlimited - multiple allowed
+  ];
+
+  foreach ($positions as $position_name => $is_limited) {
+    // Check if term already exists.
+    $existing_terms = $term_storage->loadByProperties([
+      'vid' => 'position_of_member',
+      'name' => $position_name,
+    ]);
+
+    if (empty($existing_terms)) {
+      // Create new term.
+      $term = $term_storage->create([
+        'vid' => 'position_of_member',
+        'name' => $position_name,
+        'field_limited_role' => $is_limited,
+      ]);
+      $term->save();
+    } else {
+      // Update existing term with limited_role flag.
+      $term = reset($existing_terms);
+      if ($term->hasField('field_limited_role')) {
+        $term->set('field_limited_role', $is_limited);
+        $term->save();
+      }
+    }
+  }
+
+  return t('Limited role field has been added to position_of_member taxonomy and standard position terms have been created.');
+}
+
+/**
+ * Create limited_role field using Entity API (retry with corrected approach).
+ */
+function api_application_update_11017() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_storage_config_storage = $entity_type_manager->getStorage('field_storage_config');
+  $field_config_storage = $entity_type_manager->getStorage('field_config');
+
+  // Create field storage for limited_role field.
+  $field_storage = $field_storage_config_storage->load('taxonomy_term.field_limited_role');
+  if (!$field_storage) {
+    $field_storage = $field_storage_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'type' => 'boolean',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+      'settings' => [],
+    ]);
+    $field_storage->save();
+  }
+
+  // Create field instance for position_of_member vocabulary.
+  $field_config = $field_config_storage->load('taxonomy_term.position_of_member.field_limited_role');
+  if (!$field_config) {
+    $field_config = $field_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'bundle' => 'position_of_member',
+      'label' => 'Limited Role',
+      'description' => 'Check this if only one member can have this role per application (e.g., Chairman, Secretary, Treasurer)',
+      'required' => FALSE,
+      'translatable' => FALSE,
+      'default_value' => [['value' => 0]],
+      'settings' => [
+        'on_label' => 'Limited (only one allowed)',
+        'off_label' => 'Unlimited',
+      ],
+    ]);
+    $field_config->save();
+  }
+
+  // Clear field cache.
+  $entity_field_manager->clearCachedFieldDefinitions();
+
+  // Update standard position terms with appropriate limited_role flags.
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+
+  $positions = [
+    'Chairman' => TRUE,     // Limited - only one allowed
+    'Secretary' => TRUE,    // Limited - only one allowed
+    'Treasurer' => TRUE,    // Limited - only one allowed
+    'Member' => FALSE,      // Unlimited - multiple allowed
+    'Other' => FALSE,       // Unlimited - multiple allowed
+  ];
+
+  foreach ($positions as $position_name => $is_limited) {
+    // Check if term already exists.
+    $existing_terms = $term_storage->loadByProperties([
+      'vid' => 'position_of_member',
+      'name' => $position_name,
+    ]);
+
+    if (!empty($existing_terms)) {
+      // Update existing term with limited_role flag.
+      $term = reset($existing_terms);
+      if ($term->hasField('field_limited_role')) {
+        $term->set('field_limited_role', $is_limited);
+        $term->save();
+      }
+    } else {
+      // Create new term if it doesn't exist.
+      $term = $term_storage->create([
+        'vid' => 'position_of_member',
+        'name' => $position_name,
+        'field_limited_role' => $is_limited,
+      ]);
+      $term->save();
+    }
+  }
+
+  return t('Limited role field has been created and position terms have been updated with appropriate flags.');
 }

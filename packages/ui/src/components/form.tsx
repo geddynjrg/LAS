@@ -59,6 +59,9 @@ export interface FieldControlProps<TName, TValue = string> {
   defaultValue?: TValue extends boolean
     ? boolean | "on" | null | undefined
     : TValue;
+  'aria-describedby'?: string;
+  'aria-required'?: string;
+  'aria-invalid'?: string;
 }
 
 export interface FieldProps<
@@ -100,7 +103,8 @@ export const Field = <
   const t = useTranslations();
   const format = useFormatter();
 
-  const descId = description ? `${id}-message` : undefined;
+  const descId = description ? `${id}-description` : undefined;
+  const errorId = `${id}-error`;
 
   const errorMessage = getErrorMessage(name, state);
   const fieldValues = getFormValue(name, state);
@@ -110,6 +114,11 @@ export const Field = <
   const status = useFormStatus();
   const isSubmitting = status.pending;
 
+  // Build aria-describedby list
+  const ariaDescribedBy = [descId, errorMessage ? errorId : undefined]
+    .filter(Boolean)
+    .join(' ') || undefined;
+
   return (
     <FormPrimitive.Field
       name={name}
@@ -118,6 +127,7 @@ export const Field = <
     >
       {label && (
         <FormPrimitive.Label
+          id={`${id}-legend`}
           htmlFor={id}
           className={cn(
             labelVariants(),
@@ -137,6 +147,9 @@ export const Field = <
                 id,
                 name,
                 defaultValue: fieldValues,
+                'aria-describedby': ariaDescribedBy,
+                'aria-required': required ? 'true' : undefined,
+                'aria-invalid': errorMessage ? 'true' : 'false',
               })}
           </FormPrimitive.Control>
         ) : (
@@ -155,7 +168,10 @@ export const Field = <
 
       {errorMessage && (
         <FormPrimitive.Message
+          id={errorId}
           className={cn("text-destructive typo-body-small", className)}
+          role="alert"
+          aria-live="polite"
         >
           {typeof errorMessage === "string"
             ? errorMessage

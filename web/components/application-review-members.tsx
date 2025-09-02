@@ -1,19 +1,25 @@
 import { MemberStatusIndicator } from '@/components/member-status-indicator';
 // import { MemberSummary } from "@/components/member-summary";
-import type { MembersData } from '@/lib/data/application';
-import { IconPhone } from '@tabler/icons-react';
+import type { MembersData } from '@/lib/types/application.types';
+import { IconPencil, IconPhone } from '@tabler/icons-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@workspace/ui/components/accordion';
+import { Button } from '@workspace/ui/components/button';
 import { DataNode } from '@workspace/ui/components/data-node';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import type { FC } from 'react';
 
-export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
+export const ApplicationReviewMembers: FC<{
+  membersData?: MembersData;
+  applicationId?: string;
+}> = ({
   membersData,
+  applicationId,
 }) => {
   const t = useTranslations('ApplicationDetailsPage');
 
@@ -34,7 +40,17 @@ export const ApplicationReviewMembers: FC<{ membersData?: MembersData }> = ({
 
   return (
     <div className="mt-6 grid">
-      <h4 className="typo-h4 pb-2">{t('members.members')}</h4>
+      <div className="flex items-center justify-between pb-2">
+        <h4 className="typo-h4">{t('members.members')}</h4>
+        {applicationId && (
+          <Button variant="secondary" size="sm" asChild>
+            <Link href={`/apply/${applicationId}/members`}>
+              <IconPencil className="h-4 w-4 mr-1" />
+              Edit
+            </Link>
+          </Button>
+        )}
+      </div>
 
       {/* Member Statistics Summary */}
       {/* <MemberSummary

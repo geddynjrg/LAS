@@ -1,7 +1,7 @@
 'use server';
 
 import { type MembersConfirmationData } from '@/app/apply/[id]/confirmations/members-confirmation-schema';
-import { updateApplicationMembersConfirmationData } from '@/lib/data/application-db';
+import { updateApplicationMembersConfirmationData } from '@/lib/data/application';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { redirect } from 'next/navigation';
 

@@ -4,7 +4,13 @@ import {
   type MembersData,
   membersDataSchema,
 } from '@/app/apply/[id]/members/members-data-schema';
-import { updateApplicationMembersData } from '@/lib/data/application-db';
+import {
+  validateMembersAgainstTaxonomy,
+  getMemberValidationErrorMessages,
+} from '@/app/apply/[id]/members/members-validation';
+import { updateApplicationMembersData } from '@/lib/data/application';
+import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
+import { capitalizeWords } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { redirect } from 'next/navigation';
 
@@ -50,10 +56,60 @@ export const membersDataAction: FormAction<MembersData> = async (
     throw new Error('No application ID provided');
   }
 
+  /* Additional validation against taxonomy constraints */
+  try {
+    const memberTypeOptions = await getFormFieldOptions('memberType');
+
+    if (!memberTypeOptions || memberTypeOptions.length === 0) {
+      return {
+        success: false,
+        errors: {
+          members: ['Member position types are currently unavailable. Please try again later.'],
+        },
+        values: {
+          natureOfGroup: data.natureOfGroup,
+          members: data.members,
+        },
+      };
+    }
+
+    const membersValidation = validateMembersAgainstTaxonomy(data.members, memberTypeOptions);
+
+    if (!membersValidation.isValid) {
+      return {
+        success: false,
+        errors: {
+          members: getMemberValidationErrorMessages(membersValidation),
+        },
+        values: {
+          natureOfGroup: data.natureOfGroup,
+          members: data.members,
+        },
+      };
+    }
+  } catch (taxonomyError) {
+    console.error('Failed to validate members against taxonomy:', taxonomyError);
+    return {
+      success: false,
+      errors: {
+        members: ['Unable to validate member positions. Please try again later.'],
+      },
+      values: {
+        natureOfGroup: data.natureOfGroup,
+        members: data.members,
+      },
+    };
+  }
+
   /* Submit validated data */
+  const capitalizedMembers = data.members.map(member => ({
+    ...member,
+    fullname: member.fullname ? capitalizeWords(member.fullname) : member.fullname,
+  }));
+
   await updateApplicationMembersData(id, {
     natureOfTheGroup: data.natureOfGroup,
-    members: data.members,
+    members: capitalizedMembers,
   });
 
   redirect(redirectTo);

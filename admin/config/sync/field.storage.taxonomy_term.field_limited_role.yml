@@ -1,0 +1,18 @@
+uuid: 0170d0b0-8752-49ec-9359-7b8d78ca7f51
+langcode: en
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_limited_role
+field_name: field_limited_role
+entity_type: taxonomy_term
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: false
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

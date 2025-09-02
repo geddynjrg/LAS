@@ -5,6 +5,7 @@
  * Primary module hooks for Uwezo Groups module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -25,26 +26,26 @@ function uwezo_groups_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_form_alter().
  */
-function uwezo_groups_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  // Debug: Log all group-related form IDs to help identify the correct one
+function uwezo_groups_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Debug: Log all group-related form IDs to help identify the correct one.
   if (strpos($form_id, 'group') !== FALSE) {
     \Drupal::logger('uwezo_groups')->info('Form ID: @form_id', ['@form_id' => $form_id]);
   }
-  
-  // Handle group entity forms
+
+  // Handle group entity forms.
   $group_entity_form_ids = [
     'group_review_add_form',
     'group_review_edit_form',
   ];
-  
-  // Handle group membership forms
+
+  // Handle group membership forms.
   $group_membership_form_ids = [
     'group_relationship_review-group_membership_add_form',
     'group_relationship_review-group_membership_edit_form',
   ];
-  
+
   if (in_array($form_id, $group_entity_form_ids)) {
-    // Hide revision information fields
+    // Hide revision information fields.
     if (isset($form['revision_information'])) {
       $form['revision_information']['#access'] = FALSE;
     }
@@ -54,11 +55,11 @@ function uwezo_groups_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $f
     if (isset($form['revision'])) {
       $form['revision']['#access'] = FALSE;
     }
-    
-    // Change "Published" label to "Enabled"
+
+    // Change "Published" label to "Enabled".
     if (isset($form['status'])) {
       $form['status']['#title'] = t('Enabled');
-      // Also check for nested title
+      // Also check for nested title.
       if (isset($form['status']['widget'])) {
         $form['status']['widget']['#title'] = t('Enabled');
       }
@@ -66,25 +67,25 @@ function uwezo_groups_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $f
         $form['status']['widget']['value']['#title'] = t('Enabled');
       }
     }
-    
-    // Disable "generate automatic url alias" by default
+
+    // Disable "generate automatic url alias" by default.
     if (isset($form['path'])) {
       if (isset($form['path']['widget'][0]['pathauto'])) {
         $form['path']['widget'][0]['pathauto']['#default_value'] = FALSE;
       }
-      // Alternative path structure
+      // Alternative path structure.
       if (isset($form['path']['pathauto'])) {
         $form['path']['pathauto']['#default_value'] = FALSE;
       }
     }
   }
-  
-  // Handle group membership forms
+
+  // Handle group membership forms.
   if (in_array($form_id, $group_membership_form_ids)) {
-    // Hide the entire URL alias section and disable automatic generation
+    // Hide the entire URL alias section and disable automatic generation.
     if (isset($form['path'])) {
       $form['path']['#access'] = FALSE;
-      // Also disable pathauto to prevent automatic URL generation
+      // Also disable pathauto to prevent automatic URL generation.
       if (isset($form['path']['widget'][0]['pathauto'])) {
         $form['path']['widget'][0]['pathauto']['#default_value'] = FALSE;
       }
@@ -94,4 +95,3 @@ function uwezo_groups_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $f
     }
   }
 }
-

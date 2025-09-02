@@ -1,13 +1,13 @@
 # Custom Applications admin section tabs
-api_application.admin_overview:
-  route_name: api_application.admin_overview
-  base_route: api_application.admin_overview
+entity.application.collection:
+  route_name: entity.application.collection
+  base_route: entity.application.collection
   title: 'Overview'
   weight: 0
 
 api_application.admin_settings:
   route_name: api_application.admin_settings
-  base_route: api_application.admin_overview
+  base_route: entity.application.collection
   title: 'Settings'
   weight: 10
 

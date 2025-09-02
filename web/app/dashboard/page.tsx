@@ -6,7 +6,7 @@ import {
   type GeneralDetails,
   type MembersData,
   type Status,
-} from '@/lib/data/application';
+} from '@/lib/types/application.types';
 import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import {
   IconChevronRight,
@@ -61,18 +61,6 @@ const STATUS_CONFIGS: Record<Status, StatusConfig> = {
       key: 'processTimeline.pending',
     },
   },
-  PENDING: {
-    showStepDescription: true,
-    showProcessTimeline: true,
-    stepDescription: {
-      key: 'stepDescription.pending',
-      hasReadMore: true,
-      readMoreKey: 'stepDescription.readMorePending',
-    },
-    processTimeline: {
-      key: 'processTimeline.pending',
-    },
-  },
   IN_REVIEW: {
     showStepDescription: true,
     showProcessTimeline: true,
@@ -105,6 +93,36 @@ const STATUS_CONFIGS: Record<Status, StatusConfig> = {
     showProcessTimeline: false,
     stepDescription: {
       key: 'stepDescription.disbursed',
+    },
+  },
+  GROUP_MEMBER_CONFIRMATION: {
+    showStepDescription: true,
+    showProcessTimeline: true,
+    stepDescription: {
+      key: 'stepDescription.memberConfirmation',
+    },
+    processTimeline: {
+      key: 'processTimeline.memberConfirmation',
+    },
+  },
+  CONSTITUENCY_REVIEW: {
+    showStepDescription: true,
+    showProcessTimeline: true,
+    stepDescription: {
+      key: 'stepDescription.constituencyReview',
+    },
+    processTimeline: {
+      key: 'processTimeline.constituencyReview',
+    },
+  },
+  APPROVED_BY_CONSTITUENCY: {
+    showStepDescription: true,
+    showProcessTimeline: true,
+    stepDescription: {
+      key: 'stepDescription.approvedByConstituency',
+    },
+    processTimeline: {
+      key: 'processTimeline.approvedByConstituency',
     },
   },
   CLOSED: {
@@ -202,7 +220,6 @@ export default async function Page() {
       <div className="flex items-center gap-4 pb-6 pt-8">
         <h2 className="typo-h2">{t('myApplications')}</h2>
 
-        {/* TODO: when data will come from API then replace this number */}
         <span className="typo-h6 text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full bg-neutral-500">
           {data.length}
         </span>

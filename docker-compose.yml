@@ -67,6 +67,13 @@ services:
       # EbisCloud SMS configuration
       EBISCLOUD_SMS_API_KEY: ${EBISCLOUD_SMS_API_KEY}
       EBISCLOUD_SMS_API_URL: ${EBISCLOUD_SMS_API_URL}
+      EBISCLOUD_SMS_SHORTCODE: ${EBISCLOUD_SMS_SHORTCODE}
+      EBISCLOUD_SMS_SERVICE_ID: ${EBISCLOUD_SMS_SERVICE_ID}
+      # SMTP configuration
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     depends_on:
       db:
         condition: service_healthy

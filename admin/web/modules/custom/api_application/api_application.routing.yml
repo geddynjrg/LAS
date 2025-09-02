@@ -1,13 +1,3 @@
-# Custom Applications admin overview route
-api_application.admin_overview:
-  path: '/admin/applications'
-  defaults:
-    _entity_list: 'application'
-    _title: 'Applications'
-  requirements:
-    _permission: 'administer applications'
-  options:
-    _admin_route: TRUE
 
 # Custom Applications admin settings route
 api_application.admin_settings:
@@ -92,7 +82,7 @@ api_application.send_member_confirmation_sms:
 
 # Download PDF route
 api_application.download_pdf:
-  path: '/admin/content/applications/{application}/download-pdf'
+  path: '/admin/applications/{application}/download-pdf'
   defaults:
     _controller: '\Drupal\api_application\Controller\ApplicationController::downloadPdf'
     _title: 'Download Application PDF'
@@ -108,7 +98,7 @@ api_application.download_pdf:
 
 # Send email form route
 api_application.send_email_form:
-  path: '/admin/content/applications/{application}/send-email'
+  path: '/admin/applications/{application}/send-email'
   defaults:
     _form: '\Drupal\api_application\Form\SendEmailForm'
     _title: 'Send Application via Email'

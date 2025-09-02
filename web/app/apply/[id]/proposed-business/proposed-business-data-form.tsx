@@ -6,15 +6,13 @@ import {
   proposedBusinessFormSchema,
 } from '@/app/apply/[id]/proposed-business/proposed-business-data-schema';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
-import { ProposedBusinessData as ApplicationProposedBusinessData } from '@/lib/data/application';
+import { ProposedBusinessData as ApplicationProposedBusinessData } from '@/lib/types/application.types';
 import { parseNumber } from '@/lib/util';
+import { capitalizeWords } from '@/lib/utils/string';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
-import {
-  ButtonGroup,
-  ButtonGroupItem,
-} from '@workspace/ui/components/button-group';
 import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
+import { RadioGroup } from '@workspace/ui/components/radio-group';
 import { Container } from '@workspace/ui/components/container';
 import { Currency } from '@workspace/ui/components/currency';
 import { Field, Form } from '@workspace/ui/components/form';
@@ -23,7 +21,7 @@ import { Underline } from '@workspace/ui/components/underline';
 import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { type FC, useEffect, useState } from 'react';
+import { type FC, useEffect, useRef, useState } from 'react';
 
 export interface ProposedBusinessDataProps {
   id: string;
@@ -78,6 +76,8 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
     { name: string; amount: number }[]
   >(applicationBusinessData?.customExpenses || []);
 
+  const expenseNameInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const [surplusDeficit, setSurplusDeficit] = useState(
     (averageIncome ?? 0) -
       (costOfGoods ?? 0) -
@@ -109,6 +109,17 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
     customExpenses,
   ]);
 
+  // Auto-focus on newly added expense name field
+  useEffect(() => {
+    const lastIndex = customExpenses.length - 1;
+    if (lastIndex >= 0 && expenseNameInputRefs.current[lastIndex]) {
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        expenseNameInputRefs.current[lastIndex]?.focus();
+      });
+    }
+  }, [customExpenses.length]);
+
   const prevUrl = `/apply/${id}/loan-conditions`;
   const nextUrl = `/apply/${id}/confirmations`;
 
@@ -133,18 +144,23 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             )}
             required
             control={(props) => (
-              <ButtonGroup {...props} type="single" className="flex flex-row">
-                <ButtonGroupItem value="Start-up" className="grow px-1">
-                  {t(
-                    'ApplicationDetailsPage.proposedBusiness.businessInfo.startup',
-                  )}
-                </ButtonGroupItem>
-                <ButtonGroupItem value="Expansion" className="grow px-1">
-                  {t(
-                    'ApplicationDetailsPage.proposedBusiness.businessInfo.expansion',
-                  )}
-                </ButtonGroupItem>
-              </ButtonGroup>
+              <RadioGroup
+                {...props}
+                options={[
+                  {
+                    label: t(
+                      'ApplicationDetailsPage.proposedBusiness.businessInfo.startup',
+                    ),
+                    value: "Start-up",
+                  },
+                  {
+                    label: t(
+                      'ApplicationDetailsPage.proposedBusiness.businessInfo.expansion',
+                    ),
+                    value: "Expansion",
+                  },
+                ]}
+              />
             )}
           />
 
@@ -331,10 +347,14 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                     control={(props) => (
                       <Input
                         {...props}
+                        ref={(el) => {
+                          expenseNameInputRefs.current[index] = el;
+                        }}
                         value={expense.name}
                         onValueChange={(value) => {
+                          const capitalizedValue = capitalizeWords(value);
                           const updatedExpenses = [...customExpenses];
-                          updatedExpenses[index] = { ...expense, name: value };
+                          updatedExpenses[index] = { ...expense, name: capitalizedValue };
                           setCustomExpenses(updatedExpenses);
                         }}
                         placeholder={t(

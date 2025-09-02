@@ -3,14 +3,14 @@ email:
   providers:
     default_email:
       enabled: true
-      from_name: Uwezo
       from_email: uwezo@adm.ee
+      from_name: Uwezo
       reply_to: uwezo@adm.ee
       use_html: true
     application_admin_email:
       enabled: true
-      from_name: 'Uwezo Admin'
       from_email: admin@uwezo.com
+      from_name: 'Uwezo Admin'
       reply_to: admin@uwezo.com
       use_html: true
   default_template: auto

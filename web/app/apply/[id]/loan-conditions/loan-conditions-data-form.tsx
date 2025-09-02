@@ -6,11 +6,7 @@ import {
   loanConditionsDataSchema,
 } from '@/app/apply/[id]/loan-conditions/loan-conditions-schema';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
-import { LoanConditionsData as ApplicationLoanConditionsData } from '@/lib/data/application';
-import {
-  ButtonGroup,
-  ButtonGroupItem,
-} from '@workspace/ui/components/button-group';
+import { LoanConditionsData as ApplicationLoanConditionsData } from '@/lib/types/application.types';
 import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
 import { Container } from '@workspace/ui/components/container';
 import { Field, Form } from '@workspace/ui/components/form';
@@ -29,7 +25,6 @@ export interface LoanConditionsDataProps {
   loanConditionsData?: ApplicationLoanConditionsData;
   taxonomyOptions?: {
     bankName: TaxonomyOption[];
-    purposeOfLoan: TaxonomyOption[];
     loanType: TaxonomyOption[];
   };
 }
@@ -52,7 +47,6 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
       bankNameOther: loanConditionsData?.bankNameOther,
       loanAmount: loanConditionsData?.loanAmount,
       loanType: loanConditionsData?.loanType,
-      purposeOfLoan: loanConditionsData?.purposeOfLoan,
       repaymentPeriod: loanConditionsData?.repaymentPeriod,
     },
   );
@@ -98,72 +92,42 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           title={t('ApplicationDetailsPage.loan.loanDetails')}
           className="space-y-4"
         >
-          <Field
-            state={state}
-            name="purposeOfLoan"
-            label={t('ApplicationDetailsPage.loan.purposeOfTheLoan')}
-            required
-            control={(props) => (
-              <CheckboxGroup
-                {...props}
-                options={
-                  taxonomyOptions?.purposeOfLoan || [
-                    {
-                      label: t(
-                        'ApplicationDetailsPage.groupData.groupBackground.tableBanking',
-                      ),
-                      value: 'Table banking',
-                    },
-                    {
-                      label: t(
-                        'ApplicationDetailsPage.groupData.groupBackground.commonGroupProject',
-                      ),
-                      value: 'Common group project',
-                    },
-                  ]
-                }
-              />
-            )}
-          />
-
-          <Field
+<Field
             state={state}
             name="loanType"
             label={t('ApplicationDetailsPage.loan.loanType')}
             required
             control={(props) => (
-              <ButtonGroup
+              <RadioGroup
                 {...props}
-                type="single"
-                onValueChange={(val: string) =>
+                onValueChange={(val) =>
                   setSelectedType(val as keyof typeof loanTypes)
                 }
-              >
-                <ButtonGroupItem value={loanTypes.Wezesha.title}>
-                  {loanTypes.Wezesha.title}
-                </ButtonGroupItem>
-                <ButtonGroupItem value={loanTypes.Endeleza.title}>
-                  {loanTypes.Endeleza.title}
-                </ButtonGroupItem>
-              </ButtonGroup>
+                options={[
+                  {
+                    label: loanTypes.Wezesha.title,
+                    value: loanTypes.Wezesha.title,
+                    description: (
+                      <div>
+                        <div>{loanTypes.Wezesha.content.title}</div>
+                        <div className="font-bold">{loanTypes.Wezesha.content.underText}</div>
+                      </div>
+                    )
+                  },
+                  {
+                    label: loanTypes.Endeleza.title,
+                    value: loanTypes.Endeleza.title,
+                    description: (
+                      <div>
+                        <div>{loanTypes.Endeleza.content.title}</div>
+                        <div className="font-bold">{loanTypes.Endeleza.content.underText}</div>
+                      </div>
+                    )
+                  },
+                ]}
+              />
             )}
           />
-
-          {selectedType === loanTypes.Wezesha.title && (
-            <Card variant="blue" radius="sm">
-              <p>{loanTypes.Wezesha.content.title}</p>
-              <br />
-              <p className="font-bold">{loanTypes.Wezesha.content.underText}</p>
-            </Card>
-          )}
-
-          {selectedType === loanTypes.Endeleza.title && (
-            <Card variant="blue" radius="sm">
-              <p>{loanTypes.Endeleza.content.title}</p>
-              <br />
-              <p className="font-bold">{loanTypes.Wezesha.content.underText}</p>
-            </Card>
-          )}
 
           <Field
             state={state}
@@ -194,13 +158,13 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             control={(props) => (
               <Slider
                 startDecorator={t('Common.monthCount', { count: 1 })}
-                endDecorator={t('Common.monthCount', { count: 12 })}
+                endDecorator={t('Common.monthCount', { count: 24 })}
                 thumbLabel={(value) =>
                   value ? t('Common.monthCount', { count: value }) : undefined
                 }
                 {...props}
                 min={1}
-                max={12}
+                max={24}
               />
             )}
           />

@@ -5,7 +5,7 @@ import {
   type GroupMembersConfirmationData,
   groupMembersConfirmationDataSchema,
 } from '@/app/apply/[id]/confirmations/group-members-confirmation-schema';
-import type { Member } from '@/lib/data/application';
+import type { Member } from '@/lib/types/application.types';
 import { IconCheck } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
 import { Checkbox } from '@workspace/ui/components/checkbox';

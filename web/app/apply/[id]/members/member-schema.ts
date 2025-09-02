@@ -8,11 +8,7 @@ export const memberSchema = z.object({
   fullname: z.string().nonempty(),
   nationalIdCode: z.string().nonempty(),
   gender: z.union([z.literal('Male'), z.literal('Female'), z.literal('Other')]),
-  type: z.union([
-    z.literal('Chairman'),
-    z.literal('Secretary'),
-    z.literal('Member'),
-  ]),
+  type: z.string().nonempty(),
   phoneNumber: z.string().nonempty(),
   photoOfId: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   disability: z.union([z.literal('on'), z.null()]),

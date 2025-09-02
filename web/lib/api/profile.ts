@@ -1,5 +1,6 @@
 import { UserProfileResponseSchema } from '@/lib/api/schema/response/auth-response.schema';
 import { api, validate } from '@/lib/api/utils';
+import { AuthenticationError } from '@/lib/errors/auth-error';
 import { invalidateSession } from '@/lib/session';
 
 export async function getProfile() {
@@ -9,7 +10,7 @@ export async function getProfile() {
     if (res.response.status === 401) {
       // Authentication failed, clean up broken tokens
       await invalidateSession();
-      throw new Error('Authentication required');
+      throw new AuthenticationError('Authentication required');
     }
     if (res.response.status === 404) {
       // Return a minimal profile structure for users without profiles

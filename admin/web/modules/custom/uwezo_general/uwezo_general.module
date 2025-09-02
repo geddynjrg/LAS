@@ -5,6 +5,7 @@
  * Contains hook implementations for the uwezo_general module.
  */
 
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\locale\SourceString;
 use Drupal\locale\StringStorageException;
 use Drupal\Core\Url;
@@ -58,7 +59,7 @@ function uwezo_general_add_translation(
 /**
  * Implements hook_entity_base_field_info_alter().
  */
-function uwezo_general_entity_base_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+function uwezo_general_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
   if ($entity_type->id() == 'user') {
     // Make the email field optional for user accounts.
     if (isset($fields['mail'])) {

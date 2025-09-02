@@ -1,4 +1,4 @@
-import type { MembersData } from '@/lib/data/application';
+import type { MembersData } from '@/lib/types/application.types';
 import { IconUserCheck, IconUsers } from '@tabler/icons-react';
 import { Badge } from '@workspace/ui/components/badge';
 import { Card } from '@workspace/ui/components/card';

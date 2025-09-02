@@ -90,7 +90,6 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
     );
   }
 
-
   /**
    * Responds to GET requests.
    *
@@ -147,14 +146,6 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
         'entity_type' => 'application',
         'cardinality' => 'multiple',
       ],
-      'purpose_of_the_loan' => [
-        'label' => 'Purpose of the Loan',
-        'description' => 'Purposes for which loans can be requested',
-        'field_name' => 'purpose_of_loan',
-        'entity_type' => 'application',
-        'cardinality' => 'single',
-        'auto_create' => TRUE,
-      ],
       'loan_types' => [
         'label' => 'Loan Types',
         'description' => 'Types of loans available',
@@ -193,7 +184,7 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
     $data = [];
 
     foreach ($vocabularies as $vocabulary_id => $vocabulary_info) {
-      // Handle all vocabularies normally
+      // Handle all vocabularies normally.
       $vocabulary = $vocabulary_storage->load($vocabulary_id);
 
       if (!$vocabulary) {
@@ -230,7 +221,7 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
           $term = $term->getTranslation($current_language->getId());
         }
 
-        $terms_data[] = [
+        $term_data = [
           'tid' => (int) $term->id(),
           'uuid' => $term->uuid(),
           'name' => $term->getName(),
@@ -247,6 +238,13 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
             'name' => $term->language()->getName(),
           ],
         ];
+
+        // Add limited_role field for position_of_member vocabulary.
+        if ($vocabulary_id === 'position_of_member' && $term->hasField('field_limited_role')) {
+          $term_data['limited_role'] = (bool) $term->get('field_limited_role')->value;
+        }
+
+        $terms_data[] = $term_data;
       }
 
       $data[$vocabulary_id] = [

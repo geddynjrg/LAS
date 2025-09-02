@@ -45,7 +45,7 @@ export const AccordionTrigger: FC<AccordionTriggerProps> = ({
         "active:bg-neutral-300", // active
         "data-[state=open]:bg-accordion", // open
         "data-disabled:text-neutral-400", // disabled
-        "focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-offset-2 data-[state=closed]:focus-visible:ring-2", // focus
+        "focus-visible:outline-none focus-visible:bg-pink-50 focus-visible:border-l-4 focus-visible:border-pink-500 focus-visible:text-pink-900", // enhanced focus
         className,
       )}
     >

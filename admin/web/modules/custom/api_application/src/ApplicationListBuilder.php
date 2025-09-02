@@ -284,12 +284,12 @@ class ApplicationListBuilder extends EntityListBuilder {
     if (!$account->hasPermission('administer loan applications')) {
       $group_manager = \Drupal::service('uwezo_groups.group_manager');
       $accessible_constituency_ids = $group_manager->getAccessibleConstituencyIds($account);
-      
+
       if (empty($accessible_constituency_ids)) {
         // If user has no accessible constituencies, return empty result.
         return [];
       }
-      
+
       // Filter by accessible constituencies.
       $query->condition('constituency', $accessible_constituency_ids, 'IN');
     }

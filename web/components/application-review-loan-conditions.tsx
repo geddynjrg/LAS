@@ -5,18 +5,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@workspace/ui/components/accordion';
+import { Button } from '@workspace/ui/components/button';
 import { Currency } from '@workspace/ui/components/currency';
 import { DataNode } from '@workspace/ui/components/data-node';
+import { IconPencil } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import type { FC } from 'react';
 
 interface ApplicationReviewLoanConditionProps {
   loanConditionsData?: LoanConditionsData;
+  applicationId?: string;
 }
 
 export const ApplicationReviewLoanConditions: FC<
   ApplicationReviewLoanConditionProps
-> = ({ loanConditionsData }) => {
+> = ({ loanConditionsData, applicationId }) => {
   const t = useTranslations('ApplicationDetailsPage');
 
   if (!loanConditionsData) {
@@ -25,23 +29,22 @@ export const ApplicationReviewLoanConditions: FC<
 
   return (
     <div className="mt-6 grid">
-      <h4 className="typo-h4 pb-2">{t('loan.loanConditions')}</h4>
+      <div className="flex items-center justify-between pb-2">
+        <h4 className="typo-h4">{t('loan.loanConditions')}</h4>
+        {applicationId && (
+          <Button variant="secondary" size="sm" asChild>
+            <Link href={`/apply/${applicationId}/loan-conditions`}>
+              <IconPencil className="h-4 w-4 mr-1" />
+              Edit
+            </Link>
+          </Button>
+        )}
+      </div>
       <Accordion type="multiple" className="space-y-2">
         <AccordionItem value="loan-details">
           <AccordionTrigger>{t('loan.loanDetails')}</AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-4">
-              <DataNode label={t('loan.purposeOfTheLoan')}>
-                {Array.isArray(loanConditionsData.purposeOfLoan) ? (
-                  <div className="space-y-1">
-                    {loanConditionsData.purposeOfLoan.map((purpose, index) => (
-                      <div key={index}>{purpose}</div>
-                    ))}
-                  </div>
-                ) : (
-                  loanConditionsData.purposeOfLoan
-                )}
-              </DataNode>
               <DataNode label={t('loan.loanType')}>
                 {loanConditionsData.loanType}
               </DataNode>

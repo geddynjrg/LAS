@@ -3,7 +3,7 @@ import { ApplicationReviewLoanConditions } from '@/components/application-review
 import { ApplicationReviewMembers } from '@/components/application-review-members';
 import { ApplicationReviewProposedBusiness } from '@/components/application-review-proposed-business';
 import { ApplicationStatus } from '@/components/application-status';
-import { getApplicationById } from '@/lib/data/application-db';
+import { getApplicationById } from '@/lib/data/application';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
 import { Container } from '@workspace/ui/components/container';

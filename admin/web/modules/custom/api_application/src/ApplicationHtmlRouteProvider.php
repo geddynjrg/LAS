@@ -21,40 +21,18 @@ class ApplicationHtmlRouteProvider extends AdminHtmlRouteProvider {
     $collection = parent::getRoutes($entity_type);
 
     $entity_type_id = $entity_type->id();
-    
+
     // Override the collection route to allow viewing with listing permission.
     if ($collection_route = $collection->get("entity.{$entity_type_id}.collection")) {
-      // Change the permission requirement to allow admin, view all, or just listing access.
+      // Change the permission requirement to allow admin, view all, or listing.
       $collection_route->setRequirement('_permission', 'administer loan applications+view loan applications+access loan applications listing');
     }
 
-    // @phpcs:disable
-    // @todo Implement multi-step forms
-    // Add custom step routes for the multi-step form
-    // if ($add_form_route = $collection->get("entity.{$entity_type_id}.add_form")) {
-    //   // Override the default add form to start with step 1
-    //   $add_form_route->setDefault('_entity_form', "{$entity_type_id}.step1");
-    //
-    //   // Add individual step routes
-    //   for ($step = 1; $step <= 4; $step++) {
-    //     $route = new Route('/application/add/step' . $step);
-    //     $route
-    //       ->setDefaults([
-    //         '_entity_form' => "{$entity_type_id}.step{$step}",
-    //         '_title' => 'Create Application - Step ' . $step,
-    //       ])
-    //       ->setRequirement('_entity_create_access', $entity_type_id)
-    //       ->setOption('parameters', [
-    //         $entity_type_id => ['type' => 'entity:' . $entity_type_id],
-    //       ]);
-    //     $collection->add("entity.{$entity_type_id}.add_form.step{$step}", $route);
-    //   }
-    // }
-    // @phpcs:enable
-
+    // @todo Implement multi-step forms.
     // Add settings route.
     if ($settings_route = $this->getSettingsFormRoute($entity_type)) {
-      $collection->add("entity.{$entity_type_id}.settings", $settings_route);
+      $route_name = "entity.{$entity_type_id}.settings";
+      $collection->add($route_name, $settings_route);
     }
 
     return $collection;

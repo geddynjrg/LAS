@@ -59,12 +59,11 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "add-form" = "/application/add",
  *     "edit-form" = "/application/{application}/edit",
  *     "delete-form" = "/application/{application}/delete",
- *     "collection" = "/admin/content/applications",
+ *     "collection" = "/admin/applications",
  *     "revision" = "/application/{application}/revisions/{application_revision}/view",
  *     "revision-revert-form" = "/application/{application}/revisions/{application_revision}/revert",
  *     "revision-delete-form" = "/application/{application}/revisions/{application_revision}/delete",
  *   },
- *   field_ui_base_route = "entity.application.settings",
  *   show_revision_ui = TRUE,
  *   revision_metadata_keys = {
  *     "revision_user" = "revision_uid",
@@ -94,8 +93,10 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDefaultValue('draft')
       ->setSetting('allowed_values', [
         'draft' => t('Draft'),
+        'group_member_confirmation' => t('Group member confirmation'),
         'submitted' => t('Submitted'),
-        'unassigned' => t('Unassigned'),
+        'constituency_review' => t('Constituency review'),
+        'approved_by_constituency' => t('Approved by constituency'),
         'under_review' => t('Under Review'),
         'approved' => t('Approved'),
         'rejected' => t('Rejected'),
@@ -374,8 +375,8 @@ class Application extends ContentEntityBase implements ApplicationInterface {
 
     // Table banking fields (conditionally shown)
     $fields['table_banking_duration'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('How long has the group practiced table banking?'))
-      ->setDescription(t('Duration of table banking practice.'))
+      ->setLabel(t('How many years has the group practiced table banking?'))
+      ->setDescription(t('Number of years the group has practiced table banking.'))
       ->setRevisionable(TRUE)
       ->setSettings([
         'max_length' => 255,
@@ -1188,9 +1189,10 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       $original_status = $this->original->getStatus();
       $new_status = $this->getStatus();
 
-      // Check if transitioning to submitted and no members require
-      // confirmation.
-      if ($original_status !== 'submitted' && $new_status === 'submitted') {
+      // Check if transitioning to group_member_confirmation and no members
+      // require confirmation.
+      if ($original_status !== 'group_member_confirmation' &&
+          $new_status === 'group_member_confirmation') {
         $this->checkIfImmediateTransitionNeeded();
       }
     }
@@ -1436,8 +1438,8 @@ class Application extends ContentEntityBase implements ApplicationInterface {
    * Check if immediate status transition is required.
    *
    * If no group members require SMS confirmation, the application should
-   * immediately transition from 'submitted' to 'unassigned' since the
-   * SMS confirmation flow won't be triggered.
+   * immediately transition from 'group_member_confirmation' to 'submitted'
+   * since the SMS confirmation flow won't be triggered.
    */
   protected function checkIfImmediateTransitionNeeded() {
     try {
@@ -1453,7 +1455,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       }
 
       // If no members require confirmation, immediately transition to
-      // unassigned.
+      // submitted.
       if (!$requires_confirmation) {
         // Use a shutdown function to avoid recursive saves and allow
         // notifications.
@@ -1465,13 +1467,13 @@ class Application extends ContentEntityBase implements ApplicationInterface {
             $storage = \Drupal::entityTypeManager()->getStorage('application');
             $application = $storage->load($application_id);
 
-            if ($application && $application->getStatus() === 'submitted') {
-              $application->setStatus('unassigned');
+            if ($application && $application->getStatus() === 'group_member_confirmation') {
+              $application->setStatus('submitted');
               $application->save();
             }
           }
           catch (\Exception $e) {
-            \Drupal::logger('api_application')->error('Failed to auto-transition application @id to unassigned: @message', [
+            \Drupal::logger('api_application')->error('Failed to auto-transition application @id to submitted: @message', [
               '@id' => $app_id_display,
               '@message' => $e->getMessage(),
             ]);
@@ -1485,6 +1487,48 @@ class Application extends ContentEntityBase implements ApplicationInterface {
         '@message' => $e->getMessage(),
       ]);
     }
+  }
+
+  /**
+   * Get status options array.
+   *
+   * @return array
+   *   Array of status options keyed by machine name.
+   */
+  public static function getStatusOptions(): array {
+    return [
+      'draft' => t('Draft'),
+      'group_member_confirmation' => t('Group member confirmation'),
+      'submitted' => t('Submitted'),
+      'constituency_review' => t('Constituency review'),
+      'approved_by_constituency' => t('Approved by constituency'),
+      'under_review' => t('Under Review'),
+      'approved' => t('Approved'),
+      'rejected' => t('Rejected'),
+      'disbursed' => t('Disbursed'),
+      'closed' => t('Closed'),
+    ];
+  }
+
+  /**
+   * Get allowed status transitions.
+   *
+   * @return array
+   *   Array of allowed transitions keyed by current status.
+   */
+  public static function getAllowedTransitions(): array {
+    return [
+      'draft' => ['group_member_confirmation'],
+      'group_member_confirmation' => ['submitted'],
+      'submitted' => ['constituency_review', 'rejected'],
+      'constituency_review' => ['approved_by_constituency', 'rejected'],
+      'approved_by_constituency' => ['under_review'],
+      'under_review' => ['approved', 'rejected'],
+      'approved' => ['disbursed'],
+      'rejected' => ['constituency_review', 'under_review'],
+      'disbursed' => ['closed'],
+      'closed' => [],
+    ];
   }
 
 }

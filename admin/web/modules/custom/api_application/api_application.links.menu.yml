@@ -1,7 +1,7 @@
 # Custom Applications section (separate from default entity.application.collection)
 api_application.admin:
   title: 'Applications'
-  route_name: api_application.admin_overview
+  route_name: entity.application.collection
   description: 'Manage loan applications'
   parent: system.admin
   weight: -9
@@ -9,10 +9,3 @@ api_application.admin:
     attributes:
       class: ['toolbar-icon-edit']
 
-# Application entity under Structure
-api_application.entity_settings:
-  title: 'Applications'
-  route_name: entity.application.field_ui_fields
-  description: 'Manage fields and display settings for applications'
-  parent: system.admin_structure
-  weight: 0

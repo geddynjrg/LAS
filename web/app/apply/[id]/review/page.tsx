@@ -3,7 +3,7 @@ import { ApplicationReviewGroupData } from '@/components/application-review-grou
 import { ApplicationReviewLoanConditions } from '@/components/application-review-loan-conditions';
 import { ApplicationReviewMembers } from '@/components/application-review-members';
 import { ApplicationReviewProposedBusiness } from '@/components/application-review-proposed-business';
-import { getApplicationById } from '@/lib/data/application-db';
+import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
 import { getTranslations } from 'next-intl/server';
@@ -12,7 +12,6 @@ export interface GroupDataPageProps {
   params: Promise<{ id: string }>;
 }
 
-/* TODO: PAGE CURRENTLY UNUSED, REMOVE WHEN CLEAR IF THIS WILL NEVER BE USED AGAIN */
 
 export default async function Page({ params }: GroupDataPageProps) {
   const { id } = await params;
@@ -37,11 +36,18 @@ export default async function Page({ params }: GroupDataPageProps) {
 
         <ApplicationReviewLoanConditions
           loanConditionsData={application.loanConditions}
+          applicationId={id}
         />
 
-        <ApplicationReviewMembers membersData={application.members} />
+        <ApplicationReviewMembers
+          membersData={application.members}
+          applicationId={id}
+        />
 
-        <ApplicationReviewGroupData groupData={application.groupData} />
+        <ApplicationReviewGroupData
+          groupData={application.groupData}
+          applicationId={id}
+        />
 
         <ApplicationReviewProposedBusiness
           businessDetails={
@@ -53,6 +59,7 @@ export default async function Page({ params }: GroupDataPageProps) {
                 }
               : undefined
           }
+          applicationId={id}
         />
       </Container>
 

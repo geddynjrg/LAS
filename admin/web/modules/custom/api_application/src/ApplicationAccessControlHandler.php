@@ -79,7 +79,6 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
     return AccessResult::neutral();
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -116,6 +115,5 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
 
     return parent::checkFieldAccess($operation, $field_definition, $account, $items);
   }
-
 
 }

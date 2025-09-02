@@ -71,6 +71,7 @@
   },
   "Common": {
     "menu": "Menyu",
+    "login": "Ingia",
     "close": "Funga",
     "closeMenu": "Funga menyu",
     "apply": "Omba",
@@ -287,9 +288,11 @@
       "title": "Hali",
       "unsubmitted": "<bold>Haijawasilishwa:</bold> Haijaanza",
       "draft": "<bold>Hatua ya 1:</bold> Inaendelea",
+      "groupMemberConfirmation": "<bold>Hatua ya 1.5:</bold> Inasubiri uthibitisho wa wanachama wa kundi",
       "submitted": "<bold>Hatua ya 2:</bold> Imewasilishwa",
-      "inReview": "<bold>Hatua ya 3:</bold> Inakaguliwa",
-      "pending": "<bold>Hatua ya 4:</bold> Uamuzi wa kamati unasubiriwa",
+      "constituencyReview": "<bold>Hatua ya 3:</bold> Ukaguzi wa jimbo",
+      "approvedByConstituency": "<bold>Hatua ya 4:</bold> Imeidhinishwa na jimbo",
+      "inReview": "<bold>Hatua ya 5:</bold> Inakaguliwa",
       "approved": "<bold>Imeidhinishwa:</bold> Mkopo umeidhinishwa",
       "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa",
       "disbursed": "<bold>Imetolewa:</bold> Fedha za mkopo zimetolewa",
@@ -361,7 +364,6 @@
     "loan": {
       "loanConditions": "Masharti ya mkopo",
       "loanDetails": "Maelezo ya mkopo",
-      "purposeOfTheLoan": "Madhumuni ya mkopo",
       "loanType": "Aina ya mkopo",
       "loanAmount": "Kiasi cha mkopo",
       "repaymentPeriod": "Kipindi cha marejesho kilichopendekezwa kwa miezi",
@@ -377,7 +379,8 @@
       "bankBranch": "Tawi la Benki ya Kikundi",
       "accountNumber": "Nambari ya Akaunti ya Benki",
       "selectBank": "Chagua benki",
-      "invalidLoanAmount": "Kiasi cha mkopo si sahihi"
+      "invalidLoanAmount": "Kiasi cha mkopo si sahihi",
+      "creditHistoryDescription": "k.m., Daftari la benki ya meza, Cheti cha kutolewa, Barua ya uhakika kutoka kwa mkopeshaji mwingine"
     },
     "members": {
       "members": "Wanachama",
@@ -428,7 +431,7 @@
         "edibleOils": "Mafuta ya kula",
         "constructionAndBuilding": "Ujenzi na vifaa vya ujenzi",
         "dairyProducts": "Bidhaa za maziwa",
-        "tableBankingPractice": "Kikundi kimefanya benki ya meza kwa muda gani?",
+        "tableBankingPractice": "Kikundi kimefanya benki ya meza kwa muda gani (kwa miaka)?",
         "monthlyShareContribution": "Jumla ya mchango wa hisa wa kila mwezi",
         "totalLoanedOut": "Jumla ya kiasi kilichokopeshwa",
         "totalRevolvingFund": "Jumla ya mfuko wa mzunguko",

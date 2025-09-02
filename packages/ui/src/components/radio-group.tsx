@@ -30,6 +30,7 @@ export interface RadioOption<T extends string = string>
   extends VariantProps<typeof radioGroupVariants> {
   label: ReactNode;
   value: T;
+  description?: ReactNode;
 }
 
 export interface RadioGroupProps<T extends string = string>
@@ -84,13 +85,15 @@ const RadioGroupItem: FC<
     size: VariantProps<typeof radioGroupVariants>["size"];
     color: ColorVariant;
   }
-> = ({ id, label, size, color, ...props }) => {
+> = ({ id, label, description, size, color, ...props }) => {
+  const descriptionId = description ? `${id}-description` : undefined;
+
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center">
       <RadioGroupPrimitive.Item
         id={id}
         className={cn(
-          "border-foreground text-primary focus-visible-ring rounded-full border",
+          "border-foreground text-primary focus-visible-ring rounded-full border cursor-pointer",
           "disabled:cursor-not-allowed disabled:opacity-50",
           size === "sm" && "size-4",
           size === "md" && "size-6",
@@ -99,6 +102,7 @@ const RadioGroupItem: FC<
           color === "civilRegistry" &&
             "border-border data-[state=checked]:border-radio-secondary text-radio-secondary",
         )}
+        aria-describedby={descriptionId}
         {...props}
       >
         <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
@@ -113,7 +117,14 @@ const RadioGroupItem: FC<
           />
         </RadioGroupPrimitive.Indicator>
       </RadioGroupPrimitive.Item>
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id} className="flex-1 pl-2 cursor-pointer">
+        <div>{label}</div>
+        {description && (
+          <div id={descriptionId} className="typo-body-small text-foreground mt-1">
+            {description}
+          </div>
+        )}
+      </Label>
     </div>
   );
 };

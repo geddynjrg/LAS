@@ -4,7 +4,7 @@ import {
   type GroupMembersConfirmationData,
   groupMembersConfirmationDataSchema,
 } from '@/app/apply/[id]/confirmations/group-members-confirmation-schema';
-import { updateMemberConfirmationStatuses } from '@/lib/data/application-db';
+import { updateMemberConfirmationStatuses } from '@/lib/data/application';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 import { redirect } from 'next/navigation';

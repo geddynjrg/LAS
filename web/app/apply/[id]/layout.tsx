@@ -1,5 +1,5 @@
 import { ApplyFormStepper } from '@/app/apply/[id]/apply-form-stepper';
-import { getApplicationById } from '@/lib/data/application-db';
+import { getApplicationById } from '@/lib/data/application';
 import { getSession } from '@/lib/session';
 import type { Step } from '@workspace/ui/components/stepper';
 import { getTranslations } from 'next-intl/server';

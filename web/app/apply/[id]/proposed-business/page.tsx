@@ -1,7 +1,7 @@
 import { proposedBusinessAction } from '@/app/apply/[id]/proposed-business/proposed-business-action';
 import { ProposedBusinessDataForm } from '@/app/apply/[id]/proposed-business/proposed-business-data-form';
 import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
-import { getApplicationById } from '@/lib/data/application-db';
+import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
 import { getTranslations } from 'next-intl/server';

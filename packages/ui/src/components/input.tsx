@@ -39,6 +39,15 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   onValueChange?: (value: string) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   ref?: React.Ref<HTMLInputElement>;
+  // ARIA attributes for accessibility
+  role?: string;
+  'aria-expanded'?: boolean;
+  'aria-controls'?: string;
+  'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both';
+  'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+  'aria-describedby'?: string;
+  'aria-required'?: boolean;
+  'aria-invalid'?: boolean | 'true' | 'false' | 'grammar' | 'spelling';
 }
 
 export const Input: FC<InputProps> = ({
@@ -61,14 +70,30 @@ export const Input: FC<InputProps> = ({
         type={type}
         readOnly={readonly}
         onKeyDown={(e) => {
-          // allow generic keys like Enter, Backspace, and Control
-          if (["Enter", "Backspace", "Control"].includes(e.key)) {
-            return;
-          }
+          if (type === "tel") {
+            // Allow navigation, editing, and clipboard operations
+            if ([
+              'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+              'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+              'Home', 'End'
+            ].includes(e.key)) {
+              return;
+            }
 
-          // prevent invalid characters for tel input
-          if (type == "tel" && !isValidTelChar(e.key)) {
-            e.preventDefault();
+            // Allow clipboard operations (Ctrl/Cmd + keys)
+            if (e.ctrlKey || e.metaKey) {
+              return;
+            }
+
+            // Allow text selection (Shift + keys)
+            if (e.shiftKey) {
+              return;
+            }
+
+            // Only block non-numeric characters for actual typing
+            if (!/[0-9]/.test(e.key)) {
+              e.preventDefault();
+            }
           }
         }}
         className={cn(

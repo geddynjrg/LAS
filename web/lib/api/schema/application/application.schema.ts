@@ -126,7 +126,6 @@ export const ApplicationPostRequestSchema = z.object({
     .describe('Group members'),
 
   // Loan information
-  purpose_of_loan: z.union([z.string(), z.number()]).optional(),
   loan_type: z.union([z.string(), z.number()]).optional(),
   loan_amount: z.number().optional().describe('Requested loan amount in KSh'),
   proposed_repayment_period: z

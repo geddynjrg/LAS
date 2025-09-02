@@ -1,6 +1,6 @@
 'use client';
 
-import type { GeneralDetails, Status } from '@/lib/data/application';
+import type { GeneralDetails, Status } from '@/lib/types/application.types';
 import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
 import type { FC, ReactNode } from 'react';
@@ -28,12 +28,20 @@ export const ApplicationStatus: FC<ApplicationStatusProps> = ({
         return t.rich('status.draft', {
           bold: strongText,
         });
+      case 'GROUP_MEMBER_CONFIRMATION':
+        return t.rich('status.groupMemberConfirmation', {
+          bold: strongText,
+        });
       case 'SUBMITTED':
         return t.rich('status.submitted', {
           bold: strongText,
         });
-      case 'PENDING':
-        return t.rich('status.pending', {
+      case 'CONSTITUENCY_REVIEW':
+        return t.rich('status.constituencyReview', {
+          bold: strongText,
+        });
+      case 'APPROVED_BY_CONSTITUENCY':
+        return t.rich('status.approvedByConstituency', {
           bold: strongText,
         });
       case 'IN_REVIEW':
@@ -86,8 +94,11 @@ export const ApplicationStatus: FC<ApplicationStatusProps> = ({
             'mt-1 h-4 min-h-4 w-4 min-w-4 rounded-full',
             status === 'UNSUBMITTED' && 'bg-gray-400',
             status === 'DRAFT' && 'bg-yellow-400',
+            status === 'GROUP_MEMBER_CONFIRMATION' && 'bg-orange-400',
             status === 'SUBMITTED' && 'bg-blue-400',
-            (status === 'IN_REVIEW' || status === 'PENDING') && 'bg-green-400',
+            status === 'CONSTITUENCY_REVIEW' && 'bg-blue-500',
+            status === 'APPROVED_BY_CONSTITUENCY' && 'bg-green-300',
+            status === 'IN_REVIEW' && 'bg-green-400',
             status === 'APPROVED' && 'bg-green-600',
             status === 'REJECTED' && 'bg-red-500',
             status === 'DISBURSED' && 'bg-green-800',

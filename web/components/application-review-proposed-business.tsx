@@ -1,18 +1,22 @@
 import type { ProposedBusinessData } from '@/app/apply/[id]/proposed-business/proposed-business-data-schema';
+import { IconPencil } from '@tabler/icons-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@workspace/ui/components/accordion';
+import { Button } from '@workspace/ui/components/button';
 import { Currency } from '@workspace/ui/components/currency';
 import { DataNode } from '@workspace/ui/components/data-node';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { type FC } from 'react';
 
 export const ApplicationReviewProposedBusiness: FC<{
   businessDetails?: ProposedBusinessData;
-}> = ({ businessDetails }) => {
+  applicationId?: string;
+}> = ({ businessDetails, applicationId }) => {
   const t = useTranslations('ApplicationDetailsPage');
 
   if (!businessDetails) {
@@ -21,7 +25,17 @@ export const ApplicationReviewProposedBusiness: FC<{
 
   return (
     <div className="mt-6 grid">
-      <h4 className="typo-h4 pb-2">{t('proposedBusiness.proposedBusiness')}</h4>
+      <div className="flex items-center justify-between pb-2">
+        <h4 className="typo-h4">{t('proposedBusiness.proposedBusiness')}</h4>
+        {applicationId && (
+          <Button variant="secondary" size="sm" asChild>
+            <Link href={`/apply/${applicationId}/proposed-business`}>
+              <IconPencil className="h-4 w-4 mr-1" />
+              Edit
+            </Link>
+          </Button>
+        )}
+      </div>
       <Accordion type="multiple" className="space-y-2">
         <AccordionItem value="proposed-business-information">
           <AccordionTrigger>

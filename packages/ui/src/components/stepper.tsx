@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, type FC, type ReactNode } from "react";
+import React, { useEffect, useRef, type FC, type ReactNode } from "react";
 
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 import { useMount } from "@workspace/ui/hooks/use-mount";
@@ -56,7 +56,8 @@ export const Stepper: FC<StepperProps> = ({
   };
 
   return (
-    <div
+    <nav
+      aria-label="Application form progress"
       ref={wrapRef}
       className={cn("scrollbar-width-none flex flex-row overflow-x-auto")}
     >
@@ -65,6 +66,7 @@ export const Stepper: FC<StepperProps> = ({
           "bg-background flex flex-row max-md:mr-[100vw]",
           className,
         )}
+        role="list"
       >
         {steps.map((step, i) => (
           <Step
@@ -79,7 +81,7 @@ export const Stepper: FC<StepperProps> = ({
           </Step>
         ))}
       </ol>
-    </div>
+    </nav>
   );
 };
 
@@ -102,6 +104,25 @@ const Step: FC<StepProps> = ({
 }) => {
   const router = useRouter();
 
+  const isClickable = step.path &&
+    baseUrl &&
+    progress &&
+    step.index <= progress &&
+    activeStep !== step.index;
+
+  const handleClick = () => {
+    if (isClickable) {
+      router.push(`${baseUrl}/${step.path}`);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (isClickable && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      handleClick();
+    }
+  };
+
   return (
     <li
       data-before-active={handleDataBeforeActive(
@@ -116,20 +137,16 @@ const Step: FC<StepProps> = ({
           "text-stepper-foreground bg-stepper hover:bg-stepper-hover active:bg-stepper-active focus-visible:ring-ring focus-visible:scale-y-85 focus:outline-none focus-visible:scale-x-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         activeStep === step.index &&
           "bg-stepper-primary text-primary-foreground clip-arrow-right pr-8 font-bold",
+        isClickable ? "cursor-pointer" : "cursor-default",
       )}
-      onClick={() => {
-        // allow stepper navigation if baseUrl and progress is present. Allows navigation back to previous steps and to currently in progress step
-        if (
-          step.path &&
-          baseUrl &&
-          progress &&
-          step.index <= progress &&
-          activeStep !== step.index
-        ) {
-          // Send to step path
-          router.push(`${baseUrl}/${step.path}`);
-        }
-      }}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={isClickable ? 0 : -1}
+      role={isClickable ? "button" : "listitem"}
+      aria-current={activeStep === step.index ? "step" : undefined}
+      aria-label={`Step ${step.index}: ${children}${
+        activeStep === step.index ? " (current)" : ""
+      }${isClickable ? " - Click to navigate" : ""}`}
     >
       <StepNumber stepNumber={step.index} activeStep={activeStep} />
       {children}

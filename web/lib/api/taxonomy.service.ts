@@ -11,6 +11,7 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000;
 export interface TaxonomyOption {
   label: string;
   value: string;
+  limitedRole?: boolean; // For position_of_member terms - indicates if only one allowed per application
 }
 
 /**
@@ -34,6 +35,7 @@ export async function getTaxonomyOptions(
         .map((term: any) => ({
           label: term.name,
           value: term.name,
+          limitedRole: term.limitedRole,
         }));
     }
 
@@ -61,6 +63,7 @@ export async function getTaxonomyOptions(
       .map((term: any) => ({
         label: term.name,
         value: term.name,
+        limitedRole: term.limitedRole,
       }));
   } catch (error) {
     console.error(`Error fetching taxonomy options for ${fieldName}:`, error);
@@ -89,6 +92,7 @@ export async function getTaxonomyOptionsByVocabularyId(
       .map((term: any) => ({
         label: term.name,
         value: term.name,
+        limitedRole: term.limitedRole,
       }));
   } catch (error) {
     console.error(
@@ -225,6 +229,7 @@ export async function syncTaxonomyVocabularies() {
               parentIds: parentIds,
               url: term.url,
               language: language,
+              limitedRole: term.limited_role,
               vocabularyId: vocabularyId,
             },
             create: {
@@ -236,6 +241,7 @@ export async function syncTaxonomyVocabularies() {
               parentIds: parentIds,
               url: term.url,
               language: language,
+              limitedRole: term.limited_role,
               vocabularyId: vocabularyId,
             },
           });
@@ -288,10 +294,9 @@ const taxonomyFieldMapping = {
   // Member data mappings
   natureOfTheGroup: 'group_nature',
   gender: 'gender',
-  memberType: 'member_position',
+  memberType: 'position', // Maps to position_of_member vocabulary
 
   // Loan conditions mappings
-  purposeOfLoan: 'purpose_of_loan',
   loanType: 'loan_type',
   bankName: 'bank_name',
 

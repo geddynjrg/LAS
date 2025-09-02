@@ -22,7 +22,19 @@ export const ProfileMenu: FC = () => {
     useProfile();
 
   if (!isAuthenticated || isLoading) {
-    return null;
+    return (
+      <Link href="/login" className="no-underline text-inherit">
+        <Button
+          variant="ghost"
+          className="size-13 rounded-0 hover:bg-header flex flex-col items-center gap-0 p-0"
+        >
+          <IconUserCircle />
+          <span className="text-nowrap text-xs font-normal">
+            {t('login')}
+          </span>
+        </Button>
+      </Link>
+    );
   }
 
   const handleLogout = async (e: React.MouseEvent) => {

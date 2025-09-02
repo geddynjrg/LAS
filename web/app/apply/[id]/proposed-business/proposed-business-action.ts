@@ -6,7 +6,8 @@ import {
   proposedBusinessDataSchema,
   proposedBusinessFormSchema,
 } from '@/app/apply/[id]/proposed-business/proposed-business-data-schema';
-import { updateApplicationProposedBusinessData } from '@/lib/data/application-db';
+import { updateApplicationProposedBusinessData } from '@/lib/data/application';
+import { capitalizeWords } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 import { redirect } from 'next/navigation';
@@ -51,7 +52,12 @@ export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
     throw new Error('No application ID provided');
   }
 
-  /* Submit data to dummy data list */
+  /* Submit data to database */
+  const capitalizedCustomExpenses = data.customExpenses?.map(expense => ({
+    ...expense,
+    name: capitalizeWords(expense.name),
+  }));
+
   await updateApplicationProposedBusinessData(id, {
     averageIncome: data.averageIncome,
     businessType: data.businessType,
@@ -61,7 +67,7 @@ export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
     salaries: data.salaries,
     transportForBusinessStock: data.transportForBusinessStock,
     yearsInBusiness: data.yearsInBusiness,
-    customExpenses: data.customExpenses,
+    customExpenses: capitalizedCustomExpenses,
   });
 
   redirect(redirectTo);

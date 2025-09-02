@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Controller;
 
+use Drupal\api_application\Entity\Application;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerTrait;
@@ -122,16 +123,7 @@ class ApplicationController extends ControllerBase {
 
     // Validate status transitions.
     $current_status = $application->get('status')->value;
-    $allowed_transitions = [
-      'draft' => ['submitted'],
-      'submitted' => ['unassigned', 'under_review', 'rejected'],
-      'unassigned' => ['under_review', 'rejected'],
-      'under_review' => ['approved', 'rejected'],
-      'approved' => ['disbursed'],
-      'rejected' => ['under_review'],
-      'disbursed' => ['under_review', 'closed'],
-      'closed' => [],
-    ];
+    $allowed_transitions = Application::getAllowedTransitions();
 
     if (!in_array($new_status, $allowed_transitions[$current_status] ?? [])) {
       $response['message'] = $this->t('Invalid status transition from @current to @new.', [

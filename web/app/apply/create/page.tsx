@@ -1,4 +1,4 @@
-import { createApplication } from '@/lib/data/application-db';
+import { createApplication } from '@/lib/data/application';
 import { redirect } from 'next/navigation';
 
 export default async function CreatePage() {

@@ -3,15 +3,6 @@ import { z } from 'zod';
 
 export const loanConditionsDataSchema = z
   .object({
-    purposeOfLoan: z.preprocess(
-      (v) =>
-        Array.isArray(v)
-          ? v
-          : typeof v === 'string'
-            ? v.split(',').filter(Boolean)
-            : [],
-      z.array(z.string()).min(1),
-    ),
     loanType: z.string().nonempty(),
     loanAmount: z
       .string()
@@ -27,7 +18,7 @@ export const loanConditionsDataSchema = z
             'ApplicationDetailsPage.loan.invalidLoanAmount',
           ),
       ),
-    repaymentPeriod: z.coerce.number().min(1).max(12),
+    repaymentPeriod: z.coerce.number().min(1).max(24),
     bankName: z.string().nonempty(),
     bankNameOther: z.string().min(3).optional(),
     bankBranch: z.string().nonempty(),

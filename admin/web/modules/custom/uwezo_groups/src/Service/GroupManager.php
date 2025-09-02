@@ -51,8 +51,8 @@ class GroupManager {
    */
   public function checkAccess(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
     // Only handle view and update operations for entities with constituencies.
-    if (!in_array($operation, ['view', 'update']) || 
-        !$entity->hasField('constituency') || 
+    if (!in_array($operation, ['view', 'update']) ||
+        !$entity->hasField('constituency') ||
         $entity->get('constituency')->isEmpty()) {
       return AccessResult::neutral();
     }
@@ -62,7 +62,7 @@ class GroupManager {
       return AccessResult::neutral();
     }
 
-    // Check constituency-specific access (access policy grants these permissions).
+    // Check constituency access (access policy grants these permissions).
     if ($account->hasPermission("administer constituency applications:{$constituency->id()}")) {
       return AccessResult::allowed()
         ->cachePerPermissions()
@@ -106,7 +106,7 @@ class GroupManager {
 
     foreach ($memberships as $membership) {
       $group = $membership->getGroup();
-      
+
       // Get constituencies directly assigned to the group.
       if ($group->hasField('field_assigned_constituencies') && !$group->get('field_assigned_constituencies')->isEmpty()) {
         foreach ($group->get('field_assigned_constituencies')->referencedEntities() as $constituency) {

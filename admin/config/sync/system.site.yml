@@ -2,8 +2,8 @@ _core:
   default_config_hash: ijfbzDTN4CbE7Sr-6ubWzy_t1vH4OtU1doNCLssVz-4
 langcode: en
 uuid: b7c1cf92-444a-48d1-ae2e-d678a34c066d
-name: 'Uwezo Fund'
-mail: uwezo@adm.ee
+name: 'Uwezo Fund Portal'
+mail: loans@uwezo.go.ke
 slogan: ''
 page:
   403: ''

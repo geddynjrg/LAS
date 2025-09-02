@@ -13,11 +13,12 @@ grumphp:
     succeeded: web/modules/contrib/clean_code/ascii/succeeded.txt
   tasks:
     git_blacklist:
-      keywords: [die(, var_dump(), exit;, dd(, kint(, print_r(, debug(]
+      keywords: ['\bdie\(', '\bvar_dump\(', '\bexit;', '\bdd\(', '\bkint\(', '\bprint_r\(', '\bdebug\(']
       whitelist_patterns:
         - '/^web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
+        - '/^admin\/web\/modules\/custom\/.+\.(php|module|inc|install|test|profile|theme)$/'
       triggered_by: [php, module, theme, inc, phtml, php3, php4, php5]
-      regexp_type: G
+      regexp_type: E
       match_word: false
       ignore_patterns: ['#/tests#']
     git_branch_name:

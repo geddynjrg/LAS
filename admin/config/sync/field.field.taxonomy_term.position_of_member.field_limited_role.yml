@@ -1,0 +1,23 @@
+uuid: 09615a8a-6a14-4c95-8431-6ab9a8a417f8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_limited_role
+    - taxonomy.vocabulary.position_of_member
+id: taxonomy_term.position_of_member.field_limited_role
+field_name: field_limited_role
+entity_type: taxonomy_term
+bundle: position_of_member
+label: 'Limited Role'
+description: 'Check this if only one member can have this role per application (e.g., Chairman, Secretary, Treasurer)'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Limited (only one allowed)'
+  off_label: Unlimited
+field_type: boolean

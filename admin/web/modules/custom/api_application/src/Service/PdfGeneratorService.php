@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Service;
 
+use Drupal\api_application\Entity\Application;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -385,15 +386,7 @@ class PdfGeneratorService {
     );
 
     // Get status label.
-    $status_options = [
-      'draft' => $this->t('Draft'),
-      'submitted' => $this->t('Submitted'),
-      'under_review' => $this->t('Under Review'),
-      'approved' => $this->t('Approved'),
-      'rejected' => $this->t('Rejected'),
-      'disbursed' => $this->t('Disbursed'),
-      'closed' => $this->t('Closed'),
-    ];
+    $status_options = Application::getStatusOptions();
     $variables['status_label'] = $status_options[$variables['status']] ?? $variables['status'];
 
     // Get rejection reason label if rejected.

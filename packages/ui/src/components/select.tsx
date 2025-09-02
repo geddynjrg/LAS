@@ -23,6 +23,7 @@ export const selectVariants = cva({
 export interface SelectOption<T extends string> {
   label: ReactNode;
   value: T;
+  disabled?: boolean;
 }
 
 export interface SelectProps<T extends string>
@@ -53,7 +54,11 @@ export const Select = <T extends string>({
   const cachedOptions = useMemo(
     () =>
       options?.map((option) => (
-        <SelectItem key={option.value} value={option.value}>
+        <SelectItem
+          key={option.value}
+          value={option.value}
+          disabled={option.disabled}
+        >
           {option.label}
         </SelectItem>
       )),
@@ -89,7 +94,10 @@ const SelectTrigger: FC<
     typeof selectVariants
   >
 > = ({ size, loading, className, children }) => (
-  <SelectPrimitive.Trigger className={cn(selectVariants({ size }), className)}>
+  <SelectPrimitive.Trigger
+    className={cn(selectVariants({ size }), className)}
+    tabIndex={0}
+  >
     {children}
 
     <SelectPrimitive.Icon asChild>

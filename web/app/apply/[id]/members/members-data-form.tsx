@@ -8,12 +8,21 @@ import {
   type MembersData,
   membersDataSchema,
 } from '@/app/apply/[id]/members/members-data-schema';
+import {
+  validateMembersAgainstTaxonomy,
+  getMemberValidationErrorMessages,
+  canAssignRole,
+  type MemberValidationResult,
+} from '@/app/apply/[id]/members/members-validation';
+import { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
+import { updateApplicationMembersData } from '@/lib/data/application';
 import {
   MembersData as ApplicationMembersData,
   type GenderType,
   type Member,
-} from '@/lib/data/application';
+} from '@/lib/types/application.types';
+import { capitalizeWords } from '@/lib/utils/string';
 import {
   IconCheck,
   IconPencil,
@@ -22,17 +31,13 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
-import {
-  ButtonGroup,
-  ButtonGroupItem,
-} from '@workspace/ui/components/button-group';
 import { Checkbox } from '@workspace/ui/components/checkbox';
+import { RadioGroup } from '@workspace/ui/components/radio-group';
 import { Container } from '@workspace/ui/components/container';
 import { DataNode } from '@workspace/ui/components/data-node';
 import { FileUploadInput } from '@workspace/ui/components/file-upload-input';
 import { Field, Form } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
-// import { SearchInput } from "@workspace/ui/components/search-input";
 import { Select } from '@workspace/ui/components/select';
 import { Underline } from '@workspace/ui/components/underline';
 import { FormCard } from '@workspace/ui/components/uwezo/form-card';
@@ -45,9 +50,7 @@ import {
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { formatBytes } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { FC, useState } from 'react';
-
-// import { dummyMembers } from "@/lib/data/dummy-data";
+import { FC, useState, useEffect } from 'react';
 
 // Helper function to extract error message from various error types
 const getErrorMessage = (error: any): string => {
@@ -64,12 +67,14 @@ export interface MembersDataProps {
   id: string;
   action: FormAction<MembersData>;
   applicationMembersData?: ApplicationMembersData;
+  memberTypeOptions?: TaxonomyOption[];
 }
 
 export const MembersDataForm: FC<MembersDataProps> = ({
   action,
   id,
   applicationMembersData,
+  memberTypeOptions,
 }) => {
   const t = useTranslations();
   const [state, formAction, isPending] = useForm(action, membersDataSchema, {
@@ -80,18 +85,62 @@ export const MembersDataForm: FC<MembersDataProps> = ({
   );
   const [displayNewMemberForm, setDisplayNewMemberForm] = useState(false);
   const [membersInEdit, setMembersInEdit] = useState<number[]>([]);
+  const [membersValidation, setMembersValidation] = useState<MemberValidationResult>({ isValid: true, errors: [] });
+
+  // Real-time validation whenever members or taxonomy options change
+  useEffect(() => {
+    if (memberTypeOptions && members.length > 0) {
+      const validation = validateMembersAgainstTaxonomy(members, memberTypeOptions);
+      setMembersValidation(validation);
+    } else {
+      setMembersValidation({ isValid: true, errors: [] });
+    }
+  }, [members, memberTypeOptions]);
 
   const prevUrl = `/apply/${id}/group-data`;
   const nextUrl = `/apply/${id}/loan-conditions`;
 
-  const handleMemberRemove = (id: string | undefined) => {
-    if (!id) {
+  const saveMembersData = async (updatedMembers: Partial<Member>[]) => {
+    try {
+      // Validate members before saving
+      if (memberTypeOptions) {
+        const validation = validateMembersAgainstTaxonomy(updatedMembers, memberTypeOptions);
+        setMembersValidation(validation);
+
+        if (!validation.isValid) {
+          console.warn('Members validation failed:', validation.errors);
+          return; // Don't save if validation fails
+        }
+      }
+
+      await updateApplicationMembersData(id, {
+        natureOfTheGroup: state.values?.natureOfGroup || applicationMembersData?.natureOfTheGroup || '',
+        members: updatedMembers as Member[],
+      });
+    } catch (error) {
+      console.error('Failed to save members:', error);
+    }
+  };
+
+  const handleNatureOfGroupChange = async (value: string) => {
+    try {
+      await updateApplicationMembersData(id, {
+        natureOfTheGroup: value,
+        members: members as Member[],
+      });
+    } catch (error) {
+      console.error('Failed to save nature of group:', error);
+    }
+  };
+
+  const handleMemberRemove = async (memberId: string | undefined) => {
+    if (!memberId) {
       return;
     }
 
-    setMembers((members) =>
-      members.filter((member) => member.nationalIdCode !== id),
-    );
+    const updatedMembers = members.filter((member) => member.nationalIdCode !== memberId);
+    setMembers(updatedMembers);
+    await saveMembersData(updatedMembers);
   };
 
   return (
@@ -109,79 +158,51 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             label={t('MembersPage.natureOfTheGroup')}
             required
             control={(props) => (
-              <ButtonGroup
+              <RadioGroup
                 {...props}
-                type="single"
-                className="flex flex-row items-stretch"
-              >
-                <ButtonGroupItem
-                  value="youth"
-                  className="typo-body-small-bold grow px-1"
-                >
-                  {t('MembersPage.youth')}
-                </ButtonGroupItem>
-                <ButtonGroupItem
-                  value="pwd"
-                  className="typo-body-small-bold grow px-1"
-                >
-                  {t('MembersPage.peopleWithDisabilities')}
-                </ButtonGroupItem>
-                <ButtonGroupItem
-                  value="women"
-                  className="typo-body-small-bold grow px-1"
-                >
-                  {t('MembersPage.women')}
-                </ButtonGroupItem>
-              </ButtonGroup>
+                onValueChange={(value) => {
+                  if (value) {
+                    handleNatureOfGroupChange(value);
+                  }
+                }}
+                options={[
+                  {
+                    label: t('MembersPage.youth'),
+                    value: "youth",
+                  },
+                  {
+                    label: t('MembersPage.peopleWithDisabilities'),
+                    value: "pwd",
+                  },
+                  {
+                    label: t('MembersPage.women'),
+                    value: "women",
+                  },
+                ]}
+              />
             )}
           />
 
-          {/* <div>
-            <div className="font-bold">
-              {t("MembersPage.searchForMember")}
-              <span className="text-destructive">*</span>
+          {memberTypeOptions && memberTypeOptions.length > 0 ? (
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() =>
+                !displayNewMemberForm && setDisplayNewMemberForm(true)
+              }
+            >
+              <IconPlus /> {t('MembersPage.addMember')}
+            </Button>
+          ) : (
+            <div className="text-destructive text-sm font-medium p-4 border border-destructive rounded-md bg-destructive/5">
+              <div className="font-semibold mb-2">Member position types unavailable</div>
+              <div className="text-xs">
+                Unable to load member position types from the system. Please refresh the page and try again.
+                <br />
+                <span className="font-medium">You cannot add or edit members until this is resolved.</span>
+              </div>
             </div>
-            <SearchInput
-              defaultValue=""
-              placeholder={t("MembersPage.enterNameOrNationalId")}
-              options={dummyMembers.map((member) => ({
-                label: member.fullname ?? "N/A",
-                value: member.nationalIdCode ?? "N/A",
-              }))}
-              clearOnSelect
-              onValueSelect={(value) => {
-                const selectedMember = dummyMembers.find(
-                  (member) => member.nationalIdCode === value,
-                );
-
-                // prevent duplicate members
-                if (
-                  members.find(
-                    (member) =>
-                      member.nationalIdCode === selectedMember?.nationalIdCode,
-                  )
-                ) {
-                  return;
-                }
-
-                setMembers([
-                  ...members,
-                  {
-                    ...selectedMember,
-                  },
-                ]);
-              }}
-            />
-          </div> */}
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={() =>
-              !displayNewMemberForm && setDisplayNewMemberForm(true)
-            }
-          >
-            <IconPlus /> {t('MembersPage.addMember')}
-          </Button>
+          )}
           <p className="typo-body-large mx-auto font-bold">
             {t('MembersPage.membersInfoInserted', { count: members.length })}
           </p>
@@ -200,15 +221,29 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             </div>
           )}
 
+          {/* Members validation errors */}
+          {!membersValidation.isValid && (
+            <div className="text-destructive text-sm font-medium space-y-1">
+              <div className="font-semibold">Member role conflicts:</div>
+              {getMemberValidationErrorMessages(membersValidation).map((error, index) => (
+                <div key={index} className="text-xs">• {error}</div>
+              ))}
+            </div>
+          )}
+
           {displayNewMemberForm && (
             <EditMemberFormFields
-              onSuccess={(member) => {
-                setMembers([...members, member]);
+              onSuccess={async (member) => {
+                const updatedMembers = [...members, member];
+                setMembers(updatedMembers);
                 setDisplayNewMemberForm(false);
+                await saveMembersData(updatedMembers);
               }}
               onReject={() => setDisplayNewMemberForm(false)}
               isNew
               applicationId={id}
+              memberTypeOptions={memberTypeOptions}
+              members={members}
             />
           )}
 
@@ -223,21 +258,21 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                         existingMember={member}
                         isNew={false}
                         applicationId={id}
+                        memberTypeOptions={memberTypeOptions}
+                        members={members}
                         onReject={() => {
                           setMembersInEdit(
                             membersInEdit.filter((val) => val !== index),
                           );
                         }}
-                        onSuccess={(member) => {
+                        onSuccess={async (member) => {
                           setMembersInEdit(
                             membersInEdit.filter((val) => val !== index),
                           );
-                          setMembers((members) => {
-                            const newMembers = [...members];
-                            newMembers[index] = member;
-
-                            return newMembers;
-                          });
+                          const updatedMembers = [...members];
+                          updatedMembers[index] = member;
+                          setMembers(updatedMembers);
+                          await saveMembersData(updatedMembers);
                         }}
                       />
                     );
@@ -280,7 +315,11 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                       </PersonAccordionContent>
                       <MemberAccordionFooter
                         onEdit={() => {
-                          setMembersInEdit([...membersInEdit, index]);
+                          if (memberTypeOptions && memberTypeOptions.length > 0) {
+                            setMembersInEdit([...membersInEdit, index]);
+                          } else {
+                            alert('Cannot edit member: Member position types are currently unavailable. Please refresh the page and try again.');
+                          }
                         }}
                         onRemove={() =>
                           handleMemberRemove(member.nationalIdCode)
@@ -302,7 +341,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       <input type="hidden" name="redirectTo" value={nextUrl} />
 
       <ApplyFormActionBar
-        disabled={isPending}
+        disabled={isPending || !membersValidation.isValid}
         nextUrl={nextUrl}
         prevUrl={prevUrl}
       />
@@ -359,6 +398,8 @@ interface NewMemberFormFieldsProps {
   existingMember?: Partial<Member>;
   isNew: boolean; // differentiate between new and existing members for form fields
   applicationId?: string; // for file uploads
+  memberTypeOptions?: TaxonomyOption[];
+  members: Partial<Member>[];
 }
 
 const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
@@ -367,19 +408,28 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   existingMember,
   isNew,
   applicationId,
+  memberTypeOptions,
+  members,
 }) => {
-  const [state] = useForm(memberAction, memberSchema, {
+  const formInitialValues = {
     fullname: existingMember?.fullname,
     nationalIdCode: existingMember?.nationalIdCode,
     gender: existingMember?.gender,
     phoneNumber: existingMember?.phoneNumber,
     type: existingMember?.type,
-    disability: existingMember?.disability ? 'on' : null,
+    disability: existingMember?.disability ? ('on' as const) : null,
     certificateOfDisability:
       existingMember?.disability?.certificateOfDisability,
     pwdNumber: existingMember?.disability?.pwdNumber,
     photoOfId: existingMember?.photoOfId,
-  });
+  };
+
+  // Get the index of the current member being edited
+  const currentMemberIndex = existingMember
+    ? members.findIndex(m => m.nationalIdCode === existingMember.nationalIdCode)
+    : undefined;
+
+  const [state] = useForm(memberAction, memberSchema, formInitialValues);
   const [withDisability, setWithDisability] = useState(
     existingMember?.disability?.certificateOfDisability ||
       existingMember?.disability?.pwdNumber
@@ -391,6 +441,35 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   );
   const t = useTranslations();
 
+  // Prevent editing if taxonomy data is not available
+  if (!memberTypeOptions || memberTypeOptions.length === 0) {
+    return (
+      <div className="border-destructive grid gap-4 rounded-md border bg-destructive/5 p-4">
+        <div className="text-destructive font-medium">
+          Cannot {isNew ? 'add' : 'edit'} member: Member position types unavailable
+        </div>
+        <div className="text-destructive text-sm">
+          Member position types could not be loaded. Please refresh the page and try again.
+        </div>
+        <div className="flex flex-row justify-center gap-8">
+          <Button
+            variant="ghost"
+            asChild
+            className="p-0 active:bg-transparent"
+            onClick={onReject}
+          >
+            <div>
+              <Underline className="text-destructive border-b-destructive">
+                <IconX className="!text-destructive" />
+                {t('Common.cancel')}
+              </Underline>
+            </div>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="border-primary grid gap-4 rounded-md border bg-neutral-200 p-4">
       <Field
@@ -398,15 +477,15 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         name="fullname"
         label={t('MembersPage.memberName')}
         required
-        editable={isNew}
         control={(props) => (
           <Input
             {...props}
             defaultValue={member?.fullname}
             onValueChange={(value) => {
+              const capitalizedValue = capitalizeWords(value);
               setMember((member) => ({
                 ...member,
-                fullname: value,
+                fullname: capitalizedValue,
               }));
             }}
           />
@@ -418,7 +497,6 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         name="nationalIdCode"
         label={t('MembersPage.nationalIdCodeAlienId')}
         required
-        editable={isNew}
         control={(props) => (
           <Input
             {...props}
@@ -438,31 +516,36 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         name="gender"
         label={t('MembersPage.gender')}
         required
-        editable={isNew}
         control={(props) => (
-          <ButtonGroup
+          <RadioGroup
             {...props}
             defaultValue={member?.gender}
-            type="single"
             onValueChange={(value: string) => {
               setMember((member) => ({
                 ...member,
                 gender: value as GenderType,
               }));
             }}
-          >
-            <ButtonGroupItem value="Male">
-              {t('MembersPage.male')}
-            </ButtonGroupItem>
-            <ButtonGroupItem value="Female">
-              {t('MembersPage.female')}
-            </ButtonGroupItem>
-            <ButtonGroupItem value="Other">{t('Common.other')}</ButtonGroupItem>
-          </ButtonGroup>
+            options={[
+              {
+                label: t('MembersPage.male'),
+                value: "Male",
+              },
+              {
+                label: t('MembersPage.female'),
+                value: "Female",
+              },
+              {
+                label: t('Common.other'),
+                value: "Other",
+              },
+            ]}
+          />
         )}
       />
       <Field
-        name="phone"
+        state={state}
+        name="phoneNumber"
         label={t('MembersPage.phoneNumber')}
         required
         control={(props) => (
@@ -482,28 +565,46 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       />
 
       <Field
-        name="position"
+        state={state}
+        name="type"
         label={t('MembersPage.positionOfMember')}
         required
         control={(props) => (
           <Select
-            options={[
-              {
-                label: t('ApplicationDetailsPage.members.chairman'),
-                value: 'Chairman',
-              },
-              {
-                label: t('ApplicationDetailsPage.members.secretary'),
-                value: 'Secretary',
-              },
-              {
-                label: t('ApplicationDetailsPage.members.member'),
-                value: 'Member',
-              },
-            ]}
+            options={
+              memberTypeOptions
+                ? memberTypeOptions.map(option => {
+                      const assignmentCheck = canAssignRole(
+                        option.value,
+                        members,
+                        memberTypeOptions,
+                        currentMemberIndex
+                      );
+                      return {
+                        label: option.label,
+                        value: option.value,
+                        disabled: !assignmentCheck.canAssign,
+                      };
+                    })
+                : []
+            }
             {...props}
             defaultValue={member?.type}
             onValueChange={(value) => {
+              // Check if the role can be assigned
+              if (memberTypeOptions) {
+                const assignmentCheck = canAssignRole(
+                  value,
+                  members,
+                  memberTypeOptions,
+                  currentMemberIndex
+                );
+                if (!assignmentCheck.canAssign) {
+                  alert(assignmentCheck.reason || 'This role cannot be assigned.');
+                  return;
+                }
+              }
+
               setMember((member) => ({
                 ...member,
                 type: value,
@@ -647,29 +748,75 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       <div className="flex flex-row justify-center gap-8">
         <Button
           variant="ghost"
-          asChild
+          type="button"
           className="p-0 active:bg-transparent"
           onClick={onReject}
         >
-          <div>
-            <Underline className="text-destructive border-b-destructive hover:text-destructive">
-              <IconX className="!text-destructive" />
-              {t('Common.cancel')}
-            </Underline>
-          </div>
+          <Underline className="text-destructive border-b-destructive hover:text-destructive">
+            <IconX className="!text-destructive" />
+            {t('Common.cancel')}
+          </Underline>
         </Button>
         <Button
           variant="ghost"
-          asChild
+          type="button"
           className="p-0 active:bg-transparent"
-          onClick={() => member && onSuccess(member)}
+          onClick={() => {
+            if (!member) return;
+
+            // Transform member object to form data structure for validation
+            const formDataForValidation = {
+              fullname: member.fullname,
+              nationalIdCode: member.nationalIdCode,
+              gender: member.gender,
+              type: member.type,
+              phoneNumber: member.phoneNumber,
+              photoOfId: member.photoOfId,
+              // Convert disability object to checkbox flag for validation
+              disability: member.disability ? 'on' : null,
+              certificateOfDisability: member.disability?.certificateOfDisability,
+              pwdNumber: member.disability?.pwdNumber,
+            };
+
+            // Validate member data before saving
+            const validationResult = memberSchema.safeParse(formDataForValidation);
+            if (!validationResult.success) {
+              const errors = validationResult.error.flatten().fieldErrors;
+
+              // Show specific validation messages
+              const missingFields = [];
+              if (errors.fullname) missingFields.push('Full Name');
+              if (errors.nationalIdCode) missingFields.push('National ID');
+              if (errors.gender) missingFields.push('Gender');
+              if (errors.type) missingFields.push('Position');
+              if (errors.phoneNumber) missingFields.push('Phone Number');
+              if (errors.photoOfId) missingFields.push('Photo of ID');
+
+              alert(`Please fill the required fields: ${missingFields.join(', ')}`);
+              return;
+            }
+
+            // Additional role validation
+            if (memberTypeOptions && member.type) {
+              const assignmentCheck = canAssignRole(
+                member.type,
+                members,
+                memberTypeOptions,
+                currentMemberIndex
+              );
+              if (!assignmentCheck.canAssign) {
+                alert(assignmentCheck.reason || 'This role cannot be assigned.');
+                return;
+              }
+            }
+
+            onSuccess(member);
+          }}
         >
-          <div>
-            <Underline className="border-b-green-400 text-green-400">
-              <IconCheck className="!text-green-400" />
-              {t('Common.confirm')}
-            </Underline>
-          </div>
+          <Underline className="border-b-green-400 text-green-400">
+            <IconCheck className="!text-green-400" />
+            {t('Common.confirm')}
+          </Underline>
         </Button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { membersDataAction } from '@/app/apply/[id]/members/members-data-action';
 import { MembersDataForm } from '@/app/apply/[id]/members/members-data-form';
-import { getApplicationById } from '@/lib/data/application-db';
+import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
+import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
 import { getTranslations } from 'next-intl/server';
@@ -12,7 +13,12 @@ export interface MembersPageProps {
 export default async function Page({ params }: MembersPageProps) {
   const { id } = await params;
   const t = await getTranslations();
-  const application = await getApplicationById(id);
+
+  // Fetch application and member type options in parallel
+  const [application, memberTypeOptions] = await Promise.all([
+    getApplicationById(id),
+    getFormFieldOptions('memberType'),
+  ]);
 
   return (
     <>
@@ -32,6 +38,7 @@ export default async function Page({ params }: MembersPageProps) {
         action={membersDataAction}
         id={id}
         applicationMembersData={application?.members}
+        memberTypeOptions={memberTypeOptions}
       />
     </>
   );
