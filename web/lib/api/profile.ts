@@ -4,7 +4,7 @@ import { AuthenticationError } from '@/lib/errors/auth-error';
 import { invalidateSession } from '@/lib/session';
 
 export async function getProfile() {
-  const res = await api.GET('/api/v1/user/profile');
+  const res = await api.GET('/api/v1/user/profile', {});
 
   if (!res.response.ok) {
     if (res.response.status === 401) {

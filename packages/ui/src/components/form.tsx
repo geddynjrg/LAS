@@ -60,8 +60,8 @@ export interface FieldControlProps<TName, TValue = string> {
     ? boolean | "on" | null | undefined
     : TValue;
   'aria-describedby'?: string;
-  'aria-required'?: string;
-  'aria-invalid'?: string;
+  'aria-required'?: 'true' | 'false';
+  'aria-invalid'?: 'true' | 'false' | 'grammar' | 'spelling';
 }
 
 export interface FieldProps<
@@ -148,7 +148,7 @@ export const Field = <
                 name,
                 defaultValue: fieldValues,
                 'aria-describedby': ariaDescribedBy,
-                'aria-required': required ? 'true' : undefined,
+                'aria-required': required ? 'true' : 'false',
                 'aria-invalid': errorMessage ? 'true' : 'false',
               })}
           </FormPrimitive.Control>

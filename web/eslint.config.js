@@ -1,9 +1,12 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+const require = createRequire(import.meta.url);
+const typescriptEslint = require('@typescript-eslint/eslint-plugin');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

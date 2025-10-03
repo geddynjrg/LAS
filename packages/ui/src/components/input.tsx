@@ -46,7 +46,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both';
   'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
   'aria-describedby'?: string;
-  'aria-required'?: boolean;
+  'aria-required'?: boolean | 'true' | 'false';
   'aria-invalid'?: boolean | 'true' | 'false' | 'grammar' | 'spelling';
 }
 

@@ -28,12 +28,25 @@ type ServerFile = { fid: string; filename: string; url: string };
 
 export type FileUploadInputValue = File | ServerFile | string;
 
-type UploadActionResult = {
-  success: boolean;
-  files?: ServerFile[];
-  error?: string;
-  errors?: Record<string, string[]>;
-};
+type UploadActionResult =
+  | {
+      success: true;
+      files?: ServerFile[];
+      values?: Record<string, unknown>;
+      [key: string]: unknown;
+    }
+  | {
+      success: false;
+      error?: string;
+      errors?: Record<string, unknown>;
+      values: Record<string, unknown>;
+      [key: string]: unknown;
+    }
+  | {
+      success?: undefined;
+      values?: Record<string, unknown>;
+      [key: string]: unknown;
+    };
 
 export interface FileUploadInputProps {
   accept: Accept;
@@ -42,7 +55,7 @@ export interface FileUploadInputProps {
   multiple?: boolean;
   disabled?: boolean;
   defaultValue?: FileUploadInputValue | FileUploadInputValue[];
-  "aria-invalid"?: boolean;
+  "aria-invalid"?: boolean | 'true' | 'false' | 'grammar' | 'spelling';
   "data-invalid"?: boolean;
   // Upload functionality props
   applicationId?: string;
@@ -51,7 +64,8 @@ export interface FileUploadInputProps {
   onUploadError?: (error: string) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   // Server action props (modern approach)
-  uploadAction?: (prev: UploadActionResult | null, formData: FormData) => Promise<UploadActionResult>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  uploadAction?: (prev: any, formData: FormData) => any;
   onUploadComplete?: (files: ServerFile[]) => void;
   // Delete action prop
   deleteAction?: (
@@ -233,7 +247,8 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
               formData.append("file", filesToUpload[0]!);
             }
 
-            const result = await uploadAction(null, formData);
+            const uploadResult = await uploadAction(null, formData);
+            const result = uploadResult as UploadActionResult;
 
             if (result.success) {
               // Handle successful upload
@@ -259,9 +274,9 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
               });
             } else {
               // Handle upload errors
-              const errorMessages = result.errors
-                ? Object.values(result.errors).flat().join(", ")
-                : result.error || "Upload failed";
+              const errorMessages: string = result.errors
+                ? (Object.values(result.errors).flat() as string[]).join(", ")
+                : (result.error as string) || "Upload failed";
               setUploadError(errorMessages);
               onUploadError?.(errorMessages);
             }
