@@ -42,11 +42,32 @@ fi
 # Always run web checks if there are JS files
 if [ -n "$JS_FILES" ]; then
   echo ""
-  echo "🎨 STEP 2/2: Web Code Quality (ESLint + Prettier)"
-  echo "------------------------------------------------"
+  echo "🎨 STEP 2/2: Web Code Quality (Lint + Type Check + Build)"
+  echo "--------------------------------------------------------"
   cd web
+
+  echo "  → Running lint-staged (ESLint + Prettier)..."
   npx lint-staged
   JS_EXIT_CODE=$?
+
+  if [ $JS_EXIT_CODE -eq 0 ]; then
+    echo "  → Running full lint check..."
+    pnpm run lint
+    JS_EXIT_CODE=$?
+  fi
+
+  if [ $JS_EXIT_CODE -eq 0 ]; then
+    echo "  → Running type check..."
+    pnpm run tsc
+    JS_EXIT_CODE=$?
+  fi
+
+  if [ $JS_EXIT_CODE -eq 0 ]; then
+    echo "  → Running build..."
+    pnpm run build
+    JS_EXIT_CODE=$?
+  fi
+
   cd ..
 
   if [ $JS_EXIT_CODE -ne 0 ]; then
