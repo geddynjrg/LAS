@@ -5,8 +5,6 @@ import { redirect } from 'next/navigation';
 import createClient, { type FetchResponse } from 'openapi-fetch';
 import type { z } from 'zod';
 
-import type { paths } from './schema/schema';
-
 export const api = createClient<any>({
   baseUrl: process.env.API_URL,
   fetch: (input: RequestInfo | URL, init?: RequestInit) => {
