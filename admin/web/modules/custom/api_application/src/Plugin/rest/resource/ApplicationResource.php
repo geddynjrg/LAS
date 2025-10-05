@@ -178,6 +178,14 @@ class ApplicationResource extends RestFrameworkResourceBase {
         ], 400);
       }
 
+      // Validate county and constituency if provided.
+      if (isset($data['county']) || isset($data['constituency'])) {
+        $countyConstituencyValidation = $this->validateCountyAndConstituency($data);
+        if ($countyConstituencyValidation !== TRUE) {
+          return $countyConstituencyValidation;
+        }
+      }
+
       // Find or create the owner user.
       $owner = $this->findOrCreateUser($identifier, $identifierType);
       if (!$owner) {
@@ -240,7 +248,7 @@ class ApplicationResource extends RestFrameworkResourceBase {
    * @return bool
    *   TRUE if valid, FALSE otherwise.
    */
-  protected function validateApiKey($apiKey) {
+  protected function validateApiKey($apiKey): bool {
     if (empty($apiKey)) {
       return FALSE;
     }
@@ -251,6 +259,88 @@ class ApplicationResource extends RestFrameworkResourceBase {
 
     // For security, use constant-time comparison.
     return hash_equals($validApiKey ?: '', $apiKey);
+  }
+
+  /**
+   * Validates county and constituency values.
+   *
+   * @param array $data
+   *   The application data.
+   *
+   * @return bool|\Symfony\Component\HttpFoundation\Response
+   *   TRUE if valid, Response object with error if invalid.
+   */
+  protected function validateCountyAndConstituency(array $data) {
+    $termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
+    $validationErrors = [];
+    $countyTerm = NULL;
+
+    // Validate county if provided.
+    if (!empty($data['county'])) {
+      $countyName = $data['county'];
+      $countyTerms = $termStorage->loadByProperties([
+        'name' => $countyName,
+        'vid' => 'counties',
+      ]);
+
+      if (empty($countyTerms)) {
+        $validationErrors['county'] = sprintf(
+          'Invalid county "%s". Please select a valid county from the available options.',
+          $countyName
+        );
+      }
+
+      $countyTerm = !empty($countyTerms) ? reset($countyTerms) : NULL;
+    }
+
+    // Validate constituency if provided.
+    if (!empty($data['constituency'])) {
+      $constituencyName = $data['constituency'];
+      $constituencyTerms = $termStorage->loadByProperties([
+        'name' => $constituencyName,
+        'vid' => 'constituencies',
+      ]);
+
+      if (empty($constituencyTerms)) {
+        $validationErrors['constituency'] = sprintf(
+          'Invalid constituency "%s". Please select a valid constituency from the available options.',
+          $constituencyName
+        );
+      }
+      else {
+        $constituencyTerm = reset($constituencyTerms);
+
+        // Verify county/constituency relationship if both provided.
+        if (!empty($countyTerm) && $constituencyTerm->hasField('field_parent_county')) {
+          $parentCountyField = $constituencyTerm->get('field_parent_county');
+
+          if (!$parentCountyField->isEmpty()) {
+            $parentCountyId = $parentCountyField->target_id;
+
+            if ($parentCountyId != $countyTerm->id()) {
+              $parentCounty = $termStorage->load($parentCountyId);
+              $validationErrors['constituency'] = sprintf(
+                'The constituency "%s" does not belong to the county "%s". It belongs to "%s".',
+                $constituencyName,
+                $countyName,
+                $parentCounty ? $parentCounty->getName() : 'Unknown'
+              );
+            }
+          }
+        }
+      }
+    }
+
+    // Return validation errors if any.
+    if (!empty($validationErrors)) {
+      return $this->createModifiedResponse([
+        'error' => 'Validation failed',
+        'message' => 'Invalid county or constituency values',
+        'validation_errors' => $validationErrors,
+      ], 400);
+    }
+
+    return TRUE;
   }
 
   /**
@@ -730,7 +820,17 @@ class ApplicationResource extends RestFrameworkResourceBase {
       return $term->id();
     }
 
-    // Create the term if it doesn't exist for any vocabulary.
+    // Do not auto-create terms for counties and constituencies vocabularies.
+    $protectedVocabularies = ['counties', 'constituencies'];
+    if (in_array($vocabulary, $protectedVocabularies)) {
+      $this->logger->warning('Attempted to create term "@name" in protected vocabulary "@vocab"', [
+        '@name' => $value,
+        '@vocab' => $vocabulary,
+      ]);
+      return NULL;
+    }
+
+    // Create the term if it doesn't exist for other vocabularies.
     try {
       $term = $termStorage->create([
         'vid' => $vocabulary,

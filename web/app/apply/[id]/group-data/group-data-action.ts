@@ -5,7 +5,11 @@ import {
   groupDataSchema,
 } from '@/app/apply/[id]/group-data/group-data-schema';
 import { ApplicationStatus } from '@/generated/prisma';
-import { getConstituenciesForCountyName } from '@/lib/api/counties.service';
+import {
+  getConstituenciesForCountyName,
+  getConstituencyOptions,
+  getCountyOptions,
+} from '@/lib/api/counties.service';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import {
   updateApplicationGroupData,
@@ -36,6 +40,64 @@ export const groupDataAction: FormAction<GroupData> = async (
       return {
         success,
         errors: error.flatten().fieldErrors,
+        values,
+      };
+    }
+
+    // Validate county and constituency against available options
+    const [countyOptions, constituencyOptions] = await Promise.all([
+      getCountyOptions(),
+      getConstituencyOptions(),
+    ]);
+
+    const validationErrors: Record<string, string[]> = {};
+
+    // Check if county exists in available options
+    const isValidCounty = countyOptions.some(
+      (c) =>
+        c.value === data.countyOfOperation ||
+        c.label === data.countyOfOperation,
+    );
+
+    if (!isValidCounty) {
+      validationErrors.countyOfOperation = [
+        'Please select a valid county from the list',
+      ];
+    }
+
+    // Check if constituency exists in available options
+    const isValidConstituency = constituencyOptions.some(
+      (c) => c.value === data.constituency || c.label === data.constituency,
+    );
+
+    if (!isValidConstituency) {
+      validationErrors.constituency = [
+        'Please select a valid constituency from the list',
+      ];
+    }
+
+    // Check if constituency belongs to the selected county
+    if (isValidCounty && isValidConstituency) {
+      const constituenciesForCounty = constituencyOptions.filter(
+        (c) => c.countyName === data.countyOfOperation,
+      );
+
+      const constituencyBelongsToCounty = constituenciesForCounty.some(
+        (c) => c.value === data.constituency || c.label === data.constituency,
+      );
+
+      if (!constituencyBelongsToCounty) {
+        validationErrors.constituency = [
+          'The selected constituency does not belong to the selected county',
+        ];
+      }
+    }
+
+    // If there are validation errors, return them
+    if (Object.keys(validationErrors).length > 0) {
+      return {
+        success: false,
+        errors: validationErrors,
         values,
       };
     }

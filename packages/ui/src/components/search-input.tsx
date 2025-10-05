@@ -42,11 +42,28 @@ export const SearchInput: FC<SearchInputProps> = ({
 }: SearchInputProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState(defaultValue);
+  const [lastValidValue, setLastValidValue] = useState(defaultValue);
 
   // call onValueChange when search value changes
   useEffect(() => {
     onValueChange?.(search);
   }, [onValueChange, search]);
+
+  const handleBlur = () => {
+    setIsOpen(false);
+
+    // Check if the current search value matches any option
+    const isValidSelection = options.some(
+      (option) => option.label === search || option.value === search
+    );
+
+    // If the value is not valid and not empty, reset to last valid value or clear
+    if (search && !isValidSelection) {
+      setSearch(lastValidValue || '');
+    } else if (isValidSelection && search !== lastValidValue) {
+      setLastValidValue(search);
+    }
+  };
 
   const listboxId = `${id || 'search'}-listbox`;
 
@@ -58,7 +75,7 @@ export const SearchInput: FC<SearchInputProps> = ({
             asChild
             onClick={() => setIsOpen(true)}
             onFocus={() => setIsOpen(true)}
-            onBlur={() => setIsOpen(false)}
+            onBlur={handleBlur}
             id={id}
             value={search}
             placeholder={placeholder}
@@ -96,16 +113,16 @@ export const SearchInput: FC<SearchInputProps> = ({
                   value={option.label}
                   onMouseDown={(e) => e.preventDefault()}
                   onSelect={(currentValue) => {
-                    setSearch(
-                      options.find(
-                        (option) =>
-                          option.label === currentValue && !clearOnSelect,
-                      )?.label ?? "",
+                    const selectedOption = options.find(
+                      (option) => option.label === currentValue,
                     );
-                    onValueSelect?.(
-                      options.find((option) => option.label === currentValue)
-                        ?.value ?? "",
-                    );
+                    const newValue = clearOnSelect
+                      ? ""
+                      : selectedOption?.label ?? "";
+
+                    setSearch(newValue);
+                    setLastValidValue(newValue);
+                    onValueSelect?.(selectedOption?.value ?? "");
                     setIsOpen(false);
                   }}
                 >
