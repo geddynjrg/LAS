@@ -64,7 +64,7 @@ status_manager.entity_history:
 
 # Configuration
 status_manager.settings:
-  path: '/admin/config/app-services/status-manager'
+  path: '/admin/config/services/status-manager'
   defaults:
     _form: '\Drupal\status_manager\Form\StatusManagerSettingsForm'
     _title: 'Status Manager Settings'

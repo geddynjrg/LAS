@@ -37,20 +37,6 @@ class StatusManagerSettingsForm extends ConfigFormBase {
   protected $moduleHandler;
 
   /**
-   * The notification provider manager.
-   *
-   * @var \Drupal\status_manager_notifications\Plugin\NotificationProviderManager|null
-   */
-  protected $providerManager;
-
-  /**
-   * The template manager.
-   *
-   * @var \Drupal\status_manager_notifications\Service\TemplateManager|null
-   */
-  protected $templateManager;
-
-  /**
    * Constructs a StatusManagerSettingsForm object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -59,77 +45,46 @@ class StatusManagerSettingsForm extends ConfigFormBase {
    *   The entity field manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
-   * @param \Drupal\status_manager_notifications\Plugin\NotificationProviderManager|null $provider_manager
-   *   The notification provider manager.
-   * @param \Drupal\status_manager_notifications\Service\TemplateManager|null $template_manager
-   *   The template manager.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     EntityFieldManagerInterface $entity_field_manager,
     ModuleHandlerInterface $module_handler,
-    $provider_manager = NULL,
-    $template_manager = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->moduleHandler = $module_handler;
-    $this->providerManager = $provider_manager;
-    $this->templateManager = $template_manager;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $provider_manager = NULL;
-    $template_manager = NULL;
-
-    // Try to get notification services if the module is enabled.
-    if ($container->get('module_handler')->moduleExists('status_manager_notifications')) {
-      try {
-        $provider_manager = $container->get('plugin.manager.notification_provider');
-        $template_manager = $container->get('status_manager_notifications.template_manager');
-      }
-      catch (\Exception $e) {
-        // Services not available - continue without them.
-      }
-    }
-
     return new static(
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager'),
-      $container->get('module_handler'),
-      $provider_manager,
-      $template_manager
+      $container->get('module_handler')
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames() {
-    $config_names = ['status_manager.settings'];
-
-    // Add notification config if module is enabled.
-    if ($this->moduleHandler->moduleExists('status_manager_notifications')) {
-      $config_names[] = 'status_manager_notifications.settings';
-    }
-
-    return $config_names;
+  protected function getEditableConfigNames(): array {
+    return ['status_manager.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId(): string {
     return 'status_manager_settings';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state): array {
     $config = $this->config('status_manager.settings');
 
     $form['#tree'] = TRUE;
@@ -369,9 +324,34 @@ class StatusManagerSettingsForm extends ConfigFormBase {
       }
     }
 
-    // Notification settings - enhanced with provider and template selection
-    // if module is enabled.
-    $this->buildNotificationSettings($form, $form_state, $config);
+    // Notification settings.
+    $form['notifications'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Notification Settings'),
+      '#open' => FALSE,
+    ];
+
+    if ($this->moduleHandler->moduleExists('status_manager_notifications')) {
+      $form['notifications']['info'] = [
+        '#markup' => '<p>' . $this->t('Notification settings have been moved to a dedicated configuration page.') . '</p>',
+      ];
+
+      $form['notifications']['configure_link'] = [
+        '#type' => 'link',
+        '#title' => $this->t('Configure Notification Settings'),
+        '#url' => Url::fromRoute('status_manager_notifications.settings'),
+        '#attributes' => [
+          'class' => ['button', 'button--primary'],
+        ],
+      ];
+    }
+    else {
+      $form['notifications']['not_available'] = [
+        '#markup' => '<div class="messages messages--warning">' .
+        $this->t('Enable the Status Manager Notifications module to configure notification features.') .
+        '</div>',
+      ];
+    }
 
     // Display settings.
     $form['display'] = [
@@ -464,361 +444,9 @@ class StatusManagerSettingsForm extends ConfigFormBase {
   }
 
   /**
-   * Builds the notification settings with provider and template selection.
-   */
-  protected function buildNotificationSettings(array &$form, FormStateInterface $form_state, $config) {
-    $form['notifications'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Notification Settings'),
-      '#open' => FALSE,
-    ];
-
-    // Check if status_manager_notifications module is enabled.
-    if (!$this->moduleHandler->moduleExists('status_manager_notifications')) {
-      // Show basic notification settings only.
-      $form['notifications']['not_available'] = [
-        '#markup' => '<div class="messages messages--warning">' .
-        $this->t('Advanced notification features are not available. Enable the Status Manager Notifications module for provider and template management.') .
-        '</div>',
-      ];
-
-      $form['notifications']['email_enabled'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Enable email notifications'),
-        '#default_value' => $config->get('notifications.email_enabled') ?? TRUE,
-      ];
-
-      $form['notifications']['email_from'] = [
-        '#type' => 'email',
-        '#title' => $this->t('From email address'),
-        '#description' => $this->t('Email address to use as sender for notifications. Leave empty to use site default.'),
-        '#default_value' => $config->get('notifications.email_from') ?? '',
-        '#states' => [
-          'visible' => [
-            ':input[name="notifications[email_enabled]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ];
-
-      $form['notifications']['sms_enabled'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Enable SMS notifications'),
-        '#default_value' => $config->get('notifications.sms_enabled') ?? FALSE,
-      ];
-
-      $form['notifications']['sms_provider'] = [
-        '#type' => 'select',
-        '#title' => $this->t('SMS provider'),
-        '#options' => [
-          'twilio' => $this->t('Twilio'),
-          'nexmo' => $this->t('Vonage (Nexmo)'),
-          'custom' => $this->t('Custom implementation'),
-        ],
-        '#default_value' => $config->get('notifications.sms_provider') ?? 'twilio',
-        '#states' => [
-          'visible' => [
-            ':input[name="notifications[sms_enabled]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ];
-
-      return;
-    }
-
-    // Advanced notification settings with provider and template selection.
-    if (!$this->providerManager || !$this->templateManager) {
-      $form['notifications']['service_error'] = [
-        '#markup' => '<div class="messages messages--error">' .
-        $this->t('Notification services are not available. Please check the Status Manager Notifications module configuration.') .
-        '</div>',
-      ];
-      return;
-    }
-
-    // Get notification config.
-    $notification_config = $this->config('status_manager_notifications.settings');
-
-    // Add status notification mapper button.
-    $form['notifications']['status_mapper'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Status Notification Mapping'),
-      '#open' => TRUE,
-      '#weight' => -10,
-    ];
-
-    $form['notifications']['status_mapper']['description'] = [
-      '#markup' => '<p>' . $this->t('Configure which statuses send notifications to customers, admin users, or both.') . '</p>',
-    ];
-
-    $form['notifications']['status_mapper']['configure_button'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Configure Status Notification Mapper'),
-      '#url' => Url::fromRoute('status_manager_notifications.status_notification_mapper'),
-      '#attributes' => [
-        'class' => ['button', 'button--primary', 'use-ajax'],
-        'data-dialog-type' => 'modal',
-        'data-dialog-options' => json_encode([
-          'width' => '90%',
-          'height' => '80%',
-          'title' => $this->t('Status Notification Mapper'),
-        ]),
-      ],
-    ];
-
-    // Email provider selection.
-    $form['notifications']['email'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Email Notifications'),
-      '#open' => TRUE,
-    ];
-
-    $form['notifications']['email']['enabled'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Enable email notifications'),
-      '#default_value' => $config->get('notifications.email_enabled') ?? TRUE,
-    ];
-
-    // Get email providers.
-    $email_providers = $this->providerManager->getProvidersForType('email');
-    $email_options = [];
-    foreach ($email_providers as $id => $definition) {
-      $email_options[$id] = $definition['label'];
-    }
-
-    if (!empty($email_options)) {
-      $form['notifications']['email']['provider'] = [
-        '#type' => 'select',
-        '#title' => $this->t('Email Provider'),
-        '#description' => $this->t('Choose the email service provider to use for sending notifications.'),
-        '#options' => $email_options,
-        '#default_value' => $notification_config->get('email.active_provider'),
-        '#empty_option' => $this->t('- Select Provider -'),
-        '#states' => [
-          'visible' => [
-            ':input[name="notifications[email][enabled]"]' => ['checked' => TRUE],
-          ],
-          'required' => [
-            ':input[name="notifications[email][enabled]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ];
-    }
-
-    // Get email templates.
-    $email_templates = $this->templateManager->getTemplates('email');
-    $email_template_options = [
-      'auto' => $this->t('Auto-select based on entity and status'),
-    ];
-    foreach ($email_templates as $id => $template) {
-      $email_template_options[$id] = $template['subject'] ?? $id;
-    }
-
-    $form['notifications']['email']['default_template'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Default Email Template'),
-      '#description' => $this->t('Choose the default template for email notifications. Auto-select will choose the most appropriate template based on the entity type and status.'),
-      '#options' => $email_template_options,
-      '#default_value' => $notification_config->get('email.default_template') ?? 'auto',
-      '#states' => [
-        'visible' => [
-          ':input[name="notifications[email][enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    // SMS provider selection.
-    $form['notifications']['sms'] = [
-      '#type' => 'details',
-      '#title' => $this->t('SMS Notifications'),
-      '#open' => FALSE,
-    ];
-
-    $form['notifications']['sms']['enabled'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Enable SMS notifications'),
-      '#default_value' => $config->get('notifications.sms_enabled') ?? FALSE,
-    ];
-
-    // Get SMS providers.
-    $sms_providers = $this->providerManager->getProvidersForType('sms');
-    $sms_options = [];
-    foreach ($sms_providers as $id => $definition) {
-      $sms_options[$id] = $definition['label'];
-    }
-
-    if (!empty($sms_options)) {
-      $form['notifications']['sms']['provider'] = [
-        '#type' => 'select',
-        '#title' => $this->t('SMS Provider'),
-        '#description' => $this->t('Choose the SMS service provider to use for sending notifications.'),
-        '#options' => $sms_options,
-        '#default_value' => $notification_config->get('sms.active_provider'),
-        '#empty_option' => $this->t('- Select Provider -'),
-        '#states' => [
-          'visible' => [
-            ':input[name="notifications[sms][enabled]"]' => ['checked' => TRUE],
-          ],
-          'required' => [
-            ':input[name="notifications[sms][enabled]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ];
-    }
-
-    // Get SMS templates.
-    $sms_templates = $this->templateManager->getTemplates('sms');
-    $sms_template_options = [
-      'auto' => $this->t('Auto-select based on entity and status'),
-    ];
-    foreach ($sms_templates as $id => $template) {
-      $sms_template_options[$id] = mb_substr($template['message'] ?? $id, 0, 50) . '...';
-    }
-
-    $form['notifications']['sms']['default_template'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Default SMS Template'),
-      '#description' => $this->t('Choose the default template for SMS notifications. Auto-select will choose the most appropriate template based on the entity type and status.'),
-      '#options' => $sms_template_options,
-      '#default_value' => $notification_config->get('sms.default_template') ?? 'auto',
-      '#states' => [
-        'visible' => [
-          ':input[name="notifications[sms][enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    // Entity-specific notification settings.
-    $form['notifications']['entity_settings'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Entity-Specific Settings'),
-      '#description' => $this->t('Override notification settings for specific entity types.'),
-      '#open' => FALSE,
-    ];
-
-    // Get entity mappings to show relevant entity types.
-    $entity_mappings = $config->get('entity_mappings') ?? [];
-    $enabled_entities = [];
-    foreach ($entity_mappings as $entity_type_id => $mapping) {
-      if (!empty($mapping['enabled'])) {
-        $enabled_entities[] = $entity_type_id;
-      }
-    }
-
-    if (!empty($enabled_entities)) {
-      foreach ($enabled_entities as $entity_type_id) {
-        $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
-
-        $form['notifications']['entity_settings'][$entity_type_id] = [
-          '#type' => 'details',
-          '#title' => $entity_type->getLabel(),
-          '#open' => FALSE,
-        ];
-
-        $entity_notification_config = $notification_config->get("entities.{$entity_type_id}") ?? [];
-
-        $form['notifications']['entity_settings'][$entity_type_id]['override_enabled'] = [
-          '#type' => 'checkbox',
-          '#title' => $this->t('Override default settings for @entity_type', ['@entity_type' => $entity_type->getLabel()]),
-          '#default_value' => !empty($entity_notification_config['override_enabled']),
-        ];
-
-        $form['notifications']['entity_settings'][$entity_type_id]['email_provider'] = [
-          '#type' => 'select',
-          '#title' => $this->t('Email Provider'),
-          '#options' => ['' => $this->t('Use default')] + $email_options,
-          '#default_value' => $entity_notification_config['email_provider'] ?? '',
-          '#states' => [
-            'visible' => [
-              ':input[name="notifications[entity_settings][' . $entity_type_id . '][override_enabled]"]' => [
-                'checked' => TRUE,
-              ],
-            ],
-          ],
-        ];
-
-        $form['notifications']['entity_settings'][$entity_type_id]['email_template'] = [
-          '#type' => 'select',
-          '#title' => $this->t('Email Template'),
-          '#options' => ['' => $this->t('Use default')] + $email_template_options,
-          '#default_value' => $entity_notification_config['email_template'] ?? '',
-          '#states' => [
-            'visible' => [
-              ':input[name="notifications[entity_settings][' . $entity_type_id . '][override_enabled]"]' => [
-                'checked' => TRUE,
-              ],
-            ],
-          ],
-        ];
-
-        $form['notifications']['entity_settings'][$entity_type_id]['sms_provider'] = [
-          '#type' => 'select',
-          '#title' => $this->t('SMS Provider'),
-          '#options' => ['' => $this->t('Use default')] + $sms_options,
-          '#default_value' => $entity_notification_config['sms_provider'] ?? '',
-          '#states' => [
-            'visible' => [
-              ':input[name="notifications[entity_settings][' . $entity_type_id . '][override_enabled]"]' => [
-                'checked' => TRUE,
-              ],
-            ],
-          ],
-        ];
-
-        $form['notifications']['entity_settings'][$entity_type_id]['sms_template'] = [
-          '#type' => 'select',
-          '#title' => $this->t('SMS Template'),
-          '#options' => ['' => $this->t('Use default')] + $sms_template_options,
-          '#default_value' => $entity_notification_config['sms_template'] ?? '',
-          '#states' => [
-            'visible' => [
-              ':input[name="notifications[entity_settings][' . $entity_type_id . '][override_enabled]"]' => [
-                'checked' => TRUE,
-              ],
-            ],
-          ],
-        ];
-      }
-    }
-    else {
-      $form['notifications']['entity_settings']['info'] = [
-        '#markup' => '<p><em>' . $this->t('Enable entity tracking above to configure entity-specific notification settings.') . '</em></p>',
-      ];
-    }
-
-    // Add link to advanced provider configuration.
-    $form['notifications']['advanced'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Advanced Configuration'),
-      '#open' => FALSE,
-    ];
-
-    $form['notifications']['advanced']['links'] = [
-      '#theme' => 'item_list',
-      '#title' => $this->t('Advanced Settings'),
-      '#items' => [
-        [
-          '#markup' => '<a href="/admin/config/system/status-manager/notifications/providers">' .
-          $this->t('Configure Notification Providers') . '</a> - ' .
-          $this->t('Set up API keys, credentials, and test providers'),
-        ],
-        [
-          '#markup' => '<a href="/admin/config/system/status-manager/notifications/email-templates">' .
-          $this->t('Manage Email Templates') . '</a> - ' .
-          $this->t('Create and edit email notification templates'),
-        ],
-        [
-          '#markup' => '<a href="/admin/config/system/status-manager/notifications/sms-templates">' .
-          $this->t('Manage SMS Templates') . '</a> - ' .
-          $this->t('Create and edit SMS notification templates'),
-        ],
-      ],
-    ];
-  }
-
-  /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state): void {
     parent::validateForm($form, $form_state);
 
     $values = $form_state->getValues();
@@ -826,32 +454,6 @@ class StatusManagerSettingsForm extends ConfigFormBase {
     // Validate cleanup days.
     if ($values['general']['cleanup_enabled'] && $values['general']['cleanup_days'] < 1) {
       $form_state->setErrorByName('general][cleanup_days', $this->t('Cleanup days must be at least 1.'));
-    }
-
-    // Validate notification settings - check both basic and advanced settings.
-    if (isset($values['notifications'])) {
-      if ($this->moduleHandler->moduleExists('status_manager_notifications') && $this->providerManager) {
-        // Advanced validation for notifications module.
-        if (!empty($values['notifications']['email']['enabled'])) {
-          if (empty($values['notifications']['email']['provider'])) {
-            $form_state->setErrorByName('notifications][email][provider', $this->t('Email provider is required when email notifications are enabled.'));
-          }
-        }
-
-        if (!empty($values['notifications']['sms']['enabled'])) {
-          if (empty($values['notifications']['sms']['provider'])) {
-            $form_state->setErrorByName('notifications][sms][provider', $this->t('SMS provider is required when SMS notifications are enabled.'));
-          }
-        }
-      }
-      else {
-        // Basic validation for email address.
-        if ($values['notifications']['email_enabled'] && !empty($values['notifications']['email_from'])) {
-          if (!filter_var($values['notifications']['email_from'], FILTER_VALIDATE_EMAIL)) {
-            $form_state->setErrorByName('notifications][email_from', $this->t('Please enter a valid email address.'));
-          }
-        }
-      }
     }
 
     // Validate custom date format.
@@ -873,51 +475,16 @@ class StatusManagerSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     $values = $form_state->getValues();
 
     // Save main status manager settings.
     $this->config('status_manager.settings')
       ->set('general', $values['general'])
       ->set('entity_mappings', $values['entity_mappings'])
-      ->set('notifications', $values['notifications'])
       ->set('display', $values['display'])
       ->set('performance', $values['performance'])
       ->save();
-
-    if ($this->moduleHandler->moduleExists('status_manager_notifications') && $this->providerManager && isset($values['notifications'])) {
-      $notification_config = $this->configFactory->getEditable('status_manager_notifications.settings');
-
-      // Save provider selections.
-      if (isset($values['notifications']['email']['provider'])) {
-        $notification_config->set('email.active_provider', $values['notifications']['email']['provider']);
-      }
-      if (isset($values['notifications']['sms']['provider'])) {
-        $notification_config->set('sms.active_provider', $values['notifications']['sms']['provider']);
-      }
-
-      // Save template selections.
-      if (isset($values['notifications']['email']['default_template'])) {
-        $notification_config->set('email.default_template', $values['notifications']['email']['default_template']);
-      }
-      if (isset($values['notifications']['sms']['default_template'])) {
-        $notification_config->set('sms.default_template', $values['notifications']['sms']['default_template']);
-      }
-
-      // Save entity-specific settings.
-      if (isset($values['notifications']['entity_settings'])) {
-        foreach ($values['notifications']['entity_settings'] as $entity_type_id => $entity_settings) {
-          if (!empty($entity_settings['override_enabled'])) {
-            $notification_config->set("entities.{$entity_type_id}", $entity_settings);
-          }
-          else {
-            $notification_config->clear("entities.{$entity_type_id}");
-          }
-        }
-      }
-
-      $notification_config->save();
-    }
 
     parent::submitForm($form, $form_state);
   }
@@ -928,7 +495,7 @@ class StatusManagerSettingsForm extends ConfigFormBase {
    * @return \Drupal\Core\Entity\EntityTypeInterface[]
    *   Array of content entity types.
    */
-  protected function getContentEntityTypes() {
+  protected function getContentEntityTypes(): array {
     $entity_types = [];
 
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
@@ -950,7 +517,7 @@ class StatusManagerSettingsForm extends ConfigFormBase {
    * @return array
    *   Array of field options.
    */
-  protected function getStatusFields($entity_type_id) {
+  protected function getStatusFields(string $entity_type_id): array {
     $fields = [];
 
     try {

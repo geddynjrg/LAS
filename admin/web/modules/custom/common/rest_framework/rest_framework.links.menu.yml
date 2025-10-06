@@ -1,6 +1,0 @@
-rest_framework.app_services_group:
-  title: 'App Services'
-  description: 'Configuration for application-level services.'
-  parent: system.admin_config
-  route_name: rest_framework.app_services
-  weight: 50

@@ -11,5 +11,5 @@ status_manager.settings:
   title: 'Status Manager'
   route_name: status_manager.settings
   description: 'Configure status tracking settings'
-  parent: rest_framework.app_services_group
+  parent: system.admin_config_services
   weight: 10
