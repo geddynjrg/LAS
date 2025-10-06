@@ -33,6 +33,32 @@ function sms_providers_help($route_name, RouteMatchInterface $route_match): stri
 }
 
 /**
+ * Implements hook_theme().
+ */
+function sms_providers_theme(): array {
+  return [
+    'debug_sms_email' => [
+      'variables' => [
+        // The recipient phone number.
+        'phone_number' => NULL,
+        // The SMS message content.
+        'message' => NULL,
+        // Number of characters in the message.
+        'message_length' => NULL,
+        // Unique identifier for this message.
+        'message_id' => NULL,
+        // Unix timestamp when the message was sent.
+        'timestamp' => NULL,
+        // Formatted time for display (H:i).
+        'formatted_time' => NULL,
+        // Full formatted timestamp (Y-m-d H:i:s).
+        'formatted_timestamp' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
  * Implements hook_mail().
  */
 function sms_providers_mail($key, &$message, $params): void {
@@ -40,55 +66,19 @@ function sms_providers_mail($key, &$message, $params): void {
     case 'debug_sms':
       $message['subject'] = t('Debug SMS: @phone', ['@phone' => $params['phone_number']]);
 
-      // HTML email body with SMS bubble mockup.
-      $html_body = '<div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif;">
-    <h2 style="color: #333; margin-bottom: 20px;">Debug SMS Message</h2>
+      $build = [
+        '#theme' => 'debug_sms_email',
+        '#phone_number' => $params['phone_number'],
+        '#message' => $params['message'],
+        '#message_length' => $params['message_length'],
+        '#message_id' => $params['message_id'],
+        '#timestamp' => $params['timestamp'],
+        '#formatted_time' => date('H:i', $params['timestamp']),
+        '#formatted_timestamp' => date('Y-m-d H:i:s', $params['timestamp']),
+      ];
 
-    <div style="background: #000; border-radius: 30px; padding: 15px; max-width: 375px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-      <div style="background: #fff; border-radius: 20px; overflow: hidden;">
-        <div style="background: #f8f8f8; padding: 15px; text-align: center; border-bottom: 1px solid #e0e0e0;">
-          <div style="font-size: 12px; color: #666; margin-bottom: 5px;">To:</div>
-          <div style="font-size: 16px; font-weight: 600; color: #000;">' . htmlspecialchars($params['phone_number']) . '</div>
-        </div>
-
-        <div style="padding: 20px; min-height: 200px; background: #fff;">
-          <div style="display: inline-block; max-width: 80%; margin-left: auto;">
-            <div style="background: #007AFF; color: #fff; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.4; word-wrap: break-word; margin-bottom: 5px;">
-              ' . nl2br(htmlspecialchars($params['message'])) . '
-            </div>
-            <div style="text-align: right; font-size: 11px; color: #999; margin-top: 2px;">
-              ' . date('H:i', $params['timestamp']) . '
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="background: #fff; border-radius: 8px; padding: 20px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #333;">Message Details</h3>
-      <table style="width: 100%; border-collapse: collapse;">
-        <tr>
-          <td style="padding: 8px 0; color: #666; font-size: 14px;">Message Length:</td>
-          <td style="padding: 8px 0; color: #000; font-size: 14px; text-align: right; font-weight: 500;">' . $params['message_length'] . ' characters</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0; color: #666; font-size: 14px; border-top: 1px solid #f0f0f0;">Message ID:</td>
-          <td style="padding: 8px 0; color: #000; font-size: 14px; text-align: right; font-family: monospace; border-top: 1px solid #f0f0f0;">' . htmlspecialchars($params['message_id']) . '</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0; color: #666; font-size: 14px; border-top: 1px solid #f0f0f0;">Timestamp:</td>
-          <td style="padding: 8px 0; color: #000; font-size: 14px; text-align: right; border-top: 1px solid #f0f0f0;">' . date('Y-m-d H:i:s', $params['timestamp']) . '</td>
-        </tr>
-      </table>
-    </div>
-
-    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-      <p style="margin: 0; font-size: 13px; color: #856404;">
-        <strong>Development Mode:</strong> This email represents an SMS that would be sent in production.
-      </p>
-    </div>
-  </div>';
-
+      $renderer = \Drupal::service('renderer');
+      $html_body = $renderer->renderPlain($build);
       $message['body'][] = Markup::create($html_body);
       break;
   }
