@@ -1,0 +1,10 @@
+uuid: 86bcb535-2b8e-4552-9a40-ab82812a853c
+langcode: en
+status: true
+dependencies: {  }
+id: sendmail
+label: Sendmail
+plugin: sendmail
+configuration:
+  query:
+    command: ''

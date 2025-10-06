@@ -2,38 +2,35 @@
 
 namespace Drupal\sms_providers\Provider;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
- * Debug SMS provider that logs messages instead of sending them.
+ * Debug SMS provider that sends messages via email.
  */
 class DebugProvider implements SmsProviderInterface {
 
   use StringTranslationTrait;
 
   /**
-   * The config factory.
+   * Settings key in settings.php.
    */
-  protected ConfigFactoryInterface $configFactory;
+  public const SETTINGS_KEY = 'debug_sms_email';
 
   /**
-   * The logger channel.
+   * The mail manager.
    */
-  protected LoggerChannelInterface $logger;
+  protected MailManagerInterface $mailManager;
 
   /**
    * Constructs a DebugProvider object.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
-   * @param \Drupal\Core\Logger\LoggerChannelInterface $logger
-   *   The logger channel.
+   * @param \Drupal\Core\Mail\MailManagerInterface $mail_manager
+   *   The mail manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelInterface $logger) {
-    $this->configFactory = $config_factory;
-    $this->logger = $logger;
+  public function __construct(MailManagerInterface $mail_manager) {
+    $this->mailManager = $mail_manager;
   }
 
   /**
@@ -54,55 +51,44 @@ class DebugProvider implements SmsProviderInterface {
    * {@inheritdoc}
    */
   public function isConfigured(): bool {
-    $config = $this->getConfig();
-
-    return !empty($config['enabled']);
+    $debug_email = Settings::get(self::SETTINGS_KEY);
+    return !empty($debug_email) && filter_var($debug_email, FILTER_VALIDATE_EMAIL);
   }
 
   /**
    * {@inheritdoc}
    */
   public function sendSms(string $to, string $message): string {
-    $config = $this->getConfig();
-
-    // Simulate random failures if enabled.
-    if (!empty($config['simulate_failures']) && mt_rand(1, 10) === 1) {
-      throw new \Exception('Simulated failure: Network timeout occurred');
+    if (!$this->isConfigured()) {
+      throw new \Exception('Debug SMS provider requires debug_sms_email setting to be configured');
     }
 
-    // Generate a fake message ID.
+    $debug_email = Settings::get(self::SETTINGS_KEY);
     $message_id = 'debug_' . uniqid();
 
-    // Prepare log context.
-    $context = [
-      '@provider' => $this->getName(),
-      '@to' => $to,
-      '@message_id' => $message_id,
-      '@message' => $message,
-      'message_length' => \strlen($message),
+    // Prepare email parameters.
+    $params = [
+      'phone_number' => $to,
+      'message' => $message,
+      'message_id' => $message_id,
+      'timestamp' => time(),
+      'message_length' => strlen($message),
     ];
 
-    $log_message = 'SMS would be sent via @provider to @to (ID: @message_id): "@message"';
+    // Send the email.
+    $result = $this->mailManager->mail(
+      'sms_providers',
+      'debug_sms',
+      $debug_email,
+      'en',
+      $params
+    );
 
-    // Log the message at the configured level.
-    $log_level = $config['log_level'] ?? 'info';
-    $this->logger->log($log_level, $log_message, $context);
+    if (!$result['result']) {
+      throw new \Exception('Failed to send debug SMS email');
+    }
 
     return $message_id;
-  }
-
-  /**
-   * Gets the provider configuration.
-   *
-   * @return array
-   *   The provider configuration.
-   */
-  protected function getConfig(): array {
-    return [
-      'enabled' => TRUE,
-      'log_level' => 'info',
-      'simulate_failures' => FALSE,
-    ];
   }
 
 }

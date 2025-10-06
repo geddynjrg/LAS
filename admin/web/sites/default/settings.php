@@ -898,6 +898,11 @@ if (getenv('EBISCLOUD_SMS_API_KEY')) {
   ];
 }
 
+// Debug SMS Provider configuration from environment variables.
+if (getenv('DEBUG_SMS_EMAIL')) {
+  $settings['debug_sms_email'] = getenv('DEBUG_SMS_EMAIL');
+}
+
 // File system paths from environment variables.
 if (getenv('DRUPAL_ENV')) {
   $settings['file_public_path'] = 'sites/default/files';
@@ -915,8 +920,8 @@ if (getenv('IS_DDEV_PROJECT') == 'true' && file_exists(__DIR__ . '/settings.ddev
   include __DIR__ . '/settings.ddev.php';
 }
 
-// SMTP configuration for production (overrides ddev settings)
-if (getenv('SMTP_HOST')) {
+// SMTP configuration for production (not used in DDEV).
+if (getenv('SMTP_HOST') && getenv('IS_DDEV_PROJECT') != 'true') {
   $config['symfony_mailer.settings']['default_transport'] = 'smtp';
   $config['symfony_mailer.mailer_transport.smtp']['plugin'] = 'smtp';
   $config['symfony_mailer.mailer_transport.smtp']['configuration']['host'] = getenv('SMTP_HOST');

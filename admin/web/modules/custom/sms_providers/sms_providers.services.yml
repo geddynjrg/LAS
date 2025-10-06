@@ -14,6 +14,6 @@ services:
 
   sms_providers.debug_provider:
     class: Drupal\sms_providers\Provider\DebugProvider
-    arguments: ['@config.factory', '@sms_providers.logger']
+    arguments: ['@plugin.manager.mail']
     tags:
       - { name: sms_provider, provider_id: debug }
