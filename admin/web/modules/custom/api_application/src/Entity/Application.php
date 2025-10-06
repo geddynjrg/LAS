@@ -1303,13 +1303,13 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       $this->_sms_triggers[] = 'new_application';
     }
     else {
-      // Check for status change to submitted.
+      // Check for status change to group_member_confirmation.
       if ($this->original && $this->getStatus() !== $this->original->getStatus()) {
         $original_status = $this->original->getStatus();
         $new_status = $this->getStatus();
 
-        if ($original_status !== 'submitted' && $new_status === 'submitted') {
-          $this->_sms_triggers[] = 'status_submitted';
+        if ($original_status !== 'group_member_confirmation' && $new_status === 'group_member_confirmation') {
+          $this->_sms_triggers[] = 'status_group_member_confirmation';
         }
       }
 

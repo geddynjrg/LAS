@@ -32,10 +32,13 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
         </Button>
         <ModalButton
           onConfirm={async () => {
-            // Update application status to submitted
-            await updateApplicationStatusById(id, ApplicationStatus.SUBMITTED);
-            // Sync application to external API
-            await syncApplication(id);
+            // Update application status to group_member_confirmation
+            // Members will be sent SMS confirmations, and when 75% confirm,
+            // the backend will automatically transition to submitted and sync
+            await updateApplicationStatusById(
+              id,
+              ApplicationStatus.GROUP_MEMBER_CONFIRMATION,
+            );
             router.push(`/apply/${id}/done`);
           }}
           cancelTitle={t('Common.back')}
