@@ -103,7 +103,7 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (
         refreshToken: res.refresh_token,
       });
 
-      return { success: true };
+      return { success: true, otpRequestId: undefined };
     }
   } catch (error) {
     return {

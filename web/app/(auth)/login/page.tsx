@@ -75,21 +75,29 @@ export default async function Page({
               </Link>
             </div>
 
-            <div className="flex justify-center gap-2">
-              <span className="typo-body-medium">{t('doNotHaveAccount')}</span>
-              <Underline variant="primary">
-                <Link href="/signup" className="text-primary">
-                  {t('signUp')}
-                </Link>
-              </Underline>
-            </div>
+            {loginType === 'email' && (
+              <>
+                <div className="flex justify-center gap-2">
+                  <span className="typo-body-medium">
+                    {t('doNotHaveAccount')}
+                  </span>
+                  <Underline variant="primary">
+                    <Link href="/signup" className="text-primary">
+                      {t('signUp')}
+                    </Link>
+                  </Underline>
+                </div>
 
-            <div className="flex justify-center gap-2">
-              <span className="typo-body-medium">{t('ForgotPassword')}</span>
-              <Link href="/reset" className="text-primary underline">
-                {t('reset')}
-              </Link>
-            </div>
+                <div className="flex justify-center gap-2">
+                  <span className="typo-body-medium">
+                    {t('ForgotPassword')}
+                  </span>
+                  <Link href="/reset" className="text-primary underline">
+                    {t('reset')}
+                  </Link>
+                </div>
+              </>
+            )}
           </nav>
         </section>
       </main>

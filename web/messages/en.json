@@ -226,9 +226,9 @@
   },
   "LoginPage": {
     "title": "Get started",
-    "description": "Log in or create and account to apply for the Uwezo Fund loan.",
-    "flowDescription": "The application will be <bold>saved at each step</bold> and you can return to filling it by <bold>logging in.</bold>",
-    "submittedDescription": "Once submitted, the progress of the application processing is <bold>available through your account.</bold>",
+    "description": "Log in or create an account to apply for the Uwezo Fund loan.",
+    "flowDescription": "The application will be <bold>saved at each step</bold> and you can return to complete it by <bold>logging in.</bold>",
+    "submittedDescription": "Once submitted, you can track the application progress <bold>through your account.</bold>",
     "doNotHaveAccount": "Don't have an account?",
     "email": "E-mail",
     "password": "Password",
@@ -244,7 +244,8 @@
     "invalidEmail": "Invalid email address",
     "passwordRequired": "Password is required",
     "provideValidCredentials": "Please provide valid credentials",
-    "invalidPhoneFormat": "Invalid phone number format",
+    "phoneNumberRequired": "Phone number is required",
+    "invalidPhoneFormat": "Please enter a valid phone number (9 digits)",
     "tooManyOtpRequests": "Too many OTP requests. Please try again later.",
     "otpRequestFailed": "OTP request failed",
     "phoneNumber": "Phone Number",
@@ -524,7 +525,7 @@
     "groupBasics": "Group basics",
     "natureOfTheGroup": "Nature of the group",
     "searchForMember": "Search for member",
-    "membersInfoInserted": "{count} members’ info inserted",
+    "membersInfoInserted": "{count} members' info inserted",
     "enterNameOrNationalId": "Enter name or national ID number",
     "idCode": "ID code",
     "gender": "Gender",
@@ -542,6 +543,23 @@
     "maxFileSize": "Max file size {size}",
     "errors": {
       "atLeastOneMemberRequired": "At least one member is required"
+    }
+  },
+  "Form": {
+    "errors": {
+      "required": "This field is required",
+      "invalid": "Invalid value",
+      "string_too_small": "Must be at least {minimum} characters",
+      "string_too_large": "Must be at most {maximum} characters",
+      "number_too_small": "Must be at least {minimum}",
+      "number_too_large": "Must be at most {maximum}",
+      "date_too_small": "Date must be after {minimum}",
+      "date_too_large": "Date must be before {maximum}",
+      "array_too_large": "Too many items (maximum {maximum})",
+      "invalid_union": "Invalid selection",
+      "invalid_date": "Invalid date",
+      "file_too_large": "File is too large (maximum {maximum} bytes)",
+      "phone_invalid": "Please enter a valid phone number in international format (e.g., +254712345678)"
     }
   }
 }

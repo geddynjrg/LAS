@@ -40,6 +40,7 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     if (state.success && !stateWithOtp.otpRequestId) {
       // Only redirect if success is true AND we don't have an OTP request ID
       // (meaning this is final login, not just OTP sent)
+      router.refresh();
       router.replace(redirectTo ?? '/dashboard');
     }
   }, [redirectTo, router, state.success, state]);

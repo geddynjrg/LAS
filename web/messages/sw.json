@@ -225,8 +225,8 @@
   "LoginPage": {
     "title": "Anza",
     "description": "Ingia au unda akaunti ili kuomba mkopo wa Mfuko wa Uwezo.",
-    "flowDescription": "Maombi yata<bold>hifadhiwa katika kila hatua</bold> na unaweza kurudi kuendelea kujaza kwa <bold>kuingia.</bold>",
-    "submittedDescription": "Baada ya kuwasilishwa, maendeleo ya usindikaji wa maombi <bold>yanapatikana kupitia akaunti yako.</bold>",
+    "flowDescription": "Maombi yata<bold>hifadhiwa katika kila hatua</bold> na unaweza kurudi kumaliza kwa <bold>kuingia.</bold>",
+    "submittedDescription": "Baada ya kuwasilishwa, unaweza kufuatilia maendeleo ya maombi <bold>kupitia akaunti yako.</bold>",
     "doNotHaveAccount": "Huna akaunti?",
     "email": "Barua pepe",
     "password": "Nenosiri",

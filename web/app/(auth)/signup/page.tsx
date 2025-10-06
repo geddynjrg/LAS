@@ -23,7 +23,8 @@ export default function Page() {
   useEffect(() => {
     if (state.success) {
       // The server action has already created the session
-      // We just need to navigate to trigger a refresh
+      // Refresh to update Server Components, then navigate
+      router.refresh();
       router.replace('/dashboard');
     }
   }, [state.success, router]);
