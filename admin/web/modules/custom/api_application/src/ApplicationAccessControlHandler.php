@@ -56,6 +56,24 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
         $group_manager = \Drupal::service(GroupManager::SERVICE_ID);
         $group_access = $group_manager->checkAccess($entity, $operation, $account);
         if ($group_access->isAllowed()) {
+          // Constituency reviewers cannot edit applications at/beyond "approved_by_constituency".
+          if ($this->isConstituencyReviewer($entity, $account)) {
+            $restricted_statuses = [
+              'approved_by_constituency',
+              'under_review',
+              'approved',
+              'rejected',
+              'disbursed',
+              'closed',
+            ];
+            if (in_array($entity->getStatus(), $restricted_statuses, TRUE)) {
+              return AccessResult::forbidden()
+                ->cachePerPermissions()
+                ->cachePerUser()
+                ->addCacheableDependency($entity);
+            }
+          }
+
           return $group_access;
         }
 
@@ -111,9 +129,55 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
             ->addCacheableDependency($entity);
         }
       }
+
+      // Prevent constituency reviewers from editing status field for applications at/beyond "approved_by_constituency".
+      if ($field_definition->getName() === 'status' && $this->isConstituencyReviewer($entity, $account)) {
+        $restricted_statuses = [
+          'approved_by_constituency',
+          'under_review',
+          'approved',
+          'rejected',
+          'disbursed',
+          'closed',
+        ];
+        if (in_array($entity->getStatus(), $restricted_statuses, TRUE)) {
+          return AccessResult::forbidden()
+            ->cachePerPermissions()
+            ->cachePerUser()
+            ->addCacheableDependency($entity);
+        }
+      }
     }
 
     return parent::checkFieldAccess($operation, $field_definition, $account, $items);
+  }
+
+  /**
+   * Check if a user is a constituency reviewer (not an admin).
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The application entity.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
+   *
+   * @return bool
+   *   TRUE if user is a constituency reviewer, FALSE otherwise.
+   */
+  protected function isConstituencyReviewer(EntityInterface $entity, AccountInterface $account): bool {
+    // Not a constituency reviewer if has admin permission.
+    if ($account->hasPermission('administer loan applications')) {
+      return FALSE;
+    }
+
+    // Check if user has constituency-based permission for this application.
+    if ($entity->hasField('constituency') && !$entity->get('constituency')->isEmpty()) {
+      $constituency = $entity->get('constituency')->entity;
+      if ($constituency && $account->hasPermission("administer constituency applications:{$constituency->id()}")) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
   }
 
 }

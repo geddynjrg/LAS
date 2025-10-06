@@ -42,6 +42,11 @@ class ApplicationForm extends ContentEntityForm {
       ];
     }
 
+    // Filter status options for constituency reviewers.
+    if (isset($form['status'])) {
+      $this->filterStatusOptionsForConstituencyReviewers($form);
+    }
+
     // Add our library for JavaScript behaviors.
     $form['#attached']['library'][] = 'api_application/admin';
 
@@ -94,6 +99,55 @@ class ApplicationForm extends ContentEntityForm {
     }
 
     $form_state->setRedirect('entity.application.canonical', ['application' => $entity->id()]);
+  }
+
+  /**
+   * Filter status field options for constituency reviewers.
+   *
+   * @param array $form
+   *   The form array.
+   */
+  protected function filterStatusOptionsForConstituencyReviewers(array &$form): void {
+    $account = \Drupal::currentUser();
+    $entity = $this->entity;
+
+    // Skip if user has admin permission.
+    if ($account->hasPermission('administer loan applications')) {
+      return;
+    }
+
+    // Check if user is a constituency reviewer.
+    $is_constituency_reviewer = FALSE;
+    if ($entity->hasField('constituency') && !$entity->get('constituency')->isEmpty()) {
+      $constituency = $entity->get('constituency')->entity;
+      if ($constituency && $account->hasPermission("administer constituency applications:{$constituency->id()}")) {
+        $is_constituency_reviewer = TRUE;
+      }
+    }
+
+    if (!$is_constituency_reviewer) {
+      return;
+    }
+
+    // Define allowed statuses for constituency reviewers.
+    $allowed_statuses = [
+      'draft',
+      'group_member_confirmation',
+      'submitted',
+      'constituency_review',
+      'approved_by_constituency',
+      'rejected',
+    ];
+
+    // Filter the status field options.
+    if (isset($form['status']['widget'][0]['value']['#options'])) {
+      $all_options = $form['status']['widget'][0]['value']['#options'];
+      $filtered_options = array_intersect_key(
+        $all_options,
+        array_flip($allowed_statuses)
+      );
+      $form['status']['widget'][0]['value']['#options'] = $filtered_options;
+    }
   }
 
 }

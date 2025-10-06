@@ -40,3 +40,4 @@ vendor/
 
 # ignore all drush
 drush/
+backups/
