@@ -1,2 +1,0 @@
-default:
-  message: 'Status Update: [target_entity:label] changed to [status_change:new-status:human]. [site:name]'

@@ -45,8 +45,9 @@ class RedirectAnonymousSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
-    $events[KernelEvents::REQUEST][] = ['onKernelRequest'];
+  public static function getSubscribedEvents(): array {
+    // Set high priority to run before routing/controller resolution.
+    $events[KernelEvents::REQUEST][] = ['onKernelRequest', 100];
 
     return $events;
   }
@@ -57,8 +58,24 @@ class RedirectAnonymousSubscriber implements EventSubscriberInterface {
    * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
    *   The event to process.
    */
-  public function onKernelRequest(RequestEvent $event) {
+  public function onKernelRequest(RequestEvent $event): void {
     $request = $event->getRequest();
+    $path_info = $request->getPathInfo();
+
+    // Skip validation for static files.
+    if ($this->isStaticFile($path_info)) {
+      return;
+    }
+
+    // Only process main requests - skip sub-requests (AJAX, ESI, etc.).
+    if (!$event->isMainRequest()) {
+      return;
+    }
+
+    // Only redirect anonymous users.
+    if (!$this->currentUser->isAnonymous()) {
+      return;
+    }
 
     $allowed_paths = [
       '/user/login',
@@ -74,15 +91,63 @@ class RedirectAnonymousSubscriber implements EventSubscriberInterface {
       '/api/docs/json',
     ];
 
-    $path_info = $request->getPathInfo();
-
-    if ($this->currentUser->isAnonymous() && !\in_array($path_info, $allowed_paths, TRUE) && !str_starts_with($path_info, '/api') && !str_starts_with($path_info, '/user/reset/')) {
-      $url_object = Url::fromRoute('user.login', [], ['absolute' => TRUE]);
-      /** @var string $url */
-      $url = $url_object->toString();
-      $response = new RedirectResponse($url);
-      $event->setResponse($response);
+    // Check if path is allowed for anonymous access.
+    if (\in_array($path_info, $allowed_paths, TRUE) || str_starts_with($path_info, '/api') || str_starts_with($path_info, '/user/reset/')) {
+      return;
     }
+
+    // Redirect to login page.
+    $url_object = Url::fromRoute('user.login', [], ['absolute' => TRUE]);
+    /** @var string $url */
+    $url = $url_object->toString();
+    $response = new RedirectResponse($url);
+    $event->setResponse($response);
+  }
+
+  /**
+   * Checks if the given path is for a static file.
+   *
+   * @param string $path
+   *   The path to check.
+   *
+   * @return bool
+   *   TRUE if the path is for a static file, FALSE otherwise.
+   */
+  private function isStaticFile(string $path): bool {
+    // Static file extensions that should be publicly accessible.
+    $static_extensions = [
+      'css', 'js', 'map', 'json',
+      'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'webp',
+      'woff', 'woff2', 'ttf', 'eot',
+      'pdf', 'txt', 'xml',
+    ];
+
+    // Drupal static file directories that should be publicly accessible.
+    $static_directories = [
+      '/core/',
+      '/modules/',
+      '/themes/',
+      '/sites/',
+      '/libraries/',
+    ];
+
+    // Check if path starts with known static directories.
+    foreach ($static_directories as $directory) {
+      if (str_starts_with($path, $directory)) {
+        return TRUE;
+      }
+    }
+
+    // Check if path has a static file extension.
+    $path_parts = pathinfo($path);
+    if (isset($path_parts['extension'])) {
+      $extension = strtolower($path_parts['extension']);
+      if (in_array($extension, $static_extensions, TRUE)) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
   }
 
 }

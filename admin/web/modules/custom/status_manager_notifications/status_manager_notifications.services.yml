@@ -5,9 +5,11 @@ services:
 
   status_manager_notifications.notification_manager:
     class: Drupal\status_manager_notifications\Service\NotificationManager
-    arguments: ['@config.factory', '@logger.factory', '@plugin.manager.notification_provider']
-    tags:
-      - { name: service_collector, tag: status_manager_notification_service, call: registerNotificationService }
+    arguments:
+      - '@config.factory'
+      - '@logger.factory'
+      - '@status_manager_notifications.token_service'
+      - '@plugin.manager.notification_provider'
 
   status_manager_notifications.email_service:
     class: Drupal\status_manager_notifications\Service\EmailNotificationService

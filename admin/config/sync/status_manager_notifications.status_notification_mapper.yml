@@ -1,9 +1,0 @@
-application:
-  status:
-    unassigned:
-      send_to_customer: false
-      send_to_admin: true
-      admin_roles:
-        - reviewer
-      admin_notification_types:
-        - email

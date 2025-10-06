@@ -1,0 +1,100 @@
+.notification-settings-form .form-item-global-prefer-sms {
+  background: #f5f5f5;
+  padding: 15px;
+  border-left: 3px solid #0678be;
+  margin-bottom: 20px;
+}
+
+.notification-settings-form .status-notifications > summary {
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 10px;
+  background: #f8f8f8;
+  border-left: 3px solid #43a047;
+}
+
+.notification-settings-form details[open] > summary {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.notification-preview {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.notification-preview-content {
+  background: white;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.notification-preview-content strong {
+  color: #333;
+}
+
+.notification-preview-content pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: #f5f5f5;
+  padding: 10px;
+  border-left: 3px solid #0678be;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.notification-settings-form .form-item-status-notifications textarea {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.notification-settings-form .token-tree-link {
+  margin: 15px 0;
+  padding: 10px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+}
+
+.notification-settings-form .form-type-checkboxes {
+  margin-left: 20px;
+}
+
+.notification-settings-form details.providers details {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.notification-settings-form .form-actions {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #ddd;
+}
+
+/* SMS Character Counter */
+.sms-count {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.sms-count.ok {
+  color: #43a047;
+  background: #e8f5e9;
+}
+
+.sms-count.warning {
+  color: #f57c00;
+  background: #fff3e0;
+}
+
+.sms-count.error {
+  color: #d32f2f;
+  background: #ffebee;
+}
+

@@ -2,140 +2,91 @@ status_manager_notifications.settings:
   type: config_object
   label: 'Status Manager Notifications settings'
   mapping:
-    enabled:
-      type: boolean
-      label: 'Enable notifications'
-    default_notification_type:
-      type: string
-      label: 'Default notification type'
-    email:
+    global:
       type: mapping
-      label: 'Email settings'
+      label: 'Global settings'
       mapping:
-        active_provider:
+        prefer_sms:
+          type: boolean
+          label: 'Prefer SMS over email when phone number available'
+        from_email:
+          type: email
+          label: 'Default from email address'
+        from_name:
           type: string
-          label: 'Active email provider'
-        providers:
-          type: sequence
-          label: 'Email providers'
-          sequence:
-            type: mapping
-            mapping:
-              enabled:
-                type: boolean
-                label: 'Enabled'
-              from_email:
-                type: string
-                label: 'From email'
-              from_name:
-                type: string
-                label: 'From name'
-              reply_to:
-                type: string
-                label: 'Reply-to email'
-              use_html:
-                type: boolean
-                label: 'Use HTML format'
-        default_template:
-          type: string
-          label: 'Default email template'
-    sms:
+          label: 'Default from name'
+    providers:
       type: mapping
-      label: 'SMS settings'
+      label: 'Notification providers'
       mapping:
-        active_provider:
-          type: string
-          label: 'Active SMS provider'
-        providers:
-          type: sequence
-          label: 'SMS providers'
-          sequence:
-            type: mapping
-            mapping:
-              enabled:
-                type: boolean
-                label: 'Enabled'
-        default_template:
-          type: string
-          label: 'Default SMS template'
-    entities:
+        email:
+          type: mapping
+          label: 'Email provider configuration'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+            from_email:
+              type: string
+              label: 'From email'
+            from_name:
+              type: string
+              label: 'From name'
+            reply_to:
+              type: string
+              label: 'Reply-to email'
+            use_html:
+              type: boolean
+              label: 'Use HTML format'
+        email_admin:
+          type: mapping
+          label: 'Admin email provider configuration'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+            from_email:
+              type: string
+              label: 'From email'
+            from_name:
+              type: string
+              label: 'From name'
+            reply_to:
+              type: string
+              label: 'Reply-to email'
+            use_html:
+              type: boolean
+              label: 'Use HTML format'
+        sms:
+          type: mapping
+          label: 'SMS provider configuration'
+          mapping:
+            enabled:
+              type: boolean
+              label: 'Enabled'
+    status_notifications:
       type: sequence
-      label: 'Entity-specific settings'
+      label: 'Per-status notification rules'
       sequence:
         type: mapping
         mapping:
-          override_enabled:
-            type: integer
-            label: 'Override enabled'
-          email_provider:
+          enabled:
+            type: boolean
+            label: 'Enable notifications for this status'
+          recipient:
             type: string
-            label: 'Email provider'
-          email_template:
+            label: 'Recipient type (customer or admin)'
+          admin_roles:
+            type: sequence
+            label: 'Admin roles to notify (when recipient is admin)'
+            sequence:
+              type: string
+          subject:
             type: string
-            label: 'Email template'
-          sms_provider:
-            type: string
-            label: 'SMS provider'
-          sms_template:
-            type: string
-            label: 'SMS template'
-
-status_manager_notifications.status_notification_mapper:
-  type: config_object
-  label: 'Status notification mapper configuration'
-  mapping:
-    '*':
-      type: mapping
-      label: 'Status notification mapping'
-      mapping:
-        send_to_customer:
-          type: boolean
-          label: 'Send to customer'
-        send_to_admin:
-          type: boolean
-          label: 'Send to admin'
-        customer_notification_types:
-          type: sequence
-          label: 'Customer notification types'
-          sequence:
-            type: string
-        admin_notification_types:
-          type: sequence
-          label: 'Admin notification types'
-          sequence:
-            type: string
-        admin_roles:
-          type: sequence
-          label: 'Admin roles to notify'
-          sequence:
-            type: string
-
-status_manager_notifications.email_templates:
-  type: config_object
-  label: 'Email templates'
-  mapping:
-    '*':
-      type: mapping
-      label: 'Email template'
-      mapping:
-        subject:
-          type: string
-          label: 'Subject'
-        body:
-          type: text
-          label: 'Body'
-        format:
-          type: string
-          label: 'Format'
-
-status_manager_notifications.sms_templates:
-  type: config_object
-  label: 'SMS templates'
-  mapping:
-    '*':
-      type: mapping
-      label: 'SMS template'
-      mapping:
-        message:
-          type: text
-          label: 'Message'
+            label: 'Email subject'
+          email_message:
+            type: text
+            label: 'Email message body (supports tokens)'
+          sms_message:
+            type: text
+            label: 'SMS message body (supports tokens)'

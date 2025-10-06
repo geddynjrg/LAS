@@ -1,350 +1,195 @@
-# Status Manager Notifications Module
+# Status Manager Notifications (Simplified)
 
-A plugin-based notification system for the Status Manager module that provides extensible email and SMS notification capabilities.
+Send email and SMS notifications when loan application statuses change. **Simplified for application entities only.**
+
+## Overview
+
+This module sends notifications (SMS preferred, email fallback) when application statuses change. Configure messages per status with token support.
 
 ## Features
 
-- **Plugin-based Architecture**: Easy to extend with custom notification providers
-- **Built-in Providers**: 
-  - Email: Default (Drupal mail), SendGrid
-  - SMS: Twilio, Africa's Talking
-- **Template Management**: Create and manage notification templates with token support
-- **Custom Messaging**: Send ad-hoc notifications outside of status changes
-- **Token Integration**: Full support for Drupal's token system in templates
+- ✅ **Status-based Notifications**: Configure who gets notified for each status
+- ✅ **SMS Preferred**: Try SMS first, fallback to email automatically
+- ✅ **Token Support**: Personalize messages with application data
+- ✅ **Role-based Recipients**: Send to customers or admins by role
+- ✅ **Beautiful Email Templates**: Uses ApplicationEmailProvider for styled emails
+- ✅ **Simple Configuration**: Single YAML config file
 
 ## Installation
 
-1. Enable the module and its dependencies:
-   ```bash
-   drush en status_manager_notifications -y
-   ```
-
-2. Configure providers at `/admin/config/system/status-manager/notifications`
+```bash
+drush en status_manager_notifications
+```
 
 ## Configuration
 
-### Setting Up Providers
+**Location**: Edit `config/sync/status_manager_notifications.settings.yml`
 
-1. Navigate to **Configuration > System > Status Manager > Notifications**
-2. Select your active providers for email and SMS
-3. Configure each provider with required credentials
+```yaml
+global:
+  prefer_sms: true              # Try SMS first, fallback to email
+  from_email: uwezo@adm.ee
+  from_name: Uwezo
 
-### Managing Templates
+providers:
+  email:
+    # Uses hardcoded provider: api_application_email
+    enabled: true
+    from_email: uwezo@adm.ee
+    from_name: Uwezo
+    use_html: true
 
-Templates can be managed through configuration or programmatically:
+  email_admin:
+    # Uses hardcoded provider: application_admin_email
+    enabled: true
+    from_email: admin@uwezo.com
+    from_name: 'Uwezo Admin'
+    use_html: true
 
-```php
-// Get the template service
-$email_template_service = \Drupal::service('status_manager_notifications.email_template_service');
-$sms_template_service = \Drupal::service('status_manager_notifications.sms_template_service');
+  sms:
+    # Uses system-wide SMS provider from sms_providers.settings
+    enabled: false               # Enable when SMS is configured
 
-// Save an email template
-$email_template_service->saveTemplate('node.published', 
-  'Your article "[node:title]" has been published',
-  'Hello [node:author:display-name],\n\nYour article has been published.\n\nView it here: [node:url]'
-);
+status_notifications:
+  unassigned:
+    enabled: true
+    recipient: admin             # 'customer' or 'admin'
+    admin_roles: [reviewer]      # Required when recipient: admin
+    subject: 'New Application Requires Review'
+    message: |
+      New application submitted:
+      ID: [application:application_id]
+      Group: [application:group_name]
+      View: [application:url]
 
-// Save an SMS template
-$sms_template_service->saveTemplate('application.approved',
-  'Your application [application:id] has been approved! Check your email for details.'
-);
+  approved:
+    enabled: true
+    recipient: customer
+    subject: 'Loan Application Approved'
+    message: |
+      Congratulations! Your loan application [application:application_id] has been approved.
+      Amount: [application:loan_amount]
+
+  rejected:
+    enabled: true
+    recipient: customer
+    subject: 'Application Update'
+    message: |
+      Application [application:application_id] status update.
+      Reason: [application:rejection_reason]
+      [application:rejection_message]
 ```
 
-### Template Hierarchy
+## Adding New Status Notifications
 
-Templates are resolved in the following order (most specific to least):
-1. `entity_type.bundle.field.status`
-2. `entity_type.field.status`
-3. `entity_type.status`
-4. `field.status`
-5. `status`
-6. `default`
-
-## Usage
-
-### Automatic Notifications
-
-When integrated with Status Manager, notifications are sent automatically on status changes:
-
-```php
-// In status_manager configuration
-$status_tracker->logStatusChange(
-  $entity,
-  'status',
-  'draft',
-  'published',
-  'user',
-  'both', // Send both email and SMS
-  'Published by editor'
-);
-```
-
-### Sending Custom Messages
-
-```php
-$notification_manager = \Drupal::service('status_manager_notifications.notification_manager');
-
-// Send custom email
-$result = $notification_manager->sendCustomMessage(
-  'email',
-  'user@example.com',
-  'Your custom message here',
-  ['subject' => 'Custom Subject']
-);
-
-// Send custom SMS
-$result = $notification_manager->sendCustomMessage(
-  'sms',
-  '+254700000000',
-  'Your SMS message here'
-);
-```
-
-## Creating Custom Providers
-
-### 1. Create the Plugin Class
-
-Create a new provider in your module at `src/Plugin/NotificationProvider/[Type]/MyCustomProvider.php`:
-
-```php
-<?php
-
-namespace Drupal\my_module\Plugin\NotificationProvider\Email;
-
-use Drupal\status_manager_notifications\Plugin\EmailProviderBase;
-use Drupal\Core\Form\FormStateInterface;
-
-/**
- * Provides a custom email notification provider.
- *
- * @NotificationProvider(
- *   id = "my_custom_email",
- *   label = @Translation("My Custom Email Provider"),
- *   description = @Translation("Sends emails via my custom service"),
- *   type = "email",
- *   weight = 10
- * )
- */
-class MyCustomProvider extends EmailProviderBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isConfigured() {
-    $config = $this->getConfiguration();
-    return !empty($config['api_key']) && !empty($config['from_email']);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function sendEmail($to, $subject, $body, array $options = []) {
-    $config = $this->getConfiguration();
-    
-    try {
-      // Your custom email sending logic here
-      $client = new MyEmailClient($config['api_key']);
-      $result = $client->send([
-        'to' => $to,
-        'from' => $config['from_email'],
-        'subject' => $subject,
-        'body' => $body,
-      ]);
-      
-      return [
-        'success' => TRUE,
-        'message' => 'Email sent successfully',
-        'message_id' => $result->id,
-      ];
-    }
-    catch (\Exception $e) {
-      return [
-        'success' => FALSE,
-        'message' => $e->getMessage(),
-      ];
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = parent::buildConfigurationForm($form, $form_state);
-    $config = $this->getConfiguration();
-
-    $form['api_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('API Key'),
-      '#default_value' => $config['api_key'] ?? '',
-      '#required' => TRUE,
-    ];
-
-    $form['from_email'] = [
-      '#type' => 'email',
-      '#title' => $this->t('From Email'),
-      '#default_value' => $config['from_email'] ?? '',
-      '#required' => TRUE,
-    ];
-
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getHelpText() {
-    return $this->t('Configure your custom email provider settings.');
-  }
-}
-```
-
-### 2. Create an SMS Provider
-
-```php
-<?php
-
-namespace Drupal\my_module\Plugin\NotificationProvider\Sms;
-
-use Drupal\status_manager_notifications\Plugin\SmsProviderBase;
-use Drupal\Core\Form\FormStateInterface;
-
-/**
- * Provides a custom SMS notification provider.
- *
- * @NotificationProvider(
- *   id = "my_custom_sms",
- *   label = @Translation("My Custom SMS Provider"),
- *   description = @Translation("Sends SMS via my custom service"),
- *   type = "sms",
- *   weight = 10
- * )
- */
-class MyCustomSmsProvider extends SmsProviderBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isConfigured() {
-    $config = $this->getConfiguration();
-    return !empty($config['api_key']) && !empty($config['sender_id']);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function sendSms($to, $message, array $options = []) {
-    $config = $this->getConfiguration();
-    
-    // Normalize phone number
-    $to = $this->normalizePhoneNumber($to);
-    
-    // Truncate message if needed
-    if ($config['truncate_messages']) {
-      $message = $this->truncateMessage($message);
-    }
-    
-    try {
-      // Your custom SMS sending logic
-      $client = new MySmsClient($config['api_key']);
-      $result = $client->send([
-        'to' => $to,
-        'from' => $config['sender_id'],
-        'message' => $message,
-      ]);
-      
-      return [
-        'success' => TRUE,
-        'message' => 'SMS sent successfully',
-        'message_id' => $result->id,
-      ];
-    }
-    catch (\Exception $e) {
-      return [
-        'success' => FALSE,
-        'message' => $e->getMessage(),
-      ];
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = parent::buildConfigurationForm($form, $form_state);
-    $config = $this->getConfiguration();
-
-    $form['api_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('API Key'),
-      '#default_value' => $config['api_key'] ?? '',
-      '#required' => TRUE,
-    ];
-
-    $form['sender_id'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Sender ID'),
-      '#default_value' => $config['sender_id'] ?? '',
-      '#required' => TRUE,
-    ];
-
-    $form['truncate_messages'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Truncate long messages'),
-      '#default_value' => $config['truncate_messages'] ?? TRUE,
-    ];
-
-    return $form;
-  }
-}
-```
-
-### 3. Clear Cache
-
-After creating your provider:
-```bash
-drush cr
-```
-
-Your provider will now appear in the provider selection dropdown.
+1. Add new status to `status_notifications` in config
+2. Set `enabled: true`
+3. Choose recipient type: `customer` or `admin`
+4. If `admin`, specify roles: `admin_roles: [reviewer, manager]`
+5. Write subject and message with tokens
+6. Import config: `drush cim`
 
 ## Available Tokens
 
-The module provides these tokens for use in templates:
+### Application Tokens
+- `[application:application_id]`
+- `[application:group_name]`
+- `[application:loan_amount]`
+- `[application:status]`
+- `[application:rejection_reason]`
+- `[application:rejection_message]`
+- `[application:url]` - Link to view application
+- `[application:created]`
+- `[application:changed]`
 
-- `[status_change:*]` - Status change entity tokens
-- `[entity_type:*]` - Target entity tokens (e.g., `[node:*]`, `[application:*]`)
-- `[site:*]` - Site information tokens
-- `[current-user:*]` - Current user tokens
+### User Tokens (for application owner)
+- `[application:owner:display-name]`
+- `[application:owner:mail]`
 
-### Custom Status Change Tokens
+### Status Change Tokens
+- `[status_change:old-status]`
+- `[status_change:new-status]`
+- `[status_change:created]`
 
-- `[status_change:old_status]` - Previous status value
-- `[status_change:new_status]` - New status value
-- `[status_change:field_label]` - Human-readable field label
-- `[status_change:old_status_label]` - Human-readable old status
-- `[status_change:new_status_label]` - Human-readable new status
-- `[status_change:created]` - When the change was made
-- `[status_change:notes]` - Any notes about the change
+## How It Works
 
-## API
+1. **Application Status Changes**
+   ```php
+   $application->setStatus('approved');
+   $application->save();
+   ```
 
-### Services
+2. **Status Manager Logs Change**
+   - Creates status_change entity
+   - Calls NotificationManager
 
-- `status_manager_notifications.notification_manager` - Main notification manager
-- `status_manager_notifications.email_template_service` - Email template management
-- `status_manager_notifications.sms_template_service` - SMS template management
-- `status_manager_notifications.token_service` - Token replacement service
+3. **Notification Manager**
+   - Gets config for 'approved' status
+   - Resolves recipients (customer or admins)
+   - Prepares message with tokens
+   - Sends via SMS if phone available, else email
+   - Logs results
 
-### Hooks
+## SMS Configuration
+
+1. Configure your SMS provider system-wide at `/admin/config/sms-providers`
+2. Select your default SMS provider (e.g., Africa's Talking)
+3. Enable SMS notifications in status notifications:
+
+```yaml
+providers:
+  sms:
+    enabled: true
+```
+
+4. Ensure users have `field_phone_number` field populated
+
+**Note**: The SMS provider is configured globally via the SMS Providers module. Notification settings only control whether to enable/disable SMS for status notifications.
+
+## Email Templates
+
+Email providers are hardcoded for consistency:
+
+1. **api_application_email**: Automatically used for customer emails (beautiful template)
+2. **application_admin_email**: Automatically used for admin notifications
+
+Both use ApplicationEmailProvider with HTML styling. You can customize sender email/name in configuration, but the providers themselves are fixed.
+
+## Recipient Resolution
+
+### Customer Notifications
+```yaml
+recipient: customer
+```
+- Sends to application owner's email
+- If `prefer_sms: true` and owner has phone → SMS first
+- Else → email
+
+### Admin Notifications
+```yaml
+recipient: admin
+admin_roles: [reviewer, manager]
+```
+- Finds all active users with specified roles
+- Sends notification to each matching user
+- Respects SMS preference per user
+
+## API Usage
 
 ```php
-/**
- * Alter notification provider definitions.
- */
-function hook_status_manager_notification_provider_info_alter(&$definitions) {
-  // Change provider weight
-  if (isset($definitions['sendgrid_email'])) {
-    $definitions['sendgrid_email']['weight'] = -10;
+// Get notification manager
+$manager = \Drupal::service('status_manager_notifications.notification_manager');
+
+// Send notifications for a status change
+$status_change = $status_tracker->logStatusChange(...);
+$results = $manager->sendNotificationsViaPlugins($status_change);
+
+// Check results
+foreach ($results as $result) {
+  if ($result['success']) {
+    // Notification sent
+  } else {
+    // Failed: $result['message']
   }
 }
 ```
@@ -353,18 +198,99 @@ function hook_status_manager_notification_provider_info_alter(&$definitions) {
 
 ### Notifications Not Sending
 
-1. Check that providers are configured correctly
-2. Verify that the notification type is enabled in Status Manager settings
-3. Check logs at `/admin/reports/dblog` for errors
+1. **Check config**: `drush cget status_manager_notifications.settings`
+2. **Verify status enabled**: Check `status_notifications.{status}.enabled`
+3. **Check provider enabled**: Verify email/SMS provider enabled
+4. **Test tokens**: Use Token module UI to test token replacement
+5. **Check logs**: `drush wd-show` for errors
 
-### Templates Not Found
+### SMS Not Working
 
-1. Ensure template keys follow the naming convention
-2. Check that a default template exists as fallback
-3. Clear cache after adding new templates
+1. **Provider enabled**: `providers.sms.enabled: true`
+2. **Provider configured**: Check AfricasTalkingSmsProvider configuration
+3. **Phone number exists**: User has `field_phone_number` populated
+4. **Fallback works**: If SMS fails, should fallback to email
 
-### Provider Not Appearing
+### Wrong Recipients
 
-1. Ensure your plugin annotation is correct
-2. Clear all caches: `drush cr`
-3. Check that your module is enabled
+1. **Check recipient type**: `customer` vs `admin`
+2. **Verify roles**: Ensure `admin_roles` includes correct roles
+3. **Check user status**: Only active users receive notifications
+
+## Performance
+
+- Lazy loading of providers (only instantiated when needed)
+- Cached provider instances within request
+- Minimal overhead per notification (~10-20ms)
+
+## Requirements
+
+- status_manager module
+- api_application module (provides Application entity and email providers)
+- Token module (core)
+- For SMS: Africa's Talking API account
+
+## Upgrade from Previous Version
+
+Removed features:
+- ❌ Generic entity support (applications only)
+- ❌ Complex template hierarchy
+- ❌ Multiple config files
+- ❌ Entity-specific provider overrides
+- ❌ Status mapper config file
+
+**Migration**: Update config to new `status_notifications` format. Old templates → message field.
+
+## Example: Complete Status Config
+
+```yaml
+status_notifications:
+  draft:
+    enabled: false  # Don't notify for draft
+
+  submitted:
+    enabled: true
+    recipient: admin
+    admin_roles: [reviewer]
+    subject: 'New Application Submitted'
+    message: |
+      Application [application:application_id] submitted by [application:group_name].
+
+      Review at: [application:url]
+
+  under_review:
+    enabled: true
+    recipient: customer
+    subject: 'Application Under Review'
+    message: |
+      Your application [application:application_id] is now under review.
+      We will notify you of our decision soon.
+
+  approved:
+    enabled: true
+    recipient: customer
+    subject: 'Application Approved!'
+    message: |
+      Great news! Your loan application has been approved.
+
+      Application ID: [application:application_id]
+      Loan Amount: [application:loan_amount]
+
+      Next steps: Check your email for disbursement details.
+
+  rejected:
+    enabled: true
+    recipient: customer
+    subject: 'Application Decision'
+    message: |
+      Your application [application:application_id] has been reviewed.
+
+      Status: Not approved at this time
+      Reason: [application:rejection_reason]
+
+      [application:rejection_message]
+```
+
+## License
+
+GPL-2.0-or-later

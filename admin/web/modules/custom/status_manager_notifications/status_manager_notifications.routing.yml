@@ -1,39 +1,7 @@
-status_manager_notifications.providers:
-  path: '/admin/config/system/status-manager/notifications/providers'
-  defaults:
-    _form: '\Drupal\status_manager_notifications\Form\NotificationProvidersForm'
-    _title: 'Notification Providers'
-  requirements:
-    _permission: 'administer status manager notifications'
-
-status_manager_notifications.email_templates:
-  path: '/admin/config/system/status-manager/notifications/email-templates'
-  defaults:
-    _form: '\Drupal\status_manager_notifications\Form\EmailTemplatesForm'
-    _title: 'Email Templates'
-  requirements:
-    _permission: 'administer status manager notifications'
-
-status_manager_notifications.sms_templates:
-  path: '/admin/config/system/status-manager/notifications/sms-templates'
-  defaults:
-    _form: '\Drupal\status_manager_notifications\Form\SmsTemplatesForm'
-    _title: 'SMS Templates'
-  requirements:
-    _permission: 'administer status manager notifications'
-
-status_manager_notifications.status_notification_mapper:
-  path: '/admin/config/system/status-manager/notifications/status-notification-mapper'
-  defaults:
-    _form: '\Drupal\status_manager_notifications\Form\StatusNotificationMapperForm'
-    _title: 'Status Notification Mapper'
-  requirements:
-    _permission: 'administer status manager notifications'
-
 status_manager_notifications.settings:
-  path: '/admin/config/system/status-manager/notifications'
+  path: '/admin/config/app-services/status-manager/notifications'
   defaults:
-    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-    _title: 'Status Manager Notifications'
+    _form: '\Drupal\status_manager_notifications\Form\NotificationSettingsForm'
+    _title: 'Notification Settings'
   requirements:
     _permission: 'administer status manager notifications'

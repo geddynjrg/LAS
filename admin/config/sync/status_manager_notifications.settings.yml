@@ -1,29 +1,49 @@
-email:
-  active_provider: default_email
-  providers:
-    default_email:
-      enabled: true
-      from_email: uwezo@adm.ee
-      from_name: Uwezo
-      reply_to: uwezo@adm.ee
-      use_html: true
-    application_admin_email:
-      enabled: true
-      from_email: admin@uwezo.com
-      from_name: 'Uwezo Admin'
-      reply_to: admin@uwezo.com
-      use_html: true
-  default_template: auto
-sms:
-  active_provider: ''
-  providers:
-    africas_talking_sms:
-      enabled: false
-  default_template: auto
-entities:
-  application:
-    override_enabled: 1
-    email_provider: api_application_email
-    email_template: ''
-    sms_provider: ''
-    sms_template: ''
+global:
+  prefer_sms: true
+  from_email: uwezo@adm.ee
+  from_name: Uwezo
+providers:
+  email:
+    enabled: true
+    from_email: uwezo@adm.ee
+    from_name: Uwezo
+    reply_to: uwezo@adm.ee
+    use_html: true
+  email_admin:
+    enabled: true
+    from_email: admin@uwezo.com
+    from_name: 'Uwezo Admin'
+    reply_to: admin@uwezo.com
+    use_html: true
+  sms:
+    enabled: false
+status_notifications:
+  unassigned:
+    enabled: true
+    recipient: admin
+    admin_roles:
+      - reviewer
+    subject: 'New Application Requires Review'
+    email_message: |
+      New application submitted:
+      ID: [application:application_id]
+      Group: [application:group_name]
+      View: [application:url]
+    sms_message: 'New application [application:application_id] from [application:group_name] needs review'
+  approved:
+    enabled: true
+    recipient: customer
+    subject: 'Loan Application Approved'
+    email_message: |
+      Congratulations! Your loan application [application:application_id] has been approved.
+      Amount: [application:loan_amount]
+    sms_message: 'Good news! Your loan application [application:application_id] for [application:loan_amount] has been approved.'
+  rejected:
+    enabled: true
+    recipient: customer
+    subject: 'Application Update'
+    email_message: |
+      Application [application:application_id] status update.
+      Reason: [application:rejection_reason]
+      [application:rejection_message]
+    sms_message: 'Application [application:application_id] update. Reason: [application:rejection_reason]'

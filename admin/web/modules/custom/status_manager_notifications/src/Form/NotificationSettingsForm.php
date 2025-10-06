@@ -5,314 +5,413 @@ namespace Drupal\status_manager_notifications\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\status_manager_notifications\Service\NotificationManager;
+use Drupal\Core\Config\TypedConfigManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Utility\Token;
+use Drupal\user\RoleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Configure Status Manager Notifications settings.
+ * Configure status notification settings.
  */
 class NotificationSettingsForm extends ConfigFormBase {
 
   /**
-   * The notification manager.
-   *
-   * @var \Drupal\status_manager_notifications\Service\NotificationManager
+   * The entity type manager.
    */
-  protected $notificationManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
+
+  /**
+   * The token service.
+   */
+  protected Token $token;
 
   /**
    * Constructs a NotificationSettingsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
-   * @param \Drupal\status_manager_notifications\Service\NotificationManager $notification_manager
-   *   The notification manager.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
-    NotificationManager $notification_manager,
+    TypedConfigManagerInterface $typed_config_manager,
+    EntityTypeManagerInterface $entity_type_manager,
+    Token $token,
   ) {
-    parent::__construct($config_factory);
-    $this->notificationManager = $notification_manager;
+    parent::__construct($config_factory, $typed_config_manager);
+    $this->entityTypeManager = $entity_type_manager;
+    $this->token = $token;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('config.factory'),
-      $container->get('status_manager_notifications.notification_manager')
+      $container->get('config.typed'),
+      $container->get('entity_type.manager'),
+      $container->get('token')
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames() {
-    return [
-      'status_manager_notifications.settings',
-      'status_manager_notifications.email',
-      'status_manager_notifications.sms',
-    ];
+  protected function getEditableConfigNames(): array {
+    return ['status_manager_notifications.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId(): string {
     return 'status_manager_notifications_settings';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $general_config = $this->config('status_manager_notifications.settings');
-    $email_config = $this->config('status_manager_notifications.email');
-    $sms_config = $this->config('status_manager_notifications.sms');
-
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $config = $this->config('status_manager_notifications.settings');
     $form['#tree'] = TRUE;
+    $form['#attached']['library'][] = 'status_manager_notifications/notification_settings_form';
+    $form['#attributes']['class'][] = 'notification-settings-form';
 
-    // General settings.
-    $form['general'] = [
+    // Global settings.
+    $form['global'] = [
       '#type' => 'details',
-      '#title' => $this->t('General Notification Settings'),
+      '#title' => $this->t('Global Settings'),
       '#open' => TRUE,
     ];
 
-    $form['general']['enabled'] = [
+    $form['global']['prefer_sms'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Enable notifications'),
-      '#description' => $this->t('Master switch for all notifications.'),
-      '#default_value' => $general_config->get('enabled') ?? TRUE,
+      '#title' => $this->t('Prefer SMS'),
+      '#description' => $this->t('Try SMS first, fallback to email if no phone number is available or SMS fails.'),
+      '#default_value' => $config->get('global.prefer_sms') ?? TRUE,
     ];
 
-    $form['general']['default_notification_type'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Default notification type'),
-      '#description' => $this->t('Default notification type for new status changes.'),
-      '#options' => [
-        'none' => $this->t('None'),
-        'email' => $this->t('Email'),
-        'sms' => $this->t('SMS'),
-        'both' => $this->t('Email and SMS'),
-      ],
-      '#default_value' => $general_config->get('default_notification_type') ?? 'none',
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
+    $form['global']['from_email'] = [
+      '#type' => 'email',
+      '#title' => $this->t('From Email'),
+      '#description' => $this->t('Default sender email address.'),
+      '#default_value' => $config->get('global.from_email') ?? '',
+      '#required' => TRUE,
     ];
 
-    // Email settings.
-    $form['email'] = [
+    $form['global']['from_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('From Name'),
+      '#description' => $this->t('Default sender name.'),
+      '#default_value' => $config->get('global.from_name') ?? 'Uwezo',
+      '#required' => TRUE,
+    ];
+
+    // Provider settings.
+    $form['providers'] = [
       '#type' => 'details',
-      '#title' => $this->t('Email Notification Settings'),
+      '#title' => $this->t('Delivery Providers'),
+      '#open' => FALSE,
+      '#description' => $this->t('Configure email and SMS delivery settings.'),
+    ];
+
+    $this->buildProviderSettings($form, $config);
+
+    // Status notifications.
+    $form['status_notifications'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Status Messages'),
       '#open' => TRUE,
+      '#description' => $this->t('Configure messages sent when application status changes. Use tokens to personalize content.'),
     ];
 
-    $form['email']['enabled'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Enable email notifications'),
-      '#default_value' => $email_config->get('enabled') ?? TRUE,
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
+    // Token help.
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      $form['status_notifications']['token_help'] = [
+        '#theme' => 'token_tree_link',
+        '#token_types' => ['application', 'status_change', 'user'],
+        '#global_types' => FALSE,
+        '#weight' => -10,
+      ];
+    }
 
-    $form['email']['from_email'] = [
-      '#type' => 'email',
-      '#title' => $this->t('From email address'),
-      '#description' => $this->t('Email address to use as sender. Leave empty to use site default.'),
-      '#default_value' => $email_config->get('from_email') ?? '',
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="email[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    $form['email']['reply_to'] = [
-      '#type' => 'email',
-      '#title' => $this->t('Reply-to email address'),
-      '#description' => $this->t('Email address for replies. Leave empty to use from address.'),
-      '#default_value' => $email_config->get('reply_to') ?? '',
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="email[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    $form['email']['use_html'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Use HTML format'),
-      '#description' => $this->t('Send emails in HTML format instead of plain text.'),
-      '#default_value' => $email_config->get('use_html') ?? TRUE,
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="email[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    $form['email']['include_attachments'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Include attachments'),
-      '#description' => $this->t('Include relevant files as email attachments when available.'),
-      '#default_value' => $email_config->get('include_attachments') ?? FALSE,
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="email[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    // SMS settings.
-    $form['sms'] = [
-      '#type' => 'details',
-      '#title' => $this->t('SMS Notification Settings'),
-      '#open' => FALSE,
-    ];
-
-    $form['sms']['enabled'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Enable SMS notifications'),
-      '#default_value' => $sms_config->get('enabled') ?? FALSE,
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    $form['sms']['provider'] = [
-      '#type' => 'select',
-      '#title' => $this->t('SMS provider'),
-      '#description' => $this->t('Choose your SMS service provider.'),
-      '#options' => [
-        'twilio' => $this->t('Twilio'),
-        'nexmo' => $this->t('Vonage (Nexmo)'),
-        'custom' => $this->t('Custom implementation'),
-      ],
-      '#default_value' => $sms_config->get('provider') ?? 'twilio',
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="sms[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    $form['sms']['api_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('API key'),
-      '#description' => $this->t('Your SMS provider API key.'),
-      '#default_value' => $sms_config->get('api_key') ?? '',
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="sms[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    $form['sms']['api_secret'] = [
-      '#type' => 'password',
-      '#title' => $this->t('API secret'),
-      '#description' => $this->t('Your SMS provider API secret. Leave empty to keep existing value.'),
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="sms[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    $form['sms']['from_number'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('From phone number'),
-      '#description' => $this->t('Phone number to send SMS from (e.g., +1234567890).'),
-      '#default_value' => $sms_config->get('from_number') ?? '',
-      '#states' => [
-        'visible' => [
-          ':input[name="general[enabled]"]' => ['checked' => TRUE],
-          ':input[name="sms[enabled]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-
-    // Test notifications section.
-    $form['test'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Test Notifications'),
-      '#open' => FALSE,
-    ];
-
-    $form['test']['test_email'] = [
-      '#type' => 'email',
-      '#title' => $this->t('Test email address'),
-      '#description' => $this->t('Send a test email to this address.'),
-    ];
-
-    $form['test']['test_phone'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Test phone number'),
-      '#description' => $this->t('Send a test SMS to this number (e.g., +1234567890).'),
-    ];
-
-    $form['test']['send_test_email'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Send Test Email'),
-      '#submit' => ['::sendTestEmail'],
-      '#limit_validation_errors' => [['test', 'test_email']],
-    ];
-
-    $form['test']['send_test_sms'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Send Test SMS'),
-      '#submit' => ['::sendTestSms'],
-      '#limit_validation_errors' => [['test', 'test_phone']],
-    ];
+    $this->buildStatusNotificationSettings($form, $form_state, $config);
 
     return parent::buildForm($form, $form_state);
   }
 
   /**
+   * Build provider settings section.
+   */
+  protected function buildProviderSettings(array &$form, $config): void {
+    // Email provider.
+    $form['providers']['email'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Customer Email'),
+      '#open' => FALSE,
+    ];
+
+    $form['providers']['email']['enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enabled'),
+      '#default_value' => $config->get('providers.email.enabled') ?? TRUE,
+    ];
+
+    $form['providers']['email']['from_email'] = [
+      '#type' => 'email',
+      '#title' => $this->t('From Email'),
+      '#default_value' => $config->get('providers.email.from_email') ?? '',
+      '#states' => [
+        'visible' => [':input[name="providers[email][enabled]"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    $form['providers']['email']['from_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('From Name'),
+      '#default_value' => $config->get('providers.email.from_name') ?? '',
+      '#states' => [
+        'visible' => [':input[name="providers[email][enabled]"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    // Admin email provider.
+    $form['providers']['email_admin'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Admin Email'),
+      '#open' => FALSE,
+    ];
+
+    $form['providers']['email_admin']['enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enabled'),
+      '#default_value' => $config->get('providers.email_admin.enabled') ?? TRUE,
+    ];
+
+    $form['providers']['email_admin']['from_email'] = [
+      '#type' => 'email',
+      '#title' => $this->t('From Email'),
+      '#default_value' => $config->get('providers.email_admin.from_email') ?? '',
+      '#states' => [
+        'visible' => [':input[name="providers[email_admin][enabled]"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    $form['providers']['email_admin']['from_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('From Name'),
+      '#default_value' => $config->get('providers.email_admin.from_name') ?? '',
+      '#states' => [
+        'visible' => [':input[name="providers[email_admin][enabled]"]' => ['checked' => TRUE]],
+      ],
+    ];
+
+    // SMS provider.
+    $form['providers']['sms'] = [
+      '#type' => 'details',
+      '#title' => $this->t('SMS'),
+      '#open' => FALSE,
+      '#description' => $this->t('Uses the system-wide SMS provider configured in SMS Providers settings.'),
+    ];
+
+    $form['providers']['sms']['enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enabled'),
+      '#description' => $this->t('Enable SMS notifications for status changes.'),
+      '#default_value' => $config->get('providers.sms.enabled') ?? FALSE,
+    ];
+  }
+
+  /**
+   * Build status notification settings.
+   */
+  protected function buildStatusNotificationSettings(array &$form, FormStateInterface $form_state, $config): void {
+    $statuses = $this->getApplicationStatuses();
+    $roles = $this->getUserRoles();
+
+    foreach ($statuses as $status_id => $status_label) {
+      $form['status_notifications'][$status_id] = [
+        '#type' => 'details',
+        '#title' => $status_label,
+        '#open' => FALSE,
+      ];
+
+      $status_config = $config->get("status_notifications.{$status_id}") ?? [];
+
+      $form['status_notifications'][$status_id]['enabled'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Send message'),
+        '#default_value' => $status_config['enabled'] ?? FALSE,
+      ];
+
+      $form['status_notifications'][$status_id]['recipient'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Send to'),
+        '#options' => [
+          'customer' => $this->t('Customer (Application Owner)'),
+          'admin' => $this->t('Administrators (by role)'),
+        ],
+        '#default_value' => $status_config['recipient'] ?? 'customer',
+        '#states' => [
+          'visible' => [
+            ":input[name=\"status_notifications[{$status_id}][enabled]\"]" => ['checked' => TRUE],
+          ],
+        ],
+      ];
+
+      $form['status_notifications'][$status_id]['admin_roles'] = [
+        '#type' => 'checkboxes',
+        '#title' => $this->t('Admin Roles'),
+        '#description' => $this->t('Which administrator roles to notify.'),
+        '#options' => $roles,
+        '#default_value' => $status_config['admin_roles'] ?? [],
+        '#states' => [
+          'visible' => [
+            ":input[name=\"status_notifications[{$status_id}][enabled]\"]" => ['checked' => TRUE],
+            ":input[name=\"status_notifications[{$status_id}][recipient]\"]" => ['value' => 'admin'],
+          ],
+        ],
+      ];
+
+      $form['status_notifications'][$status_id]['subject'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Subject'),
+        '#description' => $this->t('Email subject line (supports tokens).'),
+        '#default_value' => $status_config['subject'] ?? '',
+        '#states' => [
+          'visible' => [
+            ":input[name=\"status_notifications[{$status_id}][enabled]\"]" => ['checked' => TRUE],
+          ],
+        ],
+      ];
+
+      $form['status_notifications'][$status_id]['email_message'] = [
+        '#type' => 'textarea',
+        '#title' => $this->t('Email Message'),
+        '#description' => $this->t('Message sent via email (supports tokens).'),
+        '#default_value' => $status_config['email_message'] ?? $status_config['message'] ?? '',
+        '#rows' => 6,
+        '#states' => [
+          'visible' => [
+            ":input[name=\"status_notifications[{$status_id}][enabled]\"]" => ['checked' => TRUE],
+          ],
+        ],
+      ];
+
+      $sms_message = $status_config['sms_message'] ?? $status_config['message'] ?? '';
+      $char_count = mb_strlen($sms_message);
+
+      $form['status_notifications'][$status_id]['sms_message'] = [
+        '#type' => 'textarea',
+        '#title' => $this->t('SMS Message'),
+        '#description' => $this->t('Message sent via SMS (supports tokens). Character count: <span class="sms-count" id="sms-count-@id">@count</span> / 160', [
+          '@id' => $status_id,
+          '@count' => $char_count,
+        ]),
+        '#default_value' => $sms_message,
+        '#rows' => 3,
+        '#attributes' => [
+          'class' => ['sms-message-field'],
+          'data-counter-id' => "sms-count-{$status_id}",
+          'id' => "sms-message-{$status_id}",
+        ],
+        '#states' => [
+          'visible' => [
+            ":input[name=\"status_notifications[{$status_id}][enabled]\"]" => ['checked' => TRUE],
+          ],
+        ],
+      ];
+    }
+  }
+
+  /**
+   * Get application statuses.
+   */
+  protected function getApplicationStatuses(): array {
+    try {
+      $field_definitions = $this->entityTypeManager
+        ->getDefinition('application')
+        ->getClass()::baseFieldDefinitions($this->entityTypeManager->getDefinition('application'));
+
+      if (isset($field_definitions['status'])) {
+        $allowed_values = $field_definitions['status']->getSetting('allowed_values');
+        return $allowed_values;
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('status_manager_notifications')->error('Failed to load application statuses: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    // Fallback statuses.
+    return [
+      'draft' => $this->t('Draft'),
+      'submitted' => $this->t('Submitted'),
+      'under_review' => $this->t('Under Review'),
+      'approved' => $this->t('Approved'),
+      'rejected' => $this->t('Rejected'),
+    ];
+  }
+
+  /**
+   * Get available user roles.
+   */
+  protected function getUserRoles(): array {
+    $roles = [];
+    $role_storage = $this->entityTypeManager->getStorage('user_role');
+
+    foreach ($role_storage->loadMultiple() as $role_id => $role) {
+      if ($role_id !== RoleInterface::ANONYMOUS_ID && $role_id !== RoleInterface::AUTHENTICATED_ID) {
+        $roles[$role_id] = $role->label();
+      }
+    }
+
+    return $roles;
+  }
+
+  /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state): void {
     parent::validateForm($form, $form_state);
 
     $values = $form_state->getValues();
 
-    // Validate email settings.
-    if ($values['email']['enabled']) {
-      if (!empty($values['email']['from_email']) && !filter_var($values['email']['from_email'], FILTER_VALIDATE_EMAIL)) {
-        $form_state->setErrorByName('email][from_email', $this->t('Invalid from email address.'));
-      }
-
-      if (!empty($values['email']['reply_to']) && !filter_var($values['email']['reply_to'], FILTER_VALIDATE_EMAIL)) {
-        $form_state->setErrorByName('email][reply_to', $this->t('Invalid reply-to email address.'));
-      }
+    // Validate global settings.
+    if (empty($values['global']['from_email'])) {
+      $form_state->setErrorByName('global][from_email', $this->t('From email is required.'));
     }
 
-    // Validate SMS settings.
-    if ($values['sms']['enabled']) {
-      if (empty($values['sms']['api_key'])) {
-        $form_state->setErrorByName('sms][api_key', $this->t('API key is required when SMS is enabled.'));
-      }
+    // Validate status messages.
+    if (isset($values['status_notifications'])) {
+      foreach ($values['status_notifications'] as $status_id => $status_config) {
+        if (!empty($status_config['enabled'])) {
+          if (empty($status_config['subject'])) {
+            $form_state->setErrorByName("status_notifications][{$status_id}][subject",
+              $this->t('Subject is required.'));
+          }
 
-      if (!empty($values['sms']['from_number']) && !preg_match('/^\+[1-9]\d{1,14}$/', $values['sms']['from_number'])) {
-        $form_state->setErrorByName('sms][from_number', $this->t('Invalid phone number format. Use international format (e.g., +1234567890).'));
+          if (empty($status_config['email_message'])) {
+            $form_state->setErrorByName("status_notifications][{$status_id}][email_message",
+              $this->t('Email message is required.'));
+          }
+
+          if (empty($status_config['sms_message'])) {
+            $form_state->setErrorByName("status_notifications][{$status_id}][sms_message",
+              $this->t('SMS message is required.'));
+          }
+
+          if (!empty($status_config['sms_message']) && mb_strlen($status_config['sms_message']) > 320) {
+            $form_state->setErrorByName("status_notifications][{$status_id}][sms_message",
+              $this->t('SMS message should not exceed 320 characters (currently @count).', [
+                '@count' => mb_strlen($status_config['sms_message']),
+              ]));
+          }
+
+          if ($status_config['recipient'] === 'admin' && empty(array_filter($status_config['admin_roles']))) {
+            $form_state->setErrorByName("status_notifications][{$status_id}][admin_roles",
+              $this->t('Select at least one admin role.'));
+          }
+        }
       }
     }
   }
@@ -320,70 +419,34 @@ class NotificationSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    $config = $this->config('status_manager_notifications.settings');
     $values = $form_state->getValues();
 
-    // Save general settings.
-    $this->config('status_manager_notifications.settings')
-      ->set('enabled', $values['general']['enabled'])
-      ->set('default_notification_type', $values['general']['default_notification_type'])
-      ->save();
+    // Save global settings.
+    $config->set('global', $values['global']);
 
-    // Save email settings.
-    $email_config = $this->config('status_manager_notifications.email');
-    $email_config
-      ->set('enabled', $values['email']['enabled'])
-      ->set('from_email', $values['email']['from_email'])
-      ->set('reply_to', $values['email']['reply_to'])
-      ->set('use_html', $values['email']['use_html'])
-      ->set('include_attachments', $values['email']['include_attachments'])
-      ->save();
+    // Save provider settings.
+    $config->set('providers', $values['providers']);
 
-    // Save SMS settings.
-    $sms_config = $this->config('status_manager_notifications.sms');
-    $sms_config
-      ->set('enabled', $values['sms']['enabled'])
-      ->set('provider', $values['sms']['provider'])
-      ->set('api_key', $values['sms']['api_key'])
-      ->set('from_number', $values['sms']['from_number'])
-      ->save();
+    // Save status notifications.
+    if (isset($values['status_notifications'])) {
+      foreach ($values['status_notifications'] as $status_id => $status_config) {
+        // Filter out empty admin_roles checkboxes.
+        if (isset($status_config['admin_roles'])) {
+          $status_config['admin_roles'] = array_values(array_filter($status_config['admin_roles']));
+        }
 
-    // Only update API secret if a new value was provided.
-    if (!empty($values['sms']['api_secret'])) {
-      $sms_config->set('api_secret', $values['sms']['api_secret'])->save();
+        // Remove old message field if it exists (migration cleanup).
+        unset($status_config['message']);
+
+        $config->set("status_notifications.{$status_id}", $status_config);
+      }
     }
+
+    $config->save();
 
     parent::submitForm($form, $form_state);
-  }
-
-  /**
-   * Submit handler for test email.
-   */
-  public function sendTestEmail(array &$form, FormStateInterface $form_state) {
-    $test_email = $form_state->getValue(['test', 'test_email']);
-
-    if (empty($test_email)) {
-      $this->messenger()->addError($this->t('Please enter a test email address.'));
-      return;
-    }
-
-    // @todo Implement test email sending
-    $this->messenger()->addMessage($this->t('Test email functionality will be implemented.'));
-  }
-
-  /**
-   * Submit handler for test SMS.
-   */
-  public function sendTestSms(array &$form, FormStateInterface $form_state) {
-    $test_phone = $form_state->getValue(['test', 'test_phone']);
-
-    if (empty($test_phone)) {
-      $this->messenger()->addError($this->t('Please enter a test phone number.'));
-      return;
-    }
-
-    // @todo Implement test SMS sending
-    $this->messenger()->addMessage($this->t('Test SMS functionality will be implemented.'));
   }
 
 }

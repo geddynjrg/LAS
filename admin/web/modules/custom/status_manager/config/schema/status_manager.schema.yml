@@ -9,12 +9,6 @@ status_manager.settings:
         auto_tracking_enabled:
           type: boolean
           label: 'Enable automatic status tracking'
-        tracking_mode:
-          type: string
-          label: 'Tracking mode'
-        default_notification_type:
-          type: string
-          label: 'Default notification type'
         history_limit:
           type: integer
           label: 'History display limit'
@@ -24,43 +18,19 @@ status_manager.settings:
         cleanup_days:
           type: integer
           label: 'Cleanup after (days)'
-    entity_mappings:
+    tracking:
       type: mapping
-      label: 'Entity type mappings'
+      label: 'Tracking configuration'
       mapping:
-        '[%key]':
-          type: mapping
-          label: 'Entity type configuration'
-          mapping:
-            enabled:
-              type: boolean
-              label: 'Enable tracking'
-            tracked_fields:
-              type: mapping
-              label: 'Tracked fields'
-              mapping:
-                '[%key]':
-                  type: string
-                  label: 'Field name'
-            notification_type:
-              type: string
-              label: 'Notification type'
-    notifications:
-      type: mapping
-      label: 'Notification settings'
-      mapping:
-        email_enabled:
-          type: boolean
-          label: 'Enable email notifications'
-        email_from:
+        entity_type:
           type: string
-          label: 'Email from address'
-        sms_enabled:
-          type: boolean
-          label: 'Enable SMS notifications'
-        sms_provider:
+          label: 'Entity type to track (hardcoded to application)'
+        field:
           type: string
-          label: 'SMS provider'
+          label: 'Field to track (hardcoded to status)'
+        create_audit_trail:
+          type: boolean
+          label: 'Create audit trail of status changes'
     display:
       type: mapping
       label: 'Display settings'
