@@ -1,5 +1,25 @@
 import { z } from 'zod';
 
+// E.164 phone number regex
+const E164_PHONE_REGEX = /^\+[1-9]\d{7,15}$/;
+
+// Validate phone number in E.164 format or Kenya local format (9 digits)
+const validatePhoneNumber = (phone: string): boolean => {
+  // If it starts with +, validate as full E.164 format
+  if (phone.startsWith('+')) {
+    return E164_PHONE_REGEX.test(phone);
+  }
+
+  // If it doesn't start with +, validate as Kenya local format (9 digits)
+  // When prefixed with +254, it should create a valid E.164 number
+  if (!/^\d{9}$/.test(phone)) {
+    return false;
+  }
+
+  // Verify that +254{phone} would be valid E.164
+  return E164_PHONE_REGEX.test(`+254${phone}`);
+};
+
 // Function to create schemas with translated messages
 export const createEmailLoginSchema = (t: (key: string) => string) =>
   z.object({
@@ -27,29 +47,78 @@ const phoneLoginBaseSchema = z.object({
 
 // Function to create phone login schema with translated messages
 export const createPhoneLoginSchema = (t: (key: string) => string) =>
-  phoneLoginBaseSchema.refine(
-    (data) => {
-      // OTP verification step - requires both OTP code and request ID
-      if (data.otp_code && data.request_id) {
-        return data.otp_code.length > 0 && data.request_id.length > 0;
+  phoneLoginBaseSchema.superRefine((data, ctx) => {
+    // OTP verification step - requires both OTP code and request ID
+    if (data.otp_code && data.request_id) {
+      if (!data.otp_code || data.otp_code.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['otp_code'],
+          message: t('invalidOtpFormat'),
+        });
       }
-      // OTP request step - requires phone number
-      return data.phone && data.phone.length > 0;
-    },
-    {
-      message: t('provideValidCredentials'),
-    },
-  );
+      if (!data.request_id || data.request_id.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['request_id'],
+          message: t('provideValidCredentials'),
+        });
+      }
+    } else {
+      // OTP request step - requires phone number and validates format
+      if (!data.phone || data.phone.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['phone'],
+          message: t('phoneNumberRequired'),
+        });
+      } else if (!validatePhoneNumber(data.phone)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['phone'],
+          message: t('invalidPhoneFormat'),
+        });
+      }
+    }
+  });
 
 // Default schema for type inference
-export const phoneLoginSchema = phoneLoginBaseSchema.refine((data) => {
-  // OTP verification step - requires both OTP code and request ID
-  if (data.otp_code && data.request_id) {
-    return data.otp_code.length > 0 && data.request_id.length > 0;
-  }
-  // OTP request step - requires phone number
-  return data.phone && data.phone.length > 0;
-});
+export const phoneLoginSchema = phoneLoginBaseSchema.superRefine(
+  (data, ctx) => {
+    // OTP verification step - requires both OTP code and request ID
+    if (data.otp_code && data.request_id) {
+      if (!data.otp_code || data.otp_code.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['otp_code'],
+          message: 'OTP code is required',
+        });
+      }
+      if (!data.request_id || data.request_id.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['request_id'],
+          message: 'Request ID is required',
+        });
+      }
+    } else {
+      // OTP request step - requires phone number and validates format
+      if (!data.phone || data.phone.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['phone'],
+          message: 'Phone number is required',
+        });
+      } else if (!validatePhoneNumber(data.phone)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['phone'],
+          message: 'Please enter a valid phone number (9 digits)',
+        });
+      }
+    }
+  },
+);
 
 export type PhoneLogin = z.infer<typeof phoneLoginSchema>;
 

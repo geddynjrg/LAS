@@ -1,5 +1,5 @@
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
-import { validFile } from '@workspace/ui/lib/zod';
+import { phoneNumber, validFile } from '@workspace/ui/lib/zod';
 import { z } from 'zod';
 
 // Member schema for validation within members array - matching existing Member interface
@@ -13,7 +13,7 @@ const memberSchema = z.object({
     z.literal('Secretary'),
     z.literal('Member'),
   ]),
-  phoneNumber: z.string().min(1, 'Phone number is required'),
+  phoneNumber: phoneNumber(),
   photoOfId: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   disability: z
     .object({

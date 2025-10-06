@@ -1,3 +1,4 @@
+import { phoneNumber } from '@workspace/ui/lib/zod';
 import { z } from 'zod';
 
 export const membersConfirmationDataSchema = z.object({
@@ -16,7 +17,7 @@ export const membersConfirmationDataSchema = z.object({
             z.literal('Member'),
           ])
           .optional(),
-        phoneNumber: z.string().optional(),
+        phoneNumber: phoneNumber(false),
         photoOfId: z.string().optional(),
         disability: z
           .object({

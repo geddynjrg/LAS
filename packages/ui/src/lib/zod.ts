@@ -118,6 +118,21 @@ export function checkbox(required = false) {
   );
 }
 
+export function phoneNumber(required = true) {
+  const phoneSchema = z
+    .string()
+    .regex(
+      /^\+[1-9]\d{7,15}$/,
+      getIntlKey("phone_invalid"),
+    );
+
+  if (required) {
+    return phoneSchema.min(1, getIntlKey("required"));
+  }
+
+  return phoneSchema.optional();
+}
+
 export function validFile(accept: Accept, fileSize: number) {
   // File-like object schema (works for both File objects and FormDataEntryValue)
   const fileSchema = z
