@@ -56,7 +56,8 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
         $group_manager = \Drupal::service(GroupManager::SERVICE_ID);
         $group_access = $group_manager->checkAccess($entity, $operation, $account);
         if ($group_access->isAllowed()) {
-          // Constituency reviewers cannot edit applications at/beyond "approved_by_constituency".
+          // Constituency reviewers cannot edit at/beyond
+          // "approved_by_constituency".
           if ($this->isConstituencyReviewer($entity, $account)) {
             $restricted_statuses = [
               'approved_by_constituency',
@@ -81,6 +82,14 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
           ->addCacheableDependency($entity);
 
       case 'delete':
+        // Constituency reviewers can never delete applications.
+        if ($this->isConstituencyReviewer($entity, $account)) {
+          return AccessResult::forbidden()
+            ->cachePerPermissions()
+            ->cachePerUser()
+            ->addCacheableDependency($entity);
+        }
+
         // Only allow deleting draft applications by owner.
         if ($entity->getOwnerId() == $account->id() && $entity->getStatus() === 'draft') {
           return AccessResult::allowed()
@@ -130,7 +139,8 @@ class ApplicationAccessControlHandler extends EntityAccessControlHandler {
         }
       }
 
-      // Prevent constituency reviewers from editing status field for applications at/beyond "approved_by_constituency".
+      // Prevent constituency reviewers from editing status field
+      // at/beyond "approved_by_constituency".
       if ($field_definition->getName() === 'status' && $this->isConstituencyReviewer($entity, $account)) {
         $restricted_statuses = [
           'approved_by_constituency',

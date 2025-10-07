@@ -72,11 +72,30 @@
           var toDate = $dateTo.val();
 
           if (fromDate && toDate && fromDate > toDate) {
-            alert(
-              Drupal.t('The "From" date cannot be later than the "To" date.')
-            );
+            // Reset the field that was just changed
+            $(this).val("");
+
+            // Show validation message using Drupal's message system
+            var $messageArea = $form.find(".filter-messages");
+            if (!$messageArea.length) {
+              $messageArea = $('<div class="filter-messages messages messages--error"></div>');
+              $form.prepend($messageArea);
+            }
+
+            $messageArea
+              .html(Drupal.t('The "From" date cannot be later than the "To" date.'))
+              .show();
+
+            // Auto-hide message after 5 seconds
+            setTimeout(function () {
+              $messageArea.fadeOut();
+            }, 5000);
+
             return false;
           }
+
+          // Clear any error messages
+          $form.find(".filter-messages").hide();
 
           submitFormClean();
         });
@@ -155,7 +174,7 @@
    * Add loading state when navigating.
    */
   Drupal.behaviors.applicationFiltersLoading = {
-    attach: function (context, settings) {
+    attach: function (context) {
       const elements = once(
         "application-filters-loading",
         "form.application-filters-form",

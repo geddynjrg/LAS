@@ -59,18 +59,6 @@
     {% endif %}
   </div>
 
-  {# Quick Navigation #}
-  <nav class="application-nav">
-    <a href="#group-info" class="nav-link">{{ 'Group Info'|t }}</a>
-    <a href="#members" class="nav-link">{{ 'Members'|t }}</a>
-    <a href="#business-info" class="nav-link">{{ 'Business Info'|t }}</a>
-    <a href="#loan-details" class="nav-link">{{ 'Loan Details'|t }}</a>
-    <a href="#bank-details" class="nav-link">{{ 'Bank Details'|t }}</a>
-    {% if application.status == 'rejected' %}
-      <a href="#rejection-details" class="nav-link">{{ 'Rejection Details'|t }}</a>
-    {% endif %}
-  </nav>
-
   {# Main Content #}
   <div class="application-content">
 

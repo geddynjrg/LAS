@@ -10,64 +10,6 @@
   let activeStatusUpdateRequest = null;
 
   /**
-   * Smooth scrolling navigation for application sections.
-   */
-  Drupal.behaviors.applicationViewNavigation = {
-    attach: function (context, settings) {
-      // Use Drupal 11's once() function
-      const navElements = once("application-nav", ".application-nav", context);
-
-      navElements.forEach(function (navElement) {
-        const $nav = $(navElement);
-        const $links = $nav.find(".nav-link");
-        const $sections = $(".content-section");
-        const navHeight = $nav.outerHeight();
-
-        // Smooth scrolling
-        $links.on("click", function (e) {
-          e.preventDefault();
-          const target = $(this).attr("href");
-          const $target = $(target);
-
-          if ($target.length) {
-            const scrollTop = $target.offset().top - navHeight - 20;
-            $("html, body").animate(
-              {
-                scrollTop: scrollTop,
-              },
-              500
-            );
-          }
-        });
-
-        // Active section highlighting
-        function updateActiveSection() {
-          const scrollPosition = $(window).scrollTop() + navHeight + 50;
-
-          $sections.each(function () {
-            const $section = $(this);
-            const sectionTop = $section.offset().top;
-            const sectionBottom = sectionTop + $section.outerHeight();
-            const sectionId = $section.attr("id");
-
-            if (
-              scrollPosition >= sectionTop &&
-              scrollPosition < sectionBottom
-            ) {
-              $links.removeClass("active");
-              $links.filter('[href="#' + sectionId + '"]').addClass("active");
-            }
-          });
-        }
-
-        // Update on scroll
-        $(window).on("scroll", updateActiveSection);
-        updateActiveSection();
-      });
-    },
-  };
-
-  /**
    * Inline status update form.
    */
   Drupal.behaviors.applicationInlineStatusUpdate = {
