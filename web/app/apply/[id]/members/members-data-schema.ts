@@ -8,11 +8,7 @@ const memberSchema = z.object({
   fullname: z.string().min(1, 'Member name is required'),
   nationalIdCode: z.string().min(1, 'National ID is required'),
   gender: z.union([z.literal('Male'), z.literal('Female'), z.literal('Other')]),
-  type: z.union([
-    z.literal('Chairman'),
-    z.literal('Secretary'),
-    z.literal('Member'),
-  ]),
+  type: z.string().min(1, 'Position is required'),
   phoneNumber: phoneNumber(),
   photoOfId: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   disability: z

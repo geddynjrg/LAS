@@ -9,10 +9,10 @@ import {
   membersDataSchema,
 } from '@/app/apply/[id]/members/members-data-schema';
 import {
-  validateMembersAgainstTaxonomy,
-  getMemberValidationErrorMessages,
-  canAssignRole,
   type MemberValidationResult,
+  canAssignRole,
+  getMemberValidationErrorMessages,
+  validateMembersAgainstTaxonomy,
 } from '@/app/apply/[id]/members/members-validation';
 import { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
@@ -32,12 +32,12 @@ import {
 } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
 import { Checkbox } from '@workspace/ui/components/checkbox';
-import { RadioGroup } from '@workspace/ui/components/radio-group';
 import { Container } from '@workspace/ui/components/container';
 import { DataNode } from '@workspace/ui/components/data-node';
 import { FileUploadInput } from '@workspace/ui/components/file-upload-input';
 import { Field, Form } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
+import { RadioGroup } from '@workspace/ui/components/radio-group';
 import { Select } from '@workspace/ui/components/select';
 import { Underline } from '@workspace/ui/components/underline';
 import { FormCard } from '@workspace/ui/components/uwezo/form-card';
@@ -50,7 +50,7 @@ import {
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { formatBytes } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { FC, useState, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 // Helper function to extract error message from various error types
 const getErrorMessage = (error: any): string => {
@@ -85,12 +85,16 @@ export const MembersDataForm: FC<MembersDataProps> = ({
   );
   const [displayNewMemberForm, setDisplayNewMemberForm] = useState(false);
   const [membersInEdit, setMembersInEdit] = useState<number[]>([]);
-  const [membersValidation, setMembersValidation] = useState<MemberValidationResult>({ isValid: true, errors: [] });
+  const [membersValidation, setMembersValidation] =
+    useState<MemberValidationResult>({ isValid: true, errors: [] });
 
   // Real-time validation whenever members or taxonomy options change
   useEffect(() => {
     if (memberTypeOptions && members.length > 0) {
-      const validation = validateMembersAgainstTaxonomy(members, memberTypeOptions);
+      const validation = validateMembersAgainstTaxonomy(
+        members,
+        memberTypeOptions,
+      );
       setMembersValidation(validation);
     } else {
       setMembersValidation({ isValid: true, errors: [] });
@@ -104,7 +108,10 @@ export const MembersDataForm: FC<MembersDataProps> = ({
     try {
       // Validate members before saving
       if (memberTypeOptions) {
-        const validation = validateMembersAgainstTaxonomy(updatedMembers, memberTypeOptions);
+        const validation = validateMembersAgainstTaxonomy(
+          updatedMembers,
+          memberTypeOptions,
+        );
         setMembersValidation(validation);
 
         if (!validation.isValid) {
@@ -114,7 +121,10 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       }
 
       await updateApplicationMembersData(id, {
-        natureOfTheGroup: state.values?.natureOfGroup || applicationMembersData?.natureOfTheGroup || '',
+        natureOfTheGroup:
+          state.values?.natureOfGroup ||
+          applicationMembersData?.natureOfTheGroup ||
+          '',
         members: updatedMembers as Member[],
       });
     } catch (error) {
@@ -138,7 +148,9 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       return;
     }
 
-    const updatedMembers = members.filter((member) => member.nationalIdCode !== memberId);
+    const updatedMembers = members.filter(
+      (member) => member.nationalIdCode !== memberId,
+    );
     setMembers(updatedMembers);
     await saveMembersData(updatedMembers);
   };
@@ -168,15 +180,15 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                 options={[
                   {
                     label: t('MembersPage.youth'),
-                    value: "youth",
+                    value: 'youth',
                   },
                   {
                     label: t('MembersPage.peopleWithDisabilities'),
-                    value: "pwd",
+                    value: 'pwd',
                   },
                   {
                     label: t('MembersPage.women'),
-                    value: "women",
+                    value: 'women',
                   },
                 ]}
               />
@@ -195,11 +207,16 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             </Button>
           ) : (
             <div className="text-destructive text-sm font-medium p-4 border border-destructive rounded-md bg-destructive/5">
-              <div className="font-semibold mb-2">Member position types unavailable</div>
+              <div className="font-semibold mb-2">
+                Member position types unavailable
+              </div>
               <div className="text-xs">
-                Unable to load member position types from the system. Please refresh the page and try again.
+                Unable to load member position types from the system. Please
+                refresh the page and try again.
                 <br />
-                <span className="font-medium">You cannot add or edit members until this is resolved.</span>
+                <span className="font-medium">
+                  You cannot add or edit members until this is resolved.
+                </span>
               </div>
             </div>
           )}
@@ -225,9 +242,13 @@ export const MembersDataForm: FC<MembersDataProps> = ({
           {!membersValidation.isValid && (
             <div className="text-destructive text-sm font-medium space-y-1">
               <div className="font-semibold">Member role conflicts:</div>
-              {getMemberValidationErrorMessages(membersValidation).map((error, index) => (
-                <div key={index} className="text-xs">• {error}</div>
-              ))}
+              {getMemberValidationErrorMessages(membersValidation).map(
+                (error, index) => (
+                  <div key={index} className="text-xs">
+                    • {error}
+                  </div>
+                ),
+              )}
             </div>
           )}
 
@@ -315,10 +336,15 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                       </PersonAccordionContent>
                       <MemberAccordionFooter
                         onEdit={() => {
-                          if (memberTypeOptions && memberTypeOptions.length > 0) {
+                          if (
+                            memberTypeOptions &&
+                            memberTypeOptions.length > 0
+                          ) {
                             setMembersInEdit([...membersInEdit, index]);
                           } else {
-                            alert('Cannot edit member: Member position types are currently unavailable. Please refresh the page and try again.');
+                            alert(
+                              'Cannot edit member: Member position types are currently unavailable. Please refresh the page and try again.',
+                            );
                           }
                         }}
                         onRemove={() =>
@@ -426,7 +452,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
   // Get the index of the current member being edited
   const currentMemberIndex = existingMember
-    ? members.findIndex(m => m.nationalIdCode === existingMember.nationalIdCode)
+    ? members.findIndex(
+        (m) => m.nationalIdCode === existingMember.nationalIdCode,
+      )
     : undefined;
 
   const [state] = useForm(memberAction, memberSchema, formInitialValues);
@@ -446,10 +474,12 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     return (
       <div className="border-destructive grid gap-4 rounded-md border bg-destructive/5 p-4">
         <div className="text-destructive font-medium">
-          Cannot {isNew ? 'add' : 'edit'} member: Member position types unavailable
+          Cannot {isNew ? 'add' : 'edit'} member: Member position types
+          unavailable
         </div>
         <div className="text-destructive text-sm">
-          Member position types could not be loaded. Please refresh the page and try again.
+          Member position types could not be loaded. Please refresh the page and
+          try again.
         </div>
         <div className="flex flex-row justify-center gap-8">
           <Button
@@ -529,15 +559,15 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             options={[
               {
                 label: t('MembersPage.male'),
-                value: "Male",
+                value: 'Male',
               },
               {
                 label: t('MembersPage.female'),
-                value: "Female",
+                value: 'Female',
               },
               {
                 label: t('Common.other'),
-                value: "Other",
+                value: 'Other',
               },
             ]}
           />
@@ -553,11 +583,12 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             type="tel"
             startDecorator="+254"
             {...props}
-            defaultValue={member?.phoneNumber}
+            defaultValue={member?.phoneNumber?.replace(/^\+254/, '')}
             onValueChange={(value) => {
+              const phoneWithCountryCode = value ? `+254${value}` : '';
               setMember((member) => ({
                 ...member,
-                phoneNumber: value,
+                phoneNumber: phoneWithCountryCode,
               }));
             }}
           />
@@ -573,19 +604,19 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <Select
             options={
               memberTypeOptions
-                ? memberTypeOptions.map(option => {
-                      const assignmentCheck = canAssignRole(
-                        option.value,
-                        members,
-                        memberTypeOptions,
-                        currentMemberIndex
-                      );
-                      return {
-                        label: option.label,
-                        value: option.value,
-                        disabled: !assignmentCheck.canAssign,
-                      };
-                    })
+                ? memberTypeOptions.map((option) => {
+                    const assignmentCheck = canAssignRole(
+                      option.value,
+                      members,
+                      memberTypeOptions,
+                      currentMemberIndex,
+                    );
+                    return {
+                      label: option.label,
+                      value: option.value,
+                      disabled: !assignmentCheck.canAssign,
+                    };
+                  })
                 : []
             }
             {...props}
@@ -597,10 +628,12 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                   value,
                   members,
                   memberTypeOptions,
-                  currentMemberIndex
+                  currentMemberIndex,
                 );
                 if (!assignmentCheck.canAssign) {
-                  alert(assignmentCheck.reason || 'This role cannot be assigned.');
+                  alert(
+                    assignmentCheck.reason || 'This role cannot be assigned.',
+                  );
                   return;
                 }
               }
@@ -774,12 +807,15 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               photoOfId: member.photoOfId,
               // Convert disability object to checkbox flag for validation
               disability: member.disability ? 'on' : null,
-              certificateOfDisability: member.disability?.certificateOfDisability,
+              certificateOfDisability:
+                member.disability?.certificateOfDisability,
               pwdNumber: member.disability?.pwdNumber,
             };
 
             // Validate member data before saving
-            const validationResult = memberSchema.safeParse(formDataForValidation);
+            const validationResult = memberSchema.safeParse(
+              formDataForValidation,
+            );
             if (!validationResult.success) {
               const errors = validationResult.error.flatten().fieldErrors;
 
@@ -792,7 +828,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               if (errors.phoneNumber) missingFields.push('Phone Number');
               if (errors.photoOfId) missingFields.push('Photo of ID');
 
-              alert(`Please fill the required fields: ${missingFields.join(', ')}`);
+              alert(
+                `Please fill the required fields: ${missingFields.join(', ')}`,
+              );
               return;
             }
 
@@ -802,10 +840,12 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                 member.type,
                 members,
                 memberTypeOptions,
-                currentMemberIndex
+                currentMemberIndex,
               );
               if (!assignmentCheck.canAssign) {
-                alert(assignmentCheck.reason || 'This role cannot be assigned.');
+                alert(
+                  assignmentCheck.reason || 'This role cannot be assigned.',
+                );
                 return;
               }
             }

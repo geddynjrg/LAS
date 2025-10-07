@@ -10,13 +10,7 @@ export const membersConfirmationDataSchema = z.object({
         gender: z
           .union([z.literal('Male'), z.literal('Female'), z.literal('Other')])
           .optional(),
-        type: z
-          .union([
-            z.literal('Chairman'),
-            z.literal('Secretary'),
-            z.literal('Member'),
-          ])
-          .optional(),
+        type: z.string().optional(),
         phoneNumber: phoneNumber(false),
         photoOfId: z.string().optional(),
         disability: z
