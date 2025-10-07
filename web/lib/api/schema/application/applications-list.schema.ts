@@ -177,8 +177,8 @@ export const ApplicationDetailSchema = z.object({
       county: TaxonomyTermSchema.optional(),
       constituency: TaxonomyTermSchema.optional(),
       ward: z.string().optional(),
-      meeting_point: z.string().optional(),
-      nearest_landmark: z.string().optional(),
+      meeting_point: z.string().nullish(),
+      nearest_landmark: z.string().nullish(),
     })
     .optional(),
   nature_of_group: z.enum(['youth', 'pwd', 'women']).optional(),

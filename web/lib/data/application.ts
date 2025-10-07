@@ -8,8 +8,13 @@ import {
   SyncStatus,
 } from '@/generated/prisma';
 import { getProfile } from '@/lib/api/profile';
-import { AuthenticationError, isAuthenticationError } from '@/lib/errors/auth-error';
 import { addToSyncQueue } from '@/lib/api/sync.service';
+import { handlePrismaError, prisma } from '@/lib/db/prisma';
+import {
+  AuthenticationError,
+  isAuthenticationError,
+} from '@/lib/errors/auth-error';
+import { getSession } from '@/lib/session';
 import type {
   ApplicationData,
   DeclarationsData,
@@ -19,8 +24,6 @@ import type {
   MembersData,
   ProposedBusinessData,
 } from '@/lib/types/application.types';
-import { handlePrismaError, prisma } from '@/lib/db/prisma';
-import { getSession } from '@/lib/session';
 import { createApplicationId } from '@/lib/util';
 import { isFileUpload } from '@workspace/ui/lib/utils';
 
@@ -381,6 +384,7 @@ export async function updateApplicationMembersData(
           member.status === 'confirmed'
             ? MemberStatus.CONFIRMED
             : MemberStatus.PENDING,
+        requiresConfirmation: member.requiresConfirmation ?? true,
       })),
     );
 

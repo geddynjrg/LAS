@@ -172,9 +172,7 @@ function mapApiApplicationToLocal(
           fullname: member.name || '',
           nationalIdCode: member.id_number || '',
           gender: (member.gender as 'Male' | 'Female' | 'Other') || 'Other',
-          type:
-            (member.position?.name as 'Chairman' | 'Secretary' | 'Member') ||
-            'Member',
+          type: member.position?.name || 'Member',
           phoneNumber: member.phone_number || '',
           photoOfId: parseFileData(member.photo_member_id),
           disability: member.person_with_disability
