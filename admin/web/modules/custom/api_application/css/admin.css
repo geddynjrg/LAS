@@ -1168,13 +1168,6 @@ body.path-admin-content-applications {
 .status-badge--submitted::before {
   background: #3b82f6;
 }
-.status-badge--unassigned {
-  background: #fef3c7;
-  color: #92400e;
-}
-.status-badge--unassigned::before {
-  background: #f59e0b;
-}
 .status-badge--under_review {
   background: #e0e7ff;
   color: #5b21b6;

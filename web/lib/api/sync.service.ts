@@ -569,48 +569,6 @@ async function transformApplicationForExternalApi(
     return undefined;
   };
 
-  // Transform key activities
-  const transformKeyActivities = (
-    activities: any,
-  ): ('value_chain' | 'table_banking' | 'other')[] | undefined => {
-    if (!activities) return undefined;
-
-    let activitiesArray: any[] = [];
-
-    // Handle JSON string parsing
-    if (typeof activities === 'string') {
-      try {
-        const parsed = JSON.parse(activities);
-        activitiesArray = Array.isArray(parsed) ? parsed : [parsed];
-      } catch {
-        // If JSON parsing fails, treat as single string value
-        activitiesArray = [activities];
-      }
-    } else if (Array.isArray(activities)) {
-      activitiesArray = activities;
-    } else {
-      // For any other type, wrap in array
-      activitiesArray = [activities];
-    }
-
-    return activitiesArray
-      .map((activity) => {
-        if (typeof activity === 'string') {
-          const activityMap: Record<
-            string,
-            'value_chain' | 'table_banking' | 'other'
-          > = {
-            'Value chain': 'value_chain',
-            'Table banking': 'table_banking',
-            Other: 'other',
-          };
-          return activityMap[activity] || 'other';
-        }
-        return 'other';
-      })
-      .filter(Boolean) as ('value_chain' | 'table_banking' | 'other')[];
-  };
-
   // Clean null values
   const cleanValue = <T>(value: T | null | undefined): T | undefined => {
     return value === null ? undefined : value;
@@ -685,7 +643,7 @@ async function transformApplicationForExternalApi(
     group_registration_certificate: groupRegistrationCertificate,
     list_of_members_certificate: listOfMembersOnCertificate,
     group_background: parseToArray(application.groupData?.purposeOfTheGroup),
-    key_activities: transformKeyActivities(
+    key_activities: parseToArray(
       application.groupData?.keyActivitiesOfTheGroup,
     ),
     value_chain: parseToArray(application.groupData?.valueChain),
