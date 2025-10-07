@@ -1077,3 +1077,29 @@ function api_application_update_11018() {
     '@count' => $application_count,
   ]);
 }
+
+/**
+ * Delete value_chain vocabulary after merging into group_activities.
+ */
+function api_application_update_11019(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+  $vocabulary_storage = $entity_type_manager->getStorage('taxonomy_vocabulary');
+
+  // Delete all terms from value_chain vocabulary.
+  $terms = $term_storage->loadByProperties([
+    'vid' => 'value_chain',
+  ]);
+
+  if (!empty($terms)) {
+    $term_storage->delete($terms);
+  }
+
+  // Delete the value_chain vocabulary.
+  $vocabulary = $vocabulary_storage->load('value_chain');
+  if ($vocabulary) {
+    $vocabulary->delete();
+  }
+
+  return t('Deleted value_chain vocabulary and its terms (merged into group_activities).');
+}
