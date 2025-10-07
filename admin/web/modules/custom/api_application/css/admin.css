@@ -1250,6 +1250,27 @@ body.path-admin-content-applications {
 .status-badge--closed::before {
   background: #6b7280;
 }
+.status-badge--group_member_confirmation {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.status-badge--group_member_confirmation::before {
+  background: #3b82f6;
+}
+.status-badge--constituency_review {
+  background: #e0e7ff;
+  color: #5b21b6;
+}
+.status-badge--constituency_review::before {
+  background: #8b5cf6;
+}
+.status-badge--approved_by_constituency {
+  background: #d1fae5;
+  color: #065f46;
+}
+.status-badge--approved_by_constituency::before {
+  background: #10b981;
+}
 /* Amount styling */
 .loan-amount {
   font-weight: 600;

@@ -7,6 +7,7 @@ import {
 import {
   getChildTaxonomyOptions,
   getFormFieldOptions,
+  getTopLevelTaxonomyOptions,
 } from '@/lib/api/taxonomy.service';
 import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
@@ -35,7 +36,7 @@ export default async function Page({ params }: GroupDataPageProps) {
     getChildTaxonomyOptions('group_activities', 'Value chain'),
     getCountyOptions(),
     getConstituencyOptions(),
-    getFormFieldOptions('keyActivitiesOfTheGroup'),
+    getTopLevelTaxonomyOptions('group_activities'),
   ]);
 
   const taxonomyOptions = {

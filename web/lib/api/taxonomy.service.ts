@@ -152,6 +152,46 @@ export async function getChildTaxonomyOptions(
 }
 
 /**
+ * Get top-level taxonomy options (terms with no parent)
+ */
+export async function getTopLevelTaxonomyOptions(
+  vocabularyId: string,
+): Promise<TaxonomyOption[]> {
+  try {
+    const vocabulary = await prisma.taxonomyVocabulary.findUnique({
+      where: { vocabularyId },
+      include: { terms: true },
+    });
+
+    if (!vocabulary) {
+      return [];
+    }
+
+    // Get all top-level terms (terms with empty parentIds or parentIds containing only 0)
+    const topLevelTerms = vocabulary.terms.filter((term: any) => {
+      const parentIds = JSON.parse(term.parentIds || '[]');
+      return (
+        parentIds.length === 0 || (parentIds.length === 1 && parentIds[0] === 0)
+      );
+    });
+
+    return topLevelTerms
+      .sort((a: any, b: any) => a.weight - b.weight)
+      .map((term: any) => ({
+        label: term.name,
+        value: term.name,
+        limitedRole: term.limitedRole,
+      }));
+  } catch (error) {
+    console.error(
+      `Error fetching top-level taxonomy options for vocabulary ${vocabularyId}:`,
+      error,
+    );
+    return [];
+  }
+}
+
+/**
  * Get all taxonomy vocabularies for a specific entity type
  */
 export async function getTaxonomyVocabulariesByEntity(

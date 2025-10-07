@@ -6,6 +6,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Link;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Defines a class to build a listing of Application entities.
@@ -17,7 +18,7 @@ class ApplicationListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function buildHeader() {
+  public function buildHeader(): array {
     $header['id'] = [
       'data' => $this->t('ID'),
       'class' => ['application-header-id', 'text-center'],
@@ -54,7 +55,7 @@ class ApplicationListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function buildRow(EntityInterface $entity) {
+  public function buildRow(EntityInterface $entity): array {
     /** @var \Drupal\api_application\Entity\ApplicationInterface $entity */
 
     $row['id'] = [
@@ -132,7 +133,7 @@ class ApplicationListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultOperations(EntityInterface $entity) {
+  public function getDefaultOperations(EntityInterface $entity): array {
     $operations = [];
 
     // View operation.
@@ -203,7 +204,7 @@ class ApplicationListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function render() {
+  public function render(): array {
     $build = parent::render();
 
     // Add custom CSS for styling.
@@ -236,7 +237,7 @@ class ApplicationListBuilder extends EntityListBuilder {
 
     // Get status counts.
     $status_counts = [];
-    $statuses = ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'disbursed', 'closed'];
+    $statuses = ApplicationStatusConstants::getAll();
     foreach ($statuses as $status) {
       $count = $this->getStorage()->getQuery()
         ->accessCheck(TRUE)
@@ -274,7 +275,7 @@ class ApplicationListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function getEntityIds() {
+  protected function getEntityIds(): array {
     $query = $this->getStorage()->getQuery()
       ->accessCheck(TRUE)
       ->sort('created', 'DESC');
@@ -344,7 +345,7 @@ class ApplicationListBuilder extends EntityListBuilder {
    * @return string
    *   The status label.
    */
-  protected function getStatusLabel($status) {
+  protected function getStatusLabel(string $status): string {
     $statuses = [
       'draft' => $this->t('Draft'),
       'submitted' => $this->t('Submitted'),
@@ -367,16 +368,22 @@ class ApplicationListBuilder extends EntityListBuilder {
    * @return array
    *   Array with 'label' keys.
    */
-  protected function getStatusConfig($status) {
+  protected function getStatusConfig(string $status): array {
     $configs = [
       'draft' => [
         'label' => $this->t('Draft'),
       ],
+      'group_member_confirmation' => [
+        'label' => $this->t('Member Confirmation'),
+      ],
       'submitted' => [
         'label' => $this->t('Submitted'),
       ],
-      'unassigned' => [
-        'label' => $this->t('Unassigned'),
+      'constituency_review' => [
+        'label' => $this->t('Constituency Review'),
+      ],
+      'approved_by_constituency' => [
+        'label' => $this->t('Approved by Constituency'),
       ],
       'under_review' => [
         'label' => $this->t('Under Review'),
@@ -406,14 +413,16 @@ class ApplicationListBuilder extends EntityListBuilder {
    * @param string $status
    *   The status machine name.
    *
-   * @return string
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The status description.
    */
-  protected function getStatusDescription($status) {
+  protected function getStatusDescription(string $status): TranslatableMarkup {
     $descriptions = [
       'draft' => $this->t('Application is being prepared and not yet submitted'),
+      'group_member_confirmation' => $this->t('Waiting for group members to confirm their participation via SMS'),
       'submitted' => $this->t('Application has been submitted and is awaiting review'),
-      'unassigned' => $this->t('Application is awaiting assignment to a reviewer'),
+      'constituency_review' => $this->t('Application is being reviewed at constituency level'),
+      'approved_by_constituency' => $this->t('Application has been approved by the constituency and is ready for further review'),
       'under_review' => $this->t('Application is currently being reviewed by administrators'),
       'approved' => $this->t('Application has been approved and is ready for disbursement'),
       'rejected' => $this->t('Application has been rejected'),
