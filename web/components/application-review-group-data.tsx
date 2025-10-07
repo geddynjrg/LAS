@@ -1,3 +1,4 @@
+import { FileLink } from '@/components/file-link';
 import type { GroupData } from '@/lib/types/application.types';
 import { IconPencil } from '@tabler/icons-react';
 import {
@@ -8,7 +9,6 @@ import {
 } from '@workspace/ui/components/accordion';
 import { Button } from '@workspace/ui/components/button';
 import { DataNode } from '@workspace/ui/components/data-node';
-import type { ValidFile } from '@workspace/ui/lib/zod';
 import { useFormatter, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import type { FC } from 'react';
@@ -61,10 +61,14 @@ export const ApplicationReviewGroupData: FC<{
                 <DataNode
                   label={t('groupData.basicInfo.groupRegistrationCert')}
                 >
-                  {getFileName(groupData.basics.groupRegistrationCertificate)}
+                  <FileLink
+                    file={groupData.basics.groupRegistrationCertificate}
+                  />
                 </DataNode>
                 <DataNode label={t('groupData.basicInfo.listOfMembersOnCert')}>
-                  {getFileName(groupData.basics.listOfMembersOnCertificate)}
+                  <FileLink
+                    file={groupData.basics.listOfMembersOnCertificate}
+                  />
                 </DataNode>
               </div>
             </AccordionContent>
@@ -124,11 +128,7 @@ export const ApplicationReviewGroupData: FC<{
                   )}
                 </DataNode>
                 <DataNode label={t('groupData.groupBackground.creditHistory')}>
-                  {Array.isArray(groupData.background.groupCreditHistory)
-                    ? groupData.background.groupCreditHistory
-                        .map((file) => getFileName(file))
-                        .join(', ')
-                    : getFileName(groupData.background.groupCreditHistory)}
+                  <FileLink file={groupData.background.groupCreditHistory} />
                 </DataNode>
               </div>
             </AccordionContent>
@@ -138,11 +138,3 @@ export const ApplicationReviewGroupData: FC<{
     </div>
   );
 };
-
-function getFileName(file: ValidFile) {
-  if (typeof File !== 'undefined' && file instanceof File) {
-    return file.name;
-  }
-
-  return (file as { filename?: string }).filename || 'Unknown file';
-}

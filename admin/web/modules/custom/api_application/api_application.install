@@ -1012,3 +1012,68 @@ function api_application_update_11017() {
 
   return t('Limited role field has been created and position terms have been updated with appropriate flags.');
 }
+
+/**
+ * Update key_activities field from string to entity reference.
+ */
+function api_application_update_11018() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $database = \Drupal::database();
+
+  // Check if update has already been applied.
+  if ($database->schema()->tableExists('application__key_activities') &&
+      $database->schema()->fieldExists('application__key_activities', 'key_activities_target_id')) {
+    return t('Key activities field already updated to entity reference type.');
+  }
+
+  // Delete all existing applications before schema change.
+  $application_storage = $entity_type_manager->getStorage('application');
+  $applications = $application_storage->loadMultiple();
+  $application_count = count($applications);
+
+  if (!empty($applications)) {
+    $application_storage->delete($applications);
+  }
+
+  // Get the current field definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('key_activities', 'application');
+
+  if ($field_storage_definition) {
+    // Uninstall the old field (this will drop the old table).
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+  }
+
+  // Create the new field definition as entity_reference.
+  $field_storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Key activities of the group'))
+    ->setDescription(t('Select all key activities that apply.'))
+    ->setRequired(TRUE)
+    ->setRevisionable(TRUE)
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings', [
+      'target_bundles' => [
+        'group_activities' => 'group_activities',
+      ],
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'visible',
+      'type' => 'entity_reference_label',
+      'weight' => 6,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_buttons',
+      'weight' => 6,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the new field.
+  $update_manager->installFieldStorageDefinition('key_activities', 'application', 'api_application', $field_storage_definition);
+
+  return t('Deleted @count existing applications and updated key_activities field to entity reference type.', [
+    '@count' => $application_count,
+  ]);
+}
