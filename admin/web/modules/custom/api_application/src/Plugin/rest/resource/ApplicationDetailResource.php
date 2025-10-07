@@ -232,7 +232,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'group_registration_certificate' => $this->getFileData($application->get('group_registration_certificate')->entity, $applicationId),
       'list_of_members_certificate' => $this->getFileData($application->get('list_of_members_certificate')->entity, $applicationId),
       'group_background' => $this->getTaxonomyData($application->get('group_background')),
-      'key_activities' => $this->getTaxonomyData($application->get('key_activities')),
+      'key_activities' => $this->transformKeyActivities($this->getTaxonomyData($application->get('key_activities'))),
       'value_chain' => $this->getTaxonomyData($application->get('value_chain')),
       'table_banking_duration' => $application->get('table_banking_duration')->value,
       'monthly_share_contribution' => $application->get('monthly_share_contribution')->value,
@@ -415,6 +415,30 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
     }
 
     return $single ? NULL : $values;
+  }
+
+  /**
+   * Transforms key activities term names to API enum values.
+   *
+   * @param array $taxonomyData
+   *   Array of taxonomy term data.
+   *
+   * @return array
+   *   Array with transformed name values.
+   */
+  protected function transformKeyActivities(array $taxonomyData): array {
+    $nameMap = [
+      'Value chain' => 'value_chain',
+      'Table banking' => 'table_banking',
+      'Other' => 'other',
+    ];
+
+    return array_map(function ($termData) use ($nameMap) {
+      if (isset($termData['name']) && isset($nameMap[$termData['name']])) {
+        $termData['name'] = $nameMap[$termData['name']];
+      }
+      return $termData;
+    }, $taxonomyData);
   }
 
   /**

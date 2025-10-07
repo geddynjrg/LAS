@@ -40,12 +40,10 @@ async function fetchProfile(): Promise<UserProfileResponseType['data'] | null> {
 
     if (!response.ok) {
       if (response.status === 401) {
-        console.log('Profile fetch: User not authenticated');
         return null; // Not authenticated
       }
 
       if (response.status === 404) {
-        console.log('Profile fetch: Profile not found (new user?)');
         // Return empty profile for new users
         return {
           email: undefined,
@@ -57,12 +55,6 @@ async function fetchProfile(): Promise<UserProfileResponseType['data'] | null> {
         };
       }
 
-      console.error(
-        `Profile fetch error: ${response.status} ${response.statusText}`,
-      );
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Error response:', errorData);
-
       // Don't throw for non-critical errors, just return null
       return null;
     }
@@ -70,25 +62,19 @@ async function fetchProfile(): Promise<UserProfileResponseType['data'] | null> {
     const data = await response.json();
     return data.data || null;
   } catch (error) {
-    console.error('Error fetching profile:', error);
     // Don't throw, return null to indicate no profile data
     return null;
   }
 }
 
 async function logoutUser(): Promise<void> {
-  try {
-    const response = await fetch('/api/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
+  const response = await fetch('/api/logout', {
+    method: 'POST',
+    credentials: 'include',
+  });
 
-    if (!response.ok) {
-      throw new Error(`Logout failed: ${response.statusText}`);
-    }
-  } catch (error) {
-    console.error('Error during logout:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Logout failed: ${response.statusText}`);
   }
 }
 
@@ -161,6 +147,22 @@ export const SessionProvider: React.FC<{
   const clearError = useCallback(() => {
     setSessionData((prev) => ({ ...prev, error: null }));
   }, []);
+
+  // Sync initialSession prop with internal state
+  useEffect(() => {
+    setSessionData((prev) => {
+      // Only update if the authentication state actually changed
+      if (prev.isAuthenticated !== initialSession) {
+        return {
+          ...prev,
+          isAuthenticated: initialSession,
+          isLoading: initialSession,
+          profile: initialSession ? prev.profile : null,
+        };
+      }
+      return prev;
+    });
+  }, [initialSession]);
 
   // Initial profile fetch on mount if authenticated
   useEffect(() => {

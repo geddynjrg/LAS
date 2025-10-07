@@ -279,7 +279,9 @@ function template_preprocess_application(array &$variables) {
   // Key activities.
   if (!$application->get('key_activities')->isEmpty()) {
     foreach ($application->get('key_activities') as $item) {
-      $variables['application']['key_activities'][] = $item->value;
+      if ($item->entity) {
+        $variables['application']['key_activities'][] = $item->entity->getName();
+      }
     }
   }
 

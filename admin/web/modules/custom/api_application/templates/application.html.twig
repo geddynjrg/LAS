@@ -100,7 +100,7 @@
         </div>
         <div class="info-item">
           <label>{{ 'Nature of Group'|t }}</label>
-          <span>{{ application.nature_of_group ?: 'Not provided'|t }}</span>
+          <span>{{ application.nature_of_group|capitalize ?: 'Not provided'|t }}</span>
         </div>
       </div>
 
@@ -109,7 +109,7 @@
           <h3>{{ 'Group Background'|t }}</h3>
           <div class="tags">
             {% for background in application.group_background %}
-              <span class="tag">{{ background }}</span>
+              <span class="tag">{{ background|capitalize }}</span>
             {% endfor %}
           </div>
         </div>
@@ -118,11 +118,11 @@
       {% if application.key_activities %}
         <div class="info-subsection">
           <h3>{{ 'Key Activities'|t }}</h3>
-          <ul class="activity-list">
+          <div class="tags">
             {% for activity in application.key_activities %}
-              <li>{{ activity }}</li>
+              <span class="tag">{{ activity|capitalize }}</span>
             {% endfor %}
-          </ul>
+          </div>
         </div>
       {% endif %}
 
@@ -131,7 +131,7 @@
           <h3>{{ 'Value Chain'|t }}</h3>
           <div class="tags">
             {% for chain in application.value_chain %}
-              <span class="tag">{{ chain }}</span>
+              <span class="tag">{{ chain|capitalize }}</span>
             {% endfor %}
           </div>
         </div>
@@ -241,7 +241,7 @@
                 </div>
                 <div class="detail-row">
                   <span class="label">{{ 'Position:'|t }}</span>
-                  <span class="value">{{ member.position ?: 'Member'|t }}</span>
+                  <span class="value">{{ member.position|capitalize ?: 'Member'|t }}</span>
                 </div>
                 <div class="detail-row">
                   <span class="label">{{ 'Gender:'|t }}</span>
@@ -349,7 +349,7 @@
       <div class="info-grid">
         <div class="info-item">
           <label>{{ 'Nature of Business'|t }}</label>
-          <span>{{ application.nature_of_business ?: 'Not provided'|t }}</span>
+          <span>{{ application.nature_of_business|capitalize ?: 'Not provided'|t }}</span>
         </div>
         <div class="info-item">
           <label>{{ 'Years in Operation'|t }}</label>
@@ -378,7 +378,7 @@
           <h3>{{ 'Business Type'|t }}</h3>
           <div class="tags">
             {% for type in application.business_type %}
-              <span class="tag">{{ type }}</span>
+              <span class="tag">{{ type|capitalize }}</span>
             {% endfor %}
           </div>
         </div>
@@ -418,11 +418,11 @@
       <div class="info-grid">
         <div class="info-item">
           <label>{{ 'Purpose of Loan'|t }}</label>
-          <span>{{ application.purpose_of_loan ?: 'Not provided'|t }}</span>
+          <span>{{ application.purpose_of_loan|capitalize ?: 'Not provided'|t }}</span>
         </div>
         <div class="info-item">
           <label>{{ 'Loan Type'|t }}</label>
-          <span>{{ application.loan_type.name ?: 'Not provided'|t }}</span>
+          <span>{{ application.loan_type.name|capitalize ?: 'Not provided'|t }}</span>
         </div>
         <div class="info-item">
           <label>{{ 'Loan Amount'|t }}</label>

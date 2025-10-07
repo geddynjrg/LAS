@@ -152,9 +152,13 @@ class ApplicationController extends ControllerBase {
     $application->set('status', $new_status);
     $application->save();
 
+    // Get human-readable status label.
+    $status_options = Application::getStatusOptions();
+    $status_label = $status_options[$new_status] ?? $new_status;
+
     $response['success'] = TRUE;
     $response['message'] = $this->t('Application status updated to @status.', [
-      '@status' => $new_status,
+      '@status' => $status_label,
     ]);
 
     // Log the action.

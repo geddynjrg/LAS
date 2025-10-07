@@ -82,9 +82,9 @@ export const ApplicationPostRequestSchema = z.object({
     .optional()
     .describe('Group background categories (taxonomy term names or IDs)'),
   key_activities: z
-    .array(z.enum(['value_chain', 'table_banking', 'other']))
+    .array(z.union([z.string(), z.number()]))
     .optional()
-    .describe('Key activities of the group'),
+    .describe('Key activities of the group (taxonomy term names or IDs)'),
   value_chain: z
     .array(z.union([z.string(), z.number()]))
     .optional()

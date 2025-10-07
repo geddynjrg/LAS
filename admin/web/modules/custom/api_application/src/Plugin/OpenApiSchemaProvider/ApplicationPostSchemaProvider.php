@@ -87,11 +87,14 @@ class ApplicationPostSchemaProvider extends OpenApiSchemaProviderBase {
           ],
           'key_activities' => [
             'type' => 'array',
-            'description' => 'Key activities of the group',
+            'description' => 'Key activities of the group (taxonomy term names or IDs)',
             'items' => [
-              'type' => 'string',
-              'enum' => ['value_chain', 'table_banking', 'other'],
+              'oneOf' => [
+                ['type' => 'string'],
+                ['type' => 'integer'],
+              ],
             ],
+            'example' => ['Value chain', 'Table banking'],
           ],
           'value_chain' => [
             'type' => 'array',
