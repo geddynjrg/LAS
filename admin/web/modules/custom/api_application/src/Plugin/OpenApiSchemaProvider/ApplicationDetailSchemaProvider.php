@@ -394,7 +394,8 @@ class ApplicationDetailSchemaProvider extends OpenApiSchemaProviderBase {
           'url' => [
             'type' => 'string',
             'format' => 'uri',
-            'description' => 'File URL',
+            'description' => 'File URL in format /files/{applicationId}/{filename}',
+            'example' => '/files/APP-20241007-ABC123/1728290123456-a1b2c3d4e5f6.pdf',
           ],
           'size' => [
             'type' => 'integer',

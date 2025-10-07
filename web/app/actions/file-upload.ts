@@ -6,9 +6,9 @@ import crypto from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-// File storage configuration
+// File storage configuration (private directory, not in public)
 const UPLOAD_DIR =
-  process.env.UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads');
+  process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
 const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || '10485760'); // 10MB default
 
 const ALLOWED_MIME_TYPES = [
@@ -125,8 +125,8 @@ export const uploadFileAction: FormAction<{
         const uniqueFilename = generateUniqueFilename(file.name);
         const filePath = path.join(appDir, uniqueFilename);
         const publicUrl = applicationId
-          ? `/uploads/${applicationId}/${uniqueFilename}`
-          : `/uploads/${uniqueFilename}`;
+          ? `/files/${applicationId}/${uniqueFilename}`
+          : `/files/misc/${uniqueFilename}`;
 
         // Convert file to buffer and save
         const arrayBuffer = await file.arrayBuffer();
@@ -239,8 +239,8 @@ export const uploadSingleFileAction: FormAction<{
     const uniqueFilename = generateUniqueFilename(file.name);
     const filePath = path.join(appDir, uniqueFilename);
     const publicUrl = applicationId
-      ? `/uploads/${applicationId}/${uniqueFilename}`
-      : `/uploads/${uniqueFilename}`;
+      ? `/files/${applicationId}/${uniqueFilename}`
+      : `/files/misc/${uniqueFilename}`;
 
     // Convert file to buffer and save
     const arrayBuffer = await file.arrayBuffer();

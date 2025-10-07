@@ -208,10 +208,12 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
    *   The application data.
    */
   protected function buildApplicationData($application) {
+    $applicationId = $application->getApplicationId();
+
     $data = [
       'id' => $application->id(),
       'uuid' => $application->uuid(),
-      'application_id' => $application->getApplicationId(),
+      'application_id' => $applicationId,
       'status' => $this->mapStatusForApi($application->getStatus()),
       'created' => $application->getCreatedTime(),
       'changed' => $application->getChangedTime(),
@@ -227,8 +229,8 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'group_name' => $application->getGroupName(),
       'group_registration_number' => $application->getGroupRegistrationNumber(),
       'date_registered' => $application->get('date_registered')->value,
-      'group_registration_certificate' => $this->getFileData($application->get('group_registration_certificate')->entity),
-      'list_of_members_certificate' => $this->getFileData($application->get('list_of_members_certificate')->entity),
+      'group_registration_certificate' => $this->getFileData($application->get('group_registration_certificate')->entity, $applicationId),
+      'list_of_members_certificate' => $this->getFileData($application->get('list_of_members_certificate')->entity, $applicationId),
       'group_background' => $this->getTaxonomyData($application->get('group_background')),
       'key_activities' => $this->getTaxonomyData($application->get('key_activities')),
       'value_chain' => $this->getTaxonomyData($application->get('value_chain')),
@@ -237,7 +239,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'total_amount_loaned' => $application->get('total_amount_loaned')->value,
       'total_revolving_fund' => $application->get('total_revolving_fund')->value,
       'other_activities' => $application->get('other_activities')->value,
-      'group_credit_history' => $this->getMultipleFileData($application->get('group_credit_history')),
+      'group_credit_history' => $this->getMultipleFileData($application->get('group_credit_history'), $applicationId),
     ];
 
     // Location data.
@@ -252,7 +254,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
     // Step 2: Group Members.
     $data['group_members'] = [];
     foreach ($application->getGroupMembers() as $member) {
-      $data['group_members'][] = $this->buildGroupMemberData($member);
+      $data['group_members'][] = $this->buildGroupMemberData($member, $applicationId);
     }
     $data['nature_of_group'] = $application->get('nature_of_group')->value;
 
@@ -292,11 +294,13 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
    *
    * @param \Drupal\api_application\Entity\GroupMemberInterface $member
    *   The group member entity.
+   * @param string $applicationId
+   *   The application ID for constructing file URLs.
    *
    * @return array
    *   The member data.
    */
-  protected function buildGroupMemberData($member) {
+  protected function buildGroupMemberData($member, string $applicationId) {
     $data = [
       'id' => $member->id(),
       'name' => $member->getName(),
@@ -304,7 +308,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'gender' => $member->getGender(),
       'phone_number' => $member->getPhoneNumber(),
       'position' => $this->getTaxonomyData($member->get('position'), TRUE),
-      'photo_member_id' => $this->getFileData($member->get('photo_member_id')->entity),
+      'photo_member_id' => $this->getFileData($member->get('photo_member_id')->entity, $applicationId),
       'person_with_disability' => $member->isPersonWithDisability(),
       'requires_confirmation' => $member->requiresConfirmation(),
       'confirmation' => [
@@ -323,7 +327,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
 
     if ($member->isPersonWithDisability()) {
       $data['pwd_number'] = $member->getPwdNumber();
-      $data['certificate_disability'] = $this->getFileData($member->get('certificate_disability')->entity);
+      $data['certificate_disability'] = $this->getFileData($member->get('certificate_disability')->entity, $applicationId);
     }
 
     return $data;
@@ -334,11 +338,13 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
    *
    * @param \Drupal\file\FileInterface|null $file
    *   The file entity.
+   * @param string $applicationId
+   *   The application ID for constructing the file URL.
    *
    * @return array|null
    *   The file data or NULL.
    */
-  protected function getFileData($file) {
+  protected function getFileData($file, string $applicationId) {
     if (!$file instanceof FileInterface) {
       return NULL;
     }
@@ -347,7 +353,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'fid' => $file->id(),
       'uuid' => $file->uuid(),
       'filename' => $file->getFilename(),
-      'url' => $file->createFileUrl(FALSE),
+      'url' => '/files/' . $applicationId . '/' . $file->getFilename(),
       'size' => $file->getSize(),
       'mime_type' => $file->getMimeType(),
     ];
@@ -358,15 +364,17 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
    *
    * @param \Drupal\Core\Field\FieldItemListInterface $field
    *   The field item list.
+   * @param string $applicationId
+   *   The application ID for constructing file URLs.
    *
    * @return array
    *   The file data array.
    */
-  protected function getMultipleFileData($field) {
+  protected function getMultipleFileData($field, string $applicationId) {
     $files = [];
     foreach ($field as $item) {
       if ($item->entity) {
-        $files[] = $this->getFileData($item->entity);
+        $files[] = $this->getFileData($item->entity, $applicationId);
       }
     }
     return $files;

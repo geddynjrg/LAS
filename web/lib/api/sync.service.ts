@@ -374,9 +374,9 @@ async function transformApplicationForExternalApi(
   // Helper function to read file and convert to base64
   const readFileAsBase64 = async (filePath: string): Promise<string | null> => {
     try {
-      // Construct the full path - handle both relative and absolute paths
-      const fullPath = filePath.startsWith('/uploads/')
-        ? path.join(process.cwd(), 'public', filePath)
+      // Construct the full path - handle new /files/ format
+      const fullPath = filePath.startsWith('/files/')
+        ? path.join(process.cwd(), 'uploads', filePath.replace('/files/', ''))
         : filePath;
 
       const fileBuffer = await fs.readFile(fullPath);
