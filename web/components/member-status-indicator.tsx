@@ -6,6 +6,7 @@ import { FC } from 'react';
 
 interface MemberStatusIndicatorProps {
   status: string;
+  requiresConfirmation?: boolean;
   variant?: 'badge' | 'icon' | 'full';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -13,11 +14,18 @@ interface MemberStatusIndicatorProps {
 
 export const MemberStatusIndicator: FC<MemberStatusIndicatorProps> = ({
   status,
+  requiresConfirmation = true,
   variant = 'full',
   size = 'md',
   className = '',
 }) => {
   const t = useTranslations('DashboardPage');
+
+  // Don't show any status indicator for members who don't require confirmation
+  if (requiresConfirmation === false) {
+    return null;
+  }
+
   const isConfirmed = status === 'confirmed';
 
   const iconSize = {

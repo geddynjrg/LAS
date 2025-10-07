@@ -240,7 +240,11 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                 )}
                 {confirmationSent && !isPending && (
                   <div className={cn('flex items-center gap-2')}>
-                    {member.status === 'confirmed' ? (
+                    {member.requiresConfirmation === false ? (
+                      <span className={cn('text-xs text-neutral-500')}>
+                        {t('Common.notRequired')}
+                      </span>
+                    ) : member.status === 'confirmed' ? (
                       <IconCheck className={cn('text-green-400', 'h-8 w-8')} />
                     ) : (
                       <>
@@ -254,7 +258,11 @@ export const ConfirmationsMembersForm: FC<ConfirmMembersFormProps> = ({
                 )}
 
                 {isPending &&
-                  (member.status === 'confirmed' ? (
+                  (member.requiresConfirmation === false ? (
+                    <span className={cn('text-xs text-neutral-500')}>
+                      {t('Common.notRequired')}
+                    </span>
+                  ) : member.status === 'confirmed' ? (
                     <IconCheck className={cn('text-green-400', 'h-8 w-8')} />
                   ) : (
                     <div className={cn('flex items-center gap-2')}>

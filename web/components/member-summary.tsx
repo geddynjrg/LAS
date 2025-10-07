@@ -34,11 +34,7 @@ interface MemberStats {
   confirmed: number;
   pending: number;
   confirmationProgress: number;
-  roleBreakdown: {
-    Chairman: number;
-    Secretary: number;
-    Member: number;
-  };
+  roleBreakdown: Record<string, number>;
 }
 
 export const MemberSummary: FC<MemberSummaryProps> = ({
@@ -53,30 +49,38 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
     return null;
   }
 
-  // Calculate member statistics
+  // Filter to only include members who require confirmation for statistics
+  const membersRequiringConfirmation = membersData.members.filter(
+    (member) => member.requiresConfirmation !== false,
+  );
+
+  // Calculate member statistics (only for members who require confirmation)
   const memberStats: MemberStats = {
-    total: membersData.members.length,
-    confirmed: membersData.members.filter(
+    total: membersRequiringConfirmation.length,
+    confirmed: membersRequiringConfirmation.filter(
       (member) => member.status === 'confirmed',
     ).length,
-    pending: membersData.members.filter((member) => member.status === 'pending')
-      .length,
-    confirmationProgress: Math.round(
-      (membersData.members.filter((member) => member.status === 'confirmed')
-        .length /
-        membersData.members.length) *
-        100,
+    pending: membersRequiringConfirmation.filter(
+      (member) => member.status === 'pending',
+    ).length,
+    confirmationProgress:
+      membersRequiringConfirmation.length > 0
+        ? Math.round(
+            (membersRequiringConfirmation.filter(
+              (member) => member.status === 'confirmed',
+            ).length /
+              membersRequiringConfirmation.length) *
+              100,
+          )
+        : 0,
+    roleBreakdown: membersData.members.reduce(
+      (acc, member) => {
+        const type = member.type || 'Other';
+        acc[type] = (acc[type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
     ),
-    roleBreakdown: {
-      Chairman: membersData.members.filter(
-        (member) => member.type === 'Chairman',
-      ).length,
-      Secretary: membersData.members.filter(
-        (member) => member.type === 'Secretary',
-      ).length,
-      Member: membersData.members.filter((member) => member.type === 'Member')
-        .length,
-    },
   };
 
   if (variant === 'compact') {
@@ -179,25 +183,26 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
         <div className="mb-2 text-sm font-medium text-neutral-700">
           {t('memberStatus.roleDistribution')}
         </div>
-        <div className="flex gap-4 text-xs">
-          {memberStats.roleBreakdown.Chairman > 0 && (
-            <span className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-              {memberStats.roleBreakdown.Chairman} {t('memberStatus.chairman')}
-            </span>
-          )}
-          {memberStats.roleBreakdown.Secretary > 0 && (
-            <span className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-purple-500"></div>
-              {memberStats.roleBreakdown.Secretary}{' '}
-              {t('memberStatus.secretary')}
-            </span>
-          )}
-          {memberStats.roleBreakdown.Member > 0 && (
-            <span className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-gray-500"></div>
-              {memberStats.roleBreakdown.Member} {t('memberStatus.members')}
-            </span>
+        <div className="flex flex-wrap gap-4 text-xs">
+          {Object.entries(memberStats.roleBreakdown).map(
+            ([role, count], index) => {
+              const colors = [
+                'bg-blue-500',
+                'bg-purple-500',
+                'bg-green-500',
+                'bg-orange-500',
+                'bg-pink-500',
+                'bg-teal-500',
+                'bg-gray-500',
+              ];
+              const colorClass = colors[index % colors.length];
+              return (
+                <span key={role} className="flex items-center gap-1">
+                  <div className={`h-2 w-2 rounded-full ${colorClass}`}></div>
+                  {count} {role}
+                </span>
+              );
+            },
           )}
         </div>
       </div>

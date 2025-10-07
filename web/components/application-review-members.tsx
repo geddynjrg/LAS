@@ -1,5 +1,5 @@
+import { FileLink } from '@/components/file-link';
 import { MemberStatusIndicator } from '@/components/member-status-indicator';
-// import { MemberSummary } from "@/components/member-summary";
 import type { MembersData } from '@/lib/types/application.types';
 import { IconPencil, IconPhone } from '@tabler/icons-react';
 import {
@@ -17,26 +17,25 @@ import type { FC } from 'react';
 export const ApplicationReviewMembers: FC<{
   membersData?: MembersData;
   applicationId?: string;
-}> = ({
-  membersData,
-  applicationId,
-}) => {
+}> = ({ membersData, applicationId }) => {
   const t = useTranslations('ApplicationDetailsPage');
 
   if (!membersData?.members) {
     return null;
   }
 
-  // Group members by role
-  const groupedMembers = {
-    Chairman: membersData.members.filter(
-      (member) => member.type === 'Chairman',
-    ),
-    Secretary: membersData.members.filter(
-      (member) => member.type === 'Secretary',
-    ),
-    Member: membersData.members.filter((member) => member.type === 'Member'),
-  };
+  // Group members by role dynamically
+  const groupedMembers = membersData.members.reduce(
+    (acc, member) => {
+      const type = member.type || 'Other';
+      if (!acc[type]) {
+        acc[type] = [];
+      }
+      acc[type].push(member);
+      return acc;
+    },
+    {} as Record<string, typeof membersData.members>,
+  );
 
   return (
     <div className="mt-6 grid">
@@ -92,40 +91,75 @@ export const ApplicationReviewMembers: FC<{
                               </div>
                               <MemberStatusIndicator
                                 status={member.status || 'pending'}
+                                requiresConfirmation={
+                                  member.requiresConfirmation
+                                }
                                 variant="badge"
                                 size="sm"
                               />
                             </div>
 
-                            <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-neutral-600">
-                              <div className="flex items-center gap-1">
-                                <span className="font-medium">
-                                  {t('members.idLabel')}:
-                                </span>
-                                <span>{member.nationalIdCode}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <span className="font-medium">
-                                  {t('members.genderLabel')}:
-                                </span>
-                                <span>{member.gender}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <IconPhone className="h-3 w-3" />
-                                <span>{member.phoneNumber}</span>
-                              </div>
-                              {member.requiresConfirmation && (
+                            <div className="mt-2 space-y-2 text-sm text-neutral-600">
+                              <div className="grid grid-cols-2 gap-2">
                                 <div className="flex items-center gap-1">
-                                  <MemberStatusIndicator
-                                    status={member.status || 'pending'}
-                                    variant="icon"
-                                    size="sm"
-                                  />
-                                  <span className="text-xs">
-                                    {t('members.confirmationRequired')}
+                                  <span className="font-medium">
+                                    {t('members.idLabel')}:
                                   </span>
+                                  <span>{member.nationalIdCode}</span>
                                 </div>
-                              )}
+                                <div className="flex items-center gap-1">
+                                  <span className="font-medium">
+                                    {t('members.genderLabel')}:
+                                  </span>
+                                  <span>{member.gender}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <IconPhone className="h-3 w-3" />
+                                  <span>{member.phoneNumber}</span>
+                                </div>
+                                {member.requiresConfirmation && (
+                                  <div className="flex items-center gap-1">
+                                    <MemberStatusIndicator
+                                      status={member.status || 'pending'}
+                                      requiresConfirmation={
+                                        member.requiresConfirmation
+                                      }
+                                      variant="icon"
+                                      size="sm"
+                                    />
+                                    <span className="text-xs">
+                                      {t('members.confirmationRequired')}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Member Files */}
+                              <div className="space-y-1 border-t pt-2">
+                                <div>
+                                  <span className="font-medium text-xs text-neutral-700">
+                                    {t('members.photoOfId')}:
+                                  </span>
+                                  <div className="ml-2">
+                                    <FileLink file={member.photoOfId} />
+                                  </div>
+                                </div>
+                                {member.disability && (
+                                  <div>
+                                    <span className="font-medium text-xs text-neutral-700">
+                                      {t('members.disabilityCertificate')}:
+                                    </span>
+                                    <div className="ml-2">
+                                      <FileLink
+                                        file={
+                                          member.disability
+                                            .certificateOfDisability
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}

@@ -105,6 +105,7 @@
     "edit": "Hariri",
     "cancel": "Ghairi",
     "confirm": "Thibitisha",
+    "notRequired": "Haihitajiki",
     "youCanAddMultipleFiles": "Unaweza kuongeza faili nyingi",
     "mustBeValidNumber": "Lazima iwe nambari halali",
     "pleaseAgreeToTheTerms": "Tafadhali kubali masharti",
@@ -390,7 +391,9 @@
       "member": "Mwanachama",
       "idLabel": "Kitambulisho",
       "genderLabel": "Jinsia",
-      "confirmationRequired": "Uthibitisho Unahitajika"
+      "confirmationRequired": "Uthibitisho Unahitajika",
+      "photoOfId": "Picha ya Kitambulisho",
+      "disabilityCertificate": "Cheti cha Ulemavu"
     },
     "groupData": {
       "groupData": "Data za Kikundi",
