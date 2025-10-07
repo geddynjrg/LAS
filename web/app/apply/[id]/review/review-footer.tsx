@@ -32,14 +32,29 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
         </Button>
         <ModalButton
           onConfirm={async () => {
-            // Update application status to group_member_confirmation
-            // Members will be sent SMS confirmations, and when 75% confirm,
-            // the backend will automatically transition to submitted and sync
-            await updateApplicationStatusById(
-              id,
-              ApplicationStatus.GROUP_MEMBER_CONFIRMATION,
-            );
-            router.push(`/apply/${id}/done`);
+            try {
+              console.log(
+                '[SUBMIT] Updating application status to GROUP_MEMBER_CONFIRMATION for:',
+                id,
+              );
+              // Update application status to group_member_confirmation
+              // Members will be sent SMS confirmations, and when 75% confirm,
+              // the backend will automatically transition to submitted and sync
+              const result = await updateApplicationStatusById(
+                id,
+                ApplicationStatus.GROUP_MEMBER_CONFIRMATION,
+              );
+              console.log('[SUBMIT] Status update result:', result);
+              router.push(`/apply/${id}/done`);
+            } catch (error) {
+              console.error(
+                '[SUBMIT] Error updating application status:',
+                error,
+              );
+              alert(
+                `Error submitting application: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              );
+            }
           }}
           cancelTitle={t('Common.back')}
           confirmTitle={t('Common.submit')}

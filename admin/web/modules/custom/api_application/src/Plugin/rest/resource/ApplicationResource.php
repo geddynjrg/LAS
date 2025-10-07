@@ -545,6 +545,10 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $application->save();
     }
 
+    // Step 5: Transition to appropriate status based on member confirmation
+    // requirements.
+    $this->transitionApplicationStatus($application);
+
     return $application;
   }
 
@@ -590,6 +594,13 @@ class ApplicationResource extends RestFrameworkResourceBase {
     // Handle group members if provided.
     if (isset($data['group_members'])) {
       $this->processGroupMembers($application, $data['group_members']);
+    }
+
+    // Step: Transition to appropriate status based on member confirmation
+    // requirements if status is draft or group_member_confirmation.
+    $currentStatus = $application->getStatus();
+    if (in_array($currentStatus, ['draft', 'group_member_confirmation'])) {
+      $this->transitionApplicationStatus($application);
     }
 
     return $application;
@@ -913,11 +924,11 @@ class ApplicationResource extends RestFrameworkResourceBase {
 
       // Determine directory based on application ID and file type.
       if ($applicationId) {
-        $directory = 'public://applications/' . $applicationId . '/uploads/' . date('Y-m');
+        $directory = 'private://applications/' . $applicationId . '/uploads/' . date('Y-m');
       }
       else {
         // Fallback for files uploaded before application is created.
-        $directory = 'public://applications/temp/' . date('Y-m-d');
+        $directory = 'private://applications/temp/' . date('Y-m-d');
       }
 
       \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
@@ -1257,6 +1268,48 @@ class ApplicationResource extends RestFrameworkResourceBase {
       return 'submitted';
     }
     return $status;
+  }
+
+  /**
+   * Transition application to appropriate status after creation.
+   *
+   * @param \Drupal\api_application\Entity\ApplicationInterface $application
+   *   The application entity.
+   */
+  protected function transitionApplicationStatus($application): void {
+    $members = $application->getGroupMembers();
+
+    if (empty($members)) {
+      return;
+    }
+
+    $groupMemberStorage = $this->entityTypeManager->getStorage('group_member');
+    $requiresConfirmation = FALSE;
+
+    foreach ($members as $memberReference) {
+      if (isset($memberReference->target_id)) {
+        $member = $groupMemberStorage->load($memberReference->target_id);
+        if ($member && $member->requiresConfirmation()) {
+          $requiresConfirmation = TRUE;
+          break;
+        }
+      }
+    }
+
+    if ($requiresConfirmation) {
+      $application->setStatus('group_member_confirmation');
+      $application->save();
+      $this->logger->info('Application @id transitioned to group_member_confirmation status', [
+        '@id' => $application->getApplicationId(),
+      ]);
+    }
+    else {
+      $application->setStatus('submitted');
+      $application->save();
+      $this->logger->info('Application @id transitioned to submitted status (no members require confirmation)', [
+        '@id' => $application->getApplicationId(),
+      ]);
+    }
   }
 
 }
