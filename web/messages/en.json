@@ -318,6 +318,7 @@
     },
     "stepDescription": {
       "title": "What is being done in this step?",
+      "memberConfirmation": "Your application has been submitted and SMS messages have been sent to all group members who require confirmation. Each member will receive a link to confirm or decline their participation in the loan application. Once at least 75% of members have confirmed, your application will automatically proceed to the next step.",
       "inReview": "<li>The application will be checked on the local constituency level for any discrepancies.</li> <li>Verification with relevant offices (local chief, credit organisations, social service office, etc).</li> <li>If required, your group members will be contacted for an additional interview.</li>",
       "readMoreInReview": "Read more about the reviewing step",
       "pending": "Once 15 applications have passed the reviewing step, the Constituency Uwezo Fund Management Committee will gather to discuss the applications and make a recommendation about the loan application. The committee recommendations will be approved by the Uwezo Board.",
@@ -329,6 +330,7 @@
     },
     "processTimeline": {
       "title": "How long will it take?",
+      "memberConfirmation": "Member confirmations typically take 1-3 days. You will be notified via SMS once enough members have confirmed. If members do not respond within a reasonable time, you may need to follow up with them directly.",
       "inReview": "Applications usually take a few days to get to the next step where these will be reviewed by the Constituency Uwezo Fund Management Committee. The whole process should take about a week.",
       "pending": "Applications usually take a few days to get to the next step. The whole process should take about a week."
     },

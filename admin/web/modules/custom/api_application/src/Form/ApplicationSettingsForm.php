@@ -2,13 +2,16 @@
 
 namespace Drupal\api_application\Form;
 
+use Drupal\api_application\ApplicationStatusConstants;
+use Drupal\api_application\Service\ConfigFileService;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Utility\Token;
-use Drupal\api_application\Service\ConfigFileService;
 use Drupal\user\RoleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -39,6 +42,20 @@ class ApplicationSettingsForm extends ConfigFormBase {
   protected Token $token;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected ModuleHandlerInterface $moduleHandler;
+
+  /**
+   * The logger service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
+   */
+  protected $logger;
+
+  /**
    * Constructs a new ApplicationSettingsForm.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -51,6 +68,10 @@ class ApplicationSettingsForm extends ConfigFormBase {
    *   The config file service.
    * @param \Drupal\Core\Utility\Token $token
    *   The token service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   The logger factory.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -58,11 +79,15 @@ class ApplicationSettingsForm extends ConfigFormBase {
     EntityTypeManagerInterface $entity_type_manager,
     ConfigFileService $config_file_service,
     Token $token,
+    ModuleHandlerInterface $module_handler,
+    LoggerChannelFactoryInterface $logger_factory,
   ) {
     parent::__construct($config_factory, $typed_config_manager);
     $this->entityTypeManager = $entity_type_manager;
     $this->configFileService = $config_file_service;
     $this->token = $token;
+    $this->moduleHandler = $module_handler;
+    $this->logger = $logger_factory->get('api_application');
   }
 
   /**
@@ -74,7 +99,9 @@ class ApplicationSettingsForm extends ConfigFormBase {
       $container->get('config.typed'),
       $container->get('entity_type.manager'),
       $container->get('api_application.config_file_service'),
-      $container->get('token')
+      $container->get('token'),
+      $container->get('module_handler'),
+      $container->get('logger.factory')
     );
   }
 
@@ -588,7 +615,7 @@ class ApplicationSettingsForm extends ConfigFormBase {
     ];
 
     // Token help.
-    if (\Drupal::moduleHandler()->moduleExists('token')) {
+    if ($this->moduleHandler->moduleExists('token')) {
       $form['notifications']['status_notifications']['token_help'] = [
         '#theme' => 'token_tree_link',
         '#token_types' => ['application', 'status_change', 'user'],
@@ -974,18 +1001,12 @@ class ApplicationSettingsForm extends ConfigFormBase {
       }
     }
     catch (\Exception $e) {
-      \Drupal::logger('status_manager_notifications')->error('Failed to load application statuses: @error', [
+      $this->logger->error('Failed to load application statuses: @error', [
         '@error' => $e->getMessage(),
       ]);
     }
 
-    return [
-      'draft' => $this->t('Draft'),
-      'submitted' => $this->t('Submitted'),
-      'under_review' => $this->t('Under Review'),
-      'approved' => $this->t('Approved'),
-      'rejected' => $this->t('Rejected'),
-    ];
+    return ApplicationStatusConstants::getAllowedValues();
   }
 
   /**

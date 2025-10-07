@@ -2,19 +2,20 @@
 
 namespace Drupal\api_application\Plugin\rest\resource;
 
-use Drupal\Core\File\FileSystemInterface;
+use Drupal\api_application\ApplicationStatusConstants;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\rest_framework\Plugin\rest\resource\RestFrameworkResourceBase;
-use Drupal\user\UserInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Psr\Log\LoggerInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Path\PathMatcherInterface;
 use Drupal\path_alias\AliasManagerInterface;
+use Drupal\rest_framework\Plugin\rest\resource\RestFrameworkResourceBase;
 use Drupal\rest_framework\Service\RestFrameworkFieldMapper;
-use Drupal\Core\Database\Connection;
+use Drupal\user\UserInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Provides Application Resource for POST operations.
@@ -487,7 +488,7 @@ class ApplicationResource extends RestFrameworkResourceBase {
     // Step 2: Create the application.
     $values = [
       'uid' => $owner->id(),
-      'status' => $data['status'] ?? 'draft',
+      'status' => $data['status'] ?? ApplicationStatusConstants::DRAFT,
     ];
 
     // Map fields without files first.
@@ -599,7 +600,11 @@ class ApplicationResource extends RestFrameworkResourceBase {
     // Step: Transition to appropriate status based on member confirmation
     // requirements if status is draft or group_member_confirmation.
     $currentStatus = $application->getStatus();
-    if (in_array($currentStatus, ['draft', 'group_member_confirmation'])) {
+    $transitionStatuses = [
+      ApplicationStatusConstants::DRAFT,
+      ApplicationStatusConstants::GROUP_MEMBER_CONFIRMATION,
+    ];
+    if (in_array($currentStatus, $transitionStatuses)) {
       $this->transitionApplicationStatus($application);
     }
 
@@ -1050,12 +1055,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $values['requires_confirmation'] = $requiresConfirmation;
     }
 
-    // If confirmation is not required, automatically set as confirmed.
-    if (!$requiresConfirmation) {
-      $values['confirmation_status'] = 'confirmed';
-      $values['confirmation_confirmed_at'] = \Drupal::time()->getRequestTime();
-    }
-
     // Optional text field.
     if (isset($data['pwd_number'])) {
       $values['pwd_number'] = $data['pwd_number'];
@@ -1114,12 +1113,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
     if (isset($data['requires_confirmation'])) {
       $requiresConfirmation = (bool) $data['requires_confirmation'];
       $member->set('requires_confirmation', $requiresConfirmation);
-
-      // If confirmation is not required, automatically set as confirmed.
-      if (!$requiresConfirmation && $member->getConfirmationStatus() !== 'confirmed') {
-        $member->set('confirmation_status', 'confirmed');
-        $member->set('confirmation_confirmed_at', \Drupal::time()->getRequestTime());
-      }
     }
 
     // File fields.
@@ -1180,12 +1173,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
       if (isset($memberData['requires_confirmation'])) {
         $requiresConfirmation = (bool) $memberData['requires_confirmation'];
         $values['requires_confirmation'] = $requiresConfirmation;
-      }
-
-      // If confirmation is not required, automatically set as confirmed.
-      if (!$requiresConfirmation) {
-        $values['confirmation_status'] = 'confirmed';
-        $values['confirmation_confirmed_at'] = \Drupal::time()->getRequestTime();
       }
 
       // Optional text field.
@@ -1284,30 +1271,52 @@ class ApplicationResource extends RestFrameworkResourceBase {
     }
 
     $groupMemberStorage = $this->entityTypeManager->getStorage('group_member');
-    $requiresConfirmation = FALSE;
+    $requiredMembers = [];
+    $confirmedCount = 0;
 
     foreach ($members as $memberReference) {
       if (isset($memberReference->target_id)) {
         $member = $groupMemberStorage->load($memberReference->target_id);
         if ($member && $member->requiresConfirmation()) {
-          $requiresConfirmation = TRUE;
-          break;
+          $requiredMembers[] = $member;
+          $status = $member->getConfirmationStatus();
+          if ($status === 'confirmed') {
+            $confirmedCount++;
+          }
         }
       }
     }
 
-    if ($requiresConfirmation) {
-      $application->setStatus('group_member_confirmation');
-      $application->save();
-      $this->logger->info('Application @id transitioned to group_member_confirmation status', [
-        '@id' => $application->getApplicationId(),
-      ]);
-    }
-    else {
-      $application->setStatus('submitted');
+    if (empty($requiredMembers)) {
+      $application->setStatus(ApplicationStatusConstants::SUBMITTED);
       $application->save();
       $this->logger->info('Application @id transitioned to submitted status (no members require confirmation)', [
         '@id' => $application->getApplicationId(),
+      ]);
+      return;
+    }
+
+    $totalRequired = count($requiredMembers);
+    $approvalPercentage = ($confirmedCount / $totalRequired) * 100;
+
+    if ($approvalPercentage >= 75) {
+      $application->setStatus(ApplicationStatusConstants::SUBMITTED);
+      $application->save();
+      $this->logger->info('Application @id transitioned to submitted status (@count/@total members confirmed = @percentage%)', [
+        '@id' => $application->getApplicationId(),
+        '@count' => $confirmedCount,
+        '@total' => $totalRequired,
+        '@percentage' => round($approvalPercentage, 1),
+      ]);
+    }
+    else {
+      $application->setStatus(ApplicationStatusConstants::GROUP_MEMBER_CONFIRMATION);
+      $application->save();
+      $this->logger->info('Application @id set to group_member_confirmation status (@count/@total members confirmed = @percentage%, need 75%)', [
+        '@id' => $application->getApplicationId(),
+        '@count' => $confirmedCount,
+        '@total' => $totalRequired,
+        '@percentage' => round($approvalPercentage, 1),
       ]);
     }
   }

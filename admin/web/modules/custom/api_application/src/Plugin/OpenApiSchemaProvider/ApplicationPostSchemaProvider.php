@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Plugin\OpenApiSchemaProvider;
 
+use Drupal\api_application\ApplicationStatusConstants;
 use Drupal\rest_framework\Plugin\OpenApiSchemaProviderBase;
 
 /**
@@ -48,8 +49,8 @@ class ApplicationPostSchemaProvider extends OpenApiSchemaProviderBase {
           'status' => [
             'type' => 'string',
             'description' => 'Application status',
-            'enum' => ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'disbursed', 'closed'],
-            'default' => 'draft',
+            'enum' => ApplicationStatusConstants::getAll(),
+            'default' => ApplicationStatusConstants::DRAFT,
           ],
           'group_name' => [
             'type' => 'string',

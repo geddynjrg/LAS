@@ -5,18 +5,14 @@ global:
 providers:
   email:
     enabled: true
-    from_email: uwezo@adm.ee
+    from_email: loans@uwezo.co.ke
     from_name: Uwezo
-    reply_to: uwezo@adm.ee
-    use_html: true
   email_admin:
     enabled: true
-    from_email: admin@uwezo.com
+    from_email: admin@uwezo.co.ke
     from_name: 'Uwezo Admin'
-    reply_to: admin@uwezo.com
-    use_html: true
   sms:
-    enabled: false
+    enabled: true
 status_notifications:
   unassigned:
     enabled: true
@@ -33,17 +29,70 @@ status_notifications:
   approved:
     enabled: true
     recipient: customer
+    admin_roles: {  }
     subject: 'Loan Application Approved'
-    email_message: |
-      Congratulations! Your loan application [application:application_id] has been approved.
-      Amount: [application:loan_amount]
+    email_message: "Congratulations! Your loan application [application:application_id] has been approved.\r\nAmount: [application:loan_amount]\r\n"
     sms_message: 'Good news! Your loan application [application:application_id] for [application:loan_amount] has been approved.'
   rejected:
     enabled: true
     recipient: customer
+    admin_roles: {  }
     subject: 'Application Update'
-    email_message: |
-      Application [application:application_id] status update.
-      Reason: [application:rejection_reason]
-      [application:rejection_message]
+    email_message: "Application [application:application_id] status update.\r\nReason: [application:rejection_reason]\r\n[application:rejection_message]\r\n"
     sms_message: 'Application [application:application_id] update. Reason: [application:rejection_reason]'
+  draft:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  group_member_confirmation:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  submitted:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  constituency_review:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  approved_by_constituency:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  under_review:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  disbursed:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  closed:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''

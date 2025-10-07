@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Form;
 
+use Drupal\api_application\ApplicationStatusConstants;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -23,10 +24,10 @@ class ApplicationForm extends ContentEntityForm {
     if (isset($form['rejection_reason'])) {
       $form['rejection_reason']['#states'] = [
         'visible' => [
-          ':input[name="status[0][value]"]' => ['value' => 'rejected'],
+          ':input[name="status[0][value]"]' => ['value' => ApplicationStatusConstants::REJECTED],
         ],
         'required' => [
-          ':input[name="status[0][value]"]' => ['value' => 'rejected'],
+          ':input[name="status[0][value]"]' => ['value' => ApplicationStatusConstants::REJECTED],
         ],
       ];
     }
@@ -34,10 +35,10 @@ class ApplicationForm extends ContentEntityForm {
     if (isset($form['rejection_message'])) {
       $form['rejection_message']['#states'] = [
         'visible' => [
-          ':input[name="status[0][value]"]' => ['value' => 'rejected'],
+          ':input[name="status[0][value]"]' => ['value' => ApplicationStatusConstants::REJECTED],
         ],
         'required' => [
-          ':input[name="status[0][value]"]' => ['value' => 'rejected'],
+          ':input[name="status[0][value]"]' => ['value' => ApplicationStatusConstants::REJECTED],
         ],
       ];
     }
@@ -63,7 +64,7 @@ class ApplicationForm extends ContentEntityForm {
   public function validateRejectionFields(array &$form, FormStateInterface $form_state) {
     $status = $form_state->getValue(['status', 0, 'value']);
 
-    if ($status === 'rejected') {
+    if ($status === ApplicationStatusConstants::REJECTED) {
       $rejection_reason = $form_state->getValue(['rejection_reason', 0, 'value']);
       $rejection_message = $form_state->getValue(['rejection_message', 0, 'value']);
 
@@ -108,7 +109,7 @@ class ApplicationForm extends ContentEntityForm {
    *   The form array.
    */
   protected function filterStatusOptionsForConstituencyReviewers(array &$form): void {
-    $account = \Drupal::currentUser();
+    $account = $this->currentUser();
     $entity = $this->entity;
 
     // Skip if user has admin permission.
@@ -131,12 +132,12 @@ class ApplicationForm extends ContentEntityForm {
 
     // Define allowed statuses for constituency reviewers.
     $allowed_statuses = [
-      'draft',
-      'group_member_confirmation',
-      'submitted',
-      'constituency_review',
-      'approved_by_constituency',
-      'rejected',
+      ApplicationStatusConstants::DRAFT,
+      ApplicationStatusConstants::GROUP_MEMBER_CONFIRMATION,
+      ApplicationStatusConstants::SUBMITTED,
+      ApplicationStatusConstants::CONSTITUENCY_REVIEW,
+      ApplicationStatusConstants::APPROVED_BY_CONSTITUENCY,
+      ApplicationStatusConstants::REJECTED,
     ];
 
     // Filter the status field options.

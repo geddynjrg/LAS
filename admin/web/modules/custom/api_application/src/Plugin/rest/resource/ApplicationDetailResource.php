@@ -311,7 +311,10 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'photo_member_id' => $this->getFileData($member->get('photo_member_id')->entity, $applicationId),
       'person_with_disability' => $member->isPersonWithDisability(),
       'requires_confirmation' => $member->requiresConfirmation(),
-      'confirmation' => [
+    ];
+
+    if ($member->requiresConfirmation()) {
+      $data['confirmation'] = [
         'status' => $member->getConfirmationStatus(),
         'sent_at' => $member->getConfirmationSentAt(),
         'confirmed_at' => $member->getConfirmationConfirmedAt(),
@@ -322,8 +325,8 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
           'frontend' => $this->smsConfirmationService->getFrontendConfirmationUrl($member),
           'sms' => $this->smsConfirmationService->getFrontendConfirmationUrl($member),
         ],
-      ],
-    ];
+      ];
+    }
 
     if ($member->isPersonWithDisability()) {
       $data['pwd_number'] = $member->getPwdNumber();

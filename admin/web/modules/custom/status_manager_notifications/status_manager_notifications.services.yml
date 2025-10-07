@@ -10,6 +10,7 @@ services:
       - '@logger.factory'
       - '@status_manager_notifications.token_service'
       - '@plugin.manager.notification_provider'
+      - '@entity_type.manager'
 
   status_manager_notifications.email_service:
     class: Drupal\status_manager_notifications\Service\EmailNotificationService

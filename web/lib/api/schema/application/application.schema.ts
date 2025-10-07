@@ -54,7 +54,10 @@ export const ApplicationPostRequestSchema = z.object({
   status: z
     .enum([
       'draft',
+      'group_member_confirmation',
       'submitted',
+      'constituency_review',
+      'approved_by_constituency',
       'under_review',
       'approved',
       'rejected',

@@ -3,6 +3,7 @@
 namespace Drupal\status_manager_notifications\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\status_manager\Entity\StatusChangeInterface;
 use Drupal\status_manager_notifications\Plugin\NotificationProviderManager;
@@ -43,6 +44,13 @@ class NotificationManager {
   protected NotificationProviderManager $providerManager;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected EntityTypeManagerInterface $entityTypeManager;
+
+  /**
    * Cached provider instances.
    *
    * @var array
@@ -57,11 +65,13 @@ class NotificationManager {
     LoggerChannelFactoryInterface $logger_factory,
     TokenReplacementService $token_service,
     NotificationProviderManager $provider_manager,
+    EntityTypeManagerInterface $entity_type_manager,
   ) {
     $this->configFactory = $config_factory;
     $this->logger = $logger_factory->get('status_manager_notifications');
     $this->tokenService = $token_service;
     $this->providerManager = $provider_manager;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -73,7 +83,7 @@ class NotificationManager {
    * @return array
    *   Array of results from notification attempts.
    */
-  public function sendNotificationsViaPlugins(StatusChangeInterface $status_change): array {
+  public function sendNotifications(StatusChangeInterface $status_change): array {
     $results = [];
     $application = $status_change->getTargetEntity();
 
@@ -171,10 +181,10 @@ class NotificationManager {
    */
   protected function getUsersByRoles(array $roles): array {
     $recipients = [];
-    $user_storage = \Drupal::entityTypeManager()->getStorage('user');
+    $user_storage = $this->entityTypeManager->getStorage('user');
 
     foreach ($roles as $role) {
-      $uids = \Drupal::entityQuery('user')
+      $uids = $this->entityTypeManager->getStorage('user')->getQuery()
         ->condition('status', 1)
         ->condition('roles', $role)
         ->accessCheck(FALSE)

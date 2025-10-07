@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Entity;
 
+use Drupal\api_application\ApplicationStatusConstants;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\FileInterface;
 use Drupal\Core\Entity\ContentEntityBase;
@@ -90,19 +91,8 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDescription(t('The current status of the application.'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
-      ->setDefaultValue('draft')
-      ->setSetting('allowed_values', [
-        'draft' => t('Draft'),
-        'group_member_confirmation' => t('Group member confirmation'),
-        'submitted' => t('Submitted'),
-        'constituency_review' => t('Constituency review'),
-        'approved_by_constituency' => t('Approved by constituency'),
-        'under_review' => t('Under Review'),
-        'approved' => t('Approved'),
-        'rejected' => t('Rejected'),
-        'disbursed' => t('Disbursed'),
-        'closed' => t('Closed'),
-      ])
+      ->setDefaultValue(ApplicationStatusConstants::DRAFT)
+      ->setSetting('allowed_values', ApplicationStatusConstants::getAllowedValues())
       ->setDisplayOptions('view', [
         'label' => 'visible',
         'type' => 'list_default',

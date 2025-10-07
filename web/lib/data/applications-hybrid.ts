@@ -6,32 +6,31 @@ import type {
   ApplicationDetail,
   ApplicationsListQuery,
 } from '@/lib/api/schema/application/applications-list.schema';
+import { fromApiStatus } from '@/lib/constants/application-status';
 import { getApplications as getLocalApplications } from '@/lib/data/application';
 import { prisma } from '@/lib/db/prisma';
 import type { ApplicationData } from '@/lib/types/application.types';
 
 /**
- * Maps API status to local ApplicationStatus enum
+ * Maps API status to local ApplicationStatus enum using centralized constants.
+ * Note: constituency_review and approved_by_constituency are mapped to IN_REVIEW
+ * to simplify the user experience and hide internal review workflows.
  */
 function mapApiStatusToLocal(apiStatus?: string): ApplicationStatus {
-  switch (apiStatus) {
-    case 'draft':
-      return ApplicationStatus.DRAFT;
-    case 'submitted':
-      return ApplicationStatus.SUBMITTED;
-    case 'under_review':
-      return ApplicationStatus.IN_REVIEW;
-    case 'approved':
-      return ApplicationStatus.APPROVED;
-    case 'rejected':
-      return ApplicationStatus.REJECTED;
-    case 'disbursed':
-      return ApplicationStatus.DISBURSED;
-    case 'closed':
-      return ApplicationStatus.CLOSED;
-    default:
-      return ApplicationStatus.DRAFT;
+  if (!apiStatus) return ApplicationStatus.DRAFT;
+
+  // Use centralized mapping
+  const mapped = fromApiStatus(apiStatus);
+
+  // Special case: map constituency-level statuses to IN_REVIEW for user-facing displays
+  if (
+    mapped === ApplicationStatus.CONSTITUENCY_REVIEW ||
+    mapped === ApplicationStatus.APPROVED_BY_CONSTITUENCY
+  ) {
+    return ApplicationStatus.IN_REVIEW;
   }
+
+  return mapped;
 }
 
 /**
@@ -406,32 +405,26 @@ export async function getHybridApplications(
       console.warn('API call failed, using local data only:', error);
     }
 
-    // If API call was successful, combine API data with local drafts
-    if (apiCallSuccessful && apiApplications.length > 0) {
-      // Get local draft applications that are not in the API response
-      const apiApplicationIds = new Set(
-        apiApplications.map((app) => app.application_id),
-      );
-      const localDraftApplications = localApplications.filter(
-        (app) =>
-          (app.generalDetails.status === ApplicationStatus.DRAFT ||
-            app.generalDetails.status === ApplicationStatus.UNSUBMITTED) &&
-          !apiApplicationIds.has(app.generalDetails.applicationId),
-      );
+    // If API call was successful, merge API data with local applications
+    if (apiCallSuccessful) {
+      // Use a Map to deduplicate by applicationId, preferring API data
+      const applicationsMap = new Map<string, ApplicationData>();
 
-      // Convert API applications to local format
-      const mappedApiApplications = apiApplications
-        .map(mapApiApplicationToLocal)
-        .filter((app): app is ApplicationData => app !== null);
+      // Add local applications first
+      localApplications.forEach((app) => {
+        applicationsMap.set(app.generalDetails.applicationId, app);
+      });
 
-      // Combine API applications with local drafts
-      const combinedApplications = [
-        ...mappedApiApplications,
-        ...localDraftApplications,
-      ];
+      // Override with API applications (they are source of truth for synced apps)
+      apiApplications.forEach((apiApp) => {
+        const mapped = mapApiApplicationToLocal(apiApp);
+        if (mapped) {
+          applicationsMap.set(mapped.generalDetails.applicationId, mapped);
+        }
+      });
 
       // Sort by application ID (newest first, assuming APP-YYYYMMDD format)
-      return combinedApplications.sort((a, b) =>
+      return Array.from(applicationsMap.values()).sort((a, b) =>
         b.generalDetails.applicationId.localeCompare(
           a.generalDetails.applicationId,
         ),

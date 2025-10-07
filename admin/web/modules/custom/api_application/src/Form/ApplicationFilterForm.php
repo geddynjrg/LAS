@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Form;
 
+use Drupal\api_application\ApplicationStatusConstants;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -70,16 +71,7 @@ class ApplicationFilterForm extends FormBase {
     $form['status'] = [
       '#type' => 'select',
       '#title' => $this->t('Status'),
-      '#options' => [
-        '' => $this->t('All Statuses'),
-        'draft' => $this->t('Draft'),
-        'submitted' => $this->t('Submitted'),
-        'under_review' => $this->t('Under Review'),
-        'approved' => $this->t('Approved'),
-        'rejected' => $this->t('Rejected'),
-        'disbursed' => $this->t('Disbursed'),
-        'closed' => $this->t('Closed'),
-      ],
+      '#options' => ['' => $this->t('All Statuses')] + ApplicationStatusConstants::getAllowedValues(),
       '#default_value' => $request->query->get('status', ''),
       '#attributes' => [
         'class' => ['filter-status'],

@@ -1,11 +1,17 @@
 'use server';
 
-import { QueueStatus, SyncAction, SyncStatus } from '@/generated/prisma';
+import {
+  ApplicationStatus,
+  QueueStatus,
+  SyncAction,
+  SyncStatus,
+} from '@/generated/prisma';
 import { createOrUpdateApplication } from '@/lib/api/application/create';
 import type {
   ApplicationPostRequest,
   FileUpload,
 } from '@/lib/api/schema/application/application.schema';
+import { toApiStatus } from '@/lib/constants/application-status';
 import { prisma } from '@/lib/db/prisma';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -479,20 +485,15 @@ async function transformApplicationForExternalApi(
     return result;
   };
 
-  // Map status values
+  // Map status values using centralized constants
   const mapStatus = (status: string): ApplicationPostRequest['status'] => {
-    const statusMap: Record<string, ApplicationPostRequest['status']> = {
-      UNSUBMITTED: 'draft',
-      DRAFT: 'draft',
-      SUBMITTED: 'submitted',
-      PENDING: 'submitted',
-      IN_REVIEW: 'under_review',
-      APPROVED: 'approved',
-      REJECTED: 'rejected',
-      DISBURSED: 'disbursed',
-      CLOSED: 'closed',
-    };
-    return statusMap[status] || 'draft';
+    // Try to convert using the centralized mapping
+    try {
+      return toApiStatus(status as ApplicationStatus);
+    } catch {
+      // Fallback for any unmapped status
+      return 'draft';
+    }
   };
 
   // Map gender values

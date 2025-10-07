@@ -2,16 +2,17 @@
 
 namespace Drupal\api_application\Service;
 
+use Drupal\api_application\ApplicationStatusConstants;
+use Drupal\api_application\Entity\GroupMemberInterface;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\Core\Url;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
-use Drupal\Component\Datetime\TimeInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\Core\Url;
 use Drupal\sms_providers\Service\SmsServiceInterface;
-use Drupal\api_application\Entity\GroupMemberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Service for handling SMS confirmations for group members.
@@ -583,7 +584,7 @@ class SmsConfirmationService {
 
     // Only check if application is currently in group_member_confirmation
     // status.
-    if ($application->getStatus() !== 'group_member_confirmation') {
+    if ($application->getStatus() !== ApplicationStatusConstants::GROUP_MEMBER_CONFIRMATION) {
       return;
     }
 
@@ -606,7 +607,7 @@ class SmsConfirmationService {
 
       // If no members require confirmation, proceed to submitted.
       if (empty($required_members)) {
-        $application->setStatus('submitted');
+        $application->setStatus(ApplicationStatusConstants::SUBMITTED);
         $application->save();
         $this->logger->notice(
           'Application @id transitioned to submitted (no members require confirmation)',
@@ -621,7 +622,7 @@ class SmsConfirmationService {
 
       // If 75% or more confirmed, transition to submitted.
       if ($approval_percentage >= 75) {
-        $application->setStatus('submitted');
+        $application->setStatus(ApplicationStatusConstants::SUBMITTED);
         $application->save();
 
         $this->logger->notice(

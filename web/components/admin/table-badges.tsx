@@ -1,3 +1,5 @@
+import { ApplicationStatus } from '@/generated/prisma';
+import { getStatusBadgeConfig } from '@/lib/constants/application-status';
 import { ReactNode } from 'react';
 
 interface TableBadgeProps {
@@ -36,25 +38,26 @@ export function StatusBadge({
   icon?: ReactNode;
 }) {
   const getStatusConfig = (status: string) => {
-    const statusConfigs: Record<
+    // Try to use centralized application status config first
+    try {
+      const appStatus = status as ApplicationStatus;
+      if (Object.values(ApplicationStatus).includes(appStatus)) {
+        return getStatusBadgeConfig(appStatus);
+      }
+    } catch {
+      // Not an application status, continue with other configs
+    }
+
+    // Fallback configs for non-application statuses
+    const otherStatusConfigs: Record<
       string,
       { variant: TableBadgeProps['variant']; label: string }
     > = {
-      // Application statuses
-      UNSUBMITTED: { variant: 'default', label: 'Not Started' },
-      DRAFT: { variant: 'warning', label: 'Draft' },
-      SUBMITTED: { variant: 'info', label: 'Submitted' },
-      PENDING: { variant: 'warning', label: 'Pending' },
-      IN_REVIEW: { variant: 'info', label: 'In Review' },
-      APPROVED: { variant: 'success', label: 'Approved' },
-      REJECTED: { variant: 'danger', label: 'Rejected' },
-      DISBURSED: { variant: 'success', label: 'Disbursed' },
-      CLOSED: { variant: 'default', label: 'Closed' },
-
       // Sync statuses
       IN_PROGRESS: { variant: 'info', label: 'In Progress' },
       COMPLETED: { variant: 'success', label: 'Completed' },
       FAILED: { variant: 'danger', label: 'Failed' },
+      PENDING: { variant: 'warning', label: 'Pending' },
 
       // Queue statuses
       PROCESSING: { variant: 'info', label: 'Processing' },
@@ -66,7 +69,10 @@ export function StatusBadge({
     };
 
     return (
-      statusConfigs[status] || { variant: 'default' as const, label: status }
+      otherStatusConfigs[status] || {
+        variant: 'default' as const,
+        label: status,
+      }
     );
   };
 

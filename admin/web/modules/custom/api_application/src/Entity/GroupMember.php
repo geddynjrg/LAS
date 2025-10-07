@@ -570,12 +570,6 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
-    // Auto-confirm members who don't require confirmation.
-    if (!$this->requiresConfirmation() && $this->getConfirmationStatus() !== 'confirmed') {
-      $this->setConfirmationStatus('confirmed');
-      $this->setConfirmationConfirmedAt(\Drupal::time()->getRequestTime());
-    }
-
     // Handle file organization if not new and has application.
     if (!$this->isNew() && $this->getApplication()) {
       $this->organizeGroupMemberFiles();
