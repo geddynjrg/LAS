@@ -4,7 +4,10 @@ import {
   getConstituencyOptions,
   getCountyOptions,
 } from '@/lib/api/counties.service';
-import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
+import {
+  getChildTaxonomyOptions,
+  getFormFieldOptions,
+} from '@/lib/api/taxonomy.service';
 import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
@@ -29,7 +32,7 @@ export default async function Page({ params }: GroupDataPageProps) {
   ] = await Promise.all([
     getApplicationById(id),
     getFormFieldOptions('purposeOfTheGroup'),
-    getFormFieldOptions('valueChain'),
+    getChildTaxonomyOptions('group_activities', 'Value chain'),
     getCountyOptions(),
     getConstituencyOptions(),
     getFormFieldOptions('keyActivitiesOfTheGroup'),

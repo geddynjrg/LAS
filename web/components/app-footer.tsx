@@ -20,44 +20,13 @@ export const AppFooter: FC = async () => {
     siteInfo = await getSiteInfo();
   } catch (error) {
     console.error('Failed to fetch site info:', error);
-    // Fallback to hardcoded values if API fails
   }
 
-  // Fallback data
-  const defaultSiteData = {
-    site: {
-      name: 'Uwezo Fund',
-      contact: {
-        address: 'Lonrho House, 16th Floor, Standard Street',
-        po_box: 'P. O. Box 42009 – 00100, Nairobi',
-        phone: '+254 0776 154 215',
-        email: 'info@uwezo.go.ke',
-      },
-    },
-    useful_links: [
-      {
-        id: '1',
-        title: 'Staff Mail',
-        url: 'https://mail.kenya.go.ke',
-        external: true,
-      },
-      { id: '2', title: 'MyGov', url: 'https://mygov.go.ke', external: true },
-      {
-        id: '3',
-        title: 'eCitizen',
-        url: 'https://ecitizen.go.ke',
-        external: true,
-      },
-      {
-        id: '4',
-        title: 'Public Service Jobs',
-        url: 'https://psckenyajobs.go.ke',
-        external: true,
-      },
-    ],
-  };
+  const data = siteInfo?.data;
 
-  const data = siteInfo?.data || defaultSiteData;
+  if (!data) {
+    return null;
+  }
 
   return (
     <footer className="bg-primary text-primary-foreground">

@@ -104,6 +104,54 @@ export async function getTaxonomyOptionsByVocabularyId(
 }
 
 /**
+ * Get taxonomy options that are children of a specific parent term
+ */
+export async function getChildTaxonomyOptions(
+  vocabularyId: string,
+  parentTermName: string,
+): Promise<TaxonomyOption[]> {
+  try {
+    const vocabulary = await prisma.taxonomyVocabulary.findUnique({
+      where: { vocabularyId },
+      include: { terms: true },
+    });
+
+    if (!vocabulary) {
+      return [];
+    }
+
+    // Find the parent term
+    const parentTerm = vocabulary.terms.find(
+      (term: any) => term.name === parentTermName,
+    );
+
+    if (!parentTerm) {
+      return [];
+    }
+
+    // Get all child terms (terms that have this parent in their parentIds)
+    const childTerms = vocabulary.terms.filter((term: any) => {
+      const parentIds = JSON.parse(term.parentIds || '[]');
+      return parentIds.includes(parentTerm.tid);
+    });
+
+    return childTerms
+      .sort((a: any, b: any) => a.weight - b.weight)
+      .map((term: any) => ({
+        label: term.name,
+        value: term.name,
+        limitedRole: term.limitedRole,
+      }));
+  } catch (error) {
+    console.error(
+      `Error fetching child taxonomy options for parent ${parentTermName}:`,
+      error,
+    );
+    return [];
+  }
+}
+
+/**
  * Get all taxonomy vocabularies for a specific entity type
  */
 export async function getTaxonomyVocabulariesByEntity(
@@ -287,7 +335,6 @@ const taxonomyFieldMapping = {
   // Group data mappings
   purposeOfTheGroup: 'group_background',
   keyActivitiesOfTheGroup: 'group_activities',
-  valueChain: 'value_chain',
   countyOfOperation: 'county',
   constituency: 'constituency',
 

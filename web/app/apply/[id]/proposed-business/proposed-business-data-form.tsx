@@ -12,11 +12,11 @@ import { capitalizeWords } from '@/lib/utils/string';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
 import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
-import { RadioGroup } from '@workspace/ui/components/radio-group';
 import { Container } from '@workspace/ui/components/container';
 import { Currency } from '@workspace/ui/components/currency';
 import { Field, Form } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
+import { RadioGroup } from '@workspace/ui/components/radio-group';
 import { Underline } from '@workspace/ui/components/underline';
 import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
@@ -151,13 +151,13 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                     label: t(
                       'ApplicationDetailsPage.proposedBusiness.businessInfo.startup',
                     ),
-                    value: "Start-up",
+                    value: 'Start-up',
                   },
                   {
                     label: t(
                       'ApplicationDetailsPage.proposedBusiness.businessInfo.expansion',
                     ),
-                    value: "Expansion",
+                    value: 'Expansion',
                   },
                 ]}
               />
@@ -174,18 +174,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             control={(props) => (
               <CheckboxGroup
                 {...props}
-                options={
-                  taxonomyOptions?.businessType || [
-                    { label: t('Common.trade'), value: 'Trade' },
-                    { label: t('Common.service'), value: 'Service' },
-                    {
-                      label: t('Common.manufacturing'),
-                      value: 'Manufacturing',
-                    },
-                    { label: t('Common.agriculture'), value: 'Agriculture' },
-                    { label: t('Common.other'), value: 'Other' },
-                  ]
-                }
+                options={taxonomyOptions?.businessType || []}
               />
             )}
           />
@@ -354,7 +343,10 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
                         onValueChange={(value) => {
                           const capitalizedValue = capitalizeWords(value);
                           const updatedExpenses = [...customExpenses];
-                          updatedExpenses[index] = { ...expense, name: capitalizedValue };
+                          updatedExpenses[index] = {
+                            ...expense,
+                            name: capitalizedValue,
+                          };
                           setCustomExpenses(updatedExpenses);
                         }}
                         placeholder={t(

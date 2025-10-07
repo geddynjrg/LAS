@@ -664,11 +664,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
       }
     }
 
-    // Multi-value list fields.
-    if (isset($data['key_activities'])) {
-      $mapped['key_activities'] = (array) $data['key_activities'];
-    }
-
     // Text field.
     if (isset($data['rejection_message'])) {
       $mapped['rejection_message'] = $data['rejection_message'];
@@ -677,7 +672,8 @@ class ApplicationResource extends RestFrameworkResourceBase {
     // Taxonomy reference fields.
     $taxonomyFields = [
       'group_background' => 'group_background',
-      'value_chain' => 'value_chain',
+      'key_activities' => 'group_activities',
+      'value_chain' => 'group_activities',
       'county' => 'counties',
       'constituency' => 'constituencies',
       'purpose_of_loan' => 'purpose_of_the_loan',

@@ -321,20 +321,22 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
-    $fields['key_activities'] = BaseFieldDefinition::create('list_string')
+    $fields['key_activities'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Key activities of the group'))
       ->setDescription(t('Select all key activities that apply.'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
-      ->setSetting('allowed_values', [
-        'value_chain' => t('Value chain'),
-        'table_banking' => t('Table banking'),
-        'other' => t('Other'),
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler', 'default:taxonomy_term')
+      ->setSetting('handler_settings', [
+        'target_bundles' => [
+          'group_activities' => 'group_activities',
+        ],
       ])
       ->setDisplayOptions('view', [
         'label' => 'visible',
-        'type' => 'list_default',
+        'type' => 'entity_reference_label',
         'weight' => 6,
       ])
       ->setDisplayOptions('form', [
@@ -346,14 +348,14 @@ class Application extends ContentEntityBase implements ApplicationInterface {
 
     $fields['value_chain'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Value chain'))
-      ->setDescription(t('Select the value chain categories.'))
+      ->setDescription(t('Select the value chain categories (shown when Value chain is selected in key activities).'))
       ->setRevisionable(TRUE)
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setSetting('target_type', 'taxonomy_term')
       ->setSetting('handler', 'default:taxonomy_term')
       ->setSetting('handler_settings', [
         'target_bundles' => [
-          'value_chain' => 'value_chain',
+          'group_activities' => 'group_activities',
         ],
       ])
       ->setDisplayOptions('view', [
@@ -1131,10 +1133,9 @@ class Application extends ContentEntityBase implements ApplicationInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasTableBanking() {
-    $activities = $this->get('key_activities')->getValue();
-    foreach ($activities as $activity) {
-      if ($activity['value'] === 'table_banking') {
+  public function hasTableBanking(): bool {
+    foreach ($this->get('key_activities') as $item) {
+      if ($item->entity && $item->entity->getName() === 'Table banking') {
         return TRUE;
       }
     }
@@ -1144,7 +1145,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
   /**
    * {@inheritdoc}
    */
-  public function setTableBanking($value) {
+  public function setTableBanking($value): ApplicationInterface {
     // This is handled through the key_activities field.
     return $this;
   }

@@ -2,12 +2,12 @@ import { ApplicationStatus } from '@/components/application-status';
 import { MemberSummary } from '@/components/member-summary';
 import type { SiteInformationResponse } from '@/lib/api/schema/site-info/site-info.schema';
 import { getSiteInfo } from '@/lib/api/site-info';
+import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import {
   type GeneralDetails,
   type MembersData,
   type Status,
 } from '@/lib/types/application.types';
-import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import {
   IconChevronRight,
   IconFileText,
@@ -256,13 +256,7 @@ const EmptyApplicationsState: FC<EmptyApplicationsStateProps> = ({
 }) => {
   const t = useTranslations('DashboardPage');
 
-  // Fallback contact info (same as footer)
-  const defaultContact = {
-    phone: '+254 0776 154 215',
-    email: 'info@uwezo.go.ke',
-  };
-
-  const contact = siteInfo?.data?.site?.contact || defaultContact;
+  const contact = siteInfo?.data?.site?.contact;
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -292,31 +286,33 @@ const EmptyApplicationsState: FC<EmptyApplicationsStateProps> = ({
           </Button>
 
           {/* Additional Help */}
-          <div className="border-t border-neutral-200 pt-6">
-            <p className="mb-4 text-sm text-neutral-600">
-              {t('emptyState.helpText')}
-            </p>
-            <div className="flex items-center justify-center gap-6">
-              <Link href={`mailto:${contact.email}`}>
-                <Underline
-                  variant="primary"
-                  className="flex items-center gap-x-2"
-                >
-                  <IconMail className="h-4 w-4" />
-                  <span>{contact.email}</span>
-                </Underline>
-              </Link>
-              <Link href={`tel:${contact.phone}`}>
-                <Underline
-                  variant="primary"
-                  className="flex items-center gap-x-2"
-                >
-                  <IconPhone className="h-4 w-4" />
-                  <span>{contact.phone}</span>
-                </Underline>
-              </Link>
+          {contact && (
+            <div className="border-t border-neutral-200 pt-6">
+              <p className="mb-4 text-sm text-neutral-600">
+                {t('emptyState.helpText')}
+              </p>
+              <div className="flex items-center justify-center gap-6">
+                <Link href={`mailto:${contact.email}`}>
+                  <Underline
+                    variant="primary"
+                    className="flex items-center gap-x-2"
+                  >
+                    <IconMail className="h-4 w-4" />
+                    <span>{contact.email}</span>
+                  </Underline>
+                </Link>
+                <Link href={`tel:${contact.phone}`}>
+                  <Underline
+                    variant="primary"
+                    className="flex items-center gap-x-2"
+                  >
+                    <IconPhone className="h-4 w-4" />
+                    <span>{contact.phone}</span>
+                  </Underline>
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </Card>
     </div>
@@ -344,13 +340,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
 }) => {
   const t = useTranslations('DashboardPage');
 
-  // Fallback contact info (same as footer)
-  const defaultContact = {
-    phone: '+254 0776 154 215',
-    email: 'info@uwezo.go.ke',
-  };
-
-  const contact = siteInfo?.data?.site?.contact || defaultContact;
+  const contact = siteInfo?.data?.site?.contact;
 
   return (
     <Card
@@ -406,21 +396,23 @@ const GroupDetails: FC<GroupDetailsProps> = ({
       <StepDescriptionSection config={STATUS_CONFIGS[status]} t={t} />
       <ProcessTimelineSection config={STATUS_CONFIGS[status]} t={t} />
 
-      <div className="mt-4 grid gap-4 border-t border-neutral-400 py-4">
-        <h2 className="typo-h5">{t('questions.title')}</h2>
-        <Link href={`mailto:${contact.email}`}>
-          <Underline variant="primary" className="text-primary gap-x-1">
-            <IconMail />
-            <p>{contact.email}</p>
-          </Underline>
-        </Link>
-        <Link href={`tel:${contact.phone}`}>
-          <Underline variant="primary" className="text-primary gap-x-1">
-            <IconPhone />
-            <p>{contact.phone}</p>
-          </Underline>
-        </Link>
-      </div>
+      {contact && (
+        <div className="mt-4 grid gap-4 border-t border-neutral-400 py-4">
+          <h2 className="typo-h5">{t('questions.title')}</h2>
+          <Link href={`mailto:${contact.email}`}>
+            <Underline variant="primary" className="text-primary gap-x-1">
+              <IconMail />
+              <p>{contact.email}</p>
+            </Underline>
+          </Link>
+          <Link href={`tel:${contact.phone}`}>
+            <Underline variant="primary" className="text-primary gap-x-1">
+              <IconPhone />
+              <p>{contact.phone}</p>
+            </Underline>
+          </Link>
+        </div>
+      )}
     </Card>
   );
 };

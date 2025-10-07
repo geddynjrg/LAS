@@ -230,7 +230,7 @@ class ApplicationDetailResource extends RestFrameworkResourceBase {
       'group_registration_certificate' => $this->getFileData($application->get('group_registration_certificate')->entity),
       'list_of_members_certificate' => $this->getFileData($application->get('list_of_members_certificate')->entity),
       'group_background' => $this->getTaxonomyData($application->get('group_background')),
-      'key_activities' => $this->getListValues($application->get('key_activities')),
+      'key_activities' => $this->getTaxonomyData($application->get('key_activities')),
       'value_chain' => $this->getTaxonomyData($application->get('value_chain')),
       'table_banking_duration' => $application->get('table_banking_duration')->value,
       'monthly_share_contribution' => $application->get('monthly_share_contribution')->value,

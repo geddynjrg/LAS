@@ -217,28 +217,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             control={(props) => (
               <CheckboxGroup
                 {...props}
-                options={
-                  taxonomyOptions?.groupPurpose?.length
-                    ? taxonomyOptions.groupPurpose
-                    : [
-                        {
-                          label: t(
-                            'ApplicationDetailsPage.groupData.groupBackground.welfareIssues',
-                          ),
-                          value: 'Welfare issues',
-                        },
-                        {
-                          label: t(
-                            'ApplicationDetailsPage.groupData.groupBackground.incomeActivities',
-                          ),
-                          value: 'Income generating activities',
-                        },
-                        {
-                          label: t('Common.other'),
-                          value: 'Other',
-                        },
-                      ]
-                }
+                options={taxonomyOptions?.groupPurpose || []}
                 orientation="vertical"
               />
             )}
@@ -258,28 +237,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   // Use setTimeout to avoid setState during render
                   setTimeout(() => setChosenKeyActivities(val), 0);
                 }}
-                options={
-                  taxonomyOptions?.groupActivities?.length
-                    ? taxonomyOptions.groupActivities
-                    : [
-                        {
-                          label: t(
-                            'ApplicationDetailsPage.groupData.groupBackground.valueChain',
-                          ),
-                          value: 'Value chain',
-                        },
-                        {
-                          label: t(
-                            'ApplicationDetailsPage.groupData.groupBackground.tableBanking',
-                          ),
-                          value: 'Table banking',
-                        },
-                        {
-                          label: t('Common.other'),
-                          value: 'Other',
-                        },
-                      ]
-                }
+                options={taxonomyOptions?.groupActivities || []}
                 orientation="vertical"
               />
             )}
@@ -297,48 +255,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                 <CheckboxGroup
                   {...props}
                   defaultValue={props.defaultValue ?? []}
-                  options={
-                    taxonomyOptions?.valueChain?.length
-                      ? taxonomyOptions.valueChain
-                      : [
-                          {
-                            label: t(
-                              'ApplicationDetailsPage.groupData.groupBackground.leatherProducts',
-                            ),
-                            value: 'Leather and leather products',
-                          },
-                          {
-                            label: t(
-                              'ApplicationDetailsPage.groupData.groupBackground.cottonAndTextile',
-                            ),
-                            value: 'Cotton and textiles',
-                          },
-                          {
-                            label: t(
-                              'ApplicationDetailsPage.groupData.groupBackground.blueEconomy',
-                            ),
-                            value: 'Blue economy',
-                          },
-                          {
-                            label: t(
-                              'ApplicationDetailsPage.groupData.groupBackground.edibleOils',
-                            ),
-                            value: 'Edible oils',
-                          },
-                          {
-                            label: t(
-                              'ApplicationDetailsPage.groupData.groupBackground.constructionAndBuilding',
-                            ),
-                            value: 'Construction and building materials',
-                          },
-                          {
-                            label: t(
-                              'ApplicationDetailsPage.groupData.groupBackground.dairyProducts',
-                            ),
-                            value: 'Dairy and dairy products',
-                          },
-                        ]
-                  }
+                  options={taxonomyOptions?.valueChain || []}
                   orientation="vertical"
                 />
               )}
@@ -431,7 +348,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             label={
               <div>
                 <div>
-                  {t('ApplicationDetailsPage.groupData.groupBackground.creditHistory')}
+                  {t(
+                    'ApplicationDetailsPage.groupData.groupBackground.creditHistory',
+                  )}
                   <span className="text-destructive">*</span>
                 </div>
                 <div className="typo-body-small text-foreground font-normal mt-1">
@@ -452,7 +371,6 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               />
             )}
           />
-
         </FormCard>
 
         <FormCard

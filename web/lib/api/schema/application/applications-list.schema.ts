@@ -150,7 +150,7 @@ export const ApplicationDetailSchema = z.object({
       group_registration_certificate: FileDataSchema.optional(),
       list_of_members_certificate: FileDataSchema.optional(),
       group_background: z.array(TaxonomyTermSchema).optional(),
-      key_activities: z.array(z.string()).optional(),
+      key_activities: z.array(TaxonomyTermSchema).optional(),
       value_chain: z.array(TaxonomyTermSchema).optional(),
       table_banking_duration: z.string().nullable().optional(),
       monthly_share_contribution: z

@@ -139,10 +139,10 @@ class TaxonomyVocabulariesResource extends RestFrameworkResourceBase {
         'entity_type' => 'application',
         'cardinality' => 'multiple',
       ],
-      'value_chain' => [
-        'label' => 'Value Chain',
-        'description' => 'Value chain categories for groups',
-        'field_name' => 'value_chain',
+      'group_activities' => [
+        'label' => 'Group Activities',
+        'description' => 'Key activities of the group',
+        'field_name' => 'group_activities',
         'entity_type' => 'application',
         'cardinality' => 'multiple',
       ],

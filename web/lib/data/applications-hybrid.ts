@@ -6,9 +6,9 @@ import type {
   ApplicationDetail,
   ApplicationsListQuery,
 } from '@/lib/api/schema/application/applications-list.schema';
-import type { ApplicationData } from '@/lib/types/application.types';
 import { getApplications as getLocalApplications } from '@/lib/data/application';
 import { prisma } from '@/lib/db/prisma';
+import type { ApplicationData } from '@/lib/types/application.types';
 
 /**
  * Maps API status to local ApplicationStatus enum
@@ -136,7 +136,8 @@ function mapApiApplicationToLocal(
         },
         background: {
           purposeOfTheGroup: gd.group_background?.map((bg) => bg.name) || [],
-          keyActivitiesOfTheGroup: gd.key_activities || [],
+          keyActivitiesOfTheGroup:
+            gd.key_activities?.map((ka) => ka.name) || [],
           groupCreditHistory: gd.group_credit_history?.map(parseFileData) || [],
           other: gd.other_activities,
           valueChain: gd.value_chain?.map((vc) => vc.name) || null,
