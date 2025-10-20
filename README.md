@@ -59,15 +59,15 @@ pnpm --filter web dev
 pnpm --filter storybook dev
 
 # Run all development servers (web and storybook)
-pnpm dev
+pnpm -r run dev
 
 # Build all packages
-pnpm build
+pnpm -r run build
 
 # Code quality checks
-pnpm lint
-pnpm check-types
-pnpm format
+pnpm -r run lint
+pnpm -r run check-types
+pnpm --filter web prettier
 
 # Add a new shadcn/ui component to the shared UI package
 pnpm dlx shadcn@canary add button -c packages/ui
@@ -92,6 +92,60 @@ For more DDEV commands and configuration options, see the [DDEV documentation](h
 
 ## Deployment
 
+### Manual Deployment
+
+The project includes a deployment script (`scripts/deploy.sh`) that can be used for manual deployments from developer machines or in CI/CD pipelines.
+
+#### Usage
+
+```bash
+./scripts/deploy.sh [environment] [--step STEP]
+```
+
+**Arguments:**
+- `environment` - Target environment (default: staging)
+- `--step STEP` - Which step to run (default: all)
+
+**Available steps:**
+- `build` - Build Docker images only
+- `deploy` - Deploy application (requires pre-built images)
+- `post-deploy` - Run post-deployment tasks only (drush deploy)
+- `all` - Run all steps (build, deploy, post-deploy)
+
+#### Configuration
+
+For local deployment, add environment-prefixed variables to your `.env` file:
+
+```bash
+STAGING_DEPLOY_HOST=server.example.com
+STAGING_DEPLOY_USER=deploy
+STAGING_DEPLOY_PATH=/var/www/app
+STAGING_DEPLOY_KEY_PATH=/path/to/ssh/key  # Optional
+```
+
+**Note:** The deployment script does NOT transfer the `.env` file to the server. You must manually create and maintain the application `.env` file on the server with the appropriate production settings.
+
+#### Examples
+
+```bash
+# Full deployment to staging
+./scripts/deploy.sh staging
+
+# Build images only
+./scripts/deploy.sh staging --step build
+
+# Deploy only (useful after images are built)
+./scripts/deploy.sh staging --step deploy
+
+# Run post-deployment tasks only
+./scripts/deploy.sh staging --step post-deploy
+```
+
+For detailed help and configuration options:
+```bash
+./scripts/deploy.sh --help
+```
+
 ### Prerequisites
 
 - Docker and Docker Compose
@@ -102,10 +156,10 @@ For more DDEV commands and configuration options, see the [DDEV documentation](h
    ```bash
    # Create deployment directory on server
    ssh user@server "mkdir -p /path/to/deployment"
-   
+
    # Copy necessary files to server
    scp .env.example docker-compose.yml dump.sql.gz user@server:/path/to/deployment/
-   
+
    # SSH into the server
    ssh user@server
    cd /path/to/deployment
@@ -115,7 +169,7 @@ For more DDEV commands and configuration options, see the [DDEV documentation](h
    ```bash
    # Create environment file from example
    cp .env.example .env
-   nano .env  # Set at minimum: DB_PASSWORD, DB_ROOT_PASSWORD
+   nano .env  # Set production values - see list below
    
    # Start database service
    docker compose up -d db
@@ -123,6 +177,8 @@ For more DDEV commands and configuration options, see the [DDEV documentation](h
    # Import database dump (uses MYSQL_ROOT_PASSWORD from container environment)
    zcat dump.sql.gz | docker compose exec -T db sh -c 'mariadb -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
    ```
+
+   **Important:** The `.env` file on the server must be maintained manually. The deployment process does NOT transfer this file, so you need to update production settings (passwords, API keys, domain names, etc.) directly on the server whenever configuration changes are needed.
 
 3. **Configure GitHub Secrets and Variables**
    
@@ -144,12 +200,15 @@ After initial setup, the GitHub Actions pipeline will handle all deployments aut
 
 ### GitHub Actions Deployment
 
-The project uses GitHub Actions for CI/CD. Automatic deployment to staging happens on push to `staging` branch.
+The project uses GitHub Actions for automated CI/CD. Deployment to staging happens automatically on push to `staging` branch.
 
-1. Builds Docker images for web, admin, and nginx services
-2. Transfers images to the deployment server via SSH
-3. Deploys using `docker compose up -d`
-4. Runs Drupal deployment tasks (`drush deploy`)
+The workflow uses `scripts/deploy.sh` in three sequential steps:
+
+1. **Build** (`--step build`) - Builds Docker images for web, admin, and nginx services
+2. **Deploy** (`--step deploy`) - Transfers images to the deployment server via SSH and runs `docker compose up -d`
+3. **Post-deploy** (`--step post-deploy`) - Runs Drupal deployment tasks (`drush deploy`)
+
+The workflow can also be triggered manually via workflow_dispatch in the GitHub Actions UI.
 
 ## SSL/TLS Configuration (Optional)
 
