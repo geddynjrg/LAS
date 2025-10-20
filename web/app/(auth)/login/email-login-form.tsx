@@ -6,7 +6,6 @@ import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { type FC, useEffect } from 'react';
 
 export interface EmailLoginFormProps {
@@ -19,18 +18,16 @@ export const EmailLoginForm: FC<EmailLoginFormProps> = ({
   redirectTo,
 }) => {
   const t = useTranslations('LoginPage');
-  const router = useRouter();
   const [state, formAction, isPending] = useForm(action, loginSchema);
 
   // Navigate on successful login
   useEffect(() => {
     if (state.success) {
       // The server action has already created the session
-      // Refresh to update Server Components, then navigate
-      router.refresh();
-      router.replace(redirectTo ?? '/dashboard');
+      // Hard navigation to ensure cookies are properly read
+      window.location.href = redirectTo ?? '/dashboard';
     }
-  }, [redirectTo, router, state.success]);
+  }, [redirectTo, state.success]);
 
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">

@@ -64,10 +64,10 @@ export function useProfile(): UseProfileReturn {
     () => () => {
       if (!profile) return 'User';
 
-      // Priority: name > email > phoneNumber
-      if (profile.name) return profile.name;
+      // Priority: email > phoneNumber > name
       if (profile.email) return profile.email;
       if (profile.phoneNumber) return profile.phoneNumber;
+      if (profile.name) return profile.name;
 
       return 'User';
     },

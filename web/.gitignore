@@ -41,6 +41,7 @@ CLAUDE.local.md
 # File uploads
 uploads/
 apps/*/uploads/
+public/uploads/
 
 # Dependencies
 /node_modules

@@ -8,6 +8,7 @@
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\File\FileSystemInterface;
 
 /**
  * Implements hook_install().
@@ -1102,4 +1103,74 @@ function api_application_update_11019(): string {
   }
 
   return t('Deleted value_chain vocabulary and its terms (merged into group_activities).');
+}
+
+/**
+ * Migrate application files from public to private storage for security.
+ */
+function api_application_update_11020(): string {
+  $file_system = \Drupal::service('file_system');
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $file_storage = $entity_type_manager->getStorage('file');
+
+  $files_updated = 0;
+  $files_moved = 0;
+  $errors = [];
+
+  $query = $file_storage->getQuery()
+    ->condition('uri', 'public://applications/%', 'LIKE')
+    ->accessCheck(FALSE);
+
+  $fids = $query->execute();
+
+  foreach ($fids as $fid) {
+    $file = $file_storage->load($fid);
+    if ($file) {
+      $old_uri = $file->getFileUri();
+      $new_uri = str_replace('public://applications/', 'private://applications/', $old_uri);
+
+      $old_path = $file_system->realpath($old_uri);
+      $new_path_dir = dirname($file_system->realpath($new_uri) ?: 'private://applications/');
+
+      if ($old_path && file_exists($old_path)) {
+        try {
+          if (!is_dir($new_path_dir)) {
+            $file_system->prepareDirectory($new_path_dir, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
+          }
+
+          $moved_uri = $file_system->move($old_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
+          if ($moved_uri) {
+            $file->setFileUri($moved_uri);
+            $file->save();
+            $files_moved++;
+            $files_updated++;
+          }
+        }
+        catch (\Exception $e) {
+          $errors[] = t('Failed to move file @fid: @error', [
+            '@fid' => $fid,
+            '@error' => $e->getMessage(),
+          ]);
+        }
+      }
+      else {
+        $file->setFileUri($new_uri);
+        $file->save();
+        $files_updated++;
+      }
+    }
+  }
+
+  \Drupal::cache()->invalidateAll();
+  drupal_flush_all_caches();
+
+  if (!empty($errors)) {
+    \Drupal::logger('api_application')->error('File migration errors: @errors', ['@errors' => implode(', ', $errors)]);
+  }
+
+  return t('Migrated @count file records from public to private storage. @moved files physically moved. @errors errors encountered.', [
+    '@count' => $files_updated,
+    '@moved' => $files_moved,
+    '@errors' => count($errors),
+  ]);
 }

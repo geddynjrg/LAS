@@ -12,22 +12,19 @@ import { Underline } from '@workspace/ui/components/underline';
 import { useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function Page() {
   const t = useTranslations('SignUpPage');
-  const router = useRouter();
   const [state, formAction, isPending] = useForm(signupAction, signupSchema);
 
   useEffect(() => {
     if (state.success) {
       // The server action has already created the session
-      // Refresh to update Server Components, then navigate
-      router.refresh();
-      router.replace('/dashboard');
+      // Hard navigation to ensure cookies are properly read
+      window.location.href = '/dashboard';
     }
-  }, [state.success, router]);
+  }, [state.success]);
 
   return (
     <Container className="max-w-[500px] pt-8">

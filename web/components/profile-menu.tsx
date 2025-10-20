@@ -23,15 +23,13 @@ export const ProfileMenu: FC = () => {
 
   if (!isAuthenticated || isLoading) {
     return (
-      <Link href="/login" className="no-underline text-inherit">
+      <Link href="/login" className="no-underline text-inherit cursor-pointer">
         <Button
           variant="ghost"
           className="size-13 rounded-0 hover:bg-header flex flex-col items-center gap-0 p-0"
         >
           <IconUserCircle />
-          <span className="text-nowrap text-xs font-normal">
-            {t('login')}
-          </span>
+          <span className="text-nowrap text-xs font-normal">{t('login')}</span>
         </Button>
       </Link>
     );
@@ -71,7 +69,7 @@ export const ProfileMenu: FC = () => {
         )}
 
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="text-foreground">
+          <Link href="/dashboard" className="text-foreground cursor-pointer">
             {t('myApplications')}
           </Link>
         </DropdownMenuItem>
@@ -80,7 +78,10 @@ export const ProfileMenu: FC = () => {
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/admin/dashboard" className="text-foreground">
+              <Link
+                href="/admin/dashboard"
+                className="text-foreground cursor-pointer"
+              >
                 {t('adminDashboard')}
               </Link>
             </DropdownMenuItem>

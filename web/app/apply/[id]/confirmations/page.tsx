@@ -1,4 +1,3 @@
-import ConfirmationFormsWrapper from '@/app/apply/[id]/confirmations/confirmations-forms-wrapper';
 import GroupConfirmationWrapper from '@/app/apply/[id]/confirmations/group-confirmation-wrapper';
 import { getApplicationById } from '@/lib/data/application';
 import { Container } from '@workspace/ui/components/container';
@@ -34,13 +33,6 @@ export default async function Page({ params }: GroupDataPageProps) {
       </Container>
 
       <InfoPopover />
-
-      {/* <ConfirmationFormsWrapper
-        id={id}
-        application={application}
-        applicationConfirmationData={application.confirmations}
-        members={application.members}
-      /> */}
 
       <GroupConfirmationWrapper
         id={id}

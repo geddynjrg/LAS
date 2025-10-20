@@ -182,6 +182,7 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
       ->setRequired(TRUE)
       ->setSettings([
         'file_directory' => 'applications/member_ids/[date:custom:Y]-[date:custom:m]',
+        'uri_scheme' => 'private',
         'alt_field_required' => FALSE,
         'file_extensions' => 'png jpg jpeg webp',
         'max_filesize' => '2MB',
@@ -225,6 +226,7 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
       ->setDescription(t('Upload the disability certificate (PDF or Image).'))
       ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/disability_certs/[date:custom:Y]-[date:custom:m]')
+      ->setSetting('uri_scheme', 'private')
       ->setSetting('max_filesize', '2MB')
       ->setSetting('handler', 'default:file')
       ->setDisplayOptions('view', [
@@ -623,11 +625,11 @@ class GroupMember extends ContentEntityBase implements GroupMemberInterface {
             $current_uri = $file->getFileUri();
 
             // Check if file is already in the correct directory.
-            $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
+            $expected_dir_pattern = 'private://applications/' . $application_id . '/' . $subdirectory;
 
             if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
               // Move file to application-specific directory.
-              $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
+              $new_directory = 'private://applications/' . $application_id . '/' . $subdirectory;
               $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
 
               $filename = $file->getFilename();

@@ -492,20 +492,9 @@
       "no-additional-loans": "Hatustahili kupata mikopo ya ziada isipokuwa kiasi kilichoshindwa kulipwa kimefutwa kabisa"
     },
     "confirmMembersForm": {
-      "confirmation-instructions": "Uthibitisho unafanywa kupitia SMS. Mara tu unapobofya kitufe hapa chini, wanachama wanaochukua mkopo watajulishwa kupitia simu zao kwamba wanahitaji kutoa idhini. Mara tu theluthi mbili yao watakapotoa idhini, unaweza kuendelea na hatua ya mwisho.",
+      "confirmation-instructions": "Uthibitisho unafanywa kupitia SMS. Mara tu unapobofya kitufe hapa chini, wanachama wote wa kikundi watajulishwa kiotomatiki kupitia simu zao kwamba wanahitaji kutoa idhini. Mara tu asilimia 75 ya wanachama watakapothibitisha, ombi lako litaendelea kiotomatiki kwenye hatua inayofuata.",
       "progress-saved": "Unaweza kufunga ukurasa wa kivinjari kwa usalama na kurudi baadaye. Maendeleo yako yamehifadhiwa, <strong>utajulishwa kupitia SMS mara tu wanachama wa kutosha watakapothibitisha kuendelea.</strong>",
-      "select-members": "Chagua wanachama wanaochukua mkopo",
-      "select-all": "Chagua wanachama wote",
-      "send-to-members": "Tuma kwa wanachama kwa uthibitisho",
-      "confirmed-members": "{confirmed}/{total} wanachama wamethibitisha"
-    },
-    "groupConfirmationForm": {
-      "confirmation-instructions": "Uthibitisho unafanywa kupitia SMS. Mara tu unapobofya kitufe hapa chini, wanachama wanaochukua mkopo watajulishwa kupitia simu zao kwamba wanahitaji kutoa idhini. Mara tu asilimia sabini wao wameidhini, unaweza kuhamia hatua ya mwisho.",
-      "progress-saved": "Unaweza kufunga ukurasa wa kivinjari kwa usalama na kurudi kwao baadaye. Maendeleo yako yamehifadhiwa, <strong>utaarifiwa kupitia SMS mara tu wanachama wa kutosha wanapothibitisha kuendelea.</strong>",
-      "select-members": "Chagua wanachama wanaochukua mkopo",
-      "select-all": "Chagua wanachama wote",
-      "deselect-all": "Kuteulia wanachama wote",
-      "send-to-members": "Tumia kwa wanachama kwa uthibitisho",
+      "send-to-members": "Tuma kwa wanachama wote kwa uthibitisho",
       "confirmed-members": "{confirmed}/{total} wanachama wamethibitisha"
     }
   },

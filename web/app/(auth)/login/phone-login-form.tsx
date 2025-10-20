@@ -9,7 +9,6 @@ import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { type FC, useEffect, useState } from 'react';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
@@ -24,7 +23,6 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   redirectTo,
 }) => {
   const t = useTranslations('LoginPage');
-  const router = useRouter();
   const [state, formAction, isPending] = useForm(action, phoneLoginSchema);
   const [phoneLoginState, setPhoneLoginState] =
     useState<PhoneLoginState>('phone_input');
@@ -40,9 +38,10 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     if (state.success && !stateWithOtp.otpRequestId) {
       // Only redirect if success is true AND we don't have an OTP request ID
       // (meaning this is final login, not just OTP sent)
-      router.replace(redirectTo ?? '/dashboard');
+      // Hard navigation to ensure cookies are properly read
+      window.location.href = redirectTo ?? '/dashboard';
     }
-  }, [redirectTo, router, state.success, state]);
+  }, [redirectTo, state.success, state]);
 
   // handle OTP request ID from server response
   useEffect(() => {

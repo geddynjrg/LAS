@@ -246,6 +246,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setRevisionable(TRUE)
       ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/certificates/[date:custom:Y]-[date:custom:m]')
+      ->setSetting('uri_scheme', 'private')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
       ->setDisplayOptions('view', [
@@ -267,6 +268,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setRevisionable(TRUE)
       ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/members/[date:custom:Y]-[date:custom:m]')
+      ->setSetting('uri_scheme', 'private')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
       ->setDisplayOptions('view', [
@@ -475,6 +477,7 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
       ->setSetting('file_directory', 'applications/credit_history/[date:custom:Y]-[date:custom:m]')
+      ->setSetting('uri_scheme', 'private')
       ->setSetting('max_filesize', '5MB')
       ->setSetting('handler', 'default:file')
       ->setDisplayOptions('view', [
@@ -1218,11 +1221,11 @@ class Application extends ContentEntityBase implements ApplicationInterface {
             $current_uri = $file->getFileUri();
 
             // Check if file is already in the correct directory.
-            $expected_dir_pattern = 'public://applications/' . $application_id . '/' . $subdirectory;
+            $expected_dir_pattern = 'private://applications/' . $application_id . '/' . $subdirectory;
 
             if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
               // Move file to application-specific directory.
-              $new_directory = 'public://applications/' . $application_id . '/' . $subdirectory;
+              $new_directory = 'private://applications/' . $application_id . '/' . $subdirectory;
               $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
 
               $filename = $file->getFilename();
@@ -1259,11 +1262,11 @@ class Application extends ContentEntityBase implements ApplicationInterface {
             $current_uri = $file->getFileUri();
 
             // Check if file is already in the correct directory.
-            $expected_dir_pattern = 'public://applications/' . $application_id . '/credit_history';
+            $expected_dir_pattern = 'private://applications/' . $application_id . '/credit_history';
 
             if (strpos($current_uri, $expected_dir_pattern) === FALSE) {
               // Move file to application-specific directory.
-              $new_directory = 'public://applications/' . $application_id . '/credit_history';
+              $new_directory = 'private://applications/' . $application_id . '/credit_history';
               $file_system->prepareDirectory($new_directory, FileSystemInterface::CREATE_DIRECTORY);
 
               $filename = $file->getFilename();
