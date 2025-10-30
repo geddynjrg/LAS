@@ -260,9 +260,14 @@ post_deploy() {
     
     # Wait a moment for containers to be ready
     sleep 5
-    
+
+    log_info "Running Drupal deployment tasks..."
     ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
         "cd $DEPLOY_PATH && docker compose exec -T admin /var/www/html/vendor/bin/drush deploy"
+
+    log_info "Running web database migrations..."
+    ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
+        "cd $DEPLOY_PATH && docker compose exec -T web sh -c 'cd /app/web && npx prisma migrate deploy'"
 }
 
 

@@ -36,6 +36,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/web/.next/static ./web/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/web/public ./web/public
 
+# Copy Prisma schema and migrations (required for 'prisma migrate deploy' on startup)
+COPY --from=builder --chown=nextjs:nodejs /app/web/prisma ./web/prisma
+
+# Copy container entrypoint script (waits for DB, runs migrations, starts app)
+COPY --from=builder --chown=nextjs:nodejs /app/web/scripts/docker-entrypoint.sh ./web/scripts/docker-entrypoint.sh
+RUN chmod +x ./web/scripts/docker-entrypoint.sh
+
 USER nextjs
 
 ENV PORT=3000
@@ -45,4 +52,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD wget --quiet --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-CMD ["node", "web/server.js"]
+CMD ["/app/web/scripts/docker-entrypoint.sh"]

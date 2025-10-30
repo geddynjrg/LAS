@@ -11,6 +11,27 @@ JS_FILES=$(echo "$STAGED_FILES" | grep "^web/" | grep -E "\.(js|jsx|ts|tsx|css|m
 
 echo "🔍 Analyzing staged files..."
 
+# Check for Prisma schema changes without migration
+SCHEMA_CHANGED=$(echo "$STAGED_FILES" | grep "^web/prisma/schema.prisma$" || true)
+MIGRATION_CHANGED=$(echo "$STAGED_FILES" | grep "^web/prisma/migrations/" || true)
+
+if [ -n "$SCHEMA_CHANGED" ] && [ -z "$MIGRATION_CHANGED" ]; then
+  echo ""
+  echo "========================================="
+  echo "❌ PRISMA SCHEMA CHANGE WITHOUT MIGRATION"
+  echo "========================================="
+  echo ""
+  echo "You changed web/prisma/schema.prisma but no migration was added."
+  echo ""
+  echo "To fix this, run:"
+  echo "  pnpm --filter web db:migrate"
+  echo ""
+  echo "Then stage the generated migration:"
+  echo "  git add web/prisma/migrations/"
+  echo ""
+  exit 1
+fi
+
 # Initialize exit status
 PHP_EXIT_CODE=0
 JS_EXIT_CODE=0
