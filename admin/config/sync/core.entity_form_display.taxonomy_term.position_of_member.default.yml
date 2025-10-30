@@ -1,0 +1,43 @@
+uuid: 9c0d182a-babb-40fb-a306-9d187ca0416c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.position_of_member.field_limited_role
+    - taxonomy.vocabulary.position_of_member
+id: taxonomy_term.position_of_member.default
+targetEntityType: taxonomy_term
+bundle: position_of_member
+mode: default
+content:
+  field_limited_role:
+    type: boolean_checkbox
+    weight: 1
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  description: true
+  path: true
+  status: true
