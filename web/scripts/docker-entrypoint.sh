@@ -37,7 +37,7 @@ echo "Waiting for database to be ready..."
 MAX_RETRIES=30
 RETRY_COUNT=0
 
-until npx prisma db execute --stdin <<'EOF' || [ $RETRY_COUNT -eq $MAX_RETRIES ]
+until npx prisma db execute --schema=./prisma/schema.prisma --stdin <<'EOF' || [ $RETRY_COUNT -eq $MAX_RETRIES ]
 SELECT 1;
 EOF
 do
@@ -54,7 +54,7 @@ fi
 echo "Database is ready"
 
 echo "Running database migrations..."
-npx prisma migrate deploy
+npx prisma migrate deploy --schema=./prisma/schema.prisma
 
 echo "Starting application..."
 cd /app
