@@ -84,7 +84,7 @@ class DebugProvider implements SmsProviderInterface {
       $params
     );
 
-    if (!$result['result']) {
+    if (empty($result['send'])) {
       throw new \Exception('Failed to send debug SMS email');
     }
 

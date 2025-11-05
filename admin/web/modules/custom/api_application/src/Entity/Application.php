@@ -1140,20 +1140,6 @@ class Application extends ContentEntityBase implements ApplicationInterface {
 
     // Handle SMS notifications based on changes.
     $this->handleSmsNotifications($update);
-
-    // Handle immediate transition if no members require confirmation.
-    // This handles the case where SMS confirmation flow won't be triggered.
-    if ($update && $this->original) {
-      $original_status = $this->original->getStatus();
-      $new_status = $this->getStatus();
-
-      // Check if transitioning to group_member_confirmation and no members
-      // require confirmation.
-      if ($original_status !== 'group_member_confirmation' &&
-          $new_status === 'group_member_confirmation') {
-        $this->checkIfImmediateTransitionNeeded();
-      }
-    }
   }
 
   /**

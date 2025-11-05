@@ -727,7 +727,10 @@ async function transformApplicationForExternalApi(
 /**
  * Manually trigger sync for a specific application
  */
-export async function syncApplication(applicationId: string) {
+export async function syncApplication(
+  applicationId: string,
+  waitForCompletion = false,
+): Promise<{ success: boolean; error?: string; message?: string }> {
   try {
     const application = await prisma.application.findUnique({
       where: { applicationId },
@@ -827,7 +830,41 @@ export async function syncApplication(applicationId: string) {
       }
     }
 
-    // Process immediately
+    // If waitForCompletion requested, process the specific item and wait
+    if (waitForCompletion) {
+      const queueItem = await prisma.syncQueue.findFirst({
+        where: {
+          applicationId,
+          status: {
+            in: [QueueStatus.PENDING, QueueStatus.PROCESSING],
+          },
+        },
+      });
+
+      if (queueItem) {
+        console.log(
+          `[SYNC] Processing queue item ${queueItem.id} for ${applicationId}`,
+        );
+        await processSyncItem(queueItem.id);
+
+        // Check actual result
+        const updatedApp = await prisma.application.findUnique({
+          where: { applicationId },
+          select: { syncStatus: true, syncError: true },
+        });
+
+        if (!updatedApp) {
+          return { success: false, error: 'Application not found after sync' };
+        }
+
+        return {
+          success: updatedApp.syncStatus === SyncStatus.COMPLETED,
+          error: updatedApp.syncError || undefined,
+        };
+      }
+    }
+
+    // Default behavior: process queue in background
     await processSyncQueue();
 
     return { success: true };

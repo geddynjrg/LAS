@@ -3,13 +3,13 @@
 import { updateApplicationStatusById } from '@/app/apply/[id]/review/update-application-status-by-id-action';
 import { ApplicationStatus } from '@/generated/prisma';
 import { syncApplication } from '@/lib/api/sync.service';
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLeft, IconLoader2 } from '@tabler/icons-react';
 import { ActionBar } from '@workspace/ui/components/action-bar';
 import { Button } from '@workspace/ui/components/button';
 import { ModalButton } from '@workspace/ui/components/modal-button';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { type FC } from 'react';
+import { type FC, useState } from 'react';
 
 export interface ReviewDataProps {
   id: string;
@@ -18,6 +18,7 @@ export interface ReviewDataProps {
 export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
   const t = useTranslations();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <ActionBar className="mt-8">
@@ -33,26 +34,40 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
         <ModalButton
           onConfirm={async () => {
             try {
+              setIsSubmitting(true);
+
               console.log(
                 '[SUBMIT] Updating application status to GROUP_MEMBER_CONFIRMATION for:',
                 id,
               );
-              // Update application status to group_member_confirmation
-              // Members will be sent SMS confirmations, and when 75% confirm,
-              // the backend will automatically transition to submitted and sync
+
+              // Step 1: Update application status
               const result = await updateApplicationStatusById(
                 id,
                 ApplicationStatus.GROUP_MEMBER_CONFIRMATION,
               );
               console.log('[SUBMIT] Status update result:', result);
+
+              // Step 2: Sync to Drupal immediately
+              console.log('[SUBMIT] Syncing application to Drupal...');
+              const syncResult = await syncApplication(id, true);
+
+              if (!syncResult.success) {
+                throw new Error(
+                  syncResult.error || 'Failed to sync application to Drupal',
+                );
+              }
+
+              console.log('[SUBMIT] Application synced successfully');
+
+              // Step 3: Navigate to done page only after successful sync
               router.push(`/apply/${id}/done`);
             } catch (error) {
-              console.error(
-                '[SUBMIT] Error updating application status:',
-                error,
-              );
+              console.error('[SUBMIT] Error submitting application:', error);
+              setIsSubmitting(false);
+
               alert(
-                `Error submitting application: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                `Error submitting application: ${error instanceof Error ? error.message : 'Unknown error'}.\n\nPlease try again or contact support if the problem persists.`,
               );
             }
           }}
@@ -63,8 +78,16 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
           cancelButtonProps={{ variant: 'secondary' }}
           contentProps={{ size: 'sm' }}
           titleUnderline
+          disabled={isSubmitting}
         >
-          {t('Common.submit')}
+          {isSubmitting ? (
+            <>
+              <IconLoader2 className="animate-spin" />
+              Submitting your application...
+            </>
+          ) : (
+            t('Common.submit')
+          )}
         </ModalButton>
       </div>
     </ActionBar>

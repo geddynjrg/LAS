@@ -546,10 +546,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $application->save();
     }
 
-    // Step 5: Transition to appropriate status based on member confirmation
-    // requirements.
-    $this->transitionApplicationStatus($application);
-
     return $application;
   }
 
@@ -595,17 +591,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
     // Handle group members if provided.
     if (isset($data['group_members'])) {
       $this->processGroupMembers($application, $data['group_members']);
-    }
-
-    // Step: Transition to appropriate status based on member confirmation
-    // requirements if status is draft or group_member_confirmation.
-    $currentStatus = $application->getStatus();
-    $transitionStatuses = [
-      ApplicationStatusConstants::DRAFT,
-      ApplicationStatusConstants::GROUP_MEMBER_CONFIRMATION,
-    ];
-    if (in_array($currentStatus, $transitionStatuses)) {
-      $this->transitionApplicationStatus($application);
     }
 
     return $application;
