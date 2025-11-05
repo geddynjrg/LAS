@@ -25,9 +25,11 @@ storybook-static/
 # Generated files
 **/generated/
 
-# Database dumps
-*.sql.gz
-*.sql
+# Database dumps (root level only, don't ignore Prisma migrations)
+/*.sql.gz
+/*.sql
+**/*dump*.sql
+**/*dump*.sql.gz
 
 # SSL certificates
 certs/
