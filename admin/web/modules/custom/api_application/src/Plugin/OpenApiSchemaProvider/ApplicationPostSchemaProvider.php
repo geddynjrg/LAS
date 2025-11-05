@@ -169,12 +169,6 @@ class ApplicationPostSchemaProvider extends OpenApiSchemaProviderBase {
               '$ref' => '#/components/schemas/GroupMemberInput',
             ],
           ],
-          'purpose_of_loan' => [
-            'oneOf' => [
-              ['type' => 'string', 'description' => 'Purpose name (auto-creates if not found)'],
-              ['type' => 'integer', 'description' => 'Purpose taxonomy ID'],
-            ],
-          ],
           'loan_type' => [
             'oneOf' => [
               ['type' => 'string', 'description' => 'Loan type name (auto-creates if not found)'],

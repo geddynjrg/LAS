@@ -211,7 +211,6 @@ function template_preprocess_application(array &$variables) {
     'ward' => $application->get('ward')->value ?: '',
 
     // Loan details.
-    'purpose_of_loan' => NULL,
     'loan_type' => NULL,
     'loan_amount' => $application->get('loan_amount')->value ?: 0,
     'proposed_repayment_period' => $application->get('proposed_repayment_period')->value ?: 0,
@@ -318,15 +317,6 @@ function template_preprocess_application(array &$variables) {
 
     if ($constituency) {
       $variables['application']['constituency'] = $constituency->getName();
-    }
-  }
-
-  // Purpose of loan.
-  if (!$application->get('purpose_of_loan')->isEmpty()) {
-    $purpose = $application->get('purpose_of_loan')->entity;
-
-    if ($purpose) {
-      $variables['application']['purpose_of_loan'] = $purpose->getName();
     }
   }
 

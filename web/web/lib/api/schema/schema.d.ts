@@ -499,7 +499,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1759840741
+         * @example 1762371954
          */
         timestamp: number;
         /**
@@ -1010,7 +1010,7 @@ export interface components {
     TaxonomyVocabulariesMeta: {
       /**
        * @description Unix timestamp of when the response was generated
-       * @example 1759840741
+       * @example 1762371954
        */
       timestamp: number;
       /**
@@ -1080,7 +1080,7 @@ export interface components {
       meta: {
         /**
          * @description Unix timestamp of when the response was generated
-         * @example 1759840741
+         * @example 1762371954
          */
         timestamp: number;
         /**
@@ -1619,7 +1619,6 @@ export interface components {
       nature_of_group?: 'youth' | 'pwd' | 'women';
       /** @description Group members */
       group_members?: components['schemas']['GroupMemberInput'][];
-      purpose_of_loan?: string | number;
       loan_type?: string | number;
       /** @description Requested loan amount in KSh */
       loan_amount?: number;
@@ -1908,7 +1907,7 @@ export interface components {
     SiteInformationMeta: {
       /**
        * @description Unix timestamp of the response
-       * @example 1759840741
+       * @example 1762371954
        */
       timestamp: number;
       /**
@@ -2141,7 +2140,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp: number;
               /**
@@ -2211,7 +2210,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp: number;
               /**
@@ -2286,7 +2285,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2341,7 +2340,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2431,7 +2430,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2488,7 +2487,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2555,7 +2554,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2625,7 +2624,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2694,7 +2693,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2750,7 +2749,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**
@@ -2813,7 +2812,7 @@ export interface operations {
             meta?: {
               /**
                * @description Unix timestamp of when the response was generated
-               * @example 1759840741
+               * @example 1762371954
                */
               timestamp?: number;
               /**

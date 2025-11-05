@@ -87,7 +87,7 @@ model MemberData {
   fullname                String
   nationalIdCode          String
   gender                  Gender
-  type                    MemberType
+  type                    String
   phoneNumber             String
   photoOfId               String       @db.LongText
   certificateOfDisability String?      @db.LongText
@@ -272,14 +272,6 @@ enum SyncStatus {
 enum Gender {
   Male
   Female
-  Other
-}
-
-enum MemberType {
-  Chairman
-  Secretary
-  Treasurer
-  Member
   Other
 }
 

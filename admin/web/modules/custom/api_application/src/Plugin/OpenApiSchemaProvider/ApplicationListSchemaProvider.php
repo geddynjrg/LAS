@@ -255,11 +255,6 @@ class ApplicationListSchemaProvider extends OpenApiSchemaProviderBase {
                             ],
                             'nature_of_group' => 'women_group',
                             'loan_conditions' => [
-                              'purpose_of_loan' => [
-                                'tid' => 4,
-                                'name' => 'Business Expansion',
-                                'vocabulary' => 'loan_purposes',
-                              ],
                               'loan_type' => [
                                 'tid' => 5,
                                 'name' => 'Group Loan',

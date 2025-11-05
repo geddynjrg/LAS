@@ -692,7 +692,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
       'value_chain' => 'group_activities',
       'county' => 'counties',
       'constituency' => 'constituencies',
-      'purpose_of_loan' => 'purpose_of_the_loan',
       'loan_type' => 'loan_types',
       'bank_name' => 'banks',
       'business_type' => 'business_types',

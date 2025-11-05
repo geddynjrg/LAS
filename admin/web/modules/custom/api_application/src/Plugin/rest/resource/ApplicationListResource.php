@@ -309,7 +309,6 @@ class ApplicationListResource extends RestFrameworkResourceBase {
 
     // Step 3: Loan Conditions.
     $data['loan_conditions'] = [
-      'purpose_of_loan' => $this->getTaxonomyData($application->get('purpose_of_loan'), TRUE),
       'loan_type' => $this->getTaxonomyData($application->get('loan_type'), TRUE),
       'loan_amount' => $application->getLoanAmount(),
       'proposed_repayment_period' => $application->getProposedRepaymentPeriod(),

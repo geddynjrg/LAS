@@ -178,9 +178,6 @@ class ApplicationDetailSchemaProvider extends OpenApiSchemaProviderBase {
           'loan_conditions' => [
             'type' => 'object',
             'properties' => [
-              'purpose_of_loan' => [
-                '$ref' => '#/components/schemas/TaxonomyTerm',
-              ],
               'loan_type' => [
                 '$ref' => '#/components/schemas/TaxonomyTerm',
               ],

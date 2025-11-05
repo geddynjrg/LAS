@@ -349,15 +349,6 @@ class PdfGeneratorService {
     // Balance between income and expenses.
     $variables['balance'] = $variables['average_income'] - $variables['total_expenses'];
 
-    // Purpose of loan.
-    $variables['purpose_of_loan'] = '';
-    if (!$application->get('purpose_of_loan')->isEmpty()) {
-      $purpose = $application->get('purpose_of_loan')->entity;
-      if ($purpose) {
-        $variables['purpose_of_loan'] = $purpose->getName();
-      }
-    }
-
     // Loan type.
     $variables['loan_type'] = ['name' => '', 'description' => ''];
     if (!$application->get('loan_type')->isEmpty()) {

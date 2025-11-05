@@ -1174,3 +1174,41 @@ function api_application_update_11020(): string {
     '@errors' => count($errors),
   ]);
 }
+
+/**
+ * Remove purpose_of_loan field and purpose_of_the_loan taxonomy.
+ */
+function api_application_update_11021(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+  $vocabulary_storage = $entity_type_manager->getStorage('taxonomy_vocabulary');
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $messages = [];
+
+  // Delete all terms from purpose_of_the_loan vocabulary.
+  $terms = $term_storage->loadByProperties([
+    'vid' => 'purpose_of_the_loan',
+  ]);
+
+  if (!empty($terms)) {
+    $term_storage->delete($terms);
+    $messages[] = t('Deleted @count terms from purpose_of_the_loan vocabulary.', ['@count' => count($terms)]);
+  }
+
+  // Delete the purpose_of_the_loan vocabulary.
+  $vocabulary = $vocabulary_storage->load('purpose_of_the_loan');
+  if ($vocabulary) {
+    $vocabulary->delete();
+    $messages[] = t('Deleted purpose_of_the_loan vocabulary.');
+  }
+
+  // Remove the field storage definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('purpose_of_loan', 'application');
+  if ($field_storage_definition) {
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+    $messages[] = t('Removed purpose_of_loan field from application entity.');
+  }
+
+  return !empty($messages) ? implode(' ', $messages) : t('purpose_of_loan cleanup already completed.');
+}

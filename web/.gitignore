@@ -116,9 +116,6 @@ next-env.d.ts
 # TypeScript
 *.tsbuildinfo
 
-# Generated API schema
-lib/api/schema/schema.d.ts
-
 # Storybook
 storybook-static
 
