@@ -5,6 +5,7 @@ namespace Drupal\sms_providers\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\sms_providers\Provider\SmsProviderInterface;
 
@@ -14,6 +15,11 @@ use Drupal\sms_providers\Provider\SmsProviderInterface;
 class SmsService implements SmsServiceInterface {
 
   use StringTranslationTrait;
+
+  /**
+   * State key for default provider.
+   */
+  public const STATE_DEFAULT_PROVIDER = 'sms_providers.default_provider';
 
   /**
    * The config factory.
@@ -29,6 +35,11 @@ class SmsService implements SmsServiceInterface {
    * The phone number validation service.
    */
   protected PhoneNumberValidationService $phoneValidation;
+
+  /**
+   * The state service.
+   */
+  protected StateInterface $state;
 
   /**
    * Registered SMS providers.
@@ -51,15 +62,19 @@ class SmsService implements SmsServiceInterface {
    *   The logger channel.
    * @param \Drupal\sms_providers\Service\PhoneNumberValidationService $phone_validation
    *   The phone number validation service.
+   * @param \Drupal\Core\State\StateInterface $state
+   *   The state service.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
     LoggerChannelInterface $logger,
     PhoneNumberValidationService $phone_validation,
+    StateInterface $state,
   ) {
     $this->configFactory = $config_factory;
     $this->logger = $logger;
     $this->phoneValidation = $phone_validation;
+    $this->state = $state;
     $this->settings = $config_factory->get('sms_providers.settings');
   }
 
@@ -89,7 +104,11 @@ class SmsService implements SmsServiceInterface {
    * {@inheritdoc}
    */
   public function getDefaultProvider(): ?SmsProviderInterface {
-    $default_provider_id = $this->settings->get('default_provider');
+    // Try state first, fall back to config for backward compatibility.
+    $default_provider_id = $this->state->get(self::STATE_DEFAULT_PROVIDER);
+    if (empty($default_provider_id)) {
+      $default_provider_id = $this->settings->get('default_provider');
+    }
 
     if (empty($default_provider_id)) {
       // If no default set, try to get the first configured provider.

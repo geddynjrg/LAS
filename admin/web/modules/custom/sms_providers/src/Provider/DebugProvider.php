@@ -3,7 +3,7 @@
 namespace Drupal\sms_providers\Provider;
 
 use Drupal\Core\Mail\MailManagerInterface;
-use Drupal\Core\Site\Settings;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -14,9 +14,14 @@ class DebugProvider implements SmsProviderInterface {
   use StringTranslationTrait;
 
   /**
-   * Settings key in settings.php.
+   * State key for debug email.
    */
-  public const SETTINGS_KEY = 'debug_sms_email';
+  public const STATE_DEBUG_EMAIL = 'sms_providers.debug_email';
+
+  /**
+   * The state service.
+   */
+  protected StateInterface $state;
 
   /**
    * The mail manager.
@@ -26,10 +31,13 @@ class DebugProvider implements SmsProviderInterface {
   /**
    * Constructs a DebugProvider object.
    *
+   * @param \Drupal\Core\State\StateInterface $state
+   *   The state service.
    * @param \Drupal\Core\Mail\MailManagerInterface $mail_manager
    *   The mail manager.
    */
-  public function __construct(MailManagerInterface $mail_manager) {
+  public function __construct(StateInterface $state, MailManagerInterface $mail_manager) {
+    $this->state = $state;
     $this->mailManager = $mail_manager;
   }
 
@@ -51,7 +59,7 @@ class DebugProvider implements SmsProviderInterface {
    * {@inheritdoc}
    */
   public function isConfigured(): bool {
-    $debug_email = Settings::get(self::SETTINGS_KEY);
+    $debug_email = $this->state->get(self::STATE_DEBUG_EMAIL);
     return !empty($debug_email) && filter_var($debug_email, FILTER_VALIDATE_EMAIL);
   }
 
@@ -60,10 +68,10 @@ class DebugProvider implements SmsProviderInterface {
    */
   public function sendSms(string $to, string $message): string {
     if (!$this->isConfigured()) {
-      throw new \Exception('Debug SMS provider requires debug_sms_email setting to be configured');
+      throw new \Exception('Debug SMS provider requires debug email to be configured in settings');
     }
 
-    $debug_email = Settings::get(self::SETTINGS_KEY);
+    $debug_email = $this->state->get(self::STATE_DEBUG_EMAIL);
     $message_id = 'debug_' . uniqid();
 
     // Prepare email parameters.

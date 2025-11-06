@@ -898,11 +898,6 @@ if (getenv('EBISCLOUD_SMS_API_KEY')) {
   ];
 }
 
-// Debug SMS Provider configuration from environment variables.
-if (getenv('DEBUG_SMS_EMAIL')) {
-  $settings['debug_sms_email'] = getenv('DEBUG_SMS_EMAIL');
-}
-
 // File system paths from environment variables.
 if (getenv('DRUPAL_ENV')) {
   $settings['file_public_path'] = 'sites/default/files';

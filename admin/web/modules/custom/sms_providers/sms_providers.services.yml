@@ -10,10 +10,10 @@ services:
 
   sms_providers.sms_service:
     class: Drupal\sms_providers\Service\SmsService
-    arguments: ['@config.factory', '@sms_providers.logger', '@sms_providers.phone_validation']
+    arguments: ['@config.factory', '@sms_providers.logger', '@sms_providers.phone_validation', '@state']
 
   sms_providers.debug_provider:
     class: Drupal\sms_providers\Provider\DebugProvider
-    arguments: ['@plugin.manager.mail']
+    arguments: ['@state', '@plugin.manager.mail']
     tags:
       - { name: sms_provider, provider_id: debug }
