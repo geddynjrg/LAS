@@ -119,18 +119,30 @@ export function checkbox(required = false) {
 }
 
 export function phoneNumber(required = true) {
-  const phoneSchema = z
+  const baseSchema = z
     .string()
-    .regex(
-      /^\+[1-9]\d{7,15}$/,
-      getIntlKey("phone_invalid"),
+    .transform((val) => val.replace(/\s+/g, ""))
+    .pipe(
+      z.string().regex(
+        /^\+[1-9]\d{7,15}$/,
+        getIntlKey("phone_invalid"),
+      ),
     );
 
   if (required) {
-    return phoneSchema.min(1, getIntlKey("required"));
+    return z
+      .string()
+      .min(1, getIntlKey("required"))
+      .transform((val) => val.replace(/\s+/g, ""))
+      .pipe(
+        z.string().regex(
+          /^\+[1-9]\d{7,15}$/,
+          getIntlKey("phone_invalid"),
+        ),
+      );
   }
 
-  return phoneSchema.optional();
+  return baseSchema.optional();
 }
 
 export function validFile(accept: Accept, fileSize: number) {

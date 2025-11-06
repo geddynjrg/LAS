@@ -104,6 +104,11 @@ export const Input: FC<InputProps> = ({
           endDecorator && (typeof endDecorator === "string" ? "pe-11" : "pe-8"),
         )}
         onChange={(e) => {
+          // Strip whitespace from tel input
+          if (type === "tel") {
+            const normalized = e.target.value.replace(/\s+/g, "");
+            e.target.value = normalized;
+          }
           onChange?.(e);
           onValueChange?.(e.target.value);
         }}
@@ -130,8 +135,3 @@ const Decorator: FC<{ children?: ReactNode }> = ({ children }) => {
     </div>
   );
 };
-
-function isValidTelChar(val: string) {
-  // Allow digits, plus sign, parentheses, and hyphen
-  return /^[0-9+()\s-]*$/.test(val);
-}

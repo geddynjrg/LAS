@@ -44,6 +44,12 @@ function safeJsonStringify(data: any): string {
   return JSON.stringify(data);
 }
 
+// Helper function to normalize phone numbers for consistent storage
+function normalizePhone(phone: string | null | undefined): string | null {
+  if (!phone) return null;
+  return phone.replace(/\s+/g, '');
+}
+
 // Helper function to get the current authenticated user
 export async function getCurrentUser() {
   const session = await getSession();
@@ -77,29 +83,10 @@ export async function getCurrentUser() {
 
     const identifierType = getIdentifierType();
 
-    // Priority order for user identification: drupalUserId > email > phoneNumber
-    let user = null;
-
-    // Try to find user by Drupal user ID first (primary identifier)
-    user = await prisma.user.findUnique({
+    // Find or create user by Drupal user ID
+    let user = await prisma.user.findUnique({
       where: { drupalUserId },
     });
-
-    // Fallback: Try to find by email (migration case - existing users without drupalUserId)
-    if (!user && profileData.email) {
-      user = await prisma.user.findUnique({
-        where: { email: profileData.email },
-      });
-    }
-
-    // Fallback: Try by phone number (migration case)
-    if (!user && profileData.phoneNumber) {
-      user = await prisma.user.findUnique({
-        where: { phoneNumber: profileData.phoneNumber },
-      });
-    }
-
-    // Do NOT match by name alone as it's not unique across Drupal users
 
     // Create new user if not found
     if (!user) {
@@ -107,7 +94,7 @@ export async function getCurrentUser() {
         data: {
           drupalUserId,
           email: profileData.email,
-          phoneNumber: profileData.phoneNumber,
+          phoneNumber: normalizePhone(profileData.phoneNumber),
           name:
             profileData.name ||
             profileData.email ||
@@ -129,9 +116,10 @@ export async function getCurrentUser() {
         updateData.email = profileData.email;
       if (
         profileData.phoneNumber &&
-        user.phoneNumber !== profileData.phoneNumber
+        normalizePhone(user.phoneNumber) !==
+          normalizePhone(profileData.phoneNumber)
       )
-        updateData.phoneNumber = profileData.phoneNumber;
+        updateData.phoneNumber = normalizePhone(profileData.phoneNumber);
       if (profileData.name && user.name !== profileData.name)
         updateData.name = profileData.name;
 

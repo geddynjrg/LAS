@@ -5,19 +5,22 @@ const E164_PHONE_REGEX = /^\+[1-9]\d{7,15}$/;
 
 // Validate phone number in E.164 format or Kenya local format (9 digits)
 const validatePhoneNumber = (phone: string): boolean => {
+  // Strip all whitespace before validation
+  const normalized = phone.replace(/\s+/g, '');
+
   // If it starts with +, validate as full E.164 format
-  if (phone.startsWith('+')) {
-    return E164_PHONE_REGEX.test(phone);
+  if (normalized.startsWith('+')) {
+    return E164_PHONE_REGEX.test(normalized);
   }
 
   // If it doesn't start with +, validate as Kenya local format (9 digits)
   // When prefixed with +254, it should create a valid E.164 number
-  if (!/^\d{9}$/.test(phone)) {
+  if (!/^\d{9}$/.test(normalized)) {
     return false;
   }
 
   // Verify that +254{phone} would be valid E.164
-  return E164_PHONE_REGEX.test(`+254${phone}`);
+  return E164_PHONE_REGEX.test(`+254${normalized}`);
 };
 
 // Function to create schemas with translated messages
