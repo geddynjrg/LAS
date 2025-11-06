@@ -198,6 +198,28 @@ For detailed help and configuration options:
 
 After initial setup, the GitHub Actions pipeline will handle all deployments automatically.
 
+### Cron Jobs
+
+The application requires a cron job to process the email queue for the Symfony Mailer module.
+
+**Email Queue Processing:**
+
+Add this cron job to process queued emails every minute:
+
+```bash
+# Edit crontab on the server
+crontab -e
+
+# Add this line:
+* * * * * docker compose -f /path/to/deployment/docker-compose.yml exec -T admin /var/www/html/vendor/bin/drush queue:run symfony_mailer_queue >> /var/log/uwezo-mail-queue.log 2>&1
+```
+
+**Notes:**
+- Replace `/path/to/deployment` with your actual deployment directory path
+- The `-T` flag prevents TTY allocation for cron execution
+- Logs are written to `/var/log/uwezo-mail-queue.log` for troubleshooting
+- Runs every minute to ensure emails are sent promptly
+
 ### GitHub Actions Deployment
 
 The project uses GitHub Actions for automated CI/CD. Deployment to staging happens automatically on push to `staging` branch.
