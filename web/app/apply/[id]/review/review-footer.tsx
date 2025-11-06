@@ -3,7 +3,7 @@
 import { updateApplicationStatusById } from '@/app/apply/[id]/review/update-application-status-by-id-action';
 import { ApplicationStatus } from '@/generated/prisma';
 import { syncApplication } from '@/lib/api/sync.service';
-import { IconArrowLeft, IconLoader2 } from '@tabler/icons-react';
+import { IconArrowLeft } from '@tabler/icons-react';
 import { ActionBar } from '@workspace/ui/components/action-bar';
 import { Button } from '@workspace/ui/components/button';
 import { ModalButton } from '@workspace/ui/components/modal-button';
@@ -78,14 +78,7 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
           titleUnderline
           disabled={isSubmitting}
         >
-          {isSubmitting ? (
-            <>
-              <IconLoader2 className="animate-spin" />
-              Submitting your application...
-            </>
-          ) : (
-            t('Common.submit')
-          )}
+          {isSubmitting ? 'Submitting your application...' : t('Common.submit')}
         </ModalButton>
       </div>
     </ActionBar>

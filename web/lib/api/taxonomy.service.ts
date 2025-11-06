@@ -120,9 +120,12 @@ export async function getChildTaxonomyOptions(
       return [];
     }
 
-    // Find the parent term
+    // Normalize parent term name for case-insensitive matching
+    const normalizedParentName = parentTermName.toLowerCase().trim();
+
+    // Find the parent term using case-insensitive matching
     const parentTerm = vocabulary.terms.find(
-      (term: any) => term.name === parentTermName,
+      (term: any) => term.name.toLowerCase().trim() === normalizedParentName,
     );
 
     if (!parentTerm) {

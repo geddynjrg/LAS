@@ -95,6 +95,18 @@ export const GroupDataForm: FC<GroupDataProps> = ({
     state.values?.groupActivities,
   );
 
+  // Helper function for case-insensitive and trimmed string matching
+  const includesTerm = (
+    activities: string[] | undefined,
+    term: string,
+  ): boolean => {
+    if (!activities) return false;
+    const normalizedTerm = term.toLowerCase().trim();
+    return activities.some(
+      (activity) => activity.toLowerCase().trim() === normalizedTerm,
+    );
+  };
+
   // Update constituencies when county selection is made (not while typing)
   const updateConstituenciesForCounty = useCallback(
     async (countyName: string) => {
@@ -243,7 +255,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             )}
           />
 
-          {chosenKeyActivities?.includes('Value chain') && (
+          {includesTerm(chosenKeyActivities, 'Value chain') && (
             <Field
               state={state}
               name="valueChain"
@@ -261,7 +273,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               )}
             />
           )}
-          {chosenKeyActivities?.includes('Table banking') && (
+          {includesTerm(chosenKeyActivities, 'Table banking') && (
             <div>
               <Field
                 state={state}
@@ -327,7 +339,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               />
             </div>
           )}
-          {chosenKeyActivities?.includes('Other') && (
+          {includesTerm(chosenKeyActivities, 'Other') && (
             <Field
               state={state}
               name="other"
