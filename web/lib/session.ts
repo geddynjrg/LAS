@@ -2,6 +2,8 @@
 
 import { cookies } from 'next/headers';
 
+import { decodeJwtPayload } from './jwt-utils';
+
 const REFRESH_TOKENS_URL = `${process.env.API_URL}/api/v1/user/token/refresh`;
 const LOGOUT_URL = `${process.env.API_URL}/api/v1/user/logout`;
 
@@ -100,19 +102,12 @@ function isTokenExpired(token: unknown) {
     return true; // Invalid token type
   }
 
-  try {
-    const tokenPayloadBase64 = token.split('.')[1];
-
-    if (!tokenPayloadBase64) {
-      return true; // invalid token format
-    }
-
-    const exp: number = JSON.parse(atob(tokenPayloadBase64))?.exp ?? 0;
-
-    return Date.now() > exp * 1000;
-  } catch (_err) {
-    return true; // if the token is invalid, consider it expired
+  const payload = decodeJwtPayload(token);
+  if (!payload || !payload.exp) {
+    return true; // invalid token format
   }
+
+  return Date.now() > payload.exp * 1000;
 }
 
 async function getStoredTokens() {

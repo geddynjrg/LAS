@@ -252,7 +252,9 @@ async function syncApplicationDataChanges(
   apiApplications: ApplicationDetail[],
 ): Promise<void> {
   for (const apiApp of apiApplications) {
-    if (!apiApp.application_id || !apiApp.status) continue;
+    if (!apiApp.application_id || !apiApp.status) {
+      continue;
+    }
 
     try {
       // Get the corresponding local application
@@ -260,7 +262,9 @@ async function syncApplicationDataChanges(
         where: { applicationId: apiApp.application_id },
       });
 
-      if (!localApp) continue;
+      if (!localApp) {
+        continue;
+      }
 
       const newStatus = mapApiStatusToLocal(apiApp.status);
       const apiUpdatedAt = apiApp.changed
@@ -282,10 +286,6 @@ async function syncApplicationDataChanges(
             `updated timestamp: ${localApp.updatedAt.toISOString()} -> ${apiUpdatedAt.toISOString()}`,
           );
         }
-
-        console.log(
-          `Syncing application data for ${apiApp.application_id}: ${changes.join(', ')}`,
-        );
 
         await prisma.application.update({
           where: { id: localApp.id },
@@ -402,16 +402,19 @@ export async function getHybridApplications(
         await syncMemberStatusChanges(apiApplications);
       }
     } catch (error) {
-      console.warn('API call failed, using local data only:', error);
+      console.warn('[HYBRID] API call failed, using local data only:', error);
     }
 
     // If API call was successful, merge API data with local applications
     if (apiCallSuccessful) {
+      // Refetch local applications after syncing to get updated status
+      const updatedLocalApplications = await getLocalApplications();
+
       // Use a Map to deduplicate by applicationId, preferring API data
       const applicationsMap = new Map<string, ApplicationData>();
 
       // Add local applications first
-      localApplications.forEach((app) => {
+      updatedLocalApplications.forEach((app) => {
         applicationsMap.set(app.generalDetails.applicationId, app);
       });
 

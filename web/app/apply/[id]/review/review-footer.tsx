@@ -58,8 +58,6 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
                 );
               }
 
-              console.log('[SUBMIT] Application synced successfully');
-
               // Step 3: Navigate to done page only after successful sync
               router.push(`/apply/${id}/done`);
             } catch (error) {

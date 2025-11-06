@@ -4,6 +4,7 @@ import { syncCountiesData } from '@/lib/api/counties.service';
 import { syncApplication as syncApplicationService } from '@/lib/api/sync.service';
 import { syncTaxonomyVocabularies } from '@/lib/api/taxonomy.service';
 import { requireAdmin } from '@/lib/auth/guards';
+import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import { prisma } from '@/lib/db/prisma';
 
 export async function syncApplicationAction(applicationId: string) {
@@ -11,7 +12,7 @@ export async function syncApplicationAction(applicationId: string) {
   await requireAdmin();
 
   try {
-    const result = await syncApplicationService(applicationId);
+    const result = await syncApplicationService(applicationId, true);
 
     if (result.success) {
       // Fetch the updated application data
@@ -30,6 +31,7 @@ export async function syncApplicationAction(applicationId: string) {
       return {
         success: true,
         application: updatedApplication,
+        message: result.message,
       };
     }
 
@@ -89,6 +91,14 @@ export async function getApplicationsData(
   pageSize = 10,
 ) {
   await requireAdmin();
+
+  // First, fetch from hybrid approach to sync latest status from Drupal
+  // This updates the local database with current status from API
+  try {
+    await getHybridApplications();
+  } catch (error) {
+    console.warn('Failed to sync from Drupal, using local data only:', error);
+  }
 
   // Build search conditions
   // Note: MySQL doesn't support mode: "insensitive", but contains is case-insensitive by default in MySQL

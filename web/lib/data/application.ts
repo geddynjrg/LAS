@@ -14,6 +14,7 @@ import {
   AuthenticationError,
   isAuthenticationError,
 } from '@/lib/errors/auth-error';
+import { decodeJwtPayload } from '@/lib/jwt-utils';
 import { getSession } from '@/lib/session';
 import type {
   ApplicationData,
@@ -51,6 +52,14 @@ export async function getCurrentUser() {
   }
 
   try {
+    // Decode JWT to get Drupal user ID
+    const tokenPayload = decodeJwtPayload(session);
+    const drupalUserId = tokenPayload?.uid;
+
+    if (!drupalUserId) {
+      throw new Error('No Drupal user ID found in session token');
+    }
+
     const profile = await getProfile();
     const profileData = profile.data;
 
@@ -68,34 +77,35 @@ export async function getCurrentUser() {
 
     const identifierType = getIdentifierType();
 
-    // Priority order for user identification: email > phoneNumber > name
+    // Priority order for user identification: drupalUserId > email > phoneNumber
     let user = null;
 
-    // Try to find user by email first
-    if (profileData.email) {
+    // Try to find user by Drupal user ID first (primary identifier)
+    user = await prisma.user.findUnique({
+      where: { drupalUserId },
+    });
+
+    // Fallback: Try to find by email (migration case - existing users without drupalUserId)
+    if (!user && profileData.email) {
       user = await prisma.user.findUnique({
         where: { email: profileData.email },
       });
     }
 
-    // If not found by email, try by phone number
+    // Fallback: Try by phone number (migration case)
     if (!user && profileData.phoneNumber) {
       user = await prisma.user.findUnique({
         where: { phoneNumber: profileData.phoneNumber },
       });
     }
 
-    // If not found by email or phone, try by name
-    if (!user && profileData.name) {
-      user = await prisma.user.findFirst({
-        where: { name: profileData.name },
-      });
-    }
+    // Do NOT match by name alone as it's not unique across Drupal users
 
     // Create new user if not found
     if (!user) {
       user = await prisma.user.create({
         data: {
+          drupalUserId,
           email: profileData.email,
           phoneNumber: profileData.phoneNumber,
           name:
@@ -109,13 +119,23 @@ export async function getCurrentUser() {
     } else {
       // Update existing user with any new information from profile
       const updateData: any = {};
-      if (profileData.email && !user.email)
-        updateData.email = profileData.email;
-      if (profileData.phoneNumber && !user.phoneNumber)
-        updateData.phoneNumber = profileData.phoneNumber;
-      if (profileData.name && !user.name) updateData.name = profileData.name;
 
-      // Update identifierType if it has changed (e.g., user now has email when they previously only had phone)
+      // Always set drupalUserId if missing (migration case)
+      if (!user.drupalUserId) {
+        updateData.drupalUserId = drupalUserId;
+      }
+
+      if (profileData.email && user.email !== profileData.email)
+        updateData.email = profileData.email;
+      if (
+        profileData.phoneNumber &&
+        user.phoneNumber !== profileData.phoneNumber
+      )
+        updateData.phoneNumber = profileData.phoneNumber;
+      if (profileData.name && user.name !== profileData.name)
+        updateData.name = profileData.name;
+
+      // Update identifierType if it has changed
       if (!user.identifierType || user.identifierType !== identifierType) {
         updateData.identifierType = identifierType;
       }

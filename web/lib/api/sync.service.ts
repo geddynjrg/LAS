@@ -751,6 +751,25 @@ export async function syncApplication(
       throw new Error('Application not found');
     }
 
+    // Don't queue applications that already have externalId (already synced)
+    if (application.externalId) {
+      return {
+        success: true,
+        message: 'Application already synced to Drupal',
+      };
+    }
+
+    // Don't queue applications that are still drafts (not ready for sync)
+    if (
+      application.status === ApplicationStatus.DRAFT ||
+      application.status === ApplicationStatus.UNSUBMITTED
+    ) {
+      return {
+        success: true,
+        message: 'Application not ready for sync',
+      };
+    }
+
     // Check if there's already a pending sync for this application
     const existingQueueItem = await prisma.syncQueue.findFirst({
       where: {

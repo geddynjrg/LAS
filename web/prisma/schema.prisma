@@ -10,6 +10,7 @@ datasource db {
 
 model User {
   id             String         @id @default(cuid())
+  drupalUserId   String?        @unique
   email          String?        @unique
   name           String?
   createdAt      DateTime       @default(now())
@@ -22,6 +23,7 @@ model User {
   @@index([phoneNumber])
   @@index([name])
   @@index([identifierType])
+  @@index([drupalUserId])
   @@map("users")
 }
 

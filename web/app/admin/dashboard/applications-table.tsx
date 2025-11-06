@@ -123,10 +123,14 @@ export function ApplicationsTable({
           ),
         );
 
+        const syncedCount = 'message' in result && result.message ? 0 : 1;
         setSyncMessage({
           applicationId,
           type: 'success',
-          message: 'Application synced successfully',
+          message:
+            'message' in result && result.message
+              ? result.message
+              : `${syncedCount} application${syncedCount !== 1 ? 's' : ''} synced successfully`,
         });
       } else {
         const errorMessage =

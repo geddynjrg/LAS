@@ -24,7 +24,11 @@ export async function getApplicationsList(
     });
 
     if (response.error) {
-      console.error('API error:', response.response.status, response.error);
+      console.error(
+        '[API] API error:',
+        response.response.status,
+        response.error,
+      );
 
       // Try to parse as ApplicationsListError
       try {
