@@ -1,10 +1,12 @@
 'use server';
 
 import {
+  type ECitizenLogin,
   type EmailLogin,
   type PhoneLogin,
   createEmailLoginSchema,
   createPhoneLoginSchema,
+  ecitizenLoginSchema,
 } from '@/app/(auth)/login/login-schema';
 import { login } from '@/lib/api/login';
 import { requestOtp } from '@/lib/api/otp-request';
@@ -105,6 +107,40 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (
 
       return { success: true, otpRequestId: undefined };
     }
+  } catch (error) {
+    return {
+      success: false,
+      errors: {},
+      message: error instanceof Error ? error.message : t('unknownError'),
+      values,
+    };
+  }
+};
+
+export const ecitizenLoginAction: FormAction<ECitizenLogin> = async (
+  _prev,
+  formData,
+) => {
+  const t = await getTranslations('LoginPage');
+  const values = getFormZodDataValues(formData, ecitizenLoginSchema);
+  const { data, success, error } = ecitizenLoginSchema.safeParse(values);
+
+  if (error) {
+    return {
+      success,
+      errors: error.flatten().fieldErrors,
+      values,
+    };
+  }
+
+  try {
+    // This would typically handle the OAuth callback
+    // For now, we'll just return success since the actual OAuth flow
+    // happens client-side with the redirect
+    return {
+      success: true,
+      message: 'Redirecting to eCitizen...',
+    };
   } catch (error) {
     return {
       success: false,

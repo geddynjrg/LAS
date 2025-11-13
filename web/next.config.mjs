@@ -2,14 +2,17 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin();
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@workspace/ui'],
   output: 'standalone',
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'uwezo.ddev.site',
+      },
       ...(process.env.API_URL
-        ? [{ hostname: new URL(process.env.API_URL).hostname }]
+        ? [{ protocol: new URL(process.env.API_URL).protocol.replace(':', ''), hostname: new URL(process.env.API_URL).hostname }]
         : []),
     ],
   },

@@ -23,7 +23,7 @@ const validatePhoneNumber = (phone: string): boolean => {
   return E164_PHONE_REGEX.test(`+254${normalized}`);
 };
 
-// Function to create schemas with translated messages
+// Email Login Schemas
 export const createEmailLoginSchema = (t: (key: string) => string) =>
   z.object({
     loginType: z.literal('email'),
@@ -31,7 +31,6 @@ export const createEmailLoginSchema = (t: (key: string) => string) =>
     password: z.string().min(1, t('passwordRequired')),
   });
 
-// Default schema for type inference
 export const emailLoginSchema = z.object({
   loginType: z.literal('email'),
   email: z.string().email(),
@@ -40,7 +39,7 @@ export const emailLoginSchema = z.object({
 
 export type EmailLogin = z.infer<typeof emailLoginSchema>;
 
-// Phone login base schema
+// Phone Login Schemas
 const phoneLoginBaseSchema = z.object({
   loginType: z.literal('phone'),
   phone: z.string().optional(),
@@ -48,7 +47,6 @@ const phoneLoginBaseSchema = z.object({
   request_id: z.string().optional(),
 });
 
-// Function to create phone login schema with translated messages
 export const createPhoneLoginSchema = (t: (key: string) => string) =>
   phoneLoginBaseSchema.superRefine((data, ctx) => {
     // OTP verification step - requires both OTP code and request ID
@@ -85,7 +83,6 @@ export const createPhoneLoginSchema = (t: (key: string) => string) =>
     }
   });
 
-// Default schema for type inference
 export const phoneLoginSchema = phoneLoginBaseSchema.superRefine(
   (data, ctx) => {
     // OTP verification step - requires both OTP code and request ID
@@ -125,9 +122,22 @@ export const phoneLoginSchema = phoneLoginBaseSchema.superRefine(
 
 export type PhoneLogin = z.infer<typeof phoneLoginSchema>;
 
+// eCitizen Login Schemas
+export const ecitizenLoginSchema = z.object({
+  loginType: z.literal('ecitizen'),
+  state: z.string().optional(),
+  code: z.string().optional(),
+});
+
+export type ECitizenLogin = z.infer<typeof ecitizenLoginSchema>;
+
+// Legacy login schema (for backward compatibility)
 export const loginSchema = z.object({
   email: z.string().nonempty().email(),
   password: z.string().nonempty(),
 });
 
 export type Login = z.infer<typeof loginSchema>;
+
+// Union type for all login types
+export type AnyLogin = EmailLogin | PhoneLogin | ECitizenLogin;

@@ -1,5 +1,7 @@
+import { ECitizenLoginForm } from '@/app/(auth)/login/ecitizen-login-form';
 import { EmailLoginForm } from '@/app/(auth)/login/email-login-form';
 import {
+  ecitizenLoginAction,
   emailLoginAction,
   phoneLoginAction,
 } from '@/app/(auth)/login/login-actions';
@@ -16,7 +18,12 @@ export default async function Page({
   searchParams: Promise<{ callbackUrl?: string; type?: string }>;
 }) {
   const params = await searchParams;
-  const loginType = params.type === 'email' ? 'email' : 'phone';
+  const loginType =
+    params.type === 'email'
+      ? 'email'
+      : params.type === 'phone'
+        ? 'phone'
+        : 'ecitizen'; // Fixed logic
   const callbackUrl = params.callbackUrl;
   const t = await getTranslations('LoginPage');
 
@@ -43,40 +50,74 @@ export default async function Page({
             {t('loginFormHeading')}
           </h2>
 
-          {loginType === 'phone' ? (
-            <PhoneLoginForm
-              action={phoneLoginAction}
-              redirectTo={callbackUrl}
-            />
-          ) : (
-            <EmailLoginForm
-              action={emailLoginAction}
-              redirectTo={callbackUrl}
-            />
+          {/* eCitizen Login - First Option */}
+          {loginType === 'ecitizen' && (
+            <div className="space-y-4">
+              <ECitizenLoginForm action={ecitizenLoginAction} />
+
+              <Divider className="my-6">{t('or')}</Divider>
+
+              <nav
+                aria-label="Alternative login methods"
+                className="flex flex-col items-center gap-3"
+              >
+                <div className="flex justify-center gap-4">
+                  <Link
+                    href={`/login?type=email${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use Email
+                    </Underline>
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=phone${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use Phone
+                    </Underline>
+                  </Link>
+                </div>
+              </nav>
+            </div>
           )}
 
-          <Divider className="my-6">{t('or')}</Divider>
+          {/* Email Login - Second Option */}
+          {loginType === 'email' && (
+            <div className="space-y-4">
+              <EmailLoginForm
+                action={emailLoginAction}
+                redirectTo={callbackUrl}
+              />
 
-          <nav
-            aria-label="Authentication options"
-            className="flex flex-col items-center gap-3"
-          >
-            <div className="flex justify-center gap-2">
-              <Link
-                href={`/login?type=${loginType === 'phone' ? 'email' : 'phone'}${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-                className="text-primary"
-                aria-label={`Switch to ${loginType === 'phone' ? 'email' : 'phone'} login`}
+              <Divider className="my-6">{t('or')}</Divider>
+
+              <nav
+                aria-label="Authentication options"
+                className="flex flex-col items-center gap-3"
               >
-                <Underline variant="primary" className="text-primary">
-                  {loginType === 'phone'
-                    ? 'Use e-mail instead of phone'
-                    : 'Use phone instead of e-mail'}
-                </Underline>
-              </Link>
-            </div>
+                <div className="flex justify-center gap-4">
+                  <Link
+                    href={`/login?type=ecitizen${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use eCitizen
+                    </Underline>
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=phone${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use Phone
+                    </Underline>
+                  </Link>
+                </div>
 
-            {loginType === 'email' && (
-              <>
                 <div className="flex justify-center gap-2">
                   <span className="typo-body-medium">
                     {t('doNotHaveAccount')}
@@ -96,9 +137,46 @@ export default async function Page({
                     {t('reset')}
                   </Link>
                 </div>
-              </>
-            )}
-          </nav>
+              </nav>
+            </div>
+          )}
+
+          {/* Phone Login - Third Option */}
+          {loginType === 'phone' && (
+            <div className="space-y-4">
+              <PhoneLoginForm
+                action={phoneLoginAction}
+                redirectTo={callbackUrl}
+              />
+
+              <Divider className="my-6">{t('or')}</Divider>
+
+              <nav
+                aria-label="Authentication options"
+                className="flex flex-col items-center gap-3"
+              >
+                <div className="flex justify-center gap-4">
+                  <Link
+                    href={`/login?type=ecitizen${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use eCitizen
+                    </Underline>
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=email${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use Email
+                    </Underline>
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          )}
         </section>
       </main>
     </Container>
