@@ -24,8 +24,13 @@ export const GroupMemberInputSchema = z.object({
   photo_member_id: FileUploadSchema.optional(),
   person_with_disability: z.boolean().default(false),
   pwd_number: z.string().optional().describe('PWD registration number'),
+  status: z.enum(['PENDING', 'CONFIRMED']).optional().describe('Member status'),
   certificate_disability: FileUploadSchema.optional(),
   requires_confirmation: z.boolean().default(false),
+  confirmation_token: z.string().optional().describe('SMS confirmation token'),
+  confirmation_sent_at: z.number().optional().describe('When confirmation was sent (Unix timestamp)'),
+  confirmation_confirmed_at: z.number().optional().describe('When confirmation was completed (Unix timestamp)'),
+  confirmation_status: z.enum(['pending', 'sent', 'confirmed', 'declined', 'failed']).optional().describe('Current confirmation status'),
 });
 
 /**

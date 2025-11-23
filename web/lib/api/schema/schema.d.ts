@@ -1453,7 +1453,7 @@ export interface components {
        * @example pending
        * @enum {string}
        */
-      status: 'pending' | 'sent' | 'confirmed' | 'failed';
+      status: 'pending' | 'sent' | 'confirmed' | 'failed' | 'declined';
       /**
        * @description Unix timestamp when SMS was sent
        * @example 1704067200

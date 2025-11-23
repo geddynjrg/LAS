@@ -892,9 +892,9 @@ if (getenv('JWT_SECRET') && getenv('JWT_REFRESH_SECRET')) {
 if (getenv('EBISCLOUD_SMS_API_KEY')) {
   $settings['ebiscloud_sms'] = [
     'api_key' => getenv('EBISCLOUD_SMS_API_KEY'),
-    'api_url' => getenv('EBISCLOUD_SMS_API_URL') ?: 'https://api.ebisclouderp.com/v1/sms/send',
-    'shortcode' => getenv('EBISCLOUD_SMS_SHORTCODE') ?: '',
-    'service_id' => getenv('EBISCLOUD_SMS_SERVICE_ID') ?: '',
+    'api_url' => getenv('EBISCLOUD_SMS_API_URL') ?: 'https://sms.ebisclouderp.com/api/sms/sendsms',
+    'shortcode' => getenv('EBISCLOUD_SMS_SHORTCODE') ?: 'Uwezo Fund',
+    'service_id' => (int) (getenv('EBISCLOUD_SMS_SERVICE_ID') ?: 0),
   ];
 }
 

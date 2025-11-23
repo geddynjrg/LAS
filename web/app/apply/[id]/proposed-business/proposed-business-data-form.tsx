@@ -121,7 +121,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
   }, [customExpenses.length]);
 
   const prevUrl = `/apply/${id}/loan-conditions`;
-  const nextUrl = `/apply/${id}/confirmations`;
+  const nextUrl = `/apply/${id}/member-confirmation`;
 
   return (
     <Form

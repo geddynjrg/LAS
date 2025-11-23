@@ -45,11 +45,16 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
     },
     {
       index: 5,
+      title: t('ConfirmationsPage.form-title-members'), // Use existing key
+      path: '/member-confirmation',
+    },
+    {
+      index: 6,
       title: t('ApplicationDetailsPage.groupData.steps.confirmations'),
       path: '/confirmations',
     },
     {
-      index: 6,
+      index: 7,
       title: t('ReviewPage.title'),
       path: '/review',
     },

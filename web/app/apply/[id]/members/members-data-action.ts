@@ -8,7 +8,7 @@ import {
   validateMembersAgainstTaxonomy,
   getMemberValidationErrorMessages,
 } from '@/app/apply/[id]/members/members-validation';
-import { updateApplicationMembersData } from '@/lib/data/application';
+import { updateApplicationMembersData, checkPhoneNumberExistsInApplication, checkNationalIdExistsInApplication } from '@/lib/data/application';
 import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
 import { capitalizeWords } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
@@ -71,6 +71,53 @@ export const membersDataAction: FormAction<MembersData> = async (
           members: data.members,
         },
       };
+    }
+
+    // Final database-level phone number and national ID uniqueness check
+    for (const member of data.members) {
+      // Check phone number uniqueness
+      if (member.phoneNumber) {
+        const phoneExists = await checkPhoneNumberExistsInApplication(
+          id,
+          member.phoneNumber,
+          member.nationalIdCode // Exclude current member if updating
+        );
+
+        if (phoneExists) {
+          return {
+            success: false,
+            errors: {
+              members: [`Phone number ${member.phoneNumber} is already used by another member in this group. Each member must have a unique phone number.`],
+            },
+            values: {
+              natureOfGroup: data.natureOfGroup,
+              members: data.members,
+            },
+          };
+        }
+      }
+
+      // Check national ID uniqueness
+      if (member.nationalIdCode) {
+        const nationalIdExists = await checkNationalIdExistsInApplication(
+          id,
+          member.nationalIdCode,
+          member.nationalIdCode // Exclude current member if updating
+        );
+
+        if (nationalIdExists) {
+          return {
+            success: false,
+            errors: {
+              members: [`National ID ${member.nationalIdCode} is already used by another member in this group. Each member must have a unique National ID.`],
+            },
+            values: {
+              natureOfGroup: data.natureOfGroup,
+              members: data.members,
+            },
+          };
+        }
+      }
     }
 
     const membersValidation = validateMembersAgainstTaxonomy(data.members, memberTypeOptions);

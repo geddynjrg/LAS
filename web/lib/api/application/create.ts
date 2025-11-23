@@ -17,8 +17,22 @@ export async function createOrUpdateApplication(
   data: ApplicationPostRequest,
 ): Promise<ApplicationPostResponse | ErrorResponse> {
   try {
+    console.log('Preparing to create/update application with data:', data);
+
     // Validate the data against the schema
     const validatedData = ApplicationPostRequestSchema.parse(data);
+
+    console.log('Creating/updating application with data:', validatedData);
+
+    //log the member details
+    // validatedData.members.forEach((member, index) => {
+    //   console.log(`Member ${index + 1}:`, {
+    //     fullname: member.fullname,    
+    //     phoneNumber: member.phoneNumber,
+    //     requiresConfirmation: member.requiresConfirmation,
+    //   });
+    // });
+
 
     // Direct fetch to avoid the redirect middleware in api utils
     const response = await fetch(`${process.env.API_URL}/api/v1/application`, {
@@ -31,6 +45,13 @@ export async function createOrUpdateApplication(
     });
 
     const result = await response.json();
+
+    // log the raw response for debugging
+    console.log('this is the API response:', {
+      api_url: `${process.env.API_URL}/api/v1/application`,
+      status: response.status,
+      body: result,
+    });
 
     if (!response.ok) {
       console.error('API error:', response.status, result);

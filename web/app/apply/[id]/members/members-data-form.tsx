@@ -11,6 +11,8 @@ import {
 import {
   type MemberValidationResult,
   canAssignRole,
+  canAssignPhoneNumber,
+  canAssignNationalId,
   getMemberValidationErrorMessages,
   validateMembersAgainstTaxonomy,
 } from '@/app/apply/[id]/members/members-validation';
@@ -426,6 +428,7 @@ interface NewMemberFormFieldsProps {
   applicationId?: string; // for file uploads
   memberTypeOptions?: TaxonomyOption[];
   members: Partial<Member>[];
+  existingMembers?: { id: string; phoneNumber: string; nationalIdCode: string }[];
 }
 
 const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
@@ -436,6 +439,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   applicationId,
   memberTypeOptions,
   members,
+  existingMembers = [],
 }) => {
   const formInitialValues = {
     fullname: existingMember?.fullname,
@@ -500,6 +504,93 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     );
   }
 
+  const handleNationalIdChange = (value: string) => {
+    // Validate national ID uniqueness
+    if (value) {
+      const nationalIdCheck = canAssignNationalId(
+        value,
+        members,
+        existingMembers,
+        existingMember?.id
+      );
+      if (!nationalIdCheck.canAssign) {
+        console.warn(nationalIdCheck.reason);
+      }
+    }
+
+    setMember((member) => ({
+      ...member,
+      nationalIdCode: value,
+    }));
+  };
+
+  const handlePhoneNumberChange = (value: string) => {
+    const phoneWithCountryCode = value ? `+254${value}` : '';
+    
+    if (phoneWithCountryCode) {
+      const phoneCheck = canAssignPhoneNumber(
+        phoneWithCountryCode,
+        members,
+        existingMembers,
+        existingMember?.id
+      );
+      if (!phoneCheck.canAssign) {
+        console.warn(phoneCheck.reason);
+      }
+    }
+
+    setMember((member) => ({
+      ...member,
+      phoneNumber: phoneWithCountryCode,
+    }));
+  };
+
+  
+  const validateAllMembers = (members: Partial<Member>[]): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    const phoneNumbers = new Set<string>();
+    const nationalIds = new Set<string>();
+
+    members.forEach((member, index) => {
+      // Check for duplicate phone numbers
+      if (member.phoneNumber) {
+        if (phoneNumbers.has(member.phoneNumber)) {
+          errors.push(`Phone number ${member.phoneNumber} is used by multiple members.`);
+        } else {
+          phoneNumbers.add(member.phoneNumber);
+        }
+      }
+
+      // Check for duplicate national IDs
+      if (member.nationalIdCode) {
+        if (nationalIds.has(member.nationalIdCode)) {
+          errors.push(`National ID ${member.nationalIdCode} is used by multiple members.`);
+        } else {
+          nationalIds.add(member.nationalIdCode);
+        }
+      }
+
+      // Check required fields
+      if (!member.fullname) {
+        errors.push(`Member ${index + 1} is missing full name.`);
+      }
+      if (!member.nationalIdCode) {
+        errors.push(`Member ${index + 1} is missing national ID.`);
+      }
+      if (!member.phoneNumber) {
+        errors.push(`Member ${index + 1} is missing phone number.`);
+      }
+      if (!member.type) {
+        errors.push(`Member ${index + 1} is missing position.`);
+      }
+    });
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
   return (
     <div className="border-primary grid gap-4 rounded-md border bg-neutral-200 p-4">
       <Field
@@ -531,12 +622,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           <Input
             {...props}
             defaultValue={member?.nationalIdCode}
-            onValueChange={(value) => {
-              setMember((member) => ({
-                ...member,
-                nationalIdCode: value,
-              }));
-            }}
+            onValueChange={handleNationalIdChange}
           />
         )}
       />
@@ -573,6 +659,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
           />
         )}
       />
+
       <Field
         state={state}
         name="phoneNumber"
@@ -584,13 +671,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             startDecorator="+254"
             {...props}
             defaultValue={member?.phoneNumber?.replace(/^\+254/, '')}
-            onValueChange={(value) => {
-              const phoneWithCountryCode = value ? `+254${value}` : '';
-              setMember((member) => ({
-                ...member,
-                phoneNumber: phoneWithCountryCode,
-              }));
-            }}
+            onValueChange={(value) => handlePhoneNumberChange(value)}
           />
         )}
       />
@@ -805,21 +886,16 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               type: member.type,
               phoneNumber: member.phoneNumber,
               photoOfId: member.photoOfId,
-              // Convert disability object to checkbox flag for validation
               disability: member.disability ? 'on' : null,
-              certificateOfDisability:
-                member.disability?.certificateOfDisability,
+              certificateOfDisability: member.disability?.certificateOfDisability,
               pwdNumber: member.disability?.pwdNumber,
             };
 
             // Validate member data before saving
-            const validationResult = memberSchema.safeParse(
-              formDataForValidation,
-            );
+            const validationResult = memberSchema.safeParse(formDataForValidation);
+
             if (!validationResult.success) {
               const errors = validationResult.error.flatten().fieldErrors;
-
-              // Show specific validation messages
               const missingFields = [];
               if (errors.fullname) missingFields.push('Full Name');
               if (errors.nationalIdCode) missingFields.push('National ID');
@@ -828,10 +904,68 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               if (errors.phoneNumber) missingFields.push('Phone Number');
               if (errors.photoOfId) missingFields.push('Photo of ID');
 
-              alert(
-                `Please fill the required fields: ${missingFields.join(', ')}`,
-              );
+              alert(`Please fill the required fields: ${missingFields.join(', ')}`);
               return;
+            }
+
+            // Enhanced validation: Check for duplicates in current members array
+            // For new members, check if phone/nationalId already exists in the current members list
+            // For existing members, check if phone/nationalId exists in other members (not themselves)
+            
+            // Check for duplicate phone number in current members
+            if (member.phoneNumber) {
+              const duplicatePhoneMember = members.find(m => 
+                m.phoneNumber === member.phoneNumber && 
+                // For existing members, exclude themselves; for new members, check all
+                (isNew ? true : m.nationalIdCode !== existingMember?.nationalIdCode)
+              );
+              
+              if (duplicatePhoneMember) {
+                alert(`Phone number ${member.phoneNumber} is already used by ${duplicatePhoneMember.fullname || 'another member'}. Each member must have a unique phone number.`);
+                return;
+              }
+            }
+
+            // Check for duplicate national ID in current members
+            if (member.nationalIdCode) {
+              const duplicateNationalIdMember = members.find(m => 
+                m.nationalIdCode === member.nationalIdCode && 
+                // For existing members, exclude themselves; for new members, check all
+                (isNew ? true : m.nationalIdCode !== existingMember?.nationalIdCode)
+              );
+              
+              if (duplicateNationalIdMember) {
+                alert(`National ID ${member.nationalIdCode} is already used by ${duplicateNationalIdMember.fullname || 'another member'}. Each member must have a unique National ID.`);
+                return;
+              }
+            }
+
+            // Additional database-level validation (existing members check)
+            if (member.nationalIdCode) {
+              const nationalIdCheck = canAssignNationalId(
+                member.nationalIdCode,
+                members,
+                existingMembers || [],
+                existingMember?.id
+              );
+              if (!nationalIdCheck.canAssign) {
+                alert(nationalIdCheck.reason);
+                return;
+              }
+            }
+
+            // Additional phone number validation
+            if (member.phoneNumber) {
+              const phoneCheck = canAssignPhoneNumber(
+                member.phoneNumber,
+                members,
+                existingMembers || [],
+                existingMember?.id
+              );
+              if (!phoneCheck.canAssign) {
+                alert(phoneCheck.reason);
+                return;
+              }
             }
 
             // Additional role validation
@@ -843,9 +977,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                 currentMemberIndex,
               );
               if (!assignmentCheck.canAssign) {
-                alert(
-                  assignmentCheck.reason || 'This role cannot be assigned.',
-                );
+                alert(assignmentCheck.reason || 'This role cannot be assigned.');
                 return;
               }
             }

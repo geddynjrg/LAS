@@ -31,8 +31,10 @@ interface MemberSummaryProps {
 
 interface MemberStats {
   total: number;
+  responded: number; 
   confirmed: number;
   pending: number;
+  declined: number;
   confirmationProgress: number;
   roleBreakdown: Record<string, number>;
 }
@@ -57,8 +59,15 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
   // Calculate member statistics (only for members who require confirmation)
   const memberStats: MemberStats = {
     total: membersRequiringConfirmation.length,
+    responded: membersRequiringConfirmation.filter(
+      (member) =>
+        member.status === 'confirmed'
+    ).length,
     confirmed: membersRequiringConfirmation.filter(
-      (member) => member.status === 'confirmed',
+      (member) => member.status === 'confirmed' && member.confirmation_status === 'confirmed',
+    ).length,
+    declined: membersRequiringConfirmation.filter(
+      (member) => member.status === 'confirmed' && member.confirmation_status === 'declined',
     ).length,
     pending: membersRequiringConfirmation.filter(
       (member) => member.status === 'pending',
@@ -67,7 +76,7 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
       membersRequiringConfirmation.length > 0
         ? Math.round(
             (membersRequiringConfirmation.filter(
-              (member) => member.status === 'confirmed',
+              (member) => member.status === 'confirmed' && member.confirmation_status === 'confirmed',
             ).length /
               membersRequiringConfirmation.length) *
               100,
@@ -94,8 +103,8 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
             </span>
           </div>
           <Badge variant="secondary" className="text-xs">
-            {memberStats.confirmed}/{memberStats.total}{' '}
-            {t('memberStatus.confirmed')}
+            {memberStats.responded}/{memberStats.total}{' '}
+            {t('memberStatus.responded')}
           </Badge>
         </div>
 
@@ -112,6 +121,10 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
               </span>
               <span>•</span>
               <span>
+                {memberStats.declined} {t('memberStatus.declinedShort')}
+              </span>
+              <span>•</span>
+              <span>
                 {memberStats.pending} {t('memberStatus.pendingShort')}
               </span>
               <span>•</span>
@@ -124,7 +137,6 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
       </div>
     );
   }
-
   return (
     <Card variant="success" className={`p-4 ${className}`}>
       <div className="mb-3 flex items-center justify-between">
@@ -132,21 +144,35 @@ export const MemberSummary: FC<MemberSummaryProps> = ({
           <IconUsers className="h-5 w-5 text-blue-600" />
           <span className="font-medium">{t('memberStatus.overview')}</span>
         </div>
-        <Badge variant="outline" className="text-sm">
-          {memberStats.confirmationProgress}% {t('memberStatus.confirmedLabel')}
+        <Badge variant="secondary" className="text-xs">
+          {memberStats.responded}/{memberStats.total}{' '}
+          {t('memberStatus.responded')}
         </Badge>
       </div>
 
       {/* Progress Bar */}
       {showProgress && (
-        <div className="mb-4 space-y-2">
-          <Progress value={memberStats.confirmationProgress} className="h-3" />
-          <div className="flex justify-between text-xs text-neutral-600">
-            <span>
+        <div className="space-y-1">
+          <Progress
+            value={memberStats.confirmationProgress}
+            className="h-2"
+          />
+          <div className="flex gap-2 text-xs text-neutral-600">
+            <span className="flex items-center gap-1">
+              <IconUserCheck className="h-3 w-3 text-green-600" />
               {memberStats.confirmed} {t('memberStatus.confirmedShort')}
             </span>
+            <span></span>
+            <span>
+              {memberStats.declined} {t('memberStatus.declinedShort')}
+            </span>
+            <span></span>
             <span>
               {memberStats.pending} {t('memberStatus.pendingShort')}
+            </span>
+            <span></span>
+            <span>
+              {memberStats.confirmationProgress}% {t('memberStatus.progress')}
             </span>
           </div>
         </div>

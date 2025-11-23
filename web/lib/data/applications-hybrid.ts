@@ -1,6 +1,6 @@
 'use server';
 
-import { ApplicationStatus, MemberStatus } from '@/generated/prisma';
+import { ApplicationStatus, MemberStatus, ConfirmationStatus } from '@/generated/prisma';
 import { getApplicationsWithFallback } from '@/lib/api/application/list';
 import type {
   ApplicationDetail,
@@ -184,6 +184,13 @@ function mapApiApplicationToLocal(
             : undefined,
           status: member.confirmation?.is_confirmed ? 'confirmed' : 'pending',
           requiresConfirmation: member.requires_confirmation || false,
+          confirmation_status: member.confirmation?.confirmation_status,
+          confirmation_confirmed_at: member.confirmation?.confirmed_at
+            ? parseTimestamp(member.confirmation.confirmed_at)
+            : null,
+          confirmation_sent_at: member.confirmation?.sent_at
+            ? parseTimestamp(member.confirmation.sent_at)
+            : null, 
         })),
       };
     }
@@ -231,15 +238,19 @@ function mapApiApplicationToLocal(
 /**
  * Maps API member confirmation status to local MemberStatus enum
  */
-function mapApiMemberStatusToLocal(apiStatus?: string): MemberStatus {
+function mapApiMemberStatusToLocal(apiStatus?: string): ConfirmationStatus {
   switch (apiStatus) {
     case 'confirmed':
-      return MemberStatus.CONFIRMED;
+      return ConfirmationStatus.confirmed;
     case 'pending':
+      return ConfirmationStatus.pending;
     case 'sent':
+      return ConfirmationStatus.sent;
+    case 'declined':
+      return ConfirmationStatus.declined;
     case 'failed':
     default:
-      return MemberStatus.PENDING;
+      return ConfirmationStatus.pending;
   }
 }
 
@@ -342,18 +353,15 @@ async function syncMemberStatusChanges(
 
         // Only update if status actually changed
         // Use explicit enum comparison to avoid any type issues
-        const currentStatus = localMember.status;
+        const currentStatus = localMember.confirmation_status;
         const statusNeedsUpdate = currentStatus !== newStatus;
 
         if (statusNeedsUpdate) {
-          console.log(
-            `Syncing member confirmation status for ${apiMember.name} (${apiMember.phone_number}): ${currentStatus} -> ${newStatus} (API: "${apiConfirmation.status}")`,
-          );
 
           await prisma.memberData.update({
             where: { id: localMember.id },
             data: {
-              status: newStatus,
+              confirmation_status: newStatus,
               updatedAt: apiConfirmation.confirmed_at
                 ? new Date(parseTimestamp(apiConfirmation.confirmed_at) * 1000)
                 : new Date(),
@@ -391,6 +399,8 @@ export async function getHybridApplications(
     try {
       const apiResult = await getApplicationsWithFallback(query);
 
+      
+
       if (apiResult.success && apiResult.data) {
         apiApplications = apiResult.data;
         apiCallSuccessful = true;
@@ -417,6 +427,7 @@ export async function getHybridApplications(
       updatedLocalApplications.forEach((app) => {
         applicationsMap.set(app.generalDetails.applicationId, app);
       });
+
 
       // Override with API applications (they are source of truth for synced apps)
       apiApplications.forEach((apiApp) => {

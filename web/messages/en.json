@@ -27,6 +27,7 @@
     }
   },
   "ConfirmationPage": {
+    "//": "INDIVIDUAL MEMBER CONFIRMATION - Used when members click SMS links",
     "title": "Loan Application Confirmation",
     "description": "Please confirm or decline your participation in this loan application",
     "pageTitle": "Confirm Loan Application",
@@ -39,6 +40,7 @@
     "confirmedAt": "Confirmed At",
     "applicationId": "Application ID",
     "groupName": "Group Name",
+    "loanAmount": "Loan Amount",
     "confirmationPrompt": "Do you want to confirm your participation in this loan application?",
     "confirmationInstructions": "Please review the information above and choose whether to confirm or decline your participation.",
     "confirmButton": "Confirm",
@@ -342,7 +344,10 @@
       "confirmedLabel": "Confirmed",
       "pendingShort": "pending",
       "pendingLabel": "Pending",
+      "declinedShort": "declined",
+      "declinedLabel": "Declined",
       "progress": "confirmed",
+      "responded": "have responded",
       "totalMembers": "Total Members",
       "roleDistribution": "Role Distribution",
       "chairman": "Chairman",
@@ -485,9 +490,9 @@
     }
   },
   "ConfirmationsPage": {
-    "title": "Confirmations",
+    "title": "Confirmations-now",
     "form-title-declarations": "Group declaration",
-    "form-title-members": "Group confirmation",
+    "form-title-members": "Members confirmation",
     "form-title-group": "Group confirmation",
     "confirmationDataForm": {
       "group-member": "We confirm we are members of this group",
@@ -496,10 +501,24 @@
       "no-additional-loans": "We shall not be eligible for additional loans unless the amount in default has been cleared in full"
     },
     "confirmMembersForm": {
-      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, all group members will be automatically notified through their phones that they need to give consent. Once 75% of members have confirmed, your application will automatically proceed to the next step.",
+      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, all group members will be automatically notified through their phone numbers to give their consent for the loan application. All members must respond, and at least 75% of the responses need to be in favor (confirm) for the loan application to proceed to the next step.",
       "progress-saved": "You can safely close the browser page and come back to it later. Your progress has been saved, <strong>you will be notified via SMS once enough members have confirmed to proceed.</strong>",
       "send-to-members": "Send to all members for confirmation",
-      "confirmed-members": "{confirmed}/{total} members have confirmed"
+      "threshold-met": "✓ Great! Your group has met the 75% confirmation threshold. You can proceed to the next step.",
+      "threshold-needed": "Your group needs at least 75% of members to confirm. Currently at {percentage}%.",
+      "confirmed-members": "{confirmed} out of {total} members confirmed",
+      "responded-members": "{confirmed} out of {total} members responded",
+      "member-status": "Member Status",
+      "resend-timer": "Resend available in {time}"
+    },
+     "Common": {
+      "status": {
+        "confirmed": "Confirmed",
+        "declined": "Declined", 
+        "pending": "SMS Not Sent",
+        "sent": "SMS Sent",
+        "failed": "Failed To Send"
+      }
     }
   },
   "ReviewPage": {

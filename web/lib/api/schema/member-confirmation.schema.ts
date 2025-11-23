@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Member confirmation data schemas based on the OpenAPI spec
 export const ConfirmedMemberInfoSchema = z.object({
-  id: z.coerce.number().describe('Member entity ID'),
+  id: z.string().describe('Member entity ID'),
   name: z.string().describe('Member name'),
   phone_number: z.string().describe('Member phone number'),
   confirmation_status: z
@@ -16,13 +16,14 @@ export const ConfirmedMemberInfoSchema = z.object({
 });
 
 export const ConfirmedApplicationInfoSchema = z.object({
-  id: z.coerce.number().nullable().optional().describe('Application entity ID'),
+  id: z.string().nullable().optional().describe('Application entity ID'),
   application_id: z
     .string()
     .nullable()
     .optional()
     .describe('Application identifier'),
   group_name: z.string().nullable().optional().describe('Name of the group'),
+  loan_amount: z.number().nullable().optional().describe('Loan amount'),
 });
 
 export const MemberConfirmationDataSchema = z.object({

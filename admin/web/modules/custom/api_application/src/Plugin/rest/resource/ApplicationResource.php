@@ -113,7 +113,6 @@ class ApplicationResource extends RestFrameworkResourceBase {
           'message' => 'Request body cannot be empty',
         ], 400);
       }
-
       // Validate required fields.
       $requiredFields = [
         'group_name',
@@ -220,7 +219,9 @@ class ApplicationResource extends RestFrameworkResourceBase {
           'application_id' => $application->getApplicationId(),
           'status' => $this->mapStatusForApi($application->getStatus()),
           'group_name' => $application->getGroupName(),
-          'created' => $application->getCreatedTime(),
+          //members in json array
+          'app_group_members' => $application->getGroupMembers(),
+          'data members' => json_encode($data['group_members']),
           'changed' => $application->getChangedTime(),
         ],
       ];
@@ -977,7 +978,14 @@ class ApplicationResource extends RestFrameworkResourceBase {
       }
       else {
         // Create new member.
+        //log member data also confirmations
+        \Drupal::logger('api_application')->info('🔍 [PROCESS-MEMBER] Creating new member @name with confirmation data', [
+          '@name' => $memberData['name'],
+          'token' => !empty($memberData['confirmation_token']) ? substr($memberData['confirmation_token'], 0, 16) . '...' : 'MISSING',
+          'status' => $memberData['confirmation_status'] ?? 'MISSING',
+        ]);
         $member = $this->createGroupMember($application, $memberData);
+
         if ($member) {
           $memberIds[] = $member->id();
         }
@@ -1032,11 +1040,28 @@ class ApplicationResource extends RestFrameworkResourceBase {
       $values['person_with_disability'] = (bool) $data['person_with_disability'];
     }
 
-    // Requires confirmation field.
-    $requiresConfirmation = TRUE;
-    if (isset($data['requires_confirmation'])) {
-      $requiresConfirmation = (bool) $data['requires_confirmation'];
-      $values['requires_confirmation'] = $requiresConfirmation;
+    // ✅ REQUIRES CONFIRMATION - PRESERVE EXACT VALUE
+    $requiresConfirmation = $data['requires_confirmation'] ?? true;
+    $values['requires_confirmation'] = (bool) $requiresConfirmation;
+
+    // ✅ CRITICAL: PRESERVE ALL EXISTING CONFIRMATION DATA
+    if (isset($data['confirmation_token'])) {
+      $values['confirmation_token'] = $data['confirmation_token'];
+    }
+
+    if (isset($data['confirmation_status'])) {
+      $values['confirmation_status'] = $data['confirmation_status'];
+    } else {
+      // If no status provided, default based on token presence
+      $values['confirmation_status'] = isset($data['confirmation_token']) ? 'sent' : 'pending';
+    }
+
+    if (isset($data['confirmation_sent_at'])) {
+      $values['confirmation_sent_at'] = (int) $data['confirmation_sent_at'];
+    }
+
+    if (isset($data['confirmation_confirmed_at'])) {
+      $values['confirmation_confirmed_at'] = (int) $data['confirmation_confirmed_at'];
     }
 
     // Optional text field.
@@ -1059,10 +1084,44 @@ class ApplicationResource extends RestFrameworkResourceBase {
       }
     }
 
-    $member = $groupMemberStorage->create($values);
-    $member->save();
+    // 🔍 DEBUG: Log what we're creating
+    $this->logger->info('🔍 [CREATE-GROUP-MEMBER] Creating member @name with confirmation data', [
+      '@name' => $data['name'],
+      'values_set' => [
+        'token' => !empty($values['confirmation_token']) ? substr($values['confirmation_token'], 0, 16) . '...' : 'NULL',
+        'status' => $values['confirmation_status'] ?? 'NOT_SET',
+        'sent_at' => $values['confirmation_sent_at'] ?? 'NULL',
+        'confirmed_at' => $values['confirmation_confirmed_at'] ?? 'NULL',
+        'requires_confirmation' => $values['requires_confirmation'] ? 'TRUE' : 'FALSE',
+      ]
+    ]);
 
-    return $member;
+    try {
+      $member = $groupMemberStorage->create($values);
+      $member->save();
+
+      // 🔍 DEBUG: Verify what was saved
+      $savedMember = $groupMemberStorage->load($member->id());
+      $this->logger->info('✅ [CREATE-GROUP-MEMBER] Saved member @name with ID @id', [
+        '@name' => $savedMember->get('name')->value,
+        '@id' => $savedMember->id(),
+        'saved_confirmation_data' => [
+          'token' => $savedMember->get('confirmation_token')->value ? 'PRESENT' : 'NULL',
+          'status' => $savedMember->get('confirmation_status')->value ?? 'NULL',
+          'sent_at' => $savedMember->get('confirmation_sent_at')->value ?? 'NULL',
+          'confirmed_at' => $savedMember->get('confirmation_confirmed_at')->value ?? 'NULL',
+          'requires_confirmation' => $savedMember->get('requires_confirmation')->value ? 'TRUE' : 'FALSE',
+        ]
+      ]);
+
+      return $member;
+    } catch (\Exception $e) {
+      $this->logger->error('❌ [CREATE-GROUP-MEMBER] Failed to create member @name: @error', [
+        '@name' => $data['name'],
+        '@error' => $e->getMessage(),
+      ]);
+      return null;
+    }
   }
 
   /**
@@ -1074,47 +1133,88 @@ class ApplicationResource extends RestFrameworkResourceBase {
    *   The member data.
    */
   protected function updateGroupMember($member, array $data) {
+    $changed = false;
+
     // Update simple fields.
     $fields = ['name', 'gender', 'phone_number', 'pwd_number'];
     foreach ($fields as $field) {
-      if (isset($data[$field])) {
+      if (isset($data[$field]) && $member->get($field)->value !== $data[$field]) {
         $member->set($field, $data[$field]);
+        $changed = true;
       }
     }
 
     // Handle position taxonomy reference.
     if (isset($data['position'])) {
       $tid = $this->resolveTaxonomyReferences($data['position'], 'position_of_member');
-      $member->set('position', $tid);
+      if ($member->get('position')->target_id != $tid) {
+        $member->set('position', $tid);
+        $changed = true;
+      }
     }
 
     // Boolean field.
     if (isset($data['person_with_disability'])) {
-      $member->set('person_with_disability', (bool) $data['person_with_disability']);
+      $newValue = (bool) $data['person_with_disability'];
+      if ($member->get('person_with_disability')->value != $newValue) {
+        $member->set('person_with_disability', $newValue);
+        $changed = true;
+      }
     }
 
-    // Requires confirmation field.
+    // ✅ REQUIRES CONFIRMATION - PRESERVE EXACT VALUE
     if (isset($data['requires_confirmation'])) {
-      $requiresConfirmation = (bool) $data['requires_confirmation'];
-      $member->set('requires_confirmation', $requiresConfirmation);
+      $newValue = (bool) $data['requires_confirmation'];
+      if ($member->get('requires_confirmation')->value != $newValue) {
+        $member->set('requires_confirmation', $newValue);
+        $changed = true;
+      }
+    }
+
+    // ✅ CRITICAL: UPDATE CONFIRMATION DATA IF PROVIDED
+    if (isset($data['confirmation_token']) && $member->get('confirmation_token')->value !== $data['confirmation_token']) {
+      $member->set('confirmation_token', $data['confirmation_token']);
+      $changed = true;
+    }
+
+    if (isset($data['confirmation_status']) && $member->get('confirmation_status')->value !== $data['confirmation_status']) {
+      $member->set('confirmation_status', $data['confirmation_status']);
+      $changed = true;
+    }
+
+    if (isset($data['confirmation_sent_at']) && $member->get('confirmation_sent_at')->value != (int) $data['confirmation_sent_at']) {
+      $member->set('confirmation_sent_at', (int) $data['confirmation_sent_at']);
+      $changed = true;
+    }
+
+    if (isset($data['confirmation_confirmed_at']) && $member->get('confirmation_confirmed_at')->value != (int) $data['confirmation_confirmed_at']) {
+      $member->set('confirmation_confirmed_at', (int) $data['confirmation_confirmed_at']);
+      $changed = true;
     }
 
     // File fields.
     if (isset($data['photo_member_id'])) {
       $fileId = $this->processFileField($data['photo_member_id'], $member->getApplication()->getApplicationId());
-      if ($fileId) {
+      if ($fileId && $member->get('photo_member_id')->target_id != $fileId) {
         $member->set('photo_member_id', $fileId);
+        $changed = true;
       }
     }
 
     if (isset($data['certificate_disability'])) {
       $fileId = $this->processFileField($data['certificate_disability'], $member->getApplication()->getApplicationId());
-      if ($fileId) {
+      if ($fileId && $member->get('certificate_disability')->target_id != $fileId) {
         $member->set('certificate_disability', $fileId);
+        $changed = true;
       }
     }
 
-    $member->save();
+    if ($changed) {
+      $member->save();
+      $this->logger->info('✅ [UPDATE-GROUP-MEMBER] Updated member @name with new confirmation data', [
+        '@name' => $member->get('name')->value,
+      ]);
+    }
   }
 
   /**
@@ -1152,22 +1252,72 @@ class ApplicationResource extends RestFrameworkResourceBase {
         $values['person_with_disability'] = (bool) $memberData['person_with_disability'];
       }
 
-      // Requires confirmation field.
-      $requiresConfirmation = TRUE;
-      if (isset($memberData['requires_confirmation'])) {
-        $requiresConfirmation = (bool) $memberData['requires_confirmation'];
-        $values['requires_confirmation'] = $requiresConfirmation;
-      }
+      // REQUIRES CONFIRMATION - PRESERVE EXACT VALUE FROM WEB APP
+      $requiresConfirmation = $memberData['requires_confirmation'] ?? true;
+      $values['requires_confirmation'] = (bool) $requiresConfirmation;
 
       // Optional text field.
       if (isset($memberData['pwd_number'])) {
         $values['pwd_number'] = $memberData['pwd_number'];
       }
 
+      // ✅ CRITICAL FIX: PRESERVE ALL EXISTING CONFIRMATION DATA EXACTLY AS RECEIVED
+      if (isset($memberData['confirmation_token'])) {
+        $values['confirmation_token'] = $memberData['confirmation_token'];
+      }
+
+      if (isset($memberData['confirmation_status'])) {
+        $values['confirmation_status'] = $memberData['confirmation_status'];
+      } else {
+        // If no status provided, default based on token presence
+        $values['confirmation_status'] = isset($memberData['confirmation_token']) ? 'sent' : 'pending';
+      }
+
+      if (isset($memberData['confirmation_sent_at'])) {
+        $values['confirmation_sent_at'] = (int) $memberData['confirmation_sent_at'];
+      }
+
+      if (isset($memberData['confirmation_confirmed_at'])) {
+        $values['confirmation_confirmed_at'] = (int) $memberData['confirmation_confirmed_at'];
+      }
+
+      // 🔍 DEBUG: Log EXACTLY what we're setting
+      $this->logger->info('🔍 [CREATE-MEMBER-FIRST-DETAILED] Setting values for @name', [
+        '@name' => $memberData['name'],
+        'values_set' => [
+          'confirmation_token' => !empty($values['confirmation_token']) ? substr($values['confirmation_token'], 0, 16) . '...' : 'NULL',
+          'confirmation_status' => $values['confirmation_status'] ?? 'NOT_SET',
+          'confirmation_sent_at' => $values['confirmation_sent_at'] ?? 'NULL',
+          'confirmation_confirmed_at' => $values['confirmation_confirmed_at'] ?? 'NULL',
+          'requires_confirmation' => $values['requires_confirmation'] ? 'TRUE' : 'FALSE',
+        ]
+      ]);
+
       // Note: File fields will be processed later when we have application ID.
-      $member = $groupMemberStorage->create($values);
-      $member->save();
-      $memberIds[] = $member->id();
+      try {
+        $member = $groupMemberStorage->create($values);
+        $member->save();
+        $memberIds[] = $member->id();
+
+        // ✅ VERIFY: Load the saved member and check confirmation data
+        $savedMember = $groupMemberStorage->load($member->id());
+        $this->logger->info('✅ [CREATE-MEMBER-FIRST] Created member @name with ID @id', [
+          '@name' => $savedMember->getName(),
+          '@id' => $savedMember->id(),
+          'saved_confirmation_data' => [
+            'token' => $savedMember->get('confirmation_token')->value ? 'PRESENT' : 'NULL',
+            'status' => $savedMember->get('confirmation_status')->value ?? 'NULL',
+            'sent_at' => $savedMember->get('confirmation_sent_at')->value ?? 'NULL',
+            'confirmed_at' => $savedMember->get('confirmation_confirmed_at')->value ?? 'NULL',
+            'requires_confirmation' => $savedMember->get('requires_confirmation')->value ? 'TRUE' : 'FALSE',
+          ]
+        ]);
+      } catch (\Exception $e) {
+        $this->logger->error('❌ [CREATE-MEMBER-FIRST] Failed to create member @name: @error', [
+          '@name' => $memberData['name'],
+          '@error' => $e->getMessage(),
+        ]);
+      }
     }
 
     return $memberIds;
@@ -1185,15 +1335,27 @@ class ApplicationResource extends RestFrameworkResourceBase {
    */
   protected function linkMembersToApplication($application, array $memberIds, array $originalMembersData) {
     $groupMemberStorage = $this->entityTypeManager->getStorage('group_member');
-
     $references = [];
+
     foreach ($memberIds as $index => $memberId) {
       $member = $groupMemberStorage->load($memberId);
       if ($member) {
-        // Update with application reference.
+        // 🔍 DEBUG: Check confirmation data BEFORE linking
+        $this->logger->info('🔍 [LINK-MEMBERS-DETAILED] Before linking - Member @name', [
+          '@name' => $member->get('name')->value,
+          'current_confirmation_data' => [
+            'token' => $member->get('confirmation_token')->value ? 'PRESENT' : 'NULL',
+            'status' => $member->get('confirmation_status')->value ?? 'NULL',
+            'sent_at' => $member->get('confirmation_sent_at')->value ?? 'NULL',
+            'confirmed_at' => $member->get('confirmation_confirmed_at')->value ?? 'NULL',
+            'requires_confirmation' => $member->get('requires_confirmation')->value ? 'TRUE' : 'FALSE',
+          ]
+        ]);
+
+        // ✅ CRITICAL: Update with application reference WITHOUT overwriting confirmation data
         $member->set('application', $application->id());
 
-        // Process file fields now that we have application ID.
+        // Process file fields now that we have application ID
         if (isset($originalMembersData[$index])) {
           $memberData = $originalMembersData[$index];
 
@@ -1212,12 +1374,27 @@ class ApplicationResource extends RestFrameworkResourceBase {
           }
         }
 
+        // ✅ Save the member with preserved confirmation data
         $member->save();
+
+        // 🔍 DEBUG: Verify confirmation data AFTER linking
+        $refreshedMember = $groupMemberStorage->load($member->id());
+        $this->logger->info('🔍 [LINK-MEMBERS-DETAILED] After linking - Member @name', [
+          '@name' => $refreshedMember->get('name')->value,
+          'current_confirmation_data' => [
+            'token' => $refreshedMember->get('confirmation_token')->value ? 'PRESENT' : 'NULL',
+            'status' => $refreshedMember->get('confirmation_status')->value ?? 'NULL',
+            'sent_at' => $refreshedMember->get('confirmation_sent_at')->value ?? 'NULL',
+            'confirmed_at' => $refreshedMember->get('confirmation_confirmed_at')->value ?? 'NULL',
+            'requires_confirmation' => $refreshedMember->get('requires_confirmation')->value ? 'TRUE' : 'FALSE',
+          ]
+        ]);
+
         $references[] = ['target_id' => $memberId];
       }
     }
 
-    // Set group members on application.
+    // Set group members on application
     $application->set('group_members', $references);
     $application->save();
   }

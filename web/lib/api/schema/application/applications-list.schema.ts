@@ -41,9 +41,12 @@ export const TaxonomyTermSchema = z
  * Group member confirmation info schema
  */
 export const MemberConfirmationInfoSchema = z.object({
+  confirmation_status: z
+    .enum(['pending', 'sent', 'confirmed', 'failed', 'declined'])
+    .describe('Current SMS confirmation status'),
   status: z
-    .enum(['pending', 'sent', 'confirmed', 'failed'])
-    .describe('Current confirmation status'),
+    .enum(['pending', 'confirmed'])
+    .describe('Current SMS response status'),
   sent_at: z
     .union([z.number(), z.string()])
     .nullable()

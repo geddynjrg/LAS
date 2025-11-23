@@ -1,6 +1,6 @@
 import { FileLink } from '@/components/file-link';
 import { MemberStatusIndicator } from '@/components/member-status-indicator';
-import type { MembersData } from '@/lib/types/application.types';
+import type { MembersData, Member } from '@/lib/types/application.types';
 import { IconPencil, IconPhone } from '@tabler/icons-react';
 import {
   Accordion,
@@ -36,6 +36,47 @@ export const ApplicationReviewMembers: FC<{
     },
     {} as Record<string, typeof membersData.members>,
   );
+
+  const getMemberStatus = (member: Member): string => {
+    const { status, confirmation_status, requiresConfirmation } = member;
+
+    // Member doesn't need confirmation - use basic status
+    if (!requiresConfirmation) {
+      return status || 'pending';
+    }
+
+    // Member needs confirmation - complex logic
+    if (status === 'confirmed') {
+      switch (confirmation_status) {
+        case 'confirmed':
+          return 'confirmed'; // Member confirmed via SMS
+        case 'declined':
+          return 'declined'; // Member declined via SMS
+        case 'failed':
+          return 'SMS failed to send'; // SMS failed to send
+        case 'pending':
+          return 'Confirmation Not Sent'; // SMS not sent yet
+        default:
+          return 'confirmation_pending'; // SMS not sent yet
+      }
+    }
+
+    // Status is pending
+    if (status === 'pending') {
+      switch (confirmation_status) {
+        case 'sent':
+          return 'Not Responded'; // SMS sent, waiting for response
+        case 'failed':
+          return 'SMS failed to send'; // SMS failed to send
+        case 'pending':
+        default:
+          return 'SMS not sent yet'; // SMS not sent yet
+      }
+    }
+
+    // Fallback
+    return confirmation_status || 'pending';
+};
 
   return (
     <div className="mt-6 grid">
@@ -90,7 +131,11 @@ export const ApplicationReviewMembers: FC<{
                                 </DataNode>
                               </div>
                               <MemberStatusIndicator
-                                status={member.status || 'pending'}
+                                // i need to show member.confirmation_status, if member.status = confirmed && member.confirmation_status = sent then show Not Responded 
+                                // if member.status = confirmed && member.confirmation_status = confirmed then show Confirmed
+                                // if member.status = confirmed && member.confirmation_status = declined then show Declined
+                                // if member.status = pending && member.confirmation_status = pending then show COnfirmation Sms not sent.
+                                status={getMemberStatus(member)}
                                 requiresConfirmation={
                                   member.requiresConfirmation
                                 }

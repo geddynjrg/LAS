@@ -41,7 +41,7 @@ export const ConfirmationsDataForm: FC<ConfirmationsDataProps> = ({
     },
   );
 
-  const prevUrl = `/apply/${id}/proposed-business`;
+  const prevUrl = `/apply/${id}/member-confirmation`;
 
   useEffect(() => {
     if (state.success) {

@@ -83,24 +83,34 @@ model GroupData {
 }
 
 model MemberData {
-  id                      String       @id @default(cuid())
-  applicationId           String
-  natureOfTheGroup        String
-  fullname                String
-  nationalIdCode          String
-  gender                  Gender
-  type                    String
-  phoneNumber             String
-  photoOfId               String       @db.LongText
-  certificateOfDisability String?      @db.LongText
-  pwdNumber               String?
-  status                  MemberStatus @default(PENDING)
-  requiresConfirmation    Boolean      @default(false)
-  createdAt               DateTime     @default(now())
-  updatedAt               DateTime     @updatedAt
-  application             Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  id                        String            @id @default(cuid())
+  applicationId             String
+  natureOfTheGroup          String
+  fullname                  String
+  nationalIdCode            String
+  gender                    Gender
+  type                      String
+  phoneNumber               String
+  photoOfId                 String            @db.LongText
+  certificateOfDisability   String?           @db.LongText
+  pwdNumber                 String?
+  status                    MemberStatus      @default(PENDING)
+  requiresConfirmation      Boolean           @default(false)
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime          @updatedAt
+  confirmation_token        String?           @unique @db.VarChar(64)
+  confirmation_status       ConfirmationStatus? @default(pending)
+  confirmation_sent_at      DateTime?
+  confirmation_confirmed_at DateTime?
+  confirmation_token_expires_at DateTime?
+  application               Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@unique([applicationId, phoneNumber])
+  @@unique([applicationId, nationalIdCode])
   @@index([applicationId])
+  @@index([confirmation_token])
+  @@index([confirmation_status])
+  @@index([confirmation_token_expires_at])
   @@map("member_data")
 }
 
@@ -248,6 +258,14 @@ enum IdentifierType {
   EMAIL
   PHONE
   NAME
+}
+
+enum ConfirmationStatus {
+  pending
+  sent
+  confirmed
+  declined
+  failed
 }
 
 enum ApplicationStatus {

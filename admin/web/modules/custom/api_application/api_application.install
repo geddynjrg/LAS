@@ -718,6 +718,7 @@ function api_application_update_11012() {
       'pending' => t('Pending'),
       'sent' => t('SMS Sent'),
       'confirmed' => t('Confirmed'),
+      'declined' => t('declined'),
       'failed' => t('Failed'),
     ])
     ->setDisplayOptions('view', [

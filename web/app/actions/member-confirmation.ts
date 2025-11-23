@@ -49,7 +49,7 @@ export const getMemberDetailsAction: FormAction<{ token: string }> = async (
       values,
     };
   } catch (error) {
-    console.error('Error fetching member details:', error);
+    console.error('Error fetching member details actions:', error);
     return {
       success: false,
       errors: {

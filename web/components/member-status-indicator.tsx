@@ -56,6 +56,21 @@ export const MemberStatusIndicator: FC<MemberStatusIndicatorProps> = ({
         </Badge>
       );
     }
+    if (status === 'declined') {
+      return (
+        <Badge
+          variant="destructive"
+          className={cn('text-xs', {
+            'px-1.5 py-0.5 text-[10px]': size === 'sm',
+            'text-xs': size === 'md',
+            'text-sm': size === 'lg',
+          })}
+        >
+          {t('memberStatus.declinedLabel')}
+        </Badge>
+      );
+    }
+    
     return (
       <Badge
         variant="secondary"

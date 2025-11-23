@@ -18,6 +18,16 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
     return new Date(timestamp * 1000).toLocaleDateString();
   };
 
+  const formatCurrency = (amount: number | null | undefined) => {
+    if (amount === null || amount === undefined) return 'N/A';
+    return new Intl.NumberFormat('en-KE', {
+      style: 'currency',
+      currency: 'KES',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'confirmed':
@@ -35,6 +45,7 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
       if (status === 'confirmed') return tCommon('status.confirmed');
       if (status === 'declined') return tCommon('status.declined');
       if (status === 'pending') return tCommon('status.pending');
+      if (status === 'sent') return tCommon('status.pending');
     } catch {
       // If translation fails, fall through to default
     }
@@ -119,6 +130,17 @@ export function MemberDetailsCard({ memberData }: MemberDetailsCardProps) {
                   </span>
                   <span className="text-sm font-medium text-neutral-900">
                     {application.group_name}
+                  </span>
+                </div>
+              )}
+
+              {application.loan_amount && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-neutral-600">
+                    {t('loanAmount')}:
+                  </span>
+                  <span className="text-sm font-medium text-neutral-900">
+                    {formatCurrency(application.loan_amount)}
                   </span>
                 </div>
               )}

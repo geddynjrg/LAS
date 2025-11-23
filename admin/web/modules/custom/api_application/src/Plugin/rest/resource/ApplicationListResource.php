@@ -358,7 +358,8 @@ class ApplicationListResource extends RestFrameworkResourceBase {
       'person_with_disability' => $member->isPersonWithDisability(),
       'requires_confirmation' => $member->requiresConfirmation(),
       'confirmation' => [
-        'status' => $member->getConfirmationStatus(),
+        'status' => $member->requiresConfirmation() ? ($member->isConfirmed() ? 'confirmed' : 'pending') : NULL,
+        'confirmation_status' => $member->getConfirmationStatus(),
         'sent_at' => $member->getConfirmationSentAt(),
         'confirmed_at' => $member->getConfirmationConfirmedAt(),
         'is_confirmed' => $member->isConfirmed(),

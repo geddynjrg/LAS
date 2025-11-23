@@ -36,6 +36,69 @@ export interface CheckboxGroupProps<T extends string = string>
   className?: string;
 }
 
+// export const CheckboxGroup = <T extends string>({
+//   id,
+//   name,
+//   options,
+//   value: valueProp,
+//   defaultValue,
+//   orientation = "vertical",
+//   size,
+//   className,
+//   onValueChange,
+//   ...props
+// }: CheckboxGroupProps<T>) => {
+//   const [value, setValue] = useState<T[]>(
+//     Array.isArray(valueProp)
+//       ? valueProp
+//       : Array.isArray(defaultValue)
+//         ? defaultValue
+//         : (defaultValue?.split(",") as T[]),
+//   );
+
+//   useEffect(() => {
+//     if (valueProp && value !== valueProp) {
+//       setValue(Array.isArray(valueProp) ? valueProp : [valueProp]);
+//     }
+//   }, [value, valueProp]);
+
+//   function handleChange(checked: boolean, option: CheckboxGroupOption<T>) {
+//     setValue((prev) => {
+//       const newVal = checked
+//         ? [...(prev ?? []), option.value]
+//         : (prev ?? []).filter((v) => v !== option.value);
+
+//       onValueChange?.(newVal);
+
+//       return newVal;
+//     });
+//   }
+
+//   return (
+//     <fieldset
+//       className={cn(
+//         checkboxGroupVariants({ orientation, className }),
+//       )}
+//       role="group"
+//       aria-labelledby={id ? `${id}-legend` : undefined}
+//       {...props}
+//     >
+//       <input type="hidden" name={name} value={value?.join(",")} />
+
+//       {options?.map((option) => (
+//         <Checkbox
+//           key={`${id}-${option.value}`}
+//           size={size}
+//           defaultValue={value?.includes(option.value) ?? false}
+//           onValueChange={(checked) => handleChange(checked, option)}
+//         >
+//           {option.label}
+//         </Checkbox>
+//       ))}
+//     </fieldset>
+//   );
+// };
+
 export const CheckboxGroup = <T extends string>({
   id,
   name,
@@ -53,32 +116,29 @@ export const CheckboxGroup = <T extends string>({
       ? valueProp
       : Array.isArray(defaultValue)
         ? defaultValue
-        : (defaultValue?.split(",") as T[]),
+        : (defaultValue?.split(",").filter(Boolean) as T[]) ?? []
   );
 
   useEffect(() => {
-    if (valueProp && value !== valueProp) {
-      setValue(Array.isArray(valueProp) ? valueProp : [valueProp]);
+    if (valueProp !== undefined) {
+      setValue(Array.isArray(valueProp) ? valueProp : (valueProp ? [valueProp] : []));
     }
-  }, [value, valueProp]);
+  }, [valueProp]);
 
   function handleChange(checked: boolean, option: CheckboxGroupOption<T>) {
     setValue((prev) => {
       const newVal = checked
-        ? [...(prev ?? []), option.value]
-        : (prev ?? []).filter((v) => v !== option.value);
+        ? [...prev, option.value]
+        : prev.filter((v) => v !== option.value);
 
       onValueChange?.(newVal);
-
       return newVal;
     });
   }
 
   return (
     <fieldset
-      className={cn(
-        checkboxGroupVariants({ orientation, className }),
-      )}
+      className={cn(checkboxGroupVariants({ orientation, className }))}
       role="group"
       aria-labelledby={id ? `${id}-legend` : undefined}
       {...props}
@@ -89,7 +149,7 @@ export const CheckboxGroup = <T extends string>({
         <Checkbox
           key={`${id}-${option.value}`}
           size={size}
-          defaultValue={value?.includes(option.value) ?? false}
+          defaultValue={value.includes(option.value) ? "on" : undefined} // Use defaultValue with "on" string
           onValueChange={(checked) => handleChange(checked, option)}
         >
           {option.label}

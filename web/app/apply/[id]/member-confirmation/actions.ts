@@ -1,0 +1,127 @@
+// app/apply/[id]/member-confirmation/actions.ts
+'use server';
+
+import { sendConfirmationSMS } from '@/lib/api/sms.service';
+import { getApplicationById } from '@/lib/data/application';
+import { z } from 'zod';
+import { redirect } from 'next/navigation';
+import type { FormAction } from '@workspace/ui/hooks/use-form';
+import { getFormZodDataValues } from '@workspace/ui/lib/utils';
+
+// Define the schema directly in the actions file to avoid import issues
+const memberConfirmationSchema = z.object({
+  id: z.string(),
+  redirectTo: z.string(),
+});
+
+export type MemberConfirmationData = z.infer<typeof memberConfirmationSchema>;
+
+// Add this new action for form submission
+export const memberConfirmationAction: FormAction<MemberConfirmationData> = async (
+  _prev,
+  formData,
+) => {
+  try {
+    const values = getFormZodDataValues(formData, memberConfirmationSchema);
+    const redirectTo = formData.get('redirectTo')?.toString();
+    const id = formData.get('id')?.toString();
+
+    console.log('Form values:', values);
+    console.log('RedirectTo:', redirectTo);
+    console.log('ID:', id);
+
+    const { success, data, error } = memberConfirmationSchema.safeParse(values);
+
+    if (!success && error) {
+      console.log('Validation error:', error);
+      return {
+        success,
+        errors: error.flatten().fieldErrors,
+        values,
+      };
+    }
+
+    if (!redirectTo) {
+      throw new Error('No redirect URL provided');
+    }
+
+    if (!id) {
+      throw new Error('No application ID provided');
+    }
+
+    console.log('Redirecting to:', redirectTo);
+    
+    // Simply redirect to the next page - no data to save
+    redirect(redirectTo);
+  } catch (error) {
+    console.error('Error in memberConfirmationAction:', error);
+    throw error;
+  }
+};
+
+export async function refreshApplicationData(applicationId: string) {
+  try {
+    const application = await getApplicationById(applicationId);
+    
+    if (!application) {
+      return { success: false, error: 'Application not found' };
+    }
+
+    return { 
+      success: true, 
+      application 
+    };
+  } catch (error) {
+    console.error('Error refreshing application:', error);
+    return { 
+      success: false, 
+      error: 'Failed to refresh application data' 
+    };
+  }
+}
+
+export async function sendMemberConfirmations(applicationId: string) {
+  try {
+    const application = await getApplicationById(applicationId);
+    
+    if (!application) {
+      return { 
+        success: false, 
+        message: 'Application not found',
+        stats: null
+      };
+    }
+
+    if (!application.members || application.members.members.length === 0) {
+      return { 
+        success: false, 
+        message: 'No members found in application',
+        stats: null
+      };
+    }
+
+    // Call Drupal backend to send SMS to all members
+    const result = await sendConfirmationSMS(applicationId);
+
+    if (result.success) {
+      return { 
+        success: true, 
+        message: result.stats?.message || 'Confirmation SMS sent successfully',
+        stats: result.stats
+      };
+    } else {
+      return { 
+        success: false, 
+        message: result.error || 'Failed to send confirmations',
+        stats: null
+      };
+    }
+  } catch (error) {
+    console.error('Error sending member confirmations:', error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : 'Unknown error occurred',
+      stats: null
+    };
+  }
+}

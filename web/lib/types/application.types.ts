@@ -67,6 +67,7 @@ export interface GroupData {
 
 // TODO: When member data is validated fix this, Only disability is optional
 export interface Member {
+  id?: string;
   fullname?: string;
   nationalIdCode?: string;
   gender?: GenderType;
@@ -79,6 +80,10 @@ export interface Member {
   };
   status?: 'confirmed' | 'pending';
   requiresConfirmation?: boolean;
+  confirmation_status?: 'confirmed' | 'declined' | 'pending' | 'sent' | 'failed';
+  confirmation_token?: string | null;
+  confirmation_sent_at?: number | null;
+  confirmation_confirmed_at?: number | null;
 }
 
 export interface MembersData {

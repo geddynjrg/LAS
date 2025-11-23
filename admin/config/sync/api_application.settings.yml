@@ -6,8 +6,9 @@ max_file_size: 5MB
 allowed_extensions: 'pdf jpg jpeg png webp'
 sms_confirmation_enabled: true
 sms_confirmation_message: ''
-auto_send_sms: true
-frontend_base_url: 'https://uwezo.uwezo_e-services-fe-qa.fusion.adm.ee'
+auto_send_sms: false
+# frontend_base_url: 'https://uwezo.uwezo_e-services-fe-qa.fusion.adm.ee'
+frontend_base_url: 'http://localhost:3000'
 frontend_confirmation_path: '/confirm/{token}'
 instructions:
   title: 'What you need to know before applying'

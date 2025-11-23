@@ -31,6 +31,7 @@ export interface RadioOption<T extends string = string>
   label: ReactNode;
   value: T;
   description?: ReactNode;
+  limitedRole?: boolean;
 }
 
 export interface RadioGroupProps<T extends string = string>
@@ -38,6 +39,7 @@ export interface RadioGroupProps<T extends string = string>
   id?: string;
   name?: string;
   options?: RadioOption<T>[] | readonly RadioOption<T>[];
+  limitedRole?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   defaultValue?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,13 +67,14 @@ export const RadioGroup = <T extends string>({
       {...props}
       ref={ignoreSetCustomValidityError}
     >
-      {options?.map(({ value, ...option }) => (
+      {options?.map(({ value, limitedRole, ...option }) => (
         <RadioGroupItem
           key={value}
           id={`${id}-${value}`}
           value={value}
           size={size}
           color={color}
+          limitedRole={limitedRole}
           {...option}
         />
       ))}
@@ -85,7 +88,7 @@ const RadioGroupItem: FC<
     size: VariantProps<typeof radioGroupVariants>["size"];
     color: ColorVariant;
   }
-> = ({ id, label, description, size, color, ...props }) => {
+> = ({ id, label, description, size, color, limitedRole, ...props }) => {
   const descriptionId = description ? `${id}-description` : undefined;
 
   return (

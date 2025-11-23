@@ -18,6 +18,7 @@ interface ApplyFormActionBarProps {
   onBack?: () => void;
   hideNext?: boolean;
   className?: string;
+  nextTooltip?: string;
 }
 
 export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
@@ -27,6 +28,7 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   hideNext,
   onBack,
   className,
+  nextTooltip
 }) => {
   const pathName = usePathname();
   const t = useTranslations();
@@ -34,9 +36,17 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
   const activeStep =
     steps.find((step) => pathName.includes(step.path ?? ''))?.index ?? 1;
 
+  const NextButtonContent = () => (
+    <div className="flex flex-row gap-1">
+      {activeStep === 6 ? t('Common.submit') : t('Common.next')}
+      <IconArrowRight />
+    </div>
+  );
+
   return (
     <ActionBar className={cn('mt-8', className)}>
       <div className="mx-auto flex flex-row items-center gap-4">
+        {/* Back Button */}
         <Button variant="secondary" asChild onClick={onBack} type="button">
           {onBack && !prevUrl ? (
             <div>
@@ -50,28 +60,37 @@ export const ApplyFormActionBar: FC<ApplyFormActionBarProps> = ({
             </Link>
           )}
         </Button>
-        {!hideNext &&
-          (activeStep === 6 && nextUrl ? (
-            <Button disabled={disabled}>
-              <Link
-                href={nextUrl}
-                className={cn(
-                  'text-background flex flex-row gap-1',
-                  disabled && 'text-neutral-400',
-                )}
-              >
-                {activeStep === 6 ? t('Common.submit') : t('Common.next')}
-                <IconArrowRight />
-              </Link>
-            </Button>
-          ) : (
-            <SubmitButton disabled={disabled}>
-              <div className="flex flex-row gap-1">
-                {t('Common.next')}
-                <IconArrowRight />
+
+        {/* Next/Submit Button with Tooltip Container */}
+        {!hideNext && (
+          <div className="relative group">
+            {activeStep === 6 && nextUrl ? (
+              <Button disabled={disabled}>
+                <Link
+                  href={nextUrl}
+                  className={cn(
+                    'text-background flex flex-row gap-1',
+                    disabled && 'text-neutral-400',
+                  )}
+                >
+                  <NextButtonContent />
+                </Link>
+              </Button>
+            ) : (
+              <SubmitButton disabled={disabled}>
+                <NextButtonContent />
+              </SubmitButton>
+            )}
+
+            {/* Tooltip that shows on hover when disabled */}
+            {disabled && nextTooltip && (
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm rounded py-2 px-3 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg">
+                {nextTooltip}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
               </div>
-            </SubmitButton>
-          ))}
+            )}
+          </div>
+        )}
       </div>
     </ActionBar>
   );

@@ -32,17 +32,28 @@ api.use({
       request.headers.set('X-Language', (await getLocale()) || '');
     }
 
+    // ADD API KEY HERE
+    if (process.env.EXTERNAL_API_KEY) {
+      request.headers.set('X-API-Key', process.env.EXTERNAL_API_KEY);
+    }
+
     if (session) {
       request.headers.set('authorization', `Bearer ${session}`);
     }
+
 
     return request;
   },
 
   async onResponse({ response }) {
     // if the response is 401, we need to clear the session and redirect to login page
+    console.log('[API] Response:', {
+      status: response.status,
+      statusText: response.statusText,
+    });
+
     if (response.status === 401) {
-      // redirect("/login");
+      console.error('[API] 401 Unauthorized - check authentication headers');
     }
 
     return response;

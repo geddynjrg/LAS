@@ -58,8 +58,6 @@ export async function processSyncQueue() {
       take: 10,
     });
 
-    console.log(`Processing ${pendingItems.length} sync queue items...`);
-
     for (const item of pendingItems) {
       await processSyncItem(item.id);
     }
@@ -193,10 +191,6 @@ async function processSyncItem(queueItemId: string) {
           syncError: errorMessage,
         },
       });
-
-      console.log(
-        `Sync failed permanently for ${queueItem.applicationId}: ${errorMessage}`,
-      );
     } else {
       // Schedule retry with exponential backoff
       const baseDelay = 5 * 60 * 1000; // 5 minutes
@@ -215,9 +209,6 @@ async function processSyncItem(queueItemId: string) {
         },
       });
 
-      console.log(
-        `Scheduled retry ${attempts}/${maxAttempts} for ${queueItem.applicationId} in ${retryDelay / 1000 / 60} minutes`,
-      );
     }
   }
 }
@@ -377,6 +368,7 @@ async function deleteApplicationInExternalApi(
 async function transformApplicationForExternalApi(
   application: any,
 ): Promise<ApplicationPostRequest> {
+  
   // Helper function to read file and convert to base64
   const readFileAsBase64 = async (filePath: string): Promise<string | null> => {
     try {
@@ -569,6 +561,18 @@ async function transformApplicationForExternalApi(
     return undefined;
   };
 
+  const toUnixTimestamp = (dateValue: any): number | null => {
+    if (!dateValue) return null;
+
+    try {
+      const date = new Date(dateValue);
+      return Math.floor(date.getTime() / 1000); // Convert to Unix timestamp (seconds)
+    } catch (error) {
+      console.error('Error converting date to timestamp:', error);
+      return null;
+    }
+  };
+
   // Clean null values
   const cleanValue = <T>(value: T | null | undefined): T | undefined => {
     return value === null ? undefined : value;
@@ -609,23 +613,62 @@ async function transformApplicationForExternalApi(
   const groupCreditHistory = await transformFiles(
     application.groupData?.groupCreditHistory,
   );
-
-  // Transform member files
+  
+  // Enhanced member transformation with better data preservation
   const transformedMembers = await Promise.all(
-    (application.members || []).map(async (member: any) => ({
-      name: member.fullname || '',
-      id_number: member.nationalIdCode || '',
-      gender: mapGender(member.gender),
-      phone_number: member.phoneNumber || '',
-      position: extractValue(member.type),
-      photo_member_id: await transformSingleFile(member.photoOfId),
-      person_with_disability: !!member.certificateOfDisability,
-      pwd_number: cleanValue(member.pwdNumber),
-      certificate_disability: await transformSingleFile(
-        member.certificateOfDisability,
-      ),
-      requires_confirmation: member.requiresConfirmation || false,
-    })),
+    (application.members || []).map(async (member: any) => {
+
+      // Preserve ALL existing confirmation data exactly as in database
+      const confirmationData = {
+        requires_confirmation: member.requiresConfirmation !== false,
+        confirmation_token: member.confirmation_token,
+        confirmation_sent_at: toUnixTimestamp(member.confirmation_sent_at),
+        confirmation_confirmed_at: toUnixTimestamp(member.confirmation_confirmed_at),
+        confirmation_status: member.confirmation_status,
+        confirmation_token_expires_at: toUnixTimestamp(member.confirmation_token_expires_at),
+      };
+
+      // Determine the correct status to send to API
+      let apiConfirmationStatus = confirmationData.confirmation_status;
+      
+      // Logic for status determination:
+      // 1. If member has confirmed/declined, keep that status
+      // 2. If token exists but no response yet, status should be 'sent' 
+      // 3. If no token and no response, status should be 'pending'
+      
+      if (confirmationData.confirmation_status === 'confirmed' || 
+          confirmationData.confirmation_status === 'declined') {
+        // Member has already responded - preserve their decision
+        apiConfirmationStatus = confirmationData.confirmation_status;
+      } else if (confirmationData.confirmation_token && 
+                !confirmationData.confirmation_confirmed_at) {
+        // Token exists but no confirmation yet - status should be 'sent'
+        apiConfirmationStatus = 'sent';
+      } else if (!confirmationData.confirmation_token && 
+                !confirmationData.confirmation_confirmed_at) {
+        // No token and no confirmation - status should be 'pending'
+        apiConfirmationStatus = 'pending';
+      }
+
+      return {
+        name: member.fullname || '',
+        id_number: member.nationalIdCode || '',
+        gender: mapGender(member.gender),
+        phone_number: member.phoneNumber || '',
+        position: extractValue(member.type),
+        photo_member_id: await transformSingleFile(member.photoOfId),
+        person_with_disability: !!member.certificateOfDisability,
+        pwd_number: cleanValue(member.pwdNumber),
+        certificate_disability: await transformSingleFile(
+          member.certificateOfDisability,
+        ),
+        requires_confirmation: confirmationData.requires_confirmation,
+        confirmation_token: confirmationData.confirmation_token,
+        confirmation_sent_at: confirmationData.confirmation_sent_at,
+        confirmation_confirmed_at: confirmationData.confirmation_confirmed_at,
+        confirmation_status: apiConfirmationStatus,
+      };
+    }),
   );
 
   return {
@@ -763,7 +806,7 @@ export async function syncApplication(
     if (
       application.status === ApplicationStatus.DRAFT ||
       application.status === ApplicationStatus.UNSUBMITTED
-    ) {
+      ) {
       return {
         success: true,
         message: 'Application not ready for sync',
@@ -781,9 +824,6 @@ export async function syncApplication(
     });
 
     if (existingQueueItem) {
-      console.log(
-        `Application ${applicationId} is already in the sync queue with status: ${existingQueueItem.status}`,
-      );
 
       // If it's processing, wait for it to complete
       if (existingQueueItem.status === QueueStatus.PROCESSING) {
@@ -803,7 +843,6 @@ export async function syncApplication(
             attempts: 0,
           },
         });
-        console.log(`Rescheduled sync for ${applicationId} to run immediately`);
       }
     } else {
       // Check if there's a recently failed item
@@ -831,9 +870,6 @@ export async function syncApplication(
             maxAttempts: 5, // Give more attempts for manual retries
           },
         });
-        console.log(
-          `Created new sync queue item for previously failed application ${applicationId}`,
-        );
       } else {
         // No existing queue item, create a new one
         await prisma.syncQueue.create({
@@ -861,9 +897,6 @@ export async function syncApplication(
       });
 
       if (queueItem) {
-        console.log(
-          `[SYNC] Processing queue item ${queueItem.id} for ${applicationId}`,
-        );
         await processSyncItem(queueItem.id);
 
         // Check actual result
