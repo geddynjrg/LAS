@@ -1,0 +1,18 @@
+-- AlterTable: Sync ApplicationStatus enum with schema
+-- Adds: GROUP_MEMBER_CONFIRMATION, CONSTITUENCY_REVIEW, APPROVED_BY_CONSTITUENCY
+-- Removes: PENDING (replaced by DRAFT in earlier migration)
+
+ALTER TABLE `applications`
+  MODIFY COLUMN `status` ENUM(
+    'UNSUBMITTED',
+    'DRAFT',
+    'GROUP_MEMBER_CONFIRMATION',
+    'SUBMITTED',
+    'CONSTITUENCY_REVIEW',
+    'APPROVED_BY_CONSTITUENCY',
+    'IN_REVIEW',
+    'APPROVED',
+    'REJECTED',
+    'DISBURSED',
+    'CLOSED'
+  ) NOT NULL DEFAULT 'UNSUBMITTED';

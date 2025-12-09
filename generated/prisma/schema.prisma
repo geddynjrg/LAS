@@ -1,0 +1,375 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(cuid())
+  drupalUserId   String?        @unique
+  email          String?        @unique
+  name           String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  identifierType IdentifierType @default(EMAIL)
+  phoneNumber    String?        @unique
+  applications   Application[]
+
+  @@index([email])
+  @@index([phoneNumber])
+  @@index([name])
+  @@index([identifierType])
+  @@index([drupalUserId])
+  @@map("users")
+}
+
+model Application {
+  id                  String            @id @default(cuid())
+  applicationId       String            @unique
+  status              ApplicationStatus @default(UNSUBMITTED)
+  applicationProgress Int               @default(1)
+  userId              String
+  syncStatus          SyncStatus        @default(PENDING)
+  syncAttempts        Int               @default(0)
+  lastSyncAt          DateTime?
+  syncError           String?           @db.Text
+  externalId          String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  user                User              @relation(fields: [userId], references: [id])
+  confirmations       Confirmations?
+  groupData           GroupData?
+  loanConditions      LoanConditions?
+  members             MemberData[]
+  proposedBusiness    ProposedBusiness?
+
+  @@index([userId])
+  @@index([status])
+  @@index([syncStatus])
+  @@map("applications")
+}
+
+model GroupData {
+  id                             String      @id @default(cuid())
+  applicationId                  String      @unique
+  groupName                      String
+  groupRegistrationNumber        String
+  dateFormed                     DateTime
+  groupRegistrationCertificate   String      @db.LongText
+  listOfMembersOnCertificate     String      @db.LongText
+  purposeOfTheGroup              String      @db.LongText
+  keyActivitiesOfTheGroup        String      @db.LongText
+  groupCreditHistory             String      @db.LongText
+  other                          String?
+  valueChain                     String?     @db.LongText
+  tableBankingExperience         Int?
+  tableBankingShareContribution  Float?
+  tableBankingTotalLoanedOut     Float?
+  tableBankingTotalRevolvingFund Float?
+  countyOfOperation              String
+  constituency                   String
+  ward                           String
+  meetingPoint                   String
+  nearestLandmark                String
+  createdAt                      DateTime    @default(now())
+  updatedAt                      DateTime    @updatedAt
+  application                    Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("group_data")
+}
+
+model MemberData {
+  id                            String              @id @default(cuid())
+  applicationId                 String
+  natureOfTheGroup              String
+  fullname                      String
+  nationalIdCode                String
+  gender                        Gender
+  type                          String
+  phoneNumber                   String
+  photoOfId                     String              @db.LongText
+  certificateOfDisability       String?             @db.LongText
+  pwdNumber                     String?
+  status                        MemberStatus        @default(PENDING)
+  requiresConfirmation          Boolean             @default(false)
+  createdAt                     DateTime            @default(now())
+  updatedAt                     DateTime            @updatedAt
+  confirmation_token            String?             @unique @db.VarChar(64)
+  confirmation_status           ConfirmationStatus? @default(pending)
+  confirmation_sent_at          DateTime?
+  confirmation_confirmed_at     DateTime?
+  confirmation_token_expires_at DateTime?
+  application                   Application         @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, phoneNumber])
+  @@unique([applicationId, nationalIdCode])
+  @@index([applicationId])
+  @@index([confirmation_token])
+  @@index([confirmation_status])
+  @@index([confirmation_token_expires_at])
+  @@map("member_data")
+}
+
+model LoanConditions {
+  id              String      @id @default(cuid())
+  applicationId   String      @unique
+  loanType        String
+  loanAmount      Float
+  repaymentPeriod Int
+  bankName        String
+  bankNameOther   String?
+  bankBranch      String
+  accountNumber   String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("loan_conditions")
+}
+
+model ProposedBusiness {
+  id                        String          @id @default(cuid())
+  applicationId             String          @unique
+  natureOfBusiness          String
+  businessType              String          @db.LongText
+  yearsInBusiness           Int
+  averageIncome             Float
+  costOfGoods               Float
+  rentForBusiness           Float
+  salaries                  Float
+  transportForBusinessStock Float
+  createdAt                 DateTime        @default(now())
+  updatedAt                 DateTime        @updatedAt
+  application               Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  customExpenses            CustomExpense[]
+
+  @@map("proposed_business")
+}
+
+model CustomExpense {
+  id                 String           @id @default(cuid())
+  proposedBusinessId String
+  name               String
+  amount             Float
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  proposedBusiness   ProposedBusiness @relation(fields: [proposedBusinessId], references: [id], onDelete: Cascade)
+
+  @@index([proposedBusinessId])
+  @@map("custom_expenses")
+}
+
+model Confirmations {
+  id                        String      @id @default(cuid())
+  applicationId             String      @unique
+  membersConfirm            Boolean     @default(false)
+  correctInformationConfirm Boolean     @default(false)
+  liabilityConfirm          Boolean     @default(false)
+  fundsEligibleConfirm      Boolean     @default(false)
+  createdAt                 DateTime    @default(now())
+  updatedAt                 DateTime    @updatedAt
+  application               Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("confirmations")
+}
+
+model TaxonomyVocabulary {
+  id                    String         @id @default(cuid())
+  vocabularyId          String         @unique
+  vocabularyLabel       String
+  vocabularyDescription String         @db.Text
+  fieldName             String
+  entityType            EntityType
+  cardinality           Cardinality
+  autoCreate            Boolean        @default(false)
+  totalTerms            Int
+  lastSyncedAt          DateTime       @default(now())
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  terms                 TaxonomyTerm[]
+
+  @@index([fieldName])
+  @@index([entityType])
+  @@map("taxonomy_vocabularies")
+}
+
+model TaxonomyTerm {
+  id           String             @id @default(cuid())
+  tid          Int
+  uuid         String             @unique
+  name         String
+  description  String             @db.LongText
+  weight       Int
+  parentIds    String             @db.LongText
+  url          String
+  language     String             @db.LongText
+  limitedRole  Boolean? // For position_of_member terms - indicates if only one allowed per application
+  vocabularyId String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  vocabulary   TaxonomyVocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@index([vocabularyId])
+  @@index([tid])
+  @@map("taxonomy_terms")
+}
+
+model SyncQueue {
+  id            String      @id @default(cuid())
+  applicationId String
+  action        SyncAction
+  payload       String      @db.LongText
+  attempts      Int         @default(0)
+  maxAttempts   Int         @default(3)
+  status        QueueStatus @default(PENDING)
+  scheduledFor  DateTime    @default(now())
+  processedAt   DateTime?
+  error         String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([status, scheduledFor])
+  @@index([applicationId])
+  @@map("sync_queue")
+}
+
+model File {
+  id            String   @id @default(cuid())
+  filename      String
+  originalName  String
+  mimeType      String
+  size          Int
+  path          String
+  userId        String
+  applicationId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([applicationId])
+  @@map("files")
+}
+
+enum IdentifierType {
+  EMAIL
+  PHONE
+  NAME
+}
+
+enum ConfirmationStatus {
+  pending
+  sent
+  confirmed
+  declined
+  failed
+}
+
+enum ApplicationStatus {
+  UNSUBMITTED
+  DRAFT
+  GROUP_MEMBER_CONFIRMATION
+  SUBMITTED
+  CONSTITUENCY_REVIEW
+  APPROVED_BY_CONSTITUENCY
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  DISBURSED
+  CLOSED
+}
+
+enum SyncStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum MemberStatus {
+  PENDING
+  CONFIRMED
+}
+
+enum EntityType {
+  application
+  group_member
+}
+
+enum Cardinality {
+  single
+  multiple
+}
+
+enum SyncAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum QueueStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model CountiesCache {
+  id                  String   @id @default(cuid())
+  lastSyncedAt        DateTime @default(now())
+  totalCounties       Int
+  totalConstituencies Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  counties            County[]
+
+  @@map("counties_cache")
+}
+
+model County {
+  id             String         @id @default(cuid())
+  tid            Int
+  uuid           String         @unique
+  name           String
+  description    String         @db.LongText
+  weight         Int
+  url            String
+  language       String         @db.LongText
+  cacheId        String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  cache          CountiesCache  @relation(fields: [cacheId], references: [id], onDelete: Cascade)
+  constituencies Constituency[]
+
+  @@index([cacheId])
+  @@index([name])
+  @@map("counties")
+}
+
+model Constituency {
+  id          String   @id @default(cuid())
+  tid         Int
+  uuid        String   @unique
+  name        String
+  description String   @db.LongText
+  weight      Int
+  url         String
+  language    String   @db.LongText
+  countyId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  county      County   @relation(fields: [countyId], references: [id], onDelete: Cascade)
+
+  @@index([countyId])
+  @@index([name])
+  @@map("constituencies")
+}
