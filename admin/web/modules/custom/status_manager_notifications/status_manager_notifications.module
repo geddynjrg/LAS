@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * @file
+ * Contains status_manager_notifications.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function status_manager_notifications_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.status_manager_notifications':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Status Manager Notifications module provides a plugin-based notification system for the Status Manager module.') . '</p>';
+      $output .= '<h3>' . t('Features') . '</h3>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Plugin-based notification providers (Email, SMS)') . '</li>';
+      $output .= '<li>' . t('Template management for notifications') . '</li>';
+      $output .= '<li>' . t('Token replacement in templates') . '</li>';
+      $output .= '<li>' . t('Custom message sending capability') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function status_manager_notifications_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'status_change_notification':
+    case 'custom_message':
+      // Handle both status change notifications and custom messages the
+      // same way.
+      $message['subject'] = $params['subject'] ?? t('Notification from @site', ['@site' => \Drupal::config('system.site')->get('name')]);
+
+      // Check if this should be HTML format.
+      $is_html = !empty($params['format']) && ($params['format'] === 'text/html' || $params['format'] === 'html' || $params['format'] === 'full_html');
+
+      // Always set the body first.
+      if (!empty($params['body'])) {
+        $message['body'] = [$params['body']];
+      }
+      else {
+        $message['body'] = [t('No message content provided.')];
+      }
+
+      // Set format if HTML.
+      if ($is_html) {
+        // Force HTML headers.
+        $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+        $message['headers']['MIME-Version'] = '1.0';
+        $message['headers']['Content-Transfer-Encoding'] = '8bit';
+
+        // Also set the message format for Drupal's mail system.
+        $message['params']['format'] = 'text/html';
+      }
+
+      // Add other headers if provided.
+      if (!empty($params['headers'])) {
+        foreach ($params['headers'] as $header_key => $header_value) {
+          // Skip Reply-To to avoid conflicts.
+          if ($header_key !== 'Reply-To') {
+            $message['headers'][$header_key] = $header_value;
+          }
+        }
+      }
+
+      // Add attachments if provided.
+      if (!empty($params['attachments'])) {
+        $message['params']['attachments'] = $params['attachments'];
+      }
+      break;
+
+    case 'test_email':
+      $message['subject'] = t('Test Email from Status Manager Notifications');
+      $message['body'][] = t('This is a test email from the Status Manager Notifications module.');
+      $message['body'][] = '';
+      $message['body'][] = t('If you received this email, your email configuration is working correctly.');
+      $message['body'][] = '';
+      $message['body'][] = t('Configuration details:');
+      $message['body'][] = t('- Module: Status Manager Notifications');
+      $message['body'][] = t('- Time: @time', ['@time' => date('Y-m-d H:i:s')]);
+      break;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function status_manager_notifications_theme() {
+  return [
+    'status_change_email' => [
+      'variables' => [
+        'status_change' => NULL,
+        'entity' => NULL,
+        'old_status' => NULL,
+        'new_status' => NULL,
+        'message' => NULL,
+      ],
+    ],
+  ];
+}

@@ -1,0 +1,22 @@
+uuid: 853d273b-725e-4747-a6aa-4b2fa4fbd624
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_help_text
+    - paragraphs.paragraphs_type.banner
+  module:
+    - text
+id: paragraph.banner.field_help_text
+field_name: field_help_text
+entity_type: paragraph
+bundle: banner
+label: 'Help text'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

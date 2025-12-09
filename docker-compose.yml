@@ -1,0 +1,140 @@
+name: uwezo
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile
+      args:
+        - NODE_VERSION=20
+        - PROJECT=web
+        - DATABASE_URL=mysql://${DB_USER:-drupal}:${DB_PASSWORD}@db:3306/web
+    environment:
+      - NODE_ENV=${NODE_ENV:-${DRUPAL_ENV:-production}}
+      - NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS:-}
+      - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED:-}
+      - DATABASE_URL=mysql://${DB_USER:-drupal}:${DB_PASSWORD}@db:3306/web
+      - API_URL=https://${ADMIN_DOMAIN}
+    env_file:
+      - .env
+    volumes:
+      - ${MKCERT_CA_PATH:-/dev/null}:/tmp/mkcert-ca.pem:ro
+    extra_hosts:
+      - "${ADMIN_DOMAIN:-admin.localhost}:host-gateway"
+    restart: unless-stopped
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      admin:
+        condition: service_healthy
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        - PHP_VERSION=8.3
+    restart: unless-stopped
+    volumes:
+      - drupal_files:/var/www/html/web/sites/default/files
+      - drupal_private:/var/www/private
+    environment:
+      # Database configuration
+      DRUPAL_DATABASE_HOST: db
+      DRUPAL_DATABASE_NAME: ${DB_NAME:-drupal}
+      DRUPAL_DATABASE_USER: ${DB_USER:-drupal}
+      DRUPAL_DATABASE_PASSWORD: ${DB_PASSWORD}
+      DRUPAL_DATABASE_PORT: 3306
+      # Application configuration
+      DRUPAL_HASH_SALT: ${HASH_SALT}
+      DRUPAL_ENV: ${DRUPAL_ENV:-production}
+      # JWT configuration for API authentication
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      # Frontend URL for CORS
+      UWEZO_UI_PUBLIC_URL: https://${WEB_DOMAIN:-localhost}
+      # EbisCloud SMS configuration
+      EBISCLOUD_SMS_API_KEY: ${EBISCLOUD_SMS_API_KEY:-}
+      EBISCLOUD_SMS_API_URL: ${EBISCLOUD_SMS_API_URL:-}
+      EBISCLOUD_SMS_SHORTCODE: ${EBISCLOUD_SMS_SHORTCODE:-}
+      EBISCLOUD_SMS_SERVICE_ID: ${EBISCLOUD_SMS_SERVICE_ID:-0}
+      # SMTP configuration
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Database - MariaDB (meets Drupal 11 requirements)
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME:-drupal}
+      MYSQL_USER: ${DB_USER:-drupal}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Web Server - Nginx (shared for both web and admin)
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - certbot_www:/var/www/certbot:rw
+      - certbot_conf:/etc/letsencrypt:ro
+    environment:
+      - WEB_DOMAIN=${WEB_DOMAIN:-localhost}
+      - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}
+      - WEB_ALLOWED_IPS=${WEB_ALLOWED_IPS:-}
+      - ADMIN_ALLOWED_IPS=${ADMIN_ALLOWED_IPS:-}
+    depends_on:
+      - admin
+      - web
+
+  # Certbot for Let's Encrypt SSL certificates
+  certbot:
+    image: certbot/certbot:v2.11.0
+    restart: unless-stopped
+    volumes:
+      - certbot_www:/var/www/certbot:rw
+      - certbot_conf:/etc/letsencrypt:rw
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  db_data:
+  drupal_files:
+  drupal_private:
+  certbot_www:
+  certbot_conf:

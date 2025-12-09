@@ -1,0 +1,161 @@
+{
+  "ApplyCard": {
+    "applyBy": "Omba kabla ya",
+    "fee": "Ada",
+    "startsOn": "Kuanza tarehe",
+    "buttonLabel": "nenda kwenye kozi"
+  },
+
+  "Form": {
+    "errors": {
+      "invalid": "Batili",
+      "required": "Sehemu hii inahitajika",
+      "string_too_small": "Thamani lazima iwe angalau herufi {minimum}",
+      "string_too_large": "Thamani lazima iwe zaidi ya herufi {maximum}",
+      "date_too_small": "Tarehe lazima iwe angalau {minimum}",
+      "date_too_large": "Tarehe lazima iwe zaidi ya {maximum}",
+      "invalid_date": "Tarehe batili",
+      "number_too_small": "Thamani lazima iwe angalau {minimum}",
+      "number_too_large": "Thamani lazima iwe zaidi ya {maximum}",
+      "array_too_large": "Idadi ya vitu inaruhusiwa ni {maximum} tu",
+      "invalid_union": "Tafadhali chagua chaguo sahihi",
+      "file_too_large": "Ukubwa wa faili ni mkubwa mno",
+      "password_mismatch": "Nywila hazifanani"
+    }
+  },
+
+  "InfoPopover": {
+    "help": "Msaada",
+    "close": "Funga",
+    "title": "Unahitaji msaada?",
+    "faq": "Maswali yanayoulizwa mara kwa mara"
+  },
+
+  "FileUploadInput": {
+    "takePicture": "Piga picha",
+    "or": "au",
+    "chooseFile": "Chagua faili",
+    "errors": {
+      "file-invalid-type": "Aina ya faili batili",
+      "file-too-large": "Faili ni kubwa mno",
+      "file-too-small": "Faili ni ndogo mno",
+      "too-many-files": "Faili nyingi mno"
+    }
+  },
+
+  "ErrorBoundary": {
+    "title": "Samahani, kuna hitilafu!",
+    "description": "Tafadhali jaribu kujaribu upya ukurasa.",
+    "reload": "Pakia tena",
+    "home": "Nenda kwenye ukurasa wa nyumbani"
+  },
+
+  "Combobox": {
+    "placeholder": "- Chagua chaguo -",
+    "searchPlaceholder": "Tafuta...",
+    "noResults": "Hakuna matokeo yaliyopatikana"
+  },
+
+  "Buttons": {
+    "confirm": "Thibitisha",
+    "back": "Rudi",
+    "amend": "Badilisha",
+    "backToDashboard": "Rudi kwenye dashibodi",
+    "cancel": "Ghairi"
+  },
+
+  "TrainingAreaBlock": {
+    "title": "Maeneo ya mafunzo",
+    "coursesAvailable": "{count, plural, =1 {# kozi inapatikana} other {# kozi zinapatikana}}."
+  },
+
+  "HighlightedCourseListingBlock": {
+    "title": "Omba sasa",
+    "searchTitle": "Tafuta kozi",
+    "linkTitle": "Tazama zote"
+  },
+
+  "LocationMap": {
+    "getDirections": "Pata maelekezo",
+    "viewMore": "Tazama zaidi",
+    "location": "Mahali",
+    "address": "Anwani",
+    "ourGates": "Malango yetu",
+    "zoomIn": "kuvuta ndani",
+    "zoomOut": "kuvuta nje"
+  },
+
+  "AvailableSponsorshipsBlock": {
+    "availableSponsorships": "Udhamini unaopatikana"
+  },
+
+  "CourseDataBlock": {
+    "applyNow": "Omba sasa",
+    "fees": "ada",
+    "trainingFormat": "Mfumo wa mafunzo",
+    "groupSize": "Ukubwa wa kikundi",
+    "minimumEntryRequirements": "Mahitaji ya chini ya kuingia",
+    "equipmentAvailableAtInstitution": "Vifaa vinavyopatikana katika taasisi",
+    "duration": "Muda",
+    "courseFee": "ada ya kozi",
+    "applicationFee": "ada ya maombi",
+    "testBookingFee": "ada ya uhakiki"
+  },
+
+  "SimilarCoursesBlock": {
+    "similarCourses": "Kozi zinazofanana"
+  },
+
+  "SocialBlock": {
+    "followUs": "Fuata sisi!"
+  },
+
+  "TestimonialsBlock": {
+    "testimonials": "Ushuhuda"
+  },
+
+  "VocationalCentersBlock": {
+    "nairobiVocationalCenters": "Vituo vya Ufundi vya Nairobi"
+  },
+
+  "TextListBlock": {
+    "toApplyYouNeed": "Ili kuomba, unahitaji:"
+  },
+
+  "InstituteContactInfo": {
+    "doYouHaveQuestions": "Je, una maswali?",
+    "getInContact": "Wasiliana nasi na tutakusaidia kupata majibu unayohitaji."
+  },
+
+  "CourseBlock": {
+    "viewAll": "Tazama zote"
+  },
+
+  "ContactBlock": {
+    "applyNow": "Omba sasa"
+  },
+
+  "PersonCard": {
+    "sex": "Jinsia",
+    "age": "Umri",
+    "dob": "Tarehe ya kuzaliwa",
+    "male": "Mwanaume",
+    "female": "Mwanamke",
+    "intersex": "Jinsia mbili",
+    "birthRegistrationRequiresValidation": "Usajili wa kuzaliwa unahitaji uthibitisho",
+    "amendmentsNeedToBeProcessed": "Marekebisho yanahitaji kushughulikiwa kabla ya cheti cha kuzaliwa kutolewa"
+  },
+
+  "PersonAge": {
+    "ageYears": "{count , plural, =1 {# mwaka} other {# miaka}}",
+    "ageMonths": "{count , plural, =1 {# mwezi} other {# miezi}}",
+    "male": "Mwanaume",
+    "female": "Mwanamke",
+    "intersex": "Jinsia mbili"
+  },
+
+  "SponsorshipCard": {
+    "downloadApplicationForm": "Pakua fomu ya maombi",
+    "readMoreOnWebsite": "Soma zaidi kwenye tovuti"
+  }
+}

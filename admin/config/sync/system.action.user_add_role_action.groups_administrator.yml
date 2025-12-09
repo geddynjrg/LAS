@@ -1,0 +1,14 @@
+uuid: 2e95f298-cfab-45a5-bc4e-5e477a5337fe
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.groups_administrator
+  module:
+    - user
+id: user_add_role_action.groups_administrator
+label: 'Add the Groups Administrator role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: groups_administrator

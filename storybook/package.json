@@ -1,0 +1,42 @@
+{
+  "name": "storybook",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "storybook dev --no-open -p 6006",
+    "start": "npx http-server ./storybook-static",
+    "build": "storybook build --docs",
+    "preview-storybook": "serve storybook-static",
+    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.17.0",
+    "@tailwindcss/vite": "^4.1.1",
+    "@workspace/ui": "workspace:*",
+    "next-intl": "^4.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^8.6.11",
+    "@storybook/addon-essentials": "^8.6.11",
+    "@storybook/addon-links": "^8.6.11",
+    "@storybook/addon-themes": "^8.6.11",
+    "@storybook/preview-api": "^8.6.11",
+    "@storybook/react": "^8.6.11",
+    "@storybook/react-vite": "^8.6.11",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@workspace/eslint-config": "workspace:^",
+    "@workspace/typescript-config": "workspace:*",
+    "eslint": "^9.23.0",
+    "serve": "^14.2.4",
+    "storybook": "^8.6.11",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.4"
+  }
+}

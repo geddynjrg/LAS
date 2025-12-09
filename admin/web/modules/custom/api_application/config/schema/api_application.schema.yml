@@ -1,0 +1,110 @@
+api_application.settings:
+  type: config_object
+  label: 'API Application settings'
+  mapping:
+    min_group_members:
+      type: integer
+      label: 'Minimum group members'
+    max_group_members:
+      type: integer
+      label: 'Maximum group members'
+    application_prefix:
+      type: string
+      label: 'Application ID prefix'
+    api_key:
+      type: string
+      label: 'API authentication key'
+    max_file_size:
+      type: string
+      label: 'Maximum file size'
+    allowed_extensions:
+      type: string
+      label: 'Allowed file extensions'
+    sms_confirmation_enabled:
+      type: boolean
+      label: 'Enable SMS confirmation'
+    sms_confirmation_message:
+      type: text
+      label: 'SMS confirmation message template'
+    auto_send_sms:
+      type: boolean
+      label: 'Auto-send SMS on application submission'
+    frontend_base_url:
+      type: string
+      label: 'Frontend base URL'
+    frontend_confirmation_path:
+      type: string
+      label: 'Frontend response path'
+    instructions:
+      type: mapping
+      label: 'Instructions settings'
+      mapping:
+        title:
+          type: label
+          label: 'Instructions page title'
+          translatable: true
+        body:
+          type: mapping
+          label: 'Instructions body text'
+          mapping:
+            value:
+              type: text
+              label: 'Text value'
+              translatable: true
+            format:
+              type: string
+              label: 'Text format'
+        documents_required:
+          type: sequence
+          label: 'Documents required in the application'
+          sequence:
+            type: mapping
+            label: 'Document requirement'
+            mapping:
+              title:
+                type: label
+                label: 'Document title'
+                translatable: true
+              subtitle:
+                type: mapping
+                label: 'Document instructions'
+                mapping:
+                  value:
+                    type: text
+                    label: 'Text value'
+                    translatable: true
+                  format:
+                    type: string
+                    label: 'Text format'
+              link:
+                type: mapping
+                label: 'Document link'
+                mapping:
+                  uri:
+                    type: uri
+                    label: 'Link URI'
+                  title:
+                    type: label
+                    label: 'Link title'
+                    translatable: true
+                  options:
+                    type: mapping
+                    label: 'Link options'
+                    mapping:
+                      attributes:
+                        type: mapping
+                        label: 'Link attributes'
+              example_images:
+                type: sequence
+                label: 'Example images'
+                sequence:
+                  type: mapping
+                  label: 'Example image'
+                  mapping:
+                    fid:
+                      type: integer
+                      label: 'File ID'
+              examples_subtitle:
+                type: label
+                label: 'Examples caption'
+                translatable: true 

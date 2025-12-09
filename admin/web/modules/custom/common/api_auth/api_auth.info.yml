@@ -1,0 +1,10 @@
+name: API Auth
+type: module
+description: 'API authentication and authorization services with JWT support and user management.'
+package: Custom
+core_version_requirement: ^9 || ^10 || ^11
+dependencies:
+  - drupal:rest
+  - drupal:rest_framework
+  - serialization:serialization
+  - sms_providers:sms_providers 

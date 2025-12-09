@@ -1,0 +1,7 @@
+generate_keys:
+  version: 1.x
+  js:
+    js/generate-keys.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

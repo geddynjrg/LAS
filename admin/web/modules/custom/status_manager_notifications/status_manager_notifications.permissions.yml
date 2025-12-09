@@ -1,0 +1,18 @@
+# Status Manager Notifications permissions
+
+administer status manager notifications:
+  title: 'Administer Status Manager notifications'
+  description: 'Configure notification settings, templates, and providers'
+  restrict access: true
+
+manage notification templates:
+  title: 'Manage notification templates'
+  description: 'Create, edit, and delete notification templates'
+
+send notifications:
+  title: 'Send notifications'
+  description: 'Manually send notifications for status changes'
+
+view notification logs:
+  title: 'View notification logs'
+  description: 'View notification delivery logs and statistics'

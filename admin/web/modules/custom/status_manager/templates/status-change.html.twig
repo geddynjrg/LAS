@@ -1,0 +1,151 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a status change entity.
+ *
+ * Available variables:
+ * - status_change: The status change entity.
+ * - content: All status change items.
+ * - attributes: HTML attributes for the containing element.
+ *
+ * @see template_preprocess_status_change()
+ *
+ * @ingroup themeable
+ */
+#}
+<article{{ attributes.addClass('status-change-view') }}>
+  <div class="status-change-view-wrapper">
+    
+    {# Header Section #}
+    <div class="status-change-header">
+      <h1 class="status-change-title">
+        {{ 'Status Change #@id'|t({'@id': status_change.id.value}) }}
+      </h1>
+      <div class="status-change-meta">
+        <span class="meta-item">
+          <i class="icon-calendar"></i>
+          {{ 'Created:'|t }} <time datetime="{{ status_change.created.value|date('c') }}">{{ status_change.created.value|date('F j, Y - g:i A') }}</time>
+        </span>
+        <span class="meta-item">
+          <i class="icon-user"></i>
+          {{ 'By:'|t }} {{ status_change.uid.entity.label }}
+        </span>
+      </div>
+    </div>
+
+    {# Main Content Grid #}
+    <div class="status-change-content">
+      
+      {# Target Entity Card #}
+      <div class="info-card target-entity-card">
+        <h2 class="card-title">{{ 'Target Entity'|t }}</h2>
+        <div class="card-content">
+          <div class="info-row">
+            <span class="info-label">{{ 'Type:'|t }}</span>
+            <span class="info-value">{{ status_change.target_entity_type.value|capitalize }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ 'ID:'|t }}</span>
+            <span class="info-value">{{ status_change.target_entity_id.value }}</span>
+          </div>
+          {% if target_entity %}
+            <div class="info-row">
+              <span class="info-label">{{ 'Name:'|t }}</span>
+              <span class="info-value">
+                {% if target_entity_url %}
+                  <a href="{{ target_entity_url }}" class="entity-link">{{ target_entity.label }}</a>
+                {% else %}
+                  {{ target_entity.label }}
+                {% endif %}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Status Change Card #}
+      <div class="info-card status-change-card">
+        <h2 class="card-title">{{ 'Status Change Details'|t }}</h2>
+        <div class="card-content">
+          <div class="info-row">
+            <span class="info-label">{{ 'Field:'|t }}</span>
+            <span class="info-value field-name">{{ status_change.status_field.value }}</span>
+          </div>
+          <div class="status-flow">
+            <div class="status-item old-status">
+              <span class="status-label">{{ 'From:'|t }}</span>
+              <span class="status-badge status-{{ status_change.old_status.value|clean_class }}">
+                {{ status_change.old_status.value|default('(none)') }}
+              </span>
+            </div>
+            <div class="status-arrow">→</div>
+            <div class="status-item new-status">
+              <span class="status-label">{{ 'To:'|t }}</span>
+              <span class="status-badge status-{{ status_change.new_status.value|clean_class }}">
+                {{ status_change.new_status.value }}
+              </span>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ 'Source:'|t }}</span>
+            <span class="info-value">
+              <span class="source-badge source-{{ status_change.source.value }}">{{ status_change.source.value|capitalize }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {# Notification Card #}
+      <div class="info-card notification-card">
+        <h2 class="card-title">{{ 'Notification Information'|t }}</h2>
+        <div class="card-content">
+          <div class="info-row">
+            <span class="info-label">{{ 'Type:'|t }}</span>
+            <span class="info-value">
+              <span class="notification-type-badge type-{{ status_change.notification_type.value }}">
+                {{ status_change.notification_type.value|capitalize }}
+              </span>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ 'Status:'|t }}</span>
+            <span class="info-value">
+              <span class="notification-status-badge status-{{ status_change.notification_status.value }}">
+                {{ status_change.notification_status.value|capitalize }}
+              </span>
+            </span>
+          </div>
+          {% if status_change.notification_log.value %}
+            <div class="info-row full-width">
+              <span class="info-label">{{ 'Log:'|t }}</span>
+              <div class="info-value log-content">{{ status_change.notification_log.value }}</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Notes Card (if present) #}
+      {% if status_change.notes.value %}
+        <div class="info-card notes-card full-width">
+          <h2 class="card-title">{{ 'Notes'|t }}</h2>
+          <div class="card-content">
+            <div class="notes-content">{{ status_change.notes.value }}</div>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+
+    {# Actions Section #}
+    <div class="status-change-actions">
+      {% if edit_url %}
+        <a href="{{ edit_url }}" class="button button--primary">{{ 'Edit'|t }}</a>
+      {% endif %}
+      {% if delete_url %}
+        <a href="{{ delete_url }}" class="button button--danger">{{ 'Delete'|t }}</a>
+      {% endif %}
+      <a href="{{ path('entity.status_change.collection') }}" class="button button--secondary">{{ 'Back to List'|t }}</a>
+    </div>
+
+  </div>
+</article> 

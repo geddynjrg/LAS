@@ -1,0 +1,7 @@
+status_manager_notifications.settings:
+  path: '/admin/config/services/status-manager/notifications'
+  defaults:
+    _form: '\Drupal\status_manager_notifications\Form\NotificationSettingsForm'
+    _title: 'Notification Settings'
+  requirements:
+    _permission: 'administer status manager notifications'

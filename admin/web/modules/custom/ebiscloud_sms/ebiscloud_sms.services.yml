@@ -1,0 +1,11 @@
+services:
+  ebiscloud_sms.logger:
+    class: Drupal\Core\Logger\LoggerChannelInterface
+    factory: logger.factory:get
+    arguments: ['ebiscloud_sms']
+
+  ebiscloud_sms.provider:
+    class: Drupal\ebiscloud_sms\Provider\EbisProvider
+    arguments: ['@http_client', '@config.factory', '@ebiscloud_sms.logger']
+    tags:
+      - { name: sms_provider, provider_id: ebis }

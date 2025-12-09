@@ -1,0 +1,22 @@
+uuid: e6c02812-0535-4a98-88e4-178538e07eaa
+langcode: en
+status: true
+dependencies:
+  module:
+    - symfony_mailer_queue
+_core:
+  default_config_hash: oUtf135g-IPzmggtfsOOX5ZINxbSe5Kno64BN2NUKn0
+id: _
+configuration:
+  mailer_inline_css: {  }
+  queue_sending:
+    queue_behavior: delayed
+    requeue_delay: '60'
+    maximum_attempts: '5'
+    send_wait_time: '0'
+  email_theme:
+    theme: _active_fallback
+  mailer_url_to_absolute: {  }
+  mailer_wrap_and_convert:
+    plain: false
+    swiftmailer: false

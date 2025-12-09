@@ -1,0 +1,509 @@
+<?php
+
+namespace Drupal\api_application\Plugin\rest\resource;
+
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\rest_framework\Plugin\rest\resource\RestFrameworkResourceBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Psr\Log\LoggerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Path\PathMatcherInterface;
+use Drupal\path_alias\AliasManagerInterface;
+use Drupal\rest_framework\Service\RestFrameworkFieldMapper;
+use Drupal\api_application\Service\SmsConfirmationService;
+use Drupal\file\FileInterface;
+
+/**
+ * Provides Application Detail Resource for GET operations.
+ *
+ * @RestResource(
+ *   id = "application_detail",
+ *   label = @Translation("API Application Detail Resource"),
+ *   uri_paths = {
+ *     "canonical" = "/api/v1/application/{application}"
+ *   }
+ * )
+ */
+class ApplicationDetailResource extends RestFrameworkResourceBase {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The SMS confirmation service.
+   *
+   * @var \Drupal\api_application\Service\SmsConfirmationService
+   */
+  protected $smsConfirmationService;
+
+  /**
+   * Constructs a new ApplicationDetailResource object.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    array $serializer_formats,
+    LoggerInterface $logger,
+    PathMatcherInterface $path_matcher,
+    RestFrameworkFieldMapper $field_mapper,
+    LanguageManagerInterface $language_manager,
+    AliasManagerInterface $alias_manager,
+    EntityTypeManagerInterface $entity_type_manager,
+    SmsConfirmationService $sms_confirmation_service,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger, $path_matcher, $field_mapper, $language_manager, $alias_manager);
+    $this->entityTypeManager = $entity_type_manager;
+    $this->smsConfirmationService = $sms_confirmation_service;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->getParameter('serializer.formats'),
+      $container->get('logger.factory')->get('rest_framework'),
+      $container->get('path.matcher'),
+      $container->get('rest_framework.field_mapper'),
+      $container->get('language_manager'),
+      $container->get('path_alias.manager'),
+      $container->get('entity_type.manager'),
+      $container->get('api_application.sms_confirmation')
+    );
+  }
+
+  /**
+   * Responds to GET requests.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request object.
+   * @param string $application
+   *   The application ID or UUID.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   *   The response object.
+   */
+  public function get(Request $request, $application = NULL): Response {
+    try {
+      // Check authentication via API key header.
+      $apiKey = $request->headers->get('X-API-Key');
+      if (!$this->validateApiKey($apiKey)) {
+        return $this->createModifiedResponse([
+          'error' => 'Authentication failed',
+          'message' => 'Invalid or missing API key',
+        ], 401);
+      }
+
+      if (empty($application)) {
+        return $this->createModifiedResponse([
+          'error' => 'Invalid request',
+          'message' => 'Application ID is required',
+        ], 400);
+      }
+
+      // Load the application.
+      $applicationEntity = $this->loadApplication($application);
+
+      if (!$applicationEntity) {
+        return $this->createModifiedResponse([
+          'error' => 'Not found',
+          'message' => 'Application not found',
+        ], 404);
+      }
+
+      // Build the response data.
+      $responseData = $this->buildApplicationData($applicationEntity);
+
+      return $this->createModifiedResponse([
+        'success' => TRUE,
+        'data' => $responseData,
+      ]);
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Application retrieval failed: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+
+      return $this->createModifiedResponse([
+        'error' => 'Internal server error',
+        'message' => 'An error occurred while retrieving the application',
+      ], 500);
+    }
+  }
+
+  /**
+   * Validates the API key.
+   *
+   * @param string|null $apiKey
+   *   The API key to validate.
+   *
+   * @return bool
+   *   TRUE if valid, FALSE otherwise.
+   */
+  protected function validateApiKey($apiKey) {
+    if (empty($apiKey)) {
+      return FALSE;
+    }
+
+    // Get API key from configuration.
+    $config = \Drupal::config('api_application.settings');
+    $validApiKey = $config->get('api_key');
+
+    // For security, use constant-time comparison.
+    return hash_equals($validApiKey ?: '', $apiKey);
+  }
+
+  /**
+   * Loads an application by ID or UUID.
+   *
+   * @param string $identifier
+   *   The application ID, UUID, or application_id.
+   *
+   * @return \Drupal\api_application\Entity\ApplicationInterface|null
+   *   The application entity or NULL.
+   */
+  protected function loadApplication($identifier) {
+    $applicationStorage = $this->entityTypeManager->getStorage('application');
+
+    // Try to load by entity ID.
+    if (is_numeric($identifier)) {
+      return $applicationStorage->load($identifier);
+    }
+
+    // Try to load by UUID.
+    if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $identifier)) {
+      $applications = $applicationStorage->loadByProperties(['uuid' => $identifier]);
+      if (!empty($applications)) {
+        return reset($applications);
+      }
+    }
+
+    // Try to load by application_id.
+    $applications = $applicationStorage->loadByProperties(['application_id' => $identifier]);
+    if (!empty($applications)) {
+      return reset($applications);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Builds the application data array.
+   *
+   * @param \Drupal\api_application\Entity\ApplicationInterface $application
+   *   The application entity.
+   *
+   * @return array
+   *   The application data.
+   */
+  protected function buildApplicationData($application) {
+    $applicationId = $application->getApplicationId();
+
+    $data = [
+      'id' => $application->id(),
+      'uuid' => $application->uuid(),
+      'application_id' => $applicationId,
+      'status' => $this->mapStatusForApi($application->getStatus()),
+      'created' => $application->getCreatedTime(),
+      'changed' => $application->getChangedTime(),
+      'owner' => [
+        'id' => $application->getOwnerId(),
+        'email' => $application->getOwner()->getEmail(),
+        'name' => $application->getOwner()->getAccountName(),
+      ],
+    ];
+
+    // Step 1: Group Data.
+    $data['group_data'] = [
+      'group_name' => $application->getGroupName(),
+      'group_registration_number' => $application->getGroupRegistrationNumber(),
+      'date_registered' => $application->get('date_registered')->value,
+      'group_registration_certificate' => $this->getFileData($application->get('group_registration_certificate')->entity, $applicationId),
+      'list_of_members_certificate' => $this->getFileData($application->get('list_of_members_certificate')->entity, $applicationId),
+      'group_background' => $this->getTaxonomyData($application->get('group_background')),
+      'key_activities' => $this->transformKeyActivities($this->getTaxonomyData($application->get('key_activities'))),
+      'value_chain' => $this->getTaxonomyData($application->get('value_chain')),
+      'table_banking_duration' => $application->get('table_banking_duration')->value,
+      'monthly_share_contribution' => $application->get('monthly_share_contribution')->value,
+      'total_amount_loaned' => $application->get('total_amount_loaned')->value,
+      'total_revolving_fund' => $application->get('total_revolving_fund')->value,
+      'other_activities' => $application->get('other_activities')->value,
+      'group_credit_history' => $this->getMultipleFileData($application->get('group_credit_history'), $applicationId),
+    ];
+
+    // Location data.
+    $data['location'] = [
+      'county' => $this->getTaxonomyData($application->get('county'), TRUE),
+      'constituency' => $this->getTaxonomyData($application->get('constituency'), TRUE),
+      'ward' => $application->get('ward')->value,
+      'meeting_point' => $application->get('meeting_point')->value,
+      'nearest_landmark' => $application->get('nearest_landmark')->value,
+    ];
+
+    // Step 2: Group Members.
+    $data['group_members'] = [];
+    foreach ($application->getGroupMembers() as $member) {
+      $data['group_members'][] = $this->buildGroupMemberData($member, $applicationId);
+    }
+    $data['nature_of_group'] = $application->get('nature_of_group')->value;
+
+    // Step 3: Loan Conditions.
+    $data['loan_conditions'] = [
+      'loan_type' => $this->getTaxonomyData($application->get('loan_type'), TRUE),
+      'loan_amount' => $application->getLoanAmount(),
+      'proposed_repayment_period' => $application->getProposedRepaymentPeriod(),
+      'bank_name' => $this->getTaxonomyData($application->get('bank_name'), TRUE),
+      'bank_branch' => $application->get('bank_branch')->value,
+      'bank_account_number' => $application->get('bank_account_number')->value,
+    ];
+
+    // Step 4: Proposed Business.
+    $data['proposed_business'] = [
+      'nature_of_business' => $application->getNatureOfBusiness(),
+      'business_type' => $this->getTaxonomyData($application->get('business_type')),
+      'years_in_operation' => $application->get('years_in_operation')->value,
+      'average_income' => $application->get('average_income')->value,
+      'expenses' => $this->getMapFieldValues($application->get('expenses')),
+    ];
+
+    // Rejection details if applicable.
+    if ($application->getStatus() === 'rejected') {
+      $data['rejection_details'] = [
+        'rejection_reason' => $application->get('rejection_reason')->value,
+        'rejection_message' => $application->get('rejection_message')->value,
+      ];
+    }
+
+    return $data;
+  }
+
+  /**
+   * Builds group member data.
+   *
+   * @param \Drupal\api_application\Entity\GroupMemberInterface $member
+   *   The group member entity.
+   * @param string $applicationId
+   *   The application ID for constructing file URLs.
+   *
+   * @return array
+   *   The member data.
+   */
+  protected function buildGroupMemberData($member, string $applicationId) {
+    $data = [
+      'id' => $member->id(),
+      'name' => $member->getName(),
+      'id_number' => $member->getIdNumber(),
+      'gender' => $member->getGender(),
+      'phone_number' => $member->getPhoneNumber(),
+      'position' => $this->getTaxonomyData($member->get('position'), TRUE),
+      'photo_member_id' => $this->getFileData($member->get('photo_member_id')->entity, $applicationId),
+      'person_with_disability' => $member->isPersonWithDisability(),
+      'requires_confirmation' => $member->requiresConfirmation(),
+    ];
+
+    if ($member->requiresConfirmation()) {
+      $data['confirmation'] = [
+        'status' => $member->getConfirmationStatus(),
+        'sent_at' => $member->getConfirmationSentAt(),
+        'confirmed_at' => $member->getConfirmationConfirmedAt(),
+        'is_confirmed' => $member->isConfirmed(),
+        'is_declined' => $member->getConfirmationStatus() === 'declined',
+        'urls' => [
+          'api' => $this->smsConfirmationService->getApiConfirmationUrl($member),
+          'frontend' => $this->smsConfirmationService->getFrontendConfirmationUrl($member),
+          'sms' => $this->smsConfirmationService->getFrontendConfirmationUrl($member),
+        ],
+      ];
+    }
+
+    if ($member->isPersonWithDisability()) {
+      $data['pwd_number'] = $member->getPwdNumber();
+      $data['certificate_disability'] = $this->getFileData($member->get('certificate_disability')->entity, $applicationId);
+    }
+
+    return $data;
+  }
+
+  /**
+   * Gets file data.
+   *
+   * @param \Drupal\file\FileInterface|null $file
+   *   The file entity.
+   * @param string $applicationId
+   *   The application ID for constructing the file URL.
+   *
+   * @return array|null
+   *   The file data or NULL.
+   */
+  protected function getFileData($file, string $applicationId) {
+    if (!$file instanceof FileInterface) {
+      return NULL;
+    }
+
+    return [
+      'fid' => $file->id(),
+      'uuid' => $file->uuid(),
+      'filename' => $file->getFilename(),
+      'url' => '/files/' . $applicationId . '/' . $file->getFilename(),
+      'size' => $file->getSize(),
+      'mime_type' => $file->getMimeType(),
+    ];
+  }
+
+  /**
+   * Gets multiple file data.
+   *
+   * @param \Drupal\Core\Field\FieldItemListInterface $field
+   *   The field item list.
+   * @param string $applicationId
+   *   The application ID for constructing file URLs.
+   *
+   * @return array
+   *   The file data array.
+   */
+  protected function getMultipleFileData($field, string $applicationId) {
+    $files = [];
+    foreach ($field as $item) {
+      if ($item->entity) {
+        $files[] = $this->getFileData($item->entity, $applicationId);
+      }
+    }
+    return $files;
+  }
+
+  /**
+   * Gets taxonomy term data.
+   *
+   * @param \Drupal\Core\Field\FieldItemListInterface $field
+   *   The field item list.
+   * @param bool $single
+   *   Whether to return a single value.
+   *
+   * @return array|null
+   *   The term data.
+   */
+  protected function getTaxonomyData($field, $single = FALSE) {
+    $values = [];
+
+    foreach ($field as $item) {
+      if ($item->entity) {
+        $term = $item->entity;
+        $termData = [
+          'tid' => $term->id(),
+          'name' => $term->getName(),
+          'vocabulary' => $term->bundle(),
+        ];
+
+        if ($single) {
+          return $termData;
+        }
+
+        $values[] = $termData;
+      }
+    }
+
+    return $single ? NULL : $values;
+  }
+
+  /**
+   * Transforms key activities term names to API enum values.
+   *
+   * @param array $taxonomyData
+   *   Array of taxonomy term data.
+   *
+   * @return array
+   *   Array with transformed name values.
+   */
+  protected function transformKeyActivities(array $taxonomyData): array {
+    $nameMap = [
+      'Value chain' => 'value_chain',
+      'Table banking' => 'table_banking',
+      'Other' => 'other',
+    ];
+
+    return array_map(function ($termData) use ($nameMap) {
+      if (isset($termData['name']) && isset($nameMap[$termData['name']])) {
+        $termData['name'] = $nameMap[$termData['name']];
+      }
+      return $termData;
+    }, $taxonomyData);
+  }
+
+  /**
+   * Gets list field values.
+   *
+   * @param \Drupal\Core\Field\FieldItemListInterface $field
+   *   The field item list.
+   *
+   * @return array
+   *   The list values.
+   */
+  protected function getListValues($field) {
+    $values = [];
+    foreach ($field as $item) {
+      $values[] = $item->value;
+    }
+    return $values;
+  }
+
+  /**
+   * Gets map field values.
+   *
+   * @param \Drupal\Core\Field\FieldItemListInterface $field
+   *   The field item list.
+   *
+   * @return array
+   *   The map values.
+   */
+  protected function getMapFieldValues($field) {
+    $values = [];
+
+    // For map fields, we need to reconstruct the key-value pairs.
+    $map_data = [];
+    foreach ($field as $item) {
+      $item_value = $item->getValue();
+      // Map field stores key-value pairs.
+      if (isset($item_value['key']) && isset($item_value['value'])) {
+        $map_data[$item_value['key']] = $item_value['value'];
+      }
+    }
+
+    // Return as a single map object if there's data.
+    if (!empty($map_data)) {
+      $values[] = $map_data;
+    }
+
+    return $values;
+  }
+
+  /**
+   * Maps internal status to API status.
+   *
+   * Hides the 'unassigned' status from the API by mapping it to 'submitted'.
+   *
+   * @param string $status
+   *   The internal status.
+   *
+   * @return string
+   *   The status to show in the API.
+   */
+  protected function mapStatusForApi($status) {
+    // Map 'unassigned' to 'submitted' for API responses.
+    if ($status === 'unassigned') {
+      return 'submitted';
+    }
+    return $status;
+  }
+
+}

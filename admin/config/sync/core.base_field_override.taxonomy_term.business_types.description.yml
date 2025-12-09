@@ -1,0 +1,21 @@
+uuid: d70e0388-7f9f-46db-a0ea-d0e5ae81fc5f
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.business_types
+  module:
+    - text
+id: taxonomy_term.business_types.description
+field_name: description
+entity_type: taxonomy_term
+bundle: business_types
+label: Description
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

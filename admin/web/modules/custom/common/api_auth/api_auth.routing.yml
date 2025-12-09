@@ -1,0 +1,35 @@
+api_auth.settings:
+  path: '/admin/config/app-services/api-auth'
+  defaults:
+    _form: '\Drupal\api_auth\Form\ApiAuthSettingsForm'
+    _title: 'API Auth Settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+api_auth.token_management:
+  path: '/admin/config/app-services/api-auth/tokens'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\TokenManagementController::overview'
+    _title: 'Token Management'
+  requirements:
+    _permission: 'administer site configuration'
+
+api_auth.token_revoke:
+  path: '/admin/config/app-services/api-auth/tokens/{token_id}/revoke'
+  defaults:
+    _form: '\Drupal\api_auth\Form\TokenRevokeForm'
+    _title: 'Revoke Token'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    parameters:
+      token_id:
+        type: integer
+
+api_auth.token_revoke_all:
+  path: '/admin/config/app-services/api-auth/tokens/revoke-all'
+  defaults:
+    _form: '\Drupal\api_auth\Form\TokenRevokeAllForm'
+    _title: 'Revoke All Tokens'
+  requirements:
+    _permission: 'administer site configuration'

@@ -1,0 +1,18 @@
+uuid: 99ed920b-1141-4add-baa7-1c4dd3803018
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.group_background
+id: taxonomy_term.group_background.changed
+field_name: changed
+entity_type: taxonomy_term
+bundle: group_background
+label: Changed
+description: 'The time that the term was last edited.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: changed

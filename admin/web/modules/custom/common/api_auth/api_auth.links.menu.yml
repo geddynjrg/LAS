@@ -1,0 +1,6 @@
+api_auth.settings:
+  title: 'API Authentication'
+  description: 'Configure JWT authentication and other settings for the API.'
+  parent: system.admin_config_services
+  route_name: api_auth.settings
+  weight: 10 

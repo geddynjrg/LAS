@@ -1,0 +1,18 @@
+uuid: 3e63971a-e4e5-4605-98a4-9b65e42422ff
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_auth
+    - serialization
+    - user
+id: api_token_refresh
+plugin_id: api_token_refresh
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie

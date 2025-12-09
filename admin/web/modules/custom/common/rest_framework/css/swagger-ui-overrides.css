@@ -1,0 +1,53 @@
+/**
+ * Override styles for Swagger UI.
+ */
+.swagger-ui .wrapper {
+  width: 100%;
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.swagger-ui .info {
+  margin: 20px 0;
+}
+
+.swagger-ui .scheme-container {
+  margin: 0 0 20px;
+  padding: 30px 0;
+}
+
+.swagger-ui section.models {
+  margin: 30px 0;
+}
+
+.swagger-ui .model-box {
+  padding: 10px;
+}
+
+/* Fix some Drupal admin theme clashes */
+.swagger-ui .opblock-tag-section h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.swagger-ui .opblock-summary-method {
+  text-transform: uppercase;
+}
+
+.swagger-ui .opblock-summary-path {
+  max-width: 100%;
+}
+
+.swagger-ui-container {
+  margin: 0 -15px;
+}
+
+/* Fix proper font sizes */
+.swagger-ui .opblock .opblock-summary-path {
+  font-size: 16px;
+}
+
+.swagger-ui .opblock .opblock-summary-description {
+  font-size: 14px;
+}

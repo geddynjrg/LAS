@@ -1,0 +1,1215 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the API Application module.
+ */
+
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\File\FileSystemInterface;
+
+/**
+ * Implements hook_install().
+ */
+function api_application_install() {
+  // Install entity schemas.
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_type_manager->clearCachedDefinitions();
+
+  // Install the entity schemas.
+  $entity_types = [
+    'application',
+    'group_member',
+  ];
+
+  foreach ($entity_types as $entity_type_id) {
+    $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type);
+  }
+
+  // Create required vocabularies.
+  $vocabularies = [
+    'group_background' => 'Group Background',
+    'value_chain' => 'Value Chain',
+    'loan_types' => 'Loan Types',
+    'counties' => 'Counties',
+    'constituencies' => 'Constituencies',
+    'business_types' => 'Business Types',
+    'banks' => 'Banks',
+  ];
+
+  foreach ($vocabularies as $vid => $name) {
+    if (!Vocabulary::load($vid)) {
+      $vocabulary = Vocabulary::create([
+        'vid' => $vid,
+        'name' => $name,
+        'description' => $name . ' vocabulary for loan applications.',
+      ]);
+      $vocabulary->save();
+    }
+  }
+
+  // Add sample terms for group_background.
+  $group_backgrounds = [
+    'Welfare issues',
+    'Income generating activities',
+  ];
+
+  foreach ($group_backgrounds as $term_name) {
+    $term = Term::create([
+      'vid' => 'group_background',
+      'name' => $term_name,
+    ]);
+    $term->save();
+  }
+
+  // Add sample terms for value_chain.
+  $value_chains = [
+    'Leather and leather products',
+    'Cotton and textiles',
+    'Blue economy',
+    'Edible oils',
+    'Construction and building materials',
+    'Dairy and dairy products',
+  ];
+
+  foreach ($value_chains as $term_name) {
+    $term = Term::create([
+      'vid' => 'value_chain',
+      'name' => $term_name,
+    ]);
+    $term->save();
+  }
+
+  // Add sample loan types.
+  $loan_types = [
+    'Wezesha' => 'For first time borrowers. Loan amount range is 50,000 KSh - 100,000 KSh. Maximum repayment period is 24 months. The loan has a 1% interest rate.',
+    'Endeleza' => 'For repeat borrowers. Loan amount range is 100,000 KSh - 500,000 KSh. Maximum repayment period is 36 months. The loan has a 0.5% interest rate.',
+  ];
+
+  foreach ($loan_types as $name => $description) {
+    $term = Term::create([
+      'vid' => 'loan_types',
+      'name' => $name,
+      'description' => $description,
+    ]);
+    $term->save();
+  }
+
+  // Add sample business types.
+  $business_types = [
+    'Trade',
+    'Service',
+    'Manufacturing',
+    'Agriculture',
+  ];
+
+  foreach ($business_types as $term_name) {
+    $term = Term::create([
+      'vid' => 'business_types',
+      'name' => $term_name,
+    ]);
+    $term->save();
+  }
+
+  // Add sample banks.
+  $banks = [
+    'Kenya Commercial Bank (KCB)',
+    'Equity Bank Kenya',
+    'Cooperative Bank of Kenya',
+    'ABSA Bank Kenya',
+    'Standard Chartered Bank Kenya',
+    'NCBA Bank Kenya',
+    'I&M Bank Kenya',
+    'Diamond Trust Bank Kenya',
+    'Stanbic Bank Kenya',
+    'CfC Stanbic Bank',
+    'Family Bank',
+    'Gulf African Bank',
+    'NIC Bank',
+    'Prime Bank',
+    'Sidian Bank',
+    'UBA Kenya Bank',
+    'Victoria Commercial Bank',
+    'Bank of Africa Kenya',
+    'Credit Bank',
+    'Development Bank of Kenya',
+    'Housing Finance Company of Kenya',
+    'Mayfair Bank',
+    'Middle East Bank Kenya',
+    'Paramount Universal Bank',
+    'Spire Bank',
+    'Guardian Bank',
+    'DIB Bank Kenya',
+    'Consolidated Bank of Kenya',
+    'Jamii Bora Bank',
+    'M-Shwari (Safaricom)',
+    'KCB M-Pesa',
+    'Equity Eazzy Banking',
+  ];
+
+  foreach ($banks as $bank_name) {
+    $term = Term::create([
+      'vid' => 'banks',
+      'name' => $bank_name,
+    ]);
+    $term->save();
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function api_application_uninstall() {
+  // Delete created vocabularies.
+  $vocabularies = [
+    'group_background',
+    'value_chain',
+    'loan_types',
+    'counties',
+    'constituencies',
+    'business_types',
+    'banks',
+  ];
+
+  foreach ($vocabularies as $vid) {
+    if ($vocabulary = Vocabulary::load($vid)) {
+      $vocabulary->delete();
+    }
+  }
+}
+
+/**
+ * Install entity schemas for Application and Group Member entities.
+ */
+function api_application_update_11002() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Clear cached definitions to ensure we have the latest entity definitions.
+  $entity_type_manager->clearCachedDefinitions();
+
+  // Install Application entity if not already installed.
+  if (!$entity_definition_update_manager->getEntityType('application')) {
+    $application_entity_type = $entity_type_manager->getDefinition('application');
+    $entity_definition_update_manager->installEntityType($application_entity_type);
+  }
+
+  // Install Group Member entity if not already installed.
+  if (!$entity_definition_update_manager->getEntityType('group_member')) {
+    $group_member_entity_type = $entity_type_manager->getDefinition('group_member');
+    $entity_definition_update_manager->installEntityType($group_member_entity_type);
+  }
+
+  return t('Entity schemas for Application and Group Member have been installed.');
+}
+
+/**
+ * Add application_id field to Application entity and populate existing records.
+ */
+function api_application_update_11003() {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // Clear cached definitions to ensure we have the latest field definitions.
+  $entity_type_manager->clearCachedDefinitions();
+
+  // Get the field definition for application_id.
+  $field_definitions = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions('application');
+
+  if (isset($field_definitions['application_id'])) {
+    $application_id_field = $field_definitions['application_id'];
+
+    // Install the field.
+    $entity_definition_update_manager->installFieldStorageDefinition(
+      'application_id',
+      'application',
+      'api_application',
+      $application_id_field
+    );
+
+    // Populate existing applications with application IDs.
+    $storage = $entity_type_manager->getStorage('application');
+    $applications = $storage->loadMultiple();
+
+    $config = \Drupal::config('api_application.settings');
+    $prefix = $config->get('application_prefix') ?: 'APP-';
+
+    foreach ($applications as $application) {
+      if (empty($application->getApplicationId())) {
+        // Generate application ID for existing records.
+        $time = $application->getCreatedTime() ?: \Drupal::time()->getCurrentTime();
+        $application_id = $prefix . date('Ymd', $time) . '-' . substr(uniqid(), -5);
+        $application->setApplicationId($application_id);
+        $application->save();
+      }
+    }
+
+    return t('Application ID field has been added and @count existing applications have been updated.', [
+      '@count' => count($applications),
+    ]);
+  }
+
+  return t('Application ID field definition not found.');
+}
+
+/**
+ * Update position field from string to entity reference.
+ */
+function api_application_update_11004() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $database = \Drupal::database();
+
+  // Get the current field definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('position', 'group_member');
+
+  // Store existing position values before changing field type.
+  $existing_positions = [];
+  if ($field_storage_definition && $database->schema()->tableExists('group_member_field_data')) {
+    $query = $database->select('group_member_field_data', 'gmfd')
+      ->fields('gmfd', ['id', 'position'])
+      ->condition('position', '', '<>')
+      ->isNotNull('position');
+    $existing_positions = $query->execute()->fetchAllKeyed();
+  }
+
+  if ($field_storage_definition) {
+    // First, uninstall the old field.
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+  }
+
+  // Create the new field definition.
+  $field_storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Position of member'))
+    ->setDescription(t('The position/role of the member in the group.'))
+    ->setRequired(TRUE)
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings', [
+      'target_bundles' => [
+        'position_of_member' => 'position_of_member',
+      ],
+      'sort' => [
+        'field' => 'name',
+        'direction' => 'asc',
+      ],
+      'auto_create' => TRUE,
+      'auto_create_bundle' => 'position_of_member',
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'entity_reference_label',
+      'weight' => 4,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+      'weight' => 4,
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => '60',
+        'autocomplete_type' => 'tags',
+        'placeholder' => '',
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the new field.
+  $update_manager->installFieldStorageDefinition('position', 'group_member', 'api_application', $field_storage_definition);
+
+  // Migrate existing position values to taxonomy terms.
+  if (!empty($existing_positions)) {
+    $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+    $group_member_storage = $entity_type_manager->getStorage('group_member');
+
+    foreach ($existing_positions as $member_id => $position_value) {
+      // Check if term already exists.
+      $existing_terms = $term_storage->loadByProperties([
+        'vid' => 'position_of_member',
+        'name' => $position_value,
+      ]);
+
+      if (!empty($existing_terms)) {
+        $term = reset($existing_terms);
+      }
+      else {
+        // Create new term.
+        $term = $term_storage->create([
+          'vid' => 'position_of_member',
+          'name' => $position_value,
+        ]);
+        $term->save();
+      }
+
+      // Update the group member entity.
+      $member = $group_member_storage->load($member_id);
+      if ($member) {
+        $member->set('position', $term->id());
+        $member->save();
+      }
+    }
+  }
+}
+
+/**
+ * Update purpose_of_loan field from list_string to entity reference.
+ */
+function api_application_update_11005() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $database = \Drupal::database();
+
+  // Get the current field definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('purpose_of_loan', 'application');
+
+  // Store existing purpose values before changing field type.
+  $existing_purposes = [];
+  if ($field_storage_definition && $database->schema()->tableExists('application_field_data')) {
+    $query = $database->select('application_field_data', 'afd')
+      ->fields('afd', ['id', 'purpose_of_loan'])
+      ->condition('purpose_of_loan', '', '<>')
+      ->isNotNull('purpose_of_loan');
+    $existing_purposes = $query->execute()->fetchAllKeyed();
+  }
+
+  if ($field_storage_definition) {
+    // First, uninstall the old field.
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+  }
+
+  // Create the new field definition.
+  $field_storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Purpose of the loan'))
+    ->setDescription(t('Select the purpose of the loan.'))
+    ->setRequired(TRUE)
+    ->setRevisionable(TRUE)
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings', [
+      'target_bundles' => [
+        'purpose_of_the_loan' => 'purpose_of_the_loan',
+      ],
+      'sort' => [
+        'field' => 'name',
+        'direction' => 'asc',
+      ],
+      'auto_create' => TRUE,
+      'auto_create_bundle' => 'purpose_of_the_loan',
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'entity_reference_label',
+      'weight' => 30,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+      'weight' => 30,
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => '60',
+        'autocomplete_type' => 'tags',
+        'placeholder' => '',
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the new field.
+  $update_manager->installFieldStorageDefinition('purpose_of_loan', 'application', 'api_application', $field_storage_definition);
+
+  // Migrate existing purpose values to taxonomy terms.
+  if (!empty($existing_purposes)) {
+    $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+    $application_storage = $entity_type_manager->getStorage('application');
+
+    // Map old values to new term names.
+    $value_mapping = [
+      'table_banking' => 'Table banking',
+      'common_group_project' => 'Common group project',
+    ];
+
+    foreach ($existing_purposes as $application_id => $purpose_value) {
+      // Get the proper term name.
+      $term_name = $value_mapping[$purpose_value] ?? $purpose_value;
+
+      // Check if term already exists.
+      $existing_terms = $term_storage->loadByProperties([
+        'vid' => 'purpose_of_the_loan',
+        'name' => $term_name,
+      ]);
+
+      if (!empty($existing_terms)) {
+        $term = reset($existing_terms);
+      }
+      else {
+        // Create new term.
+        $term = $term_storage->create([
+          'vid' => 'purpose_of_the_loan',
+          'name' => $term_name,
+        ]);
+        $term->save();
+      }
+
+      // Update the application entity.
+      $application = $application_storage->load($application_id);
+      if ($application) {
+        $application->set('purpose_of_loan', $term->id());
+        $application->save();
+      }
+    }
+  }
+}
+
+/**
+ * Add rejection reason and rejection message fields to Application entity.
+ */
+function api_application_update_11007() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add rejection_reason field.
+  $rejection_reason = BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Rejection Reason'))
+    ->setDescription(t('Reason for rejecting this application.'))
+    ->setRequired(FALSE)
+    ->setRevisionable(TRUE)
+    ->setSetting('allowed_values', [
+      'incomplete_information' => t('Incomplete or incorrect information'),
+      'missing_documents' => t('Required documents missing or invalid'),
+      'eligibility_criteria' => t('Does not meet eligibility criteria'),
+      'duplicate_application' => t('Duplicate application'),
+      'insufficient_collateral' => t('Insufficient collateral'),
+      'poor_credit_history' => t('Poor credit history'),
+      'other' => t('Other reason'),
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'list_default',
+      'weight' => -9,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => -9,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('rejection_reason', 'application', 'api_application', $rejection_reason);
+
+  // Add rejection_message field.
+  $rejection_message = BaseFieldDefinition::create('text_long')
+    ->setLabel(t('Rejection Message'))
+    ->setDescription(t('Detailed explanation for the rejection.'))
+    ->setRequired(FALSE)
+    ->setRevisionable(TRUE)
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'text_default',
+      'weight' => -8,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'text_textarea',
+      'weight' => -8,
+      'settings' => [
+        'rows' => 4,
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('rejection_message', 'application', 'api_application', $rejection_message);
+}
+
+/**
+ * Update bank_name field to entity reference and create banks vocabulary.
+ */
+function api_application_update_11009() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $database = \Drupal::database();
+
+  // Add sample banks.
+  $banks = [
+    'Kenya Commercial Bank (KCB)',
+    'Equity Bank Kenya',
+    'Cooperative Bank of Kenya',
+    'ABSA Bank Kenya',
+    'Standard Chartered Bank Kenya',
+    'NCBA Bank Kenya',
+    'I&M Bank Kenya',
+    'Diamond Trust Bank Kenya',
+    'Stanbic Bank Kenya',
+    'CfC Stanbic Bank',
+    'Family Bank',
+    'Gulf African Bank',
+    'NIC Bank',
+    'Prime Bank',
+    'Sidian Bank',
+    'UBA Kenya Bank',
+    'Victoria Commercial Bank',
+    'Bank of Africa Kenya',
+    'Credit Bank',
+    'Development Bank of Kenya',
+    'Housing Finance Company of Kenya',
+    'Mayfair Bank',
+    'Middle East Bank Kenya',
+    'Paramount Universal Bank',
+    'Spire Bank',
+    'Guardian Bank',
+    'DIB Bank Kenya',
+    'Consolidated Bank of Kenya',
+    'Jamii Bora Bank',
+    'M-Shwari (Safaricom)',
+    'KCB M-Pesa',
+    'Equity Eazzy Banking',
+  ];
+
+  foreach ($banks as $bank_name) {
+    $term = Term::create([
+      'vid' => 'banks',
+      'name' => $bank_name,
+    ]);
+    $term->save();
+  }
+
+  // Get the current field definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('bank_name', 'application');
+
+  // Store existing bank name values before changing field type.
+  $existing_bank_names = [];
+  if ($field_storage_definition && $database->schema()->tableExists('application_field_data')) {
+    $query = $database->select('application_field_data', 'afd')
+      ->fields('afd', ['id', 'bank_name'])
+      ->condition('bank_name', '', '<>')
+      ->isNotNull('bank_name');
+    $existing_bank_names = $query->execute()->fetchAllKeyed();
+  }
+
+  if ($field_storage_definition) {
+    // First, uninstall the old field.
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+  }
+
+  // Create the new field definition.
+  $field_storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Group Bank name'))
+    ->setDescription(t('Select the bank name.'))
+    ->setRequired(TRUE)
+    ->setRevisionable(TRUE)
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings', [
+      'target_bundles' => [
+        'banks' => 'banks',
+      ],
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'entity_reference_label',
+      'weight' => 34,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+      'weight' => 34,
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => '60',
+        'placeholder' => '',
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the new field.
+  $update_manager->installFieldStorageDefinition('bank_name', 'application', 'api_application', $field_storage_definition);
+
+  // Migrate existing bank name values to taxonomy terms.
+  if (!empty($existing_bank_names)) {
+    $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+    $application_storage = $entity_type_manager->getStorage('application');
+
+    foreach ($existing_bank_names as $application_id => $bank_name_value) {
+      // Check if term already exists.
+      $existing_terms = $term_storage->loadByProperties([
+        'vid' => 'banks',
+        'name' => $bank_name_value,
+      ]);
+
+      if (!empty($existing_terms)) {
+        $term = reset($existing_terms);
+      }
+      else {
+        // Create new term.
+        $term = $term_storage->create([
+          'vid' => 'banks',
+          'name' => $bank_name_value,
+        ]);
+        $term->save();
+      }
+
+      // Update the application entity.
+      $application = $application_storage->load($application_id);
+      if ($application) {
+        $application->set('bank_name', $term->id());
+        $application->save();
+      }
+    }
+
+    $migrated_count = count($existing_bank_names);
+    return t('Bank name field has been updated to use taxonomy reference and @count existing applications have been migrated.', [
+      '@count' => $migrated_count,
+    ]);
+  }
+
+  return t('Bank name field has been updated to use taxonomy reference and banks vocabulary has been created.');
+}
+
+/**
+ * Add group_credit_history field to Application entity.
+ */
+function api_application_update_11010() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Create the group_credit_history field definition.
+  $field_storage_definition = BaseFieldDefinition::create('file')
+    ->setLabel(t('Group Credit History'))
+    ->setDescription(t("Upload documents showing the group's credit history."))
+    ->setRevisionable(TRUE)
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setSetting('file_extensions', 'pdf doc docx jpg jpeg png gif bmp tiff svg webp')
+    ->setSetting('file_directory', 'applications/[application:application_id]/credit_history')
+    ->setSetting('max_filesize', '10 MB')
+    ->setSetting('description_field', FALSE)
+    ->setDisplayOptions('view', [
+      'label' => 'above',
+      'type' => 'file_default',
+      'weight' => 24,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'file_generic',
+      'weight' => 24,
+      'settings' => [
+        'progress_indicator' => 'throbber',
+      ],
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the field.
+  $update_manager->installFieldStorageDefinition('group_credit_history', 'application', 'api_application', $field_storage_definition);
+
+  return t('Group credit history field has been added to the Application entity.');
+}
+
+/**
+ * Add SMS confirmation fields to Group Member entity.
+ */
+function api_application_update_11012() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add confirmation_status field.
+  $confirmation_status = BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Confirmation Status'))
+    ->setDescription(t('The SMS confirmation status of the member.'))
+    ->setDefaultValue('pending')
+    ->setSetting('allowed_values', [
+      'pending' => t('Pending'),
+      'sent' => t('SMS Sent'),
+      'confirmed' => t('Confirmed'),
+      'declined' => t('declined'),
+      'failed' => t('Failed'),
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'list_default',
+      'weight' => 10,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => 10,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_status', 'group_member', 'api_application', $confirmation_status);
+
+  // Add confirmation_token field.
+  $confirmation_token = BaseFieldDefinition::create('string')
+    ->setLabel(t('Confirmation Token'))
+    ->setDescription(t('Unique token for SMS confirmation link.'))
+    ->setSettings([
+      'max_length' => 255,
+      'text_processing' => 0,
+    ])
+    ->setDisplayConfigurable('view', FALSE)
+    ->setDisplayConfigurable('form', FALSE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_token', 'group_member', 'api_application', $confirmation_token);
+
+  // Add confirmation_sent_at field.
+  $confirmation_sent_at = BaseFieldDefinition::create('timestamp')
+    ->setLabel(t('Confirmation Sent At'))
+    ->setDescription(t('Timestamp when the confirmation SMS was sent.'))
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'timestamp',
+      'weight' => 11,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', FALSE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_sent_at', 'group_member', 'api_application', $confirmation_sent_at);
+
+  // Add confirmation_confirmed_at field.
+  $confirmation_confirmed_at = BaseFieldDefinition::create('timestamp')
+    ->setLabel(t('Confirmation Confirmed At'))
+    ->setDescription(t('Timestamp when the member confirmed via SMS.'))
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'timestamp',
+      'weight' => 12,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', FALSE);
+
+  $update_manager->installFieldStorageDefinition('confirmation_confirmed_at', 'group_member', 'api_application', $confirmation_confirmed_at);
+
+  return t('SMS confirmation fields have been added to the Group Member entity.');
+}
+
+/**
+ * Add declined status option to confirmation_status field.
+ */
+function api_application_update_11013() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  // Get the current field storage definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('confirmation_status', 'group_member');
+
+  if ($field_storage_definition) {
+    // Update the allowed values to include 'declined'.
+    $allowed_values = $field_storage_definition->getSetting('allowed_values');
+    if (!isset($allowed_values['declined'])) {
+      $allowed_values['declined'] = t('Declined');
+      $field_storage_definition->setSetting('allowed_values', $allowed_values);
+      $update_manager->updateFieldStorageDefinition($field_storage_definition);
+    }
+  }
+
+  return t('Added declined status option to confirmation_status field.');
+}
+
+/**
+ * Add requires_confirmation field to Group Member entity.
+ */
+function api_application_update_11014() {
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add requires_confirmation field.
+  $requires_confirmation = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Requires Confirmation'))
+    ->setDescription(t('Whether this member requires SMS confirmation.'))
+    ->setDefaultValue(TRUE)
+    ->setDisplayOptions('view', [
+      'label' => 'inline',
+      'type' => 'boolean',
+      'weight' => 13,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'weight' => 13,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  $update_manager->installFieldStorageDefinition('requires_confirmation', 'group_member', 'api_application', $requires_confirmation);
+
+  return t('Requires confirmation field has been added to the Group Member entity.');
+}
+
+/**
+ * Enable the symfony_mailer module for email functionality.
+ */
+function api_application_update_11015() {
+  $module_handler = \Drupal::service('module_handler');
+
+  if (!$module_handler->moduleExists('symfony_mailer')) {
+    $module_installer = \Drupal::service('module_installer');
+    $module_installer->install(['symfony_mailer']);
+    return t('Symfony Mailer module has been enabled.');
+  }
+
+  return t('Symfony Mailer module was already enabled.');
+}
+
+/**
+ * Add limited_role field to position_of_member taxonomy and create standard position terms.
+ */
+function api_application_update_11016() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_storage_config_storage = $entity_type_manager->getStorage('field_storage_config');
+  $field_config_storage = $entity_type_manager->getStorage('field_config');
+
+  // Create field storage for limited_role field.
+  $field_storage = $field_storage_config_storage->load('taxonomy_term.field_limited_role');
+  if (!$field_storage) {
+    $field_storage = $field_storage_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'type' => 'boolean',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+      'settings' => [],
+    ]);
+    $field_storage->save();
+  }
+
+  // Create field instance for position_of_member vocabulary.
+  $field_config = $field_config_storage->load('taxonomy_term.position_of_member.field_limited_role');
+  if (!$field_config) {
+    $field_config = $field_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'bundle' => 'position_of_member',
+      'label' => 'Limited Role',
+      'description' => 'Check this if only one member can have this role per application (e.g., Chairman, Secretary, Treasurer)',
+      'required' => FALSE,
+      'translatable' => FALSE,
+      'default_value' => [['value' => 0]],
+      'settings' => [
+        'on_label' => 'Limited (only one allowed)',
+        'off_label' => 'Unlimited',
+      ],
+    ]);
+    $field_config->save();
+  }
+
+  // Clear field cache.
+  $entity_field_manager->clearCachedFieldDefinitions();
+
+  // Create standard position terms with appropriate limited_role flags.
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+
+  $positions = [
+    'Chairman' => TRUE,     // Limited - only one allowed
+    'Secretary' => TRUE,    // Limited - only one allowed
+    'Treasurer' => TRUE,    // Limited - only one allowed
+    'Member' => FALSE,      // Unlimited - multiple allowed
+    'Other' => FALSE,       // Unlimited - multiple allowed
+  ];
+
+  foreach ($positions as $position_name => $is_limited) {
+    // Check if term already exists.
+    $existing_terms = $term_storage->loadByProperties([
+      'vid' => 'position_of_member',
+      'name' => $position_name,
+    ]);
+
+    if (empty($existing_terms)) {
+      // Create new term.
+      $term = $term_storage->create([
+        'vid' => 'position_of_member',
+        'name' => $position_name,
+        'field_limited_role' => $is_limited,
+      ]);
+      $term->save();
+    } else {
+      // Update existing term with limited_role flag.
+      $term = reset($existing_terms);
+      if ($term->hasField('field_limited_role')) {
+        $term->set('field_limited_role', $is_limited);
+        $term->save();
+      }
+    }
+  }
+
+  return t('Limited role field has been added to position_of_member taxonomy and standard position terms have been created.');
+}
+
+/**
+ * Create limited_role field using Entity API (retry with corrected approach).
+ */
+function api_application_update_11017() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $field_storage_config_storage = $entity_type_manager->getStorage('field_storage_config');
+  $field_config_storage = $entity_type_manager->getStorage('field_config');
+
+  // Create field storage for limited_role field.
+  $field_storage = $field_storage_config_storage->load('taxonomy_term.field_limited_role');
+  if (!$field_storage) {
+    $field_storage = $field_storage_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'type' => 'boolean',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+      'settings' => [],
+    ]);
+    $field_storage->save();
+  }
+
+  // Create field instance for position_of_member vocabulary.
+  $field_config = $field_config_storage->load('taxonomy_term.position_of_member.field_limited_role');
+  if (!$field_config) {
+    $field_config = $field_config_storage->create([
+      'field_name' => 'field_limited_role',
+      'entity_type' => 'taxonomy_term',
+      'bundle' => 'position_of_member',
+      'label' => 'Limited Role',
+      'description' => 'Check this if only one member can have this role per application (e.g., Chairman, Secretary, Treasurer)',
+      'required' => FALSE,
+      'translatable' => FALSE,
+      'default_value' => [['value' => 0]],
+      'settings' => [
+        'on_label' => 'Limited (only one allowed)',
+        'off_label' => 'Unlimited',
+      ],
+    ]);
+    $field_config->save();
+  }
+
+  // Clear field cache.
+  $entity_field_manager->clearCachedFieldDefinitions();
+
+  // Update standard position terms with appropriate limited_role flags.
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+
+  $positions = [
+    'Chairman' => TRUE,     // Limited - only one allowed
+    'Secretary' => TRUE,    // Limited - only one allowed
+    'Treasurer' => TRUE,    // Limited - only one allowed
+    'Member' => FALSE,      // Unlimited - multiple allowed
+    'Other' => FALSE,       // Unlimited - multiple allowed
+  ];
+
+  foreach ($positions as $position_name => $is_limited) {
+    // Check if term already exists.
+    $existing_terms = $term_storage->loadByProperties([
+      'vid' => 'position_of_member',
+      'name' => $position_name,
+    ]);
+
+    if (!empty($existing_terms)) {
+      // Update existing term with limited_role flag.
+      $term = reset($existing_terms);
+      if ($term->hasField('field_limited_role')) {
+        $term->set('field_limited_role', $is_limited);
+        $term->save();
+      }
+    } else {
+      // Create new term if it doesn't exist.
+      $term = $term_storage->create([
+        'vid' => 'position_of_member',
+        'name' => $position_name,
+        'field_limited_role' => $is_limited,
+      ]);
+      $term->save();
+    }
+  }
+
+  return t('Limited role field has been created and position terms have been updated with appropriate flags.');
+}
+
+/**
+ * Update key_activities field from string to entity reference.
+ */
+function api_application_update_11018() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $database = \Drupal::database();
+
+  // Check if update has already been applied.
+  if ($database->schema()->tableExists('application__key_activities') &&
+      $database->schema()->fieldExists('application__key_activities', 'key_activities_target_id')) {
+    return t('Key activities field already updated to entity reference type.');
+  }
+
+  // Delete all existing applications before schema change.
+  $application_storage = $entity_type_manager->getStorage('application');
+  $applications = $application_storage->loadMultiple();
+  $application_count = count($applications);
+
+  if (!empty($applications)) {
+    $application_storage->delete($applications);
+  }
+
+  // Get the current field definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('key_activities', 'application');
+
+  if ($field_storage_definition) {
+    // Uninstall the old field (this will drop the old table).
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+  }
+
+  // Create the new field definition as entity_reference.
+  $field_storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Key activities of the group'))
+    ->setDescription(t('Select all key activities that apply.'))
+    ->setRequired(TRUE)
+    ->setRevisionable(TRUE)
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings', [
+      'target_bundles' => [
+        'group_activities' => 'group_activities',
+      ],
+    ])
+    ->setDisplayOptions('view', [
+      'label' => 'visible',
+      'type' => 'entity_reference_label',
+      'weight' => 6,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_buttons',
+      'weight' => 6,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  // Install the new field.
+  $update_manager->installFieldStorageDefinition('key_activities', 'application', 'api_application', $field_storage_definition);
+
+  return t('Deleted @count existing applications and updated key_activities field to entity reference type.', [
+    '@count' => $application_count,
+  ]);
+}
+
+/**
+ * Delete value_chain vocabulary after merging into group_activities.
+ */
+function api_application_update_11019(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+  $vocabulary_storage = $entity_type_manager->getStorage('taxonomy_vocabulary');
+
+  // Delete all terms from value_chain vocabulary.
+  $terms = $term_storage->loadByProperties([
+    'vid' => 'value_chain',
+  ]);
+
+  if (!empty($terms)) {
+    $term_storage->delete($terms);
+  }
+
+  // Delete the value_chain vocabulary.
+  $vocabulary = $vocabulary_storage->load('value_chain');
+  if ($vocabulary) {
+    $vocabulary->delete();
+  }
+
+  return t('Deleted value_chain vocabulary and its terms (merged into group_activities).');
+}
+
+/**
+ * Migrate application files from public to private storage for security.
+ */
+function api_application_update_11020(): string {
+  $file_system = \Drupal::service('file_system');
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $file_storage = $entity_type_manager->getStorage('file');
+
+  $files_updated = 0;
+  $files_moved = 0;
+  $errors = [];
+
+  $query = $file_storage->getQuery()
+    ->condition('uri', 'public://applications/%', 'LIKE')
+    ->accessCheck(FALSE);
+
+  $fids = $query->execute();
+
+  foreach ($fids as $fid) {
+    $file = $file_storage->load($fid);
+    if ($file) {
+      $old_uri = $file->getFileUri();
+      $new_uri = str_replace('public://applications/', 'private://applications/', $old_uri);
+
+      $old_path = $file_system->realpath($old_uri);
+      $new_path_dir = dirname($file_system->realpath($new_uri) ?: 'private://applications/');
+
+      if ($old_path && file_exists($old_path)) {
+        try {
+          if (!is_dir($new_path_dir)) {
+            $file_system->prepareDirectory($new_path_dir, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
+          }
+
+          $moved_uri = $file_system->move($old_uri, $new_uri, FileSystemInterface::EXISTS_RENAME);
+          if ($moved_uri) {
+            $file->setFileUri($moved_uri);
+            $file->save();
+            $files_moved++;
+            $files_updated++;
+          }
+        }
+        catch (\Exception $e) {
+          $errors[] = t('Failed to move file @fid: @error', [
+            '@fid' => $fid,
+            '@error' => $e->getMessage(),
+          ]);
+        }
+      }
+      else {
+        $file->setFileUri($new_uri);
+        $file->save();
+        $files_updated++;
+      }
+    }
+  }
+
+  \Drupal::cache()->invalidateAll();
+  drupal_flush_all_caches();
+
+  if (!empty($errors)) {
+    \Drupal::logger('api_application')->error('File migration errors: @errors', ['@errors' => implode(', ', $errors)]);
+  }
+
+  return t('Migrated @count file records from public to private storage. @moved files physically moved. @errors errors encountered.', [
+    '@count' => $files_updated,
+    '@moved' => $files_moved,
+    '@errors' => count($errors),
+  ]);
+}
+
+/**
+ * Remove purpose_of_loan field and purpose_of_the_loan taxonomy.
+ */
+function api_application_update_11021(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+  $vocabulary_storage = $entity_type_manager->getStorage('taxonomy_vocabulary');
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  $messages = [];
+
+  // Delete all terms from purpose_of_the_loan vocabulary.
+  $terms = $term_storage->loadByProperties([
+    'vid' => 'purpose_of_the_loan',
+  ]);
+
+  if (!empty($terms)) {
+    $term_storage->delete($terms);
+    $messages[] = t('Deleted @count terms from purpose_of_the_loan vocabulary.', ['@count' => count($terms)]);
+  }
+
+  // Delete the purpose_of_the_loan vocabulary.
+  $vocabulary = $vocabulary_storage->load('purpose_of_the_loan');
+  if ($vocabulary) {
+    $vocabulary->delete();
+    $messages[] = t('Deleted purpose_of_the_loan vocabulary.');
+  }
+
+  // Remove the field storage definition.
+  $field_storage_definition = $update_manager->getFieldStorageDefinition('purpose_of_loan', 'application');
+  if ($field_storage_definition) {
+    $update_manager->uninstallFieldStorageDefinition($field_storage_definition);
+    $messages[] = t('Removed purpose_of_loan field from application entity.');
+  }
+
+  return !empty($messages) ? implode(' ', $messages) : t('purpose_of_loan cleanup already completed.');
+}

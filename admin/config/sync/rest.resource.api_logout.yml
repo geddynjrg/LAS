@@ -1,0 +1,17 @@
+uuid: 553ba8d0-1475-4d1c-b5c7-18b8d2093070
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_auth
+    - serialization
+id: api_logout
+plugin_id: api_logout
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - jwt_auth

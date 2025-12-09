@@ -1,0 +1,18 @@
+uuid: 12345678-1234-1234-1234-123456789abc
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+    - user
+id: application_counties
+plugin_id: application_counties
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie

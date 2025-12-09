@@ -1,0 +1,160 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Uwezo Groups module.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+/**
+ * Implements hook_install().
+ */
+function uwezo_groups_install() {
+  // Clean up old constituencies vocabulary and terms before importing new data.
+  uwezo_groups_cleanup_old_constituencies();
+
+  // Import Kenya counties and constituencies data.
+  uwezo_groups_import_kenya_data();
+}
+
+/**
+ * Import Kenya counties and constituencies data from JSON file.
+ */
+function uwezo_groups_import_kenya_data() {
+  $module_path = \Drupal::service('extension.list.module')->getPath('uwezo_groups');
+  $json_file = $module_path . '/data/kenya_counties_constituencies.json';
+
+  if (!file_exists($json_file)) {
+    \Drupal::messenger()->addWarning(t('Kenya counties and constituencies data file not found at @path.', ['@path' => $json_file]));
+    return;
+  }
+
+  $json_data = file_get_contents($json_file);
+  $data = json_decode($json_data, TRUE);
+
+  if (!$data || !isset($data['counties'])) {
+    \Drupal::messenger()->addWarning(t('Failed to decode Kenya counties and constituencies JSON data.'));
+    return;
+  }
+
+  // Ensure both vocabularies exist.
+  $counties_vocabulary = Vocabulary::load('counties');
+  if (!$counties_vocabulary) {
+    $counties_vocabulary = Vocabulary::create([
+      'vid' => 'counties',
+      'name' => 'Counties',
+      'description' => 'Counties vocabulary for loan applications.',
+    ]);
+    $counties_vocabulary->save();
+    \Drupal::messenger()->addStatus(t('Created Counties vocabulary.'));
+  }
+
+  $constituencies_vocabulary = Vocabulary::load('constituencies');
+  if (!$constituencies_vocabulary) {
+    $constituencies_vocabulary = Vocabulary::create([
+      'vid' => 'constituencies',
+      'name' => 'Constituencies',
+      'description' => 'Constituencies vocabulary for loan applications.',
+    ]);
+    $constituencies_vocabulary->save();
+    \Drupal::messenger()->addStatus(t('Created Constituencies vocabulary.'));
+  }
+
+  // Import counties and constituencies to separate vocabularies.
+  $imported = uwezo_groups_process_counties_data($data['counties']);
+
+  if ($imported['counties'] > 0 || $imported['constituencies'] > 0) {
+    \Drupal::messenger()->addStatus(t('Successfully imported @counties counties and @constituencies constituencies.', [
+      '@counties' => $imported['counties'],
+      '@constituencies' => $imported['constituencies'],
+    ]));
+  }
+}
+
+/**
+ * Process and import counties data with hierarchical structure.
+ */
+function uwezo_groups_process_counties_data($counties_data) {
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $imported = ['counties' => 0, 'constituencies' => 0];
+
+  // Get existing county terms to avoid duplicates.
+  $existing_counties = [];
+  $existing_county_terms = $term_storage->loadByProperties(['vid' => 'counties']);
+  foreach ($existing_county_terms as $term) {
+    $existing_counties[$term->getName()] = $term;
+  }
+
+  // Get existing constituency terms to avoid duplicates.
+  $existing_constituencies = [];
+  $existing_constituency_terms = $term_storage->loadByProperties(['vid' => 'constituencies']);
+  foreach ($existing_constituency_terms as $term) {
+    $existing_constituencies[$term->getName()] = $term;
+  }
+
+  foreach ($counties_data as $county_data) {
+    // Create county term in counties vocabulary.
+    if (!isset($existing_counties[$county_data['name']])) {
+      $county_term = Term::create([
+        'vid' => 'counties',
+        'name' => $county_data['name'],
+        'weight' => $county_data['code'] ?? 0,
+      ]);
+      $county_term->save();
+      $imported['counties']++;
+      $county_tid = $county_term->id();
+      $existing_counties[$county_data['name']] = $county_term;
+    }
+    else {
+      $county_term = $existing_counties[$county_data['name']];
+      $county_tid = $county_term->id();
+    }
+
+    // Create constituencies in constituencies vocabulary with parent county reference.
+    if (!empty($county_data['constituencies']) && is_array($county_data['constituencies'])) {
+      foreach ($county_data['constituencies'] as $constituency_name) {
+        if (!isset($existing_constituencies[$constituency_name])) {
+          $constituency_term = Term::create([
+            'vid' => 'constituencies',
+            'name' => $constituency_name,
+            'field_parent_county' => [$county_tid],
+          ]);
+          $constituency_term->save();
+          $imported['constituencies']++;
+          $existing_constituencies[$constituency_name] = $constituency_term;
+        }
+      }
+    }
+  }
+
+  return $imported;
+}
+
+/**
+ * Clean up old constituencies vocabulary and existing counties data.
+ */
+function uwezo_groups_cleanup_old_constituencies() {
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  // Clean up existing counties data before importing new structure.
+  $counties_terms = $term_storage->loadByProperties(['vid' => 'counties']);
+  foreach ($counties_terms as $term) {
+    $term->delete();
+  }
+
+  // Clean up existing constituencies data before importing new structure.
+  $constituency_terms = $term_storage->loadByProperties(['vid' => 'constituencies']);
+  foreach ($constituency_terms as $term) {
+    $term->delete();
+  }
+}
+
+/**
+ * Re-import Kenya counties and constituencies data.
+ */
+function uwezo_groups_update_110001() {
+  uwezo_groups_cleanup_old_constituencies();
+  uwezo_groups_import_kenya_data();
+}

@@ -1,0 +1,348 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { z } from "zod";
+
+import { Alert } from "@workspace/ui/components/alert";
+import { Button } from "@workspace/ui/components/button";
+import {
+  ButtonGroup,
+  ButtonGroupItem,
+} from "@workspace/ui/components/button-group";
+import { CallingCodeSelect } from "@workspace/ui/components/calling-code-select";
+import { Checkbox } from "@workspace/ui/components/checkbox";
+import { CheckboxGroup } from "@workspace/ui/components/checkbox-group";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@workspace/ui/components/collapsible";
+import { Combobox } from "@workspace/ui/components/combobox";
+import { DatePicker } from "@workspace/ui/components/date-picker";
+import { FileUploadInput } from "@workspace/ui/components/file-upload-input";
+import {
+  Field,
+  FieldGroup,
+  Form,
+  SubmitButton,
+} from "@workspace/ui/components/form";
+import { Input } from "@workspace/ui/components/input";
+import { RadioGroup } from "@workspace/ui/components/radio-group";
+import { SearchInput } from "@workspace/ui/components/search-input";
+import { Select } from "@workspace/ui/components/select";
+import { Slider } from "@workspace/ui/components/slider";
+import { Textarea } from "@workspace/ui/components/textarea";
+import { Underline } from "@workspace/ui/components/underline";
+import { useForm, type FormAction } from "@workspace/ui/hooks/use-form";
+import { formatBytes, getFormDataValues } from "@workspace/ui/lib/utils";
+import { validFile } from "@workspace/ui/lib/zod";
+
+const FILE_ACCEPT = {
+  "image/*": [".jpg", ".jpeg", ".png"],
+  "application/pdf": [".pdf"],
+};
+const MAX_FILE_SIZE = 1e6; // 1 MB
+
+const meta = {
+  component: Form,
+} satisfies Meta<typeof Form>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Primary: Story = {
+  render: (_props) => {
+    const [state, action, isPending] = useForm(formAction, schema);
+
+    return (
+      <Form className="space-y-6" action={action}>
+        <Field
+          state={state}
+          name="input"
+          label="Input label"
+          required
+          control={(props) => <Input {...props} />}
+          description="This is a description for the input field"
+        />
+
+        <Field
+          state={state}
+          name="textarea"
+          label="Textarea label"
+          required
+          control={(props) => <Textarea {...props} />}
+          description="This is a description for the textarea field"
+        />
+
+        <Field
+          state={state}
+          name="select"
+          label="Select label"
+          required
+          control={(props) => <Select options={mockOptions} {...props} />}
+          description="This is a description for the select field"
+        />
+
+        <Field
+          state={state}
+          name="checkbox"
+          label="Checkbox label"
+          description="This is a description for the checkbox field"
+          required
+          control={(props) => (
+            <Checkbox {...props}>I agree to the terms</Checkbox>
+          )}
+        />
+
+        <Field
+          state={state}
+          name="search"
+          label="Search Input label"
+          required
+          control={(props) => <SearchInput {...props} options={mockOptions} />}
+          description="This is a description for the search input field"
+        />
+
+        <Field
+          state={state}
+          name="combobox"
+          label="Combobox Input label"
+          required
+          control={(props) => <Combobox {...props} options={mockOptions} />}
+          description="This is a description for the combobox input field"
+        />
+
+        <FieldGroup
+          label="Phone Number"
+          description="Enter your phone number"
+          required
+        >
+          <Field
+            state={state}
+            name="callingCode"
+            className="max-w-40"
+            required
+            control={(props) => <CallingCodeSelect {...props} />}
+          />
+          <Field
+            state={state}
+            name="phone"
+            required
+            control={(props) => <Input type="tel" {...props} />}
+          />
+        </FieldGroup>
+
+        <Field
+          state={state}
+          name="date"
+          label="Date label"
+          required
+          control={(props) => <DatePicker {...props} />}
+          description="This is a description for the date picker field"
+        />
+
+        <Field
+          state={state}
+          name="buttonGroup"
+          label="Button group label"
+          required
+          control={(props) => (
+            <ButtonGroup {...props} type="single">
+              <ButtonGroupItem value="a">A</ButtonGroupItem>
+              <ButtonGroupItem value="b">B</ButtonGroupItem>
+              <ButtonGroupItem value="c">C</ButtonGroupItem>
+            </ButtonGroup>
+          )}
+          description="This is a description for the button group field"
+        />
+
+        <Field
+          state={state}
+          name="slider"
+          label="Slider label"
+          required
+          control={(props) => <Slider {...props} min={1} max={12} />}
+          description="This is a description for the slider field"
+        />
+
+        <Field
+          state={state}
+          name="radioGroup"
+          label="Radio group label"
+          required
+          control={(props) => (
+            <RadioGroup
+              {...props}
+              options={[
+                { label: "Option 1", value: "1" },
+                { label: "Option 2", value: "2" },
+                { label: "Option 3", value: "3" },
+              ]}
+            />
+          )}
+          description="This is a description for the radio group field"
+        />
+
+        <Field
+          state={state}
+          name="checkboxGroup"
+          label="Checkbox group label"
+          required
+          control={(props) => (
+            <CheckboxGroup
+              {...props}
+              options={[
+                { label: "Option 1", value: "1" },
+                { label: "Option 2", value: "2" },
+                { label: "Option 3", value: "3" },
+              ]}
+            />
+          )}
+          description="This is a description for the checkbox group field"
+        />
+
+        <Field
+          state={state}
+          name="upload"
+          label="Upload File"
+          required
+          control={(props) => (
+            <FileUploadInput
+              accept={FILE_ACCEPT}
+              maxSize={MAX_FILE_SIZE}
+              {...props}
+            />
+          )}
+          description={`Max file size ${formatBytes(MAX_FILE_SIZE)}`}
+        />
+
+        <SubmitButton disabled={isPending}>Submit</SubmitButton>
+
+        <Collapsible>
+          <CollapsibleTrigger>
+            <Underline>View state</Underline>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <Alert variant="info">
+              <pre>{JSON.stringify(state, null, 2)}</pre>
+            </Alert>
+          </CollapsibleContent>
+        </Collapsible>
+      </Form>
+    );
+  },
+};
+
+export const ToggleEditMode: Story = {
+  render: (_props) => {
+    const defaultValues = {
+      firstName: "John",
+      lastName: "Doe",
+    };
+
+    const [isEditing, setIsEditing] = useState(false);
+
+    const [state, action, _isPending] = useForm(
+      (_prev, formData) => {
+        setIsEditing(false);
+
+        return { values: Object.fromEntries(formData.entries()) };
+      },
+      z.object({
+        firstName: z.string().min(3).max(10),
+        lastName: z.string().min(3).max(10),
+      }),
+      defaultValues,
+    );
+
+    return (
+      <Form className="space-y-6" action={action}>
+        <Field
+          state={state}
+          defaultValues={defaultValues}
+          editable={isEditing}
+          name="firstName"
+          label="First Name"
+          control={(props) => <Input {...props} />}
+        />
+        <Field
+          state={state}
+          defaultValues={defaultValues}
+          editable={isEditing}
+          name="lastName"
+          label="Last Name"
+          control={(props) => <Input {...props} />}
+        />
+
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setIsEditing((v) => !v)}
+          >
+            {isEditing ? "Cancel" : "Edit"}
+          </Button>
+          <SubmitButton disabled={!isEditing}>Submit</SubmitButton>
+        </div>
+      </Form>
+    );
+  },
+};
+
+const schema = z.object({
+  input: z.string().min(3).max(10),
+  textarea: z.string().nonempty(),
+  select: z.union([z.literal("1"), z.literal("2"), z.literal("3")]),
+  checkbox: z.preprocess(
+    // preprocess values before validation, otherwise refine will not trigger with correct error message
+    (val) => val ?? null,
+    z
+      .union([z.literal("on"), z.null()])
+      .refine((v) => v === "on", { message: "Please agree to the terms" }),
+  ),
+  search: z.string().nonempty(),
+  combobox: z.string().nonempty(),
+  callingCode: z.string().nonempty(),
+  phone: z.string().nonempty(),
+  date: z.coerce.date(),
+  buttonGroup: z.string().nonempty(),
+  radioGroup: z.string().nonempty(),
+  checkboxGroup: z.preprocess(
+    (v) =>
+      Array.isArray(v)
+        ? v
+        : typeof v === "string"
+          ? v.split(",").filter(Boolean)
+          : [],
+    z.array(z.string()).min(1),
+  ),
+  slider: z.coerce.number().min(1).max(12),
+  upload: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
+});
+
+const formAction: FormAction<z.infer<typeof schema>> = async (
+  _prev,
+  formData,
+) => {
+  const values = getFormDataValues(formData, schema);
+
+  const { error, data, success } = schema.safeParse(values);
+
+  if (!success) {
+    return {
+      success,
+      errors: error.flatten().fieldErrors,
+      values,
+    };
+  }
+
+  alert(JSON.stringify(data, null, 2));
+
+  return { success, test: 123 };
+};
+
+const mockOptions = [
+  { label: "Option 1", value: "1" },
+  { label: "Option 2", value: "2" },
+  { label: "Option 3", value: "3" },
+] as const;

@@ -1,0 +1,37 @@
+administer loan applications:
+  title: 'Administer loan applications'
+  description: 'Full administrative access to loan applications.'
+  restrict access: true
+
+create loan applications:
+  title: 'Create loan applications'
+  description: 'Create new loan applications.'
+
+view loan applications:
+  title: 'View loan applications'
+  description: 'View any loan application.'
+
+access loan applications listing:
+  title: 'Access loan applications listing'
+  description: 'Access the loan applications listing page without viewing individual applications.'
+
+edit loan applications:
+  title: 'Edit loan applications'
+  description: 'Edit any loan application.'
+
+delete loan applications:
+  title: 'Delete loan applications'
+  description: 'Delete any loan application.'
+
+administer group members:
+  title: 'Administer group members'
+  description: 'Full administrative access to group members.'
+  restrict access: true
+
+send sms confirmations:
+  title: 'Send SMS confirmations'
+  description: 'Send SMS confirmation messages to group members.'
+
+view confirmation status:
+  title: 'View confirmation status'
+  description: 'View SMS confirmation status of group members.'

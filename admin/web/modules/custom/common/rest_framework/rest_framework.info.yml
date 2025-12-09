@@ -1,0 +1,8 @@
+name: REST Framework
+type: module
+description: 'REST API framework providing endpoints, schemas, guidelines and default structures with multilingual support.'
+package: Custom
+core_version_requirement: ^9 || ^10 || ^11
+dependencies:
+  - drupal:rest
+  - serialization:serialization 

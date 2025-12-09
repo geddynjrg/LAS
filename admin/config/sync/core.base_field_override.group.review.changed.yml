@@ -1,0 +1,18 @@
+uuid: 31a0b8fc-2235-4a31-9112-1525cc4e64c8
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.review
+id: group.review.changed
+field_name: changed
+entity_type: group
+bundle: review
+label: 'Changed on'
+description: 'The time that the group was last edited.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: changed

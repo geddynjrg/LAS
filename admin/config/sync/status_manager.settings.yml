@@ -1,0 +1,20 @@
+_core:
+  default_config_hash: ZX1Ejfhpfa8vvuMM60szCa4F2l8jCnBdqv4afKAaa-8
+general:
+  auto_tracking_enabled: true
+  history_limit: 50
+  cleanup_enabled: true
+  cleanup_days: 365
+tracking:
+  entity_type: application
+  field: status
+  create_audit_trail: true
+display:
+  show_entity_links: true
+  show_user_info: true
+  date_format: short
+  custom_date_format: 'Y-m-d H:i:s'
+performance:
+  batch_size: 100
+  cache_enabled: true
+  cache_lifetime: 3600

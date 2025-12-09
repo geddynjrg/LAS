@@ -1,0 +1,496 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a loan application.
+ *
+ * Available variables:
+ * - content: All content items.
+ * - entity: The application entity.
+ * - application: Normalized application data array.
+ * - can_update: Whether the current user can update the application.
+ * - can_approve_reject: Whether the current user can approve/reject.
+ * - status_form_url: URL to the status form (if user has access).
+ * - approve_url: URL to approve the application.
+ * - reject_url: URL to reject the application.
+ * - attributes: HTML attributes for the containing element.
+ */
+#}
+{{ attach_library('api_application/admin') }}
+
+<article{{ attributes.addClass('application-view', 'application-status-' ~ application.status|replace({_: '-'})) }}>
+
+  {# Header with status and actions #}
+  <div class="application-header">
+    <div class="header-content">
+      <h1 class="application-title">{{ application.application_id }}</h1>
+      <div class="status-badge status-{{ application.status|replace({_: '-'}) }}">
+        {{ application.status_label }}
+      </div>
+    </div>
+
+    {% if can_update and allowed_statuses %}
+      <div class="header-actions">
+        {# Inline status update form #}
+        <form class="status-update-form" action="{{ status_update_url }}" method="post">
+          <label class="visually-hidden" for="status-select">{{ 'Change application status'|t }}</label>
+          <select name="status" id="status-select" class="status-select" data-current="{{ application.status }}">
+            <option value="">{{ '-- Change Status --'|t }}</option>
+            {% for status in allowed_statuses %}
+              <option value="{{ status }}">{{ status_options[status] ?? status|replace({_: ' '})|title }}</option>
+            {% endfor %}
+          </select>
+
+          {# Rejection fields (hidden by default) #}
+          <div class="rejection-fields" style="display: none;">
+            <select name="rejection_reason" class="rejection-reason-select">
+              <option value="">{{ '-- Select Reason --'|t }}</option>
+              {% for reason_key, reason_label in rejection_reasons %}
+                <option value="{{ reason_key }}">{{ reason_label }}</option>
+              {% endfor %}
+            </select>
+            <textarea name="rejection_message" class="rejection-message" placeholder="{{ 'Enter rejection details...'|t }}" rows="3"></textarea>
+          </div>
+
+          <button type="submit" class="button button--primary button--small" disabled>
+            {{ 'Update Status'|t }}
+          </button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Main Content #}
+  <div class="application-content">
+
+    {# Group Information Section #}
+    <section id="group-info" class="content-section">
+      <h2 class="section-title">{{ 'Group Information'|t }}</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>{{ 'Group Name'|t }}</label>
+          <span>{{ application.group_name ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Registration Number'|t }}</label>
+          <span>{{ application.group_registration_number ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Date Registered'|t }}</label>
+          <span>{{ application.date_registered_formatted ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'County'|t }}</label>
+          <span>{{ application.county ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Constituency'|t }}</label>
+          <span>{{ application.constituency ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Ward'|t }}</label>
+          <span>{{ application.ward ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Meeting Point'|t }}</label>
+          <span>{{ application.meeting_point ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Nearest Landmark'|t }}</label>
+          <span>{{ application.nearest_landmark ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Nature of Group'|t }}</label>
+          <span>{{ application.nature_of_group|capitalize ?: 'Not provided'|t }}</span>
+        </div>
+      </div>
+
+      {% if application.group_background %}
+        <div class="info-subsection">
+          <h3>{{ 'Group Background'|t }}</h3>
+          <div class="tags">
+            {% for background in application.group_background %}
+              <span class="tag">{{ background|capitalize }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if application.key_activities %}
+        <div class="info-subsection">
+          <h3>{{ 'Key Activities'|t }}</h3>
+          <div class="tags">
+            {% for activity in application.key_activities %}
+              <span class="tag">{{ activity|capitalize }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if application.value_chain %}
+        <div class="info-subsection">
+          <h3>{{ 'Value Chain'|t }}</h3>
+          <div class="tags">
+            {% for chain in application.value_chain %}
+              <span class="tag">{{ chain|capitalize }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if application.other_activities %}
+        <div class="info-subsection">
+          <h3>{{ 'Other Activities'|t }}</h3>
+          <p>{{ application.other_activities }}</p>
+        </div>
+      {% endif %}
+
+      {% if application.group_credit_history %}
+        <div class="info-subsection">
+          <h3>{{ 'Group Credit History'|t }}</h3>
+          <div class="document-container">
+            <a href="{{ application.group_credit_history.url }}" class="document-link" target="_blank">
+              {{ application.group_credit_history.filename }}
+              <span class="file-size">({{ application.group_credit_history.size }})</span>
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Group Members Section #}
+    <section id="members" class="content-section">
+      <h2 class="section-title">
+        {{ 'Group Members'|t }}
+        <span class="count">({{ application.group_members_count }})</span>
+        {% if confirmation_stats %}
+          <span class="confirmation-summary">
+            - {{ 'SMS Responses: @responded/@total'|t({'@responded': confirmation_stats.confirmed + confirmation_stats.declined, '@total': confirmation_stats.total}) }}
+            {% if confirmation_stats.confirmed > 0 or confirmation_stats.declined > 0 %}
+              ({{ 'Confirmed: @confirmed, Declined: @declined'|t({'@confirmed': confirmation_stats.confirmed, '@declined': confirmation_stats.declined}) }})
+            {% endif %}
+            {% if confirmation_stats.total < application.group_members_count %}
+              <small style="opacity: 0.7;">{{ '(some members do not require SMS)'|t }}</small>
+            {% endif %}
+          </span>
+        {% endif %}
+      </h2>
+
+      {# SMS Confirmation Controls #}
+      {% if can_update and send_sms_url %}
+        <div class="sms-confirmation-controls">
+          <h3>{{ 'SMS Confirmation'|t }}</h3>
+          <div class="confirmation-stats">
+            <div class="stats-grid">
+              <div class="stat-item confirmed">
+                <span class="count">{{ confirmation_stats.confirmed }}</span>
+                <span class="label">{{ 'Confirmed'|t }}</span>
+              </div>
+              <div class="stat-item declined">
+                <span class="count">{{ confirmation_stats.declined }}</span>
+                <span class="label">{{ 'Declined'|t }}</span>
+              </div>
+              <div class="stat-item sent">
+                <span class="count">{{ confirmation_stats.sent }}</span>
+                <span class="label">{{ 'SMS Sent'|t }}</span>
+              </div>
+              <div class="stat-item pending">
+                <span class="count">{{ confirmation_stats.pending }}</span>
+                <span class="label">{{ 'Pending'|t }}</span>
+              </div>
+              <div class="stat-item failed">
+                <span class="count">{{ confirmation_stats.failed }}</span>
+                <span class="label">{{ 'Failed'|t }}</span>
+              </div>
+            </div>
+          </div>
+
+          {% if not all_members_confirmed %}
+            <button type="button" class="button button--primary send-sms-all" data-url="{{ send_sms_url }}">
+              {{ 'Send Confirmation SMS to All Members'|t }}
+            </button>
+          {% else %}
+            <div class="confirmation-complete">
+              <div class="confirmation-complete-main">
+                <span class="icon">✓</span>
+                {{ 'All members have responded to their invitations'|t }}
+              </div>
+              {% if confirmation_stats.declined > 0 %}
+                <div class="confirmation-declined-note">
+                  <strong>{{ 'Note:'|t }}</strong> {{ '@count member(s) declined participation'|t({'@count': confirmation_stats.declined}) }}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if application.group_members %}
+        <div class="members-grid">
+          {% for member in application.group_members %}
+            <div class="member-card member-confirmation-{{ member.confirmation_status }}">
+              <h4>
+                {{ member.name }}
+                <span class="confirmation-badge confirmation-{{ member.confirmation_status }}">
+                  {{ confirmation_status_labels[member.confirmation_status] }}
+                </span>
+              </h4>
+              <div class="member-details">
+                <div class="detail-row">
+                  <span class="label">{{ 'ID Number:'|t }}</span>
+                  <span class="value">{{ member.id_number }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Position:'|t }}</span>
+                  <span class="value">{{ member.position|capitalize ?: 'Member'|t }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Gender:'|t }}</span>
+                  <span class="value">{{ member.gender|capitalize }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Phone:'|t }}</span>
+                  <span class="value">{{ member.phone_number }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Status:'|t }}</span>
+                  <span class="value">
+                    <span class="confirmation-badge confirmation-{{ member.confirmation_status }}">
+                      {{ confirmation_status_labels[member.confirmation_status] }}
+                    </span>
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">{{ 'Requires SMS:'|t }}</span>
+                  <span class="value">
+                    {% if member.requires_confirmation %}
+                      <span class="tag">{{ 'Yes'|t }}</span>
+                    {% else %}
+                      <span class="tag" style="background: #f3f4f6; color: #6b7280;">{{ 'No'|t }}</span>
+                    {% endif %}
+                  </span>
+                </div>
+                {% if member.is_pwd %}
+                  <div class="detail-row">
+                    <span class="label">{{ 'PWD Number:'|t }}</span>
+                    <span class="value">{{ member.pwd_number }}</span>
+                  </div>
+                {% endif %}
+
+                {# Confirmation details #}
+                <div class="confirmation-details">
+                  {% if member.confirmation_confirmed_at %}
+                    <div class="detail-row">
+                      <span class="label">
+                        {% if member.confirmation_status == 'declined' %}
+                          {{ 'Declined:'|t }}
+                        {% else %}
+                          {{ 'Confirmed:'|t }}
+                        {% endif %}
+                      </span>
+                      <span class="value">{{ member.confirmation_confirmed_at|format_date('short') }}</span>
+                    </div>
+                  {% elseif member.confirmation_sent_at %}
+                    <div class="detail-row">
+                      <span class="label">{{ 'SMS Sent:'|t }}</span>
+                      <span class="value">{{ member.confirmation_sent_at|format_date('short') }}</span>
+                    </div>
+                  {% endif %}
+
+                  {# Individual SMS action #}
+                  {% if can_update and member.requires_confirmation and member.confirmation_status not in ['confirmed', 'declined'] %}
+                    <div class="member-actions">
+                      <button type="button" class="button button--small send-member-sms"
+                              data-member-id="{{ member.id }}"
+                              data-member-name="{{ member.name }}">
+                        {% if member.confirmation_status == 'failed' %}
+                          {{ 'Resend SMS'|t }}
+                        {% else %}
+                          {{ 'Send SMS'|t }}
+                        {% endif %}
+                      </button>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="no-data">{{ 'No members added'|t }}</p>
+      {% endif %}
+    </section>
+
+    {# Table Banking Section #}
+    <section id="table-banking" class="content-section">
+      <h2 class="section-title">{{ 'Table Banking Information'|t }}</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>{{ 'Duration (years)'|t }}</label>
+          <span>{{ application.table_banking_duration ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Monthly Share Contribution'|t }}</label>
+          <span>{{ application.monthly_share_contribution ? 'KES ' ~ application.monthly_share_contribution|number_format : 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Total Amount Loaned'|t }}</label>
+          <span>{{ application.total_amount_loaned ? 'KES ' ~ application.total_amount_loaned|number_format : 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Total Revolving Fund'|t }}</label>
+          <span>{{ application.total_revolving_fund ? 'KES ' ~ application.total_revolving_fund|number_format : 'Not provided'|t }}</span>
+        </div>
+      </div>
+    </section>
+
+    {# Business Information Section #}
+    <section id="business-info" class="content-section">
+      <h2 class="section-title">{{ 'Business Information'|t }}</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>{{ 'Nature of Business'|t }}</label>
+          <span>{{ application.nature_of_business|capitalize ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Years in Operation'|t }}</label>
+          <span>{{ application.years_in_operation ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Average Monthly Income'|t }}</label>
+          <span>{{ application.average_income ? 'KES ' ~ application.average_income|number_format : 'Not provided'|t }}</span>
+        </div>
+
+        {# Render balance between income and expences #}
+        {% if application.balance %}
+          <div class="info-item">
+            <label>{{ 'Monthly Balance'|t }}</label>
+              {% if application.balance >= 0 %}
+                <span class="positive">{{ 'KES +' ~ application.balance|number_format }}</span>
+              {% else %}
+                <span class="negative">{{ 'KES ' ~ application.balance|number_format }}</span>
+              {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if application.business_type %}
+        <div class="info-subsection">
+          <h3>{{ 'Business Type'|t }}</h3>
+          <div class="tags">
+            {% for type in application.business_type %}
+              <span class="tag">{{ type|capitalize }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if application.expenses %}
+        <div class="info-subsection">
+          <h3>{{ 'Monthly Expenses'|t }}</h3>
+          <table class="expenses-table">
+            <thead>
+              <tr>
+                <th>{{ 'Expense Type'|t }}</th>
+                <th>{{ 'Amount (KES)'|t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for expense in application.expenses %}
+                <tr>
+                  <td>{{ expense.key|replace({_: ' '})|title }}</td>
+                  <td>{{ expense.value|number_format }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td><strong>{{ 'Total'|t }}</strong></td>
+                <td><strong>{{ application.total_expenses ? 'KES ' ~ application.total_expenses|number_format : 'Not provided'|t }}</strong></td>
+              </tr>
+          </table>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Loan Details Section #}
+    <section id="loan-details" class="content-section">
+      <h2 class="section-title">{{ 'Loan Details'|t }}</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>{{ 'Loan Type'|t }}</label>
+          <span>{{ application.loan_type.name|capitalize ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Loan Amount'|t }}</label>
+          <span class="highlight">{{ application.loan_amount ? 'KES ' ~ application.loan_amount|number_format : 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Proposed Repayment Period'|t }}</label>
+          <span>{{ application.proposed_repayment_period ? application.proposed_repayment_period ~ ' months' : 'Not provided'|t }}</span>
+        </div>
+      </div>
+
+      {% if application.loan_type.description %}
+        <div class="info-subsection">
+          <h3>{{ 'Loan Type Description'|t }}</h3>
+          <p>{{ application.loan_type.description }}</p>
+        </div>
+      {% endif %}
+    </section>
+
+    {# Bank Details Section #}
+    <section id="bank-details" class="content-section">
+      <h2 class="section-title">{{ 'Bank Details'|t }}</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>{{ 'Bank Name'|t }}</label>
+          <span>{{ application.bank_name ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Bank Branch'|t }}</label>
+          <span>{{ application.bank_branch ?: 'Not provided'|t }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Account Number'|t }}</label>
+          <span>{{ application.bank_account_number ?: 'Not provided'|t }}</span>
+        </div>
+      </div>
+    </section>
+
+    {# Rejection Details Section (if rejected) #}
+    {% if application.status == 'rejected' and (application.rejection_reason or application.rejection_message) %}
+      <section id="rejection-details" class="content-section rejection-section">
+        <h2 class="section-title">{{ 'Rejection Details'|t }}</h2>
+        <div class="rejection-content">
+          {% if application.rejection_reason %}
+            <div class="rejection-reason">
+              <strong>{{ 'Reason:'|t }}</strong> {{ application.rejection_reason_label }}
+            </div>
+          {% endif %}
+          {% if application.rejection_message %}
+            <div class="rejection-message">
+              <strong>{{ 'Message:'|t }}</strong>
+              <p>{{ application.rejection_message }}</p>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    {# Metadata Section #}
+    <section id="metadata" class="content-section metadata-section">
+      <h2 class="section-title">{{ 'Application Information'|t }}</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>{{ 'Submitted On'|t }}</label>
+          <span>{{ application.created_formatted }}</span>
+        </div>
+        <div class="info-item">
+          <label>{{ 'Application ID'|t }}</label>
+          <span>{{ application.application_id }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</article>

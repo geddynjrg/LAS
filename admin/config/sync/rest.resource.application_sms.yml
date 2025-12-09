@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+id: application_sms
+plugin_id: application_sms
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - jwt_auth

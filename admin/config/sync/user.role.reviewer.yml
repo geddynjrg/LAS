@@ -1,0 +1,41 @@
+uuid: f0243094-c0d7-497b-bed3-073373c2d64c
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.tags
+  module:
+    - contextual
+    - file
+    - node
+    - path
+    - system
+    - taxonomy
+    - toolbar
+id: reviewer
+label: Reviewer
+weight: -7
+is_admin: false
+permissions:
+  - 'access administration pages'
+  - 'access content overview'
+  - 'access contextual links'
+  - 'access files overview'
+  - 'access loan applications listing'
+  - 'access toolbar'
+  - 'administer group members'
+  - 'administer loan applications'
+  - 'administer url aliases'
+  - 'create loan applications'
+  - 'create terms in tags'
+  - 'create url aliases'
+  - 'delete loan applications'
+  - 'edit loan applications'
+  - 'edit terms in tags'
+  - 'revert all revisions'
+  - 'send sms confirmations'
+  - 'view all revisions'
+  - 'view confirmation status'
+  - 'view loan applications'
+  - 'view own unpublished content'
+  - 'view the administration theme'

@@ -1,0 +1,161 @@
+{
+  "ApplyCard": {
+    "applyBy": "Apply by",
+    "fee": "Fee",
+    "startsOn": "Starts on",
+    "buttonLabel": "go to course"
+  },
+
+  "Form": {
+    "errors": {
+      "invalid": "Invalid",
+      "required": "This field is required",
+      "string_too_small": "Value must be at least {minimum} characters",
+      "string_too_large": "Value must be at most {maximum} characters",
+      "date_too_small": "Date must be at least {minimum}",
+      "date_too_large": "Date must be at most {maximum}",
+      "invalid_date": "Invalid date",
+      "number_too_small": "Value must be at least {minimum}",
+      "number_too_large": "Value must be at most {maximum}",
+      "array_too_large": "Maximum of {maximum} items allowed",
+      "invalid_union": "Please choose a valid option",
+      "file_too_large": "Max file size is {maximum}MB",
+      "password_mismatch": "Passwords do not match"
+    }
+  },
+
+  "InfoPopover": {
+    "help": "Help",
+    "close": "Close",
+    "title": "Do you need help?",
+    "faq": "Frequently asked questions"
+  },
+
+  "FileUploadInput": {
+    "takePicture": "Take picture",
+    "or": "or",
+    "chooseFile": "Choose file",
+    "errors": {
+      "file-invalid-type": "Invalid file type",
+      "file-too-large": "File is too large",
+      "file-too-small": "File is too small",
+      "too-many-files": "Too many files"
+    }
+  },
+
+  "ErrorBoundary": {
+    "title": "Oops, there is an error!",
+    "description": "Please try to reload the page.",
+    "reload": "Reload",
+    "home": "Go to home"
+  },
+
+  "Combobox": {
+    "placeholder": "- Select option -",
+    "searchPlaceholder": "Search...",
+    "noResults": "No results found"
+  },
+
+  "Buttons": {
+    "confirm": "Confirm",
+    "back": "Back",
+    "amend": "Amend",
+    "backToDashboard": "Back to dashboard",
+    "cancel": "Cancel"
+  },
+
+  "TrainingAreaBlock": {
+    "title": "Training areas",
+    "coursesAvailable": "{count, plural, =1 {# course available}  other {# courses available}}."
+  },
+
+  "HighlightedCourseListingBlock": {
+    "title": "Apply now",
+    "searchTitle": "Search for courses",
+    "linkTitle": "View all"
+  },
+
+  "LocationMap": {
+    "getDirections": "Get Directions",
+    "viewMore": "View more",
+    "location": "Location",
+    "address": "Address",
+    "ourGates": "Our gates",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
+  },
+
+  "AvailableSponsorshipsBlock": {
+    "availableSponsorships": "Available sponsorships"
+  },
+
+  "CourseDataBlock": {
+    "applyNow": "Apply now",
+    "fees": "Fees",
+    "trainingFormat": "Training Format",
+    "groupSize": "Group Size",
+    "minimumEntryRequirements": "Minimum entry requirements",
+    "equipmentAvailableAtInstitution": "Equipment available at institution",
+    "duration": "Duration",
+    "courseFee": "Course fee",
+    "applicationFee": "Application fee",
+    "testBookingFee": "Test booking fee"
+  },
+
+  "SimilarCoursesBlock": {
+    "similarCourses": "Similar courses"
+  },
+
+  "SocialBlock": {
+    "followUs": "Follow us!"
+  },
+
+  "TestimonialsBlock": {
+    "testimonials": "Testimonials"
+  },
+
+  "VocationalCentersBlock": {
+    "nairobiVocationalCenters": "Nairobi Vocational Centres"
+  },
+
+  "TextListBlock": {
+    "toApplyYouNeed": "To apply, you need:"
+  },
+
+  "InstituteContactInfo": {
+    "doYouHaveQuestions": "Do you have questions?",
+    "getInContact": "Get in contact with us and we’ll help you get the answers you need."
+  },
+
+  "CourseBlock": {
+    "viewAll": "View all"
+  },
+
+  "ContactBlock": {
+    "applyNow": "Apply now"
+  },
+
+  "PersonCard": {
+    "sex": "Sex",
+    "age": "Age",
+    "dob": "Date of birth",
+    "male": "Male",
+    "female": "Female",
+    "intersex": "Intersex",
+    "birthRegistrationRequiresValidation": "Birth registration requires validation",
+    "amendmentsNeedToBeProcessed": "Amendments need to be processed before a birth certificate can be issued"
+  },
+
+  "PersonAge": {
+    "ageYears": "{count , plural, =1 {# year} other {# years}}",
+    "ageMonths": "{count , plural, =1 {# month} other {# months}}",
+    "male": "Male",
+    "female": "Female",
+    "intersex": "Intersex"
+  },
+
+  "SponsorshipCard": {
+    "downloadApplicationForm": "Download application form",
+    "readMoreOnWebsite": "Read more on website"
+  }
+}

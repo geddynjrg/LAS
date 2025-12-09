@@ -1,0 +1,242 @@
+<?php
+
+/**
+ * @file
+ * Contains status_manager.module.
+ */
+
+use Drupal\api_application\Entity\Application;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for application entities.
+ */
+function status_manager_application_update(Application $application) {
+  $config = \Drupal::config('status_manager.settings');
+
+  if (!$config->get('general.auto_tracking_enabled')) {
+    return;
+  }
+
+  // Only track if status actually changed.
+  if (!isset($application->original) ||
+      $application->original->getStatus() === $application->getStatus()) {
+    return;
+  }
+
+  $status_tracker = \Drupal::service('status_manager.status_tracker');
+  $status_tracker->logStatusChange(
+    $application,
+    'status',
+    $application->original->getStatus(),
+    $application->getStatus(),
+    'user',
+    'notification'
+  );
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for application entities.
+ */
+function status_manager_application_insert(Application $application) {
+  $config = \Drupal::config('status_manager.settings');
+
+  if (!$config->get('general.auto_tracking_enabled')) {
+    return;
+  }
+
+  if (!$config->get('tracking.create_audit_trail')) {
+    return;
+  }
+
+  $status = $application->getStatus();
+  if ($status) {
+    $status_tracker = \Drupal::service('status_manager.status_tracker');
+    $status_tracker->logStatusChange(
+      $application,
+      'status',
+      NULL,
+      $status,
+      'system',
+      'notification',
+      'Initial status on application creation'
+    );
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function status_manager_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'status_change_notification':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      break;
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function status_manager_entity_operation(EntityInterface $entity) {
+  $operations = [];
+
+  // Check if this entity type should have status history.
+  if (status_manager_entity_has_status_tracking($entity)) {
+    $operations['status_history'] = [
+      'title' => t('Status History'),
+      'url' => Url::fromRoute('status_manager.entity_history', [
+        'entity_type' => $entity->getEntityTypeId(),
+        'entity_id' => $entity->id(),
+      ]),
+      'weight' => 50,
+    ];
+  }
+
+  return $operations;
+}
+
+/**
+ * Implements hook_local_tasks_alter().
+ */
+function status_manager_local_tasks_alter(&$local_tasks) {
+  // We'll dynamically add status history tabs via hook_menu_local_tasks_alter.
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function status_manager_menu_local_tasks_alter(&$data, $route_name, RefinableCacheableDependencyInterface &$cacheability) {
+  // Get current route match.
+  $route_match = \Drupal::routeMatch();
+
+  // Check if we're on an entity page that should have status history tab.
+  $entity = NULL;
+  $entity_type_id = NULL;
+
+  // Try to extract entity from route parameters.
+  foreach ($route_match->getParameters() as $parameter) {
+    if ($parameter instanceof EntityInterface) {
+      $entity = $parameter;
+      $entity_type_id = $entity->getEntityTypeId();
+      break;
+    }
+  }
+
+  // If we found an entity and it has status tracking, add the tab.
+  if ($entity && status_manager_entity_has_status_tracking($entity)) {
+    $data['tabs'][0]['status_manager.entity_history'] = [
+      '#theme' => 'menu_local_task',
+      '#link' => [
+        'title' => t('Status History'),
+        'url' => Url::fromRoute('status_manager.entity_history', [
+          'entity_type' => $entity_type_id,
+          'entity_id' => $entity->id(),
+        ]),
+        'localized_options' => [],
+      ],
+      '#active' => $route_name === 'status_manager.entity_history',
+      '#weight' => 100,
+      '#access' => \Drupal::currentUser()->hasPermission('view status changes') && $entity->access('view'),
+    ];
+  }
+}
+
+/**
+ * Helper function to check if an entity has status tracking enabled.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity to check.
+ *
+ * @return bool
+ *   TRUE if the entity has status tracking, FALSE otherwise.
+ */
+function status_manager_entity_has_status_tracking(EntityInterface $entity) {
+  $config = \Drupal::config('status_manager.settings');
+
+  if (!$config->get('general.auto_tracking_enabled')) {
+    return FALSE;
+  }
+
+  $tracked_entity_type = $config->get('tracking.entity_type');
+  return $entity->getEntityTypeId() === $tracked_entity_type;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function status_manager_theme() {
+  return [
+    'status_change' => [
+      'render element' => 'elements',
+      'template' => 'status-change',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for status change templates.
+ *
+ * Default template: status-change.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the status change entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_status_change(array &$variables) {
+  $status_change = $variables['elements']['#status_change'];
+  $variables['status_change'] = $status_change;
+
+  // Add the default content.
+  $variables['content'] = $variables['elements'];
+
+  // Get the target entity.
+  $target_entity = $status_change->getTargetEntity();
+  $variables['target_entity'] = $target_entity;
+
+  // Add target entity URL if available.
+  $variables['target_entity_url'] = NULL;
+  if ($target_entity) {
+    if (method_exists($target_entity, 'hasLinkTemplate') && $target_entity->hasLinkTemplate('canonical')) {
+      try {
+        $variables['target_entity_url'] = $target_entity->toUrl('canonical')->toString();
+      }
+      catch (\Exception $e) {
+        // Ignore if URL generation fails.
+      }
+    }
+  }
+
+  // Add edit and delete URLs if user has access.
+  $variables['edit_url'] = NULL;
+  $variables['delete_url'] = NULL;
+
+  if ($status_change->access('update')) {
+    $variables['edit_url'] = Url::fromRoute('entity.status_change.edit_form', [
+      'status_change' => $status_change->id(),
+    ])->toString();
+  }
+
+  if ($status_change->access('delete')) {
+    $variables['delete_url'] = Url::fromRoute('entity.status_change.delete_form', [
+      'status_change' => $status_change->id(),
+    ])->toString();
+  }
+
+  // Add cache tags.
+  $variables['#cache']['tags'] = $status_change->getCacheTags();
+}
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ */
+function status_manager_entity_view_mode_alter(&$view_mode, EntityInterface $entity) {
+  // Ensure status_change entities use our custom template.
+  if ($entity->getEntityTypeId() === 'status_change' && $view_mode === 'full') {
+    // The template will be used automatically.
+  }
+}

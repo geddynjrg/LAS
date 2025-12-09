@@ -1,0 +1,254 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the UWEZO Auth module.
+ */
+
+use Drupal\Core\Database\Database;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+
+/**
+ * Implements hook_schema().
+ */
+function api_auth_schema() {
+  $db_schema = Database::getConnection()->schema();
+
+  if (!$db_schema->tableExists('api_active_tokens')) {
+    $schema['api_active_tokens'] = [
+      'description' => 'Stores all active JWT tokens for tracking and revocation.',
+      'fields' => [
+        'id' => [
+          'description' => 'Primary identifier for token record.',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ],
+        'jti' => [
+          'description' => 'JWT ID (jti claim).',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ],
+        'user_id' => [
+          'description' => 'The user ID associated with this token.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+        'token_hash' => [
+          'description' => 'Hashed token value for security.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ],
+        'type' => [
+          'description' => 'Token type (access or refresh).',
+          'type' => 'varchar',
+          'length' => 16,
+          'not null' => TRUE,
+          'default' => 'access',
+        ],
+        'issued' => [
+          'description' => 'Timestamp when the token was issued.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+        'expiration' => [
+          'description' => 'Token expiration timestamp.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+        'ip' => [
+          'description' => 'IP address of the client that requested the token.',
+          'type' => 'varchar',
+          'length' => 45,
+          'not null' => FALSE,
+        ],
+        'user_agent' => [
+          'description' => 'User agent of the client that requested the token.',
+          'type' => 'text',
+          'size' => 'normal',
+          'not null' => FALSE,
+        ],
+        'is_revoked' => [
+          'description' => 'Whether this token has been revoked.',
+          'type' => 'int',
+          'size' => 'tiny',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+        'parent_id' => [
+          'description' => 'ID of the parent token (for tracking refresh token chains).',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => FALSE,
+        ],
+      ],
+      'primary key' => ['id'],
+      'unique keys' => [
+        'jti' => ['jti'],
+      ],
+      'indexes' => [
+        'token_user' => ['user_id'],
+        'token_expiration' => ['expiration'],
+        'token_is_revoked' => ['is_revoked'],
+        'token_type' => ['type'],
+        'token_parent' => ['parent_id'],
+      ],
+    ];
+
+    return $schema;
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Creates the active tokens tracking table.
+ */
+function api_auth_update_11001() {
+  $schema = Database::getConnection()->schema();
+
+  if (!$schema->tableExists('api_active_tokens')) {
+    $schema->createTable('api_active_tokens', api_auth_schema()['api_active_tokens']);
+
+    return t('Created JWT active tokens tracking table.');
+  }
+
+  return t('JWT active tokens tracking table already exists.');
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Creates the phone number field for OTP authentication.
+ */
+function api_auth_update_11002() {
+  _api_auth_create_phone_field();
+
+  return t('Created phone number field for OTP authentication.');
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add unique index to phone number field for uniqueness constraint.
+ */
+function api_auth_update_11003() {
+  $connection = Database::getConnection();
+  $schema = $connection->schema();
+
+  // Add unique index to phone number field.
+  $table_name = 'user__field_phone_number';
+  $index_name = 'field_phone_number_value_unique';
+
+  // Check if the table exists.
+  if ($schema->tableExists($table_name)) {
+    // Drop existing index if it exists (in case of re-run).
+    if ($schema->indexExists($table_name, $index_name)) {
+      $schema->dropIndex($table_name, $index_name);
+    }
+
+    // Add unique index.
+    $schema->addUniqueKey($table_name, $index_name, ['field_phone_number_value']);
+
+    return t('Added unique constraint to phone number field.');
+  }
+
+  return t('Phone number field table not found, skipping unique constraint.');
+}
+
+/**
+ * Creates the phone number field for users.
+ */
+function _api_auth_create_phone_field() {
+  $field_name = 'field_phone_number';
+  $entity_type = 'user';
+  $bundle = 'user';
+
+  // Check if field storage already exists.
+  $field_storage = FieldStorageConfig::loadByName($entity_type, $field_name);
+
+  if (!$field_storage) {
+    $field_storage = FieldStorageConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => $entity_type,
+      'type' => 'telephone',
+      'settings' => [],
+    ]);
+    $field_storage->save();
+  }
+
+  // Check if field config already exists.
+  $field_config = FieldConfig::loadByName($entity_type, $bundle, $field_name);
+
+  if (!$field_config) {
+    $field_config = FieldConfig::create([
+      'field_storage' => $field_storage,
+      'bundle' => $bundle,
+      'label' => 'Phone Number',
+      'description' => 'Phone number for OTP authentication',
+      'required' => FALSE,
+      'settings' => [],
+    ]);
+    $field_config->save();
+
+    // Configure the form display.
+    $form_display = Drupal::entityTypeManager()
+      ->getStorage('entity_form_display')
+      ->load("{$entity_type}.{$bundle}.default");
+
+    if ($form_display) {
+      $form_display->setComponent($field_name, [
+        'type' => 'telephone_default',
+        'weight' => 5,
+        'settings' => [
+          'placeholder' => '+254712345678',
+        ],
+      ]);
+      $form_display->save();
+    }
+
+    // Configure the view display.
+    $view_display = Drupal::entityTypeManager()
+      ->getStorage('entity_view_display')
+      ->load("{$entity_type}.{$bundle}.default");
+
+    if ($view_display) {
+      $view_display->setComponent($field_name, [
+        'type' => 'telephone_link',
+        'weight' => 5,
+        'label' => 'above',
+      ]);
+      $view_display->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Ensures sms_providers module is installed for OTP functionality.
+ */
+function api_auth_update_11004() {
+  $module_handler = \Drupal::service('module_handler');
+  $module_installer = \Drupal::service('module_installer');
+
+  // Check if sms_providers module is not installed.
+  if (!$module_handler->moduleExists('sms_providers')) {
+    // Install the sms_providers module.
+    $module_installer->install(['sms_providers']);
+
+    return t('Installed sms_providers module for OTP functionality.');
+  }
+
+  return t('SMS providers module already installed.');
+}

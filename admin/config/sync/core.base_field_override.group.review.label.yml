@@ -1,0 +1,18 @@
+uuid: d07acb17-9d1f-4f88-9c5d-530cf2180162
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.review
+id: group.review.label
+field_name: label
+entity_type: group
+bundle: review
+label: Title
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

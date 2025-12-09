@@ -1,0 +1,29 @@
+uuid: b317a8a0-6877-4223-b9ae-e515f9d6b8f1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_parent_county
+    - taxonomy.vocabulary.constituencies
+    - taxonomy.vocabulary.counties
+id: taxonomy_term.constituencies.field_parent_county
+field_name: field_parent_county
+entity_type: taxonomy_term
+bundle: constituencies
+label: 'Parent County'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      counties: counties
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,538 @@
+{#
+/**
+ * @file
+ * PDF template for loan applications.
+ *
+ * Available variables:
+ * - application: Normalized application data array.
+ * - entity: The application entity.
+ * - site_name: The site name.
+ */
+#}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ application.application_id }} - {{ site_name }}</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 20px;
+        }
+
+        /* Override all header colors to use brand purple */
+        h1, h2, h3, h4, h5, h6 {
+            color: #47103f !important;
+        }
+
+        .pdf-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #47103f;
+            padding-bottom: 15px;
+        }
+
+        .pdf-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #47103f !important;
+            margin: 0 0 10px 0;
+        }
+
+        .pdf-header .site-name {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        .status-draft { background-color: #9ca3af; color: #fff; }
+        .status-pending { background-color: #f59e0b; color: #fff; }
+        .status-submitted { background-color: rgb(183, 42, 159); color: #fff; }
+        .status-under-review { background-color: #3b82f6; color: #fff; }
+        .status-approved { background-color: #47103f; color: #fff; }
+        .status-rejected { background-color: #ef4444; color: #fff; }
+        .status-disbursed { background-color: rgb(183, 42, 159); color: #fff; }
+        .status-closed { background-color: #6b7280; color: #fff; }
+
+        .content-section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #47103f !important;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: table-row;
+            margin-bottom: 8px;
+        }
+
+        .info-item .label {
+            display: table-cell;
+            font-weight: bold;
+            width: 30%;
+            padding: 5px 10px 5px 0;
+            vertical-align: top;
+        }
+
+        .info-item .value {
+            display: table-cell;
+            padding: 5px 0;
+            vertical-align: top;
+        }
+
+        .members-grid {
+            margin-top: 15px;
+        }
+
+        .member-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            page-break-inside: avoid;
+        }
+
+        .member-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #47103f !important;
+        }
+
+        .confirmation-badge {
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        .confirmation-confirmed { background-color: #d4edda; color: #155724; }
+        .confirmation-declined { background-color: #f8d7da; color: #721c24; }
+        .confirmation-pending { background-color: #fff3cd; color: #856404; }
+        .confirmation-sent { background-color: #cce5ff; color: #004085; }
+
+        .tags {
+            margin-top: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 4px 8px;
+            margin: 2px 4px 2px 0;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .expenses-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .expenses-table th,
+        .expenses-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .expenses-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #47103f !important;
+        }
+
+        .positive {
+            color: #47103f !important;
+            font-weight: bold;
+        }
+
+        .negative {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .no-data {
+            font-style: italic;
+            color: #666;
+        }
+
+        .rejection-section {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+        }
+
+        .metadata-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        @page {
+            margin: 2cm;
+        }
+
+        .pdf-footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    {# PDF Header #}
+    <div class="pdf-header">
+        <div class="site-name">{{ site_name }}</div>
+        <h1>{{ application.application_id }}</h1>
+        <div class="status-badge status-{{ application.status|replace({_: '-'}) }}">
+            {{ application.status_label }}
+        </div>
+    </div>
+
+    {# Group Information Section #}
+    <section class="content-section">
+        <h2 class="section-title">{{ 'Group Information'|t }}</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">{{ 'Group Name'|t }}</div>
+                <div class="value">{{ application.group_name ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Registration Number'|t }}</div>
+                <div class="value">{{ application.group_registration_number ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Date Registered'|t }}</div>
+                <div class="value">{{ application.date_registered_formatted ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'County'|t }}</div>
+                <div class="value">{{ application.county ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Constituency'|t }}</div>
+                <div class="value">{{ application.constituency ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Ward'|t }}</div>
+                <div class="value">{{ application.ward ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Meeting Point'|t }}</div>
+                <div class="value">{{ application.meeting_point ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Nearest Landmark'|t }}</div>
+                <div class="value">{{ application.nearest_landmark ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Nature of Group'|t }}</div>
+                <div class="value">{{ application.nature_of_group ?: 'Not provided'|t }}</div>
+            </div>
+        </div>
+
+        {% if application.group_background %}
+            <div class="info-subsection">
+                <h3>{{ 'Group Background'|t }}</h3>
+                <div class="tags">
+                    {% for background in application.group_background %}
+                        <span class="tag">{{ background }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if application.key_activities %}
+            <div class="info-subsection">
+                <h3>{{ 'Key Activities'|t }}</h3>
+                <ul class="activity-list">
+                    {% for activity in application.key_activities %}
+                        <li>{{ activity }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if application.value_chain %}
+            <div class="info-subsection">
+                <h3>{{ 'Value Chain'|t }}</h3>
+                <div class="tags">
+                    {% for chain in application.value_chain %}
+                        <span class="tag">{{ chain }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if application.other_activities %}
+            <div class="info-subsection">
+                <h3>{{ 'Other Activities'|t }}</h3>
+                <p>{{ application.other_activities }}</p>
+            </div>
+        {% endif %}
+    </section>
+
+    {# Group Members Section #}
+    <section class="content-section">
+        <h2 class="section-title">
+            {{ 'Group Members'|t }}
+            <span class="count">({{ application.group_members_count }})</span>
+        </h2>
+
+        {% if application.group_members %}
+            <div class="members-grid">
+                {% for member in application.group_members %}
+                    <div class="member-card">
+                        <h4>
+                            {{ member.name }}
+                            <span class="confirmation-badge confirmation-{{ member.confirmation_status }}">
+                                {{ member.confirmation_status|replace({_: ' '})|title }}
+                            </span>
+                        </h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="label">{{ 'ID Number:'|t }}</div>
+                                <div class="value">{{ member.id_number }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="label">{{ 'Position:'|t }}</div>
+                                <div class="value">{{ member.position ?: 'Member'|t }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="label">{{ 'Gender:'|t }}</div>
+                                <div class="value">{{ member.gender|capitalize }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="label">{{ 'Phone:'|t }}</div>
+                                <div class="value">{{ member.phone_number }}</div>
+                            </div>
+                            {% if member.is_pwd %}
+                                <div class="info-item">
+                                    <div class="label">{{ 'PWD Number:'|t }}</div>
+                                    <div class="value">{{ member.pwd_number }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-data">{{ 'No members added'|t }}</p>
+        {% endif %}
+    </section>
+
+    {# Table Banking Section #}
+    <section class="content-section">
+        <h2 class="section-title">{{ 'Table Banking Information'|t }}</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">{{ 'Duration (years)'|t }}</div>
+                <div class="value">{{ application.table_banking_duration ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Monthly Share Contribution'|t }}</div>
+                <div class="value">{{ application.monthly_share_contribution ? 'KES ' ~ application.monthly_share_contribution|number_format : 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Total Amount Loaned'|t }}</div>
+                <div class="value">{{ application.total_amount_loaned ? 'KES ' ~ application.total_amount_loaned|number_format : 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Total Revolving Fund'|t }}</div>
+                <div class="value">{{ application.total_revolving_fund ? 'KES ' ~ application.total_revolving_fund|number_format : 'Not provided'|t }}</div>
+            </div>
+        </div>
+    </section>
+
+    {# Business Information Section #}
+    <section class="content-section">
+        <h2 class="section-title">{{ 'Business Information'|t }}</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">{{ 'Nature of Business'|t }}</div>
+                <div class="value">{{ application.nature_of_business ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Years in Operation'|t }}</div>
+                <div class="value">{{ application.years_in_operation ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Average Monthly Income'|t }}</div>
+                <div class="value">{{ application.average_income ? 'KES ' ~ application.average_income|number_format : 'Not provided'|t }}</div>
+            </div>
+            {% if application.balance %}
+                <div class="info-item">
+                    <div class="label">{{ 'Monthly Balance'|t }}</div>
+                    <div class="value">
+                        {% if application.balance >= 0 %}
+                            <span class="positive">{{ 'KES +' ~ application.balance|number_format }}</span>
+                        {% else %}
+                            <span class="negative">{{ 'KES ' ~ application.balance|number_format }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if application.business_type %}
+            <div class="info-subsection">
+                <h3>{{ 'Business Type'|t }}</h3>
+                <div class="tags">
+                    {% for type in application.business_type %}
+                        <span class="tag">{{ type }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if application.expenses %}
+            <div class="info-subsection">
+                <h3>{{ 'Monthly Expenses'|t }}</h3>
+                <table class="expenses-table">
+                    <thead>
+                        <tr>
+                            <th>{{ 'Expense Type'|t }}</th>
+                            <th>{{ 'Amount (KES)'|t }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in application.expenses %}
+                            <tr>
+                                <td>{{ expense.key|replace({_: ' '})|title }}</td>
+                                <td>{{ expense.value|number_format }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>{{ 'Total'|t }}</strong></td>
+                            <td><strong>{{ application.total_expenses ? 'KES ' ~ application.total_expenses|number_format : 'Not provided'|t }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        {% endif %}
+    </section>
+
+    {# Loan Details Section #}
+    <section class="content-section">
+        <h2 class="section-title">{{ 'Loan Details'|t }}</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">{{ 'Loan Type'|t }}</div>
+                <div class="value">{{ application.loan_type.name ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Loan Amount'|t }}</div>
+                <div class="value"><span class="highlight">{{ application.loan_amount ? 'KES ' ~ application.loan_amount|number_format : 'Not provided'|t }}</span></div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Proposed Repayment Period'|t }}</div>
+                <div class="value">{{ application.proposed_repayment_period ? application.proposed_repayment_period ~ ' months' : 'Not provided'|t }}</div>
+            </div>
+        </div>
+
+        {% if application.loan_type.description %}
+            <div class="info-subsection">
+                <h3>{{ 'Loan Type Description'|t }}</h3>
+                <p>{{ application.loan_type.description }}</p>
+            </div>
+        {% endif %}
+    </section>
+
+    {# Bank Details Section #}
+    <section class="content-section">
+        <h2 class="section-title">{{ 'Bank Details'|t }}</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">{{ 'Bank Name'|t }}</div>
+                <div class="value">{{ application.bank_name ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Bank Branch'|t }}</div>
+                <div class="value">{{ application.bank_branch ?: 'Not provided'|t }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Account Number'|t }}</div>
+                <div class="value">{{ application.bank_account_number ?: 'Not provided'|t }}</div>
+            </div>
+        </div>
+    </section>
+
+    {# Rejection Details Section (if rejected) #}
+    {% if application.status == 'rejected' and (application.rejection_reason or application.rejection_message) %}
+        <section class="content-section rejection-section">
+            <h2 class="section-title">{{ 'Rejection Details'|t }}</h2>
+            <div class="rejection-content">
+                {% if application.rejection_reason %}
+                    <div class="rejection-reason">
+                        <strong>{{ 'Reason:'|t }}</strong> {{ application.rejection_reason_label }}
+                    </div>
+                {% endif %}
+                {% if application.rejection_message %}
+                    <div class="rejection-message">
+                        <strong>{{ 'Message:'|t }}</strong>
+                        <p>{{ application.rejection_message }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+
+    {# Metadata Section #}
+    <section class="content-section metadata-section">
+        <h2 class="section-title">{{ 'Application Information'|t }}</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="label">{{ 'Submitted On'|t }}</div>
+                <div class="value">{{ application.created_formatted }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">{{ 'Application ID'|t }}</div>
+                <div class="value">{{ application.application_id }}</div>
+            </div>
+        </div>
+    </section>
+
+    {# PDF Footer #}
+    <div class="pdf-footer">
+        {{ 'Generated on'|t }} {{ 'now'|date('Y-m-d H:i:s') }} | {{ site_name }}
+    </div>
+</body>
+</html>

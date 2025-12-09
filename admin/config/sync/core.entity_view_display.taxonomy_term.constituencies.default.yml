@@ -1,0 +1,31 @@
+uuid: 4ff4d3a5-b161-40f6-8058-2250c0c472fb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.constituencies.field_parent_county
+    - taxonomy.vocabulary.constituencies
+  module:
+    - text
+id: taxonomy_term.constituencies.default
+targetEntityType: taxonomy_term
+bundle: constituencies
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_parent_county:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden:
+  langcode: true

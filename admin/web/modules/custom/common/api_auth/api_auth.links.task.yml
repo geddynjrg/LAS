@@ -1,0 +1,11 @@
+api_auth.settings_tab:
+  title: 'Settings'
+  route_name: api_auth.settings
+  base_route: api_auth.settings
+  weight: 0
+
+api_auth.token_management_tab:
+  title: 'Token Management'
+  route_name: api_auth.token_management
+  base_route: api_auth.settings
+  weight: 10 

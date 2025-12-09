@@ -1,0 +1,9 @@
+min_group_members: 10
+max_group_members: 15
+max_file_size: '5MB'
+allowed_extensions: 'pdf jpg jpeg png'
+sms_confirmation_enabled: false
+sms_confirmation_message: ''
+auto_send_sms: false
+frontend_base_url: ''
+frontend_confirmation_path: '/response/{token}'

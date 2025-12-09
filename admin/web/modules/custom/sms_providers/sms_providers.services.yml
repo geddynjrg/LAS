@@ -1,0 +1,19 @@
+services:
+  sms_providers.logger:
+    class: Drupal\Core\Logger\LoggerChannelInterface
+    factory: logger.factory:get
+    arguments: ['sms_providers']
+
+  sms_providers.phone_validation:
+    class: Drupal\sms_providers\Service\PhoneNumberValidationService
+    arguments: ['@validation.basic_recursive_validator_factory']
+
+  sms_providers.sms_service:
+    class: Drupal\sms_providers\Service\SmsService
+    arguments: ['@config.factory', '@sms_providers.logger', '@sms_providers.phone_validation', '@state']
+
+  sms_providers.debug_provider:
+    class: Drupal\sms_providers\Provider\DebugProvider
+    arguments: ['@state', '@plugin.manager.mail']
+    tags:
+      - { name: sms_provider, provider_id: debug }

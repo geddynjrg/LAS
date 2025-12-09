@@ -1,0 +1,103 @@
+<?php
+
+/**
+ * @file
+ * Contains hook implementations for the uwezo_general module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\locale\SourceString;
+use Drupal\locale\StringStorageException;
+use Drupal\Core\Url;
+
+/**
+ * Add a user interface translation to the translation storage.
+ *
+ * Use this only when adding a string in a update hook. It is recommended to
+ * use *.po files.
+ *
+ * @param string $source_string
+ *   English string.
+ * @param string $langcode
+ *   Language to translate to.
+ * @param string $translated_string
+ *   Translated string.
+ * @param string|null $context
+ *   Context of the translation.
+ */
+function uwezo_general_add_translation(
+  string $source_string,
+  string $langcode,
+  string $translated_string,
+  ?string $context = NULL,
+): void {
+  try {
+    // Find existing source string.
+    $storage = Drupal::service('locale.storage');
+    $string = $storage->findString(['source' => $source_string, 'context' => $context ?: '']);
+
+    if ($string === NULL) {
+      $string = new SourceString();
+      $string->setString($source_string);
+      $string->setStorage($storage);
+      $string->setValues(['context' => $context]);
+      $string->save();
+    }
+    // Create translation. If one already exists, it will be replaced.
+    $translation = $storage->createTranslation([
+      'lid' => $string->lid,
+      'language' => $langcode,
+      'translation' => $translated_string,
+    ]);
+    $translation->save();
+  }
+  catch (StringStorageException $e) {
+    Drupal::logger('uwezo_general')->warning($e->getMessage());
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function uwezo_general_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  if ($entity_type->id() == 'user') {
+    // Make the email field optional for user accounts.
+    if (isset($fields['mail'])) {
+      $fields['mail']->setRequired(FALSE);
+    }
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function uwezo_general_user_login($account) {
+  $current_route = Drupal::routeMatch()->getRouteName();
+  $request = Drupal::request();
+
+  // Only redirect for HTML requests.
+  if ($request->getRequestFormat() !== 'html') {
+    return;
+  }
+
+  // Check if there's already a destination parameter set.
+  $destination = $request->query->get('destination');
+  if ($destination && $destination != '/user/login') {
+    return;
+  }
+
+  // Don't redirect if coming from password reset routes.
+  if (in_array($current_route, ['user.reset', 'user.reset.login'])) {
+    return;
+  }
+
+  // Check if user has admin permissions.
+  if ($account->hasPermission('administer loan applications') ||
+      $account->hasPermission('access administration pages')) {
+
+    // Redirect admin users to the applications page.
+    $applications_url = Url::fromRoute('entity.application.collection')->toString();
+    Drupal::service('request_stack')
+      ->getCurrentRequest()->query->set('destination', $applications_url);
+  }
+}

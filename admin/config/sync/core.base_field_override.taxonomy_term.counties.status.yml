@@ -1,0 +1,22 @@
+uuid: 0eadef83-af07-4081-b232-4d0697efd55b
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.counties
+id: taxonomy_term.counties.status
+field_name: status
+entity_type: taxonomy_term
+bundle: counties
+label: Published
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

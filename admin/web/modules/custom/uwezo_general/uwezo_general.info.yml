@@ -1,0 +1,7 @@
+name: 'UWEZO General'
+type: module
+description: 'General module for UWEZO.'
+core_version_requirement: ^10 || ^11
+package: UWEZO
+dependencies:
+  - drupal:user

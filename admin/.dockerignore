@@ -1,0 +1,32 @@
+# Version control
+.git/
+.gitignore
+
+# Documentation
+*.md
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+
+# Environment files
+.env*
+
+# Drupal runtime files
+web/sites/*/files/
+web/sites/*/private/
+web/sites/*/settings.local.php
+
+# Dependencies (handled by multi-stage build)
+vendor/
+
+# Development tools
+.ddev/
+tests/
+
+# Logs and temp files
+*.log
+*~
+*.bak
+*.swp

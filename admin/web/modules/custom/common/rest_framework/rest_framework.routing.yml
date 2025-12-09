@@ -1,0 +1,22 @@
+rest_framework.api_docs:
+  path: '/api/docs'
+  defaults:
+    _controller: '\Drupal\rest_framework\Controller\OpenApiController::stoplightDocs'
+  requirements:
+    _permission: 'access content'
+
+rest_framework.api_docs_swagger:
+  path: '/api/docs/swagger'
+  defaults:
+    _controller: '\Drupal\rest_framework\Controller\OpenApiController::documentation'
+    _title: 'API Documentation (Swagger UI)'
+  requirements:
+    _permission: 'access content'
+
+rest_framework.api_docs_json:
+  path: '/api/docs/json'
+  defaults:
+    _controller: '\Drupal\rest_framework\Controller\OpenApiController::spec'
+    _title: 'OpenAPI Specification'
+  requirements:
+    _permission: 'access content'

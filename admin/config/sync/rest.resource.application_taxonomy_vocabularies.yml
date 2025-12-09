@@ -1,0 +1,18 @@
+uuid: e5dde3f0-d49e-44c2-a64d-5c5a4b6295ac
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+    - user
+id: application_taxonomy_vocabularies
+plugin_id: application_taxonomy_vocabularies
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie

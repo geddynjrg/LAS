@@ -1,0 +1,12 @@
+notification_settings_form:
+  version: 1.0
+  css:
+    theme:
+      css/notification-settings.css: {}
+  js:
+    js/sms-character-counter.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - core/drupal.ajax

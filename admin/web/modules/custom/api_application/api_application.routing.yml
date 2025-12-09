@@ -1,0 +1,113 @@
+
+# Custom Applications admin settings route
+api_application.admin_settings:
+  path: '/admin/applications/settings'
+  defaults:
+    _form: '\Drupal\api_application\Form\ApplicationSettingsForm'
+    _title: 'Application Settings'
+  requirements:
+    _permission: 'administer applications'
+  options:
+    _admin_route: TRUE
+
+# AJAX status update route
+api_application.application_status_update:
+  path: '/admin/structure/application/{application}/status-update'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::updateStatus'
+    _title: 'Update Application Status'
+  requirements:
+    _entity_access: 'application.update'
+    application: \d+
+  methods: [POST]
+  options:
+    _admin_route: TRUE
+    parameters:
+      application:
+        type: entity:application
+
+# Member response page route
+api_application.member_response:
+  path: '/member/response/{token}'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::showMemberResponsePage'
+    _title: 'Respond to Membership'
+  requirements:
+    _access: 'TRUE'
+    token: '[a-f0-9]{64}'
+  methods: [GET]
+
+# Process member response route
+api_application.process_member_response:
+  path: '/member/response/{token}'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::processMemberResponse'
+    _title: 'Process Response'
+  requirements:
+    _access: 'TRUE'
+    token: '[a-f0-9]{64}'
+  methods: [GET]
+
+# Send SMS confirmation route
+api_application.send_confirmation_sms:
+  path: '/admin/structure/application/{application}/send-sms'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::sendConfirmationSms'
+    _title: 'Send Confirmation SMS'
+  requirements:
+    _entity_access: 'application.update'
+    application: \d+
+  methods: [POST]
+  options:
+    _admin_route: TRUE
+    parameters:
+      application:
+        type: entity:application
+
+# Send SMS confirmation to single member route
+api_application.send_member_confirmation_sms:
+  path: '/admin/structure/member/{group_member}/send-sms'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::sendMemberConfirmationSms'
+    _title: 'Send Member Confirmation SMS'
+  requirements:
+    _entity_access: 'group_member.update'
+    group_member: \d+
+  methods: [POST]
+  options:
+    _admin_route: TRUE
+    parameters:
+      group_member:
+        type: entity:group_member
+
+# Download PDF route
+api_application.download_pdf:
+  path: '/admin/applications/{application}/download-pdf'
+  defaults:
+    _controller: '\Drupal\api_application\Controller\ApplicationController::downloadPdf'
+    _title: 'Download Application PDF'
+  requirements:
+    _entity_access: 'application.view'
+    application: \d+
+  methods: [GET]
+  options:
+    _admin_route: TRUE
+    parameters:
+      application:
+        type: entity:application
+
+# Send email form route
+api_application.send_email_form:
+  path: '/admin/applications/{application}/send-email'
+  defaults:
+    _form: '\Drupal\api_application\Form\SendEmailForm'
+    _title: 'Send Application via Email'
+  requirements:
+    _entity_access: 'application.view'
+    application: \d+
+  methods: [GET, POST]
+  options:
+    _admin_route: TRUE
+    parameters:
+      application:
+        type: entity:application

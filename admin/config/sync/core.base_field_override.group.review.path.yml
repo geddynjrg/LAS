@@ -1,0 +1,20 @@
+uuid: db24a4c0-94fe-4ee6-9b20-6e28a0e44ffc
+langcode: en
+status: true
+dependencies:
+  config:
+    - group.type.review
+  module:
+    - path
+id: group.review.path
+field_name: path
+entity_type: group
+bundle: review
+label: 'URL alias'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: path

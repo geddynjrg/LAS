@@ -1,0 +1,20 @@
+uuid: 622675ea-deec-4ac0-b2d8-41f6a69e964c
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.group_background
+  module:
+    - path
+id: taxonomy_term.group_background.path
+field_name: path
+entity_type: taxonomy_term
+bundle: group_background
+label: 'URL alias'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: path

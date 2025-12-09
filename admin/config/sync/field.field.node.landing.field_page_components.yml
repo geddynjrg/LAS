@@ -1,0 +1,44 @@
+uuid: 1ef1a70c-a8f0-429f-bb59-713f14ca2000
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_page_components
+    - node.type.landing
+    - paragraphs.paragraphs_type.banner
+    - paragraphs.paragraphs_type.from_library
+    - paragraphs.paragraphs_type.text_blocks
+  module:
+    - entity_reference_revisions
+id: node.landing.field_page_components
+field_name: field_page_components
+entity_type: node
+bundle: landing
+label: 'Page components'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      from_library: from_library
+      banner: banner
+      text_blocks: text_blocks
+    negate: 0
+    target_bundles_drag_drop:
+      banner:
+        weight: 5
+        enabled: true
+      from_library:
+        weight: 2
+        enabled: true
+      text_block:
+        weight: 7
+        enabled: false
+      text_blocks:
+        weight: 8
+        enabled: true
+field_type: entity_reference_revisions

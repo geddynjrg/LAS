@@ -1,0 +1,19 @@
+jwt_secret: 2CqNFl3Ezcq+apCLP+GHL7wOJNOjJV+h0v1RFNrfa2I=
+jwt_refresh_secret: 6p3WZrMh4BrluGiuqFiN/U/UEsxrtcPYUb5SukvuhVE=
+jwt_expiration: 3600
+jwt_refresh_expiration: 2592000
+jwt_auth_enabled: true
+jwt_strict_validation: true
+jwt_token_limit_per_user: 10
+jwt_store_tokens: true
+jwt_revoke_tokens_on_password_change: true
+otp:
+  enabled: true
+  length: 6
+  expiry: 300
+  max_attempts: 3
+  rate_limit: 5
+  message_template: 'Your login code is: [code]'
+  user_phone_field: field_phone_number
+  default_role: authenticated
+  username_prefix: user_

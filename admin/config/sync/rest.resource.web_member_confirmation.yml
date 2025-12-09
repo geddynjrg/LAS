@@ -1,0 +1,19 @@
+
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+    - user
+id: web_member_confirmation
+plugin_id: web_member_confirmation
+granularity: resource
+configuration:
+  methods:
+    - GET
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie

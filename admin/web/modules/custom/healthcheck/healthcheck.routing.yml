@@ -1,0 +1,16 @@
+healthcheck.healthcheck:
+  path: "/healthz"
+  defaults:
+    _controller: '\Drupal\healthcheck\Controller\HealthCheckController::check'
+    _title: "Healthcheck"
+  requirements:
+    _permission: "access content"
+  options:
+    _format: "json"
+healthcheck.metrics:
+  path: "/metrics/web"
+  defaults:
+    _controller: '\Drupal\healthcheck\Controller\MetricsController::metrics'
+    _title: "Metrics"
+  requirements:
+    _permission: "access content"

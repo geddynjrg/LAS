@@ -1,0 +1,18 @@
+uuid: c4514a06-d6ab-4907-bc3e-7dcb1a2ed956
+langcode: en
+status: true
+dependencies: {  }
+id: smtp
+label: SMTP
+plugin: smtp
+configuration:
+  user: ''
+  pass: ''
+  host: mail.govmail.ke
+  port: null
+  query:
+    verify_peer: true
+    local_domain: ''
+    restart_threshold: null
+    restart_threshold_sleep: null
+    ping_threshold: null

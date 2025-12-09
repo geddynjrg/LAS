@@ -1,0 +1,96 @@
+services:
+  api_application.config_file_service:
+    class: Drupal\api_application\Service\ConfigFileService
+    arguments:
+      - '@entity_type.manager'
+      - '@file_system'
+      - '@logger.factory'
+      - '@file.usage'
+
+  api_application.sms_confirmation:
+    class: Drupal\api_application\Service\SmsConfirmationService
+    arguments:
+      - '@entity_type.manager'
+      - '@sms_providers.sms_service'
+      - '@logger.factory'
+      - '@config.factory'
+      - '@cache_tags.invalidator'
+      - '@datetime.time'
+      - '@request_stack'
+
+  api_application.pdf_generator:
+    class: Drupal\api_application\Service\PdfGeneratorService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@renderer'
+      - '@file_system'
+      - '@logger.factory'
+      - '@date.formatter'
+
+  api_application.email_service:
+    class: Drupal\api_application\Service\EmailService
+    arguments:
+      - '@config.factory'
+      - '@email_factory'
+      - '@renderer'
+      - '@logger.factory'
+      - '@file_system'
+      - '@api_application.pdf_generator'
+
+  api_application.access_policy:
+    class: Drupal\api_application\AccessPolicy\ApplicationAccessPolicy
+    arguments:
+      - '@uwezo_groups.group_manager'
+    tags:
+      - { name: access_policy, priority: 100 }
+
+  # plugin.rest.application_sms:
+  #   class: Drupal\api_application\Plugin\rest\resource\ApplicationSmsResource
+  #   arguments:
+  #     - []  # configuration
+  #     - 'application_sms'  # plugin_id
+  #     - []  # plugin_definition
+  #     - ['json']  # serialization_formats
+  #     - '@logger.factory'  # Keep as factory
+  #     - '@path.matcher'
+  #     - '@rest_framework.field_mapper'
+  #     - '@language_manager'
+  #     - '@path_alias.manager'
+  #     - '@entity_type.manager'
+  #     - '@api_application.sms_confirmation'
+  #     - '@sms_providers.sms_service'
+  #   tags:
+  #     - { name: rest_resource }
+  api_application.web_sms_confirmation:
+      class: Drupal\api_application\Service\WebSmsConfirmationService
+      arguments:
+        - '@sms_providers.sms_service'
+        - '@logger.factory'
+        - '@config.factory'
+        - '@datetime.time'
+        - '@request_stack'
+
+  plugin.rest.application_sms:
+    class: Drupal\api_application\Plugin\rest\resource\ApplicationSmsResource
+    arguments:
+      - []
+      - 'application_sms'
+      - []
+      - ['json']
+      - '@logger.factory'
+      - '@api_application.web_sms_confirmation'
+    tags:
+      - { name: rest_resource }
+
+  plugin.rest.web_member_confirmation:
+    class: Drupal\api_application\Plugin\rest\resource\WebMemberConfirmationResource
+    arguments:
+      - []
+      - 'web_member_confirmation'
+      - []
+      - ['json']
+      - '@logger.factory'
+      - '@api_application.web_sms_confirmation'
+    tags:
+      - { name: rest_resource }

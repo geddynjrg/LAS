@@ -1,0 +1,57 @@
+# Custom Applications admin section tabs
+entity.application.collection:
+  route_name: entity.application.collection
+  base_route: entity.application.collection
+  title: 'Overview'
+  weight: 0
+
+api_application.admin_settings:
+  route_name: api_application.admin_settings
+  base_route: entity.application.collection
+  title: 'Settings'
+  weight: 10
+
+# Content section tabs
+system.admin_content:
+  route_name: system.admin_content
+  base_route: system.admin_content
+  title: 'Content'
+  weight: -10
+
+# Application entity tabs
+entity.application.canonical:
+  route_name: entity.application.canonical
+  base_route: entity.application.canonical
+  title: 'View'
+  weight: 0
+
+entity.application.edit_form:
+  route_name: entity.application.edit_form
+  base_route: entity.application.canonical
+  title: 'Edit'
+  weight: 10
+
+entity.application.delete_form:
+  route_name: entity.application.delete_form
+  base_route: entity.application.canonical
+  title: 'Delete'
+  weight: 20
+
+# Group Member entity tabs
+entity.group_member.canonical:
+  route_name: entity.group_member.canonical
+  base_route: entity.group_member.canonical
+  title: 'View'
+  weight: 0
+
+entity.group_member.edit_form:
+  route_name: entity.group_member.edit_form
+  base_route: entity.group_member.canonical
+  title: 'Edit'
+  weight: 10
+
+entity.group_member.delete_form:
+  route_name: entity.group_member.delete_form
+  base_route: entity.group_member.canonical
+  title: 'Delete'
+  weight: 20

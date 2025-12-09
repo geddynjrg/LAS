@@ -1,0 +1,123 @@
+# husky
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Check if there are PHP files in admin directory
+PHP_FILES=$(echo "$STAGED_FILES" | grep "^admin/" | grep -E "\.(php|module|inc|install|test|profile|theme|twig|yml|yaml)$" || true)
+
+# Check if there are JS/TS files in web directory
+JS_FILES=$(echo "$STAGED_FILES" | grep "^web/" | grep -E "\.(js|jsx|ts|tsx|css|md)$" || true)
+
+echo "🔍 Analyzing staged files..."
+
+# Check for Prisma schema changes without migration
+SCHEMA_CHANGED=$(echo "$STAGED_FILES" | grep "^web/prisma/schema.prisma$" || true)
+MIGRATION_CHANGED=$(echo "$STAGED_FILES" | grep "^web/prisma/migrations/" || true)
+
+if [ -n "$SCHEMA_CHANGED" ] && [ -z "$MIGRATION_CHANGED" ]; then
+  echo ""
+  echo "========================================="
+  echo "❌ PRISMA SCHEMA CHANGE WITHOUT MIGRATION"
+  echo "========================================="
+  echo ""
+  echo "You changed web/prisma/schema.prisma but no migration was added."
+  echo ""
+  echo "To fix this, run:"
+  echo "  pnpm --filter web db:migrate"
+  echo ""
+  echo "Then stage the generated migration:"
+  echo "  git add web/prisma/migrations/"
+  echo ""
+  exit 1
+fi
+
+# Initialize exit status
+PHP_EXIT_CODE=0
+JS_EXIT_CODE=0
+
+echo "========================================="
+echo "🔍 UWEZO PRE-COMMIT QUALITY CHECKS"
+echo "========================================="
+
+# Run GrumPHP for admin PHP files
+if [ -n "$PHP_FILES" ]; then
+  echo ""
+  echo "📋 STEP 1/2: PHP Code Quality (GrumPHP)"
+  echo "---------------------------------------"
+  cd admin
+  vendor/bin/grumphp git:pre-commit
+  PHP_EXIT_CODE=$?
+  cd ..
+
+  if [ $PHP_EXIT_CODE -ne 0 ]; then
+    echo "❌ PHP code quality checks FAILED"
+  else
+    echo "✅ PHP code quality checks PASSED"
+  fi
+else
+  echo ""
+  echo "⏭️  STEP 1/2: No PHP files to check - SKIPPED"
+fi
+
+# Always run web checks if there are JS files
+if [ -n "$JS_FILES" ]; then
+  echo ""
+  echo "🎨 STEP 2/2: Web Code Quality (Lint + Type Check + Build)"
+  echo "--------------------------------------------------------"
+  cd web
+
+  echo "  → Running lint-staged (ESLint + Prettier)..."
+  npx lint-staged
+  JS_EXIT_CODE=$?
+
+  if [ $JS_EXIT_CODE -eq 0 ]; then
+    echo "  → Running full lint check..."
+    pnpm run lint
+    JS_EXIT_CODE=$?
+  fi
+
+  if [ $JS_EXIT_CODE -eq 0 ]; then
+    echo "  → Running type check..."
+    pnpm run tsc
+    JS_EXIT_CODE=$?
+  fi
+
+  if [ $JS_EXIT_CODE -eq 0 ]; then
+    echo "  → Running build..."
+    pnpm run build
+    JS_EXIT_CODE=$?
+  fi
+
+  cd ..
+
+  if [ $JS_EXIT_CODE -ne 0 ]; then
+    echo "❌ Web code quality checks FAILED"
+  else
+    echo "✅ Web code quality checks PASSED"
+  fi
+else
+  echo ""
+  echo "⏭️  STEP 2/2: No web files to check - SKIPPED"
+fi
+
+echo ""
+echo "========================================="
+echo "📊 FINAL RESULTS"
+echo "========================================="
+
+# Final result
+if [ $PHP_EXIT_CODE -eq 0 ] && [ $JS_EXIT_CODE -eq 0 ]; then
+  echo "🎉 ALL CHECKS PASSED - Commit allowed!"
+else
+  echo "💥 SOME CHECKS FAILED - Commit blocked!"
+  echo ""
+  if [ $PHP_EXIT_CODE -ne 0 ]; then
+    echo "   ❌ PHP checks failed"
+  fi
+  if [ $JS_EXIT_CODE -ne 0 ]; then
+    echo "   ❌ Web checks failed"
+  fi
+  echo ""
+  exit 1
+fi

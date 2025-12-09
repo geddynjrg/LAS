@@ -1,0 +1,219 @@
+# Define allowed IPs for web domain access control
+geo $web_allowed_ips {
+    default 0;
+    
+    # Docker networks - IMPORTANT: These are internal Docker IPs
+    # The real client IPs come through the Docker host
+    172.16.0.0/12 1;  # Docker default bridge networks
+    10.0.0.0/8 1;     # Docker custom networks
+    
+    # Allow localhost (when accessed directly on host)
+    127.0.0.1 1;
+    ::1 1;
+    
+    # Custom allowed IPs for web domain
+    ${WEB_ALLOWED_IPS}
+}
+
+# Define allowed IPs for admin domain access control
+geo $admin_allowed_ips {
+    default 0;
+    
+    # Docker networks
+    172.16.0.0/12 1;
+    10.0.0.0/8 1;
+    
+    # Allow localhost
+    127.0.0.1 1;
+    ::1 1;
+    
+    # Custom allowed IPs for admin domain
+    ${ADMIN_ALLOWED_IPS}
+}
+
+# Upstream for Next.js web
+upstream web_backend {
+    server web:3000;
+}
+
+# Upstream for Drupal admin
+upstream admin_backend {
+    server admin:80;
+}
+
+# HTTP server for Let's Encrypt and redirect
+server {
+    listen 80;
+    server_name ${WEB_DOMAIN} ${ADMIN_DOMAIN};
+    
+    # Allow Let's Encrypt ACME challenge without IP restrictions
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        allow all;
+    }
+    
+    # IP whitelist check for all other requests
+    location / {
+        if ($web_allowed_ips = 0) {
+            return 403;
+        }
+        return 301 https://$host$request_uri;
+    }
+}
+
+# HTTPS Admin subdomain - Drupal backend
+server {
+    listen 443 ssl http2;
+    server_name ${ADMIN_DOMAIN};
+    
+    # IP whitelist check
+    if ($admin_allowed_ips = 0) {
+        return 403;
+    }
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/certs/uwezo.crt;
+    ssl_certificate_key /etc/nginx/certs/uwezo.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Request size limits
+    client_max_body_size 32M;
+    client_body_buffer_size 128k;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+        application/javascript
+        application/json
+        application/xml
+        text/css
+        text/javascript
+        text/plain
+        text/xml
+        image/svg+xml;
+
+    # Proxy all requests to admin container
+    location / {
+        proxy_pass http://admin_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port 443;
+        
+        # Proxy timeouts
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+        
+        # Proxy buffering
+        proxy_buffering off;
+        proxy_request_buffering off;
+        
+        # Pass through headers
+        proxy_pass_header Server;
+    }
+
+    # Health check endpoint
+    location = /healthz {
+        access_log off;
+        proxy_pass http://admin_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
+
+# HTTPS Main domain - Next.js web
+server {
+    listen 443 ssl http2;
+    server_name ${WEB_DOMAIN};
+    
+    # IP whitelist check
+    if ($web_allowed_ips = 0) {
+        return 403;
+    }
+
+    # SSL Configuration
+    ssl_certificate /etc/nginx/certs/uwezo.crt;
+    ssl_certificate_key /etc/nginx/certs/uwezo.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Request size limits
+    client_max_body_size 32M;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_comp_level 6;
+    gzip_types
+        application/javascript
+        application/json
+        application/xml
+        text/css
+        text/javascript
+        text/plain
+        text/xml
+        image/svg+xml;
+
+    # Static assets caching for Next.js
+    location /_next/static/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        proxy_pass http://web_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    # Next.js API routes and pages
+    location / {
+        proxy_pass http://web_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        
+        # WebSocket support for Next.js dev
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        # Timeouts
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # Health check endpoint for Next.js
+    location = /api/health {
+        access_log off;
+        proxy_pass http://web_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}

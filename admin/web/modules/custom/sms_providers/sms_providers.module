@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @file
+ * Contains sms_providers.module.
+ */
+
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function sms_providers_help($route_name, RouteMatchInterface $route_match): string {
+  switch ($route_name) {
+    // Main module help for the sms_providers module.
+    case 'help.page.sms_providers':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The SMS Providers module provides a plugin-based system') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Managing SMS Providers') . '</dt>';
+      $output .= '<dd>' . t('Configure different SMS providers and their settings through the administration interface.') . '</dd>';
+      $output .= '<dt>' . t('Sending Messages') . '</dt>';
+      $output .= '<dd>' . t('Use the SMS service to send messages through configured providers with automatic failover support.') . '</dd>';
+      $output .= '</dl>';
+      return $output;
+
+    default:
+      return '';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function sms_providers_theme(): array {
+  return [
+    'debug_sms_email' => [
+      'variables' => [
+        // The recipient phone number.
+        'phone_number' => NULL,
+        // The SMS message content.
+        'message' => NULL,
+        // Number of characters in the message.
+        'message_length' => NULL,
+        // Unique identifier for this message.
+        'message_id' => NULL,
+        // Unix timestamp when the message was sent.
+        'timestamp' => NULL,
+        // Formatted time for display (H:i).
+        'formatted_time' => NULL,
+        // Full formatted timestamp (Y-m-d H:i:s).
+        'formatted_timestamp' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_mail().
+ */
+function sms_providers_mail($key, &$message, $params): void {
+  switch ($key) {
+    case 'debug_sms':
+      $message['subject'] = t('Debug SMS: @phone', ['@phone' => $params['phone_number']]);
+
+      $build = [
+        '#theme' => 'debug_sms_email',
+        '#phone_number' => $params['phone_number'],
+        '#message' => $params['message'],
+        '#message_length' => $params['message_length'],
+        '#message_id' => $params['message_id'],
+        '#timestamp' => $params['timestamp'],
+        '#formatted_time' => date('H:i', $params['timestamp']),
+        '#formatted_timestamp' => date('Y-m-d H:i:s', $params['timestamp']),
+      ];
+
+      $renderer = \Drupal::service('renderer');
+      $html_body = $renderer->renderPlain($build);
+      $message['body'][] = Markup::create($html_body);
+      break;
+  }
+}

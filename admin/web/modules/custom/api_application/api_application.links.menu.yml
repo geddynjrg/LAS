@@ -1,0 +1,11 @@
+# Custom Applications section (separate from default entity.application.collection)
+api_application.admin:
+  title: 'Applications'
+  route_name: entity.application.collection
+  description: 'Manage loan applications'
+  parent: system.admin
+  weight: -9
+  options:
+    attributes:
+      class: ['toolbar-icon-edit']
+

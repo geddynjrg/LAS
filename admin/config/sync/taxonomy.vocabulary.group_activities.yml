@@ -1,0 +1,9 @@
+uuid: 950711f4-d381-4dbc-9d87-1ca2c7684a77
+langcode: en
+status: true
+dependencies: {  }
+name: 'Group Activities'
+vid: group_activities
+description: 'Key activities of the group'
+weight: 0
+new_revision: false

@@ -1,0 +1,62 @@
+status_manager.settings:
+  type: config_object
+  label: 'Status Manager settings'
+  mapping:
+    general:
+      type: mapping
+      label: 'General settings'
+      mapping:
+        auto_tracking_enabled:
+          type: boolean
+          label: 'Enable automatic status tracking'
+        history_limit:
+          type: integer
+          label: 'History display limit'
+        cleanup_enabled:
+          type: boolean
+          label: 'Enable automatic cleanup'
+        cleanup_days:
+          type: integer
+          label: 'Cleanup after (days)'
+    tracking:
+      type: mapping
+      label: 'Tracking configuration'
+      mapping:
+        entity_type:
+          type: string
+          label: 'Entity type to track (hardcoded to application)'
+        field:
+          type: string
+          label: 'Field to track (hardcoded to status)'
+        create_audit_trail:
+          type: boolean
+          label: 'Create audit trail of status changes'
+    display:
+      type: mapping
+      label: 'Display settings'
+      mapping:
+        show_entity_links:
+          type: boolean
+          label: 'Show entity links'
+        show_user_info:
+          type: boolean
+          label: 'Show user information'
+        date_format:
+          type: string
+          label: 'Date format'
+        custom_date_format:
+          type: string
+          label: 'Custom date format'
+    performance:
+      type: mapping
+      label: 'Performance settings'
+      mapping:
+        batch_size:
+          type: integer
+          label: 'Batch size'
+        cache_enabled:
+          type: boolean
+          label: 'Enable caching'
+        cache_lifetime:
+          type: integer
+          label: 'Cache lifetime' 
