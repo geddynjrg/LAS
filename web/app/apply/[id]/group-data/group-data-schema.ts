@@ -10,6 +10,13 @@ export const groupDataSchema = z
     groupRegistrationCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
     listOfMembersOnCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
 
+    groupMeetingMinutes: z.preprocess(
+      (v) => (Array.isArray(v) ? v : v != null ? [v] : []),
+      z.array(validFile(FILE_ACCEPT, MAX_FILE_SIZE)).min(1, {
+        message: 'At least one meeting minute file is required',
+      }),
+    ),
+
     groupPurpose: z.preprocess(
       (v) =>
         Array.isArray(v)
@@ -80,6 +87,18 @@ export const groupDataSchema = z
     nearestLandmark: z.string(),
   })
   .superRefine((data, ctx) => {
+
+    if (data.groupMeetingMinutes.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 1,
+        type: 'string',
+        inclusive: true,
+        path: ['groupMeetingMinutes'],
+        message: 'At least one meeting minute file is required',
+      });
+    }
+
     // if group activities include value chain, value chain should not be empty
     if (
       data.groupActivities.includes('Value chain') &&

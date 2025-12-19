@@ -70,6 +70,13 @@ export const ApplicationReviewGroupData: FC<{
                     file={groupData.basics.listOfMembersOnCertificate}
                   />
                 </DataNode>
+                <DataNode label={t('groupData.basicInfo.groupMeetingMinutes')}>
+                  {groupData.basics.groupMeetingMinutes.map((file, index) => (
+                    <div key={index} className="mb-1">
+                      <FileLink file={file} />
+                    </div>
+                  ))}
+                </DataNode>
               </div>
             </AccordionContent>
           </AccordionItem>

@@ -121,6 +121,10 @@ export const groupDataAction: FormAction<GroupData> = async (
       filename: '',
       url: '',
     };
+    const groupMeetingMinutes = data.groupMeetingMinutes || [
+      { fid: 0, filename: '', url: '' },
+    ];
+
     const groupCreditHistory = data.groupCreditHistory || [
       { fid: 0, filename: '', url: '' },
     ];
@@ -133,6 +137,7 @@ export const groupDataAction: FormAction<GroupData> = async (
         dateFormed: data.dateFormed,
         groupRegistrationCertificate,
         listOfMembersOnCertificate,
+        groupMeetingMinutes,
       },
       background: {
         purposeOfTheGroup: data.groupPurpose,

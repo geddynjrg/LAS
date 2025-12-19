@@ -7,4 +7,6 @@ dependencies:
   - drupal:rest
   - drupal:rest_framework
   - serialization:serialization
-  - sms_providers:sms_providers 
+  - sms_providers:sms_providers
+config_optional:
+  - rest.resource.api_ecitizen_login

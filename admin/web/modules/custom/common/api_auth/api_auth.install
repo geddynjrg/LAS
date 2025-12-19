@@ -8,6 +8,46 @@
 use Drupal\Core\Database\Database;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Core\Config\FileStorage;
+
+/**
+ * Implements hook_install().
+ */
+function api_auth_install() {
+  // Import optional configuration on module installation
+  $optional_config = [
+    'rest.resource.api_ecitizen_login',
+  ];
+
+  $module_path = \Drupal::service('extension.list.module')->getPath('api_auth');
+  $config_storage = new FileStorage($module_path . '/config/optional');
+
+  foreach ($optional_config as $config_name) {
+    $config = $config_storage->read($config_name);
+    if ($config) {
+      \Drupal::configFactory()->getEditable($config_name)
+        ->setData($config)
+        ->save(TRUE);
+    }
+  }
+
+  // Grant permissions to anonymous and authenticated users
+  _api_auth_grant_ecitizen_permissions();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function api_auth_uninstall() {
+  // Remove our configuration on uninstall
+  $config_names = [
+    'rest.resource.api_ecitizen_login',
+  ];
+
+  foreach ($config_names as $config_name) {
+    \Drupal::configFactory()->getEditable($config_name)->delete();
+  }
+}
 
 /**
  * Implements hook_schema().
@@ -251,4 +291,48 @@ function api_auth_update_11004() {
   }
 
   return t('SMS providers module already installed.');
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add eCitizen REST resource and permissions.
+ */
+function api_auth_update_11005() {
+  // Import eCitizen REST resource configuration
+  $module_path = \Drupal::service('extension.list.module')->getPath('api_auth');
+  $config_storage = new FileStorage($module_path . '/config/optional');
+
+  $config = $config_storage->read('rest.resource.api_ecitizen_login');
+  if ($config) {
+    \Drupal::configFactory()->getEditable('rest.resource.api_ecitizen_login')
+      ->setData($config)
+      ->save(TRUE);
+
+    // Grant permissions
+    _api_auth_grant_ecitizen_permissions();
+
+    return t('Added eCitizen SSO login REST resource and permissions.');
+  }
+
+  return t('eCitizen REST resource configuration not found.');
+}
+
+/**
+ * Grants eCitizen login permissions to roles.
+ */
+function _api_auth_grant_ecitizen_permissions() {
+  // Grant permission to anonymous users
+  $anonymous_role = \Drupal\user\Entity\Role::load('anonymous');
+  if ($anonymous_role) {
+    $anonymous_role->grantPermission('restful post api_ecitizen_login');
+    $anonymous_role->save();
+  }
+
+  // Grant permission to authenticated users
+  $authenticated_role = \Drupal\user\Entity\Role::load('authenticated');
+  if ($authenticated_role) {
+    $authenticated_role->grantPermission('restful post api_ecitizen_login');
+    $authenticated_role->save();
+  }
 }

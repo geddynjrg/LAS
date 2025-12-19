@@ -22,14 +22,15 @@ export const GroupMemberInputSchema = z.object({
   phone_number: z.string().describe('Phone number'),
   position: z.union([z.string(), z.number()]).optional(),
   photo_member_id: FileUploadSchema.optional(),
+  economic_activity: z.string().optional().describe('Economic activity of the member'),
   person_with_disability: z.boolean().default(false),
   pwd_number: z.string().optional().describe('PWD registration number'),
   status: z.enum(['PENDING', 'CONFIRMED']).optional().describe('Member status'),
   certificate_disability: FileUploadSchema.optional(),
   requires_confirmation: z.boolean().default(false),
-  confirmation_token: z.string().optional().describe('SMS confirmation token'),
-  confirmation_sent_at: z.number().optional().describe('When confirmation was sent (Unix timestamp)'),
-  confirmation_confirmed_at: z.number().optional().describe('When confirmation was completed (Unix timestamp)'),
+  confirmation_token: z.string().nullable().optional().describe('SMS confirmation token'),
+  confirmation_sent_at: z.number().nullable().optional().describe('When confirmation was sent (Unix timestamp)'),
+  confirmation_confirmed_at: z.number().nullable().optional().describe('When confirmation was completed (Unix timestamp)'),
   confirmation_status: z.enum(['pending', 'sent', 'confirmed', 'declined', 'failed']).optional().describe('Current confirmation status'),
 });
 
@@ -82,6 +83,7 @@ export const ApplicationPostRequestSchema = z.object({
     .describe('Date when group was registered (YYYY-MM-DD format)'),
   group_registration_certificate: FileUploadSchema.optional(),
   list_of_members_certificate: FileUploadSchema.optional(),
+  group_meeting_minutes: z.array(FileUploadSchema).optional(),
   group_background: z
     .array(z.union([z.string(), z.number()]))
     .optional()
@@ -140,6 +142,7 @@ export const ApplicationPostRequestSchema = z.object({
     .number()
     .optional()
     .describe('Repayment period in months'),
+  institution_type: z.string().optional().describe('Type of institution (bank or sacco)'),
   bank_name: z.union([z.string(), z.number()]).optional(),
   bank_branch: z.string().optional().describe('Bank branch name'),
   bank_account_number: z.string().optional().describe('Bank account number'),

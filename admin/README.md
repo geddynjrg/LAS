@@ -2,7 +2,7 @@
 
 ## Features
 - Secure authentication system with anonymous user redirection
-- Custom event subscribers for access control 
+- Custom event subscribers for access control
 - Code quality checks and automated testing
 - Deployment pipeline configuration
 - OpenAPI documentation

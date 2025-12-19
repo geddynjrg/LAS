@@ -134,6 +134,26 @@ const STATUS_CONFIGS: Record<Status, StatusConfig> = {
   },
 };
 
+const STEP_PATHS = [
+  '/group-data',        // Step 1
+  '/members',          // Step 2
+  '/loan-conditions',  // Step 3
+  '/proposed-business', // Step 4
+  '/member-confirmation', // Step 5
+  '/confirmations',    // Step 6
+  '/review',          // Step 7
+] as const;
+
+const getStepUrl = (applicationId: string, applicationProgress?: number): string => {
+  if (!applicationProgress || applicationProgress <= 0) {
+    return `/apply/${applicationId}/group-data`; // Default to first step
+  }
+  
+  // Ensure progress is within bounds
+  const stepIndex = Math.min(applicationProgress - 1, STEP_PATHS.length - 1);
+  return `/apply/${applicationId}${STEP_PATHS[stepIndex]}`;
+};
+
 // Helper component for rendering step descriptions
 const StepDescriptionSection: FC<{
   config: StatusConfig;
@@ -233,6 +253,7 @@ export default async function Page() {
             <GroupDetails
               key={application.generalDetails.applicationId}
               applicationId={application.generalDetails.applicationId}
+              applicationProgress={application.generalDetails.applicationProgress}
               groupName={application.groupData?.basics.groupName}
               loanAmount={application.loanConditions?.loanAmount}
               status={application.generalDetails.status}
@@ -320,6 +341,7 @@ const EmptyApplicationsState: FC<EmptyApplicationsStateProps> = ({
 };
 
 interface GroupDetailsProps extends PropsWithChildren {
+  applicationProgress?: number;
   applicationId: string;
   groupName?: string;
   loanAmount?: number;
@@ -337,10 +359,29 @@ const GroupDetails: FC<GroupDetailsProps> = ({
   siteInfo,
   members,
   rejectionDetails,
+  applicationProgress,
 }) => {
   const t = useTranslations('DashboardPage');
 
   const contact = siteInfo?.data?.site?.contact;
+
+  const getApplicationUrl = () => {
+    console.log('Application Status:', status);
+    console.log('Application Progress:', applicationProgress);
+    // For UNSUBMITTED or DRAFT status, go to the current step
+    if (status === 'UNSUBMITTED' || status === 'DRAFT') {
+      return getStepUrl(applicationId, applicationProgress);
+    }
+    // For other statuses, go to dashboard view
+    return `/dashboard/${applicationId}`;
+  };
+
+  const getButtonText = () => {
+    if (status === 'UNSUBMITTED' || status === 'DRAFT') {
+      return t('continueFillingApplication');
+    }
+    return t('viewApplication');
+  }
 
   return (
     <Card
@@ -370,16 +411,8 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         )}
 
         <Button variant="secondary" className="w-full text-neutral-700" asChild>
-          <Link
-            href={
-              status === 'UNSUBMITTED' || status === 'DRAFT'
-                ? `/apply/${applicationId}/group-data`
-                : `/dashboard/${applicationId}`
-            }
-          >
-            {status === 'UNSUBMITTED' || status === 'DRAFT'
-              ? t('continueFillingApplication')
-              : t('viewApplication')}
+          <Link href={getApplicationUrl()}>
+            {getButtonText()}
           </Link>
         </Button>
       </div>

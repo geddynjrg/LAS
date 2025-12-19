@@ -17,7 +17,8 @@ import { Card } from '@workspace/ui/components/uwezo/card';
 import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { type FC, useState } from 'react';
+import { Content } from 'next/font/google';
+import { type FC, useEffect, useState } from 'react';
 
 export interface LoanConditionsDataProps {
   id: string;
@@ -44,7 +45,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
       accountNumber: loanConditionsData?.accountNumber,
       bankBranch: loanConditionsData?.bankBranch,
       bankName: loanConditionsData?.bankName,
-      bankNameOther: loanConditionsData?.bankNameOther,
+      institutionType: loanConditionsData?.institutionType,
       loanAmount: loanConditionsData?.loanAmount,
       loanType: loanConditionsData?.loanType,
       repaymentPeriod: loanConditionsData?.repaymentPeriod,
@@ -55,9 +56,9 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
     keyof typeof loanTypes | undefined
   >(state.values?.loanType as keyof typeof loanTypes);
 
-  const [selectedBankName, setSelectedBankName] = useState(
-    state.values?.bankName,
-  );
+  const [institutionType, setInstitutionType] = useState<
+    keyof typeof institutionTypes | undefined
+  >(state.values?.institutionType as keyof typeof institutionTypes);
 
   const loanTypes = {
     Endeleza: {
@@ -78,6 +79,26 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
     },
   };
 
+  // const institutionTypes = {
+  //   bank: t('ApplicationDetailsPage.loan.bank'),
+  //   sacco: t('ApplicationDetailsPage.loan.sacco'),
+  // };
+
+  const institutionTypes = {
+    Bank: {
+      title: 'Bank',
+      Content: {
+        title: t('ApplicationDetailsPage.loan.bank'),
+      },
+    },
+    SACCO: {
+      title: 'SACCO',
+      Content: {
+        title: t('ApplicationDetailsPage.loan.sacco'),
+      },
+    },
+  };
+
   const maxAmount = selectedType
     ? loanTypes[selectedType]?.maxLoanAmount
     : undefined;
@@ -92,7 +113,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           title={t('ApplicationDetailsPage.loan.loanDetails')}
           className="space-y-4"
         >
-<Field
+          <Field
             state={state}
             name="loanType"
             label={t('ApplicationDetailsPage.loan.loanType')}
@@ -170,7 +191,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
           />
         </FormCard>
 
-        <FormCard
+        {/* <FormCard
           title={t('ApplicationDetailsPage.loan.bankAccountDetails')}
           className="space-y-4"
         >
@@ -201,6 +222,79 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
                   {...props}
                   defaultValue={props.defaultValue ?? undefined}
                   placeholder={t('ApplicationDetailsPage.loan.bankName')}
+                />
+              )}
+            />
+          )}
+
+          <Field
+            state={state}
+            name="bankBranch"
+            label={t('ApplicationDetailsPage.loan.bankBranch')}
+            required
+            control={(props) => <Input {...props} />}
+          />
+
+          <Field
+            state={state}
+            name="accountNumber"
+            label={t('ApplicationDetailsPage.loan.accountNumber')}
+            required
+            control={(props) => <Input {...props} />}
+          />
+        </FormCard> */}
+        <FormCard
+          title={t('ApplicationDetailsPage.loan.bankAccountDetails')}
+          className="space-y-4"
+          >
+          <Field
+            state={state}
+            name="institutionType"
+            label={
+              <div>
+                {t('ApplicationDetailsPage.loan.institutionType')}
+              </div>
+            }
+            required
+            control={(props) => (
+              <RadioGroup
+                {...props}
+                onValueChange={(val) => {
+                  setInstitutionType(val as keyof typeof institutionTypes);
+                }}
+                options={[
+                  {
+                    label: t('ApplicationDetailsPage.loan.bank'),
+                    value: institutionTypes.Bank.title,
+                  },
+                  {
+                    label: t('ApplicationDetailsPage.loan.sacco'),
+                    value: institutionTypes.SACCO.title,
+                  },
+                ]}
+              />
+            )}
+          />
+
+          {institutionType && (
+            <Field
+              state={state}
+              name="bankName"
+              label={
+                institutionType === institutionTypes.Bank.title
+                  ? t('ApplicationDetailsPage.loan.bankName')
+                  : t('ApplicationDetailsPage.loan.saccoName')
+              }
+              required
+              control={(props) => (
+                <Input
+                  {...props}
+                  defaultValue={props.defaultValue ?? undefined}
+                  placeholder={
+                    institutionType === institutionTypes.Bank.title
+                      ? t('ApplicationDetailsPage.loan.enterBankName')
+                      : t('ApplicationDetailsPage.loan.enterSaccoName')
+                  }
                 />
               )}
             />

@@ -380,18 +380,27 @@
       "repaymentPeriod": "Proposed repayment period in months",
       "bankAccountDetails": "Bank account details",
       "groupsBankName": "Group bank name",
+      "groupsSaccoName": "Group SACCO name",
+      "groupsSaccoBranch" : "Group's SACCO branch",
       "groupsBankBranch": "Group's bank branch",
-      "bankAccountNumber": "Bank account number",
+      "bankAccountNumber": "Account number",
       "LoanDescriptionWezesha": "Wezesha is for first time borrowers. Loan amount range is 50 000 KSh - 100 000 KSh. Maximum repayment period is 24 months.",
       "LoanDescriptionEndeleza": "Endeleza is a subsequent loan for repeat borrowers. The Loan amount is up to Kshs. 500,000 upgraded as a percentage (150%  to not more than 200%) of the initial amount.",
-      "Interest": "The loan has a 1% interest rate.",
+      "Interest": "The loan has a 1% administrative fee deductable upfront.",
       "maximumLoan": "Maximum amount is {count} KSh",
       "bankName": "Group bank name",
       "bankBranch": "Group bank branch",
       "accountNumber": "Bank account number",
       "selectBank": "Select bank",
       "invalidLoanAmount": "Invalid loan amount",
-      "creditHistoryDescription": "e.g., Table banking ledger, Discharge certificate, Letter of clearance from another lender"
+      "creditHistoryDescription": "e.g., Table banking ledger, Discharge certificate, Letter of clearance from another lender",
+      "institutionType": "Institution Type",
+      "bank": "Bank",
+      "sacco": "SACCO",
+      "saccoName": "SACCO Name",
+      "enterBankName": "Enter bank name",
+      "enterSaccoName": "Enter SACCO name"
+
     },
     "members": {
       "members": "Members",
@@ -401,6 +410,7 @@
       "member": "Member",
       "idLabel": "ID",
       "genderLabel": "Gender",
+      "economicActivityLabel": "Economic Activity",
       "confirmationRequired": "Confirmation Required",
       "photoOfId": "Photo of ID",
       "disabilityCertificate": "Disability Certificate"
@@ -413,12 +423,14 @@
       },
       "basicInfo": {
         "groupBasics": "Group basics",
-        "groupName": "Group name",
+        "groupName": "Group name as per registration certificate",
         "registrationNumber": "Registration number",
         "dateFormed": "Date formed",
         "groupRegistrationCert": "Group registration certificate",
         "listOfMembersOnCert": "List of members on certificate",
         "groupRegistrationNumber": "Group registration number",
+        "groupMeetingMinutes": "Group meeting minutes",
+        "groupMeetingMinutesDescription": "Upload minutes from at least 3 recent group meetings",
         "dateRegistered": "Date registered"
       },
       "locationInfo": {
@@ -430,7 +442,7 @@
         "nearestLandmark": "Nearest landmark"
       },
       "groupBackground": {
-        "groupBackground": "Group background",
+        "groupBackground": "Group Purpose",
         "purposeOfTheGroup": "Purpose of the group",
         "keyActivitiesOfGroup": "Key activities of the group",
         "creditHistory": "Group credit history",
@@ -463,7 +475,7 @@
       "businessInfo": {
         "businessInformation": "Business information",
         "natureOfBusiness": "Nature of business",
-        "businessType": "Business type",
+        "businessType": "Business Sector",
         "operationPeriod": "How many years has the group been in operation?",
         "startup": "Start-up",
         "expansion": "Expansion",
@@ -490,7 +502,7 @@
     }
   },
   "ConfirmationsPage": {
-    "title": "Confirmations-now",
+    "title": "Confirmations",
     "form-title-declarations": "Group declaration",
     "form-title-members": "Members confirmation",
     "form-title-group": "Group confirmation",
@@ -501,8 +513,8 @@
       "no-additional-loans": "We shall not be eligible for additional loans unless the amount in default has been cleared in full"
     },
     "confirmMembersForm": {
-      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, all group members will be automatically notified through their phone numbers to give their consent for the loan application. All members must respond, and at least 75% of the responses need to be in favor (confirm) for the loan application to proceed to the next step.",
-      "progress-saved": "You can safely close the browser page and come back to it later. Your progress has been saved, <strong>you will be notified via SMS once enough members have confirmed to proceed.</strong>",
+      "confirmation-instructions": "Confirmation is done through SMS. Once you click the button below, all group members will be automatically notified through their phone numbers to give their consent for the loan application. At least 75% of the responses need to be in favor (confirm) for the loan application to proceed to the next step.",
+      "progress-saved": "You can safely close the browser page and come back to it later once members have confirmed. Your progress has been saved.",
       "send-to-members": "Send to all members for confirmation",
       "threshold-met": "✓ Great! Your group has met the 75% confirmation threshold. You can proceed to the next step.",
       "threshold-needed": "Your group needs at least 75% of members to confirm. Currently at {percentage}%.",
@@ -540,15 +552,18 @@
     "searchForMember": "Search for member",
     "membersInfoInserted": "{count} members' info inserted",
     "enterNameOrNationalId": "Enter name or national ID number",
-    "idCode": "ID code",
+    "idCode": "ID Number",
     "gender": "Gender",
     "male": "Male",
     "female": "Female",
     "phoneNumber": "Phone number",
     "capacity": "Capacity",
     "memberName": "Member name",
-    "nationalIdCodeAlienId": "National ID code/Alien ID",
+    "nationalIdCodeAlienId": "National ID Number",
     "positionOfMember": "Position of member",
+    "economicActivity": "Economic activity",
+    "economicActivityPlaceholder": "Economic activity",
+    "economicActivityDescription": "Economic activity a member is involved in apart from the group activities",
     "photoOfMemberId": "Photo of member ID",
     "personWithDisability": "Person with disability",
     "certificateOfDisability": "Certificate of disability",

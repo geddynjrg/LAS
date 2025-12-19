@@ -33,3 +33,52 @@ api_auth.token_revoke_all:
     _title: 'Revoke All Tokens'
   requirements:
     _permission: 'administer site configuration'
+
+api_auth.ecitizen.initiate:
+  path: '/api/oauth/ecitizen'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::initiate'
+    _title: 'eCitizen OAuth Initiation'
+  requirements:
+    _permission: 'access content'
+
+api_auth.ecitizen.callback:
+  path: '/api/oauth/ecitizen/callback'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::callback'
+    _title: 'eCitizen OAuth Callback'
+  requirements:
+    _permission: 'access content'
+
+api_auth.ecitizen_oauth:
+  path: '/api/v1/user/ecitizen-oauth'
+  defaults:
+    _controller: '\Drupal\api_auth\Plugin\rest\resource\ApiECitizenLoginResource::oauthExchange'
+    _plugin: 'api_ecitizen_login'
+  requirements:
+    _permission: 'restful post api_ecitizen_login'
+  options:
+    _auth: []
+
+api_auth.ecitizen_store_pkce:
+  path: '/api/v1/ecitizen/store-pkce'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::storePkce'
+    _format: 'json'
+  requirements:
+    _permission: 'access content'
+
+api_auth.test_callback:
+  path: '/test-callback'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\TestCallbackController::capture'
+  requirements:
+    _permission: 'access content'
+
+api_auth.test_route:
+  path: '/api-test'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\TestRouteController::test'
+    _title: 'Test Route'
+  requirements:
+    _permission: 'access content'

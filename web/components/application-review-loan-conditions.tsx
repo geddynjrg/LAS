@@ -67,15 +67,29 @@ export const ApplicationReviewLoanConditions: FC<
           <AccordionTrigger>{t('loan.bankAccountDetails')}</AccordionTrigger>
           <AccordionContent>
             <div className="grid gap-4">
-              <DataNode label={t('loan.groupsBankName')}>
-                {loanConditionsData.bankNameOther &&
-                loanConditionsData.bankName === 'Other'
-                  ? loanConditionsData.bankNameOther
-                  : loanConditionsData.bankName}
-              </DataNode>
-              <DataNode label={t('loan.groupsBankBranch')}>
-                {loanConditionsData.bankBranch}
-              </DataNode>
+              {/* check if institution is Bank or SACCO */}
+              {/* if Bank then show group bank name, else group sacco name */}
+              {loanConditionsData.institutionType === 'Bank' ? (
+                <DataNode label={t('loan.groupsBankName')}>
+                  {loanConditionsData.bankName}
+                </DataNode>
+              ) : (
+                <DataNode label={t('loan.groupsSaccoName')}>
+                  {loanConditionsData.bankName}
+                </DataNode>
+              )}
+
+              {loanConditionsData.institutionType === 'Bank' ? (
+                <DataNode label={t('loan.groupsBankBranch')}>
+                  {loanConditionsData.bankBranch}
+                </DataNode>
+              ) : (
+                <DataNode label={t('loan.groupsSaccoBranch')}>
+                  {loanConditionsData.bankBranch}
+                </DataNode>
+              )}
+
+
               <DataNode label={t('loan.bankAccountNumber')}>
                 {loanConditionsData.accountNumber}
               </DataNode>

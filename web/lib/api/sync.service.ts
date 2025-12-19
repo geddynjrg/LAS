@@ -113,12 +113,15 @@ async function processSyncItem(queueItemId: string) {
 
     switch (queueItem.action) {
       case 'CREATE':
+        console.log('Creating application in external API:', application.applicationId);
         result = await sendApplicationToExternalApi(application);
         break;
       case 'UPDATE':
+        console.log('Updating application in external API:', application.applicationId);
         result = await updateApplicationInExternalApi(application);
         break;
       case 'DELETE':
+        console.log('Deleting application in external API:', application.applicationId);
         result = await deleteApplicationInExternalApi(
           application.applicationId,
         );
@@ -607,12 +610,32 @@ async function transformApplicationForExternalApi(
   const groupRegistrationCertificate = await transformSingleFile(
     application.groupData?.groupRegistrationCertificate,
   );
+
   const listOfMembersOnCertificate = await transformSingleFile(
     application.groupData?.listOfMembersOnCertificate,
   );
-  const groupCreditHistory = await transformFiles(
+
+  // tranform group minutes files
+  const groupMinutesFilesResult = await transformFiles(
+    application.groupData?.groupMeetingMinutes,
+  );
+
+  const groupCreditHistoryResult = await transformFiles(
     application.groupData?.groupCreditHistory,
   );
+
+  const groupMinutesFiles = Array.isArray(groupMinutesFilesResult)
+    ? groupMinutesFilesResult
+    : groupMinutesFilesResult
+      ? [groupMinutesFilesResult]
+      : undefined;
+
+
+  const groupCreditHistory = Array.isArray(groupCreditHistoryResult)
+    ? groupCreditHistoryResult
+    : groupCreditHistoryResult
+      ? [groupCreditHistoryResult]
+      : undefined;
   
   // Enhanced member transformation with better data preservation
   const transformedMembers = await Promise.all(
@@ -621,11 +644,11 @@ async function transformApplicationForExternalApi(
       // Preserve ALL existing confirmation data exactly as in database
       const confirmationData = {
         requires_confirmation: member.requiresConfirmation !== false,
-        confirmation_token: member.confirmation_token,
-        confirmation_sent_at: toUnixTimestamp(member.confirmation_sent_at),
-        confirmation_confirmed_at: toUnixTimestamp(member.confirmation_confirmed_at),
+        confirmation_token: member.confirmation_token || undefined, // Convert null to undefined
+        confirmation_sent_at: toUnixTimestamp(member.confirmation_sent_at) || undefined, // Convert null/0 to undefined
+        confirmation_confirmed_at: toUnixTimestamp(member.confirmation_confirmed_at) || undefined, // Convert null/0 to undefined
         confirmation_status: member.confirmation_status,
-        confirmation_token_expires_at: toUnixTimestamp(member.confirmation_token_expires_at),
+        confirmation_token_expires_at: toUnixTimestamp(member.confirmation_token_expires_at) || undefined,
       };
 
       // Determine the correct status to send to API
@@ -657,15 +680,16 @@ async function transformApplicationForExternalApi(
         phone_number: member.phoneNumber || '',
         position: extractValue(member.type),
         photo_member_id: await transformSingleFile(member.photoOfId),
+        economic_activity: cleanValue(member.economicActivity),
         person_with_disability: !!member.certificateOfDisability,
         pwd_number: cleanValue(member.pwdNumber),
         certificate_disability: await transformSingleFile(
           member.certificateOfDisability,
         ),
         requires_confirmation: confirmationData.requires_confirmation,
-        confirmation_token: confirmationData.confirmation_token,
-        confirmation_sent_at: confirmationData.confirmation_sent_at,
-        confirmation_confirmed_at: confirmationData.confirmation_confirmed_at,
+        confirmation_token: confirmationData.confirmation_token, // undefined instead of null
+        confirmation_sent_at: confirmationData.confirmation_sent_at, // undefined instead of null
+        confirmation_confirmed_at: confirmationData.confirmation_confirmed_at, // undefined instead of null
         confirmation_status: apiConfirmationStatus,
       };
     }),
@@ -685,6 +709,11 @@ async function transformApplicationForExternalApi(
     date_registered: formatDate(application.groupData?.dateFormed),
     group_registration_certificate: groupRegistrationCertificate,
     list_of_members_certificate: listOfMembersOnCertificate,
+    group_meeting_minutes: groupMinutesFiles
+      ? Array.isArray(groupMinutesFiles)
+        ? groupMinutesFiles
+        : [groupMinutesFiles]
+      : undefined,
     group_background: parseToArray(application.groupData?.purposeOfTheGroup),
     key_activities: parseToArray(
       application.groupData?.keyActivitiesOfTheGroup,
@@ -726,11 +755,8 @@ async function transformApplicationForExternalApi(
     loan_type: extractValue(application.loanConditions?.loanType),
     loan_amount: application.loanConditions?.loanAmount,
     proposed_repayment_period: application.loanConditions?.repaymentPeriod,
-    bank_name: extractValue(
-      application.loanConditions?.bankName === 'Other'
-        ? application.loanConditions?.bankNameOther
-        : application.loanConditions?.bankName,
-    ),
+    bank_name: application.loanConditions?.bankName,
+    institution_type: application.loanConditions?.institutionType,
     bank_branch: application.loanConditions?.bankBranch,
     bank_account_number: application.loanConditions?.accountNumber,
 

@@ -152,6 +152,13 @@ export const ApplicationReviewMembers: FC<{
                                   </span>
                                   <span>{member.nationalIdCode}</span>
                                 </div>
+                                {/* economic activity */}
+                                <div className="flex items-center gap-1">
+                                  <span className="font-medium">
+                                    {t('members.economicActivityLabel')}:
+                                  </span>
+                                  <span>{member.economicActivity}</span>
+                                </div>
                                 <div className="flex items-center gap-1">
                                   <span className="font-medium">
                                     {t('members.genderLabel')}:

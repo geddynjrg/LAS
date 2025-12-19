@@ -1,26 +1,25 @@
+// app/(auth)/login/ecitizen-login-form.tsx
 'use client';
 
-import {
-  type ECitizenLogin,
-  ecitizenLoginSchema,
-} from '@/app/(auth)/login/login-schema';
 import { Alert } from '@workspace/ui/components/alert';
-import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
-import { useTranslations } from 'next-intl';
-import { type FC, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
-export interface ECitizenLoginFormProps {
-  action: FormAction<ECitizenLogin>;
-}
-
-export const ECitizenLoginForm: FC<ECitizenLoginFormProps> = ({ action }) => {
-  const t = useTranslations('LoginPage');
-  const [state, formAction, isPending] = useForm(action, ecitizenLoginSchema);
+export const ECitizenLoginForm = () => {
+  const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const base64UrlEncode = (str: string): string => {
+    return btoa(str)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+  };
+
+
   const generateRandomString = (length: number): string => {
-    const charset =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     let result = '';
     const array = new Uint8Array(length);
     window.crypto.getRandomValues(array);
@@ -28,46 +27,117 @@ export const ECitizenLoginForm: FC<ECitizenLoginFormProps> = ({ action }) => {
     return result;
   };
 
-  const base64urlencode = (str: ArrayBuffer): string => {
-    return btoa(String.fromCharCode(...new Uint8Array(str)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-  };
-
-  const pkceChallengeFromVerifier = async (
-    verifier: string,
-  ): Promise<string> => {
+  const sha256 = async (plain: string): Promise<ArrayBuffer> => {
     const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
-    const digest = await window.crypto.subtle.digest('SHA-256', data);
-    return base64urlencode(digest);
+    const data = encoder.encode(plain);
+    return await window.crypto.subtle.digest('SHA-256', data);
   };
 
   const handleECitizenLogin = async () => {
-    const codeVerifier = generateRandomString(128);
-    const codeChallenge = await pkceChallengeFromVerifier(codeVerifier);
-    const state = generateRandomString(32);
+    setIsLoading(true);
     setError('');
 
     try {
-      // Store code verifier on your server
-      await fetch('https://majuu.uwezo.go.ke/index.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ code_verifier: codeVerifier, state }),
+      // Generate PKCE code_verifier and code_challenge
+      const codeVerifier = generateRandomString(64);
+      const state = generateRandomString(32);
+      
+      // Calculate code_challenge
+      const hashed = await sha256(codeVerifier);
+      const hashArray = Array.from(new Uint8Array(hashed));
+      const hashString = String.fromCharCode.apply(null, hashArray);
+      const codeChallenge = base64UrlEncode(hashString);
+
+
+      // Get callback URL
+      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+
+      console.log('Generated PKCE:', {
+        codeVerifier: codeVerifier.substring(0, 10) + '...',
+        codeChallenge: codeChallenge.substring(0, 10) + '...',
+        state,
+        callbackUrl
       });
 
-      // Store code verifier locally for the callback
-      localStorage.setItem(`pkce_${state}`, codeVerifier);
+      // Store PKCE verifier and state in Drupal via API
+      const drupalUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://uwezo.ddev.site';
+      
+      // First, check if we can make a CORS request
+      // console.log('Testing CORS connection to Drupal...');
+      
+      // const storeResponse = await fetch(`${drupalUrl}/api/v1/ecitizen/store-pkce`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Accept': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     code_verifier: codeVerifier,
+      //     state: state,
+      //     callback_url: callbackUrl,
+      //   }),
+      //   credentials: 'include', // Important for cookies/session
+      // });
 
-      // Redirect to eCitizen OAuth
-      const authUrl = `https://accounts.ecitizen.go.ke/oauth/authorize?response_type=code&client_id=b30d441b886d8a1cd539e007bc5a3f40&redirect_uri=https%3A%2F%2Fmajuu.uwezo.go.ke&scope=openid%20profile%20email&code_challenge=${encodeURIComponent(codeChallenge)}&code_challenge_method=S256&state=${encodeURIComponent(state)}`;
+      // if (!storeResponse.ok) {
+      //   const errorText = await storeResponse.text();
+      //   console.error('Store PKCE failed:', {
+      //     status: storeResponse.status,
+      //     statusText: storeResponse.statusText,
+      //     error: errorText
+      //   });
+        
+      //   if (storeResponse.status === 0) {
+      //     throw new Error('Network error: Cannot connect to Drupal. Check CORS configuration.');
+      //   }
+        
+      //   try {
+      //     const errorData = JSON.parse(errorText);
+      //     throw new Error(errorData.error || 'Failed to initialize authentication session');
+      //   } catch {
+      //     throw new Error(`Server error: ${storeResponse.status} ${storeResponse.statusText}`);
+      //   }
+      // }
+
+      // const result = await storeResponse.json();
+      // console.log('PKCE stored successfully:', result);
+
+      // Store state in sessionStorage for verification
+      sessionStorage.setItem('ecitizen_state', state);
+      sessionStorage.setItem('ecitizen_callback', callbackUrl);
+
+      // Build authorization URL with PKCE parameters
+      const authUrl = `${drupalUrl}/api/oauth/ecitizen?` + new URLSearchParams({
+        state: state,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+        callback: callbackUrl,
+      });
+
+      console.log('Redirecting to Drupal OAuth handler:', {
+        url: authUrl,
+        state: state,
+        hasCodeChallenge: !!codeChallenge,
+      });
+
+      // Redirect to Drupal OAuth handler
       window.location.href = authUrl;
-    } catch (err) {
-      console.error('Failed to store code_verifier:', err);
-      setError('Something went wrong. Please try again.');
+
+    } 
+    catch (err) {
+      console.error('eCitizen login error:', err);
+      
+      // User-friendly error messages
+      let errorMessage = err instanceof Error ? err.message : 'Failed to start authentication. Please try again.';
+      
+      if (errorMessage.includes('CORS') || errorMessage.includes('Network error')) {
+        errorMessage = 'Cannot connect to authentication server. Please ensure the server is running and CORS is configured.';
+      } else if (errorMessage.includes('CSRF')) {
+        errorMessage = 'Security token missing. Please refresh the page and try again.';
+      }
+      
+      setError(errorMessage);
+      setIsLoading(false);
     }
   };
 
@@ -75,31 +145,46 @@ export const ECitizenLoginForm: FC<ECitizenLoginFormProps> = ({ action }) => {
     <div className="space-y-6">
       {error && (
         <Alert variant="error" className="mb-4">
-          {error}
+          <p className="font-medium">Authentication Error</p>
+          <p className="text-sm">{error}</p>
         </Alert>
       )}
 
-      {state.message && (
-        <Alert variant={state.success ? 'success' : 'error'} className="mb-4">
-          {state.message}
-        </Alert>
-      )}
-
-      <button
-        type="button"
-        onClick={handleECitizenLogin}
-        disabled={isPending}
-        className="phx-submit-loading:opacity-75 text-sm font-semibold leading-6 flex w-full justify-center rounded-full border border-transparent py-2 px-4 font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#15b14d] focus:ring-offset-2 disabled:opacity-75 transition-colors duration-200 bg-[#15b14d] hover:bg-[#0e7e36]"
-        title="Sign in with eCitizen"
-      >
-        {isPending ? 'Signing in...' : 'Sign in With eCitizen'}
-      </button>
-
-      <p className="text-center text-sm text-gray-600">
-        Secure government authentication
-      </p>
-
-      <input type="hidden" name="loginType" value="ecitizen" />
+      <div className="text-center">
+        <p className="text-sm text-gray-600 mb-4">
+          Secure government authentication via eCitizen
+        </p>
+        
+        <button
+          type="button"
+          onClick={handleECitizenLogin}
+          disabled={isLoading}
+          className="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold text-white bg-[#15b14d] rounded-full hover:bg-[#0e7e36] focus:outline-none focus:ring-2 focus:ring-[#15b14d] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+        >
+          {isLoading ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Connecting to eCitizen...
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+              </svg>
+              Sign in with eCitizen
+            </>
+          )}
+        </button>
+        
+        <div className="mt-3 text-xs text-gray-500 space-y-1">
+          <p>You will be redirected to the official eCitizen portal</p>
+          <p className="text-[10px]">Using Drupal OAuth endpoint</p>
+          <p className="text-[10px]">Drupal URL: {process.env.NEXT_PUBLIC_DRUPAL_URL || 'Not configured'}</p>
+        </div>
+      </div>
     </div>
   );
 };

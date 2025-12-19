@@ -37,6 +37,16 @@ export function validateApplicationForSubmission(application: ApplicationData): 
     if (!groupData.basics?.dateFormed) missingFields.push('Date Formed');
     if (!isValidFileObject(groupData.basics?.groupRegistrationCertificate)) missingFields.push('Registration Certificate');
     if (!isValidFileObject(groupData.basics?.listOfMembersOnCertificate)) missingFields.push('Members List Certificate');
+    if (!groupData.basics?.groupMeetingMinutes || groupData.basics.groupMeetingMinutes.length === 0) {
+      missingFields.push('Group Meeting Minutes');
+    } // else if validate each file in array? if is a valid file object
+    if (groupData.basics?.groupMeetingMinutes) {
+      groupData.basics.groupMeetingMinutes.forEach((file, index) => {
+        if (!isValidFileObject(file)) {
+          missingFields.push(`Group Meeting Minutes File ${index + 1}`);
+        }
+      });
+    }
     
     // Check background
     if (!groupData.background?.purposeOfTheGroup?.length) missingFields.push('Purpose of Group');
@@ -66,6 +76,7 @@ export function validateApplicationForSubmission(application: ApplicationData): 
       if (!member.nationalIdCode) missingFields.push(`Member ${memberNumber} - National ID`);
       if (!member.phoneNumber) missingFields.push(`Member ${memberNumber} - Phone Number`);
       if (!member.type) missingFields.push(`Member ${memberNumber} - Position`);
+      if (!member.economicActivity) missingFields.push(`Member ${memberNumber} - Economic Activity`);
       if (!isValidFileObject(member.photoOfId)) missingFields.push(`Member ${memberNumber} - Photo ID`);
       if (!member.gender) missingFields.push(`Member ${memberNumber} - Gender`);
     });
@@ -82,10 +93,11 @@ export function validateApplicationForSubmission(application: ApplicationData): 
       member.confirmation_status === 'confirmed'
     ).length;
 
-    // Check if all members have responded
-    if (respondedCount !== totalMembers) {
-      const pendingCount = totalMembers - respondedCount;
-      errors.push(`${pendingCount} member(s) haven't responded to consent requests`);
+    // Check if atleast 75% have responded
+    const requiredResponses = Math.ceil(totalMembers * 0.75);
+    
+    if (respondedCount < requiredResponses) {
+      errors.push(`at least ${requiredResponses} member(s) have to respond to consent requests`);
     }
 
     // Check if 75% have consented (from those who responded)
@@ -129,8 +141,8 @@ export function validateApplicationForSubmission(application: ApplicationData): 
     if (!loan.loanType) missingFields.push('Loan Type');
     if (!loan.loanAmount || loan.loanAmount <= 0) missingFields.push('Valid Loan Amount');
     if (!loan.repaymentPeriod || loan.repaymentPeriod <= 0) missingFields.push('Repayment Period');
-    if (!loan.bankName) missingFields.push('Bank Name');
-    if (!loan.bankBranch) missingFields.push('Bank Branch');
+    if (!loan.bankName) missingFields.push('Bank/SACCO Name');
+    if (!loan.bankBranch) missingFields.push('Bank/SACCO Branch');
     if (!loan.accountNumber) missingFields.push('Account Number');
   }
 

@@ -19,8 +19,12 @@ export const loanConditionsDataSchema = z
           ),
       ),
     repaymentPeriod: z.coerce.number().min(1).max(24),
-    bankName: z.string().nonempty(),
-    bankNameOther: z.string().min(3).optional(),
+    // bankName: z.string().nonempty(),
+    bankName: z.string().nonempty('Please enter the institution name'),
+    // institutionType: z.enum(['bank', 'sacco'], {
+    //   errorMap: () => ({ message: 'Please select either Bank or SACCO' }),
+    // }),
+    institutionType: z.string().nonempty('Please select either Bank or SACCO'),
     bankBranch: z.string().nonempty(),
     accountNumber: z.string().nonempty(),
   })
@@ -51,6 +55,16 @@ export const loanConditionsDataSchema = z
         break;
       default:
         return;
+    }
+  })
+  .superRefine((data, ctx) => {
+    // Validate that institution type is selected if it's required
+    if (!data.institutionType) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['institutionType'],
+        message: 'Please select either Bank or SACCO',
+      });
     }
   });
 

@@ -273,6 +273,14 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
       ? {} // This should not happen since files are processed in the action
       : (data.basics.listOfMembersOnCertificate as Record<string, any>);
 
+    const groupMeetingMinutesJson = Array.isArray(
+      data.basics.groupMeetingMinutes,
+    )
+      ? data.basics.groupMeetingMinutes.map((file) =>
+          isFileUpload(file) ? {} : (file as Record<string, any>),
+        )
+      : (data.basics.groupMeetingMinutes as Record<string, any>);
+
     const groupCreditHistoryJson = Array.isArray(
       data.background.groupCreditHistory,
     )
@@ -290,6 +298,9 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
       ),
       listOfMembersOnCertificate: safeJsonStringify(
         listOfMembersOnCertificateJson,
+      ),
+      groupMeetingMinutes: safeJsonStringify(
+        groupMeetingMinutesJson,
       ),
       purposeOfTheGroup: safeJsonStringify(data.background.purposeOfTheGroup),
       keyActivitiesOfTheGroup: safeJsonStringify(
@@ -452,6 +463,7 @@ export async function updateApplicationMembersData(
           gender: member.gender as any,
           type: member.type as any,
           phoneNumber: member.phoneNumber || '',
+          economicActivity: member.economicActivity || '',
           photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
           certificateOfDisability: member.disability?.certificateOfDisability
             ? safeJsonStringify(member.disability.certificateOfDisability as any)
@@ -494,6 +506,7 @@ export async function updateApplicationMembersData(
           nationalIdCode: member.nationalIdCode || '',
           gender: member.gender as any,
           type: member.type as any,
+          economicActivity: member.economicActivity || '',
           phoneNumber: member.phoneNumber || '',
           photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
           certificateOfDisability: member.disability?.certificateOfDisability
@@ -563,6 +576,7 @@ export async function updateApplicationLoanConditionsData(
   id: string,
   data: LoanConditionsData,
 ) {
+  console.log('Updating loan conditions with data:', data);
   try {
     const user = await getCurrentUser();
 
@@ -585,7 +599,8 @@ export async function updateApplicationLoanConditionsData(
       loanAmount: data.loanAmount,
       repaymentPeriod: data.repaymentPeriod,
       bankName: data.bankName,
-      bankNameOther: data.bankNameOther,
+      bankNameOther: data.bankNameOther || null,
+      institutionType: data.institutionType, // 'bank' or 'sacco'
       bankBranch: data.bankBranch,
       accountNumber: data.accountNumber,
     };
@@ -892,6 +907,10 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
           typeof gd.listOfMembersOnCertificate === 'string'
             ? JSON.parse(gd.listOfMembersOnCertificate)
             : gd.listOfMembersOnCertificate,
+        groupMeetingMinutes:
+          typeof gd.groupMeetingMinutes === 'string'
+            ? JSON.parse(gd.groupMeetingMinutes)
+            : gd.groupMeetingMinutes,
       },
       background: {
         purposeOfTheGroup:
@@ -941,6 +960,7 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         nationalIdCode: m.nationalIdCode,
         gender: m.gender,
         type: m.type,
+        economicActivity: m.economicActivity,
         phoneNumber: m.phoneNumber,
         photoOfId:
           typeof m.photoOfId === 'string'
@@ -973,6 +993,7 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
       loanType: lc.loanType,
       loanAmount: lc.loanAmount,
       repaymentPeriod: lc.repaymentPeriod,
+      institutionType: lc.institutionType,
       bankName: lc.bankName,
       bankNameOther: lc.bankNameOther,
       bankBranch: lc.bankBranch,

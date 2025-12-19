@@ -82,8 +82,9 @@ export const GroupMemberDetailSchema = z.object({
     .describe('Member entity ID (can be number or string)'),
   name: z.string().optional(),
   id_number: z.string().optional(),
-  gender: z.enum(['male', 'female', 'other']).optional(),
+  gender: z.enum(['male', 'female']).optional(),
   phone_number: z.string().optional(),
+  economic_activity: z.string().optional(),
   position: TaxonomyTermSchema.optional(),
   photo_member_id: FileDataSchema.optional(),
   person_with_disability: z.boolean().optional(),
@@ -152,6 +153,7 @@ export const ApplicationDetailSchema = z.object({
         .describe('Date in YYYY-MM-DD format'),
       group_registration_certificate: FileDataSchema.optional(),
       list_of_members_certificate: FileDataSchema.optional(),
+      group_meeting_minutes: z.array(FileDataSchema).optional(),
       group_background: z.array(TaxonomyTermSchema).optional(),
       key_activities: z.array(TaxonomyTermSchema).optional(),
       value_chain: z.array(TaxonomyTermSchema).optional(),
@@ -194,6 +196,7 @@ export const ApplicationDetailSchema = z.object({
         .union([z.number(), z.string()])
         .nullable()
         .optional(),
+      institution_type: TaxonomyTermSchema.nullable().optional(),
       bank_name: TaxonomyTermSchema.nullable().optional(),
       bank_branch: z.string().nullable().optional(),
       bank_account_number: z.string().nullable().optional(),

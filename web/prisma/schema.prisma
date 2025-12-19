@@ -61,6 +61,7 @@ model GroupData {
   dateFormed                     DateTime
   groupRegistrationCertificate   String      @db.LongText
   listOfMembersOnCertificate     String      @db.LongText
+  groupMeetingMinutes            String      @db.LongText @default("[]") // Make required with default
   purposeOfTheGroup              String      @db.LongText
   keyActivitiesOfTheGroup        String      @db.LongText
   groupCreditHistory             String      @db.LongText
@@ -90,6 +91,7 @@ model MemberData {
   nationalIdCode            String
   gender                    Gender
   type                      String
+  economicActivity          String?
   phoneNumber               String
   photoOfId                 String            @db.LongText
   certificateOfDisability   String?           @db.LongText
@@ -121,6 +123,7 @@ model LoanConditions {
   loanAmount      Float
   repaymentPeriod Int
   bankName        String
+  institutionType String?
   bankNameOther   String?
   bankBranch      String
   accountNumber   String
@@ -292,7 +295,6 @@ enum SyncStatus {
 enum Gender {
   Male
   Female
-  Other
 }
 
 enum MemberStatus {

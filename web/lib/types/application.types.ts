@@ -5,7 +5,7 @@ export type Status = ApplicationStatus;
 
 export type MemberType = string;
 
-export type GenderType = 'Male' | 'Female' | 'Other';
+export type GenderType = 'Male' | 'Female';
 
 export interface ApplicationData {
   generalDetails: GeneralDetails;
@@ -42,6 +42,7 @@ export interface GroupData {
     dateFormed: string;
     groupRegistrationCertificate: ValidFile;
     listOfMembersOnCertificate: ValidFile;
+    groupMeetingMinutes: ValidFile[];
   };
   background: {
     purposeOfTheGroup: string[];
@@ -72,6 +73,7 @@ export interface Member {
   nationalIdCode?: string;
   gender?: GenderType;
   type?: MemberType;
+  economicActivity?: string;
   phoneNumber?: string;
   photoOfId: ValidFile;
   disability?: {
@@ -97,6 +99,7 @@ export interface LoanConditionsData {
   repaymentPeriod: number;
   bankName: string;
   bankNameOther?: string;
+  institutionType: string;
   bankBranch: string;
   accountNumber: string;
 }

@@ -60,6 +60,11 @@ export const GroupDataForm: FC<GroupDataProps> = ({
       applicationGroupData?.basics.groupRegistrationCertificate,
     listOfMembersOnCertificate:
       applicationGroupData?.basics.listOfMembersOnCertificate,
+    groupMeetingMinutes: applicationGroupData?.basics.groupMeetingMinutes
+      ? Array.isArray(applicationGroupData.basics.groupMeetingMinutes)
+        ? applicationGroupData.basics.groupMeetingMinutes
+        : [applicationGroupData.basics.groupMeetingMinutes]
+      : undefined,
     groupPurpose: applicationGroupData?.background.purposeOfTheGroup,
     groupActivities: applicationGroupData?.background.keyActivitiesOfTheGroup,
     valueChain: applicationGroupData?.background.valueChain ?? undefined,
@@ -207,6 +212,35 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                 applicationId={id}
                 enableUpload={true}
                 uploadAction={uploadSingleFileAction}
+                {...props}
+              />
+            )}
+          />
+
+                    <Field
+            state={state}
+            name="groupMeetingMinutes"
+            label={
+              <div>
+                <div>
+                  {t('ApplicationDetailsPage.groupData.basicInfo.groupMeetingMinutes')}
+                  <span className="text-destructive">*</span>
+                </div>
+                <div className="typo-body-small text-foreground font-normal mt-1">
+                  {t('ApplicationDetailsPage.groupData.basicInfo.groupMeetingMinutesDescription')}
+                </div>
+              </div>
+            }
+            description={t('Common.youCanAddMultipleFiles')}
+            required
+            control={(props) => (
+              <FileUploadInput
+                accept={FILE_ACCEPT}
+                maxSize={MAX_FILE_SIZE}
+                applicationId={id}
+                enableUpload={true}
+                multiple
+                uploadAction={uploadFileAction}
                 {...props}
               />
             )}

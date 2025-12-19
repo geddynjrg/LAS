@@ -18,6 +18,7 @@ import { useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
 import { type FC, useState, useEffect } from 'react';
 import type { Member } from '@/lib/types/application.types';
+import { IconRefresh, IconCheck, IconX } from '@tabler/icons-react';
 
 interface MemberConfirmationDataProps {
   id: string;
@@ -61,6 +62,11 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
   const [confirmedCount, setConfirmedCount] = useState(initialConfirmedCount);
   const [isThresholdMet, setIsThresholdMet] = useState(initialIsThresholdMet);
 
+  // Refresh button states
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshStatus, setRefreshStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [refreshMessage, setRefreshMessage] = useState<string>('');
+  
   // tracking responses
   const [respondedCount, setRespondedCount] = useState(
     initialMembers.filter(member => 
@@ -84,9 +90,15 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     setRespondedCount(newRespondedCount);
   }, [initialMembers, initialConfirmedCount, initialIsThresholdMet]);
 
-  // Calculate if all members have responded
-  const allMembersResponded = respondedCount === totalMembers && totalMembers > 0;
-  const is75PercentMet = allMembersResponded && confirmedCount >= Math.ceil(totalMembers * 0.75);
+  // required thresholds
+  const minRequiredResponses = Math.ceil(totalMembers * 0.75);
+  const minRequiredConsents = Math.ceil(totalMembers * 0.75);
+
+  // Check if we have enough responses (75% of members)
+  const hasEnoughResponses = respondedCount >= minRequiredResponses;
+  
+  // Check if we have enough consents (75% of members must consent)
+  const hasEnoughConsents = confirmedCount >= minRequiredConsents;
 
   const respondedPercentage = totalMembers > 0 
     ? Math.round((respondedCount / totalMembers) * 100) 
@@ -95,7 +107,6 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
   const confirmationPercentage = totalMembers > 0 
     ? Math.round((confirmedCount / totalMembers) * 100) 
     : 0;
-
 
   // Countdown timer for resend - only starts when response is received
   useEffect(() => {
@@ -107,16 +118,28 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     }
   }, [countdown, canResend]);
 
-  // Auto-hide success/error alerts after 2 minutes
+  // Auto-hide success/error alerts after 1 minute
   useEffect(() => {
     if (sendResult?.timestamp) {
       const hideTimer = setTimeout(() => {
         setSendResult(null);
-      }, 2 * 60 * 1000); // 2 minutes
+      }, 1 * 60 * 1000); // 1 minute
 
       return () => clearTimeout(hideTimer);
     }
   }, [sendResult]);
+
+  // Auto-hide refresh status after 5 seconds
+  useEffect(() => {
+    if (refreshStatus !== 'idle') {
+      const timer = setTimeout(() => {
+        setRefreshStatus('idle');
+        setRefreshMessage('');
+      }, 5000); // 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [refreshStatus]);
 
   const handleSendConfirmations = async () => {
     if (!canResend) return;
@@ -134,19 +157,7 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
         if (refreshResult.success && refreshResult.application) {
           const updatedApplication = refreshResult.application;
           if (updatedApplication.members) {
-            setMembers(updatedApplication.members.members);
-            
-            // Recalculate confirmed count
-            const newConfirmedCount = updatedApplication.members.members.filter(
-              (member: Member) => member.confirmation_status === 'confirmed'
-            ).length;
-            setConfirmedCount(newConfirmedCount);
-            
-            // Recalculate threshold
-            const newConfirmationPercentage = totalMembers > 0 
-              ? Math.round((newConfirmedCount / totalMembers) * 100) 
-              : 0;
-            setIsThresholdMet(newConfirmationPercentage >= 75);
+            updateMemberData(updatedApplication.members.members);
           }
         }
       }
@@ -177,7 +188,29 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     }
   };
 
-  
+    // Helper function to update member data
+  const updateMemberData = (updatedMembers: Member[]) => {
+    setMembers(updatedMembers);
+    
+    // Recalculate confirmed count
+    const newConfirmedCount = updatedMembers.filter(
+      (member: Member) => member.confirmation_status === 'confirmed'
+    ).length;
+    setConfirmedCount(newConfirmedCount);
+    
+    // Recalculate responded count
+    const newRespondedCount = updatedMembers.filter(
+      (member: Member) => member.confirmation_status && member.confirmation_status !== 'pending' && member.confirmation_status !== 'sent'
+    ).length;
+    setRespondedCount(newRespondedCount);
+    
+    // Check thresholds
+    const newHasEnoughResponses = newRespondedCount >= minRequiredResponses;
+    const newHasEnoughConsents = newConfirmedCount >= minRequiredConsents;
+    
+    // Update threshold met status
+    setIsThresholdMet(newHasEnoughResponses && newHasEnoughConsents);
+  };
 
   const formatCountdown = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -245,33 +278,77 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
   // Manual refresh function
   const handleRefreshStatus = async () => {
+    if (isRefreshing) return; // Prevent multiple clicks
+    
+    setIsRefreshing(true);
+    setRefreshStatus('idle');
+    setRefreshMessage('');
+
     try {
       const refreshResult = await refreshApplicationData(id);
       
       if (refreshResult.success && refreshResult.application) {
         const updatedApplication = refreshResult.application;
         if (updatedApplication.members) {
-          setMembers(updatedApplication.members.members);
+          updateMemberData(updatedApplication.members.members);
           
+          // Calculate changes
           const newConfirmedCount = updatedApplication.members.members.filter(
             (member: Member) => member.confirmation_status === 'confirmed'
           ).length;
-          setConfirmedCount(newConfirmedCount);
-          
           const newRespondedCount = updatedApplication.members.members.filter(
-          (member: Member) => member.confirmation_status && member.confirmation_status !== 'pending' && member.confirmation_status !== 'sent'
+            (member: Member) => member.confirmation_status && member.confirmation_status !== 'pending' && member.confirmation_status !== 'sent'
           ).length;
-          setRespondedCount(newRespondedCount);
           
-          const allResponded = newRespondedCount === totalMembers && totalMembers > 0;
-          const newIs75PercentMet = allResponded && newConfirmedCount >= Math.ceil(totalMembers * 0.75);
-          setIsThresholdMet(newIs75PercentMet);
+          const confirmedChange = newConfirmedCount - confirmedCount;
+          const respondedChange = newRespondedCount - respondedCount;
+          
+          // Set success message with details
+          let message = 'Status updated successfully';
+          if (confirmedChange > 0 || respondedChange > 0) {
+            const changes = [];
+            if (confirmedChange > 0) changes.push(`${confirmedChange} new consent${confirmedChange > 1 ? 's' : ''}`);
+            if (respondedChange > 0) changes.push(`${respondedChange} new response${respondedChange > 1 ? 's' : ''}`);
+            message = `Updated! ${changes.join(' and ')}`;
+          } else {
+            message = 'Status is up to date';
+          }
+          
+          setRefreshStatus('success');
+          setRefreshMessage(message);
         }
+      } else {
+        setRefreshStatus('error');
+        setRefreshMessage(refreshResult.error || 'Failed to refresh status');
       }
     } catch (error) {
       console.error('Failed to refresh status:', error);
+    } finally {
+      // Always reset the refreshing state
+      setIsRefreshing(false);
     }
   };
+
+  const getRefreshButtonClasses = () => {
+    const baseClasses = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200";
+    
+    if (isRefreshing) {
+      return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200 cursor-wait`;
+    }
+    
+    if (refreshStatus === 'success') {
+      return `${baseClasses} bg-green-100 text-green-700 border border-green-200 hover:bg-green-200`;
+    }
+    
+    if (refreshStatus === 'error') {
+      return `${baseClasses} bg-red-100 text-red-700 border border-red-200 hover:bg-red-200`;
+    }
+    
+    return `${baseClasses} bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm`;
+  };
+
+  // Determine if we can proceed to next step
+  const canProceed = hasEnoughResponses && hasEnoughConsents;
 
   return (
     <Form 
@@ -302,20 +379,20 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
                   {respondedCount}/{totalMembers}
                 </div>
                 <div className="text-blue-600 font-medium mb-3">
-                  Members Responded
+                  Members Responded (at least {minRequiredResponses} required)
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 mb-1">
                   <div 
                     className={`h-3 rounded-full transition-all duration-500 ${
-                      allMembersResponded ? 'bg-green-600' : 'bg-blue-600'
+                      hasEnoughResponses ? 'bg-green-600' : 'bg-blue-600'
                     }`}
                     style={{ width: `${Math.min(respondedPercentage, 100)}%` }}
                   ></div>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>{respondedPercentage}% responded</span>
-                  <span className={allMembersResponded ? 'text-green-600 font-semibold' : ''}>
-                    {allMembersResponded ? '✓ All Responded' : 'All must respond'}
+                  <span className={hasEnoughResponses ? 'text-green-600 font-semibold' : ''}>
+                    100%
                   </span>
                 </div>
               </div>
@@ -325,29 +402,29 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
               {/* Status Summary */}
               <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-                <div className={`p-2 rounded ${allMembersResponded ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                <div className={`p-2 rounded ${hasEnoughResponses ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
                   <div className="font-semibold">Response Status</div>
-                  <div>{allMembersResponded ? 'Complete' : 'In Progress'}</div>
+                  <div>{respondedCount === totalMembers ? 'Complete' : 'In Progress'}</div>
                 </div>
-                <div className={`p-2 rounded ${is75PercentMet ? 'bg-green-100 text-green-800' : allMembersResponded ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800'}`}>
-                  <div className="font-semibold">Consent Status</div>
+                <div className={`p-2 rounded ${canProceed ? 'bg-green-100 text-green-800' : hasEnoughResponses ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800'}`}>
+                  <div className="font-semibold">Members Consented (at least {minRequiredConsents} required)</div>
                   <div className="w-full bg-gray-200 rounded-full h-3 mb-1">
                     <div 
                       className={`h-3 rounded-full transition-all duration-500 ${
-                        is75PercentMet ? 'bg-green-600' : 'bg-orange-500'
+                        hasEnoughConsents ? 'bg-green-600' : 'bg-orange-500'
                       }`}
-                      style={{ width: `${Math.min(confirmationPercentage, 100)}%` }}
+                      style={{ width: `${Math.min(confirmationPercentage, 75)}%` }}
                     ></div>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>{confirmationPercentage}% consented</span>
-                    <span className={is75PercentMet ? 'text-green-600 font-semibold' : 'text-orange-600'}>
-                      {is75PercentMet ? '✓ Threshold Met' : '75% consent required'}
+                    <span className={hasEnoughConsents ? 'text-green-600 font-semibold' : 'text-orange-600'}>
+                      {hasEnoughConsents ? '✓ Threshold Met' : '75% consent required'}
                     </span>
                   </div>
                   <div>
-                    {is75PercentMet ? 'Approved' : 
-                    allMembersResponded ? 'Review Needed' : 'Waiting for Responses'}
+                    {hasEnoughConsents ? 'Approved' : 
+                    respondedCount === totalMembers ? 'Review Needed' : 'Waiting for Responses'}
                   </div>
                 </div>
               </div>
@@ -360,13 +437,53 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
               <h3 className="font-semibold text-gray-800">
                 Member Status ({members.length} members)
               </h3>
-              <button
+              {/* <button
                 type="button"
                 onClick={handleRefreshStatus}
                 className="text-sm bg-white hover:bg-gray-100 text-gray-700 px-3 py-1 rounded border border-gray-300 transition-colors"
               >
                 Refresh Status
-              </button>
+              </button> */}
+              <div className="flex items-center gap-3">
+                {/* Refresh Status Indicator */}
+                {refreshStatus !== 'idle' && (
+                  <div className={`flex items-center gap-2 px-3 py-1 rounded text-sm ${
+                    refreshStatus === 'success' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-red-100 text-red-700'
+                  }`}>
+                    {refreshStatus === 'success' ? (
+                      <IconCheck size={16} />
+                    ) : (
+                      <IconX size={16} />
+                    )}
+                    <span className="font-medium">
+                      {refreshMessage || (refreshStatus === 'success' ? 'Updated!' : 'Error')}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Enhanced Refresh Button */}
+                <button
+                  type="button"
+                  onClick={handleRefreshStatus}
+                  disabled={isRefreshing}
+                  className={getRefreshButtonClasses()}
+                  title="Refresh member status"
+                >
+                  {isRefreshing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></div>
+                      <span>Refreshing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <IconRefresh size={18} className={refreshStatus === 'success' ? 'text-green-600' : ''} />
+                      <span>Refresh Status</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
             <div className="divide-y">
               {members.map((member, index) => (
@@ -457,14 +574,14 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
       {/* Action Bar - Only enable next if threshold is met */}
       <ApplyFormActionBar 
-        disabled={!allMembersResponded || !is75PercentMet || isPending}
+        disabled={!canProceed || isPending}
         prevUrl={prevUrl}
         nextUrl={nextUrl}
         nextTooltip={
-          !allMembersResponded 
-            ? `Waiting for ${totalMembers - respondedCount} more members to respond`
-            : !is75PercentMet
-            ? `Requires ${Math.ceil(totalMembers * 0.75)} consents (${confirmedCount}/${totalMembers})`
+          !hasEnoughResponses 
+            ? `Need ${minRequiredResponses - respondedCount} more responses`
+            : !hasEnoughConsents
+            ? `Need ${minRequiredConsents - confirmedCount} more consents`
             : undefined
         }
       />

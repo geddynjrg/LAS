@@ -7,8 +7,9 @@ import { z } from 'zod';
 const memberSchema = z.object({
   fullname: z.string().min(1, 'Member name is required'),
   nationalIdCode: z.string().min(1, 'National ID is required'),
-  gender: z.union([z.literal('Male'), z.literal('Female'), z.literal('Other')]),
+  gender: z.union([z.literal('Male'), z.literal('Female')]),
   type: z.string().min(1, 'Position is required'),
+  economicActivity: z.string().optional(),
   phoneNumber: phoneNumber(),
   photoOfId: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
   disability: z

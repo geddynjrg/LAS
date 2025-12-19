@@ -132,6 +132,9 @@ function mapApiApplicationToLocal(
           listOfMembersOnCertificate: parseFileData(
             gd.list_of_members_certificate,
           ),
+          groupMeetingMinutes: gd.group_meeting_minutes
+            ? gd.group_meeting_minutes.map(parseFileData)
+            : [],
         },
         background: {
           purposeOfTheGroup: gd.group_background?.map((bg) => bg.name) || [],
@@ -170,9 +173,10 @@ function mapApiApplicationToLocal(
         members: apiApp.group_members.map((member) => ({
           fullname: member.name || '',
           nationalIdCode: member.id_number || '',
-          gender: (member.gender as 'Male' | 'Female' | 'Other') || 'Other',
+          gender: (member.gender as 'Male' | 'Female') || 'Female',
           type: member.position?.name || 'Member',
           phoneNumber: member.phone_number || '',
+          economicActivity: member.economic_activity || '',
           photoOfId: parseFileData(member.photo_member_id),
           disability: member.person_with_disability
             ? {
@@ -202,6 +206,7 @@ function mapApiApplicationToLocal(
         loanType: lc.loan_type?.name || '',
         loanAmount: parseNumber(lc.loan_amount) || 0,
         repaymentPeriod: parseInteger(lc.proposed_repayment_period) || 0,
+        institutionType: lc.institution_type?.name || '',
         bankName: lc.bank_name?.name || '',
         bankBranch: lc.bank_branch || '',
         accountNumber: lc.bank_account_number || '',
@@ -307,6 +312,24 @@ async function syncApplicationDataChanges(
             ...(apiApp.id && { externalId: String(apiApp.id) }),
           },
         });
+
+        // we also need to send an update to the LMS system if status changed
+
+        // await fetch(`${process.env.LMS_API_URL}/api/v1/application/sync-status`, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     'X-API-Key': process.env.LMS_API_KEY || '',
+        //   },
+        //   body: JSON.stringify({
+        //     application_id: apiApp.application_id,
+        //     status: apiApp.status,
+        //     updated_at: apiUpdatedAt
+        //       ? apiUpdatedAt.toISOString()
+        //       : new Date().toISOString(),
+        //   }),
+        // });
+
       }
     } catch (error) {
       console.error(
@@ -409,7 +432,7 @@ export async function getHybridApplications(
         await syncApplicationDataChanges(apiApplications);
 
         // Sync member status changes from API to local database
-        await syncMemberStatusChanges(apiApplications);
+        // await syncMemberStatusChanges(apiApplications);
       }
     } catch (error) {
       console.warn('[HYBRID] API call failed, using local data only:', error);

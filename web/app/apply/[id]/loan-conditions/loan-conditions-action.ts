@@ -42,8 +42,9 @@ export const loanConditionsAction: FormAction<LoanConditionsData> = async (
     repaymentPeriod: data.repaymentPeriod,
     accountNumber: data.accountNumber,
     bankBranch: data.bankBranch,
-    bankName: data.bankName,
-    bankNameOther: data.bankNameOther,
+    bankName: data.bankName, // Always set to 'Other' since we're using custom input
+    // bankNameOther: data.bankNameOther, // Store the actual institution name here
+    institutionType: data.institutionType, // Store institution type
   });
 
   redirect(redirectTo);

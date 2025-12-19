@@ -335,6 +335,12 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                         >
                           {member.type ?? 'N/A'}
                         </DataNode>
+                        <DataNode
+                          orientation="horizontal"
+                          label={t('MembersPage.economicActivity')}
+                        >
+                          {member.economicActivity ?? 'N/A'}
+                        </DataNode>
                       </PersonAccordionContent>
                       <MemberAccordionFooter
                         onEdit={() => {
@@ -447,6 +453,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     gender: existingMember?.gender,
     phoneNumber: existingMember?.phoneNumber,
     type: existingMember?.type,
+    economicActivity: existingMember?.economicActivity,
     disability: existingMember?.disability ? ('on' as const) : null,
     certificateOfDisability:
       existingMember?.disability?.certificateOfDisability,
@@ -462,6 +469,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     : undefined;
 
   const [state] = useForm(memberAction, memberSchema, formInitialValues);
+
   const [withDisability, setWithDisability] = useState(
     existingMember?.disability?.certificateOfDisability ||
       existingMember?.disability?.pwdNumber
@@ -730,6 +738,27 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
       <Field
         state={state}
+        name="economicActivity"
+        label={t('MembersPage.economicActivity')}
+        required
+        control={(props) => (
+          <Input
+            {...props}
+            defaultValue={member?.economicActivity}
+            onValueChange={(value) => {
+              setMember((member) => ({
+                ...member,
+                economicActivity: value,
+              }));
+            }}
+            placeholder={t('MembersPage.economicActivityPlaceholder')}
+          />
+        )}
+        description={t('MembersPage.economicActivityDescription')}
+      />
+
+      <Field
+        state={state}
         name="photoOfId"
         label={t('MembersPage.photoOfMemberId')}
         required
@@ -885,6 +914,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               gender: member.gender,
               type: member.type,
               phoneNumber: member.phoneNumber,
+              economicActivity: member.economicActivity,
               photoOfId: member.photoOfId,
               disability: member.disability ? 'on' : null,
               certificateOfDisability: member.disability?.certificateOfDisability,
@@ -901,6 +931,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               if (errors.nationalIdCode) missingFields.push('National ID');
               if (errors.gender) missingFields.push('Gender');
               if (errors.type) missingFields.push('Position');
+              if (errors.economicActivity) missingFields.push('Economic Activity');
               if (errors.phoneNumber) missingFields.push('Phone Number');
               if (errors.photoOfId) missingFields.push('Photo of ID');
 
