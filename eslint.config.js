@@ -9,6 +9,8 @@ export default [
       '**/node_modules',
       '**/.next',
       '**/out',
+      '**/generated/**',
+      '**/web/generated/**',
       '**/jest.config.js',
       '**/jest.setup.js',
     ],

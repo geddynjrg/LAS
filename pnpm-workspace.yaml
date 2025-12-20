@@ -1,4 +1,16 @@
 packages:
-  - "packages/*"
-  - "web"
-  - "storybook"
+  - packages/*
+  - web
+  - storybook
+
+ignoredBuiltDependencies:
+  - core-js-pure
+  - esbuild
+  - unrs-resolver
+
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@tailwindcss/oxide'
+  - prisma
+  - sharp

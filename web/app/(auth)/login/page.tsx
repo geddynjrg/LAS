@@ -53,7 +53,7 @@ export default async function Page({
           {/* eCitizen Login - First Option */}
           {loginType === 'ecitizen' && (
             <div className="space-y-4">
-              <ECitizenLoginForm action={ecitizenLoginAction} />
+              <ECitizenLoginForm />
 
               <Divider className="my-6">{t('or')}</Divider>
 
