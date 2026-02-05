@@ -16,7 +16,7 @@ import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { Form } from '@workspace/ui/components/form';
 import { useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { type FC, useState, useEffect } from 'react';
+import { type FC, useState, useEffect, JSXElementConstructor, ReactElement, ReactNode, ReactPortal } from 'react';
 import type { Member } from '@/lib/types/application.types';
 
 interface MemberConfirmationDataProps {
@@ -288,7 +288,7 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
             <p>{t('ConfirmationsPage.confirmMembersForm.confirmation-instructions')}</p>
             <p>
               {t.rich('ConfirmationsPage.confirmMembersForm.progress-saved', {
-                strong: (chunks) => <strong>{chunks}</strong>,
+                strong: (chunks: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined) => <strong>{chunks}</strong>,
               })}
             </p>
           </div>
