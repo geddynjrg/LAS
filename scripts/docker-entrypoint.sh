@@ -54,7 +54,7 @@ fi
 echo "Database is ready"
 
 echo "Running database migrations..."
-npx prisma migrate deploy --schema=./prisma/schema.prisma
+npx prisma@6.11.1 migrate deploy --schema=./prisma/schema.prisma
 
 echo "Starting application..."
 cd /app

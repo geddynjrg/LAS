@@ -51,6 +51,7 @@ COPY composer.json composer.lock ./
 # Copy all application files
 COPY --chown=www-data:www-data . .
 
+RUN git config --global --add safe.directory '*'
 # Copy custom PHP configuration
 COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 

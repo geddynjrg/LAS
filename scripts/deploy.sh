@@ -164,6 +164,17 @@ setup_ssh() {
 
 # Build Docker images
 build_images() {
+    log_info "Converting line endings to Linux format (LF)..."
+    # This ensures the ingredients are fixed every time right before baking
+    dos2unix docker/nginx/docker-entrypoint.sh
+    dos2unix web/scripts/docker-entrypoint.sh
+    dos2unix scripts/deploy.sh
+    dos2unix scripts/init-certs.sh
+
+    if ! command -v docker &> /dev/null; then
+        log_error "Docker not found..."
+        exit 1
+    fi
     
     if ! command -v docker &> /dev/null; then
         log_error "Docker not found. Please install Docker."
@@ -252,7 +263,7 @@ transfer_configs() {
 deploy_application() {
     
     ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
-        "cd $DEPLOY_PATH && docker compose up -d --remove-orphans --no-build"
+        "cd $DEPLOY_PATH && docker compose up -d --force-recreate --remove-orphans --no-build"
 }
 
 # Run post-deployment tasks
@@ -267,7 +278,7 @@ post_deploy() {
 
     log_info "Running web database migrations..."
     ssh $SSH_KEY_ARG $SSH_OPTIONS "$DEPLOY_USER@$DEPLOY_HOST" \
-        "cd $DEPLOY_PATH && docker compose exec -T web sh -c 'cd /app/web && npx prisma migrate deploy'"
+        "cd $DEPLOY_PATH && docker compose exec -T web sh -c 'cd /app/web && npx prisma@6.11.1 migrate deploy'"
 }
 
 

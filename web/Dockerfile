@@ -19,8 +19,9 @@ FROM base AS builder
 
 COPY --from=deps /app ./
 COPY web/ ./web/
-RUN pnpm --filter=web db:generate
-RUN pnpm --filter=web build
+RUN npx prisma generate --schema=./web/prisma/schema.prisma
+# RUN npx next build ./web
+RUN cd web && pnpm build
 
 # Production image
 FROM base AS production
@@ -30,7 +31,7 @@ WORKDIR /app
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
-
+RUN npm install -g prisma@6.11.1
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/web/.next/static ./web/.next/static
@@ -52,4 +53,7 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD wget --quiet --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-CMD ["/app/web/scripts/docker-entrypoint.sh"]
+RUN sed -i 's/\r$//' /app/web/scripts/docker-entrypoint.sh
+ 
+ENTRYPOINT ["/app/web/scripts/docker-entrypoint.sh"]
+CMD []

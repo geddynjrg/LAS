@@ -14,7 +14,10 @@ services:
       - NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS:-}
       - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED:-}
       - DATABASE_URL=mysql://${DB_USER:-drupal}:${DB_PASSWORD}@db:3306/web
+      - NEXT_PUBLIC_ADMIN_DOMAIN=https://${ADMIN_DOMAIN}
       - API_URL=https://${ADMIN_DOMAIN}
+      - LMS_API_URL=${LMS_API_URL}
+      - LMS_API_KEY=${LMS_API_KEY}
     env_file:
       - .env
     volumes:
@@ -69,6 +72,13 @@ services:
       EBISCLOUD_SMS_API_URL: ${EBISCLOUD_SMS_API_URL:-}
       EBISCLOUD_SMS_SHORTCODE: ${EBISCLOUD_SMS_SHORTCODE:-}
       EBISCLOUD_SMS_SERVICE_ID: ${EBISCLOUD_SMS_SERVICE_ID:-0}
+      # Ecitizen config
+      ECITIZEN_CLIENT_ID: ${ECITIZEN_CLIENT_ID}
+      ECITIZEN_CLIENT_SECRET: ${ECITIZEN_CLIENT_SECRET}
+      ECITIZEN_AUTH_URL: ${ECITIZEN_AUTH_URL}
+      ECITIZEN_TOKEN_URL: ${ECITIZEN_TOKEN_URL}
+      ECITIZEN_USER_INFO_URL: ${ECITIZEN_USER_INFO_URL}
+      ECITIZEN_REDIRECT_URI: https://${ADMIN_DOMAIN}/api/oauth/ecitizen
       # SMTP configuration
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
@@ -114,6 +124,7 @@ services:
     volumes:
       - certbot_www:/var/www/certbot:rw
       - certbot_conf:/etc/letsencrypt:ro
+      - ./certs:/etc/nginx/certs
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN:-localhost}
       - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}
