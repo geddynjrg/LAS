@@ -1,99 +1,68 @@
 // app/(auth)/ecitizen/callback/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { createSession } from '@/lib/session';
+import {
+  IconAlertCircle,
+  IconArrowRight,
+  IconCircleCheckFilled,
+  IconLoader2,
+} from '@tabler/icons-react';
 import { Alert } from '@workspace/ui/components/alert';
+import { Button } from '@workspace/ui/components/button';
 import { Container } from '@workspace/ui/components/container';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+// app/(auth)/ecitizen/callback/page.tsx
 
 export default function ECitizenCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    'loading',
+  );
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        const accessToken = searchParams.get('access_token');
-        const refreshToken = searchParams.get('refresh_token');
-        const email = searchParams.get('email');
-        const uid = searchParams.get('uid');
-        const error = searchParams.get('error');
-        const errorDescription = searchParams.get('error_description');
-        const code = searchParams.get('code');
-        const state = searchParams.get('state');
+        const params = {
+          accessToken: searchParams.get('access_token'),
+          refreshToken: searchParams.get('refresh_token'),
+          error: searchParams.get('error'),
+          errorDescription: searchParams.get('error_description'),
+          callbackUrl: searchParams.get('callback_url') || '/dashboard',
+        };
 
-        console.log('Processing callback with:', {
-          code,
-          error,
-          errorDescription,
-          state,
-          hasAccessToken: !!accessToken,
-          hasRefreshToken: !!refreshToken,
-          email,
-          uid,
+        if (params.error) {
+          throw new Error(
+            params.error === 'access_denied'
+              ? 'Access denied. Please check your eCitizen credentials.'
+              : params.errorDescription || 'Authentication failed',
+          );
+        }
+
+        if (!params.accessToken || !params.refreshToken) {
+          throw new Error('Missing session tokens. Please log in again.');
+        }
+
+        // Initialize session
+        await createSession({
+          accessToken: params.accessToken,
+          refreshToken: params.refreshToken,
         });
 
-        // Check for errors first
-        if (error) {
-          let errorMsg = `eCitizen authentication failed: ${errorDescription || error}`;
-          
-          // Specific error messages
-          if (error === 'access_denied') {
-            errorMsg = 'Access denied by eCitizen. The credentials provided were invalid.';
-          } else if (error === 'invalid_request') {
-            errorMsg = 'Invalid request to eCitizen. Please try again.';
-          }
-          
-          throw new Error(errorMsg);
-        }
-
-        const storedState = sessionStorage.getItem('ecitizen_state');
-        if (state && storedState !== state) {
-          throw new Error('Security error: State mismatch. Possible CSRF attack.');
-        }
-
-        if (!accessToken || !refreshToken) {
-          throw new Error('Authentication incomplete. Please try again.');
-        }
-
-        // Get callback URL from sessionStorage
-        const callbackUrl = sessionStorage.getItem('ecitizen_callback') || '/dashboard';
-
-        // Store tokens
-        localStorage.setItem('access_token', accessToken);
-        localStorage.setItem('refresh_token', refreshToken);
-        
-        if (email) {
-          localStorage.setItem('user_email', email);
-        }
-        
-        if (uid) {
-          localStorage.setItem('user_id', uid);
-        }
-
-        // Clear session storage
-        sessionStorage.removeItem('ecitizen_state');
-        sessionStorage.removeItem('ecitizen_callback');
-
         setStatus('success');
-        setMessage('Authentication successful! Redirecting...');
+        setMessage('Securely signed in. Taking you to your dashboard...');
 
-        // Redirect to original callback URL or dashboard
-        setTimeout(() => {
-          router.push(callbackUrl);
-        }, 1500);
-
-      } catch (error) {
-        console.error('eCitizen callback error:', error);
+        setTimeout(() => router.push(params.callbackUrl), 1500);
+      } catch (error: any) {
         setStatus('error');
-        setMessage(error instanceof Error ? error.message : 'Authentication failed');
-        
-        // Clear session storage on error
-        sessionStorage.removeItem('ecitizen_state');
-        sessionStorage.removeItem('ecitizen_callback');
-        
+        setMessage(
+          error instanceof Error ? error.message : 'Authentication failed',
+        );
+
         // Redirect to login page after delay
         setTimeout(() => {
           router.push('/login');
@@ -101,88 +70,63 @@ export default function ECitizenCallbackPage() {
       }
     };
 
-    const handleMockAuthentication = async () => {
-      try {
-        // Call your Drupal API to create/get a test user
-        const drupalUrl = process.env.NEXT_PUBLIC_DRUPAL_URL || 'http://uwezo.ddev.site';
-        const response = await fetch(`${drupalUrl}/api/v1/user/ecitizen-login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: 'test.user@ecitizen.go.ke',
-            ecitizen_data: {
-              id: 'mock_ecitizen_id',
-              name: 'Test User',
-              email: 'test.user@ecitizen.go.ke',
-            },
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Store tokens
-          localStorage.setItem('access_token', data.data.access_token);
-          localStorage.setItem('refresh_token', data.data.refresh_token);
-          
-          if (data.data.user) {
-            localStorage.setItem('user_email', data.data.user.email);
-            localStorage.setItem('user_id', data.data.user.uid);
-          }
-
-          setStatus('success');
-          setMessage('Mock authentication successful! Redirecting...');
-
-          const callbackUrl = sessionStorage.getItem('ecitizen_callback') || '/dashboard';
-          setTimeout(() => {
-            router.push(callbackUrl);
-          }, 1000);
-        } else {
-          throw new Error('Mock authentication failed');
-        }
-      } catch (error) {
-        throw new Error('Failed to create test user: ' + (error instanceof Error ? error.message : String(error)));
-      }
-    };
-
     handleCallback();
   }, [router, searchParams]);
 
   return (
-    <Container className="max-w-md py-16">
-      <div className="text-center space-y-6">
+    <Container className="flex min-h-[60vh] items-center justify-center max-w-md">
+      <div className="w-full text-center space-y-8 animate-in fade-in zoom-in duration-300">
         {status === 'loading' && (
-          <>
-            <div className="flex justify-center">
-              <div className="animate-spin h-12 w-12 border-4 border-[#15b14d] border-t-transparent rounded-full"></div>
+          <div className="space-y-4">
+            <div className="relative flex justify-center">
+              <IconLoader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
-            <h1 className="text-xl font-semibold">Completing eCitizen Authentication</h1>
-            <p className="text-gray-600">Please wait while we verify your identity...</p>
-          </>
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">
+                Verifying Identity
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                Finalizing your secure connection with eCitizen...
+              </p>
+            </div>
+          </div>
         )}
 
         {status === 'success' && (
-          <>
-            <div className="flex justify-center text-[#15b14d]">
-              <svg className="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="space-y-4">
+            <div className="flex justify-center">
+              <IconCircleCheckFilled className="h-16 w-16 text-green-500" />
             </div>
-            <h1 className="text-xl font-semibold">Success!</h1>
-            <p className="text-gray-600">{message}</p>
-          </>
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">
+                Welcome Back!
+              </h1>
+              <p className="text-muted-foreground">{message}</p>
+            </div>
+          </div>
         )}
 
         {status === 'error' && (
-          <>
-            <Alert variant="error">
-              <h2 className="font-semibold mb-2">Authentication Failed</h2>
-              <p className="mb-2">{message}</p>
-              <p className="mt-4 text-sm">Redirecting to login page...</p>
+          <div className="space-y-6">
+            <Alert variant="error" className="text-left">
+              <IconAlertCircle className="h-5 w-5" />
+              <div className="font-semibold">Authentication Error</div>
+              <div>{message}</div>
             </Alert>
-          </>
+
+            <div className="flex flex-col gap-3">
+              <Button onClick={() => router.push('/login')} className="w-full">
+                Try Logging In Again
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => router.push('/')}
+                className="w-full text-xs"
+              >
+                Back to Home
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </Container>

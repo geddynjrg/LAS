@@ -2,23 +2,25 @@
 'use client';
 
 import { ApplyFormActionBar } from '@/app/apply/[id]/apply-form-action-bar';
-import { 
-  sendMemberConfirmations, 
-  refreshApplicationData, 
-  memberConfirmationAction 
+import {
+  memberConfirmationAction,
+  refreshApplicationData,
+  sendMemberConfirmations,
 } from '@/app/apply/[id]/member-confirmation/actions';
-import { 
+import {
+  type MemberConfirmationData,
   memberConfirmationSchema,
-  type MemberConfirmationData 
 } from '@/app/apply/[id]/member-confirmation/member-confirmation-schema';
+import type { Member } from '@/lib/types/application.types';
+import { IconCheck, IconRefresh, IconX } from '@tabler/icons-react';
 import { Container } from '@workspace/ui/components/container';
-import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { Form } from '@workspace/ui/components/form';
+import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { type FC, useState, useEffect } from 'react';
-import type { Member } from '@/lib/types/application.types';
-import { IconRefresh, IconCheck, IconX } from '@tabler/icons-react';
+import { type FC, useEffect, useState } from 'react';
+
+// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
 
 interface MemberConfirmationDataProps {
   id: string;
@@ -36,7 +38,7 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
   isThresholdMet: initialIsThresholdMet,
 }) => {
   const t = useTranslations();
-  
+
   // Use form hook for the form submission
   const [state, formAction, isPending] = useForm(
     memberConfirmationAction,
@@ -44,19 +46,19 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     {
       id,
       redirectTo: `/apply/${id}/confirmations`,
-    }
+    },
   );
 
   const [isSending, setIsSending] = useState(false);
-  const [sendResult, setSendResult] = useState<{ 
-    success: boolean; 
-    message?: string; 
+  const [sendResult, setSendResult] = useState<{
+    success: boolean;
+    message?: string;
     stats?: any;
     timestamp?: number;
   } | null>(null);
   const [canResend, setCanResend] = useState(true);
   const [countdown, setCountdown] = useState(0);
-  
+
   // State for dynamic updates
   const [members, setMembers] = useState<Member[]>(initialMembers);
   const [confirmedCount, setConfirmedCount] = useState(initialConfirmedCount);
@@ -64,14 +66,19 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
   // Refresh button states
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [refreshStatus, setRefreshStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [refreshStatus, setRefreshStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
   const [refreshMessage, setRefreshMessage] = useState<string>('');
-  
+
   // tracking responses
   const [respondedCount, setRespondedCount] = useState(
-    initialMembers.filter(member => 
-      member.confirmation_status && member.confirmation_status !== 'pending' && member.confirmation_status !== 'sent'
-    ).length
+    initialMembers.filter(
+      (member) =>
+        member.confirmation_status &&
+        member.confirmation_status !== 'pending' &&
+        member.confirmation_status !== 'sent',
+    ).length,
   );
 
   const prevUrl = `/apply/${id}/proposed-business`;
@@ -82,10 +89,13 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     setMembers(initialMembers);
     setConfirmedCount(initialConfirmedCount);
     setIsThresholdMet(initialIsThresholdMet);
-    
+
     // Calculate responded count
-    const newRespondedCount = initialMembers.filter(member => 
-      member.confirmation_status && member.confirmation_status !== 'pending' && member.confirmation_status !== 'sent'
+    const newRespondedCount = initialMembers.filter(
+      (member) =>
+        member.confirmation_status &&
+        member.confirmation_status !== 'pending' &&
+        member.confirmation_status !== 'sent',
     ).length;
     setRespondedCount(newRespondedCount);
   }, [initialMembers, initialConfirmedCount, initialIsThresholdMet]);
@@ -96,17 +106,15 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
   // Check if we have enough responses (75% of members)
   const hasEnoughResponses = respondedCount >= minRequiredResponses;
-  
+
   // Check if we have enough consents (75% of members must consent)
   const hasEnoughConsents = confirmedCount >= minRequiredConsents;
 
-  const respondedPercentage = totalMembers > 0 
-    ? Math.round((respondedCount / totalMembers) * 100) 
-    : 0;
+  const respondedPercentage =
+    totalMembers > 0 ? Math.round((respondedCount / totalMembers) * 100) : 0;
 
-  const confirmationPercentage = totalMembers > 0 
-    ? Math.round((confirmedCount / totalMembers) * 100) 
-    : 0;
+  const confirmationPercentage =
+    totalMembers > 0 ? Math.round((confirmedCount / totalMembers) * 100) : 0;
 
   // Countdown timer for resend - only starts when response is received
   useEffect(() => {
@@ -121,9 +129,12 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
   // Auto-hide success/error alerts after 1 minute
   useEffect(() => {
     if (sendResult?.timestamp) {
-      const hideTimer = setTimeout(() => {
-        setSendResult(null);
-      }, 1 * 60 * 1000); // 1 minute
+      const hideTimer = setTimeout(
+        () => {
+          setSendResult(null);
+        },
+        1 * 60 * 1000,
+      ); // 1 minute
 
       return () => clearTimeout(hideTimer);
     }
@@ -146,14 +157,14 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
     setIsSending(true);
     setSendResult(null);
-    
+
     try {
       const result = await sendMemberConfirmations(id);
-      
+
       // Refresh application data after sending SMS
       if (result.success) {
         const refreshResult = await refreshApplicationData(id);
-        
+
         if (refreshResult.success && refreshResult.application) {
           const updatedApplication = refreshResult.application;
           if (updatedApplication.members) {
@@ -164,7 +175,7 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
       setSendResult({
         ...result,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       // Start countdown only after successful response
@@ -175,12 +186,11 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
         // If failed, allow immediate retry
         setCanResend(true);
       }
-
     } catch (error) {
-      setSendResult({ 
-        success: false, 
+      setSendResult({
+        success: false,
         message: 'Failed to send confirmations',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
       setCanResend(true); // Allow immediate retry on error
     } finally {
@@ -188,26 +198,29 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     }
   };
 
-    // Helper function to update member data
+  // Helper function to update member data
   const updateMemberData = (updatedMembers: Member[]) => {
     setMembers(updatedMembers);
-    
+
     // Recalculate confirmed count
     const newConfirmedCount = updatedMembers.filter(
-      (member: Member) => member.confirmation_status === 'confirmed'
+      (member: Member) => member.confirmation_status === 'confirmed',
     ).length;
     setConfirmedCount(newConfirmedCount);
-    
+
     // Recalculate responded count
     const newRespondedCount = updatedMembers.filter(
-      (member: Member) => member.confirmation_status && member.confirmation_status !== 'pending' && member.confirmation_status !== 'sent'
+      (member: Member) =>
+        member.confirmation_status &&
+        member.confirmation_status !== 'pending' &&
+        member.confirmation_status !== 'sent',
     ).length;
     setRespondedCount(newRespondedCount);
-    
+
     // Check thresholds
     const newHasEnoughResponses = newRespondedCount >= minRequiredResponses;
     const newHasEnoughConsents = newConfirmedCount >= minRequiredConsents;
-    
+
     // Update threshold met status
     setIsThresholdMet(newHasEnoughResponses && newHasEnoughConsents);
   };
@@ -220,45 +233,46 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
 
   const getStatusBadge = (member: Member) => {
     const status = member.confirmation_status || member.status || 'pending';
-    
+
     const statusConfig = {
-      confirmed: { 
-        label: 'Consented ✓', 
+      confirmed: {
+        label: 'Consented ✓',
         color: 'bg-green-100 text-green-800 border border-green-200',
-        description: 'Agreed to loan'
+        description: 'Agreed to loan',
       },
-      declined: { 
-        label: 'Declined ✗', 
+      declined: {
+        label: 'Declined ✗',
         color: 'bg-red-100 text-red-800 border border-red-200',
-        description: 'Declined loan'
+        description: 'Declined loan',
       },
-      pending: { 
-        label: 'No Response', 
+      pending: {
+        label: 'No Response',
         color: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-        description: 'SMS not sent'
+        description: 'SMS not sent',
       },
-      sent: { 
-        label: 'Awaiting Response', 
+      sent: {
+        label: 'Awaiting Response',
         color: 'bg-blue-100 text-blue-800 border border-blue-200',
-        description: 'SMS sent, waiting reply'
+        description: 'SMS sent, waiting reply',
       },
-      failed: { 
-        label: 'SMS Failed', 
+      failed: {
+        label: 'SMS Failed',
         color: 'bg-gray-100 text-gray-800 border border-gray-200',
-        description: 'Failed to send SMS'
+        description: 'Failed to send SMS',
       },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
-    
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+
     return (
       <div className="flex flex-col items-end">
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${config.color}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium ${config.color}`}
+        >
           {config.label}
         </span>
-        <span className="text-xs text-gray-500 mt-1">
-          {config.description}
-        </span>
+        <span className="text-xs text-gray-500 mt-1">{config.description}</span>
       </div>
     );
   };
@@ -279,41 +293,50 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
   // Manual refresh function
   const handleRefreshStatus = async () => {
     if (isRefreshing) return; // Prevent multiple clicks
-    
+
     setIsRefreshing(true);
     setRefreshStatus('idle');
     setRefreshMessage('');
 
     try {
       const refreshResult = await refreshApplicationData(id);
-      
+
       if (refreshResult.success && refreshResult.application) {
         const updatedApplication = refreshResult.application;
         if (updatedApplication.members) {
           updateMemberData(updatedApplication.members.members);
-          
+
           // Calculate changes
           const newConfirmedCount = updatedApplication.members.members.filter(
-            (member: Member) => member.confirmation_status === 'confirmed'
+            (member: Member) => member.confirmation_status === 'confirmed',
           ).length;
           const newRespondedCount = updatedApplication.members.members.filter(
-            (member: Member) => member.confirmation_status && member.confirmation_status !== 'pending' && member.confirmation_status !== 'sent'
+            (member: Member) =>
+              member.confirmation_status &&
+              member.confirmation_status !== 'pending' &&
+              member.confirmation_status !== 'sent',
           ).length;
-          
+
           const confirmedChange = newConfirmedCount - confirmedCount;
           const respondedChange = newRespondedCount - respondedCount;
-          
+
           // Set success message with details
           let message = 'Status updated successfully';
           if (confirmedChange > 0 || respondedChange > 0) {
             const changes = [];
-            if (confirmedChange > 0) changes.push(`${confirmedChange} new consent${confirmedChange > 1 ? 's' : ''}`);
-            if (respondedChange > 0) changes.push(`${respondedChange} new response${respondedChange > 1 ? 's' : ''}`);
+            if (confirmedChange > 0)
+              changes.push(
+                `${confirmedChange} new consent${confirmedChange > 1 ? 's' : ''}`,
+              );
+            if (respondedChange > 0)
+              changes.push(
+                `${respondedChange} new response${respondedChange > 1 ? 's' : ''}`,
+              );
             message = `Updated! ${changes.join(' and ')}`;
           } else {
             message = 'Status is up to date';
           }
-          
+
           setRefreshStatus('success');
           setRefreshMessage(message);
         }
@@ -329,30 +352,45 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     }
   };
 
+  const getAlertStyles = (result: any) => {
+    const type = result.stats?.status_type;
+
+    switch (type) {
+      case 'partial':
+        return 'bg-amber-50 text-amber-800 border-amber-200';
+      case 'info':
+        return 'bg-blue-50 text-blue-800 border-blue-200';
+      case 'success':
+        return 'bg-green-50 text-green-800 border-green-200';
+      default:
+        return 'bg-red-50 text-red-800 border-red-200';
+    }
+  };
+
   const getRefreshButtonClasses = () => {
-    const baseClasses = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200";
-    
+    const baseClasses =
+      'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200';
+
     if (isRefreshing) {
       return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200 cursor-wait`;
     }
-    
+
     if (refreshStatus === 'success') {
       return `${baseClasses} bg-green-100 text-green-700 border border-green-200 hover:bg-green-200`;
     }
-    
+
     if (refreshStatus === 'error') {
       return `${baseClasses} bg-red-100 text-red-700 border border-red-200 hover:bg-red-200`;
     }
-    
+
     return `${baseClasses} bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm`;
   };
 
-  // Determine if we can proceed to next step
   const canProceed = hasEnoughResponses && hasEnoughConsents;
 
   return (
-    <Form 
-      action={formAction} 
+    <Form
+      action={formAction}
       className="flex flex-col justify-between min-h-screen"
       autoComplete="on"
     >
@@ -362,10 +400,16 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
           className="space-y-6"
         >
           <div className="prose">
-            <p>{t('ConfirmationsPage.confirmMembersForm.confirmation-instructions')}</p>
+            <p>
+              {t(
+                'ConfirmationsPage.confirmMembersForm.confirmation-instructions',
+              )}
+            </p>
             <p>
               {t.rich('ConfirmationsPage.confirmMembersForm.progress-saved', {
-                strong: (chunks) => <strong>{chunks}</strong>,
+                strong: (chunks) => {
+                  return <strong>{chunks}</strong>;
+                },
               })}
             </p>
           </div>
@@ -382,7 +426,7 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
                   Members Responded (at least {minRequiredResponses} required)
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 mb-1">
-                  <div 
+                  <div
                     className={`h-3 rounded-full transition-all duration-500 ${
                       hasEnoughResponses ? 'bg-green-600' : 'bg-blue-600'
                     }`}
@@ -391,40 +435,66 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>{respondedPercentage}% responded</span>
-                  <span className={hasEnoughResponses ? 'text-green-600 font-semibold' : ''}>
+                  <span
+                    className={
+                      hasEnoughResponses ? 'text-green-600 font-semibold' : ''
+                    }
+                  >
                     100%
                   </span>
                 </div>
               </div>
 
               {/* Consent Progress - Only show when all have responded */}
-              
 
               {/* Status Summary */}
               <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-                <div className={`p-2 rounded ${hasEnoughResponses ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                <div
+                  className={`p-2 rounded ${hasEnoughResponses ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}
+                >
                   <div className="font-semibold">Response Status</div>
-                  <div>{respondedCount === totalMembers ? 'Complete' : 'In Progress'}</div>
+                  <div>
+                    {respondedCount === totalMembers
+                      ? 'Complete'
+                      : 'In Progress'}
+                  </div>
                 </div>
-                <div className={`p-2 rounded ${canProceed ? 'bg-green-100 text-green-800' : hasEnoughResponses ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800'}`}>
-                  <div className="font-semibold">Members Consented (at least {minRequiredConsents} required)</div>
+                <div
+                  className={`p-2 rounded ${canProceed ? 'bg-green-100 text-green-800' : hasEnoughResponses ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800'}`}
+                >
+                  <div className="font-semibold">
+                    Members Consented (at least {minRequiredConsents} required)
+                  </div>
                   <div className="w-full bg-gray-200 rounded-full h-3 mb-1">
-                    <div 
+                    <div
                       className={`h-3 rounded-full transition-all duration-500 ${
                         hasEnoughConsents ? 'bg-green-600' : 'bg-orange-500'
                       }`}
-                      style={{ width: `${Math.min(confirmationPercentage, 75)}%` }}
+                      style={{
+                        width: `${Math.min(confirmationPercentage, 75)}%`,
+                      }}
                     ></div>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>{confirmationPercentage}% consented</span>
-                    <span className={hasEnoughConsents ? 'text-green-600 font-semibold' : 'text-orange-600'}>
-                      {hasEnoughConsents ? '✓ Threshold Met' : '75% consent required'}
+                    <span
+                      className={
+                        hasEnoughConsents
+                          ? 'text-green-600 font-semibold'
+                          : 'text-orange-600'
+                      }
+                    >
+                      {hasEnoughConsents
+                        ? '✓ Threshold Met'
+                        : '75% consent required'}
                     </span>
                   </div>
                   <div>
-                    {hasEnoughConsents ? 'Approved' : 
-                    respondedCount === totalMembers ? 'Review Needed' : 'Waiting for Responses'}
+                    {hasEnoughConsents
+                      ? 'Approved'
+                      : respondedCount === totalMembers
+                        ? 'Review Needed'
+                        : 'Waiting for Responses'}
                   </div>
                 </div>
               </div>
@@ -447,22 +517,25 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
               <div className="flex items-center gap-3">
                 {/* Refresh Status Indicator */}
                 {refreshStatus !== 'idle' && (
-                  <div className={`flex items-center gap-2 px-3 py-1 rounded text-sm ${
-                    refreshStatus === 'success' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-red-100 text-red-700'
-                  }`}>
+                  <div
+                    className={`flex items-center gap-2 px-3 py-1 rounded text-sm ${
+                      refreshStatus === 'success'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}
+                  >
                     {refreshStatus === 'success' ? (
                       <IconCheck size={16} />
                     ) : (
                       <IconX size={16} />
                     )}
                     <span className="font-medium">
-                      {refreshMessage || (refreshStatus === 'success' ? 'Updated!' : 'Error')}
+                      {refreshMessage ||
+                        (refreshStatus === 'success' ? 'Updated!' : 'Error')}
                     </span>
                   </div>
                 )}
-                
+
                 {/* Enhanced Refresh Button */}
                 <button
                   type="button"
@@ -478,7 +551,12 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
                     </>
                   ) : (
                     <>
-                      <IconRefresh size={18} className={refreshStatus === 'success' ? 'text-green-600' : ''} />
+                      <IconRefresh
+                        size={18}
+                        className={
+                          refreshStatus === 'success' ? 'text-green-600' : ''
+                        }
+                      />
                       <span>Refresh Status</span>
                     </>
                   )}
@@ -487,7 +565,10 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
             </div>
             <div className="divide-y">
               {members.map((member, index) => (
-                <div key={index} className="px-4 py-3 flex justify-between items-center">
+                <div
+                  key={index}
+                  className="px-4 py-3 flex justify-between items-center"
+                >
                   <div className="flex-1">
                     <div className="font-medium text-gray-900">
                       {getMemberDisplayName(member)}
@@ -520,49 +601,102 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
                     : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                 }`}
               >
-                {isSending 
-                  ? t('Common.sending') 
+                {isSending
+                  ? t('Common.sending')
                   : !canResend
-                  ? `Resend in ${formatCountdown(countdown)}`
-                  : t('ConfirmationsPage.confirmMembersForm.send-to-members')
-                }
+                    ? `Resend in ${formatCountdown(countdown)}`
+                    : t('ConfirmationsPage.confirmMembersForm.send-to-members')}
               </button>
 
               {!canResend && (
                 <div className="text-sm text-gray-600">
-                  You can resend confirmation SMS in {formatCountdown(countdown)}
+                  You can resend confirmation SMS in{' '}
+                  {formatCountdown(countdown)}
                 </div>
               )}
             </div>
 
             {/* Result Alert */}
             {sendResult && (
-              <div 
-                className={`p-4 rounded-lg border animate-in fade-in duration-300 ${
-                  sendResult.success 
-                    ? 'bg-green-100 text-green-800 border-green-200' 
-                    : 'bg-red-100 text-red-800 border-red-200'
+              <div
+                className={`p-4 rounded-xl border-2 shadow-sm animate-in slide-in-from-bottom-2 duration-300 ${
+                  sendResult.stats?.status_type === 'total_success'
+                    ? 'bg-green-50 text-green-800 border-green-200'
+                    : sendResult.stats?.status_type === 'partial_success'
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : sendResult.stats?.status_type === 'info'
+                        ? 'bg-blue-50 text-blue-800 border-blue-200'
+                        : 'bg-red-50 text-red-800 border-red-200'
                 }`}
               >
-                <div className="flex items-center space-x-2">
-                  <div className="font-semibold">
-                    {sendResult.success ? '✓ Success' : '✗ Failed'}
+                <div className="flex items-start gap-3">
+                  {/* Dynamic Icon Section */}
+                  <div className="mt-1">
+                    {sendResult.stats?.status_type === 'total_success' && (
+                      <IconCheck className="w-5 h-5 text-green-600" />
+                    )}
+                    {sendResult.stats?.status_type === 'partial_success' && (
+                      <span className="text-xl">⚠️</span>
+                    )}
+                    {sendResult.stats?.status_type === 'info' && (
+                      <span className="text-xl">ℹ️</span>
+                    )}
+                    {(sendResult.stats?.status_type === 'error' ||
+                      !sendResult.success) && (
+                      <IconX className="w-5 h-5 text-red-600" />
+                    )}
                   </div>
-                  {sendResult.stats && (
-                    <div className="text-sm opacity-75">
-                      • {sendResult.stats.sms_failed || 0} failed
+
+                  <div className="flex-1">
+                    {/* Dynamic Title Section */}
+                    <div className="font-bold">
+                      {sendResult.stats?.status_type === 'total_success' &&
+                        'Notifications Sent'}
+                      {sendResult.stats?.status_type === 'partial_success' &&
+                        'Partial Delivery'}
+                      {sendResult.stats?.status_type === 'info' &&
+                        'Status Up to Date'}
+                      {(!sendResult.stats?.status_type ||
+                        sendResult.stats?.status_type === 'error') &&
+                        'Delivery Failed'}
                     </div>
-                  )}
-                </div>
-                <div className="text-sm mt-1">
-                  {sendResult.message}
+
+                    {/* The Human-Friendly Message from Drupal */}
+                    <div className="text-sm opacity-90 leading-relaxed">
+                      {sendResult.message}
+                    </div>
+
+                    {/* Stats Breakdown - Only show if there was actually an attempt */}
+                    {sendResult.stats &&
+                      (sendResult.stats.sms_sent > 0 ||
+                        sendResult.stats.sms_failed > 0) && (
+                        <div className="mt-2 flex gap-4 text-xs font-mono uppercase tracking-tighter font-semibold">
+                          <span
+                            className={
+                              sendResult.stats.sms_sent > 0
+                                ? 'text-green-700'
+                                : 'text-gray-400'
+                            }
+                          >
+                            Sent: {sendResult.stats.sms_sent}
+                          </span>
+                          {sendResult.stats.sms_failed > 0 && (
+                            <span className="text-red-700">
+                              Failed: {sendResult.stats.sms_failed}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                  </div>
                 </div>
               </div>
             )}
 
             <div className="text-xs text-gray-500">
-              SMS are sent via the Uwezo Fund. Members who have not yet responded will receive new confirmation links.
-              {!canResend && ` Wait ${formatCountdown(countdown)} before resending.`}
+              SMS are sent via the Uwezo Fund. Members who have not yet
+              responded will receive new confirmation links.
+              {!canResend &&
+                ` Wait ${formatCountdown(countdown)} before resending.`}
             </div>
           </div>
         </FormCard>
@@ -573,16 +707,16 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
       <input type="hidden" name="redirectTo" value={nextUrl} />
 
       {/* Action Bar - Only enable next if threshold is met */}
-      <ApplyFormActionBar 
+      <ApplyFormActionBar
         disabled={!canProceed || isPending}
         prevUrl={prevUrl}
         nextUrl={nextUrl}
         nextTooltip={
-          !hasEnoughResponses 
+          !hasEnoughResponses
             ? `Need ${minRequiredResponses - respondedCount} more responses`
             : !hasEnoughConsents
-            ? `Need ${minRequiredConsents - confirmedCount} more consents`
-            : undefined
+              ? `Need ${minRequiredConsents - confirmedCount} more consents`
+              : undefined
         }
       />
     </Form>

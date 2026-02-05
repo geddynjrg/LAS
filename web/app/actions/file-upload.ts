@@ -84,7 +84,7 @@ export const uploadFileAction: FormAction<{
 
     // Ensure base upload directory exists
     await ensureUploadDir(UPLOAD_DIR);
-
+    console.log('Base upload directory ensured at:', UPLOAD_DIR);
     // Create application-specific directory if applicationId is provided
     const appDir = applicationId
       ? path.join(UPLOAD_DIR, applicationId)
@@ -188,6 +188,7 @@ export const uploadSingleFileAction: FormAction<{
   file: File;
   applicationId?: string;
 }> = async (_prev, formData) => {
+  console.log('Starting uploadSingleFileAction');
   const applicationId = formData.get('applicationId')?.toString();
   const file = formData.get('file') as File;
   const values = { file, applicationId };

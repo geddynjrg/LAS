@@ -74,7 +74,7 @@ export const zodErrorMap: z.ZodErrorMap = (issue, ctx) => {
 export const zodKeys = <T extends z.ZodTypeAny>(schema: T): string[] => {
   const paths = new Set<string>();
 
-  const extractPaths = (schema: Zod.ZodType, prefix: string = "") => {
+  const extractPaths = (schema: z.ZodType, prefix: string = "") => {
     if (schema instanceof z.ZodNullable || schema instanceof z.ZodOptional) {
       extractPaths(schema.unwrap(), prefix);
       return;
@@ -125,7 +125,7 @@ export function phoneNumber(required = true) {
     .pipe(
       z.string().regex(
         /^\+[1-9]\d{7,15}$/,
-        getIntlKey("phone_invalid"),
+        getIntlKey("invalid"),
       ),
     );
 
@@ -137,7 +137,7 @@ export function phoneNumber(required = true) {
       .pipe(
         z.string().regex(
           /^\+[1-9]\d{7,15}$/,
-          getIntlKey("phone_invalid"),
+          getIntlKey("invalid"),
         ),
       );
   }

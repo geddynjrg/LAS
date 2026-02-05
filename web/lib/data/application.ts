@@ -299,9 +299,7 @@ export async function updateApplicationGroupData(id: string, data: GroupData) {
       listOfMembersOnCertificate: safeJsonStringify(
         listOfMembersOnCertificateJson,
       ),
-      groupMeetingMinutes: safeJsonStringify(
-        groupMeetingMinutesJson,
-      ),
+      groupMeetingMinutes: safeJsonStringify(groupMeetingMinutesJson),
       purposeOfTheGroup: safeJsonStringify(data.background.purposeOfTheGroup),
       keyActivitiesOfTheGroup: safeJsonStringify(
         data.background.keyActivitiesOfTheGroup,
@@ -382,13 +380,13 @@ export async function updateApplicationMembersData(
     }
 
     const existingMembers = application.members || [];
-    
+
     // Validate phone number and national ID uniqueness before processing
     const phoneNumberMap = new Map<string, string>(); // phoneNumber -> nationalIdCode
     const nationalIdMap = new Map<string, string>(); // nationalIdCode -> nationalIdCode (for tracking)
-    
+
     // Track phone numbers and national IDs from existing members
-    existingMembers.forEach(member => {
+    existingMembers.forEach((member) => {
       if (member.phoneNumber) {
         phoneNumberMap.set(member.phoneNumber, member.nationalIdCode);
       }
@@ -407,15 +405,24 @@ export async function updateApplicationMembersData(
       if (member.phoneNumber) {
         // Check for duplicates within the incoming data
         if (incomingPhoneNumbers.has(member.phoneNumber)) {
-          duplicateErrors.push(`Phone number ${member.phoneNumber} is used by multiple members in your current changes.`);
+          duplicateErrors.push(
+            `Phone number ${member.phoneNumber} is used by multiple members in your current changes.`,
+          );
           continue;
         }
         incomingPhoneNumbers.add(member.phoneNumber);
 
         // Check if phone number exists in other existing members
-        const existingMemberWithSamePhone = phoneNumberMap.get(member.phoneNumber);
-        if (existingMemberWithSamePhone && existingMemberWithSamePhone !== member.nationalIdCode) {
-          duplicateErrors.push(`Phone number ${member.phoneNumber} is already used by another member in this group.`);
+        const existingMemberWithSamePhone = phoneNumberMap.get(
+          member.phoneNumber,
+        );
+        if (
+          existingMemberWithSamePhone &&
+          existingMemberWithSamePhone !== member.nationalIdCode
+        ) {
+          duplicateErrors.push(
+            `Phone number ${member.phoneNumber} is already used by another member in this group.`,
+          );
         }
       }
 
@@ -423,15 +430,24 @@ export async function updateApplicationMembersData(
       if (member.nationalIdCode) {
         // Check for duplicates within the incoming data
         if (incomingNationalIds.has(member.nationalIdCode)) {
-          duplicateErrors.push(`National ID ${member.nationalIdCode} is used by multiple members in your current changes.`);
+          duplicateErrors.push(
+            `National ID ${member.nationalIdCode} is used by multiple members in your current changes.`,
+          );
           continue;
         }
         incomingNationalIds.add(member.nationalIdCode);
 
         // Check if national ID exists in other existing members
-        const existingMemberWithSameNationalId = nationalIdMap.get(member.nationalIdCode);
-        if (existingMemberWithSameNationalId && existingMemberWithSameNationalId !== member.nationalIdCode) {
-          duplicateErrors.push(`National ID ${member.nationalIdCode} is already used by another member in this group.`);
+        const existingMemberWithSameNationalId = nationalIdMap.get(
+          member.nationalIdCode,
+        );
+        if (
+          existingMemberWithSameNationalId &&
+          existingMemberWithSameNationalId !== member.nationalIdCode
+        ) {
+          duplicateErrors.push(
+            `National ID ${member.nationalIdCode} is already used by another member in this group.`,
+          );
         }
       }
     }
@@ -448,13 +464,14 @@ export async function updateApplicationMembersData(
     for (const member of data.members) {
       // Check if this member already exists
       const existingMember = existingMembers.find(
-        existing => existing.nationalIdCode === member.nationalIdCode
+        (existing) => existing.nationalIdCode === member.nationalIdCode,
       );
 
       if (existingMember) {
         // Check if phone number has changed
-        const phoneNumberChanged = existingMember.phoneNumber !== member.phoneNumber;
-        
+        const phoneNumberChanged =
+          existingMember.phoneNumber !== member.phoneNumber;
+
         // Prepare base update data
         const updateData: any = {
           natureOfTheGroup: data.natureOfTheGroup,
@@ -466,7 +483,9 @@ export async function updateApplicationMembersData(
           economicActivity: member.economicActivity || '',
           photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
           certificateOfDisability: member.disability?.certificateOfDisability
-            ? safeJsonStringify(member.disability.certificateOfDisability as any)
+            ? safeJsonStringify(
+                member.disability.certificateOfDisability as any,
+              )
             : null,
           pwdNumber: member.disability?.pwdNumber || null,
         };
@@ -487,15 +506,17 @@ export async function updateApplicationMembersData(
           updateData.confirmation_status = existingMember.confirmation_status;
           updateData.confirmation_token = existingMember.confirmation_token;
           updateData.confirmation_sent_at = existingMember.confirmation_sent_at;
-          updateData.confirmation_confirmed_at = existingMember.confirmation_confirmed_at;
-          updateData.confirmation_token_expires_at = existingMember.confirmation_token_expires_at;
+          updateData.confirmation_confirmed_at =
+            existingMember.confirmation_confirmed_at;
+          updateData.confirmation_token_expires_at =
+            existingMember.confirmation_token_expires_at;
         }
 
         memberUpdates.push(
           prisma.memberData.update({
             where: { id: existingMember.id },
             data: updateData,
-          })
+          }),
         );
       } else {
         // Create new member with default confirmation status
@@ -510,7 +531,9 @@ export async function updateApplicationMembersData(
           phoneNumber: member.phoneNumber || '',
           photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
           certificateOfDisability: member.disability?.certificateOfDisability
-            ? safeJsonStringify(member.disability.certificateOfDisability as any)
+            ? safeJsonStringify(
+                member.disability.certificateOfDisability as any,
+              )
             : null,
           pwdNumber: member.disability?.pwdNumber || null,
           status: MemberStatus.PENDING,
@@ -527,8 +550,13 @@ export async function updateApplicationMembersData(
 
     // Identify members that were removed
     const removedMemberIds = existingMembers
-      .filter(existing => !data.members.some(member => member.nationalIdCode === existing.nationalIdCode))
-      .map(member => member.id);
+      .filter(
+        (existing) =>
+          !data.members.some(
+            (member) => member.nationalIdCode === existing.nationalIdCode,
+          ),
+      )
+      .map((member) => member.id);
 
     // Execute all operations in a transaction
     await prisma.$transaction(async (tx) => {
@@ -781,12 +809,37 @@ export async function updateApplicationDeclarationsData(
       where: { id: application.id },
       data: {
         applicationProgress:
-          currentProgress && currentProgress > 6 ? currentProgress : 6,
+          currentProgress && currentProgress > 7 ? currentProgress : 7,
         syncStatus: SyncStatus.PENDING,
       },
     });
 
     return getApplicationById(id);
+  } catch (error) {
+    const { message } = handlePrismaError(error);
+    throw new Error(message);
+  }
+}
+
+export async function updateApplicationMembersSMSConfirmation(id: string) {
+  try {
+    const application = await prisma.application.findUnique({
+      where: { applicationId: id },
+    });
+
+    if (!application) {
+      throw new Error('Application not found');
+    }
+
+    const currentProgress = application.applicationProgress;
+    await prisma.application.update({
+      where: { id: application.id },
+      data: {
+        applicationProgress:
+          currentProgress && currentProgress > 6 ? currentProgress : 6,
+        syncStatus: SyncStatus.PENDING,
+      },
+    });
   } catch (error) {
     const { message } = handlePrismaError(error);
     throw new Error(message);
@@ -840,6 +893,7 @@ export async function updateApplicationMembersConfirmationData(id: string) {
 export async function updateApplicationStatus(
   id: string,
   status?: ApplicationStatus,
+  applicationProgress?: number,
 ) {
   try {
     const user = await getCurrentUser();
@@ -861,7 +915,7 @@ export async function updateApplicationStatus(
       where: { id: application.id },
       data: {
         status: status || ApplicationStatus.SUBMITTED,
-        applicationProgress: 7,
+        applicationProgress: applicationProgress || 7,
         syncStatus: SyncStatus.PENDING,
       },
     });
@@ -1042,41 +1096,11 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
 
 /**
  * Check if a phone number already exists in the application (excluding a specific member)
-*/
+ */
 export async function checkPhoneNumberExistsInApplication(
   applicationId: string,
   phoneNumber: string,
-  excludeNationalIdCode?: string
-  ): Promise<boolean> {
-  try {
-    const application = await prisma.application.findUnique({
-      where: { applicationId },
-      include: { members: true },
-    });
-
-    if (!application) {
-      return false;
-    }
-
-    const existingMember = application.members.find(member => 
-      member.phoneNumber === phoneNumber && 
-      member.nationalIdCode !== excludeNationalIdCode
-    );
-
-    return !!existingMember;
-  } catch (error) {
-    console.error('Error checking phone number existence:', error);
-    return false;
-  }
-}
-
-/**
- * Check if a national ID number already exists in the application (excluding a specific member)
-*/
-export async function checkNationalIdExistsInApplication(
-  applicationId: string,
-  nationalIdCode: string,
-  excludeNationalIdCode?: string
+  excludeNationalIdCode?: string,
 ): Promise<boolean> {
   try {
     const application = await prisma.application.findUnique({
@@ -1088,9 +1112,41 @@ export async function checkNationalIdExistsInApplication(
       return false;
     }
 
-    const existingMember = application.members.find(member => 
-      member.nationalIdCode === nationalIdCode && 
-      member.nationalIdCode !== excludeNationalIdCode
+    const existingMember = application.members.find(
+      (member) =>
+        member.phoneNumber === phoneNumber &&
+        member.nationalIdCode !== excludeNationalIdCode,
+    );
+
+    return !!existingMember;
+  } catch (error) {
+    console.error('Error checking phone number existence:', error);
+    return false;
+  }
+}
+
+/**
+ * Check if a national ID number already exists in the application (excluding a specific member)
+ */
+export async function checkNationalIdExistsInApplication(
+  applicationId: string,
+  nationalIdCode: string,
+  excludeNationalIdCode?: string,
+): Promise<boolean> {
+  try {
+    const application = await prisma.application.findUnique({
+      where: { applicationId },
+      include: { members: true },
+    });
+
+    if (!application) {
+      return false;
+    }
+
+    const existingMember = application.members.find(
+      (member) =>
+        member.nationalIdCode === nationalIdCode &&
+        member.nationalIdCode !== excludeNationalIdCode,
     );
 
     return !!existingMember;

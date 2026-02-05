@@ -6,7 +6,7 @@ const meta = {
   component: Currency,
   args: {
     amount: 1000,
-    currency: "USD",
+    currency: "KES",
     className: "",
   },
 } satisfies Meta<typeof Currency>;

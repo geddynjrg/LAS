@@ -28,11 +28,11 @@ export const Primary = {
   render: (props) => (
     <GalleryModal title="Gallery" images={props.images}>
       <div className="grid grid-cols-3 gap-4">
-        {props.images.map((image, index) => (
+        {props.images?.map((image, index) => (
           <GalleryModalTrigger key={index} index={index} asChild>
             <img
-              src={image.url}
-              alt={image.alt}
+              src={image?.url}
+              alt={image?.alt}
               style={{
                 objectFit: "cover",
                 objectPosition: "center",

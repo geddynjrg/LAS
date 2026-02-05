@@ -1,6 +1,10 @@
 'use server';
 
-import { ApplicationStatus, MemberStatus, ConfirmationStatus } from '@/generated/prisma';
+import {
+  ApplicationStatus,
+  ConfirmationStatus,
+  MemberStatus,
+} from '@/generated/prisma';
 import { getApplicationsWithFallback } from '@/lib/api/application/list';
 import type {
   ApplicationDetail,
@@ -107,7 +111,7 @@ function mapApiApplicationToLocal(
         applicationId: apiApp.application_id,
         status: mapApiStatusToLocal(apiApp.status),
         user: apiApp.owner?.email || apiApp.owner?.name || '',
-        applicationProgress: 5, // Assume completed if from API
+        applicationProgress: 7, // Assume completed if from API
         rejectionDetails: apiApp.rejection_details
           ? {
               rejectionReason: apiApp.rejection_details.rejection_reason,
@@ -194,7 +198,7 @@ function mapApiApplicationToLocal(
             : null,
           confirmation_sent_at: member.confirmation?.sent_at
             ? parseTimestamp(member.confirmation.sent_at)
-            : null, 
+            : null,
         })),
       };
     }
@@ -329,7 +333,6 @@ async function syncApplicationDataChanges(
         //       : new Date().toISOString(),
         //   }),
         // });
-
       }
     } catch (error) {
       console.error(
@@ -380,7 +383,6 @@ async function syncMemberStatusChanges(
         const statusNeedsUpdate = currentStatus !== newStatus;
 
         if (statusNeedsUpdate) {
-
           await prisma.memberData.update({
             where: { id: localMember.id },
             data: {
@@ -422,8 +424,6 @@ export async function getHybridApplications(
     try {
       const apiResult = await getApplicationsWithFallback(query);
 
-      
-
       if (apiResult.success && apiResult.data) {
         apiApplications = apiResult.data;
         apiCallSuccessful = true;
@@ -450,7 +450,6 @@ export async function getHybridApplications(
       updatedLocalApplications.forEach((app) => {
         applicationsMap.set(app.generalDetails.applicationId, app);
       });
-
 
       // Override with API applications (they are source of truth for synced apps)
       apiApplications.forEach((apiApp) => {

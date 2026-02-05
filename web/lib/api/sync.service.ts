@@ -2,11 +2,15 @@
 
 import {
   ApplicationStatus,
+  LmsSyncStatus,
   QueueStatus,
   SyncAction,
   SyncStatus,
 } from '@/generated/prisma';
-import { createOrUpdateApplication } from '@/lib/api/application/create';
+import {
+  createOrUpdateApplication,
+  sendToLms,
+} from '@/lib/api/application/create';
 import type {
   ApplicationPostRequest,
   FileUpload,
@@ -59,9 +63,13 @@ export async function processSyncQueue() {
     });
 
     for (const item of pendingItems) {
+      console.log('Processing sync queue item:', item.id);
       await processSyncItem(item.id);
+      console.log('Processed sync queue item:', item.id);
     }
-
+    console.log('ready to process lms que');
+    await processLmsQueue();
+    console.log('finished processing lms que');
     return { processed: pendingItems.length };
   } catch (error) {
     console.error('Error processing sync queue:', error);
@@ -110,46 +118,120 @@ async function processSyncItem(queueItemId: string) {
     }
 
     let result: ExternalApiResponse;
+    const payload = await transformApplicationForExternalApi(application);
 
     switch (queueItem.action) {
       case 'CREATE':
-        console.log('Creating application in external API:', application.applicationId);
-        result = await sendApplicationToExternalApi(application);
-        break;
-      case 'UPDATE':
-        console.log('Updating application in external API:', application.applicationId);
-        result = await updateApplicationInExternalApi(application);
-        break;
-      case 'DELETE':
-        console.log('Deleting application in external API:', application.applicationId);
-        result = await deleteApplicationInExternalApi(
+        console.log(
+          'Creating application in external API:',
           application.applicationId,
         );
+        result = await sendApplicationToExternalApi(payload);
+        break;
+      case 'UPDATE':
+        console.log(
+          'Updating application in external API:',
+          application.applicationId,
+        );
+
+        if (!application.externalId) {
+          // If no external ID, create instead
+          result = await sendApplicationToExternalApi(payload);
+        } else {
+          // include the application_id in the payload
+          payload.application_id = application.externalId;
+          result = await updateApplicationInExternalApi(payload);
+        }
+        break;
+      case 'DELETE':
+        console.log(
+          'Deleting application in external API:',
+          application.applicationId,
+        );
+        if (!application?.externalId) {
+          result = { success: true }; // Nothing to delete
+        } else {
+          payload.application_id = application.externalId;
+          payload.status = 'closed';
+          result = await deleteApplicationInExternalApi(payload);
+        }
+
         break;
       default:
         throw new Error(`Unknown action: ${queueItem.action}`);
     }
 
     if (result.success) {
-      // Mark sync as completed
-      await prisma.syncQueue.update({
-        where: { id: queueItemId },
-        data: {
-          status: QueueStatus.COMPLETED,
-          processedAt: new Date(),
-        },
+      console.log('Creating application in lms API:');
+      await prisma.$transaction(async (tx) => {
+        await tx.application.update({
+          where: { id: application.id },
+          data: {
+            lmsSyncStatus: 'PENDING',
+            lmsSyncAttempts: 0,
+            lmsSyncError: null,
+          },
+        });
+
+        // Mark sync as completed
+        await tx.syncQueue.update({
+          where: { id: queueItemId },
+          data: {
+            status: QueueStatus.COMPLETED,
+            processedAt: new Date(),
+          },
+        });
+
+        // Update application sync status (backend)
+        await tx.application.update({
+          where: { id: application.id },
+          data: {
+            syncStatus: SyncStatus.COMPLETED,
+            lastSyncAt: new Date(),
+            externalId: result.id || application.externalId,
+            syncError: null,
+          },
+        });
       });
 
-      // Update application sync status
-      await prisma.application.update({
-        where: { id: application.id },
-        data: {
-          syncStatus: SyncStatus.COMPLETED,
-          lastSyncAt: new Date(),
-          externalId: result.id || application.externalId,
-          syncError: null,
-        },
-      });
+      // Now send to LMS
+      let lmsSuccess = false;
+      const lmsErrorMsg: string | null = null;
+
+      try {
+        const lmsResult = await sendApplicationToLmsApi(payload);
+        console.log('lms result:', lmsResult);
+        if (lmsResult.success) {
+          lmsSuccess = true;
+          await prisma.application.update({
+            where: { id: application.id },
+            data: {
+              lmsSyncStatus: 'COMPLETED',
+              lmsReferenceId: lmsResult?.id || null,
+              lmsLastSyncAt: new Date(),
+              lmsSyncError: null,
+              lmsSyncAttempts: 1,
+            },
+          });
+        } else {
+          // Queue for retry
+          await queueLmsRetry(
+            application.applicationId,
+            queueItem.id,
+            payload,
+            lmsResult.error,
+          );
+        }
+      } catch (err) {
+        // Queue for retry on error too
+        await queueLmsRetry(
+          application.applicationId,
+          queueItem.id,
+          payload,
+          err,
+        );
+        throw err;
+      }
     } else {
       throw new Error(result.error || 'Unknown error');
     }
@@ -211,19 +293,64 @@ async function processSyncItem(queueItemId: string) {
           error: errorMessage,
         },
       });
-
     }
   }
+}
+
+// Helper function to queue LMS retry
+async function queueLmsRetry(
+  applicationId: string,
+  syncQueueId: string,
+  payload: any,
+  error?: any,
+) {
+  const errorMsg = error instanceof Error ? error.message : 'Unknown LMS error';
+
+  const lmsSyncQueue = await prisma.lmsSyncQueue.upsert({
+    where: { applicationId },
+    update: {
+      syncQueueId,
+      payload,
+      status: 'PENDING',
+      attempts: 0,
+      nextRetryAt: new Date(Date.now() + 5 * 60 * 1000),
+      lastAttemptAt: new Date(),
+      error: errorMsg,
+    },
+    create: {
+      applicationId,
+      syncQueueId,
+      payload,
+      status: 'PENDING',
+      attempts: 0,
+      maxAttempts: 5,
+      nextRetryAt: new Date(Date.now() + 5 * 60 * 1000),
+      lastAttemptAt: new Date(),
+      error: errorMsg,
+    },
+  });
+
+  console.log('LMS sync queued for retry:', lmsSyncQueue);
+
+  // Also update application status
+  await prisma.application.update({
+    where: { applicationId },
+    data: {
+      lmsSyncStatus: 'PENDING',
+      lmsSyncError: errorMsg,
+      lmsLastSyncAt: new Date(),
+      lmsSyncAttempts: 1,
+    },
+  });
 }
 
 /**
  * Send application to external API
  */
 async function sendApplicationToExternalApi(
-  application: any,
+  payload: any,
 ): Promise<ExternalApiResponse> {
   try {
-    const payload = await transformApplicationForExternalApi(application);
     const result = await createOrUpdateApplication(payload);
 
     if ('error' in result && result.error) {
@@ -261,22 +388,64 @@ async function sendApplicationToExternalApi(
   }
 }
 
+// send application to lms API
+
+async function sendApplicationToLmsApi(
+  payload: any,
+): Promise<ExternalApiResponse> {
+  try {
+    const result = await sendToLms(payload);
+
+    if ('error' in result && result.error) {
+      // just retun the error
+      return {
+        success: false,
+        error: result.message || result.error || 'Unknown error',
+      };
+    }
+
+    // Check if it's a successful response
+    if (
+      'success' in result &&
+      result.success &&
+      'data' in result &&
+      result.data
+    ) {
+      const idVal = result.data?.id;
+      return {
+        success: true,
+        id: idVal != null ? String(idVal) : undefined,
+      };
+    }
+
+    // Handle other successful responses without explicit success field
+    if ('data' in result && result.data) {
+      return {
+        success: true,
+        id: result.data.application_id,
+      };
+    }
+
+    return {
+      success: false,
+      error: 'Unexpected response format from LMS API',
+    };
+  } catch (error) {
+    console.error('Error sending application to LMS API:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
 /**
  * Update application in external API
  */
 async function updateApplicationInExternalApi(
-  application: any,
+  payload: any,
 ): Promise<ExternalApiResponse> {
   try {
-    if (!application.externalId) {
-      // If no external ID, create instead
-      return sendApplicationToExternalApi(application);
-    }
-
-    // For updates, we need to include the application_id in the payload
-    const payload = await transformApplicationForExternalApi(application);
-    payload.application_id = application.externalId;
-
     const result = await createOrUpdateApplication(payload);
 
     if ('error' in result && result.error) {
@@ -319,36 +488,9 @@ async function updateApplicationInExternalApi(
  * Note: Since the API doesn't have a DELETE endpoint, we'll update the status to "closed"
  */
 async function deleteApplicationInExternalApi(
-  applicationId: string,
+  payload: any,
 ): Promise<ExternalApiResponse> {
   try {
-    const application = await prisma.application.findUnique({
-      where: { applicationId },
-      include: {
-        user: true,
-        groupData: true,
-        members: true,
-        loanConditions: true,
-        proposedBusiness: true,
-        confirmations: true,
-      },
-    });
-
-    if (!application?.externalId) {
-      return { success: true }; // Nothing to delete
-    }
-
-    // Update the application status to "closed" instead of deleting
-    const updatedApplication = {
-      ...application,
-      status: 'closed' as const,
-    };
-
-    const payload =
-      await transformApplicationForExternalApi(updatedApplication);
-    payload.application_id = application.externalId;
-    payload.status = 'closed';
-
     const result = await createOrUpdateApplication(payload);
 
     if ('error' in result && result.error) {
@@ -371,15 +513,18 @@ async function deleteApplicationInExternalApi(
 async function transformApplicationForExternalApi(
   application: any,
 ): Promise<ApplicationPostRequest> {
-  
   // Helper function to read file and convert to base64
   const readFileAsBase64 = async (filePath: string): Promise<string | null> => {
     try {
+      const uploadDir = process.env.UPLOAD_DIR || 'uploads';
       // Construct the full path - handle new /files/ format
       const fullPath = filePath.startsWith('/files/')
-        ? path.join(process.cwd(), 'uploads', filePath.replace('/files/', ''))
+        ? path.resolve(
+            process.cwd(),
+            uploadDir,
+            filePath.replace('/files/', ''),
+          )
         : filePath;
-
       const fileBuffer = await fs.readFile(fullPath);
       return fileBuffer.toString('base64');
     } catch (error) {
@@ -630,45 +775,52 @@ async function transformApplicationForExternalApi(
       ? [groupMinutesFilesResult]
       : undefined;
 
-
   const groupCreditHistory = Array.isArray(groupCreditHistoryResult)
     ? groupCreditHistoryResult
     : groupCreditHistoryResult
       ? [groupCreditHistoryResult]
       : undefined;
-  
+
   // Enhanced member transformation with better data preservation
   const transformedMembers = await Promise.all(
     (application.members || []).map(async (member: any) => {
-
       // Preserve ALL existing confirmation data exactly as in database
       const confirmationData = {
         requires_confirmation: member.requiresConfirmation !== false,
         confirmation_token: member.confirmation_token || undefined, // Convert null to undefined
-        confirmation_sent_at: toUnixTimestamp(member.confirmation_sent_at) || undefined, // Convert null/0 to undefined
-        confirmation_confirmed_at: toUnixTimestamp(member.confirmation_confirmed_at) || undefined, // Convert null/0 to undefined
+        confirmation_sent_at:
+          toUnixTimestamp(member.confirmation_sent_at) || undefined, // Convert null/0 to undefined
+        confirmation_confirmed_at:
+          toUnixTimestamp(member.confirmation_confirmed_at) || undefined, // Convert null/0 to undefined
         confirmation_status: member.confirmation_status,
-        confirmation_token_expires_at: toUnixTimestamp(member.confirmation_token_expires_at) || undefined,
+        confirmation_token_expires_at:
+          toUnixTimestamp(member.confirmation_token_expires_at) || undefined,
       };
 
       // Determine the correct status to send to API
       let apiConfirmationStatus = confirmationData.confirmation_status;
-      
+
       // Logic for status determination:
       // 1. If member has confirmed/declined, keep that status
-      // 2. If token exists but no response yet, status should be 'sent' 
+      // 2. If token exists but no response yet, status should be 'sent'
       // 3. If no token and no response, status should be 'pending'
-      
-      if (confirmationData.confirmation_status === 'confirmed' || 
-          confirmationData.confirmation_status === 'declined') {
+
+      if (
+        confirmationData.confirmation_status === 'confirmed' ||
+        confirmationData.confirmation_status === 'declined'
+      ) {
         // Member has already responded - preserve their decision
         apiConfirmationStatus = confirmationData.confirmation_status;
-      } else if (confirmationData.confirmation_token && 
-                !confirmationData.confirmation_confirmed_at) {
+      } else if (
+        confirmationData.confirmation_token &&
+        !confirmationData.confirmation_confirmed_at
+      ) {
         // Token exists but no confirmation yet - status should be 'sent'
         apiConfirmationStatus = 'sent';
-      } else if (!confirmationData.confirmation_token && 
-                !confirmationData.confirmation_confirmed_at) {
+      } else if (
+        !confirmationData.confirmation_token &&
+        !confirmationData.confirmation_confirmed_at
+      ) {
         // No token and no confirmation - status should be 'pending'
         apiConfirmationStatus = 'pending';
       }
@@ -832,7 +984,7 @@ export async function syncApplication(
     if (
       application.status === ApplicationStatus.DRAFT ||
       application.status === ApplicationStatus.UNSUBMITTED
-      ) {
+    ) {
       return {
         success: true,
         message: 'Application not ready for sync',
@@ -850,7 +1002,6 @@ export async function syncApplication(
     });
 
     if (existingQueueItem) {
-
       // If it's processing, wait for it to complete
       if (existingQueueItem.status === QueueStatus.PROCESSING) {
         return {
@@ -924,7 +1075,9 @@ export async function syncApplication(
 
       if (queueItem) {
         await processSyncItem(queueItem.id);
-
+        console.log('ready to process lms que');
+        await processLmsQueue();
+        console.log('finished processing lms que');
         // Check actual result
         const updatedApp = await prisma.application.findUnique({
           where: { applicationId },
@@ -943,7 +1096,14 @@ export async function syncApplication(
     }
 
     // Default behavior: process queue in background
+    console.log('calling processSyncQueue');
     await processSyncQueue();
+    console.log('completed processing sync queue');
+
+    // process lms queue as well
+    console.log('calling processLmsQueue');
+    await processLmsQueue();
+    console.log('completed processing lms queue');
 
     return { success: true };
   } catch (error) {
@@ -1428,4 +1588,195 @@ export async function retryAllFailedItems() {
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
+}
+
+/**
+ * Process pending LMS sync queue items
+ */
+export async function processLmsQueue() {
+  console.log('Processing LMS queue');
+  try {
+    // Get pending LMS items scheduled for now or earlier
+    const pendingLmsItems = await prisma.lmsSyncQueue.findMany({
+      where: {
+        status: LmsSyncStatus.PENDING,
+        nextRetryAt: {
+          lte: new Date(),
+        },
+        attempts: {
+          lt: prisma.lmsSyncQueue.fields.maxAttempts, // Check max attempts
+        },
+      },
+      orderBy: {
+        nextRetryAt: 'asc',
+      },
+      take: 10,
+    });
+
+    console.log('lms pending items', pendingLmsItems.length);
+
+    for (const item of pendingLmsItems) {
+      await processLmsQueueItem(item.id);
+    }
+
+    return { processed: pendingLmsItems.length };
+  } catch (error) {
+    console.error('Error processing LMS queue:', error);
+  }
+}
+
+/**
+ * Process a single LMS sync queue item
+ */
+async function processLmsQueueItem(lmsQueueItemId: string) {
+  try {
+    console.log(`Processing LMS queue item ${lmsQueueItemId}`);
+    // Mark as processing
+    await prisma.lmsSyncQueue.update({
+      where: { id: lmsQueueItemId },
+      data: { status: LmsSyncStatus.PROCESSING },
+    });
+
+    const lmsQueueItem = await prisma.lmsSyncQueue.findUnique({
+      where: { id: lmsQueueItemId },
+    });
+
+    if (!lmsQueueItem) {
+      console.log('LMS queue item not found during processing');
+      await prisma.lmsSyncQueue.update({
+        where: { id: lmsQueueItemId },
+        data: {
+          status: LmsSyncStatus.FAILED,
+          error: 'LMS queue item not found',
+        },
+      });
+      throw new Error('LMS queue item not found');
+    }
+
+    // Get the application to update status
+    const application = await prisma.application.findUnique({
+      where: { applicationId: lmsQueueItem.applicationId },
+    });
+
+    if (!application) {
+      await prisma.lmsSyncQueue.update({
+        where: { id: lmsQueueItemId },
+        data: { status: LmsSyncStatus.FAILED, error: 'Application not found' },
+      });
+      throw new Error('Application not found');
+    }
+
+    // Send to LMS API
+    const result = await sendApplicationToLmsApi(lmsQueueItem.payload);
+
+    if (result.success) {
+      console.log(`LMS sync successful for queue item ${result}`);
+      // Mark LMS queue as completed
+      await prisma.lmsSyncQueue.update({
+        where: { id: lmsQueueItemId },
+        data: {
+          status: LmsSyncStatus.COMPLETED,
+          successData: result as any,
+          attempts: lmsQueueItem.attempts + 1,
+          lastAttemptAt: new Date(),
+          error: null,
+        },
+      });
+
+      // Update application LMS status
+      await prisma.application.update({
+        where: { id: application.id },
+        data: {
+          lmsSyncStatus: LmsSyncStatus.COMPLETED,
+          lmsReferenceId: result.id,
+          lmsLastSyncAt: new Date(),
+          lmsSyncError: null,
+          lmsSyncAttempts: (application.lmsSyncAttempts || 0) + 1,
+        },
+      });
+    } else {
+      // update status to pending to trigger retry logic and attempts increment
+      await prisma.lmsSyncQueue.update({
+        where: { id: lmsQueueItemId },
+        data: {
+          status: LmsSyncStatus.PENDING,
+          attempts: lmsQueueItem.attempts + 1,
+          lastAttemptAt: new Date(),
+          error: result.error || 'LMS sync failed',
+        },
+      });
+      throw new Error(result.error || 'LMS sync failed');
+    }
+  } catch (error) {
+    console.error(`Error processing LMS queue item ${lmsQueueItemId}:`, error);
+
+    const lmsQueueItem = await prisma.lmsSyncQueue.findUnique({
+      where: { id: lmsQueueItemId },
+    });
+
+    if (!lmsQueueItem) return;
+
+    const attempts = lmsQueueItem.attempts + 1;
+    const maxAttempts = lmsQueueItem.maxAttempts || 5;
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+
+    if (attempts >= maxAttempts) {
+      // Mark as failed
+      await prisma.lmsSyncQueue.update({
+        where: { id: lmsQueueItemId },
+        data: {
+          status: LmsSyncStatus.FAILED,
+          attempts,
+          error: errorMessage,
+          lastAttemptAt: new Date(),
+        },
+      });
+
+      // Update application
+      await prisma.application.update({
+        where: { applicationId: lmsQueueItem.applicationId },
+        data: {
+          lmsSyncStatus: LmsSyncStatus.FAILED,
+          lmsSyncError: errorMessage,
+          lmsSyncAttempts: attempts,
+          lmsLastSyncAt: new Date(),
+        },
+      });
+    } else {
+      // Schedule retry with exponential backoff
+      const baseDelay = 5 * 60 * 1000; // 5 minutes
+      const retryDelay = Math.min(
+        baseDelay * Math.pow(2, attempts - 1),
+        24 * 60 * 60 * 1000, // Max 24 hours
+      );
+
+      await prisma.lmsSyncQueue.update({
+        where: { id: lmsQueueItemId },
+        data: {
+          status: LmsSyncStatus.PENDING,
+          attempts,
+          nextRetryAt: new Date(Date.now() + retryDelay),
+          error: errorMessage,
+          lastAttemptAt: new Date(),
+        },
+      });
+    }
+  }
+}
+
+function shouldNotRetry(errorMessage: string): boolean {
+  const lowerMsg = errorMessage.toLowerCase();
+  const permanentPatterns = [
+    'not found',
+    'invalid',
+    'unauthorized',
+    'forbidden',
+    'validation failed',
+    'duplicate entry',
+    '422', // Unprocessable entity
+    '403', // Forbidden
+    '401', // Unauthorized
+  ];
+  return permanentPatterns.some((pattern) => lowerMsg.includes(pattern));
 }

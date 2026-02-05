@@ -1,18 +1,32 @@
-// lib/api/sms.service.ts - UPDATED FOR JWT_AUTH
 'use server';
 
 import { api } from '@/lib/api/utils';
-import { getSession } from '@/lib/session'; // Your JWT session utility
+import { getSession } from '@/lib/session';
+
+interface smsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    application_id: string;
+    sms_sent: number;
+    sms_failed: number;
+    total_attempted?: number;
+    status_type?: string;
+    timestamp: string;
+  };
+}
 
 export async function sendConfirmationSMS(
   applicationId: string,
-): Promise<{ success: boolean; error?: string; stats?: any }> {
+): Promise<{ success: boolean; error?: string; stats?: smsResponse }> {
   try {
-    console.log('[SMS Service] Sending member confirmation SMS for:', applicationId);
-    
-    // Get the JWT access token from your session
+    console.log(
+      '[SMS Service] Sending member confirmation SMS for:',
+      applicationId,
+    );
+
     const accessToken = await getSession();
-    
+
     if (!accessToken) {
       return {
         success: false,
@@ -28,9 +42,8 @@ export async function sendConfirmationSMS(
         trigger: 'member_confirmation',
         timestamp: new Date().toISOString(),
       },
-      // Add JWT authorization header for jwt_auth authentication
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
@@ -38,14 +51,14 @@ export async function sendConfirmationSMS(
 
     if (res.error) {
       console.error('[SMS Service] Error:', res.error);
-      
+
       if (res.response?.status === 401) {
         return {
           success: false,
           error: 'Authentication failed. Please log in again.',
         };
       }
-      
+
       return {
         success: false,
         error: `HTTP ${res.response?.status}: ${res.error.message || 'Failed to send SMS'}`,
@@ -54,9 +67,8 @@ export async function sendConfirmationSMS(
 
     return {
       success: true,
-      stats: res.data,
+      stats: res.data as smsResponse,
     };
-
   } catch (error) {
     console.error('[SMS Service] Exception:', error);
     return {

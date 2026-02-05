@@ -135,20 +135,23 @@ const STATUS_CONFIGS: Record<Status, StatusConfig> = {
 };
 
 const STEP_PATHS = [
-  '/group-data',        // Step 1
-  '/members',          // Step 2
-  '/loan-conditions',  // Step 3
+  '/group-data', // Step 1
+  '/members', // Step 2
+  '/loan-conditions', // Step 3
   '/proposed-business', // Step 4
   '/member-confirmation', // Step 5
-  '/confirmations',    // Step 6
-  '/review',          // Step 7
+  '/confirmations', // Step 6
+  '/review', // Step 7
 ] as const;
 
-const getStepUrl = (applicationId: string, applicationProgress?: number): string => {
+const getStepUrl = (
+  applicationId: string,
+  applicationProgress?: number,
+): string => {
   if (!applicationProgress || applicationProgress <= 0) {
     return `/apply/${applicationId}/group-data`; // Default to first step
   }
-  
+
   // Ensure progress is within bounds
   const stepIndex = Math.min(applicationProgress - 1, STEP_PATHS.length - 1);
   return `/apply/${applicationId}${STEP_PATHS[stepIndex]}`;
@@ -253,7 +256,9 @@ export default async function Page() {
             <GroupDetails
               key={application.generalDetails.applicationId}
               applicationId={application.generalDetails.applicationId}
-              applicationProgress={application.generalDetails.applicationProgress}
+              applicationProgress={
+                application.generalDetails.applicationProgress
+              }
               groupName={application.groupData?.basics.groupName}
               loanAmount={application.loanConditions?.loanAmount}
               status={application.generalDetails.status}
@@ -365,15 +370,61 @@ const GroupDetails: FC<GroupDetailsProps> = ({
 
   const contact = siteInfo?.data?.site?.contact;
 
+  // Update the getApplicationUrl function in GroupDetails component
   const getApplicationUrl = () => {
-    console.log('Application Status:', status);
-    console.log('Application Progress:', applicationProgress);
+    console.log('DEBUG - Application Status:', status);
+    console.log('DEBUG - Application Progress:', applicationProgress);
+    console.log(
+      'DEBUG - Step URL calculation:',
+      getStepUrl(applicationId, applicationProgress),
+    );
+
     // For UNSUBMITTED or DRAFT status, go to the current step
     if (status === 'UNSUBMITTED' || status === 'DRAFT') {
-      return getStepUrl(applicationId, applicationProgress);
+      const stepUrl = getStepUrl(applicationId, applicationProgress);
+      console.log('DEBUG - Returning step URL:', stepUrl);
+      return stepUrl;
     }
     // For other statuses, go to dashboard view
+    console.log(
+      'DEBUG - Returning dashboard URL:',
+      `/dashboard/${applicationId}`,
+    );
     return `/dashboard/${applicationId}`;
+  };
+
+  // Also update the getStepUrl function to be more defensive
+  const getStepUrl = (
+    applicationId: string,
+    applicationProgress?: number,
+  ): string => {
+    console.log('getStepUrl called with:', {
+      applicationId,
+      applicationProgress,
+    });
+
+    // If no progress or invalid progress, default to first step
+    if (
+      !applicationProgress ||
+      applicationProgress <= 0 ||
+      applicationProgress > STEP_PATHS.length
+    ) {
+      console.log('Defaulting to first step');
+      return `/apply/${applicationId}/group-data`;
+    }
+
+    // Progress is 1-based, array is 0-based
+    const stepIndex = applicationProgress - 1;
+
+    // Ensure index is within bounds
+    if (stepIndex >= STEP_PATHS.length) {
+      console.log('Step index out of bounds, defaulting to last step');
+      return `/apply/${applicationId}${STEP_PATHS[STEP_PATHS.length - 1]}`;
+    }
+
+    const url = `/apply/${applicationId}${STEP_PATHS[stepIndex]}`;
+    console.log('Calculated URL:', url);
+    return url;
   };
 
   const getButtonText = () => {
@@ -381,7 +432,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
       return t('continueFillingApplication');
     }
     return t('viewApplication');
-  }
+  };
 
   return (
     <Card
@@ -411,9 +462,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         )}
 
         <Button variant="secondary" className="w-full text-neutral-700" asChild>
-          <Link href={getApplicationUrl()}>
-            {getButtonText()}
-          </Link>
+          <Link href={getApplicationUrl()}>{getButtonText()}</Link>
         </Button>
       </div>
 

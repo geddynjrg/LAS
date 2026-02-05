@@ -164,7 +164,7 @@ export const groupDataAction: FormAction<GroupData> = async (
       },
     });
 
-    await updateApplicationStatus(id, ApplicationStatus.DRAFT);
+    await updateApplicationStatus(id, ApplicationStatus.DRAFT, 1);
 
     // Revalidate the application pages to show updated file data
     revalidatePath(`/apply/${id}`);

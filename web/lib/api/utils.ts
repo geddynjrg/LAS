@@ -37,10 +37,15 @@ api.use({
       request.headers.set('X-API-Key', process.env.EXTERNAL_API_KEY);
     }
 
-    if (session) {
-      request.headers.set('authorization', `Bearer ${session}`);
+    if (session?.trim()) {
+      // ← safer check
+      request.headers.set('authorization', `Bearer ${session.trim()}`);
+    } else {
+      // kill all sessions and send to login
+      console.warn(
+        '[API middleware] No valid session → sending request without auth',
+      );
     }
-
 
     return request;
   },
