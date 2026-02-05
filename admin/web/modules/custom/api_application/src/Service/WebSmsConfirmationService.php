@@ -550,17 +550,6 @@ class WebSmsConfirmationService {
    *   Database connection.
    */
   protected function getWebDatabase() {
-    $webConfig = [
-      "database" => "web",
-      "username" => "db",
-      "password" => "db",
-      "host" => "db",
-      "port" => "3306",
-      "driver" => "mysql",
-      "namespace" => "Drupal\\Core\\Database\\Driver\\mysql",
-    ];
-
-    \Drupal\Core\Database\Database::addConnectionInfo('web', 'default', $webConfig);
     return \Drupal\Core\Database\Database::getConnection('default', 'web');
   }
 

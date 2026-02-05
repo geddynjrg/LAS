@@ -103,17 +103,31 @@ class ApplicationSmsResource extends ResourceBase {
         "@failed" => $results["failed"]
       ]);
 
-      // Step 3: Build response data
+      $sent = $results["success"];
+      $failed = $results["failed"];
+      $total = $sent + $failed;
+
+      $isSuccess = ($sent > 0 || ($sent === 0 && $failed === 0));
+
+      $statusType = 'success';
+      if ($sent > 0 && $failed > 0) {
+          $statusType = 'partial'; // 3 sent, 1 failed
+      } elseif ($sent === 0 && $failed > 0) {
+          $statusType = 'error';   // 0 sent, 1 failed
+      } elseif ($sent === 0 && $failed === 0) {
+          $statusType = 'info';    // Already up to date
+      }
+
+      // response data
       $responseData = [
-        "success" => $results["success"] > 0,
-        "message" => $results["success"] > 0 ?
-          "Confirmation SMS sent to {$results["success"]} members" :
-          "Failed to send confirmation SMS",
+        "success" => $isSuccess,
+        "message" => $this->formatSmsMessage($sent, $failed),
         "data" => [
           "application_id" => $application,
-          "sms_sent" => $results["success"],
-          "sms_failed" => $results["failed"],
-          "trigger" => "member_confirmation",
+          "sms_sent" => $sent,
+          "sms_failed" => $failed,
+          "total_attempted" => $total,
+          "status_type" => $statusType,
           "timestamp" => date("c"),
         ],
       ];
@@ -135,6 +149,34 @@ class ApplicationSmsResource extends ResourceBase {
         "message" => "An error occurred while sending SMS",
       ], 500);
     }
+  }
+
+  /**
+   * Formats a user-friendly message based on SMS dispatch results.
+   */
+  protected function formatSmsMessage($sent, $failed) {
+      // Case 1: No members needed notification (All already consented/sent)
+      if ($sent === 0 && $failed === 0) {
+          return "All eligible members have already been notified. No new SMS were required at this time.";
+      }
+
+      // Case 2: Perfect Success
+      if ($sent > 0 && $failed === 0) {
+          return "Confirmation SMS sent to all pending members successfully.";
+      }
+
+      // Case 3: Partial Success (The scenario where 3 sent and 1 failed)
+      if ($sent > 0 && $failed > 0) {
+          return "Successfully notified $sent members, but $failed attempts failed. Please verify the phone numbers of members marked as 'Failed'.";
+      }
+
+      // Case 4: Total Failure (0 sent, >0 failed)
+      if ($sent === 0 && $failed > 0) {
+          return "Failed to send SMS to $failed members. Please check their contact details and try again.";
+      }
+
+      // Fallback
+      return "An unexpected error occurred while dispatching SMS notifications.";
   }
 
   /**
@@ -188,75 +230,20 @@ class ApplicationSmsResource extends ResourceBase {
    *   Database connection.
    */
   protected function getWebDatabase() {
-    $webConfig = [
-      "database" => "web",
-      "username" => "db",
-      "password" => "db",
-      "host" => "db",
-      "port" => "3306",
-      "driver" => "mysql",
-      "namespace" => "Drupal\\Core\\Database\\Driver\\mysql",
-    ];
+    try {
+      // Attempt to get the connection defined in settings.php
+      return \Drupal\Core\Database\Database::getConnection('default', 'web');
+    }
+    catch (\Exception $e) {
+      // Log the error to Drupal's watchdog logs
+      \Drupal::logger('api_application')->error('Web Database Connection Failed: @message', [
+        '@message' => $e->getMessage(),
+      ]);
 
-    \Drupal\Core\Database\Database::addConnectionInfo('web', 'default', $webConfig);
-    return \Drupal\Core\Database\Database::getConnection('default', 'web');
+      // Optionally: print to the screen for immediate debugging (Dev only)
+      // dump($e->getMessage());
+
+      return NULL;
+    }
   }
 }
-
-
-
-  // protected function loadApplication($applicationId) {
-  //   \Drupal::logger("system")->info("Loading application from Prisma: @app", ["@app" => $applicationId]);
-
-  //   try {
-  //     // Prisma database configuration - this works (confirmed via test)
-  //     $prisma_config = [
-  //       "database" => "web",
-  //       "username" => "db",
-  //       "password" => "db",
-  //       "host" => "db",
-  //       "port" => "3306",
-  //       "driver" => "mysql",
-  //       "namespace" => "Drupal\Core\Database\Driver\mysql",
-  //     ];
-
-  //     // Connect to Prisma database
-  //     \Drupal\Core\Database\Database::addConnectionInfo("prisma", "default", $prisma_config);
-  //     $prisma_db = \Drupal\Core\Database\Database::getConnection("default", "prisma");
-
-  //     // Query the application
-  //     $query = $prisma_db->select("applications", "a");
-  //     $query->fields("a", ["id", "applicationId", "status", "userId"]);
-  //     $query->condition("a.applicationId", $applicationId);
-  //     $application = $query->execute()->fetchObject();
-
-  //     if ($application) {
-  //       \Drupal::logger("system")->info("Application found: @id", ["@id" => $application->id]);
-
-  //       // Load members with phone numbers
-  //       $members_query = $prisma_db->select("member_data", "m");
-  //       $members_query->fields("m", ["id", "fullname", "phoneNumber", "nationalIdCode"]);
-  //       $members_query->condition("m.applicationId", $application->id);
-  //       $members_query->condition("m.phoneNumber", "", "<>");
-  //       $members_query->isNotNull("m.phoneNumber");
-  //       $members = $members_query->execute()->fetchAll();
-
-  //       \Drupal::logger("system")->info("Found @count members", ["@count" => count($members)]);
-
-  //       return (object) [
-  //         "prisma_id" => $application->id,
-  //         "application_id" => $application->applicationId,
-  //         "status" => $application->status,
-  //         "user_id" => $application->userId,
-  //         "members" => $members,
-  //       ];
-  //     } else {
-  //       \Drupal::logger("system")->warning("Application not found: @app", ["@app" => $applicationId]);
-  //       return NULL;
-  //     }
-
-  //   } catch (\Exception $e) {
-  //     \Drupal::logger("system")->error("Error: @message", ["@message" => $e->getMessage()]);
-  //     return NULL;
-  //   }
-  // }

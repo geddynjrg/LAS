@@ -877,6 +877,42 @@ if (getenv('DRUPAL_DATABASE_PASSWORD')) {
   ];
 }
 
+$is_docker_env = getenv('DRUPAL_DATABASE_PASSWORD') !== false;
+
+if ($is_docker_env) {
+    $databases['web']['default'] = [
+      'database'  => 'web',
+      'username'  => getenv('DRUPAL_DATABASE_USER'),
+      'password'  => getenv('DRUPAL_DATABASE_PASSWORD'),
+      'host'      => getenv('DRUPAL_DATABASE_HOST'),
+      'port'      => getenv('DRUPAL_DATABASE_PORT') ?: 3306,
+      'driver'    => 'mysql',
+      'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+      'prefix'    => '',
+    ];
+} else {
+    $databases['web']['default'] = [
+      'database'  => 'web',
+      'username'  => 'db',
+      'password'  => 'db',
+      'host'      => 'db',
+      'port'      => '3306',
+      'driver'    => 'mysql',
+      'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+      'prefix'    => '',
+    ];
+}
+
+$settings['ecitizen_oauth'] = [
+  'client_id'     => getenv('ECITIZEN_CLIENT_ID') ?: 'b30d441b886d8a1cd539e007bc5a3f40',
+  'client_secret' => getenv('ECITIZEN_CLIENT_SECRET')?: 'fptijPtHhSveQCPlqtoSKicuRRuDHBUw',
+  'ecitizen_auth_url' => getenv('ECITIZEN_AUTH_URL') ?: 'https://accounts.ecitizen.go.ke/oauth/authorize',
+  'ecitizen_token_url' => getenv('ECITIZEN_TOKEN_URL') ?: 'https://accounts.ecitizen.go.ke/oauth/access-token',
+  'ecitizen_user_info_url' => getenv('ECITIZEN_USER_INFO_URL') ?: 'https://accounts.ecitizen.go.ke/api/user-info',
+  'redirect_uri'  => getenv('ECITIZEN_REDIRECT_URI') ?: 'https://loans-staging-admin.uwezo.go.ke/api/oauth/ecitizen',
+  'forntend_url'    => getenv('UWEZO_UI_PUBLIC_URL') ?: 'https://loans-staging.uwezo.go.ke',
+];
+
 // Hash salt from environment variable.
 if (getenv('DRUPAL_HASH_SALT')) {
   $settings['hash_salt'] = getenv('DRUPAL_HASH_SALT');

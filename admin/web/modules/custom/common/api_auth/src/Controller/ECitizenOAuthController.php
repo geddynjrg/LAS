@@ -4,277 +4,105 @@
 namespace Drupal\api_auth\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Routing\TrustedRedirectResponse; // Add this
+use Drupal\Core\Routing\TrustedRedirectResponse;
+use Drupal\Core\Site\Settings;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Handles eCitizen OAuth flow
  */
 class ECitizenOAuthController extends ControllerBase {
 
-  /**
-   * Configuration (same as original script).
-   */
-  // protected $config = [
-  //   'client_id' => 'b30d441b886d8a1cd539e007bc5a3f40',
-  //   'client_secret' => 'fptijPtHhSveQCPlqtoSKicuRRuDHBUw',
-  //   'redirect_uri' => 'http://uwezo.ddev.site/api/oauth/ecitizen/callback', // ← UPDATED!
-  //   'auth_url' => 'https://accounts.ecitizen.go.ke/oauth/authorize',
-  //   'token_url' => 'https://accounts.ecitizen.go.ke/oauth/access-token',
-  //   'userinfo_url' => 'https://accounts.ecitizen.go.ke/api/user-info',
-  //   'nextjs_url' => 'http://localhost:3000',
-  // ];
+  protected $oauthConfig;
 
-  protected $config = [
-    'client_id' => 'b30d441b886d8a1cd539e007bc5a3f40',
-    'client_secret' => 'fptijPtHhSveQCPlqtoSKicuRRuDHBUw',
-    'redirect_uri' => 'https://majuu.uwezo.go.ke/api/oauth/ecitizen/callback', // ← MATCHES YOUR WORKING SCRIPT
-    'auth_url' => 'https://accounts.ecitizen.go.ke/oauth/authorize',
-    'token_url' => 'https://accounts.ecitizen.go.ke/oauth/access-token',
-    'userinfo_url' => 'https://accounts.ecitizen.go.ke/api/user-info',
-    'nextjs_url' => 'http://localhost:3000',
-];
+  public function __construct() {
+    $this->oauthConfig = Settings::get('ecitizen_oauth', []);
+  }
 
-  /**
-   * Start OAuth flow (initiate).
-   */
-  // public function initiate(Request $request) {
+  private function base64UrlEncode($data) {
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+  }
 
-  //   $session = $request->getSession();
+  private function generateRandomString($length) {
+    return $this->base64UrlEncode(random_bytes($length));
+  }
 
-  //   // Generate PKCE parameters
-  //   $codeVerifier = bin2hex(random_bytes(64));
-  //   $state = $request->query->get('state') ?: bin2hex(random_bytes(16));
-  //   $codeChallenge = $request->query->get('code_challenge');
-
-  //   // If no code_challenge provided, calculate it
-  //   if (!$codeChallenge) {
-  //     $codeChallenge = rtrim(strtr(base64_encode(hash('sha256', $codeVerifier, true)), '+/', '-_'), '=');
-  //   }
-
-  //   // Store PKCE verifier in session
-  //   $session->set('ecitizen_pkce_verifier', $codeVerifier);
-  //   $session->set('ecitizen_state', $state);
-
-  //   // Store callback URL if provided
-  //   if ($callbackUrl = $request->query->get('callback')) {
-  //     $session->set('ecitizen_callback', $callbackUrl);
-  //   }
+  private function generateCodeChallenge($verifier) {
+    $hash = hash('sha256', $verifier, TRUE);
+    return $this->base64UrlEncode($hash);
+  }
 
 
-  //   // Build authorization URL with PKCE
-  //   $params = [
-  //     'response_type' => 'code',
-  //     'client_id' => $this->config['client_id'],
-  //     'redirect_uri' => $this->config['redirect_uri'],
-  //     'scope' => 'openid profile email',
-  //     'state' => $state,
-  //     'code_challenge' => $codeChallenge,
-  //     'code_challenge_method' => 'S256',
-  //   ];
+  public function startEcitizenOauth(Request $request) {
 
-  //   $authUrl = $this->config['auth_url'] . '?' . http_build_query($params);
+    $allowedUrls = [
+      'http://localhost:3000',
+      'https://loans-staging.uwezo.go.ke',
+      'https://loans.uwezo.go.ke',
+    ];
 
+    $origin = $request->query->get('origin');
+    $callbackUrl = $request->query->get('callbackUrl') ?: '/dashboard';
 
-  //   return new TrustedRedirectResponse($authUrl);
-  // }
-
-// public function initiate(Request $request) {
-
-//   $session = $request->getSession();
-
-//   // Get PKCE parameters from request
-//   $codeVerifier = bin2hex(random_bytes(64));
-//   $state = $request->query->get('state') ?: bin2hex(random_bytes(16));
-//   $codeChallenge = $request->query->get('code_challenge');
-
-//   // If no code_challenge from Next.js, calculate it
-//   if (!$codeChallenge) {
-//     // Generate a code_verifier and calculate challenge
-//     $codeChallenge = rtrim(strtr(base64_encode(hash('sha256', $codeVerifier, true)), '+/', '-_'), '=');
-//   }
-
-//   // Store in session
-//   $session->set('ecitizen_pkce_verifier', $codeVerifier);
-//   $session->set('ecitizen_state', $state);
-
-//   if ($callbackUrl = $request->query->get('callback')) {
-//     $session->set('ecitizen_callback', $callbackUrl);
-//   }
-
-
-
-//   // Build authorization URL WITH PKCE
-//   $params = [
-//     'response_type' => 'code',
-//     'client_id' => $this->config['client_id'],
-//     'redirect_uri' => $this->config['redirect_uri'],
-//     'scope' => 'openid profile email',
-//     'state' => $state,
-//     'code_challenge' => $codeChallenge, // ← MUST BE INCLUDED
-//     'code_challenge_method' => 'S256', // ← MUST BE INCLUDED
-//   ];
-
-//   $authUrl = $this->config['auth_url'] . '?' . http_build_query($params);
-
-
-
-//   // Log the actual URL being sent (hide sensitive parts)
-//   $debugParams = $params;
-//   $debugParams['code_challenge'] = substr($codeChallenge, 0, 20) . '...';
-
-//   return new TrustedRedirectResponse($authUrl);
-// }
-
-public function initiate(Request $request) {
-    $session = $request->getSession();
-
-    // Get parameters
-    $state = $request->query->get('state') ?: bin2hex(random_bytes(16));
-    $codeChallenge = $request->query->get('code_challenge');
-    $callbackUrl = $request->query->get('callback', '/dashboard');
-
-    // Store origin from the request
-    $origin = $request->headers->get('Origin');
-    if ($origin) {
-        \Drupal::service('tempstore.private')->get('ecitizen_origin')->set($state, $origin);
+    if (!$origin || !in_array($origin, $allowedUrls)) {
+      \Drupal::logger('ecitizen_auth')->warning('Untrusted origin: @origin', ['@origin' => $origin ?? 'none']);
+      throw new AccessDeniedHttpException('Untrusted origin. Authentication blocked.');
     }
 
-    // Store callback URL
-    \Drupal::service('tempstore.private')->get('ecitizen_oauth')->set($state, [
-        'created' => time(),
-        'callback_url' => $callbackUrl,
-    ]);
+    $codeVerifier = $this->generateRandomString(64);
+    $codeChallenge = $this->generateCodeChallenge($codeVerifier);
+    $state = $this->generateRandomString(32);
+
+
+    $session = $request->getSession();
+
+    $tempstore = \Drupal::service('tempstore.private')->get('api_auth_ecitizen');
+    $tempstore->set('code_verifier', $codeVerifier);
+    $tempstore->set('state', $state);
+    $tempstore->set('return_origin', $callbackUrl);
+
+    $clientId = $this->oauthConfig['client_id'];
+    $redirectUri = $this->oauthConfig['redirect_uri'];
 
     // Build authorization URL (with PKCE if provided)
     $params = [
         'response_type' => 'code',
-        'client_id' => $this->config['client_id'],
-        'redirect_uri' => $this->config['redirect_uri'],
+        'client_id' => $clientId,
+        'redirect_uri' => $redirectUri,
         'scope' => 'openid profile email',
+        'code_challenge' => $codeChallenge,
+        'code_challenge_method' => 'S256',
         'state' => $state,
     ];
 
-    if ($codeChallenge) {
-        $params['code_challenge'] = $codeChallenge;
-        $params['code_challenge_method'] = 'S256';
-    }
-
-    $authUrl = $this->config['auth_url'] . '?' . http_build_query($params);
+    $authUrl = 'https://accounts.ecitizen.go.ke/oauth/authorize' . '?' . http_build_query($params);
 
     return new TrustedRedirectResponse($authUrl);
-}
-
-  /**
-   * Handle eCitizen callback (main logic from original script).
-   */
-  // public function callback(Request $request) {
-
-  //   $session = $request->getSession();
-
-  //   $code = $request->query->get('code');
-  //   $state = $request->query->get('state');
-  //   $error = $request->query->get('error');
-  //   $errorDescription = $request->query->get('error_description');
-
-  //   if ($error) {
-  //       // Instead of throwing an error, redirect to Next.js with the error
-  //       $redirectUrl = $this->config['nextjs_url'] . '/auth/ecitizen/callback?' . http_build_query([
-  //           'error' => $error,
-  //           'error_description' => $errorDescription ?? 'Unknown error',
-  //           'state' => $state,
-  //       ]);
-
-  //       return new TrustedRedirectResponse($redirectUrl);
-  //   }
-
-
-  //   if (!$code || !$state) {
-  //       throw new BadRequestHttpException('Missing code or state parameter.');
-  //   }
-
-  //   // Get stored PKCE data
-  //   $tempstore = \Drupal::service('tempstore.private')->get('ecitizen_oauth');
-  //   $stored = $tempstore->get($state);
-
-  //   if (!$stored) {
-  //     throw new BadRequestHttpException('Invalid or expired state parameter.');
-  //   }
-
-  //   $callbackUrl = $stored['callback_url'] ?? '/dashboard';
-
-  //   // IMPORTANT: For now, skip eCitizen token exchange since credentials don't work
-  //   // We'll mock the response for development
-  //   if ($this->shouldMockResponse()) {
-  //     return $this->mockAuthentication($code, $state, $callbackUrl);
-  //   }
-
-  //   // Original token exchange code (commented out since it fails)
-  //   /*
-  //   $tokenData = $this->exchangeCodeForToken($code, $codeVerifier);
-
-  //   if (!$tokenData || empty($tokenData['access_token'])) {
-  //     throw new BadRequestHttpException('Failed to exchange code for token.');
-  //   }
-
-  //   // Get user info
-  //   $userInfo = $this->getUserInfo($tokenData['access_token']);
-
-  //   if (empty($userInfo['email'])) {
-  //     throw new BadRequestHttpException('No email provided by eCitizen.');
-  //   }
-
-  //   $email = $userInfo['email'];
-
-  //   // Find or create user
-  //   $user = $this->findOrCreateUser($email, $userInfo);
-
-  //   // Generate JWT tokens
-  //   $tokens = $this->generateJwtTokens($user);
-  //   */
-
-  //   // For now, use mock data
-  //   $email = 'test.user@ecitizen.go.ke';
-  //   $user = $this->findOrCreateUser($email, [
-  //     'id' => 'mock_ecitizen_id_' . $state,
-  //     'email' => $email,
-  //     'name' => 'Mock eCitizen User',
-  //   ]);
-
-  //   $tokens = $this->generateJwtTokens($user);
-
-  //   // Redirect to Next.js with tokens
-  //   $redirectUrl = $this->config['nextjs_url'] . '/auth/ecitizen/callback?' . http_build_query([
-  //     'access_token' => $tokens['access_token'],
-  //     'refresh_token' => $tokens['refresh_token'],
-  //     'email' => urlencode($email),
-  //     'uid' => $user->id(),
-  //     'callback' => urlencode($callbackUrl),
-  //   ]);
-
-  //   // Clean up
-  //   $tempstore->delete($state);
-
-
-  //   // Use TrustedRedirectResponse for the Next.js redirect
-  //   return new TrustedRedirectResponse($redirectUrl);
-  // }
+  }
 
   public function callback(Request $request) {
     $code = $request->query->get('code');
     $state = $request->query->get('state');
     $error = $request->query->get('error');
 
+    \Drupal::logger('ecitizen_auth')->warning('callback initiated. request: @request, code: @code, state: @state, Error: @error', [
+        '@request' => $request ?? 'none',
+        '@code' => $code ?? 'none',
+        '@state' => $state ?? 'none',
+        '@error' => $error ?? 'none',
+    ]);
+
+
     // Handle errors first (like your script does)
     if ($error) {
         $errorDescription = $request->query->get('error_description');
 
-        $redirectUrl = $this->config['nextjs_url'] . '/auth/ecitizen/callback?' . http_build_query([
+        $redirectUrl = $this->oauthConfig['forntend_url'] . '/auth/ecitizen/callback?' . http_build_query([
           'error' => $error,
           'error_description' => $errorDescription ?? 'Unknown error',
-          'state' => $state,
         ]);
 
         return new TrustedRedirectResponse($redirectUrl);
@@ -284,25 +112,22 @@ public function initiate(Request $request) {
         throw new BadRequestHttpException('Missing code or state parameter.');
     }
 
-    // Get stored data from tempstore (like your $_SESSION storage)
-    $tempstore = \Drupal::service('tempstore.private')->get('ecitizen_oauth');
-    $pkceStore = \Drupal::service('tempstore.private')->get('ecitizen_pkce');
-    $originStore = \Drupal::service('tempstore.private')->get('ecitizen_origin');
+    $tempstore = \Drupal::service('tempstore.private')->get('api_auth_ecitizen');
+    $savedState = $tempstore->get('state');
+    $codeVerifier = $tempstore->get('code_verifier');
+    $returnOrigin = $tempstore->get('return_origin');
 
-    $storedData = $tempstore->get($state);
-    $codeVerifier = $pkceStore->get($state);
-    $origin = $originStore->get($state);
-
-    if (!$storedData) {
-        throw new BadRequestHttpException('Invalid or expired state parameter.');
+    if (empty($savedState) || $state !== $savedState) {
+      \Drupal::logger('api_auth')->error('State mismatch or session expired. Saved: @saved, Received: @received', [
+        '@saved' => $savedState ?? 'NULL',
+        '@received' => $state ?? 'NULL',
+      ]);
+      throw new AccessDeniedHttpException('Invalid state. Please try logging in again.');
     }
 
-    $callbackUrl = $storedData['callback_url'] ?? '/dashboard';
+    $callbackUrl = $returnOrigin ?? '/dashboard';
 
-    // Clean up tempstore
-    $tempstore->delete($state);
-    $pkceStore->delete($state);
-    $originStore->delete($state);
+    $this->clearEcitizenTempstore($tempstore);
 
     // TOKEN EXCHANGE - Use your working script's logic
     $tokenData = $this->exchangeCodeForToken($code, $codeVerifier);
@@ -336,20 +161,29 @@ public function initiate(Request $request) {
     $tokens = $this->generateJwtTokens($user);
 
     // REDIRECT BASED ON ORIGIN (like your script does)
-    $redirectUrl = $this->determineRedirectUrl($origin, $callbackUrl, [
+    $redirectUrl = $this->determineRedirectUrl($callbackUrl, $callbackUrl, [
         'access_token' => $tokens['access_token'],
         'refresh_token' => $tokens['refresh_token'],
-        'name' => urlencode($fullName),
-        'id' => urlencode($idNumber),
-        'mobile' => urlencode($mobile),
-        'krapin' => urlencode($krapin),
-        'email' => urlencode($email),
-        'dob' => urlencode($dob),
-        'gender' => urlencode($gender),
-        'uid' => $user->id(),
+        // 'name' => urlencode($fullName),
+        // 'id' => urlencode($idNumber),
+        // 'mobile' => urlencode($mobile),
+        // 'krapin' => urlencode($krapin),
+        // 'email' => urlencode($email),
+        // 'dob' => urlencode($dob),
+        // 'gender' => urlencode($gender),
+        // 'uid' => $user->id(),
+        'callback_url' => urlencode($callbackUrl),
     ]);
 
+
+
     return new TrustedRedirectResponse($redirectUrl);
+}
+
+private function clearEcitizenTempstore($tempstore) {
+  $tempstore->delete('state');
+  $tempstore->delete('code_verifier');
+  $tempstore->delete('return_origin');
 }
 
 private function determineRedirectUrl($origin, $callbackUrl, $params) {
@@ -359,14 +193,9 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
     // Route based on origin (like your script does)
     if ($origin === 'http://localhost:3000') {
         return "http://localhost:3000/auth/ecitizen/callback?$queryParams";
-    } elseif ($origin === 'http://localhost:3001') {
-        return "http://localhost:3001/auth/ecitizen/callback?$queryParams";
-    } elseif ($origin === 'https://majuu.uwezo.go.ke') {
-        return "https://majuu.uwezo.go.ke$callbackUrl?$queryParams";
     }
-
     // Default fallback
-    return $this->config['nextjs_url'] . "/auth/ecitizen/callback?$queryParams";
+    return $this->oauthConfig['forntend_url'] . "/auth/ecitizen/callback?$queryParams";
 }
 
   /**
@@ -384,7 +213,7 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
 
     $tokens = $this->generateJwtTokens($user);
 
-    $redirectUrl = $this->config['nextjs_url'] . '/auth/ecitizen/callback?' . http_build_query([
+    $redirectUrl = $this->oauthConfig['forntend_url'] . '/auth/ecitizen/callback?' . http_build_query([
       'access_token' => $tokens['access_token'],
       'refresh_token' => $tokens['refresh_token'],
       'email' => urlencode($email),
@@ -404,39 +233,13 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
     return \Drupal::request()->getHost() !== 'production-domain.com';
   }
 
-  /**
-   * Exchange code for token (from original httpPost).
-   */
-  // private function exchangeCodeForToken($code, $codeVerifier) {
-  //   try {
-  //     $data = [
-  //       'grant_type' => 'authorization_code',
-  //       'code' => $code,
-  //       'redirect_uri' => $this->config['redirect_uri'],
-  //       'client_id' => $this->config['client_id'],
-  //       'client_secret' => $this->config['client_secret'],
-  //       'code_verifier' => $codeVerifier,
-  //     ];
-
-  //     $response = \Drupal::httpClient()->post($this->config['token_url'], [
-  //       'form_params' => $data,
-  //       'headers' => ['Accept' => 'application/json'],
-  //       'verify' => false, // For development
-  //     ]);
-
-  //     return json_decode($response->getBody(), TRUE);
-  //   } catch (\Exception $e) {
-  //    return null;
-  //   }
-  // }
-
   private function exchangeCodeForToken($code, $codeVerifier = null) {
     $data = [
         'grant_type' => 'authorization_code',
         'code' => $code,
-        'redirect_uri' => $this->config['redirect_uri'],
-        'client_id' => $this->config['client_id'],
-        'client_secret' => $this->config['client_secret'],
+        'redirect_uri' => $this->oauthConfig['redirect_uri'],
+        'client_id' => $this->oauthConfig['client_id'],
+        'client_secret' => $this->oauthConfig['client_secret'],
     ];
 
     // Add code_verifier only if provided (like your script does)
@@ -445,15 +248,19 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
     }
 
     try {
-        $response = \Drupal::httpClient()->post($this->config['token_url'], [
+        $response = \Drupal::httpClient()->post($this->oauthConfig['ecitizen_token_url'], [
             'form_params' => $data,
             'headers' => ['Accept' => 'application/json'],
             'verify' => true,
+            'http_errors' => true,
         ]);
 
         return json_decode($response->getBody(), TRUE);
     } catch (\Exception $e) {
-        return null;
+        \Drupal::logger('ecitizen_auth')->error('Token exchange failed: @message', [
+          '@message' => $e->getMessage(),
+      ]);
+      return null;
     }
 }
 
@@ -463,7 +270,7 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
   private function getUserInfo($accessToken) {
 
     try {
-      $response = \Drupal::httpClient()->get($this->config['userinfo_url'], [
+      $response = \Drupal::httpClient()->get($this->oauthConfig['ecitizen_user_info_url'], [
         'headers' => [
           'Authorization' => 'Bearer ' . $accessToken,
           'Accept' => 'application/json',
@@ -473,7 +280,8 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
 
       return json_decode($response->getBody(), TRUE);
     } catch (\Exception $e) {
-      return ['email' => 'test@example.com']; // Fallback
+      return null;
+      // return ['email' => 'test@example.com']; // Fallback
     }
   }
 
@@ -481,67 +289,78 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
    * Find or create user (adapted from original DB logic).
    */
   private function findOrCreateUser($email, $ecitizenData) {
-    $user_storage = \Drupal::entityTypeManager()->getStorage('user');
+      $user_storage = \Drupal::entityTypeManager()->getStorage('user');
 
-    // Try to load by email
-    $users = $user_storage->loadByProperties(['mail' => $email]);
-    $user = reset($users);
+      $users = $user_storage->loadByProperties(['mail' => $email]);
+      $user = reset($users);
 
-    $isNewUser = false;
+      if (!$user) {
+          $baseUsername = preg_replace('/@.*$/', '', $email);
+          $username = $baseUsername;
+          $counter = 1;
 
-    if (!$user) {
-      $isNewUser = true;
+          while ($user_storage->loadByProperties(['name' => $username])) {
+              $username = $baseUsername . '_' . $counter;
+              $counter++;
+          }
 
-      // Generate username from email
-      $baseUsername = preg_replace('/@.*$/', '', $email);
-      $username = $baseUsername;
-      $counter = 1;
+          $user = $user_storage->create([
+              'name' => $username,
+              'mail' => $email,
+              'status' => 1,
+              'pass' => \Drupal::service('password_generator')->generate(),
+              'init' => $email,
+          ]);
 
-      while ($user_storage->loadByProperties(['name' => $username])) {
-        $username = $baseUsername . '_' . $counter;
-        $counter++;
+          if (isset($ecitizenData['first_name'])) {
+              // If you have a name field, set it
+              $user->set('field_name', $ecitizenData['first_name']);
+          }
+
+          // Store other eCitizen data in user's data field or custom fields
+          $userData = [
+              'ecitizen' => [
+                  'id' => $ecitizenData['id'] ?? '',
+                  'id_number' => $ecitizenData['id_number'] ?? '',
+                  'mobile_number' => $ecitizenData['mobile_number'] ?? '',
+                  'kra_pin_number' => $ecitizenData['kra_pin_number'] ?? '',
+                  'dob' => $ecitizenData['dob'] ?? '',
+                  'gender' => $ecitizenData['gender'] ?? '',
+                  'last_login' => time(),
+              ]
+          ];
+
+          $user->set('data', $userData);
+
+          $user->save();
+
+          \Drupal::logger('ecitizen_auth')->info('User registered via eCitizen SSO: @email', ['@email' => $email]);
+
+      } else {
+          // Update existing user's eCitizen data
+          $currentData = $user->get('data')->getValue();
+          $userData = !empty($currentData) ? $currentData[0]['value'] : [];
+
+          $userData['ecitizen'] = [
+              'id' => $ecitizenData['id'] ?? ($userData['ecitizen']['id'] ?? ''),
+              'id_number' => $ecitizenData['id_number'] ?? ($userData['ecitizen']['id_number'] ?? ''),
+              'mobile_number' => $ecitizenData['mobile_number'] ?? ($userData['ecitizen']['mobile_number'] ?? ''),
+              'kra_pin_number' => $ecitizenData['kra_pin_number'] ?? ($userData['ecitizen']['kra_pin_number'] ?? ''),
+              'dob' => $ecitizenData['dob'] ?? ($userData['ecitizen']['dob'] ?? ''),
+              'gender' => $ecitizenData['gender'] ?? ($userData['ecitizen']['gender'] ?? ''),
+              'last_login' => time(),
+          ];
+
+          $user->set('data', $userData);
+
+          \Drupal::logger('api_auth')->info('User logged in via eCitizen SSO: @email', ['@email' => $email]);
       }
 
-      // Create user
-      $user = $user_storage->create([
-        'name' => $username,
-        'mail' => $email,
-        'status' => 1,
-        'pass' => \Drupal::service('password_generator')->generate(),
-        'init' => $email,
-      ]);
-
-      // Store eCitizen data in user's data field
-      $user->set('data', [
-        'ecitizen' => [
-          'id' => $ecitizenData['id'] ?? '',
-          'data' => $ecitizenData,
-          'last_login' => time(),
-        ]
-      ]);
-
+      // Update last access time
+      $user->setLastAccessTime(time());
       $user->save();
 
-    } else {
-      // Update existing user's eCitizen data
-      $userData = $user->get('data')->getValue();
-      if (empty($userData)) {
-        $userData = [['value' => []]];
-      }
-      $userData[0]['value']['ecitizen'] = [
-        'id' => $ecitizenData['id'] ?? '',
-        'data' => $ecitizenData,
-        'last_login' => time(),
-      ];
-      $user->set('data', $userData);
-
-    }
-
-    // Update last access time
-    $user->setLastAccessTime(time());
-    $user->save();
-
-    return $user;
+      return $user;
   }
 
   /**
@@ -564,6 +383,8 @@ private function determineRedirectUrl($origin, $callbackUrl, $params) {
    */
   public function storePkce(Request $request) {
     $data = json_decode($request->getContent(), TRUE);
+
+    return new JsonResponse(['status' => "ok: {$data}"]);
 
     if (empty($data['code_verifier']) || empty($data['state'])) {
       return new JsonResponse(['error' => 'Missing code_verifier or state'], 400);

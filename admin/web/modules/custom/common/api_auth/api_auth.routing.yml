@@ -35,18 +35,19 @@ api_auth.token_revoke_all:
     _permission: 'administer site configuration'
 
 api_auth.ecitizen.initiate:
-  path: '/api/oauth/ecitizen'
+  path: '/api/oauth/ecitizen/login'
   defaults:
-    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::initiate'
+    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::startEcitizenOauth'
     _title: 'eCitizen OAuth Initiation'
   requirements:
     _permission: 'access content'
 
 api_auth.ecitizen.callback:
-  path: '/api/oauth/ecitizen/callback'
+  path: '/api/oauth/ecitizen'
   defaults:
     _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::callback'
     _title: 'eCitizen OAuth Callback'
+  methods: [GET]
   requirements:
     _permission: 'access content'
 
