@@ -200,7 +200,6 @@ async function processSyncItem(queueItemId: string) {
 
       try {
         const lmsResult = await sendApplicationToLmsApi(payload);
-        console.log('lms result:', lmsResult);
         if (lmsResult.success) {
           lmsSuccess = true;
           await prisma.application.update({
@@ -215,6 +214,7 @@ async function processSyncItem(queueItemId: string) {
           });
         } else {
           // Queue for retry
+          console.log('lms error result:', lmsResult);
           await queueLmsRetry(
             application.applicationId,
             queueItem.id,
@@ -304,7 +304,7 @@ async function queueLmsRetry(
   payload: any,
   error?: any,
 ) {
-  const errorMsg = error instanceof Error ? error.message : 'Unknown LMS error';
+  const errorMsg = error instanceof Error ? error.message : 'Unknown LMS error: ' + String(error);
 
   const lmsSyncQueue = await prisma.lmsSyncQueue.upsert({
     where: { applicationId },
@@ -799,11 +799,6 @@ async function transformApplicationForExternalApi(
 
       // Determine the correct status to send to API
       let apiConfirmationStatus = confirmationData.confirmation_status;
-
-      // Logic for status determination:
-      // 1. If member has confirmed/declined, keep that status
-      // 2. If token exists but no response yet, status should be 'sent'
-      // 3. If no token and no response, status should be 'pending'
 
       if (
         confirmationData.confirmation_status === 'confirmed' ||
@@ -1625,6 +1620,47 @@ export async function processLmsQueue() {
   }
 }
 
+const isDefinitelyPermanentError = (err: unknown): boolean => {
+  if (!(err instanceof Error)) return false;
+
+  const msg = err.message.toLowerCase();
+
+  if (
+    msg.includes('unauthorized') ||
+    msg.includes('forbidden') ||
+    msg.includes('invalid') ||
+    msg.includes('validation failed') ||
+    msg.includes('not found') ||
+    msg.includes('already exists') ||
+    msg.includes('duplicate') ||
+    msg.includes('422') ||
+    msg.includes('403') ||
+    msg.includes('401') ||
+    msg.includes('invalid_api_key') ||
+    msg.includes('invalid_api_key_requested') ||
+    msg.includes('IP address not authorized') ||
+    msg.includes('ip_not_allowed') ||
+    msg.includes('missing_api_key') ||
+    msg.includes('rate_limited')
+  ) {
+    return true;
+  }
+
+  if (
+    msg.includes('econnrefused') ||
+    msg.includes('connection refused') ||
+    msg.includes('etimedout') ||
+    msg.includes('enotfound') || // DNS failure
+    msg.includes('certificate') || // SSL issues
+    msg.includes('self signed') ||
+    msg.includes('depth') // certificate chain
+  ) {
+    return false;
+  }
+
+  return false;
+};
+
 /**
  * Process a single LMS sync queue item
  */
@@ -1708,58 +1744,67 @@ async function processLmsQueueItem(lmsQueueItemId: string) {
       throw new Error(result.error || 'LMS sync failed');
     }
   } catch (error) {
-    console.error(`Error processing LMS queue item ${lmsQueueItemId}:`, error);
-
     const lmsQueueItem = await prisma.lmsSyncQueue.findUnique({
       where: { id: lmsQueueItemId },
     });
 
     if (!lmsQueueItem) return;
 
+    console.error(`LMS sync attempt failed`, {
+      queueId: lmsQueueItemId,
+      applicationId: lmsQueueItem.applicationId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+
     const attempts = lmsQueueItem.attempts + 1;
-    const maxAttempts = lmsQueueItem.maxAttempts || 5;
+    const maxAttempts = lmsQueueItem.maxAttempts ?? 8;
+
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
 
-    if (attempts >= maxAttempts) {
-      // Mark as failed
-      await prisma.lmsSyncQueue.update({
-        where: { id: lmsQueueItemId },
-        data: {
-          status: LmsSyncStatus.FAILED,
-          attempts,
-          error: errorMessage,
-          lastAttemptAt: new Date(),
-        },
-      });
+    let nextStatus: LmsSyncStatus;
+    let shouldDrop = false;
 
-      // Update application
-      await prisma.application.update({
-        where: { applicationId: lmsQueueItem.applicationId },
-        data: {
-          lmsSyncStatus: LmsSyncStatus.FAILED,
-          lmsSyncError: errorMessage,
-          lmsSyncAttempts: attempts,
-          lmsLastSyncAt: new Date(),
-        },
-      });
+    if (isDefinitelyPermanentError(error)) {
+      nextStatus = LmsSyncStatus.FAILED;
+      shouldDrop = true;
+    } else if (attempts >= maxAttempts) {
+      nextStatus = LmsSyncStatus.FAILED;
+      shouldDrop = true;
     } else {
-      // Schedule retry with exponential backoff
-      const baseDelay = 5 * 60 * 1000; // 5 minutes
-      const retryDelay = Math.min(
-        baseDelay * Math.pow(2, attempts - 1),
-        24 * 60 * 60 * 1000, // Max 24 hours
-      );
+      nextStatus = LmsSyncStatus.PENDING;
+      shouldDrop = false;
+    }
 
-      await prisma.lmsSyncQueue.update({
-        where: { id: lmsQueueItemId },
-        data: {
-          status: LmsSyncStatus.PENDING,
-          attempts,
-          nextRetryAt: new Date(Date.now() + retryDelay),
-          error: errorMessage,
-          lastAttemptAt: new Date(),
-        },
+    const retryDelayMs = shouldDrop
+      ? 0
+      : Math.min(5 * 60_000 * Math.pow(1.8, attempts - 1), 4 * 3600_000); // ~4h max
+
+    await prisma.lmsSyncQueue.update({
+      where: { id: lmsQueueItemId },
+      data: {
+        status: nextStatus,
+        attempts,
+        lastAttemptAt: new Date(),
+        nextRetryAt: shouldDrop ? null : new Date(Date.now() + retryDelayMs),
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+    });
+
+    await prisma.application.update({
+      where: { applicationId: lmsQueueItem.applicationId },
+      data: {
+        lmsSyncStatus: nextStatus,
+        lmsSyncError: error instanceof Error ? error.message : 'Unknown error',
+        lmsSyncAttempts: attempts,
+        lmsLastSyncAt: new Date(),
+      },
+    });
+
+    if (shouldDrop) {
+      console.warn(`Giving up on LMS sync after ${attempts} attempts`, {
+        permanent: isDefinitelyPermanentError(error),
+        applicationId: lmsQueueItem.applicationId,
       });
     }
   }

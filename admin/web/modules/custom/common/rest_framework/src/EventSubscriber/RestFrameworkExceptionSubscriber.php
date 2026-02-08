@@ -110,9 +110,9 @@ class RestFrameworkExceptionSubscriber implements EventSubscriberInterface {
     }
 
     // Hide potentially sensitive information for server errors.
-    if (empty($message) || $status_code >= 500) {
-      $message = 'An error occurred. Please try again later.';
-    }
+    // if (empty($message) || $status_code >= 500) {
+    //   $message = 'An error occurred. Please try again later.';
+    // }
 
     // ALWAYS use application/json for content type.
     $headers['Content-Type'] = 'application/json';

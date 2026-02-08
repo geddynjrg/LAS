@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+    - user
+id: lms_application_update
+plugin_id: lms_application_update
+granularity: resource
+configuration:
+  methods:
+    - PATCH
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie 

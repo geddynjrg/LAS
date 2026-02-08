@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 // app/(auth)/ecitizen/callback/page.tsx
 
 export default function ECitizenCallbackPage() {
-  const router = useRouter();
+  const router = useRouter(); 
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
     'loading',

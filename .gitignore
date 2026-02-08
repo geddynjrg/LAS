@@ -31,6 +31,10 @@ storybook-static
 
 # Debug
 npm-debug.log*
+debug_apis.php
+debug_routes_all.php
+debug_routes.php
+bk_up.env.example
 
 # Misc
 .DS_Store
