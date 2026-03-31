@@ -46,6 +46,12 @@ model Application {
   loanConditions      LoanConditions?
   members             MemberData[]
   proposedBusiness    ProposedBusiness?
+  lmsReferenceId      String?
+  lmsSyncStatus       String? // Can be: 'PENDING', 'COMPLETED', 'FAILED'
+  lmsSyncError        String?
+  lmsSyncAttempts     Int               @default(0)
+  lmsLastSyncAt       DateTime?
+  lmsSyncQueue        LmsSyncQueue?
 
   @@index([userId])
   @@index([status])
@@ -235,6 +241,8 @@ model SyncQueue {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
+  lmsSyncQueue LmsSyncQueue? @relation
+
   @@index([status, scheduledFor])
   @@index([applicationId])
   @@map("sync_queue")
@@ -323,6 +331,37 @@ enum QueueStatus {
   PROCESSING
   COMPLETED
   FAILED
+}
+
+model LmsSyncQueue {
+  id            String        @id @default(cuid())
+  applicationId String        @unique
+  syncQueueId   String        @unique
+  payload       Json
+  status        LmsSyncStatus @default(PENDING)
+  attempts      Int           @default(0)
+  maxAttempts   Int           @default(3)
+  lastAttemptAt DateTime?
+  nextRetryAt   DateTime?
+  error         String?
+  successData   Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  application Application @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade)
+  syncQueue   SyncQueue   @relation(fields: [syncQueueId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([nextRetryAt])
+  @@index([applicationId])
+}
+
+enum LmsSyncStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  SKIPPED
 }
 
 model CountiesCache {

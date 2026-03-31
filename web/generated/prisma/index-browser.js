@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.12.0
- * Query Engine version: 8047c96bbd92db98a2abc7c9323ce77c02c89dbc
+ * Prisma Client JS version: 6.11.1
+ * Query Engine version: f40f79ec31188888a2e33acda0ecc8fd10a853a9
  */
 Prisma.prismaVersion = {
-  client: "6.12.0",
-  engine: "8047c96bbd92db98a2abc7c9323ce77c02c89dbc"
+  client: "6.11.1",
+  engine: "f40f79ec31188888a2e33acda0ecc8fd10a853a9"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -143,7 +143,12 @@ exports.Prisma.ApplicationScalarFieldEnum = {
   syncError: 'syncError',
   externalId: 'externalId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  lmsReferenceId: 'lmsReferenceId',
+  lmsSyncStatus: 'lmsSyncStatus',
+  lmsSyncError: 'lmsSyncError',
+  lmsSyncAttempts: 'lmsSyncAttempts',
+  lmsLastSyncAt: 'lmsLastSyncAt'
 };
 
 exports.Prisma.GroupDataScalarFieldEnum = {
@@ -306,6 +311,22 @@ exports.Prisma.FileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.LmsSyncQueueScalarFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  syncQueueId: 'syncQueueId',
+  payload: 'payload',
+  status: 'status',
+  attempts: 'attempts',
+  maxAttempts: 'maxAttempts',
+  lastAttemptAt: 'lastAttemptAt',
+  nextRetryAt: 'nextRetryAt',
+  error: 'error',
+  successData: 'successData',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CountiesCacheScalarFieldEnum = {
   id: 'id',
   lastSyncedAt: 'lastSyncedAt',
@@ -348,6 +369,15 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -366,7 +396,10 @@ exports.Prisma.ApplicationOrderByRelevanceFieldEnum = {
   applicationId: 'applicationId',
   userId: 'userId',
   syncError: 'syncError',
-  externalId: 'externalId'
+  externalId: 'externalId',
+  lmsReferenceId: 'lmsReferenceId',
+  lmsSyncStatus: 'lmsSyncStatus',
+  lmsSyncError: 'lmsSyncError'
 };
 
 exports.Prisma.GroupDataOrderByRelevanceFieldEnum = {
@@ -469,6 +502,24 @@ exports.Prisma.FileOrderByRelevanceFieldEnum = {
   applicationId: 'applicationId'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
+exports.Prisma.LmsSyncQueueOrderByRelevanceFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  syncQueueId: 'syncQueueId',
+  error: 'error'
+};
+
 exports.Prisma.CountiesCacheOrderByRelevanceFieldEnum = {
   id: 'id'
 };
@@ -560,6 +611,14 @@ exports.QueueStatus = exports.$Enums.QueueStatus = {
   FAILED: 'FAILED'
 };
 
+exports.LmsSyncStatus = exports.$Enums.LmsSyncStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Application: 'Application',
@@ -573,6 +632,7 @@ exports.Prisma.ModelName = {
   TaxonomyTerm: 'TaxonomyTerm',
   SyncQueue: 'SyncQueue',
   File: 'File',
+  LmsSyncQueue: 'LmsSyncQueue',
   CountiesCache: 'CountiesCache',
   County: 'County',
   Constituency: 'Constituency'

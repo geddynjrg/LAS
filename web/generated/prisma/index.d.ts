@@ -74,6 +74,11 @@ export type SyncQueue = $Result.DefaultSelection<Prisma.$SyncQueuePayload>
  */
 export type File = $Result.DefaultSelection<Prisma.$FilePayload>
 /**
+ * Model LmsSyncQueue
+ * 
+ */
+export type LmsSyncQueue = $Result.DefaultSelection<Prisma.$LmsSyncQueuePayload>
+/**
  * Model CountiesCache
  * 
  */
@@ -190,6 +195,17 @@ export const QueueStatus: {
 
 export type QueueStatus = (typeof QueueStatus)[keyof typeof QueueStatus]
 
+
+export const LmsSyncStatus: {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
+export type LmsSyncStatus = (typeof LmsSyncStatus)[keyof typeof LmsSyncStatus]
+
 }
 
 export type IdentifierType = $Enums.IdentifierType
@@ -231,6 +247,10 @@ export const SyncAction: typeof $Enums.SyncAction
 export type QueueStatus = $Enums.QueueStatus
 
 export const QueueStatus: typeof $Enums.QueueStatus
+
+export type LmsSyncStatus = $Enums.LmsSyncStatus
+
+export const LmsSyncStatus: typeof $Enums.LmsSyncStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -478,6 +498,16 @@ export class PrismaClient<
   get file(): Prisma.FileDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.lmsSyncQueue`: Exposes CRUD operations for the **LmsSyncQueue** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LmsSyncQueues
+    * const lmsSyncQueues = await prisma.lmsSyncQueue.findMany()
+    * ```
+    */
+  get lmsSyncQueue(): Prisma.LmsSyncQueueDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.countiesCache`: Exposes CRUD operations for the **CountiesCache** model.
     * Example usage:
     * ```ts
@@ -564,8 +594,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.12.0
-   * Query Engine version: 8047c96bbd92db98a2abc7c9323ce77c02c89dbc
+   * Prisma Client JS version: 6.11.1
+   * Query Engine version: f40f79ec31188888a2e33acda0ecc8fd10a853a9
    */
   export type PrismaVersion = {
     client: string
@@ -958,6 +988,7 @@ export namespace Prisma {
     TaxonomyTerm: 'TaxonomyTerm',
     SyncQueue: 'SyncQueue',
     File: 'File',
+    LmsSyncQueue: 'LmsSyncQueue',
     CountiesCache: 'CountiesCache',
     County: 'County',
     Constituency: 'Constituency'
@@ -979,7 +1010,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "application" | "groupData" | "memberData" | "loanConditions" | "proposedBusiness" | "customExpense" | "confirmations" | "taxonomyVocabulary" | "taxonomyTerm" | "syncQueue" | "file" | "countiesCache" | "county" | "constituency"
+      modelProps: "user" | "application" | "groupData" | "memberData" | "loanConditions" | "proposedBusiness" | "customExpense" | "confirmations" | "taxonomyVocabulary" | "taxonomyTerm" | "syncQueue" | "file" | "lmsSyncQueue" | "countiesCache" | "county" | "constituency"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1775,6 +1806,72 @@ export namespace Prisma {
           }
         }
       }
+      LmsSyncQueue: {
+        payload: Prisma.$LmsSyncQueuePayload<ExtArgs>
+        fields: Prisma.LmsSyncQueueFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LmsSyncQueueFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LmsSyncQueueFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload>
+          }
+          findFirst: {
+            args: Prisma.LmsSyncQueueFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LmsSyncQueueFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload>
+          }
+          findMany: {
+            args: Prisma.LmsSyncQueueFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload>[]
+          }
+          create: {
+            args: Prisma.LmsSyncQueueCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload>
+          }
+          createMany: {
+            args: Prisma.LmsSyncQueueCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.LmsSyncQueueDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload>
+          }
+          update: {
+            args: Prisma.LmsSyncQueueUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload>
+          }
+          deleteMany: {
+            args: Prisma.LmsSyncQueueDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LmsSyncQueueUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.LmsSyncQueueUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LmsSyncQueuePayload>
+          }
+          aggregate: {
+            args: Prisma.LmsSyncQueueAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLmsSyncQueue>
+          }
+          groupBy: {
+            args: Prisma.LmsSyncQueueGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LmsSyncQueueGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LmsSyncQueueCountArgs<ExtArgs>
+            result: $Utils.Optional<LmsSyncQueueCountAggregateOutputType> | number
+          }
+        }
+      }
       CountiesCache: {
         payload: Prisma.$CountiesCachePayload<ExtArgs>
         fields: Prisma.CountiesCacheFieldRefs
@@ -2069,6 +2166,7 @@ export namespace Prisma {
     taxonomyTerm?: TaxonomyTermOmit
     syncQueue?: SyncQueueOmit
     file?: FileOmit
+    lmsSyncQueue?: LmsSyncQueueOmit
     countiesCache?: CountiesCacheOmit
     county?: CountyOmit
     constituency?: ConstituencyOmit
@@ -3354,11 +3452,13 @@ export namespace Prisma {
   export type ApplicationAvgAggregateOutputType = {
     applicationProgress: number | null
     syncAttempts: number | null
+    lmsSyncAttempts: number | null
   }
 
   export type ApplicationSumAggregateOutputType = {
     applicationProgress: number | null
     syncAttempts: number | null
+    lmsSyncAttempts: number | null
   }
 
   export type ApplicationMinAggregateOutputType = {
@@ -3374,6 +3474,11 @@ export namespace Prisma {
     externalId: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    lmsReferenceId: string | null
+    lmsSyncStatus: string | null
+    lmsSyncError: string | null
+    lmsSyncAttempts: number | null
+    lmsLastSyncAt: Date | null
   }
 
   export type ApplicationMaxAggregateOutputType = {
@@ -3389,6 +3494,11 @@ export namespace Prisma {
     externalId: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    lmsReferenceId: string | null
+    lmsSyncStatus: string | null
+    lmsSyncError: string | null
+    lmsSyncAttempts: number | null
+    lmsLastSyncAt: Date | null
   }
 
   export type ApplicationCountAggregateOutputType = {
@@ -3404,6 +3514,11 @@ export namespace Prisma {
     externalId: number
     createdAt: number
     updatedAt: number
+    lmsReferenceId: number
+    lmsSyncStatus: number
+    lmsSyncError: number
+    lmsSyncAttempts: number
+    lmsLastSyncAt: number
     _all: number
   }
 
@@ -3411,11 +3526,13 @@ export namespace Prisma {
   export type ApplicationAvgAggregateInputType = {
     applicationProgress?: true
     syncAttempts?: true
+    lmsSyncAttempts?: true
   }
 
   export type ApplicationSumAggregateInputType = {
     applicationProgress?: true
     syncAttempts?: true
+    lmsSyncAttempts?: true
   }
 
   export type ApplicationMinAggregateInputType = {
@@ -3431,6 +3548,11 @@ export namespace Prisma {
     externalId?: true
     createdAt?: true
     updatedAt?: true
+    lmsReferenceId?: true
+    lmsSyncStatus?: true
+    lmsSyncError?: true
+    lmsSyncAttempts?: true
+    lmsLastSyncAt?: true
   }
 
   export type ApplicationMaxAggregateInputType = {
@@ -3446,6 +3568,11 @@ export namespace Prisma {
     externalId?: true
     createdAt?: true
     updatedAt?: true
+    lmsReferenceId?: true
+    lmsSyncStatus?: true
+    lmsSyncError?: true
+    lmsSyncAttempts?: true
+    lmsLastSyncAt?: true
   }
 
   export type ApplicationCountAggregateInputType = {
@@ -3461,6 +3588,11 @@ export namespace Prisma {
     externalId?: true
     createdAt?: true
     updatedAt?: true
+    lmsReferenceId?: true
+    lmsSyncStatus?: true
+    lmsSyncError?: true
+    lmsSyncAttempts?: true
+    lmsLastSyncAt?: true
     _all?: true
   }
 
@@ -3563,6 +3695,11 @@ export namespace Prisma {
     externalId: string | null
     createdAt: Date
     updatedAt: Date
+    lmsReferenceId: string | null
+    lmsSyncStatus: string | null
+    lmsSyncError: string | null
+    lmsSyncAttempts: number
+    lmsLastSyncAt: Date | null
     _count: ApplicationCountAggregateOutputType | null
     _avg: ApplicationAvgAggregateOutputType | null
     _sum: ApplicationSumAggregateOutputType | null
@@ -3597,12 +3734,18 @@ export namespace Prisma {
     externalId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    lmsReferenceId?: boolean
+    lmsSyncStatus?: boolean
+    lmsSyncError?: boolean
+    lmsSyncAttempts?: boolean
+    lmsLastSyncAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     confirmations?: boolean | Application$confirmationsArgs<ExtArgs>
     groupData?: boolean | Application$groupDataArgs<ExtArgs>
     loanConditions?: boolean | Application$loanConditionsArgs<ExtArgs>
     members?: boolean | Application$membersArgs<ExtArgs>
     proposedBusiness?: boolean | Application$proposedBusinessArgs<ExtArgs>
+    lmsSyncQueue?: boolean | Application$lmsSyncQueueArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
 
@@ -3621,9 +3764,14 @@ export namespace Prisma {
     externalId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    lmsReferenceId?: boolean
+    lmsSyncStatus?: boolean
+    lmsSyncError?: boolean
+    lmsSyncAttempts?: boolean
+    lmsLastSyncAt?: boolean
   }
 
-  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "applicationId" | "status" | "applicationProgress" | "userId" | "syncStatus" | "syncAttempts" | "lastSyncAt" | "syncError" | "externalId" | "createdAt" | "updatedAt", ExtArgs["result"]["application"]>
+  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "applicationId" | "status" | "applicationProgress" | "userId" | "syncStatus" | "syncAttempts" | "lastSyncAt" | "syncError" | "externalId" | "createdAt" | "updatedAt" | "lmsReferenceId" | "lmsSyncStatus" | "lmsSyncError" | "lmsSyncAttempts" | "lmsLastSyncAt", ExtArgs["result"]["application"]>
   export type ApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     confirmations?: boolean | Application$confirmationsArgs<ExtArgs>
@@ -3631,6 +3779,7 @@ export namespace Prisma {
     loanConditions?: boolean | Application$loanConditionsArgs<ExtArgs>
     members?: boolean | Application$membersArgs<ExtArgs>
     proposedBusiness?: boolean | Application$proposedBusinessArgs<ExtArgs>
+    lmsSyncQueue?: boolean | Application$lmsSyncQueueArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -3643,6 +3792,7 @@ export namespace Prisma {
       loanConditions: Prisma.$LoanConditionsPayload<ExtArgs> | null
       members: Prisma.$MemberDataPayload<ExtArgs>[]
       proposedBusiness: Prisma.$ProposedBusinessPayload<ExtArgs> | null
+      lmsSyncQueue: Prisma.$LmsSyncQueuePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3657,6 +3807,11 @@ export namespace Prisma {
       externalId: string | null
       createdAt: Date
       updatedAt: Date
+      lmsReferenceId: string | null
+      lmsSyncStatus: string | null
+      lmsSyncError: string | null
+      lmsSyncAttempts: number
+      lmsLastSyncAt: Date | null
     }, ExtArgs["result"]["application"]>
     composites: {}
   }
@@ -4003,6 +4158,7 @@ export namespace Prisma {
     loanConditions<T extends Application$loanConditionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$loanConditionsArgs<ExtArgs>>): Prisma__LoanConditionsClient<$Result.GetResult<Prisma.$LoanConditionsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     members<T extends Application$membersArgs<ExtArgs> = {}>(args?: Subset<T, Application$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberDataPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     proposedBusiness<T extends Application$proposedBusinessArgs<ExtArgs> = {}>(args?: Subset<T, Application$proposedBusinessArgs<ExtArgs>>): Prisma__ProposedBusinessClient<$Result.GetResult<Prisma.$ProposedBusinessPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    lmsSyncQueue<T extends Application$lmsSyncQueueArgs<ExtArgs> = {}>(args?: Subset<T, Application$lmsSyncQueueArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4044,6 +4200,11 @@ export namespace Prisma {
     readonly externalId: FieldRef<"Application", 'String'>
     readonly createdAt: FieldRef<"Application", 'DateTime'>
     readonly updatedAt: FieldRef<"Application", 'DateTime'>
+    readonly lmsReferenceId: FieldRef<"Application", 'String'>
+    readonly lmsSyncStatus: FieldRef<"Application", 'String'>
+    readonly lmsSyncError: FieldRef<"Application", 'String'>
+    readonly lmsSyncAttempts: FieldRef<"Application", 'Int'>
+    readonly lmsLastSyncAt: FieldRef<"Application", 'DateTime'>
   }
     
 
@@ -4484,6 +4645,25 @@ export namespace Prisma {
      */
     include?: ProposedBusinessInclude<ExtArgs> | null
     where?: ProposedBusinessWhereInput
+  }
+
+  /**
+   * Application.lmsSyncQueue
+   */
+  export type Application$lmsSyncQueueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    where?: LmsSyncQueueWhereInput
   }
 
   /**
@@ -13243,6 +13423,7 @@ export namespace Prisma {
     error?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    lmsSyncQueue?: boolean | SyncQueue$lmsSyncQueueArgs<ExtArgs>
   }, ExtArgs["result"]["syncQueue"]>
 
 
@@ -13263,10 +13444,15 @@ export namespace Prisma {
   }
 
   export type SyncQueueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "applicationId" | "action" | "payload" | "attempts" | "maxAttempts" | "status" | "scheduledFor" | "processedAt" | "error" | "createdAt" | "updatedAt", ExtArgs["result"]["syncQueue"]>
+  export type SyncQueueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lmsSyncQueue?: boolean | SyncQueue$lmsSyncQueueArgs<ExtArgs>
+  }
 
   export type $SyncQueuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SyncQueue"
-    objects: {}
+    objects: {
+      lmsSyncQueue: Prisma.$LmsSyncQueuePayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       applicationId: string
@@ -13620,6 +13806,7 @@ export namespace Prisma {
    */
   export interface Prisma__SyncQueueClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    lmsSyncQueue<T extends SyncQueue$lmsSyncQueueArgs<ExtArgs> = {}>(args?: Subset<T, SyncQueue$lmsSyncQueueArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13678,6 +13865,10 @@ export namespace Prisma {
      */
     omit?: SyncQueueOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
+    /**
      * Filter, which SyncQueue to fetch.
      */
     where: SyncQueueWhereUniqueInput
@@ -13696,6 +13887,10 @@ export namespace Prisma {
      */
     omit?: SyncQueueOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
+    /**
      * Filter, which SyncQueue to fetch.
      */
     where: SyncQueueWhereUniqueInput
@@ -13713,6 +13908,10 @@ export namespace Prisma {
      * Omit specific fields from the SyncQueue
      */
     omit?: SyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
     /**
      * Filter, which SyncQueue to fetch.
      */
@@ -13762,6 +13961,10 @@ export namespace Prisma {
      */
     omit?: SyncQueueOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
+    /**
      * Filter, which SyncQueue to fetch.
      */
     where?: SyncQueueWhereInput
@@ -13810,6 +14013,10 @@ export namespace Prisma {
      */
     omit?: SyncQueueOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
+    /**
      * Filter, which SyncQueues to fetch.
      */
     where?: SyncQueueWhereInput
@@ -13853,6 +14060,10 @@ export namespace Prisma {
      */
     omit?: SyncQueueOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
+    /**
      * The data needed to create a SyncQueue.
      */
     data: XOR<SyncQueueCreateInput, SyncQueueUncheckedCreateInput>
@@ -13881,6 +14092,10 @@ export namespace Prisma {
      * Omit specific fields from the SyncQueue
      */
     omit?: SyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
     /**
      * The data needed to update a SyncQueue.
      */
@@ -13922,6 +14137,10 @@ export namespace Prisma {
      */
     omit?: SyncQueueOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
+    /**
      * The filter to search for the SyncQueue to update in case it exists.
      */
     where: SyncQueueWhereUniqueInput
@@ -13948,6 +14167,10 @@ export namespace Prisma {
      */
     omit?: SyncQueueOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
+    /**
      * Filter which SyncQueue to delete.
      */
     where: SyncQueueWhereUniqueInput
@@ -13968,6 +14191,25 @@ export namespace Prisma {
   }
 
   /**
+   * SyncQueue.lmsSyncQueue
+   */
+  export type SyncQueue$lmsSyncQueueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    where?: LmsSyncQueueWhereInput
+  }
+
+  /**
    * SyncQueue without action
    */
   export type SyncQueueDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13979,6 +14221,10 @@ export namespace Prisma {
      * Omit specific fields from the SyncQueue
      */
     omit?: SyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyncQueueInclude<ExtArgs> | null
   }
 
 
@@ -14950,6 +15196,1057 @@ export namespace Prisma {
      * Omit specific fields from the File
      */
     omit?: FileOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model LmsSyncQueue
+   */
+
+  export type AggregateLmsSyncQueue = {
+    _count: LmsSyncQueueCountAggregateOutputType | null
+    _avg: LmsSyncQueueAvgAggregateOutputType | null
+    _sum: LmsSyncQueueSumAggregateOutputType | null
+    _min: LmsSyncQueueMinAggregateOutputType | null
+    _max: LmsSyncQueueMaxAggregateOutputType | null
+  }
+
+  export type LmsSyncQueueAvgAggregateOutputType = {
+    attempts: number | null
+    maxAttempts: number | null
+  }
+
+  export type LmsSyncQueueSumAggregateOutputType = {
+    attempts: number | null
+    maxAttempts: number | null
+  }
+
+  export type LmsSyncQueueMinAggregateOutputType = {
+    id: string | null
+    applicationId: string | null
+    syncQueueId: string | null
+    status: $Enums.LmsSyncStatus | null
+    attempts: number | null
+    maxAttempts: number | null
+    lastAttemptAt: Date | null
+    nextRetryAt: Date | null
+    error: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type LmsSyncQueueMaxAggregateOutputType = {
+    id: string | null
+    applicationId: string | null
+    syncQueueId: string | null
+    status: $Enums.LmsSyncStatus | null
+    attempts: number | null
+    maxAttempts: number | null
+    lastAttemptAt: Date | null
+    nextRetryAt: Date | null
+    error: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type LmsSyncQueueCountAggregateOutputType = {
+    id: number
+    applicationId: number
+    syncQueueId: number
+    payload: number
+    status: number
+    attempts: number
+    maxAttempts: number
+    lastAttemptAt: number
+    nextRetryAt: number
+    error: number
+    successData: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type LmsSyncQueueAvgAggregateInputType = {
+    attempts?: true
+    maxAttempts?: true
+  }
+
+  export type LmsSyncQueueSumAggregateInputType = {
+    attempts?: true
+    maxAttempts?: true
+  }
+
+  export type LmsSyncQueueMinAggregateInputType = {
+    id?: true
+    applicationId?: true
+    syncQueueId?: true
+    status?: true
+    attempts?: true
+    maxAttempts?: true
+    lastAttemptAt?: true
+    nextRetryAt?: true
+    error?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type LmsSyncQueueMaxAggregateInputType = {
+    id?: true
+    applicationId?: true
+    syncQueueId?: true
+    status?: true
+    attempts?: true
+    maxAttempts?: true
+    lastAttemptAt?: true
+    nextRetryAt?: true
+    error?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type LmsSyncQueueCountAggregateInputType = {
+    id?: true
+    applicationId?: true
+    syncQueueId?: true
+    payload?: true
+    status?: true
+    attempts?: true
+    maxAttempts?: true
+    lastAttemptAt?: true
+    nextRetryAt?: true
+    error?: true
+    successData?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type LmsSyncQueueAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LmsSyncQueue to aggregate.
+     */
+    where?: LmsSyncQueueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LmsSyncQueues to fetch.
+     */
+    orderBy?: LmsSyncQueueOrderByWithRelationInput | LmsSyncQueueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LmsSyncQueueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LmsSyncQueues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LmsSyncQueues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LmsSyncQueues
+    **/
+    _count?: true | LmsSyncQueueCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LmsSyncQueueAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LmsSyncQueueSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LmsSyncQueueMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LmsSyncQueueMaxAggregateInputType
+  }
+
+  export type GetLmsSyncQueueAggregateType<T extends LmsSyncQueueAggregateArgs> = {
+        [P in keyof T & keyof AggregateLmsSyncQueue]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLmsSyncQueue[P]>
+      : GetScalarType<T[P], AggregateLmsSyncQueue[P]>
+  }
+
+
+
+
+  export type LmsSyncQueueGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LmsSyncQueueWhereInput
+    orderBy?: LmsSyncQueueOrderByWithAggregationInput | LmsSyncQueueOrderByWithAggregationInput[]
+    by: LmsSyncQueueScalarFieldEnum[] | LmsSyncQueueScalarFieldEnum
+    having?: LmsSyncQueueScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LmsSyncQueueCountAggregateInputType | true
+    _avg?: LmsSyncQueueAvgAggregateInputType
+    _sum?: LmsSyncQueueSumAggregateInputType
+    _min?: LmsSyncQueueMinAggregateInputType
+    _max?: LmsSyncQueueMaxAggregateInputType
+  }
+
+  export type LmsSyncQueueGroupByOutputType = {
+    id: string
+    applicationId: string
+    syncQueueId: string
+    payload: JsonValue
+    status: $Enums.LmsSyncStatus
+    attempts: number
+    maxAttempts: number
+    lastAttemptAt: Date | null
+    nextRetryAt: Date | null
+    error: string | null
+    successData: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: LmsSyncQueueCountAggregateOutputType | null
+    _avg: LmsSyncQueueAvgAggregateOutputType | null
+    _sum: LmsSyncQueueSumAggregateOutputType | null
+    _min: LmsSyncQueueMinAggregateOutputType | null
+    _max: LmsSyncQueueMaxAggregateOutputType | null
+  }
+
+  type GetLmsSyncQueueGroupByPayload<T extends LmsSyncQueueGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LmsSyncQueueGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LmsSyncQueueGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LmsSyncQueueGroupByOutputType[P]>
+            : GetScalarType<T[P], LmsSyncQueueGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LmsSyncQueueSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    applicationId?: boolean
+    syncQueueId?: boolean
+    payload?: boolean
+    status?: boolean
+    attempts?: boolean
+    maxAttempts?: boolean
+    lastAttemptAt?: boolean
+    nextRetryAt?: boolean
+    error?: boolean
+    successData?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    syncQueue?: boolean | SyncQueueDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["lmsSyncQueue"]>
+
+
+
+  export type LmsSyncQueueSelectScalar = {
+    id?: boolean
+    applicationId?: boolean
+    syncQueueId?: boolean
+    payload?: boolean
+    status?: boolean
+    attempts?: boolean
+    maxAttempts?: boolean
+    lastAttemptAt?: boolean
+    nextRetryAt?: boolean
+    error?: boolean
+    successData?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type LmsSyncQueueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "applicationId" | "syncQueueId" | "payload" | "status" | "attempts" | "maxAttempts" | "lastAttemptAt" | "nextRetryAt" | "error" | "successData" | "createdAt" | "updatedAt", ExtArgs["result"]["lmsSyncQueue"]>
+  export type LmsSyncQueueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    syncQueue?: boolean | SyncQueueDefaultArgs<ExtArgs>
+  }
+
+  export type $LmsSyncQueuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LmsSyncQueue"
+    objects: {
+      application: Prisma.$ApplicationPayload<ExtArgs>
+      syncQueue: Prisma.$SyncQueuePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      applicationId: string
+      syncQueueId: string
+      payload: Prisma.JsonValue
+      status: $Enums.LmsSyncStatus
+      attempts: number
+      maxAttempts: number
+      lastAttemptAt: Date | null
+      nextRetryAt: Date | null
+      error: string | null
+      successData: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["lmsSyncQueue"]>
+    composites: {}
+  }
+
+  type LmsSyncQueueGetPayload<S extends boolean | null | undefined | LmsSyncQueueDefaultArgs> = $Result.GetResult<Prisma.$LmsSyncQueuePayload, S>
+
+  type LmsSyncQueueCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LmsSyncQueueFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LmsSyncQueueCountAggregateInputType | true
+    }
+
+  export interface LmsSyncQueueDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LmsSyncQueue'], meta: { name: 'LmsSyncQueue' } }
+    /**
+     * Find zero or one LmsSyncQueue that matches the filter.
+     * @param {LmsSyncQueueFindUniqueArgs} args - Arguments to find a LmsSyncQueue
+     * @example
+     * // Get one LmsSyncQueue
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LmsSyncQueueFindUniqueArgs>(args: SelectSubset<T, LmsSyncQueueFindUniqueArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LmsSyncQueue that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LmsSyncQueueFindUniqueOrThrowArgs} args - Arguments to find a LmsSyncQueue
+     * @example
+     * // Get one LmsSyncQueue
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LmsSyncQueueFindUniqueOrThrowArgs>(args: SelectSubset<T, LmsSyncQueueFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LmsSyncQueue that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LmsSyncQueueFindFirstArgs} args - Arguments to find a LmsSyncQueue
+     * @example
+     * // Get one LmsSyncQueue
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LmsSyncQueueFindFirstArgs>(args?: SelectSubset<T, LmsSyncQueueFindFirstArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LmsSyncQueue that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LmsSyncQueueFindFirstOrThrowArgs} args - Arguments to find a LmsSyncQueue
+     * @example
+     * // Get one LmsSyncQueue
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LmsSyncQueueFindFirstOrThrowArgs>(args?: SelectSubset<T, LmsSyncQueueFindFirstOrThrowArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LmsSyncQueues that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LmsSyncQueueFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LmsSyncQueues
+     * const lmsSyncQueues = await prisma.lmsSyncQueue.findMany()
+     * 
+     * // Get first 10 LmsSyncQueues
+     * const lmsSyncQueues = await prisma.lmsSyncQueue.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const lmsSyncQueueWithIdOnly = await prisma.lmsSyncQueue.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LmsSyncQueueFindManyArgs>(args?: SelectSubset<T, LmsSyncQueueFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LmsSyncQueue.
+     * @param {LmsSyncQueueCreateArgs} args - Arguments to create a LmsSyncQueue.
+     * @example
+     * // Create one LmsSyncQueue
+     * const LmsSyncQueue = await prisma.lmsSyncQueue.create({
+     *   data: {
+     *     // ... data to create a LmsSyncQueue
+     *   }
+     * })
+     * 
+     */
+    create<T extends LmsSyncQueueCreateArgs>(args: SelectSubset<T, LmsSyncQueueCreateArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LmsSyncQueues.
+     * @param {LmsSyncQueueCreateManyArgs} args - Arguments to create many LmsSyncQueues.
+     * @example
+     * // Create many LmsSyncQueues
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LmsSyncQueueCreateManyArgs>(args?: SelectSubset<T, LmsSyncQueueCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a LmsSyncQueue.
+     * @param {LmsSyncQueueDeleteArgs} args - Arguments to delete one LmsSyncQueue.
+     * @example
+     * // Delete one LmsSyncQueue
+     * const LmsSyncQueue = await prisma.lmsSyncQueue.delete({
+     *   where: {
+     *     // ... filter to delete one LmsSyncQueue
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LmsSyncQueueDeleteArgs>(args: SelectSubset<T, LmsSyncQueueDeleteArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LmsSyncQueue.
+     * @param {LmsSyncQueueUpdateArgs} args - Arguments to update one LmsSyncQueue.
+     * @example
+     * // Update one LmsSyncQueue
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LmsSyncQueueUpdateArgs>(args: SelectSubset<T, LmsSyncQueueUpdateArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LmsSyncQueues.
+     * @param {LmsSyncQueueDeleteManyArgs} args - Arguments to filter LmsSyncQueues to delete.
+     * @example
+     * // Delete a few LmsSyncQueues
+     * const { count } = await prisma.lmsSyncQueue.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LmsSyncQueueDeleteManyArgs>(args?: SelectSubset<T, LmsSyncQueueDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LmsSyncQueues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LmsSyncQueueUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LmsSyncQueues
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LmsSyncQueueUpdateManyArgs>(args: SelectSubset<T, LmsSyncQueueUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one LmsSyncQueue.
+     * @param {LmsSyncQueueUpsertArgs} args - Arguments to update or create a LmsSyncQueue.
+     * @example
+     * // Update or create a LmsSyncQueue
+     * const lmsSyncQueue = await prisma.lmsSyncQueue.upsert({
+     *   create: {
+     *     // ... data to create a LmsSyncQueue
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LmsSyncQueue we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LmsSyncQueueUpsertArgs>(args: SelectSubset<T, LmsSyncQueueUpsertArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LmsSyncQueues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LmsSyncQueueCountArgs} args - Arguments to filter LmsSyncQueues to count.
+     * @example
+     * // Count the number of LmsSyncQueues
+     * const count = await prisma.lmsSyncQueue.count({
+     *   where: {
+     *     // ... the filter for the LmsSyncQueues we want to count
+     *   }
+     * })
+    **/
+    count<T extends LmsSyncQueueCountArgs>(
+      args?: Subset<T, LmsSyncQueueCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LmsSyncQueueCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LmsSyncQueue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LmsSyncQueueAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LmsSyncQueueAggregateArgs>(args: Subset<T, LmsSyncQueueAggregateArgs>): Prisma.PrismaPromise<GetLmsSyncQueueAggregateType<T>>
+
+    /**
+     * Group by LmsSyncQueue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LmsSyncQueueGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LmsSyncQueueGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LmsSyncQueueGroupByArgs['orderBy'] }
+        : { orderBy?: LmsSyncQueueGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LmsSyncQueueGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLmsSyncQueueGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LmsSyncQueue model
+   */
+  readonly fields: LmsSyncQueueFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LmsSyncQueue.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LmsSyncQueueClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    syncQueue<T extends SyncQueueDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SyncQueueDefaultArgs<ExtArgs>>): Prisma__SyncQueueClient<$Result.GetResult<Prisma.$SyncQueuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LmsSyncQueue model
+   */
+  interface LmsSyncQueueFieldRefs {
+    readonly id: FieldRef<"LmsSyncQueue", 'String'>
+    readonly applicationId: FieldRef<"LmsSyncQueue", 'String'>
+    readonly syncQueueId: FieldRef<"LmsSyncQueue", 'String'>
+    readonly payload: FieldRef<"LmsSyncQueue", 'Json'>
+    readonly status: FieldRef<"LmsSyncQueue", 'LmsSyncStatus'>
+    readonly attempts: FieldRef<"LmsSyncQueue", 'Int'>
+    readonly maxAttempts: FieldRef<"LmsSyncQueue", 'Int'>
+    readonly lastAttemptAt: FieldRef<"LmsSyncQueue", 'DateTime'>
+    readonly nextRetryAt: FieldRef<"LmsSyncQueue", 'DateTime'>
+    readonly error: FieldRef<"LmsSyncQueue", 'String'>
+    readonly successData: FieldRef<"LmsSyncQueue", 'Json'>
+    readonly createdAt: FieldRef<"LmsSyncQueue", 'DateTime'>
+    readonly updatedAt: FieldRef<"LmsSyncQueue", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LmsSyncQueue findUnique
+   */
+  export type LmsSyncQueueFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * Filter, which LmsSyncQueue to fetch.
+     */
+    where: LmsSyncQueueWhereUniqueInput
+  }
+
+  /**
+   * LmsSyncQueue findUniqueOrThrow
+   */
+  export type LmsSyncQueueFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * Filter, which LmsSyncQueue to fetch.
+     */
+    where: LmsSyncQueueWhereUniqueInput
+  }
+
+  /**
+   * LmsSyncQueue findFirst
+   */
+  export type LmsSyncQueueFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * Filter, which LmsSyncQueue to fetch.
+     */
+    where?: LmsSyncQueueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LmsSyncQueues to fetch.
+     */
+    orderBy?: LmsSyncQueueOrderByWithRelationInput | LmsSyncQueueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LmsSyncQueues.
+     */
+    cursor?: LmsSyncQueueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LmsSyncQueues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LmsSyncQueues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LmsSyncQueues.
+     */
+    distinct?: LmsSyncQueueScalarFieldEnum | LmsSyncQueueScalarFieldEnum[]
+  }
+
+  /**
+   * LmsSyncQueue findFirstOrThrow
+   */
+  export type LmsSyncQueueFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * Filter, which LmsSyncQueue to fetch.
+     */
+    where?: LmsSyncQueueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LmsSyncQueues to fetch.
+     */
+    orderBy?: LmsSyncQueueOrderByWithRelationInput | LmsSyncQueueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LmsSyncQueues.
+     */
+    cursor?: LmsSyncQueueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LmsSyncQueues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LmsSyncQueues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LmsSyncQueues.
+     */
+    distinct?: LmsSyncQueueScalarFieldEnum | LmsSyncQueueScalarFieldEnum[]
+  }
+
+  /**
+   * LmsSyncQueue findMany
+   */
+  export type LmsSyncQueueFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * Filter, which LmsSyncQueues to fetch.
+     */
+    where?: LmsSyncQueueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LmsSyncQueues to fetch.
+     */
+    orderBy?: LmsSyncQueueOrderByWithRelationInput | LmsSyncQueueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LmsSyncQueues.
+     */
+    cursor?: LmsSyncQueueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LmsSyncQueues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LmsSyncQueues.
+     */
+    skip?: number
+    distinct?: LmsSyncQueueScalarFieldEnum | LmsSyncQueueScalarFieldEnum[]
+  }
+
+  /**
+   * LmsSyncQueue create
+   */
+  export type LmsSyncQueueCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LmsSyncQueue.
+     */
+    data: XOR<LmsSyncQueueCreateInput, LmsSyncQueueUncheckedCreateInput>
+  }
+
+  /**
+   * LmsSyncQueue createMany
+   */
+  export type LmsSyncQueueCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LmsSyncQueues.
+     */
+    data: LmsSyncQueueCreateManyInput | LmsSyncQueueCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LmsSyncQueue update
+   */
+  export type LmsSyncQueueUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LmsSyncQueue.
+     */
+    data: XOR<LmsSyncQueueUpdateInput, LmsSyncQueueUncheckedUpdateInput>
+    /**
+     * Choose, which LmsSyncQueue to update.
+     */
+    where: LmsSyncQueueWhereUniqueInput
+  }
+
+  /**
+   * LmsSyncQueue updateMany
+   */
+  export type LmsSyncQueueUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LmsSyncQueues.
+     */
+    data: XOR<LmsSyncQueueUpdateManyMutationInput, LmsSyncQueueUncheckedUpdateManyInput>
+    /**
+     * Filter which LmsSyncQueues to update
+     */
+    where?: LmsSyncQueueWhereInput
+    /**
+     * Limit how many LmsSyncQueues to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LmsSyncQueue upsert
+   */
+  export type LmsSyncQueueUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LmsSyncQueue to update in case it exists.
+     */
+    where: LmsSyncQueueWhereUniqueInput
+    /**
+     * In case the LmsSyncQueue found by the `where` argument doesn't exist, create a new LmsSyncQueue with this data.
+     */
+    create: XOR<LmsSyncQueueCreateInput, LmsSyncQueueUncheckedCreateInput>
+    /**
+     * In case the LmsSyncQueue was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LmsSyncQueueUpdateInput, LmsSyncQueueUncheckedUpdateInput>
+  }
+
+  /**
+   * LmsSyncQueue delete
+   */
+  export type LmsSyncQueueDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
+    /**
+     * Filter which LmsSyncQueue to delete.
+     */
+    where: LmsSyncQueueWhereUniqueInput
+  }
+
+  /**
+   * LmsSyncQueue deleteMany
+   */
+  export type LmsSyncQueueDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LmsSyncQueues to delete
+     */
+    where?: LmsSyncQueueWhereInput
+    /**
+     * Limit how many LmsSyncQueues to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LmsSyncQueue without action
+   */
+  export type LmsSyncQueueDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LmsSyncQueue
+     */
+    select?: LmsSyncQueueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LmsSyncQueue
+     */
+    omit?: LmsSyncQueueOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LmsSyncQueueInclude<ExtArgs> | null
   }
 
 
@@ -18093,7 +19390,12 @@ export namespace Prisma {
     syncError: 'syncError',
     externalId: 'externalId',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    lmsReferenceId: 'lmsReferenceId',
+    lmsSyncStatus: 'lmsSyncStatus',
+    lmsSyncError: 'lmsSyncError',
+    lmsSyncAttempts: 'lmsSyncAttempts',
+    lmsLastSyncAt: 'lmsLastSyncAt'
   };
 
   export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum]
@@ -18289,6 +19591,25 @@ export namespace Prisma {
   export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
 
 
+  export const LmsSyncQueueScalarFieldEnum: {
+    id: 'id',
+    applicationId: 'applicationId',
+    syncQueueId: 'syncQueueId',
+    payload: 'payload',
+    status: 'status',
+    attempts: 'attempts',
+    maxAttempts: 'maxAttempts',
+    lastAttemptAt: 'lastAttemptAt',
+    nextRetryAt: 'nextRetryAt',
+    error: 'error',
+    successData: 'successData',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type LmsSyncQueueScalarFieldEnum = (typeof LmsSyncQueueScalarFieldEnum)[keyof typeof LmsSyncQueueScalarFieldEnum]
+
+
   export const CountiesCacheScalarFieldEnum: {
     id: 'id',
     lastSyncedAt: 'lastSyncedAt',
@@ -18343,6 +19664,21 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const NullsOrder: {
     first: 'first',
     last: 'last'
@@ -18367,7 +19703,10 @@ export namespace Prisma {
     applicationId: 'applicationId',
     userId: 'userId',
     syncError: 'syncError',
-    externalId: 'externalId'
+    externalId: 'externalId',
+    lmsReferenceId: 'lmsReferenceId',
+    lmsSyncStatus: 'lmsSyncStatus',
+    lmsSyncError: 'lmsSyncError'
   };
 
   export type ApplicationOrderByRelevanceFieldEnum = (typeof ApplicationOrderByRelevanceFieldEnum)[keyof typeof ApplicationOrderByRelevanceFieldEnum]
@@ -18501,6 +19840,33 @@ export namespace Prisma {
   };
 
   export type FileOrderByRelevanceFieldEnum = (typeof FileOrderByRelevanceFieldEnum)[keyof typeof FileOrderByRelevanceFieldEnum]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+  export const LmsSyncQueueOrderByRelevanceFieldEnum: {
+    id: 'id',
+    applicationId: 'applicationId',
+    syncQueueId: 'syncQueueId',
+    error: 'error'
+  };
+
+  export type LmsSyncQueueOrderByRelevanceFieldEnum = (typeof LmsSyncQueueOrderByRelevanceFieldEnum)[keyof typeof LmsSyncQueueOrderByRelevanceFieldEnum]
 
 
   export const CountiesCacheOrderByRelevanceFieldEnum: {
@@ -18644,6 +20010,27 @@ export namespace Prisma {
    */
   export type EnumQueueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueueStatus'>
     
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'LmsSyncStatus'
+   */
+  export type EnumLmsSyncStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LmsSyncStatus'>
+    
   /**
    * Deep Input Types
    */
@@ -18736,12 +20123,18 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Application"> | string | null
     createdAt?: DateTimeFilter<"Application"> | Date | string
     updatedAt?: DateTimeFilter<"Application"> | Date | string
+    lmsReferenceId?: StringNullableFilter<"Application"> | string | null
+    lmsSyncStatus?: StringNullableFilter<"Application"> | string | null
+    lmsSyncError?: StringNullableFilter<"Application"> | string | null
+    lmsSyncAttempts?: IntFilter<"Application"> | number
+    lmsLastSyncAt?: DateTimeNullableFilter<"Application"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     confirmations?: XOR<ConfirmationsNullableScalarRelationFilter, ConfirmationsWhereInput> | null
     groupData?: XOR<GroupDataNullableScalarRelationFilter, GroupDataWhereInput> | null
     loanConditions?: XOR<LoanConditionsNullableScalarRelationFilter, LoanConditionsWhereInput> | null
     members?: MemberDataListRelationFilter
     proposedBusiness?: XOR<ProposedBusinessNullableScalarRelationFilter, ProposedBusinessWhereInput> | null
+    lmsSyncQueue?: XOR<LmsSyncQueueNullableScalarRelationFilter, LmsSyncQueueWhereInput> | null
   }
 
   export type ApplicationOrderByWithRelationInput = {
@@ -18757,12 +20150,18 @@ export namespace Prisma {
     externalId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lmsReferenceId?: SortOrderInput | SortOrder
+    lmsSyncStatus?: SortOrderInput | SortOrder
+    lmsSyncError?: SortOrderInput | SortOrder
+    lmsSyncAttempts?: SortOrder
+    lmsLastSyncAt?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     confirmations?: ConfirmationsOrderByWithRelationInput
     groupData?: GroupDataOrderByWithRelationInput
     loanConditions?: LoanConditionsOrderByWithRelationInput
     members?: MemberDataOrderByRelationAggregateInput
     proposedBusiness?: ProposedBusinessOrderByWithRelationInput
+    lmsSyncQueue?: LmsSyncQueueOrderByWithRelationInput
     _relevance?: ApplicationOrderByRelevanceInput
   }
 
@@ -18782,12 +20181,18 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Application"> | string | null
     createdAt?: DateTimeFilter<"Application"> | Date | string
     updatedAt?: DateTimeFilter<"Application"> | Date | string
+    lmsReferenceId?: StringNullableFilter<"Application"> | string | null
+    lmsSyncStatus?: StringNullableFilter<"Application"> | string | null
+    lmsSyncError?: StringNullableFilter<"Application"> | string | null
+    lmsSyncAttempts?: IntFilter<"Application"> | number
+    lmsLastSyncAt?: DateTimeNullableFilter<"Application"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     confirmations?: XOR<ConfirmationsNullableScalarRelationFilter, ConfirmationsWhereInput> | null
     groupData?: XOR<GroupDataNullableScalarRelationFilter, GroupDataWhereInput> | null
     loanConditions?: XOR<LoanConditionsNullableScalarRelationFilter, LoanConditionsWhereInput> | null
     members?: MemberDataListRelationFilter
     proposedBusiness?: XOR<ProposedBusinessNullableScalarRelationFilter, ProposedBusinessWhereInput> | null
+    lmsSyncQueue?: XOR<LmsSyncQueueNullableScalarRelationFilter, LmsSyncQueueWhereInput> | null
   }, "id" | "applicationId">
 
   export type ApplicationOrderByWithAggregationInput = {
@@ -18803,6 +20208,11 @@ export namespace Prisma {
     externalId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lmsReferenceId?: SortOrderInput | SortOrder
+    lmsSyncStatus?: SortOrderInput | SortOrder
+    lmsSyncError?: SortOrderInput | SortOrder
+    lmsSyncAttempts?: SortOrder
+    lmsLastSyncAt?: SortOrderInput | SortOrder
     _count?: ApplicationCountOrderByAggregateInput
     _avg?: ApplicationAvgOrderByAggregateInput
     _max?: ApplicationMaxOrderByAggregateInput
@@ -18826,6 +20236,11 @@ export namespace Prisma {
     externalId?: StringNullableWithAggregatesFilter<"Application"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Application"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Application"> | Date | string
+    lmsReferenceId?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    lmsSyncStatus?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    lmsSyncError?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    lmsSyncAttempts?: IntWithAggregatesFilter<"Application"> | number
+    lmsLastSyncAt?: DateTimeNullableWithAggregatesFilter<"Application"> | Date | string | null
   }
 
   export type GroupDataWhereInput = {
@@ -19649,6 +21064,7 @@ export namespace Prisma {
     error?: StringNullableFilter<"SyncQueue"> | string | null
     createdAt?: DateTimeFilter<"SyncQueue"> | Date | string
     updatedAt?: DateTimeFilter<"SyncQueue"> | Date | string
+    lmsSyncQueue?: XOR<LmsSyncQueueNullableScalarRelationFilter, LmsSyncQueueWhereInput> | null
   }
 
   export type SyncQueueOrderByWithRelationInput = {
@@ -19664,6 +21080,7 @@ export namespace Prisma {
     error?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lmsSyncQueue?: LmsSyncQueueOrderByWithRelationInput
     _relevance?: SyncQueueOrderByRelevanceInput
   }
 
@@ -19683,6 +21100,7 @@ export namespace Prisma {
     error?: StringNullableFilter<"SyncQueue"> | string | null
     createdAt?: DateTimeFilter<"SyncQueue"> | Date | string
     updatedAt?: DateTimeFilter<"SyncQueue"> | Date | string
+    lmsSyncQueue?: XOR<LmsSyncQueueNullableScalarRelationFilter, LmsSyncQueueWhereInput> | null
   }, "id">
 
   export type SyncQueueOrderByWithAggregationInput = {
@@ -19801,6 +21219,107 @@ export namespace Prisma {
     applicationId?: StringNullableWithAggregatesFilter<"File"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"File"> | Date | string
+  }
+
+  export type LmsSyncQueueWhereInput = {
+    AND?: LmsSyncQueueWhereInput | LmsSyncQueueWhereInput[]
+    OR?: LmsSyncQueueWhereInput[]
+    NOT?: LmsSyncQueueWhereInput | LmsSyncQueueWhereInput[]
+    id?: StringFilter<"LmsSyncQueue"> | string
+    applicationId?: StringFilter<"LmsSyncQueue"> | string
+    syncQueueId?: StringFilter<"LmsSyncQueue"> | string
+    payload?: JsonFilter<"LmsSyncQueue">
+    status?: EnumLmsSyncStatusFilter<"LmsSyncQueue"> | $Enums.LmsSyncStatus
+    attempts?: IntFilter<"LmsSyncQueue"> | number
+    maxAttempts?: IntFilter<"LmsSyncQueue"> | number
+    lastAttemptAt?: DateTimeNullableFilter<"LmsSyncQueue"> | Date | string | null
+    nextRetryAt?: DateTimeNullableFilter<"LmsSyncQueue"> | Date | string | null
+    error?: StringNullableFilter<"LmsSyncQueue"> | string | null
+    successData?: JsonNullableFilter<"LmsSyncQueue">
+    createdAt?: DateTimeFilter<"LmsSyncQueue"> | Date | string
+    updatedAt?: DateTimeFilter<"LmsSyncQueue"> | Date | string
+    application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+    syncQueue?: XOR<SyncQueueScalarRelationFilter, SyncQueueWhereInput>
+  }
+
+  export type LmsSyncQueueOrderByWithRelationInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    syncQueueId?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    lastAttemptAt?: SortOrderInput | SortOrder
+    nextRetryAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    successData?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    application?: ApplicationOrderByWithRelationInput
+    syncQueue?: SyncQueueOrderByWithRelationInput
+    _relevance?: LmsSyncQueueOrderByRelevanceInput
+  }
+
+  export type LmsSyncQueueWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    applicationId?: string
+    syncQueueId?: string
+    AND?: LmsSyncQueueWhereInput | LmsSyncQueueWhereInput[]
+    OR?: LmsSyncQueueWhereInput[]
+    NOT?: LmsSyncQueueWhereInput | LmsSyncQueueWhereInput[]
+    payload?: JsonFilter<"LmsSyncQueue">
+    status?: EnumLmsSyncStatusFilter<"LmsSyncQueue"> | $Enums.LmsSyncStatus
+    attempts?: IntFilter<"LmsSyncQueue"> | number
+    maxAttempts?: IntFilter<"LmsSyncQueue"> | number
+    lastAttemptAt?: DateTimeNullableFilter<"LmsSyncQueue"> | Date | string | null
+    nextRetryAt?: DateTimeNullableFilter<"LmsSyncQueue"> | Date | string | null
+    error?: StringNullableFilter<"LmsSyncQueue"> | string | null
+    successData?: JsonNullableFilter<"LmsSyncQueue">
+    createdAt?: DateTimeFilter<"LmsSyncQueue"> | Date | string
+    updatedAt?: DateTimeFilter<"LmsSyncQueue"> | Date | string
+    application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+    syncQueue?: XOR<SyncQueueScalarRelationFilter, SyncQueueWhereInput>
+  }, "id" | "applicationId" | "syncQueueId">
+
+  export type LmsSyncQueueOrderByWithAggregationInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    syncQueueId?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    lastAttemptAt?: SortOrderInput | SortOrder
+    nextRetryAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    successData?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: LmsSyncQueueCountOrderByAggregateInput
+    _avg?: LmsSyncQueueAvgOrderByAggregateInput
+    _max?: LmsSyncQueueMaxOrderByAggregateInput
+    _min?: LmsSyncQueueMinOrderByAggregateInput
+    _sum?: LmsSyncQueueSumOrderByAggregateInput
+  }
+
+  export type LmsSyncQueueScalarWhereWithAggregatesInput = {
+    AND?: LmsSyncQueueScalarWhereWithAggregatesInput | LmsSyncQueueScalarWhereWithAggregatesInput[]
+    OR?: LmsSyncQueueScalarWhereWithAggregatesInput[]
+    NOT?: LmsSyncQueueScalarWhereWithAggregatesInput | LmsSyncQueueScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LmsSyncQueue"> | string
+    applicationId?: StringWithAggregatesFilter<"LmsSyncQueue"> | string
+    syncQueueId?: StringWithAggregatesFilter<"LmsSyncQueue"> | string
+    payload?: JsonWithAggregatesFilter<"LmsSyncQueue">
+    status?: EnumLmsSyncStatusWithAggregatesFilter<"LmsSyncQueue"> | $Enums.LmsSyncStatus
+    attempts?: IntWithAggregatesFilter<"LmsSyncQueue"> | number
+    maxAttempts?: IntWithAggregatesFilter<"LmsSyncQueue"> | number
+    lastAttemptAt?: DateTimeNullableWithAggregatesFilter<"LmsSyncQueue"> | Date | string | null
+    nextRetryAt?: DateTimeNullableWithAggregatesFilter<"LmsSyncQueue"> | Date | string | null
+    error?: StringNullableWithAggregatesFilter<"LmsSyncQueue"> | string | null
+    successData?: JsonNullableWithAggregatesFilter<"LmsSyncQueue">
+    createdAt?: DateTimeWithAggregatesFilter<"LmsSyncQueue"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"LmsSyncQueue"> | Date | string
   }
 
   export type CountiesCacheWhereInput = {
@@ -20138,12 +21657,18 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateInput = {
@@ -20159,11 +21684,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUpdateInput = {
@@ -20178,12 +21709,18 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateInput = {
@@ -20199,11 +21736,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateManyInput = {
@@ -20219,6 +21762,11 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
   }
 
   export type ApplicationUpdateManyMutationInput = {
@@ -20233,6 +21781,11 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ApplicationUncheckedUpdateManyInput = {
@@ -20248,6 +21801,11 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type GroupDataCreateInput = {
@@ -21188,6 +22746,7 @@ export namespace Prisma {
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutSyncQueueInput
   }
 
   export type SyncQueueUncheckedCreateInput = {
@@ -21203,6 +22762,7 @@ export namespace Prisma {
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutSyncQueueInput
   }
 
   export type SyncQueueUpdateInput = {
@@ -21218,6 +22778,7 @@ export namespace Prisma {
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutSyncQueueNestedInput
   }
 
   export type SyncQueueUncheckedUpdateInput = {
@@ -21233,6 +22794,7 @@ export namespace Prisma {
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutSyncQueueNestedInput
   }
 
   export type SyncQueueCreateManyInput = {
@@ -21367,6 +22929,116 @@ export namespace Prisma {
     path?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     applicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LmsSyncQueueCreateInput = {
+    id?: string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: $Enums.LmsSyncStatus
+    attempts?: number
+    maxAttempts?: number
+    lastAttemptAt?: Date | string | null
+    nextRetryAt?: Date | string | null
+    error?: string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    application: ApplicationCreateNestedOneWithoutLmsSyncQueueInput
+    syncQueue: SyncQueueCreateNestedOneWithoutLmsSyncQueueInput
+  }
+
+  export type LmsSyncQueueUncheckedCreateInput = {
+    id?: string
+    applicationId: string
+    syncQueueId: string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: $Enums.LmsSyncStatus
+    attempts?: number
+    maxAttempts?: number
+    lastAttemptAt?: Date | string | null
+    nextRetryAt?: Date | string | null
+    error?: string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LmsSyncQueueUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    application?: ApplicationUpdateOneRequiredWithoutLmsSyncQueueNestedInput
+    syncQueue?: SyncQueueUpdateOneRequiredWithoutLmsSyncQueueNestedInput
+  }
+
+  export type LmsSyncQueueUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    syncQueueId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LmsSyncQueueCreateManyInput = {
+    id?: string
+    applicationId: string
+    syncQueueId: string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: $Enums.LmsSyncStatus
+    attempts?: number
+    maxAttempts?: number
+    lastAttemptAt?: Date | string | null
+    nextRetryAt?: Date | string | null
+    error?: string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LmsSyncQueueUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LmsSyncQueueUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    syncQueueId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21865,6 +23537,11 @@ export namespace Prisma {
     isNot?: ProposedBusinessWhereInput | null
   }
 
+  export type LmsSyncQueueNullableScalarRelationFilter = {
+    is?: LmsSyncQueueWhereInput | null
+    isNot?: LmsSyncQueueWhereInput | null
+  }
+
   export type MemberDataOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -21888,11 +23565,17 @@ export namespace Prisma {
     externalId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lmsReferenceId?: SortOrder
+    lmsSyncStatus?: SortOrder
+    lmsSyncError?: SortOrder
+    lmsSyncAttempts?: SortOrder
+    lmsLastSyncAt?: SortOrder
   }
 
   export type ApplicationAvgOrderByAggregateInput = {
     applicationProgress?: SortOrder
     syncAttempts?: SortOrder
+    lmsSyncAttempts?: SortOrder
   }
 
   export type ApplicationMaxOrderByAggregateInput = {
@@ -21908,6 +23591,11 @@ export namespace Prisma {
     externalId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lmsReferenceId?: SortOrder
+    lmsSyncStatus?: SortOrder
+    lmsSyncError?: SortOrder
+    lmsSyncAttempts?: SortOrder
+    lmsLastSyncAt?: SortOrder
   }
 
   export type ApplicationMinOrderByAggregateInput = {
@@ -21923,11 +23611,17 @@ export namespace Prisma {
     externalId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    lmsReferenceId?: SortOrder
+    lmsSyncStatus?: SortOrder
+    lmsSyncError?: SortOrder
+    lmsSyncAttempts?: SortOrder
+    lmsLastSyncAt?: SortOrder
   }
 
   export type ApplicationSumOrderByAggregateInput = {
     applicationProgress?: SortOrder
     syncAttempts?: SortOrder
+    lmsSyncAttempts?: SortOrder
   }
 
   export type EnumApplicationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -22876,6 +24570,186 @@ export namespace Prisma {
   export type FileSumOrderByAggregateInput = {
     size?: SortOrder
   }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type EnumLmsSyncStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.LmsSyncStatus | EnumLmsSyncStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LmsSyncStatus[]
+    notIn?: $Enums.LmsSyncStatus[]
+    not?: NestedEnumLmsSyncStatusFilter<$PrismaModel> | $Enums.LmsSyncStatus
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type SyncQueueScalarRelationFilter = {
+    is?: SyncQueueWhereInput
+    isNot?: SyncQueueWhereInput
+  }
+
+  export type LmsSyncQueueOrderByRelevanceInput = {
+    fields: LmsSyncQueueOrderByRelevanceFieldEnum | LmsSyncQueueOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type LmsSyncQueueCountOrderByAggregateInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    syncQueueId?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    lastAttemptAt?: SortOrder
+    nextRetryAt?: SortOrder
+    error?: SortOrder
+    successData?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LmsSyncQueueAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+  }
+
+  export type LmsSyncQueueMaxOrderByAggregateInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    syncQueueId?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    lastAttemptAt?: SortOrder
+    nextRetryAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LmsSyncQueueMinOrderByAggregateInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    syncQueueId?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+    lastAttemptAt?: SortOrder
+    nextRetryAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LmsSyncQueueSumOrderByAggregateInput = {
+    attempts?: SortOrder
+    maxAttempts?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type EnumLmsSyncStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LmsSyncStatus | EnumLmsSyncStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LmsSyncStatus[]
+    notIn?: $Enums.LmsSyncStatus[]
+    not?: NestedEnumLmsSyncStatusWithAggregatesFilter<$PrismaModel> | $Enums.LmsSyncStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLmsSyncStatusFilter<$PrismaModel>
+    _max?: NestedEnumLmsSyncStatusFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
 
   export type CountyListRelationFilter = {
     every?: CountyWhereInput
@@ -23161,6 +25035,12 @@ export namespace Prisma {
     connect?: ProposedBusinessWhereUniqueInput
   }
 
+  export type LmsSyncQueueCreateNestedOneWithoutApplicationInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutApplicationInput
+    connect?: LmsSyncQueueWhereUniqueInput
+  }
+
   export type ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput = {
     create?: XOR<ConfirmationsCreateWithoutApplicationInput, ConfirmationsUncheckedCreateWithoutApplicationInput>
     connectOrCreate?: ConfirmationsCreateOrConnectWithoutApplicationInput
@@ -23190,6 +25070,12 @@ export namespace Prisma {
     create?: XOR<ProposedBusinessCreateWithoutApplicationInput, ProposedBusinessUncheckedCreateWithoutApplicationInput>
     connectOrCreate?: ProposedBusinessCreateOrConnectWithoutApplicationInput
     connect?: ProposedBusinessWhereUniqueInput
+  }
+
+  export type LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutApplicationInput
+    connect?: LmsSyncQueueWhereUniqueInput
   }
 
   export type EnumApplicationStatusFieldUpdateOperationsInput = {
@@ -23274,6 +25160,16 @@ export namespace Prisma {
     update?: XOR<XOR<ProposedBusinessUpdateToOneWithWhereWithoutApplicationInput, ProposedBusinessUpdateWithoutApplicationInput>, ProposedBusinessUncheckedUpdateWithoutApplicationInput>
   }
 
+  export type LmsSyncQueueUpdateOneWithoutApplicationNestedInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutApplicationInput
+    upsert?: LmsSyncQueueUpsertWithoutApplicationInput
+    disconnect?: LmsSyncQueueWhereInput | boolean
+    delete?: LmsSyncQueueWhereInput | boolean
+    connect?: LmsSyncQueueWhereUniqueInput
+    update?: XOR<XOR<LmsSyncQueueUpdateToOneWithWhereWithoutApplicationInput, LmsSyncQueueUpdateWithoutApplicationInput>, LmsSyncQueueUncheckedUpdateWithoutApplicationInput>
+  }
+
   export type ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput = {
     create?: XOR<ConfirmationsCreateWithoutApplicationInput, ConfirmationsUncheckedCreateWithoutApplicationInput>
     connectOrCreate?: ConfirmationsCreateOrConnectWithoutApplicationInput
@@ -23326,6 +25222,16 @@ export namespace Prisma {
     delete?: ProposedBusinessWhereInput | boolean
     connect?: ProposedBusinessWhereUniqueInput
     update?: XOR<XOR<ProposedBusinessUpdateToOneWithWhereWithoutApplicationInput, ProposedBusinessUpdateWithoutApplicationInput>, ProposedBusinessUncheckedUpdateWithoutApplicationInput>
+  }
+
+  export type LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutApplicationInput
+    upsert?: LmsSyncQueueUpsertWithoutApplicationInput
+    disconnect?: LmsSyncQueueWhereInput | boolean
+    delete?: LmsSyncQueueWhereInput | boolean
+    connect?: LmsSyncQueueWhereUniqueInput
+    update?: XOR<XOR<LmsSyncQueueUpdateToOneWithWhereWithoutApplicationInput, LmsSyncQueueUpdateWithoutApplicationInput>, LmsSyncQueueUncheckedUpdateWithoutApplicationInput>
   }
 
   export type ApplicationCreateNestedOneWithoutGroupDataInput = {
@@ -23562,12 +25468,76 @@ export namespace Prisma {
     update?: XOR<XOR<TaxonomyVocabularyUpdateToOneWithWhereWithoutTermsInput, TaxonomyVocabularyUpdateWithoutTermsInput>, TaxonomyVocabularyUncheckedUpdateWithoutTermsInput>
   }
 
+  export type LmsSyncQueueCreateNestedOneWithoutSyncQueueInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutSyncQueueInput, LmsSyncQueueUncheckedCreateWithoutSyncQueueInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutSyncQueueInput
+    connect?: LmsSyncQueueWhereUniqueInput
+  }
+
+  export type LmsSyncQueueUncheckedCreateNestedOneWithoutSyncQueueInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutSyncQueueInput, LmsSyncQueueUncheckedCreateWithoutSyncQueueInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutSyncQueueInput
+    connect?: LmsSyncQueueWhereUniqueInput
+  }
+
   export type EnumSyncActionFieldUpdateOperationsInput = {
     set?: $Enums.SyncAction
   }
 
   export type EnumQueueStatusFieldUpdateOperationsInput = {
     set?: $Enums.QueueStatus
+  }
+
+  export type LmsSyncQueueUpdateOneWithoutSyncQueueNestedInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutSyncQueueInput, LmsSyncQueueUncheckedCreateWithoutSyncQueueInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutSyncQueueInput
+    upsert?: LmsSyncQueueUpsertWithoutSyncQueueInput
+    disconnect?: LmsSyncQueueWhereInput | boolean
+    delete?: LmsSyncQueueWhereInput | boolean
+    connect?: LmsSyncQueueWhereUniqueInput
+    update?: XOR<XOR<LmsSyncQueueUpdateToOneWithWhereWithoutSyncQueueInput, LmsSyncQueueUpdateWithoutSyncQueueInput>, LmsSyncQueueUncheckedUpdateWithoutSyncQueueInput>
+  }
+
+  export type LmsSyncQueueUncheckedUpdateOneWithoutSyncQueueNestedInput = {
+    create?: XOR<LmsSyncQueueCreateWithoutSyncQueueInput, LmsSyncQueueUncheckedCreateWithoutSyncQueueInput>
+    connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutSyncQueueInput
+    upsert?: LmsSyncQueueUpsertWithoutSyncQueueInput
+    disconnect?: LmsSyncQueueWhereInput | boolean
+    delete?: LmsSyncQueueWhereInput | boolean
+    connect?: LmsSyncQueueWhereUniqueInput
+    update?: XOR<XOR<LmsSyncQueueUpdateToOneWithWhereWithoutSyncQueueInput, LmsSyncQueueUpdateWithoutSyncQueueInput>, LmsSyncQueueUncheckedUpdateWithoutSyncQueueInput>
+  }
+
+  export type ApplicationCreateNestedOneWithoutLmsSyncQueueInput = {
+    create?: XOR<ApplicationCreateWithoutLmsSyncQueueInput, ApplicationUncheckedCreateWithoutLmsSyncQueueInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutLmsSyncQueueInput
+    connect?: ApplicationWhereUniqueInput
+  }
+
+  export type SyncQueueCreateNestedOneWithoutLmsSyncQueueInput = {
+    create?: XOR<SyncQueueCreateWithoutLmsSyncQueueInput, SyncQueueUncheckedCreateWithoutLmsSyncQueueInput>
+    connectOrCreate?: SyncQueueCreateOrConnectWithoutLmsSyncQueueInput
+    connect?: SyncQueueWhereUniqueInput
+  }
+
+  export type EnumLmsSyncStatusFieldUpdateOperationsInput = {
+    set?: $Enums.LmsSyncStatus
+  }
+
+  export type ApplicationUpdateOneRequiredWithoutLmsSyncQueueNestedInput = {
+    create?: XOR<ApplicationCreateWithoutLmsSyncQueueInput, ApplicationUncheckedCreateWithoutLmsSyncQueueInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutLmsSyncQueueInput
+    upsert?: ApplicationUpsertWithoutLmsSyncQueueInput
+    connect?: ApplicationWhereUniqueInput
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutLmsSyncQueueInput, ApplicationUpdateWithoutLmsSyncQueueInput>, ApplicationUncheckedUpdateWithoutLmsSyncQueueInput>
+  }
+
+  export type SyncQueueUpdateOneRequiredWithoutLmsSyncQueueNestedInput = {
+    create?: XOR<SyncQueueCreateWithoutLmsSyncQueueInput, SyncQueueUncheckedCreateWithoutLmsSyncQueueInput>
+    connectOrCreate?: SyncQueueCreateOrConnectWithoutLmsSyncQueueInput
+    upsert?: SyncQueueUpsertWithoutLmsSyncQueueInput
+    connect?: SyncQueueWhereUniqueInput
+    update?: XOR<XOR<SyncQueueUpdateToOneWithWhereWithoutLmsSyncQueueInput, SyncQueueUpdateWithoutLmsSyncQueueInput>, SyncQueueUncheckedUpdateWithoutLmsSyncQueueInput>
   }
 
   export type CountyCreateNestedManyWithoutCacheInput = {
@@ -24102,6 +26072,69 @@ export namespace Prisma {
     _max?: NestedEnumQueueStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumLmsSyncStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.LmsSyncStatus | EnumLmsSyncStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LmsSyncStatus[]
+    notIn?: $Enums.LmsSyncStatus[]
+    not?: NestedEnumLmsSyncStatusFilter<$PrismaModel> | $Enums.LmsSyncStatus
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumLmsSyncStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LmsSyncStatus | EnumLmsSyncStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LmsSyncStatus[]
+    notIn?: $Enums.LmsSyncStatus[]
+    not?: NestedEnumLmsSyncStatusWithAggregatesFilter<$PrismaModel> | $Enums.LmsSyncStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLmsSyncStatusFilter<$PrismaModel>
+    _max?: NestedEnumLmsSyncStatusFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
   export type ApplicationCreateWithoutUserInput = {
     id?: string
     applicationId: string
@@ -24114,11 +26147,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutUserInput = {
@@ -24133,11 +26172,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutUserInput = {
@@ -24182,6 +26227,11 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Application"> | string | null
     createdAt?: DateTimeFilter<"Application"> | Date | string
     updatedAt?: DateTimeFilter<"Application"> | Date | string
+    lmsReferenceId?: StringNullableFilter<"Application"> | string | null
+    lmsSyncStatus?: StringNullableFilter<"Application"> | string | null
+    lmsSyncError?: StringNullableFilter<"Application"> | string | null
+    lmsSyncAttempts?: IntFilter<"Application"> | number
+    lmsLastSyncAt?: DateTimeNullableFilter<"Application"> | Date | string | null
   }
 
   export type UserCreateWithoutApplicationsInput = {
@@ -24415,6 +26465,41 @@ export namespace Prisma {
   export type ProposedBusinessCreateOrConnectWithoutApplicationInput = {
     where: ProposedBusinessWhereUniqueInput
     create: XOR<ProposedBusinessCreateWithoutApplicationInput, ProposedBusinessUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type LmsSyncQueueCreateWithoutApplicationInput = {
+    id?: string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: $Enums.LmsSyncStatus
+    attempts?: number
+    maxAttempts?: number
+    lastAttemptAt?: Date | string | null
+    nextRetryAt?: Date | string | null
+    error?: string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    syncQueue: SyncQueueCreateNestedOneWithoutLmsSyncQueueInput
+  }
+
+  export type LmsSyncQueueUncheckedCreateWithoutApplicationInput = {
+    id?: string
+    syncQueueId: string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: $Enums.LmsSyncStatus
+    attempts?: number
+    maxAttempts?: number
+    lastAttemptAt?: Date | string | null
+    nextRetryAt?: Date | string | null
+    error?: string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LmsSyncQueueCreateOrConnectWithoutApplicationInput = {
+    where: LmsSyncQueueWhereUniqueInput
+    create: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
   }
 
   export type UserUpsertWithoutApplicationsInput = {
@@ -24667,6 +26752,47 @@ export namespace Prisma {
     customExpenses?: CustomExpenseUncheckedUpdateManyWithoutProposedBusinessNestedInput
   }
 
+  export type LmsSyncQueueUpsertWithoutApplicationInput = {
+    update: XOR<LmsSyncQueueUpdateWithoutApplicationInput, LmsSyncQueueUncheckedUpdateWithoutApplicationInput>
+    create: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
+    where?: LmsSyncQueueWhereInput
+  }
+
+  export type LmsSyncQueueUpdateToOneWithWhereWithoutApplicationInput = {
+    where?: LmsSyncQueueWhereInput
+    data: XOR<LmsSyncQueueUpdateWithoutApplicationInput, LmsSyncQueueUncheckedUpdateWithoutApplicationInput>
+  }
+
+  export type LmsSyncQueueUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    syncQueue?: SyncQueueUpdateOneRequiredWithoutLmsSyncQueueNestedInput
+  }
+
+  export type LmsSyncQueueUncheckedUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    syncQueueId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ApplicationCreateWithoutGroupDataInput = {
     id?: string
     applicationId: string
@@ -24679,11 +26805,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutGroupDataInput = {
@@ -24699,10 +26831,16 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutGroupDataInput = {
@@ -24733,11 +26871,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutGroupDataInput = {
@@ -24753,10 +26897,16 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutMembersInput = {
@@ -24771,11 +26921,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutMembersInput = {
@@ -24791,10 +26947,16 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutMembersInput = {
@@ -24825,11 +26987,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutMembersInput = {
@@ -24845,10 +27013,16 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutLoanConditionsInput = {
@@ -24863,11 +27037,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutLoanConditionsInput = {
@@ -24883,10 +27063,16 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutLoanConditionsInput = {
@@ -24917,11 +27103,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutLoanConditionsInput = {
@@ -24937,10 +27129,16 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutProposedBusinessInput = {
@@ -24955,11 +27153,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutProposedBusinessInput = {
@@ -24975,10 +27179,16 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutProposedBusinessInput = {
@@ -25035,11 +27245,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutProposedBusinessInput = {
@@ -25055,10 +27271,16 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type CustomExpenseUpsertWithWhereUniqueWithoutProposedBusinessInput = {
@@ -25177,11 +27399,17 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutConfirmationsInput = {
@@ -25197,10 +27425,16 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutConfirmationsInput = {
@@ -25231,11 +27465,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutConfirmationsInput = {
@@ -25251,10 +27491,16 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type TaxonomyTermCreateWithoutVocabularyInput = {
@@ -25404,6 +27650,274 @@ export namespace Prisma {
     autoCreate?: BoolFieldUpdateOperationsInput | boolean
     totalTerms?: IntFieldUpdateOperationsInput | number
     lastSyncedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LmsSyncQueueCreateWithoutSyncQueueInput = {
+    id?: string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: $Enums.LmsSyncStatus
+    attempts?: number
+    maxAttempts?: number
+    lastAttemptAt?: Date | string | null
+    nextRetryAt?: Date | string | null
+    error?: string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    application: ApplicationCreateNestedOneWithoutLmsSyncQueueInput
+  }
+
+  export type LmsSyncQueueUncheckedCreateWithoutSyncQueueInput = {
+    id?: string
+    applicationId: string
+    payload: JsonNullValueInput | InputJsonValue
+    status?: $Enums.LmsSyncStatus
+    attempts?: number
+    maxAttempts?: number
+    lastAttemptAt?: Date | string | null
+    nextRetryAt?: Date | string | null
+    error?: string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LmsSyncQueueCreateOrConnectWithoutSyncQueueInput = {
+    where: LmsSyncQueueWhereUniqueInput
+    create: XOR<LmsSyncQueueCreateWithoutSyncQueueInput, LmsSyncQueueUncheckedCreateWithoutSyncQueueInput>
+  }
+
+  export type LmsSyncQueueUpsertWithoutSyncQueueInput = {
+    update: XOR<LmsSyncQueueUpdateWithoutSyncQueueInput, LmsSyncQueueUncheckedUpdateWithoutSyncQueueInput>
+    create: XOR<LmsSyncQueueCreateWithoutSyncQueueInput, LmsSyncQueueUncheckedCreateWithoutSyncQueueInput>
+    where?: LmsSyncQueueWhereInput
+  }
+
+  export type LmsSyncQueueUpdateToOneWithWhereWithoutSyncQueueInput = {
+    where?: LmsSyncQueueWhereInput
+    data: XOR<LmsSyncQueueUpdateWithoutSyncQueueInput, LmsSyncQueueUncheckedUpdateWithoutSyncQueueInput>
+  }
+
+  export type LmsSyncQueueUpdateWithoutSyncQueueInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    application?: ApplicationUpdateOneRequiredWithoutLmsSyncQueueNestedInput
+  }
+
+  export type LmsSyncQueueUncheckedUpdateWithoutSyncQueueInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: EnumLmsSyncStatusFieldUpdateOperationsInput | $Enums.LmsSyncStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    lastAttemptAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    successData?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApplicationCreateWithoutLmsSyncQueueInput = {
+    id?: string
+    applicationId: string
+    status?: $Enums.ApplicationStatus
+    applicationProgress?: number
+    syncStatus?: $Enums.SyncStatus
+    syncAttempts?: number
+    lastSyncAt?: Date | string | null
+    syncError?: string | null
+    externalId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
+    user: UserCreateNestedOneWithoutApplicationsInput
+    confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
+    groupData?: GroupDataCreateNestedOneWithoutApplicationInput
+    loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
+    members?: MemberDataCreateNestedManyWithoutApplicationInput
+    proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutLmsSyncQueueInput = {
+    id?: string
+    applicationId: string
+    status?: $Enums.ApplicationStatus
+    applicationProgress?: number
+    userId: string
+    syncStatus?: $Enums.SyncStatus
+    syncAttempts?: number
+    lastSyncAt?: Date | string | null
+    syncError?: string | null
+    externalId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
+    confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
+    groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
+    loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
+    members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
+    proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutLmsSyncQueueInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutLmsSyncQueueInput, ApplicationUncheckedCreateWithoutLmsSyncQueueInput>
+  }
+
+  export type SyncQueueCreateWithoutLmsSyncQueueInput = {
+    id?: string
+    applicationId: string
+    action: $Enums.SyncAction
+    payload: string
+    attempts?: number
+    maxAttempts?: number
+    status?: $Enums.QueueStatus
+    scheduledFor?: Date | string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SyncQueueUncheckedCreateWithoutLmsSyncQueueInput = {
+    id?: string
+    applicationId: string
+    action: $Enums.SyncAction
+    payload: string
+    attempts?: number
+    maxAttempts?: number
+    status?: $Enums.QueueStatus
+    scheduledFor?: Date | string
+    processedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SyncQueueCreateOrConnectWithoutLmsSyncQueueInput = {
+    where: SyncQueueWhereUniqueInput
+    create: XOR<SyncQueueCreateWithoutLmsSyncQueueInput, SyncQueueUncheckedCreateWithoutLmsSyncQueueInput>
+  }
+
+  export type ApplicationUpsertWithoutLmsSyncQueueInput = {
+    update: XOR<ApplicationUpdateWithoutLmsSyncQueueInput, ApplicationUncheckedUpdateWithoutLmsSyncQueueInput>
+    create: XOR<ApplicationCreateWithoutLmsSyncQueueInput, ApplicationUncheckedCreateWithoutLmsSyncQueueInput>
+    where?: ApplicationWhereInput
+  }
+
+  export type ApplicationUpdateToOneWithWhereWithoutLmsSyncQueueInput = {
+    where?: ApplicationWhereInput
+    data: XOR<ApplicationUpdateWithoutLmsSyncQueueInput, ApplicationUncheckedUpdateWithoutLmsSyncQueueInput>
+  }
+
+  export type ApplicationUpdateWithoutLmsSyncQueueInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    status?: EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
+    applicationProgress?: IntFieldUpdateOperationsInput | number
+    syncStatus?: EnumSyncStatusFieldUpdateOperationsInput | $Enums.SyncStatus
+    syncAttempts?: IntFieldUpdateOperationsInput | number
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    syncError?: NullableStringFieldUpdateOperationsInput | string | null
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
+    confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
+    groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
+    loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
+    members?: MemberDataUpdateManyWithoutApplicationNestedInput
+    proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutLmsSyncQueueInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    status?: EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
+    applicationProgress?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    syncStatus?: EnumSyncStatusFieldUpdateOperationsInput | $Enums.SyncStatus
+    syncAttempts?: IntFieldUpdateOperationsInput | number
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    syncError?: NullableStringFieldUpdateOperationsInput | string | null
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
+    groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
+    loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
+    members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
+    proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+  }
+
+  export type SyncQueueUpsertWithoutLmsSyncQueueInput = {
+    update: XOR<SyncQueueUpdateWithoutLmsSyncQueueInput, SyncQueueUncheckedUpdateWithoutLmsSyncQueueInput>
+    create: XOR<SyncQueueCreateWithoutLmsSyncQueueInput, SyncQueueUncheckedCreateWithoutLmsSyncQueueInput>
+    where?: SyncQueueWhereInput
+  }
+
+  export type SyncQueueUpdateToOneWithWhereWithoutLmsSyncQueueInput = {
+    where?: SyncQueueWhereInput
+    data: XOR<SyncQueueUpdateWithoutLmsSyncQueueInput, SyncQueueUncheckedUpdateWithoutLmsSyncQueueInput>
+  }
+
+  export type SyncQueueUpdateWithoutLmsSyncQueueInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    action?: EnumSyncActionFieldUpdateOperationsInput | $Enums.SyncAction
+    payload?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    status?: EnumQueueStatusFieldUpdateOperationsInput | $Enums.QueueStatus
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SyncQueueUncheckedUpdateWithoutLmsSyncQueueInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    action?: EnumSyncActionFieldUpdateOperationsInput | $Enums.SyncAction
+    payload?: StringFieldUpdateOperationsInput | string
+    attempts?: IntFieldUpdateOperationsInput | number
+    maxAttempts?: IntFieldUpdateOperationsInput | number
+    status?: EnumQueueStatusFieldUpdateOperationsInput | $Enums.QueueStatus
+    scheduledFor?: DateTimeFieldUpdateOperationsInput | Date | string
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25684,6 +28198,11 @@ export namespace Prisma {
     externalId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
   }
 
   export type ApplicationUpdateWithoutUserInput = {
@@ -25698,11 +28217,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutUserInput = {
@@ -25717,11 +28242,17 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateManyWithoutUserInput = {
@@ -25736,6 +28267,11 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MemberDataCreateManyApplicationInput = {
