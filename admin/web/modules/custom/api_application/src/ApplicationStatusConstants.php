@@ -63,6 +63,11 @@ class ApplicationStatusConstants {
   const CLOSED = 'closed';
 
   /**
+   * Closed training - Applicants training.
+   */
+  const TRAINING = 'training';
+
+  /**
    * Get all valid status values as an array.
    *
    * @return array
@@ -79,6 +84,7 @@ class ApplicationStatusConstants {
       self::APPROVED,
       self::REJECTED,
       self::DISBURSED,
+      self::TRAINING,
       self::CLOSED,
     ];
   }
@@ -100,6 +106,7 @@ class ApplicationStatusConstants {
       self::APPROVED => t('Approved'),
       self::REJECTED => t('Rejected'),
       self::DISBURSED => t('Disbursed'),
+      self::TRAINING => t('Training'),
       self::CLOSED => t('Closed'),
     ];
   }

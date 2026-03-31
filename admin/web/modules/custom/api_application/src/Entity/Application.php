@@ -262,8 +262,8 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       ->setDisplayConfigurable('form', TRUE);
 
     $fields['list_of_members_certificate'] = BaseFieldDefinition::create('file')
-      ->setLabel(t('List of members on certificate'))
-      ->setDescription(t('Upload the list of members on certificate (PDF or Image).'))
+      ->setLabel(t('Signed list of members'))
+      ->setDescription(t('Upload the signed list of members (PDF or Image).'))
       ->setRequired(TRUE)
       ->setRevisionable(TRUE)
       ->setSetting('file_extensions', 'pdf jpg jpeg png webp')
@@ -1468,7 +1468,8 @@ class Application extends ContentEntityBase implements ApplicationInterface {
       'constituency_review' => ['approved_by_constituency', 'rejected'],
       'approved_by_constituency' => ['under_review'],
       'under_review' => ['approved', 'rejected'],
-      'approved' => ['disbursed'],
+      'approved' => ['training'],
+      'training' => ['disbursed'],
       'rejected' => ['constituency_review', 'under_review'],
       'disbursed' => ['closed'],
       'closed' => [],
