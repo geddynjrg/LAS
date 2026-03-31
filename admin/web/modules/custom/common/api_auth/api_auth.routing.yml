@@ -41,6 +41,8 @@ api_auth.ecitizen.initiate:
     _title: 'eCitizen OAuth Initiation'
   requirements:
     _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
 
 api_auth.ecitizen.callback:
   path: '/api/oauth/ecitizen'
@@ -48,6 +50,31 @@ api_auth.ecitizen.callback:
     _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::callback'
     _title: 'eCitizen OAuth Callback'
   methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+
+api_auth.ecitizen.test_manual:
+  path: '/api/oauth/ecitizen/test-manual'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::testManualFlow'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+
+api_auth.ecitizen.test_store:
+  path: '/api/oauth/ecitizen/test-tempstore'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::testStoreSession'
+  requirements:
+    _permission: 'access content'
+
+api_auth.ecitizen.test_retrive_store:
+  path: '/api/oauth/ecitizen/test-retrivestore'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\ECitizenOAuthController::testRetriveStoreSession'
   requirements:
     _permission: 'access content'
 

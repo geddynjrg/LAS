@@ -146,5 +146,5 @@ function api_auth_user_delete($account) {
   // Clean up tokens when user is deleted.
   /** @var \Drupal\api_auth\Service\TokenStorageService $token_storage */
   $token_storage = \Drupal::service('api_auth.token_storage');
-  $token_storage->revokeAllUserTokens($account->id());
+  $token_storage->revokeUserTokens($account->id());
 }

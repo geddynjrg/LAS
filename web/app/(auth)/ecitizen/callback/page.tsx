@@ -1,6 +1,7 @@
 // app/(auth)/ecitizen/callback/page.tsx
 'use client';
 
+import React from 'react';
 import { createSession } from '@/lib/session';
 import {
   IconAlertCircle,
@@ -35,6 +36,10 @@ export default function ECitizenCallbackPage() {
           callbackUrl: searchParams.get('callback_url') || '/dashboard',
         };
 
+        const decodedCallback = decodeURIComponent(params.callbackUrl);
+        const finalPath = decodedCallback.startsWith('/') ? decodedCallback : `/${decodedCallback}`;
+
+
         if (params.error) {
           throw new Error(
             params.error === 'access_denied'
@@ -56,12 +61,13 @@ export default function ECitizenCallbackPage() {
         setStatus('success');
         setMessage('Securely signed in. Taking you to your dashboard...');
 
-        setTimeout(() => router.push(params.callbackUrl), 1500);
+        setTimeout(() => router.push(finalPath), 1500);
       } catch (error: any) {
         setStatus('error');
-        setMessage(
-          error instanceof Error ? error.message : 'Authentication failed',
-        );
+
+        const displayMessage = searchParams.get('error_description') || error.message || 'Authentication failed';
+
+        setMessage(displayMessage);
 
         // Redirect to login page after delay
         setTimeout(() => {
