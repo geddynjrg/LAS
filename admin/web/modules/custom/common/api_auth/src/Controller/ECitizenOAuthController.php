@@ -119,6 +119,7 @@ class ECitizenOAuthController extends ControllerBase {
     $this->state->set('ecitizen_pkce_' . $state, [
       'code_verifier' => $codeVerifier,
       'callback_url' => $callbackUrl,
+      'origin' => $origin,
       'timestamp' => time(),
     ]);
 
@@ -189,7 +190,7 @@ class ECitizenOAuthController extends ControllerBase {
       'access_token' => $tokens['access_token'],
       'refresh_token' => $tokens['refresh_token'],
       'callback_url' => $pkceData['callback_url'] ?? '/dashboard',
-    ]);
+    ], $pkceData['origin'] ?? NULL);
 
     return new TrustedRedirectResponse($redirectUrl);
   }
@@ -273,8 +274,19 @@ class ECitizenOAuthController extends ControllerBase {
   /**
    * Builds the frontend redirect URL.
    */
-  private function buildFrontendRedirect($path, $params) {
-    $frontendBase = $this->oauthConfig['frontend_url'] ?? 'https://loans.uwezo.go.ke';
+  private function buildFrontendRedirect($path, $params, $origin = NULL) {
+    $allowedUrls = [
+      'https://loans-staging.uwezo.go.ke',
+      'https://loans.uwezo.go.ke',
+    ];
+
+    if ($origin && in_array($origin, $allowedUrls)) {
+      $frontendBase = $origin;
+    }
+    else {
+      $frontendBase = $this->oauthConfig['frontend_url'] ?? 'https://loans.uwezo.go.ke';
+    }
+
     return $frontendBase . $path . '?' . http_build_query($params);
   }
 
@@ -282,7 +294,12 @@ class ECitizenOAuthController extends ControllerBase {
    * Redirects to frontend with error parameters.
    */
   private function redirectWithError($state, $errorParams) {
-    $url = $this->buildFrontendRedirect('/ecitizen/callback', $errorParams);
+    $pkceData = $state ? $this->state->get('ecitizen_pkce_' . $state) : NULL;
+    $url = $this->buildFrontendRedirect(
+      '/ecitizen/callback',
+      $errorParams,
+      $pkceData['origin'] ?? NULL,
+    );
     return new TrustedRedirectResponse($url);
   }
 

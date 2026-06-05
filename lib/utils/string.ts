@@ -12,3 +12,4 @@ export function capitalizeWords(text: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase())
     .replace(/'\w/g, (match) => match.toUpperCase());
 }
+

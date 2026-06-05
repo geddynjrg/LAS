@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/session';
+import { updateSession } from '@/lib/session';
 import { getLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -18,7 +18,7 @@ export const api = createClient<any>({
 
 api.use({
   async onRequest({ request }) {
-    const [headersList, session] = await Promise.all([headers(), getSession()]);
+    const [headersList, session] = await Promise.all([headers(), updateSession()]);
 
     if (!request.headers.has('Content-Type')) {
       request.headers.set('Content-Type', 'application/json');

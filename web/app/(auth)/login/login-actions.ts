@@ -12,6 +12,7 @@ import { login } from '@/lib/api/login';
 import { requestOtp } from '@/lib/api/otp-request';
 import { verifyOtp } from '@/lib/api/otp-verify';
 import { createSession } from '@/lib/session';
+import { formatKenyanPhoneForApi } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 import { getTranslations } from 'next-intl/server';
@@ -40,6 +41,15 @@ export const emailLoginAction: FormAction<EmailLogin> = async (
       username: data.email,
       password: data.password,
     });
+
+    if (!res.data?.access_token || !res.data?.refresh_token) {
+      return {
+        success: false,
+        errors: {},
+        message: t('unknownError'),
+        values,
+      };
+    }
 
     await createSession({
       accessToken: res.data.access_token,
@@ -79,11 +89,15 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (
   try {
     // Two-step OTP flow
     if (!data.otp_code) {
-      // Step 1: Request OTP
-      // Add country code to phone number if not already present
-      const fullPhoneNumber = data.phone!.startsWith('+')
-        ? data.phone!
-        : `+254${data.phone!}`;
+      // Step 1: Request OTP — normalize to +254XXXXXXXXX for Drupal API
+      const fullPhoneNumber = formatKenyanPhoneForApi(data.phone!);
+      if (!fullPhoneNumber) {
+        return {
+          success: false,
+          errors: { phone: [t('invalidPhoneFormat')] },
+          values,
+        };
+      }
       const otpResponse = await requestOtp({ phone: fullPhoneNumber });
 
       return {
@@ -99,6 +113,15 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (
         request_id: data.request_id!,
         otp_code: data.otp_code!,
       });
+
+      if (!res.access_token || !res.refresh_token) {
+        return {
+          success: false,
+          errors: {},
+          message: t('unknownError'),
+          values,
+        };
+      }
 
       await createSession({
         accessToken: res.access_token,

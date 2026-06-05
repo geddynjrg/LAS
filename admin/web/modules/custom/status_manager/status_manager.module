@@ -26,6 +26,10 @@ function status_manager_application_update(Application $application) {
     return;
   }
 
+  if (!empty($GLOBALS['status_manager_skip_auto_track'])) {
+    return;
+  }
+
   $status_tracker = \Drupal::service('status_manager.status_tracker');
   $status_tracker->logStatusChange(
     $application,

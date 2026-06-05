@@ -13,9 +13,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Drupal\api_application\ApplicationRejectionReasons;
 use Drupal\api_application\ApplicationStatusConstants;
 use Drupal\api_application\Entity\ApplicationInterface;
 use Drupal\api_application\Entity\Application;
@@ -62,7 +60,7 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
     LanguageManagerInterface $language_manager,
     AliasManagerInterface $alias_manager,
     EntityTypeManagerInterface $entity_type_manager,
-    Connection $database
+    Connection $database,
   ) {
     parent::__construct(
       $configuration,
@@ -132,7 +130,8 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
       }
 
       /** @var \Drupal\api_application\Entity\ApplicationInterface $entity */
-      $entity = reset($entities);  // Get the first (and only) matching entity
+      // Get the first (and only) matching entity.
+      $entity = reset($entities);
 
       // 3. Get request data
       $data = json_decode($request->getContent(), TRUE);
@@ -163,8 +162,31 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
       // 5. Validate status transition
       $current_status = $entity->getStatus();
       $new_status = $data['status'];
+
+      // Idempotent: LMS may re-sync a status that Drupal already has.
+      if ($current_status === $new_status) {
+        if ($new_status === ApplicationStatusConstants::TRAINING && $this->hasTrainingScheduleData($data)) {
+          return $this->sendTrainingScheduleNotification($entity, $current_status, $data);
+        }
+
+        return $this->createModifiedResponse([
+          'success' => TRUE,
+          'message' => 'Application status already up to date',
+          'data' => [
+            'id' => $entity->id(),
+            'uuid' => $entity->uuid(),
+            'application_id' => $entity->getApplicationId(),
+            'status' => $entity->getStatus(),
+            'changed' => $entity->getChangedTime(),
+          ],
+        ], 200);
+      }
+
       $allowed_transitions = Application::getAllowedTransitions();
-      if (!in_array($new_status, $allowed_transitions[$current_status] ?? [])) {
+      if (
+        !in_array($new_status, $allowed_transitions[$current_status] ?? [])
+        && !$this->isAllowedLmsStatusTransition($current_status, $new_status)
+      ) {
         return $this->createModifiedResponse([
           'error' => 'invalid_status_transition',
           'message' => "Invalid status transition from $current_status to $new_status",
@@ -173,21 +195,41 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
 
       // 6. Handle rejection-specific fields
       $rejection_reason = $data['rejection_reason'] ?? NULL;
-      $rejection_message = $data['rejection_message'] ?? NULL;
+      $rejection_message = $data['rejection_message'] ?? $data['failure_message'] ?? NULL;
       if ($new_status === 'rejected') {
-        if (empty($rejection_reason) || empty($rejection_message)) {
+        if (empty($rejection_message)) {
           return $this->createModifiedResponse([
             'error' => 'missing_rejection',
-            'message' => "Rejection reason and message are required for rejected status",
+            'message' => "Rejection message is required for rejected status",
           ], 400);
         }
+        $rejection_reason = ApplicationRejectionReasons::normalize($rejection_reason);
         $entity->set('rejection_reason', $rejection_reason);
+        $entity->set('rejection_message', $rejection_message);
+      }
+      elseif ($new_status === 'disbursement_failed' && !empty($rejection_message)) {
+        $entity->set('rejection_reason', ApplicationRejectionReasons::normalize($rejection_reason));
         $entity->set('rejection_message', $rejection_message);
       }
 
       // 7. Update and save
+      $trainingNotes = $this->buildTrainingScheduleNotes($data);
+      $GLOBALS['status_manager_skip_auto_track'] = TRUE;
       $entity->setStatus($new_status);
       $entity->save();
+      unset($GLOBALS['status_manager_skip_auto_track']);
+
+      /** @var \Drupal\status_manager\Service\StatusTracker $status_tracker */
+      $status_tracker = \Drupal::service('status_manager.status_tracker');
+      $status_tracker->logStatusChange(
+        $entity,
+        'status',
+        $current_status,
+        $new_status,
+        'api',
+        'notification',
+        $trainingNotes
+      );
 
       // 8. Log the action
       $this->logger->notice('Application @id status changed from @old to @new via LMS API.', [
@@ -201,9 +243,11 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
         'success' => TRUE,
         'message' => 'Application status updated successfully',
         'data' => [
-          'id' => $entity->id(),                    // Internal numeric ID
+      // Internal numeric ID.
+          'id' => $entity->id(),
           'uuid' => $entity->uuid(),
-          'application_id' => $entity->getApplicationId(),  // Your custom APP-XXXX ID
+      // Your custom APP-XXXX ID.
+          'application_id' => $entity->getApplicationId(),
           'status' => $entity->getStatus(),
           'changed' => $entity->getChangedTime(),
         ],
@@ -261,7 +305,10 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
 
       foreach ($data['updates'] as $update) {
         if (empty($update['application_id']) || empty($update['status'])) {
-          $errors[] = ['application_id' => $update['application_id'] ?? 'unknown', 'error' => 'Missing application_id or status'];
+          $errors[] = [
+            'application_id' => $update['application_id'] ?? 'unknown',
+            'error' => 'Missing application_id or status',
+          ];
           continue;
         }
 
@@ -275,22 +322,47 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
         $application = reset($applications);
         $current_status = $application->getStatus();
         $new_status = $update['status'];
+
+        if ($current_status === $new_status) {
+          $results[] = [
+            'application_id' => $update['application_id'],
+            'success' => TRUE,
+            'new_status' => $new_status,
+            'message' => 'Already up to date',
+          ];
+          continue;
+        }
+
         $allowed_transitions = Application::getAllowedTransitions();
-        if (!in_array($new_status, $allowed_transitions[$current_status] ?? [])) {
-          $errors[] = ['application_id' => $update['application_id'], 'error' => "Invalid transition from $current_status to $new_status"];
+        if (
+          !in_array($new_status, $allowed_transitions[$current_status] ?? [])
+          && !$this->isAllowedLmsStatusTransition($current_status, $new_status)
+        ) {
+          $errors[] = [
+            'application_id' => $update['application_id'],
+            'error' => "Invalid transition from $current_status to $new_status",
+          ];
           continue;
         }
 
         // Handle rejection.
         if ($new_status === 'rejected') {
           $rejection_reason = $update['rejection_reason'] ?? NULL;
-          $rejection_message = $update['rejection_message'] ?? NULL;
-          if (empty($rejection_reason) || empty($rejection_message)) {
-            $errors[] = ['application_id' => $update['application_id'], 'error' => 'Rejection reason and message required'];
+          $rejection_message = $update['rejection_message'] ?? $update['failure_message'] ?? NULL;
+          if (empty($rejection_message)) {
+            $errors[] = ['application_id' => $update['application_id'], 'error' => 'Rejection message required'];
             continue;
           }
-          $application->set('rejection_reason', $rejection_reason);
+          $application->set('rejection_reason', ApplicationRejectionReasons::normalize($rejection_reason));
           $application->set('rejection_message', $rejection_message);
+        }
+        elseif ($new_status === 'disbursement_failed') {
+          $rejection_reason = $update['rejection_reason'] ?? NULL;
+          $rejection_message = $update['rejection_message'] ?? $update['failure_message'] ?? NULL;
+          if (!empty($rejection_message)) {
+            $application->set('rejection_reason', ApplicationRejectionReasons::normalize($rejection_reason));
+            $application->set('rejection_message', $rejection_message);
+          }
         }
 
         // Update and save.
@@ -333,6 +405,58 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
   }
 
   /**
+   * LMS may advance applications to any later workflow stage in one step.
+   */
+  protected function isAllowedLmsStatusTransition(string $current_status, string $new_status): bool {
+    if ($current_status === $new_status) {
+      return TRUE;
+    }
+
+    if (!in_array($new_status, ApplicationStatusConstants::getAll(), TRUE)) {
+      return FALSE;
+    }
+
+    $ranks = [
+      ApplicationStatusConstants::DRAFT => 0,
+      ApplicationStatusConstants::GROUP_MEMBER_CONFIRMATION => 1,
+      ApplicationStatusConstants::SUBMITTED => 2,
+      ApplicationStatusConstants::CONSTITUENCY_REVIEW => 3,
+      ApplicationStatusConstants::APPROVED_BY_CONSTITUENCY => 4,
+      ApplicationStatusConstants::UNDER_REVIEW => 5,
+      ApplicationStatusConstants::APPROVED => 6,
+      ApplicationStatusConstants::PENDING_SECRETARIAT_REVIEW => 7,
+      ApplicationStatusConstants::PENDING_FUND_TRANSFER => 8,
+      ApplicationStatusConstants::TRAINING => 9,
+      ApplicationStatusConstants::PENDING_FINAL_DISBURSEMENT => 10,
+      ApplicationStatusConstants::DISBURSED => 11,
+      ApplicationStatusConstants::DISBURSEMENT_FAILED => 10,
+      ApplicationStatusConstants::REJECTED => 6,
+      ApplicationStatusConstants::CLOSED => 12,
+    ];
+
+    if ($new_status === ApplicationStatusConstants::REJECTED) {
+      return ($ranks[$current_status] ?? 0) < ($ranks[ApplicationStatusConstants::DISBURSED] ?? 11);
+    }
+
+    if ($new_status === ApplicationStatusConstants::DISBURSEMENT_FAILED) {
+      return in_array($current_status, [
+        ApplicationStatusConstants::PENDING_FINAL_DISBURSEMENT,
+        ApplicationStatusConstants::DISBURSED,
+      ], TRUE);
+    }
+
+    if ($new_status === ApplicationStatusConstants::CLOSED) {
+      return in_array($current_status, [
+        ApplicationStatusConstants::DISBURSED,
+        ApplicationStatusConstants::DISBURSEMENT_FAILED,
+        ApplicationStatusConstants::REJECTED,
+      ], TRUE);
+    }
+
+    return ($ranks[$new_status] ?? -1) > ($ranks[$current_status] ?? -1);
+  }
+
+  /**
    * Validates the API key.
    *
    * @param string|null $apiKey
@@ -340,7 +464,7 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
    *
    * @return bool
    *   TRUE if valid, FALSE otherwise.
-  */
+   */
   protected function validateApiKey($apiKey): bool {
     if (empty($apiKey)) {
       return FALSE;
@@ -352,6 +476,72 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
 
     // For security, use constant-time comparison.
     return hash_equals($validApiKey ?: '', $apiKey);
+  }
+
+  /**
+   * Checks whether the payload includes training schedule details.
+   */
+  protected function hasTrainingScheduleData(array $data): bool {
+    return !empty($data['training_start_date'])
+      || !empty($data['training_end_date'])
+      || !empty($data['training_venue'])
+      || !empty($data['training_notes']);
+  }
+
+  /**
+   * Builds a human-readable training schedule note for notifications.
+   */
+  protected function buildTrainingScheduleNotes(array $data): string {
+    if (!$this->hasTrainingScheduleData($data)) {
+      return '';
+    }
+
+    $parts = [];
+    if (!empty($data['training_start_date'])) {
+      $parts[] = 'Start: ' . $data['training_start_date'];
+    }
+    if (!empty($data['training_end_date'])) {
+      $parts[] = 'End: ' . $data['training_end_date'];
+    }
+    if (!empty($data['training_venue'])) {
+      $parts[] = 'Venue: ' . $data['training_venue'];
+    }
+    if (!empty($data['training_notes'])) {
+      $parts[] = 'Notes: ' . $data['training_notes'];
+    }
+
+    return implode('. ', $parts);
+  }
+
+  /**
+   * Sends training schedule notifications without changing application status.
+   */
+  protected function sendTrainingScheduleNotification(ApplicationInterface $entity, string $current_status, array $data): Response {
+    $trainingNotes = $this->buildTrainingScheduleNotes($data);
+
+    /** @var \Drupal\status_manager\Service\StatusTracker $status_tracker */
+    $status_tracker = \Drupal::service('status_manager.status_tracker');
+    $status_tracker->logStatusChange(
+      $entity,
+      'status',
+      $current_status,
+      ApplicationStatusConstants::TRAINING,
+      'api',
+      'notification',
+      $trainingNotes
+    );
+
+    return $this->createModifiedResponse([
+      'success' => TRUE,
+      'message' => 'Training schedule notification sent',
+      'data' => [
+        'id' => $entity->id(),
+        'uuid' => $entity->uuid(),
+        'application_id' => $entity->getApplicationId(),
+        'status' => $entity->getStatus(),
+        'changed' => $entity->getChangedTime(),
+      ],
+    ], 200);
   }
 
 }

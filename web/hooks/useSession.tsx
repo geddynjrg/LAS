@@ -92,11 +92,12 @@ export const SessionProvider: React.FC<{
 
   // Fetch profile data when authenticated
   const refreshProfile = useCallback(async () => {
-    if (!sessionData.isAuthenticated) {
-      return;
-    }
-
-    setSessionData((prev) => ({ ...prev, isLoading: true, error: null }));
+    setSessionData((prev) => {
+      if (!prev.isAuthenticated) {
+        return prev;
+      }
+      return { ...prev, isLoading: true, error: null };
+    });
 
     try {
       const profile = await fetchProfile();
@@ -117,7 +118,7 @@ export const SessionProvider: React.FC<{
           error instanceof Error ? error.message : 'Failed to fetch profile',
       }));
     }
-  }, [sessionData.isAuthenticated]);
+  }, []);
 
   // Logout function
   const logout = useCallback(async () => {
@@ -167,7 +168,7 @@ export const SessionProvider: React.FC<{
   // Initial profile fetch on mount if authenticated
   useEffect(() => {
     if (initialSession) {
-      refreshProfile();
+      void refreshProfile();
     }
   }, [initialSession, refreshProfile]);
 

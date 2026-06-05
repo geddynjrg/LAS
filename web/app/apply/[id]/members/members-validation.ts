@@ -1,6 +1,29 @@
 import { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { Member } from '@/lib/types/application.types';
 
+/** Leadership roles that may only be assigned to one member per application. */
+export const LIMITED_MEMBER_POSITIONS = [
+  'Chairperson',
+  'Chairman',
+  'Treasurer',
+  'Secretary',
+] as const;
+
+export function isLimitedMemberPosition(roleValue: string): boolean {
+  const normalized = roleValue.trim().toLowerCase();
+  return LIMITED_MEMBER_POSITIONS.some(
+    (role) => role.toLowerCase() === normalized,
+  );
+}
+
+export function limitedMemberPositionLabel(roleValue: string): string {
+  return (
+    LIMITED_MEMBER_POSITIONS.find(
+      (role) => role.toLowerCase() === roleValue.trim().toLowerCase(),
+    ) ?? roleValue
+  );
+}
+
 export interface MemberValidationError {
   type: 'duplicate_limited_role' | 'invalid_role' | 'missing_required_role' | 'duplicate_phone_number' | 'duplicate_national_id';
   message: string;
@@ -143,8 +166,22 @@ export function validateMembersAgainstTaxonomy(
   const limitedRoles = new Map<string, TaxonomyOption>();
 
   memberTypeOptions.forEach(option => {
-    if (option.limitedRole) {
-      limitedRoles.set(option.value, option);
+    if (option.limitedRole || isLimitedMemberPosition(option.value)) {
+      limitedRoles.set(option.value, {
+        ...option,
+        limitedRole: true,
+      });
+    }
+  });
+
+  // Ensure leadership roles are limited even if taxonomy metadata is missing.
+  LIMITED_MEMBER_POSITIONS.forEach((position) => {
+    if (!limitedRoles.has(position)) {
+      limitedRoles.set(position, {
+        label: position,
+        value: position,
+        limitedRole: true,
+      });
     }
   });
 
@@ -187,20 +224,25 @@ export function validateMembersAgainstTaxonomy(
       return;
     }
 
-    // Check for duplicate limited roles
-    if (limitedRoles.has(member.type)) {
-      const existingMemberIndex = limitedRoleAssignments.get(member.type);
+    // Check for duplicate limited roles (case-insensitive for leadership titles)
+    const limitedRoleKey = member.type.trim().toLowerCase();
+    const isLimited =
+      limitedRoles.has(member.type) ||
+      isLimitedMemberPosition(member.type);
+
+    if (isLimited) {
+      const existingMemberIndex = limitedRoleAssignments.get(limitedRoleKey);
       if (existingMemberIndex !== undefined) {
         errors.push({
           type: 'duplicate_limited_role',
-          message: `The ${limitedRoles.get(member.type)?.label} role can only be assigned to one member. Currently assigned to ${members[existingMemberIndex]?.fullname || `Member ${existingMemberIndex + 1}`} and ${member.fullname || `Member ${index + 1}`}.`,
+          message: `The ${limitedMemberPositionLabel(member.type)} role can only be assigned to one member. Currently assigned to ${members[existingMemberIndex]?.fullname || `Member ${existingMemberIndex + 1}`} and ${member.fullname || `Member ${index + 1}`}.`,
           memberIndex: index,
           roleValue: member.type,
           conflictingMemberIndex: existingMemberIndex,
           phoneNumber: ''
         });
       } else {
-        limitedRoleAssignments.set(member.type, index);
+        limitedRoleAssignments.set(limitedRoleKey, index);
       }
     }
 
@@ -375,13 +417,14 @@ export function canAssignRole(
   }
 
   // If not a limited role, it can always be assigned
-  if (!roleOption.limitedRole) {
+  if (!roleOption.limitedRole && !isLimitedMemberPosition(roleValue)) {
     return { canAssign: true };
   }
 
   // Check if limited role is already taken by another member
+  const roleKey = roleValue.trim().toLowerCase();
   const existingMemberIndex = members.findIndex((member, index) =>
-    member.type === roleValue && index !== excludeMemberIndex
+    member.type?.trim().toLowerCase() === roleKey && index !== excludeMemberIndex
   );
 
   if (existingMemberIndex !== -1) {

@@ -22,21 +22,20 @@ export default async function Page({ params }: GroupDataPageProps) {
   const { id } = await params;
   const t = await getTranslations();
 
-  // Fetch application and taxonomy data in parallel
+  const application = await getApplicationById(id);
+
   const [
-    application,
     groupPurposeOptions,
     valueChainOptions,
     countyOptions,
     constituencyOptions,
     groupActivitiesOptions,
   ] = await Promise.all([
-    getApplicationById(id),
-    getFormFieldOptions('purposeOfTheGroup'),
-    getChildTaxonomyOptions('group_activities', 'Value chain'),
-    getCountyOptions(),
-    getConstituencyOptions(),
-    getTopLevelTaxonomyOptions('group_activities'),
+    getFormFieldOptions('purposeOfTheGroup').catch(() => []),
+    getChildTaxonomyOptions('group_activities', 'Value chain').catch(() => []),
+    getCountyOptions().catch(() => []),
+    getConstituencyOptions().catch(() => []),
+    getTopLevelTaxonomyOptions('group_activities').catch(() => []),
   ]);
 
   const taxonomyOptions = {

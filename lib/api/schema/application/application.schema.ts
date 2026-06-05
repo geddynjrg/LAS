@@ -65,6 +65,7 @@ export const ApplicationPostRequestSchema = z.object({
       'approved_by_constituency',
       'under_review',
       'approved',
+      'training',
       'rejected',
       'disbursed',
       'closed',

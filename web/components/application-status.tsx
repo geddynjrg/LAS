@@ -60,12 +60,28 @@ export const ApplicationStatus: FC<ApplicationStatusProps> = ({
         return t.rich('status.disbursed', {
           bold: strongText,
         });
+      case 'TRAINING':
+        return t.rich('status.training', {
+          bold: strongText,
+        });
+      case 'PENDING_SECRETARIAT_REVIEW':
+      case 'PENDING_FUND_TRANSFER':
+      case 'PENDING_FINAL_DISBURSEMENT':
+        return t.rich('status.approved', {
+          bold: strongText,
+        });
+      case 'DISBURSEMENT_FAILED':
+        return t.rich('status.rejected', {
+          bold: strongText,
+        });
       case 'CLOSED':
         return t.rich('status.closed', {
           bold: strongText,
         });
       default:
-        return null;
+        return t.rich('status.inReview', {
+          bold: strongText,
+        });
     }
   };
 
@@ -102,6 +118,11 @@ export const ApplicationStatus: FC<ApplicationStatusProps> = ({
             status === 'APPROVED' && 'bg-green-600',
             status === 'REJECTED' && 'bg-red-500',
             status === 'DISBURSED' && 'bg-green-800',
+            status === 'TRAINING' && 'bg-purple-400',
+            status === 'PENDING_SECRETARIAT_REVIEW' && 'bg-indigo-400',
+            status === 'PENDING_FUND_TRANSFER' && 'bg-teal-500',
+            status === 'PENDING_FINAL_DISBURSEMENT' && 'bg-teal-600',
+            status === 'DISBURSEMENT_FAILED' && 'bg-red-400',
             status === 'CLOSED' && 'bg-gray-600',
           )}
         ></div>

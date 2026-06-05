@@ -68,6 +68,12 @@ export const STATUS_CONFIG: Record<ApplicationStatus, StatusConfig> = {
     label: 'Approved',
     badgeVariant: 'success',
   },
+  [ApplicationStatus.TRAINING]: {
+    local: ApplicationStatus.TRAINING,
+    api: 'training',
+    label: 'Training',
+    badgeVariant: 'info',
+  },
   [ApplicationStatus.REJECTED]: {
     local: ApplicationStatus.REJECTED,
     api: 'rejected',
@@ -102,6 +108,7 @@ export function toApiStatus(
   | 'approved_by_constituency'
   | 'under_review'
   | 'approved'
+  | 'training'
   | 'rejected'
   | 'disbursed'
   | 'closed' {
@@ -113,6 +120,7 @@ export function toApiStatus(
     | 'approved_by_constituency'
     | 'under_review'
     | 'approved'
+    | 'training'
     | 'rejected'
     | 'disbursed'
     | 'closed';

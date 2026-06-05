@@ -61,34 +61,69 @@ status_notifications:
     subject: ''
     email_message: ''
     sms_message: ''
-  constituency_review:
-    enabled: false
-    recipient: customer
-    admin_roles: {  }
-    subject: ''
-    email_message: ''
-    sms_message: ''
   approved_by_constituency:
-    enabled: false
+    enabled: true
     recipient: customer
     admin_roles: {  }
-    subject: ''
-    email_message: ''
-    sms_message: ''
+    subject: 'Constituency Approval'
+    email_message: "Your loan application [application:application_id] has passed constituency review and is proceeding to HQ.\r\n"
+    sms_message: 'Your loan application [application:application_id] has passed constituency review.'
+  constituency_review:
+    enabled: true
+    recipient: customer
+    admin_roles: {  }
+    subject: 'Application Under Review'
+    email_message: "Your loan application [application:application_id] is under constituency review.\r\n"
+    sms_message: 'Your loan application [application:application_id] is under review.'
   under_review:
+    enabled: true
+    recipient: customer
+    admin_roles: {  }
+    subject: 'Application Under HQ Review'
+    email_message: "Your loan application [application:application_id] is now under HQ review.\r\n"
+    sms_message: 'Your loan application [application:application_id] is now under HQ review.'
+  training:
+    enabled: true
+    recipient: customer
+    admin_roles: {  }
+    subject: 'Uwezo Fund Training Scheduled'
+    email_message: "Your group loan application [application:application_id] ([application:group_name]) has been scheduled for mandatory training.\r\n\r\n[status_change:notes]\r\n"
+    sms_message: 'Uwezo Fund training for [application:application_id] ([application:group_name]). [status_change:notes]'
+  pending_secretariat_review:
     enabled: false
     recipient: customer
     admin_roles: {  }
     subject: ''
     email_message: ''
     sms_message: ''
+  pending_fund_transfer:
+    enabled: false
+    recipient: customer
+    admin_roles: {  }
+    subject: ''
+    email_message: ''
+    sms_message: ''
+  pending_final_disbursement:
+    enabled: true
+    recipient: customer
+    admin_roles: {  }
+    subject: 'Ready for Disbursement'
+    email_message: "Your loan application [application:application_id] has completed training and is awaiting final disbursement authorization.\r\n"
+    sms_message: 'Application [application:application_id] completed training and awaits disbursement.'
+  disbursement_failed:
+    enabled: true
+    recipient: customer
+    admin_roles: {  }
+    subject: 'Disbursement Update'
+    email_message: "Your loan application [application:application_id] disbursement could not be completed. Reason: [application:rejection_message]\r\nPlease contact your constituency office.\r\n"
+    sms_message: 'Application [application:application_id]: disbursement was not completed. [application:rejection_message] Contact your constituency office.'
   disbursed:
-    enabled: false
+    enabled: true
     recipient: customer
     admin_roles: {  }
-    subject: ''
-    email_message: ''
-    sms_message: ''
+    subject: 'Loan Disbursed'
+    email_message: "Your loan for application [application:application_id] has been disbursed.\r\n"
+    sms_message: 'Your loan application [application:application_id] has been disbursed.'
   closed:
     enabled: false
     recipient: customer

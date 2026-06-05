@@ -10,6 +10,7 @@ import {
   groupDataSchema,
 } from '@/app/apply/[id]/group-data/group-data-schema';
 import { getConstituenciesForCountyName } from '@/lib/api/counties.service';
+import { getWardsForConstituencyName } from '@/lib/api/wards.service';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
 import { GroupData as ApplicationGroupData } from '@/lib/types/application.types';
@@ -19,13 +20,14 @@ import { Container } from '@workspace/ui/components/container';
 import { FileUploadInput } from '@workspace/ui/components/file-upload-input';
 import { Field, Form } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
+import { LandmarkMapInput } from '@workspace/ui/components/landmark-map-input';
 import { SearchInput } from '@workspace/ui/components/search-input';
 import { Underline } from '@workspace/ui/components/underline';
 import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { type FC, useCallback, useState } from 'react';
+import { type FC, useCallback, useEffect, useState } from 'react';
 
 export interface GroupDataProps {
   id: string;
@@ -50,54 +52,78 @@ export const GroupDataForm: FC<GroupDataProps> = ({
   const [filteredConstituencies, setFilteredConstituencies] = useState<
     TaxonomyOption[]
   >(taxonomyOptions?.constituency || []);
+  const [filteredWards, setFilteredWards] = useState<TaxonomyOption[]>([]);
 
   const [state, formAction, isPending] = useForm(action, groupDataSchema, {
-    groupName: applicationGroupData?.basics.groupName,
+    groupName: applicationGroupData?.basics?.groupName,
     groupRegistrationNumber:
-      applicationGroupData?.basics.groupRegistrationNumber,
-    dateFormed: applicationGroupData?.basics.dateFormed,
+      applicationGroupData?.basics?.groupRegistrationNumber,
+    dateFormed: applicationGroupData?.basics?.dateFormed,
     groupRegistrationCertificate:
-      applicationGroupData?.basics.groupRegistrationCertificate,
+      applicationGroupData?.basics?.groupRegistrationCertificate,
     listOfMembersOnCertificate:
-      applicationGroupData?.basics.listOfMembersOnCertificate,
-    groupMeetingMinutes: applicationGroupData?.basics.groupMeetingMinutes
+      applicationGroupData?.basics?.listOfMembersOnCertificate,
+    groupMeetingMinutes: applicationGroupData?.basics?.groupMeetingMinutes
       ? Array.isArray(applicationGroupData.basics.groupMeetingMinutes)
         ? applicationGroupData.basics.groupMeetingMinutes
         : [applicationGroupData.basics.groupMeetingMinutes]
       : undefined,
-    groupPurpose: applicationGroupData?.background.purposeOfTheGroup,
-    groupActivities: applicationGroupData?.background.keyActivitiesOfTheGroup,
-    valueChain: applicationGroupData?.background.valueChain ?? undefined,
+    groupPurpose: applicationGroupData?.background?.purposeOfTheGroup,
+    groupActivities:
+      applicationGroupData?.background?.keyActivitiesOfTheGroup,
+    valueChain: applicationGroupData?.background?.valueChain ?? undefined,
     tableBankingExperience:
-      applicationGroupData?.background.tableBanking?.tableBankingExperience,
+      applicationGroupData?.background?.tableBanking?.tableBankingExperience,
     tableBankingShareContribution:
-      applicationGroupData?.background.tableBanking
+      applicationGroupData?.background?.tableBanking
         ?.tableBankingShareContribution,
     tableBankingTotalLoanedOut:
-      applicationGroupData?.background.tableBanking?.tableBankingTotalLoanedOut,
+      applicationGroupData?.background?.tableBanking?.tableBankingTotalLoanedOut,
     tableBankingTotalRevolvingFund:
-      applicationGroupData?.background.tableBanking
+      applicationGroupData?.background?.tableBanking
         ?.tableBankingTotalRevolvingFund,
-    other: applicationGroupData?.background.other,
-    groupCreditHistory: applicationGroupData?.background.groupCreditHistory
+    other: applicationGroupData?.background?.other,
+    groupCreditHistory: applicationGroupData?.background?.groupCreditHistory
       ? Array.isArray(applicationGroupData.background.groupCreditHistory)
         ? applicationGroupData.background.groupCreditHistory
         : [applicationGroupData.background.groupCreditHistory]
       : undefined,
-    countyOfOperation: applicationGroupData?.location.countyOfOperation,
-    constituency: applicationGroupData?.location.constituency,
-    ward: applicationGroupData?.location.ward,
-    meetingPoint: applicationGroupData?.location.meetingPoint,
-    nearestLandmark: applicationGroupData?.location.nearestLandmark,
+    countyOfOperation: applicationGroupData?.location?.countyOfOperation,
+    constituency: applicationGroupData?.location?.constituency,
+    ward: applicationGroupData?.location?.ward,
+    meetingPoint: applicationGroupData?.location?.meetingPoint,
+    nearestLandmark: applicationGroupData?.location?.nearestLandmark,
   });
 
   const t = useTranslations();
   const [chosenCounty, setChosenCounty] = useState(
     state.values?.countyOfOperation,
   );
+  const [chosenConstituency, setChosenConstituency] = useState(
+    state.values?.constituency,
+  );
+  const [chosenWard, setChosenWard] = useState(state.values?.ward);
   const [isLoadingConstituencies, setIsLoadingConstituencies] = useState(false);
+  const [isLoadingWards, setIsLoadingWards] = useState(false);
+  const [wardLoadHint, setWardLoadHint] = useState<string | null>(null);
   const [chosenKeyActivities, setChosenKeyActivities] = useState(
     state.values?.groupActivities,
+  );
+
+  const constituencyOptionsForValidation = useCallback(
+    (constituencyName: string) => {
+      const trimmed = constituencyName.trim();
+      const fromFiltered = filteredConstituencies.some(
+        (c) => c.value === trimmed || c.label === trimmed,
+      );
+      if (fromFiltered) {
+        return true;
+      }
+      return (taxonomyOptions?.constituency ?? []).some(
+        (c) => c.value === trimmed || c.label === trimmed,
+      );
+    },
+    [filteredConstituencies, taxonomyOptions?.constituency],
   );
 
   // Helper function for case-insensitive and trimmed string matching
@@ -140,6 +166,54 @@ export const GroupDataForm: FC<GroupDataProps> = ({
     },
     [chosenCounty, taxonomyOptions?.county, taxonomyOptions?.constituency],
   );
+
+  const updateWardsForConstituency = useCallback(
+    async (constituencyName: string, options?: { requireValidOption?: boolean }) => {
+      const trimmed = constituencyName?.trim();
+      if (!trimmed) {
+        setFilteredWards([]);
+        setWardLoadHint(null);
+        return;
+      }
+
+      if (
+        options?.requireValidOption &&
+        !constituencyOptionsForValidation(trimmed)
+      ) {
+        return;
+      }
+
+      setIsLoadingWards(true);
+      setWardLoadHint(null);
+      try {
+        const wards = await getWardsForConstituencyName(trimmed);
+        setFilteredWards(wards);
+        if (wards.length === 0) {
+          setWardLoadHint(
+            'No wards were found for this constituency. You can still type the ward name.',
+          );
+        }
+      } catch (error) {
+        console.error('Error fetching wards:', error);
+        setFilteredWards([]);
+        setWardLoadHint(
+          'Could not load wards. You can still type the ward name.',
+        );
+      } finally {
+        setIsLoadingWards(false);
+      }
+    },
+    [constituencyOptionsForValidation],
+  );
+
+  useEffect(() => {
+    const constituency = state.values?.constituency;
+    if (constituency) {
+      void updateWardsForConstituency(constituency, {
+        requireValidOption: false,
+      });
+    }
+  }, [state.values?.constituency, updateWardsForConstituency]);
 
   const prevUrl = `/apply`;
   const nextUrl = `/apply/${id}/members`;
@@ -397,7 +471,6 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   {t(
                     'ApplicationDetailsPage.groupData.groupBackground.creditHistory',
                   )}
-                  <span className="text-destructive">*</span>
                 </div>
                 <div className="typo-body-small text-foreground font-normal mt-1">
                   {t('ApplicationDetailsPage.loan.creditHistoryDescription')}
@@ -438,10 +511,18 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             control={(props) => (
               <SearchInput
                 {...props}
+                defaultValue={props.defaultValue ?? state.values?.countyOfOperation}
                 onValueChange={(value) => {
                   setChosenCounty(value);
+                }}
+                onValueSelect={(value) => {
+                  setChosenCounty(value);
+                  setChosenConstituency(undefined);
+                  setChosenWard(undefined);
+                  setFilteredWards([]);
+                  setWardLoadHint(null);
                   if (value) {
-                    updateConstituenciesForCounty(value);
+                    void updateConstituenciesForCounty(value);
                   } else {
                     setFilteredConstituencies(
                       taxonomyOptions?.constituency || [],
@@ -463,10 +544,27 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             control={(props) => (
               <SearchInput
                 {...props}
+                defaultValue={props.defaultValue ?? state.values?.constituency}
+                onValueChange={(value) => {
+                  setChosenConstituency(value);
+                  if (!value) {
+                    setChosenWard(undefined);
+                    setFilteredWards([]);
+                    setWardLoadHint(null);
+                  }
+                }}
+                onValueSelect={(value) => {
+                  setChosenConstituency(value);
+                  setChosenWard(undefined);
+                  void updateWardsForConstituency(value, {
+                    requireValidOption: true,
+                  });
+                }}
                 placeholder={t(
                   'ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch',
                 )}
                 options={filteredConstituencies}
+                isLoading={isLoadingConstituencies}
               />
             )}
           />
@@ -477,12 +575,29 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             label={t('Common.ward')}
             required
             control={(props) => (
-              <Input
-                placeholder={t(
-                  'ApplicationDetailsPage.groupData.groupBackground.enterWard',
-                )}
-                {...props}
-              />
+              <div className="flex w-full flex-col gap-1">
+                <SearchInput
+                  {...props}
+                  defaultValue={props.defaultValue ?? state.values?.ward}
+                  placeholder={t(
+                    'ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch',
+                  )}
+                  options={filteredWards}
+                  isLoading={isLoadingWards}
+                  disabled={
+                    !(chosenConstituency || state.values?.constituency) ||
+                    isLoadingWards
+                  }
+                  onValueChange={(value) => {
+                    setChosenWard(value);
+                  }}
+                />
+                {wardLoadHint ? (
+                  <p className="text-muted-foreground typo-body-small">
+                    {wardLoadHint}
+                  </p>
+                ) : null}
+              </div>
             )}
           />
 
@@ -509,11 +624,16 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               'ApplicationDetailsPage.groupData.locationInfo.nearestLandmark',
             )}
             control={(props) => (
-              <Input
+              <LandmarkMapInput
+                {...props}
                 placeholder={t(
                   'ApplicationDetailsPage.groupData.groupBackground.nearestLandmarkExamples',
                 )}
-                {...props}
+                locationContext={{
+                  county: chosenCounty,
+                  constituency: chosenConstituency,
+                  ward: chosenWard,
+                }}
               />
             )}
           />

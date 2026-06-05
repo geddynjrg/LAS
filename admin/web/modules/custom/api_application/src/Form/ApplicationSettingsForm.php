@@ -218,6 +218,46 @@ class ApplicationSettingsForm extends ConfigFormBase {
       ],
     ];
 
+    $form['general_settings']['sms_settings']['sms_submission_success_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable Submission Success SMS'),
+      '#default_value' => $config->get('sms_submission_success_enabled') ?? TRUE,
+      '#description' => $this->t('Send a submission-success SMS to all group members after an application is submitted.'),
+    ];
+
+    $form['general_settings']['sms_settings']['sms_submission_success_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Submission Success SMS Message Template'),
+      '#default_value' => $config->get('sms_submission_success_message') ?: '',
+      '#description' => $this->t('Custom message for post-submission SMS. Tokens: [member:name], [application:id], [application:group_name]. Leave empty to use the default message.'),
+      '#rows' => 4,
+      '#states' => [
+        'visible' => [
+          ':input[name="general_settings[sms_settings][sms_submission_success_enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['general_settings']['sms_settings']['sms_payment_success_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable Payment Success SMS'),
+      '#default_value' => $config->get('sms_payment_success_enabled') ?? TRUE,
+      '#description' => $this->t('Send an SMS to all group members after a successful loan repayment via Pesaflow.'),
+    ];
+
+    $form['general_settings']['sms_settings']['sms_payment_success_message'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Payment Success SMS Message Template'),
+      '#default_value' => $config->get('sms_payment_success_message') ?: '',
+      '#description' => $this->t('Custom message for post-payment SMS. Tokens: [member:name], [application:id], [application:group_name], [payment:amount], [payment:reference]. Leave empty to use the default message.'),
+      '#rows' => 4,
+      '#states' => [
+        'visible' => [
+          ':input[name="general_settings[sms_settings][sms_payment_success_enabled]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
     $form['general_settings']['sms_settings']['auto_send_sms'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Auto-send SMS on Application Submission'),
@@ -693,6 +733,10 @@ class ApplicationSettingsForm extends ConfigFormBase {
       ->set('api_key', $general['api_settings']['api_key'])
       ->set('sms_confirmation_enabled', $general['sms_settings']['sms_confirmation_enabled'])
       ->set('sms_confirmation_message', $general['sms_settings']['sms_confirmation_message'])
+      ->set('sms_submission_success_enabled', $general['sms_settings']['sms_submission_success_enabled'])
+      ->set('sms_submission_success_message', $general['sms_settings']['sms_submission_success_message'])
+      ->set('sms_payment_success_enabled', $general['sms_settings']['sms_payment_success_enabled'])
+      ->set('sms_payment_success_message', $general['sms_settings']['sms_payment_success_message'])
       ->set('auto_send_sms', $general['sms_settings']['auto_send_sms'])
       ->set('frontend_base_url', $general['sms_settings']['frontend_base_url'])
       ->set('frontend_confirmation_path', $general['sms_settings']['frontend_confirmation_path']);

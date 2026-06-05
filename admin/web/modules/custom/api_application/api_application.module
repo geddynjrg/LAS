@@ -106,6 +106,7 @@ function api_application_theme() {
         'application' => NULL,
         'entity' => NULL,
         'site_name' => NULL,
+        'confirmation_status_labels' => [],
       ],
       'template' => 'application-pdf',
     ],
@@ -156,6 +157,30 @@ function api_application_theme() {
       ],
       'template' => 'application-admin-custom-message-email',
     ],
+  ];
+}
+
+/**
+ * Formats a file entity for template display.
+ *
+ * @param \Drupal\file\FileInterface|null $file
+ *   The file entity.
+ *
+ * @return array|null
+ *   File metadata for templates, or NULL when no file is provided.
+ */
+function _api_application_format_file_metadata($file) {
+  if (!$file) {
+    return NULL;
+  }
+
+  $size = ByteSizeMarkup::create($file->getSize());
+
+  return [
+    'filename' => $file->getFilename(),
+    'url' => $file->createFileUrl(),
+    'size' => (string) $size,
+    'mime' => $file->getMimeType(),
   ];
 }
 
@@ -228,7 +253,10 @@ function template_preprocess_application(array &$variables) {
     'expenses' => [],
 
     // Documents.
+    'group_registration_certificate' => NULL,
+    'list_of_members_certificate' => NULL,
     'group_credit_history' => NULL,
+    'group_credit_history_files' => [],
 
     // Rejection details.
     'rejection_reason' => $application->get('rejection_reason')->value ?: '',
@@ -355,21 +383,40 @@ function template_preprocess_application(array &$variables) {
   // Balance between income and expenses.
   $variables['application']['balance'] = $variables['application']['average_income'] - $variables['application']['total_expenses'];
 
-  // Handle group credit history file.
-  if (!$application->get('group_credit_history')->isEmpty()) {
-    $file = $application->get('group_credit_history')->entity;
+  // Handle uploaded documents.
+  $variables['application']['group_registration_certificate'] = _api_application_format_file_metadata(
+    $application->get('group_registration_certificate')->entity
+  );
+  $variables['application']['list_of_members_certificate'] = _api_application_format_file_metadata(
+    $application->get('list_of_members_certificate')->entity
+  );
 
-    if ($file) {
-      // Use ByteSizeMarkup for Drupal 11 compatibility.
-      $size = ByteSizeMarkup::create($file->getSize());
-      $variables['application']['group_credit_history'] = [
-        'filename' => $file->getFilename(),
-        'url' => $file->createFileUrl(),
-        'size' => (string) $size,
-        'mime' => $file->getMimeType(),
-      ];
+  if (!$application->get('group_credit_history')->isEmpty()) {
+    foreach ($application->get('group_credit_history') as $item) {
+      $file_metadata = _api_application_format_file_metadata($item->entity);
+      if ($file_metadata) {
+        $variables['application']['group_credit_history_files'][] = $file_metadata;
+      }
+    }
+
+    if (!empty($variables['application']['group_credit_history_files'])) {
+      $variables['application']['group_credit_history'] = $variables['application']['group_credit_history_files'][0];
     }
   }
+
+  // Human-readable labels for list fields.
+  $nature_of_group_labels = [
+    'youth' => t('Youth'),
+    'pwd' => t('People with disabilities'),
+    'women' => t('Women'),
+  ];
+  $variables['application']['nature_of_group_label'] = $nature_of_group_labels[$variables['application']['nature_of_group']] ?? $variables['application']['nature_of_group'];
+
+  $nature_of_business_labels = [
+    'startup' => t('Start-up'),
+    'expansion' => t('Expansion'),
+  ];
+  $variables['application']['nature_of_business_label'] = $nature_of_business_labels[$variables['application']['nature_of_business']] ?? $variables['application']['nature_of_business'];
 
   // Format dates.
   if ($variables['application']['date_registered']) {

@@ -11,12 +11,9 @@ export const ECitizenLoginForm = () => {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  // const drupalUrl = 'http://127.0.0.1:32768';
-  // const drupalUrl = 'https://loans-admin.uwezo.go.ke';
-  const drupalUrl = 'https://loans-staging-admin.uwezo.go.ke';
-  // const drupalUrl =
-  //   process.env.ADMIN_DOMAIN ||
-  //   'https://loans-staging-admin.uwezo.go.ke';
+  const drupalUrl =
+    process.env.NEXT_PUBLIC_ADMIN_DOMAIN ||
+    'https://loans-staging-admin.uwezo.go.ke';
 
   const base64UrlEncode = (str: ArrayBuffer | string) => {
     const buffer =

@@ -52,6 +52,7 @@ model Application {
   lmsSyncAttempts   Int     @default(0)
   lmsLastSyncAt     DateTime?
   lmsSyncQueue      LmsSyncQueue?
+  paymentTransactions PaymentTransaction[]
 
   @@index([userId])
   @@index([status])
@@ -288,8 +289,13 @@ enum ApplicationStatus {
   APPROVED_BY_CONSTITUENCY
   IN_REVIEW
   APPROVED
+  PENDING_SECRETARIAT_REVIEW
+  PENDING_FUND_TRANSFER
+  PENDING_FINAL_DISBURSEMENT
   REJECTED
+  TRAINING
   DISBURSED
+  DISBURSEMENT_FAILED
   CLOSED
 }
 
@@ -413,4 +419,40 @@ model Constituency {
   @@index([countyId])
   @@index([name])
   @@map("constituencies")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model PaymentTransaction {
+  id                    String        @id @default(cuid())
+  applicationId         String
+  billRefNumber         String        @unique
+  amountExpected        Float
+  currency              String        @default("KES")
+  status                PaymentStatus @default(PENDING)
+  clientName            String
+  clientMSISDN          String
+  clientIDNumber        String
+  clientEmail           String
+  checkoutPayload       Json
+  pesaflowPaymentRef    String?
+  pesaflowInvoiceNumber String?
+  paymentChannel        String?
+  amountPaid            Float?
+  ipnPayload            Json?
+  smsSentAt             DateTime?
+  completedAt           DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  application           Application   @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payment_transactions")
 }

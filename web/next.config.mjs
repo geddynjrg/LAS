@@ -1,8 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin(
-  './i18n/request.ts'
-);
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig = {
   transpilePackages: ['@workspace/ui'],
@@ -14,7 +12,12 @@ const nextConfig = {
         hostname: 'uwezo.ddev.site',
       },
       ...(process.env.API_URL
-        ? [{ protocol: new URL(process.env.API_URL).protocol.replace(':', ''), hostname: new URL(process.env.API_URL).hostname }]
+        ? [
+            {
+              protocol: new URL(process.env.API_URL).protocol.replace(':', ''),
+              hostname: new URL(process.env.API_URL).hostname,
+            },
+          ]
         : []),
     ],
   },
@@ -22,6 +25,13 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '30mb',
     },
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+    };
+    return config;
   },
 };
 

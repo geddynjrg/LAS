@@ -21,7 +21,7 @@ interface UseProfileReturn {
 }
 
 export function useProfile(): UseProfileReturn {
-  const { profile, isLoading } = useSession();
+  const { profile, isLoading, isAuthenticated } = useSession();
 
   const userIdentification = useMemo((): UserIdentification | null => {
     if (!profile) return null;
@@ -95,7 +95,7 @@ export function useProfile(): UseProfileReturn {
     isAdmin,
     getDisplayName,
     getContactInfo,
-    isAuthenticated: !!profile,
+    isAuthenticated,
     isLoading,
   };
 }

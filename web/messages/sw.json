@@ -285,6 +285,35 @@
     "group": "Kikundi",
     "viewApplication": "Tazama maombi",
     "continueFillingApplication": "Endelea kujaza maombi",
+    "repay": {
+      "repayButton": "Lipa mkopo",
+      "modalTitle": "Malipo ya mkopo",
+      "checkoutTitle": "Kamilisha malipo",
+      "modalDescription": "Weka kiasi unachotaka kulipa sasa. Malipo hufunguliwa kwa usalama ndani ya dirisha hili kupitia Pesaflow.",
+      "outstandingBalance": "Salio linalobaki",
+      "totalDue": "Jumla ya kiasi cha kulipa",
+      "paidSoFar": "Imelipwa hadi sasa:",
+      "originalLoan": "Mkopo wa awali:",
+      "amountToPay": "Kiasi cha kulipa (KES)",
+      "amountHint": "Unaweza kulipa kiasi chochote hadi salio linalobaki.",
+      "invalidAmount": "Weka kiasi halali cha malipo.",
+      "amountExceedsBalance": "Kiasi kinazidi salio linalobaki cha KES {amount}.",
+      "fullyRepaid": "Mkopo huu umelipwa kikamilifu mtandaoni. Wasiliana na msaada ikiwa salio bado linaonekana.",
+      "pendingPayment": "Tayari una malipo yanayoendelea. Endelea na malipo hapa chini au subiri yamekwisha.",
+      "continuePayment": "Endelea na malipo",
+      "invoiceReference": "Nambari ya ankara: {reference}",
+      "checkoutNote": "Kamilisha malipo katika fomu hapo juu. Usifunge dirisha hili hadi Pesaflow ithibitishe mafanikio.",
+      "back": "Rudi",
+      "close": "Funga",
+      "repaymentPeriod": "Muda wa malipo: miezi {months}",
+      "paymentsComingSoon": "Malipo mtandaoni kupitia Pesaflow yanakuja hivi karibuni.",
+      "pesaflowNote": "Malipo huchakatwa kupitia Pesaflow. Hakuna STK ya M-Pesa inayotumwa kiotomatiki.",
+      "proceedToPay": "Endelea kulipa",
+      "cancel": "Ghairi",
+      "processing": "Inachakata...",
+      "paymentUnavailable": "Malipo hayapatikani sasa. Tafadhali jaribu tena baadaye.",
+      "paymentInitiated": "Ombi la malipo limerekodiwa. Malipo ya Pesaflow yatafunguliwa hapa."
+    },
     "status": {
       "title": "Hali",
       "unsubmitted": "<bold>Haijawasilishwa:</bold> Haijaanza",
@@ -297,6 +326,7 @@
       "approved": "<bold>Imeidhinishwa:</bold> Mkopo umeidhinishwa",
       "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa",
       "disbursed": "<bold>Imetolewa:</bold> Fedha za mkopo zimetolewa",
+      "training": "<bold>Mafunzo:</bold> Mafunzo ya kikundi yanaendelea",
       "closed": "<bold>Imefungwa:</bold> Ombi limefungwa"
     },
     "rejectionDetails": {
@@ -349,6 +379,9 @@
       "email": "Tutumie barua pepe",
       "phone": "Tupigie simu"
     },
+    "trainingCertificate": {
+      "download": "Pakua cheti cha mafunzo"
+    },
     "emptyState": {
       "title": "Anza Maombi Yako ya Kwanza",
       "description": "Bado haujamanza maombi yoyote. Anza safari yako ya kupata msaada wa kifedha kwa kundi lako kwa kuunda maombi yako ya kwanza.",
@@ -360,6 +393,8 @@
     "backToDashboard": "Rudi kwenye dashibodi",
     "applicationNotFound": "Ombi halijapatikana",
     "status": "Hali",
+    "downloadTrainingCertificate": "Pakua cheti cha mafunzo",
+    "trainingCertificateAvailableFrom": "Cheti cha mafunzo kitapatikana kuanzia {date}",
     "numberMonths": "{month, plural, =1 {# mwezi} other {# miezi}}",
     "numberYears": "{year, plural, =1 {# mwaka} other {# miaka}}",
     "loan": {

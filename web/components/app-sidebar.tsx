@@ -1,3 +1,5 @@
+'use client';
+
 import { type Locale, locales } from '@/i18n/config';
 import { setUserLocale } from '@/lib/locale';
 import { FlagSelect } from '@workspace/ui/components/flag-select';

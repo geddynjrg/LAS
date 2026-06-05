@@ -1,10 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, type FC, type ReactNode } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  type FC,
+  type ReactNode,
+} from "react";
 
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
-import { useMount } from "@workspace/ui/hooks/use-mount";
 import { cn } from "@workspace/ui/lib/utils";
 
 export interface StepperProps {
@@ -32,28 +37,34 @@ export const Stepper: FC<StepperProps> = ({
 
   const isMobile = useIsMobile();
 
-  useMount(() => {
-    handleScrollToActiveStep();
-    window.addEventListener("resize", handleScrollToActiveStep, {
-      passive: true,
-    });
-  });
+  const scrollActiveStepInNav = useCallback(() => {
+    const nav = wrapRef.current;
+    if (!nav) {
+      return;
+    }
+
+    const target = nav.querySelector(
+      isMobile ? "[data-active=true]" : "[data-before-active=true]",
+    ) as HTMLElement | null;
+    if (!target) {
+      return;
+    }
+
+    // Scroll only the horizontal stepper nav — never the document (avoids mobile jump-to-top).
+    const navRect = nav.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    nav.scrollLeft += targetRect.left - navRect.left;
+  }, [isMobile]);
 
   useEffect(() => {
-    handleScrollToActiveStep();
-  });
+    scrollActiveStepInNav();
+  }, [activeStep, scrollActiveStepInNav]);
 
-  const handleScrollToActiveStep = () => {
-    wrapRef.current
-      ?.querySelector(
-        isMobile ? "[data-active=true]" : "[data-before-active=true]",
-      )
-      ?.scrollIntoView({
-        block: "nearest",
-        behavior: "instant",
-        inline: "start",
-      });
-  };
+  useEffect(() => {
+    window.addEventListener("resize", scrollActiveStepInNav, { passive: true });
+    return () =>
+      window.removeEventListener("resize", scrollActiveStepInNav);
+  }, [scrollActiveStepInNav]);
 
   return (
     <nav

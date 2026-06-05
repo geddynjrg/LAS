@@ -71,10 +71,21 @@ RUN --mount=type=cache,target=/tmp/composer \
         --optimize-autoloader
 
 # Create necessary directories and set permissions
+# RUN mkdir -p web/sites/default/files /var/www/private /var/log/supervisor /run/nginx \
+#     && chown -R www-data:www-data /var/www/html \
+#     && chmod -R 755 web/sites/default \
+#     && chmod -R 775 web/sites/default/files
 RUN mkdir -p web/sites/default/files /var/www/private /var/log/supervisor /run/nginx \
+    && mkdir -p /var/lib/nginx/tmp/client_body \
+    && mkdir -p /var/lib/nginx/tmp/fastcgi \
+    && mkdir -p /var/lib/nginx/tmp/proxy \
+    && chown -R www-data:www-data /var/lib/nginx/tmp \
+    && chmod -R 777 /var/lib/nginx/tmp \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 web/sites/default \
-    && chmod -R 775 web/sites/default/files
+    && chmod -R 775 web/sites/default/files\
+    && chmod -R 755 /var/lib/nginx \
+    && chmod -R 777 /var/lib/nginx/tmp
 
 # PHP-FPM configuration to run as www-data
 RUN sed -i 's/user = nobody/user = www-data/' /usr/local/etc/php-fpm.d/www.conf && \

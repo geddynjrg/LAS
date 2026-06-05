@@ -9,18 +9,39 @@ services:
         - NODE_VERSION=20
         - PROJECT=web
         - DATABASE_URL=mysql://${DB_USER:-drupal}:${DB_PASSWORD}@db:3306/web
+        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://${WEB_DOMAIN:-localhost}}
+        - NEXT_PUBLIC_ADMIN_DOMAIN=https://${ADMIN_DOMAIN:-admin.localhost}
+        - NEXT_PUBLIC_API_URL=https://${ADMIN_DOMAIN:-admin.localhost}
     environment:
       - NODE_ENV=${NODE_ENV:-${DRUPAL_ENV:-production}}
       - NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS:-}
       - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED:-}
       - DATABASE_URL=mysql://${DB_USER:-drupal}:${DB_PASSWORD}@db:3306/web
       - NEXT_PUBLIC_ADMIN_DOMAIN=https://${ADMIN_DOMAIN}
-      - API_URL=https://${ADMIN_DOMAIN}
-      - LMS_API_URL=${LMS_API_URL}
+      # Server-side sync uses internal Docker services (avoids nginx/IP whitelist + hairpin NAT)
+      - API_URL=http://admin
+      - LMS_API_URL=${LMS_INTERNAL_API_URL:-http://uwezo-lms-app:8000}
+      - LMS_API_HOST=${LMS_API_HOST:-lms-staging.uwezo.go.ke}
       - LMS_API_KEY=${LMS_API_KEY}
+      - CRON_SECRET=${CRON_SECRET}
+      - API_FETCH_TIMEOUT_MS=${API_FETCH_TIMEOUT_MS:-60000}
+      - UPLOAD_DIR=/app/web/uploads
+      - MAX_FILE_SIZE=31457280
+      - PESAFLOW_CHECKOUT_URL=${PESAFLOW_CHECKOUT_URL:-}
+      - PESAFLOW_STATUS_URL=${PESAFLOW_STATUS_URL:-}
+      - PESAFLOW_API_CLIENT_ID=${PESAFLOW_API_CLIENT_ID:-}
+      - PESAFLOW_SERVICE_ID=${PESAFLOW_SERVICE_ID:-}
+      - PESAFLOW_HMAC_KEY=${PESAFLOW_HMAC_KEY:-}
+      - PESAFLOW_HMAC_SECRET=${PESAFLOW_HMAC_SECRET:-}
+      - PESAFLOW_BILL_DESC=${PESAFLOW_BILL_DESC:-Uwezo Fund Repayment}
+      - PESAFLOW_SEND_STK=${PESAFLOW_SEND_STK:-false}
+      - PESAFLOW_CALLBACK_SECRET=${PESAFLOW_CALLBACK_SECRET:-}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://${WEB_DOMAIN:-localhost}}
+      - EXTERNAL_API_KEY=${EXTERNAL_API_KEY:-}
     env_file:
       - .env
     volumes:
+      - web_uploads:/app/web/uploads
       - ${MKCERT_CA_PATH:-/dev/null}:/tmp/mkcert-ca.pem:ro
     extra_hosts:
       - "${ADMIN_DOMAIN:-admin.localhost}:host-gateway"
@@ -28,7 +49,7 @@ services:
     expose:
       - "3000"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health", "||", "exit", "1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q UP"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -38,6 +59,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    networks:
+      - default
+      - lms
     depends_on:
       admin:
         condition: service_healthy
@@ -123,16 +147,38 @@ services:
       - "${HTTPS_PORT:-443}:443"
     volumes:
       - certbot_www:/var/www/certbot:rw
-      - certbot_conf:/etc/letsencrypt:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./certs:/etc/nginx/certs
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN:-localhost}
       - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}
+      - LMS_DOMAIN=${LMS_DOMAIN:-lms-staging.uwezo.go.ke}
       - WEB_ALLOWED_IPS=${WEB_ALLOWED_IPS:-}
       - ADMIN_ALLOWED_IPS=${ADMIN_ALLOWED_IPS:-}
+      - LMS_ALLOWED_IPS=${LMS_ALLOWED_IPS:-}
     depends_on:
       - admin
       - web
+
+  # Processes sync_queue → Drupal admin → LMS on a schedule
+  sync-worker:
+    image: curlimages/curl:8.5.0
+    restart: unless-stopped
+    environment:
+      - APP_URL=http://web:3000
+      - CRON_SECRET=${CRON_SECRET}
+      - SYNC_INTERVAL_MINUTES=${SYNC_INTERVAL_MINUTES:-5}
+    volumes:
+      - ./scripts/sync-applications-cron.sh:/sync-applications-cron.sh:ro
+    entrypoint: ["/bin/sh", "/sync-applications-cron.sh"]
+    depends_on:
+      web:
+        condition: service_started
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Certbot for Let's Encrypt SSL certificates
   certbot:
@@ -143,9 +189,15 @@ services:
       - certbot_conf:/etc/letsencrypt:rw
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+networks:
+  lms:
+    external: true
+    name: uwezo-network
+
 volumes:
   db_data:
   drupal_files:
   drupal_private:
   certbot_www:
   certbot_conf:
+  web_uploads:

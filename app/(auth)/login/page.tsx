@@ -67,7 +67,7 @@ export default async function Page({
                     className="text-primary"
                   >
                     <Underline variant="primary" className="text-primary">
-                      Use Email
+                      Use Emailing
                     </Underline>
                   </Link>
                   <span className="text-gray-400">|</span>

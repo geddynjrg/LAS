@@ -23,17 +23,24 @@ export default async function MemberConfirmationPage({ params }: PageProps) {
     throw new Error('Members data not found');
   }
 
-  // Calculate confirmation progress
-  const confirmedCount = application.members.members.filter(
+  const members = application.members.members;
+  const confirmedCount = members.filter(
     (member) => member.confirmation_status === 'confirmed',
   ).length;
-  const totalMembers = application.members.members.length;
-  const confirmationPercentage = totalMembers > 0 
-    ? Math.round((confirmedCount / totalMembers) * 100) 
-    : 0;
+  const totalMembers = members.length;
+  const respondedCount = members.filter(
+    (member) =>
+      member.confirmation_status &&
+      member.confirmation_status !== 'pending' &&
+      member.confirmation_status !== 'sent',
+  ).length;
+  const respondedPercentage =
+    totalMembers > 0
+      ? Math.round((respondedCount / totalMembers) * 100)
+      : 0;
 
-  // Check if 75% threshold is met
-  const isThresholdMet = confirmationPercentage >= 75;
+  // 75% of members must have responded (confirmed or declined) to proceed
+  const isThresholdMet = respondedPercentage >= 75;
 
   return (
     <>
@@ -45,7 +52,7 @@ export default async function MemberConfirmationPage({ params }: PageProps) {
             <p className="text-gray-600 mt-2">
               {isThresholdMet 
                 ? t('ConfirmationsPage.confirmMembersForm.threshold-met')
-                : t('ConfirmationsPage.confirmMembersForm.threshold-needed', { percentage: confirmationPercentage })
+                : t('ConfirmationsPage.confirmMembersForm.threshold-needed', { percentage: respondedPercentage })
               }
             </p>
           </div>

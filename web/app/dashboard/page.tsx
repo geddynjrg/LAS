@@ -1,8 +1,12 @@
 import { ApplicationStatus } from '@/components/application-status';
+import { LoanRepayModal } from '@/components/loan-repay-modal';
 import { MemberSummary } from '@/components/member-summary';
 import type { SiteInformationResponse } from '@/lib/api/schema/site-info/site-info.schema';
 import { getSiteInfo } from '@/lib/api/site-info';
 import { getHybridApplications } from '@/lib/data/applications-hybrid';
+import { isAuthenticationError } from '@/lib/errors/auth-error';
+import { getTrainingCertificateAvailability } from '@/lib/lms/training-certificate';
+import { redirect } from 'next/navigation';
 import {
   type GeneralDetails,
   type MembersData,
@@ -10,6 +14,7 @@ import {
 } from '@/lib/types/application.types';
 import {
   IconChevronRight,
+  IconDownload,
   IconFileText,
   IconMail,
   IconPhone,
@@ -40,7 +45,7 @@ interface StatusConfig {
   };
 }
 
-const STATUS_CONFIGS: Record<Status, StatusConfig> = {
+const STATUS_CONFIGS: Partial<Record<Status, StatusConfig>> = {
   UNSUBMITTED: {
     showStepDescription: false,
     showProcessTimeline: false,
@@ -134,6 +139,11 @@ const STATUS_CONFIGS: Record<Status, StatusConfig> = {
   },
 };
 
+const DEFAULT_STATUS_CONFIG: StatusConfig = {
+  showStepDescription: false,
+  showProcessTimeline: false,
+};
+
 const STEP_PATHS = [
   '/group-data', // Step 1
   '/members', // Step 2
@@ -225,8 +235,27 @@ const ProcessTimelineSection: FC<{
 
 export default async function Page() {
   const t = await getTranslations('DashboardPage');
-  // const data = await getApplications();
-  const data = await getHybridApplications();
+  let data;
+  try {
+    data = await getHybridApplications();
+  } catch (error) {
+    if (isAuthenticationError(error)) {
+      redirect('/login?callbackUrl=/dashboard');
+    }
+    throw error;
+  }
+
+  const certificateAvailability = await Promise.all(
+    data.map(async (application) => ({
+      applicationId: application.generalDetails.applicationId,
+      available: await getTrainingCertificateAvailability(
+        application.generalDetails.applicationId,
+      ),
+    })),
+  );
+  const certificateAvailableById = new Map(
+    certificateAvailability.map((entry) => [entry.applicationId, entry.available]),
+  );
 
   // Only fetch site info if we need it (no applications = empty state)
   let siteInfo: SiteInformationResponse | null = null;
@@ -240,12 +269,23 @@ export default async function Page() {
 
   return (
     <Container>
-      <div className="flex items-center gap-4 pb-6 pt-8">
-        <h2 className="typo-h2">{t('myApplications')}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-6 pt-8">
+        <div className="flex items-center gap-4">
+          <h2 className="typo-h2">{t('myApplications')}</h2>
 
-        <span className="typo-h6 text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full bg-neutral-500">
-          {data.length}
-        </span>
+          <span className="typo-h6 text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full bg-neutral-500">
+            {data.length}
+          </span>
+        </div>
+
+        {data.length > 0 && (
+          <Button size="lg" className="px-8" asChild>
+            <Link href="/apply/create">
+              <IconPlus className="mr-2 h-5 w-5" />
+              {t('emptyState.applyButton')}
+            </Link>
+          </Button>
+        )}
       </div>
 
       {data.length === 0 ? (
@@ -265,6 +305,11 @@ export default async function Page() {
               siteInfo={siteInfo}
               members={application.members}
               rejectionDetails={application.generalDetails.rejectionDetails}
+              certificateAvailable={
+                certificateAvailableById.get(
+                  application.generalDetails.applicationId,
+                ) ?? false
+              }
             />
           ))}
         </div>
@@ -354,6 +399,7 @@ interface GroupDetailsProps extends PropsWithChildren {
   siteInfo: SiteInformationResponse | null;
   members?: MembersData;
   rejectionDetails?: GeneralDetails['rejectionDetails'];
+  certificateAvailable?: boolean;
 }
 
 const GroupDetails: FC<GroupDetailsProps> = ({
@@ -365,66 +411,17 @@ const GroupDetails: FC<GroupDetailsProps> = ({
   members,
   rejectionDetails,
   applicationProgress,
+  certificateAvailable = false,
 }) => {
   const t = useTranslations('DashboardPage');
 
   const contact = siteInfo?.data?.site?.contact;
 
-  // Update the getApplicationUrl function in GroupDetails component
   const getApplicationUrl = () => {
-    console.log('DEBUG - Application Status:', status);
-    console.log('DEBUG - Application Progress:', applicationProgress);
-    console.log(
-      'DEBUG - Step URL calculation:',
-      getStepUrl(applicationId, applicationProgress),
-    );
-
-    // For UNSUBMITTED or DRAFT status, go to the current step
     if (status === 'UNSUBMITTED' || status === 'DRAFT') {
-      const stepUrl = getStepUrl(applicationId, applicationProgress);
-      console.log('DEBUG - Returning step URL:', stepUrl);
-      return stepUrl;
+      return getStepUrl(applicationId, applicationProgress);
     }
-    // For other statuses, go to dashboard view
-    console.log(
-      'DEBUG - Returning dashboard URL:',
-      `/dashboard/${applicationId}`,
-    );
     return `/dashboard/${applicationId}`;
-  };
-
-  // Also update the getStepUrl function to be more defensive
-  const getStepUrl = (
-    applicationId: string,
-    applicationProgress?: number,
-  ): string => {
-    console.log('getStepUrl called with:', {
-      applicationId,
-      applicationProgress,
-    });
-
-    // If no progress or invalid progress, default to first step
-    if (
-      !applicationProgress ||
-      applicationProgress <= 0 ||
-      applicationProgress > STEP_PATHS.length
-    ) {
-      console.log('Defaulting to first step');
-      return `/apply/${applicationId}/group-data`;
-    }
-
-    // Progress is 1-based, array is 0-based
-    const stepIndex = applicationProgress - 1;
-
-    // Ensure index is within bounds
-    if (stepIndex >= STEP_PATHS.length) {
-      console.log('Step index out of bounds, defaulting to last step');
-      return `/apply/${applicationId}${STEP_PATHS[STEP_PATHS.length - 1]}`;
-    }
-
-    const url = `/apply/${applicationId}${STEP_PATHS[stepIndex]}`;
-    console.log('Calculated URL:', url);
-    return url;
   };
 
   const getButtonText = () => {
@@ -464,6 +461,30 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         <Button variant="secondary" className="w-full text-neutral-700" asChild>
           <Link href={getApplicationUrl()}>{getButtonText()}</Link>
         </Button>
+
+        {certificateAvailable && (
+          <Button
+            variant="secondary"
+            className="mt-3 w-full text-neutral-700"
+            asChild
+          >
+            <a
+              href={`/api/applications/${applicationId}/training-certificate`}
+            >
+              <IconDownload className="mr-2 inline size-4" />
+              {t('trainingCertificate.download')}
+            </a>
+          </Button>
+        )}
+
+        {(status === 'APPROVED' || status === 'DISBURSED') && loanAmount ? (
+          <div className="mt-3">
+            <LoanRepayModal
+              applicationId={applicationId}
+              loanAmount={loanAmount}
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-4 space-y-2 border-t border-neutral-400 pt-4">
@@ -475,8 +496,14 @@ const GroupDetails: FC<GroupDetailsProps> = ({
       </div>
 
       {/* Dynamic Step Description and Process Timeline */}
-      <StepDescriptionSection config={STATUS_CONFIGS[status]} t={t} />
-      <ProcessTimelineSection config={STATUS_CONFIGS[status]} t={t} />
+      <StepDescriptionSection
+        config={STATUS_CONFIGS[status] ?? DEFAULT_STATUS_CONFIG}
+        t={t}
+      />
+      <ProcessTimelineSection
+        config={STATUS_CONFIGS[status] ?? DEFAULT_STATUS_CONFIG}
+        t={t}
+      />
 
       {contact && (
         <div className="mt-4 grid gap-4 border-t border-neutral-400 py-4">

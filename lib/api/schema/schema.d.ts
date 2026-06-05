@@ -387,6 +387,7 @@ export interface paths {
             | 'submitted'
             | 'under_review'
             | 'approved'
+            | 'training'
             | 'rejected'
             | 'disbursed'
             | 'closed';
@@ -1352,6 +1353,7 @@ export interface components {
         | 'submitted'
         | 'under_review'
         | 'approved'
+        | 'training'
         | 'rejected'
         | 'disbursed'
         | 'closed';
@@ -1552,6 +1554,7 @@ export interface components {
         | 'approved_by_constituency'
         | 'under_review'
         | 'approved'
+        | 'training'
         | 'rejected'
         | 'disbursed'
         | 'closed';

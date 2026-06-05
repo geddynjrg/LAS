@@ -68,6 +68,30 @@ export const STATUS_CONFIG: Record<ApplicationStatus, StatusConfig> = {
     label: 'Approved',
     badgeVariant: 'success',
   },
+  [ApplicationStatus.PENDING_SECRETARIAT_REVIEW]: {
+    local: ApplicationStatus.PENDING_SECRETARIAT_REVIEW,
+    api: 'pending_secretariat_review',
+    label: 'Pending Secretariat Review',
+    badgeVariant: 'info',
+  },
+  [ApplicationStatus.PENDING_FUND_TRANSFER]: {
+    local: ApplicationStatus.PENDING_FUND_TRANSFER,
+    api: 'pending_fund_transfer',
+    label: 'Pending Fund Transfer',
+    badgeVariant: 'info',
+  },
+  [ApplicationStatus.PENDING_FINAL_DISBURSEMENT]: {
+    local: ApplicationStatus.PENDING_FINAL_DISBURSEMENT,
+    api: 'pending_final_disbursement',
+    label: 'Pending Final Disbursement',
+    badgeVariant: 'info',
+  },
+  [ApplicationStatus.TRAINING]: {
+    local: ApplicationStatus.TRAINING,
+    api: 'training',
+    label: 'Training',
+    badgeVariant: 'info',
+  },
   [ApplicationStatus.REJECTED]: {
     local: ApplicationStatus.REJECTED,
     api: 'rejected',
@@ -79,6 +103,12 @@ export const STATUS_CONFIG: Record<ApplicationStatus, StatusConfig> = {
     api: 'disbursed',
     label: 'Disbursed',
     badgeVariant: 'success',
+  },
+  [ApplicationStatus.DISBURSEMENT_FAILED]: {
+    local: ApplicationStatus.DISBURSEMENT_FAILED,
+    api: 'disbursement_failed',
+    label: 'Disbursement Failed',
+    badgeVariant: 'danger',
   },
   [ApplicationStatus.CLOSED]: {
     local: ApplicationStatus.CLOSED,

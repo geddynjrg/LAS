@@ -68,6 +68,26 @@ class ApplicationStatusConstants {
   const TRAINING = 'training';
 
   /**
+   * Awaiting Head of Secretariat review after HQ approval.
+   */
+  const PENDING_SECRETARIAT_REVIEW = 'pending_secretariat_review';
+
+  /**
+   * Fund transfer from constituency to HQ authorized.
+   */
+  const PENDING_FUND_TRANSFER = 'pending_fund_transfer';
+
+  /**
+   * Training complete; awaiting final disbursement authorization.
+   */
+  const PENDING_FINAL_DISBURSEMENT = 'pending_final_disbursement';
+
+  /**
+   * Disbursement attempted but failed (e.g. cheque not collected).
+   */
+  const DISBURSEMENT_FAILED = 'disbursement_failed';
+
+  /**
    * Get all valid status values as an array.
    *
    * @return array
@@ -83,8 +103,12 @@ class ApplicationStatusConstants {
       self::UNDER_REVIEW,
       self::APPROVED,
       self::REJECTED,
+      self::PENDING_SECRETARIAT_REVIEW,
+      self::PENDING_FUND_TRANSFER,
+      self::PENDING_FINAL_DISBURSEMENT,
       self::DISBURSED,
       self::TRAINING,
+      self::DISBURSEMENT_FAILED,
       self::CLOSED,
     ];
   }
@@ -105,8 +129,12 @@ class ApplicationStatusConstants {
       self::UNDER_REVIEW => t('Under Review'),
       self::APPROVED => t('Approved'),
       self::REJECTED => t('Rejected'),
+      self::PENDING_SECRETARIAT_REVIEW => t('Pending secretariat review'),
+      self::PENDING_FUND_TRANSFER => t('Pending fund transfer'),
+      self::PENDING_FINAL_DISBURSEMENT => t('Pending final disbursement'),
       self::DISBURSED => t('Disbursed'),
       self::TRAINING => t('Training'),
+      self::DISBURSEMENT_FAILED => t('Disbursement failed'),
       self::CLOSED => t('Closed'),
     ];
   }

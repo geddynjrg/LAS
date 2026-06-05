@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse, userAgent } from 'next/server';
 
 const protectedRoutes = ['/dashboard', '/apply', '/admin'];
 const adminRoutes = ['/admin'];
-const publicRoutes = ['/login', '/signup', '/reset'];
+const publicRoutes = ['/login', '/signup', '/reset', '/payment-success'];
 
 const loggedInRedirect = '/dashboard';
 const loggedOutRedirect = '/login';
@@ -85,11 +85,16 @@ export async function middleware(request: NextRequest) {
   // Redirect api requests to api route with correct headers
   // Exclude internal Next.js API routes
   const internalApiRoutes = [
+    '/api/health',
     '/api/profile',
     '/api/logout',
     '/api/upload',
     '/api/admin/sync-queue',
     '/api/cron/sync-applications',
+    '/api/cron/sync-status-from-drupal',
+    '/api/geocode',
+    '/api/payments',
+    '/api/applications',
     '/api/test',
   ];
   const isInternalRoute = internalApiRoutes.some((route) =>

@@ -6,19 +6,23 @@ import {
   loanConditionsDataSchema,
 } from '@/app/apply/[id]/loan-conditions/loan-conditions-schema';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
+import {
+  getBranchesForBank,
+  getUniqueBanks,
+  loadKenyaBankBranches,
+  type BankBranch,
+} from '@/lib/data/kenya-bank-branches';
 import { LoanConditionsData as ApplicationLoanConditionsData } from '@/lib/types/application.types';
-import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
 import { Container } from '@workspace/ui/components/container';
 import { Field, Form } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
 import { RadioGroup } from '@workspace/ui/components/radio-group';
+import { SearchInput } from '@workspace/ui/components/search-input';
 import { Slider } from '@workspace/ui/components/slider';
-import { Card } from '@workspace/ui/components/uwezo/card';
 import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { Content } from 'next/font/google';
-import { type FC, useEffect, useState } from 'react';
+import { type FC, useEffect, useMemo, useState } from 'react';
 
 export interface LoanConditionsDataProps {
   id: string;
@@ -60,6 +64,56 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
     keyof typeof institutionTypes | undefined
   >(state.values?.institutionType as keyof typeof institutionTypes);
 
+  const [bankBranches, setBankBranches] = useState<BankBranch[]>([]);
+  const [banksLoading, setBanksLoading] = useState(false);
+  const [selectedBank, setSelectedBank] = useState<string | undefined>(
+    state.values?.bankName,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    setBanksLoading(true);
+    loadKenyaBankBranches()
+      .then((rows) => {
+        if (!cancelled) {
+          setBankBranches(rows);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setBankBranches([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setBanksLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (state.values?.bankName) {
+      setSelectedBank(state.values.bankName);
+    }
+  }, [state.values?.bankName]);
+
+  const bankOptions = useMemo(
+    () =>
+      getUniqueBanks(bankBranches).map((bank) => ({
+        label: bank,
+        value: bank,
+      })),
+    [bankBranches],
+  );
+
+  const branchOptions = useMemo(
+    () => getBranchesForBank(bankBranches, selectedBank || ''),
+    [bankBranches, selectedBank],
+  );
+
   const loanTypes = {
     Endeleza: {
       title: 'Endeleza',
@@ -98,6 +152,10 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
       },
     },
   };
+
+  const isBankInstitution =
+    institutionType === institutionTypes.Bank.title ||
+    state.values?.institutionType === institutionTypes.Bank.title;
 
   const maxAmount = selectedType
     ? loanTypes[selectedType]?.maxLoanAmount
@@ -281,22 +339,40 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
               state={state}
               name="bankName"
               label={
-                institutionType === institutionTypes.Bank.title
+                isBankInstitution
                   ? t('ApplicationDetailsPage.loan.bankName')
                   : t('ApplicationDetailsPage.loan.saccoName')
               }
               required
-              control={(props) => (
-                <Input
-                  {...props}
-                  defaultValue={props.defaultValue ?? undefined}
-                  placeholder={
-                    institutionType === institutionTypes.Bank.title
-                      ? t('ApplicationDetailsPage.loan.enterBankName')
-                      : t('ApplicationDetailsPage.loan.enterSaccoName')
-                  }
-                />
-              )}
+              control={(props) =>
+                isBankInstitution ? (
+                  <SearchInput
+                    {...props}
+                    defaultValue={
+                      props.defaultValue ?? state.values?.bankName
+                    }
+                    placeholder={t(
+                      'ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch',
+                    )}
+                    options={bankOptions}
+                    isLoading={banksLoading}
+                    onValueChange={(value) => {
+                      setSelectedBank(value);
+                    }}
+                    onValueSelect={(value) => {
+                      setSelectedBank(value);
+                    }}
+                  />
+                ) : (
+                  <Input
+                    {...props}
+                    defaultValue={props.defaultValue ?? undefined}
+                    placeholder={t(
+                      'ApplicationDetailsPage.loan.enterSaccoName',
+                    )}
+                  />
+                )
+              }
             />
           )}
 
@@ -305,7 +381,22 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             name="bankBranch"
             label={t('ApplicationDetailsPage.loan.bankBranch')}
             required
-            control={(props) => <Input {...props} />}
+            control={(props) =>
+              isBankInstitution ? (
+                <SearchInput
+                  {...props}
+                  defaultValue={props.defaultValue ?? state.values?.bankBranch}
+                  placeholder={t(
+                    'ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch',
+                  )}
+                  options={branchOptions}
+                  isLoading={banksLoading}
+                  disabled={!selectedBank && !state.values?.bankName}
+                />
+              ) : (
+                <Input {...props} />
+              )
+            }
           />
 
           <Field

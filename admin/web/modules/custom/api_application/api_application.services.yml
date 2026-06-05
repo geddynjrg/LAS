@@ -83,11 +83,35 @@ services:
     tags:
       - { name: rest_resource }
 
+  plugin.rest.application_payment_success_sms:
+    class: Drupal\api_application\Plugin\rest\resource\ApplicationPaymentSuccessSmsResource
+    arguments:
+      - []
+      - 'application_payment_success_sms'
+      - []
+      - ['json']
+      - '@logger.factory'
+      - '@api_application.web_sms_confirmation'
+    tags:
+      - { name: rest_resource }
+
   plugin.rest.web_member_confirmation:
     class: Drupal\api_application\Plugin\rest\resource\WebMemberConfirmationResource
     arguments:
       - []
       - 'web_member_confirmation'
+      - []
+      - ['json']
+      - '@logger.factory'
+      - '@api_application.web_sms_confirmation'
+    tags:
+      - { name: rest_resource }
+
+  plugin.rest.member_confirmation_otp:
+    class: Drupal\api_application\Plugin\rest\resource\MemberConfirmationOtpResource
+    arguments:
+      - []
+      - 'member_confirmation_otp'
       - []
       - ['json']
       - '@logger.factory'

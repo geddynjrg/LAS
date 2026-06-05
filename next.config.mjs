@@ -1,6 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin('./web/i18n/request.ts');
 
 const nextConfig = {
   transpilePackages: ['@workspace/ui'],
@@ -20,6 +20,13 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '30mb',
     },
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      poll: 1000,       // Check for changes every second
+      aggregateTimeout: 300,
+    };
+    return config;
   },
 };
 

@@ -38,6 +38,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   className?: string;
   onValueChange?: (value: string) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   ref?: React.Ref<HTMLInputElement>;
   // ARIA attributes for accessibility
   role?: string;

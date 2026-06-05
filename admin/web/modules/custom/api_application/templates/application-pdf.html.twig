@@ -263,7 +263,7 @@
             </div>
             <div class="info-item">
                 <div class="label">{{ 'Nature of Group'|t }}</div>
-                <div class="value">{{ application.nature_of_group ?: 'Not provided'|t }}</div>
+                <div class="value">{{ application.nature_of_group_label ?: application.nature_of_group ?: 'Not provided'|t }}</div>
             </div>
         </div>
 
@@ -306,6 +306,32 @@
                 <p>{{ application.other_activities }}</p>
             </div>
         {% endif %}
+
+        {% if application.group_registration_certificate or application.list_of_members_certificate or application.group_credit_history_files %}
+            <div class="info-subsection">
+                <h3>{{ 'Uploaded Documents'|t }}</h3>
+                <div class="info-grid">
+                    {% if application.group_registration_certificate %}
+                        <div class="info-item">
+                            <div class="label">{{ 'Group Registration Certificate'|t }}</div>
+                            <div class="value">{{ application.group_registration_certificate.filename }} ({{ application.group_registration_certificate.size }})</div>
+                        </div>
+                    {% endif %}
+                    {% if application.list_of_members_certificate %}
+                        <div class="info-item">
+                            <div class="label">{{ 'List of Members on Certificate'|t }}</div>
+                            <div class="value">{{ application.list_of_members_certificate.filename }} ({{ application.list_of_members_certificate.size }})</div>
+                        </div>
+                    {% endif %}
+                    {% for credit_history in application.group_credit_history_files %}
+                        <div class="info-item">
+                            <div class="label">{{ 'Group Credit History'|t }}{% if application.group_credit_history_files|length > 1 %} {{ loop.index }}{% endif %}</div>
+                            <div class="value">{{ credit_history.filename }} ({{ credit_history.size }})</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     </section>
 
     {# Group Members Section #}
@@ -322,7 +348,7 @@
                         <h4>
                             {{ member.name }}
                             <span class="confirmation-badge confirmation-{{ member.confirmation_status }}">
-                                {{ member.confirmation_status|replace({_: ' '})|title }}
+                                {{ confirmation_status_labels[member.confirmation_status] ?? member.confirmation_status|replace({_: ' '})|title }}
                             </span>
                         </h4>
                         <div class="info-grid">
@@ -341,6 +367,10 @@
                             <div class="info-item">
                                 <div class="label">{{ 'Phone:'|t }}</div>
                                 <div class="value">{{ member.phone_number }}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="label">{{ 'Requires SMS Confirmation:'|t }}</div>
+                                <div class="value">{{ member.requires_confirmation ? 'Yes'|t : 'No'|t }}</div>
                             </div>
                             {% if member.is_pwd %}
                                 <div class="info-item">
@@ -386,7 +416,7 @@
         <div class="info-grid">
             <div class="info-item">
                 <div class="label">{{ 'Nature of Business'|t }}</div>
-                <div class="value">{{ application.nature_of_business ?: 'Not provided'|t }}</div>
+                <div class="value">{{ application.nature_of_business_label ?: application.nature_of_business ?: 'Not provided'|t }}</div>
             </div>
             <div class="info-item">
                 <div class="label">{{ 'Years in Operation'|t }}</div>
@@ -396,7 +426,7 @@
                 <div class="label">{{ 'Average Monthly Income'|t }}</div>
                 <div class="value">{{ application.average_income ? 'KES ' ~ application.average_income|number_format : 'Not provided'|t }}</div>
             </div>
-            {% if application.balance %}
+            {% if application.average_income or application.total_expenses %}
                 <div class="info-item">
                     <div class="label">{{ 'Monthly Balance'|t }}</div>
                     <div class="value">

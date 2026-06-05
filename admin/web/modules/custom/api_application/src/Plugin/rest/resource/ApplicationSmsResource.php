@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Plugin\rest\resource;
 
+use Drupal\Core\Database\Database;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ApplicationSmsResource extends ResourceBase {
 
   /**
+   * Supported SMS trigger types.
+   */
+  protected const TRIGGER_MEMBER_CONFIRMATION = 'member_confirmation';
+
+  protected const TRIGGER_SUBMISSION_SUCCESS = 'submission_success';
+
+  /**
    * The Web SMS confirmation service.
    *
    * @var \Drupal\api_application\Service\WebSmsConfirmationService
@@ -37,7 +45,7 @@ class ApplicationSmsResource extends ResourceBase {
     $plugin_definition,
     array $serializer_formats,
     $logger,
-    WebSmsConfirmationService $web_sms_confirmation_service
+    WebSmsConfirmationService $web_sms_confirmation_service,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
     $this->webSmsConfirmationService = $web_sms_confirmation_service;
@@ -61,15 +69,28 @@ class ApplicationSmsResource extends ResourceBase {
    * Responds to POST requests.
    */
   public function post(Request $request, $application = NULL) {
-    \Drupal::logger('api_application')->info("=== SMS ENDPOINT STARTED ===");
-    \Drupal::logger('api_application')->info("Method: POST, Application: @app", ["@app" => $application ?? "NULL"]);
+    $payload = json_decode($request->getContent(), TRUE) ?: [];
+    $trigger = $payload['trigger'] ?? self::TRIGGER_MEMBER_CONFIRMATION;
 
-    // Rate limiting check
-    if (!$this->checkRateLimit($application)) {
-        return new ResourceResponse([
-            "error" => "Rate limit exceeded",
-            "message" => "Please wait before sending more SMS",
-        ], 429);
+    \Drupal::logger('api_application')->info("=== SMS ENDPOINT STARTED ===");
+    \Drupal::logger('api_application')->info("Method: POST, Application: @app, Trigger: @trigger", [
+      "@app" => $application ?? "NULL",
+      "@trigger" => $trigger,
+    ]);
+
+    if (!in_array($trigger, [self::TRIGGER_MEMBER_CONFIRMATION, self::TRIGGER_SUBMISSION_SUCCESS], TRUE)) {
+      return new ResourceResponse([
+        "error" => "invalid_trigger",
+        "message" => "Unsupported SMS trigger. Use member_confirmation or submission_success.",
+      ], 400);
+    }
+
+    // Rate limiting check (separate bucket per trigger type).
+    if (!$this->checkRateLimit($application, $trigger)) {
+      return new ResourceResponse([
+        "error" => "Rate limit exceeded",
+        "message" => "Please wait before sending more SMS",
+      ], 429);
     }
 
     try {
@@ -81,7 +102,6 @@ class ApplicationSmsResource extends ResourceBase {
         ], 400);
       }
 
-      // Step 1: Verify the application exists in Web database
       \Drupal::logger('api_application')->info("Step 1: Verifying application exists: @app", ["@app" => $application]);
       $applicationExists = $this->verifyApplicationExists($application);
 
@@ -93,37 +113,47 @@ class ApplicationSmsResource extends ResourceBase {
         ], 404);
       }
 
-      \Drupal::logger('api_application')->info("Step 2: Calling sendConfirmationSmsToAllMembers for application: @app", ["@app" => $application]);
-
-      // Step 2: Use the Web SMS confirmation service to send to all members
-      $results = $this->webSmsConfirmationService->sendConfirmationSmsToAllMembers($application);
+      if ($trigger === self::TRIGGER_SUBMISSION_SUCCESS) {
+        \Drupal::logger('api_application')->info("Step 2: Sending submission success SMS for application: @app", ["@app" => $application]);
+        $results = $this->webSmsConfirmationService->sendSubmissionSuccessSmsToAllMembers($application);
+      }
+      else {
+        \Drupal::logger('api_application')->info("Step 2: Sending member confirmation SMS for application: @app", ["@app" => $application]);
+        $results = $this->webSmsConfirmationService->sendConfirmationSmsToAllMembers($application);
+      }
 
       \Drupal::logger('api_application')->info("SMS send result: @success success, @failed failed", [
         "@success" => $results["success"],
-        "@failed" => $results["failed"]
+        "@failed" => $results["failed"],
       ]);
 
       $sent = $results["success"];
       $failed = $results["failed"];
       $total = $sent + $failed;
+      $disabled = !empty($results['disabled']);
 
-      $isSuccess = ($sent > 0 || ($sent === 0 && $failed === 0));
+      $isSuccess = $disabled || $sent > 0 || ($sent === 0 && $failed === 0);
 
       $statusType = 'success';
-      if ($sent > 0 && $failed > 0) {
-          $statusType = 'partial'; // 3 sent, 1 failed
-      } elseif ($sent === 0 && $failed > 0) {
-          $statusType = 'error';   // 0 sent, 1 failed
-      } elseif ($sent === 0 && $failed === 0) {
-          $statusType = 'info';    // Already up to date
+      if ($disabled) {
+        $statusType = 'disabled';
+      }
+      elseif ($sent > 0 && $failed > 0) {
+        $statusType = 'partial';
+      }
+      elseif ($sent === 0 && $failed > 0) {
+        $statusType = 'error';
+      }
+      elseif ($sent === 0 && $failed === 0) {
+        $statusType = 'info';
       }
 
-      // response data
       $responseData = [
         "success" => $isSuccess,
-        "message" => $this->formatSmsMessage($sent, $failed),
+        "message" => $this->formatSmsMessage($sent, $failed, $trigger, $disabled),
         "data" => [
           "application_id" => $application,
+          "trigger" => $trigger,
           "sms_sent" => $sent,
           "sms_failed" => $failed,
           "total_attempted" => $total,
@@ -132,13 +162,14 @@ class ApplicationSmsResource extends ResourceBase {
         ],
       ];
 
-      $statusCode = $results["success"] > 0 ? 200 : 500;
+      $statusCode = ($sent > 0 || $sent === 0 && $failed === 0 || $disabled) ? 200 : 500;
 
       \Drupal::logger('api_application')->info("SMS endpoint completed with status: @status", ["@status" => $statusCode]);
 
       return new ResourceResponse($responseData, $statusCode);
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       \Drupal::logger('api_application')->error("SMS endpoint exception: @message - @trace", [
         "@message" => $e->getMessage(),
         "@trace" => $e->getTraceAsString(),
@@ -154,59 +185,78 @@ class ApplicationSmsResource extends ResourceBase {
   /**
    * Formats a user-friendly message based on SMS dispatch results.
    */
-  protected function formatSmsMessage($sent, $failed) {
-      // Case 1: No members needed notification (All already consented/sent)
+  protected function formatSmsMessage($sent, $failed, $trigger, $disabled = FALSE) {
+    if ($disabled) {
+      return "Submission success SMS notifications are disabled in admin settings.";
+    }
+
+    if ($trigger === self::TRIGGER_SUBMISSION_SUCCESS) {
       if ($sent === 0 && $failed === 0) {
-          return "All eligible members have already been notified. No new SMS were required at this time.";
+        return "No members with phone numbers were found for submission notification.";
       }
 
-      // Case 2: Perfect Success
       if ($sent > 0 && $failed === 0) {
-          return "Confirmation SMS sent to all pending members successfully.";
+        return "Submission success SMS sent to all group members.";
       }
 
-      // Case 3: Partial Success (The scenario where 3 sent and 1 failed)
       if ($sent > 0 && $failed > 0) {
-          return "Successfully notified $sent members, but $failed attempts failed. Please verify the phone numbers of members marked as 'Failed'.";
+        return "Submission success SMS sent to $sent members, but $failed attempts failed.";
       }
 
-      // Case 4: Total Failure (0 sent, >0 failed)
       if ($sent === 0 && $failed > 0) {
-          return "Failed to send SMS to $failed members. Please check their contact details and try again.";
+        return "Failed to send submission success SMS to $failed members.";
       }
 
-      // Fallback
-      return "An unexpected error occurred while dispatching SMS notifications.";
+      return "An unexpected error occurred while dispatching submission success SMS.";
+    }
+
+    if ($sent === 0 && $failed === 0) {
+      return "All eligible members have already been notified. No new SMS were required at this time.";
+    }
+
+    if ($sent > 0 && $failed === 0) {
+      return "Confirmation SMS sent to all pending members successfully.";
+    }
+
+    if ($sent > 0 && $failed > 0) {
+      return "Successfully notified $sent members, but $failed attempts failed. Please verify the phone numbers of members marked as 'Failed'.";
+    }
+
+    if ($sent === 0 && $failed > 0) {
+      return "Failed to send SMS to $failed members. Please check their contact details and try again.";
+    }
+
+    return "An unexpected error occurred while dispatching SMS notifications.";
   }
 
   /**
    * Check rate limiting for application.
-  */
-  protected function checkRateLimit($applicationId) {
-      $cache = \Drupal::cache();
-      $key = 'sms_rate_limit:' . $applicationId;
+   */
+  protected function checkRateLimit($applicationId, $trigger) {
+    $cache = \Drupal::cache();
+    $key = 'sms_rate_limit:' . $trigger . ':' . $applicationId;
 
-      if ($cache->get($key)) {
-          return false;
-      }
+    if ($cache->get($key)) {
+      return FALSE;
+    }
 
-      // set 2-minute rate limit
-      $cache->set($key, true, time() + 120);
-      return true;
+    // Set 2-minute rate limit per trigger type.
+    $cache->set($key, TRUE, time() + 120);
+    return TRUE;
   }
 
   /**
    * Verify that an application exists in the Web database.
-   *
-   * @param string $applicationId
-   *   The application ID.
-   *
-   * @return bool
-   *   TRUE if application exists, FALSE otherwise.
    */
   protected function verifyApplicationExists($applicationId) {
     try {
+      \Drupal::logger('api_application')->info("Verifying application ID: '@id'", ['@id' => $applicationId]);
       $db = $this->getWebDatabase();
+
+      if (!$db) {
+        \Drupal::logger('api_application')->error("Web DB connection is NULL");
+        return FALSE;
+      }
 
       $application = $db->select('applications', 'a')
         ->fields('a', ['id'])
@@ -217,33 +267,27 @@ class ApplicationSmsResource extends ResourceBase {
 
       return !empty($application);
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       \Drupal::logger('api_application')->error("Error verifying application: @error", ["@error" => $e->getMessage()]);
-      return false;
+      return FALSE;
     }
   }
 
   /**
    * Get Web database connection.
-   *
-   * @return \Drupal\Core\Database\Connection
-   *   Database connection.
    */
   protected function getWebDatabase() {
     try {
-      // Attempt to get the connection defined in settings.php
-      return \Drupal\Core\Database\Database::getConnection('default', 'web');
+      return Database::getConnection('default', 'web');
     }
     catch (\Exception $e) {
-      // Log the error to Drupal's watchdog logs
       \Drupal::logger('api_application')->error('Web Database Connection Failed: @message', [
         '@message' => $e->getMessage(),
       ]);
 
-      // Optionally: print to the screen for immediate debugging (Dev only)
-      // dump($e->getMessage());
-
       return NULL;
     }
   }
+
 }

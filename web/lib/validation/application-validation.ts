@@ -1,4 +1,8 @@
 // lib/validation/application-validation.ts
+import {
+  isLimitedMemberPosition,
+  limitedMemberPositionLabel,
+} from '@/app/apply/[id]/members/members-validation';
 import { ApplicationData, Member } from '@/lib/types/application.types';
 import type { ValidFile } from '@workspace/ui/lib/zod'; 
 
@@ -51,7 +55,6 @@ export function validateApplicationForSubmission(application: ApplicationData): 
     // Check background
     if (!groupData.background?.purposeOfTheGroup?.length) missingFields.push('Purpose of Group');
     if (!groupData.background?.keyActivitiesOfTheGroup?.length) missingFields.push('Key Activities');
-    if (!groupData.background?.groupCreditHistory?.length) missingFields.push('Group Credit History');
     
     // Check location
     if (!groupData.location?.countyOfOperation) missingFields.push('County');
@@ -76,7 +79,6 @@ export function validateApplicationForSubmission(application: ApplicationData): 
       if (!member.nationalIdCode) missingFields.push(`Member ${memberNumber} - National ID`);
       if (!member.phoneNumber) missingFields.push(`Member ${memberNumber} - Phone Number`);
       if (!member.type) missingFields.push(`Member ${memberNumber} - Position`);
-      if (!member.economicActivity) missingFields.push(`Member ${memberNumber} - Economic Activity`);
       if (!isValidFileObject(member.photoOfId)) missingFields.push(`Member ${memberNumber} - Photo ID`);
       if (!member.gender) missingFields.push(`Member ${memberNumber} - Gender`);
     });
@@ -105,6 +107,24 @@ export function validateApplicationForSubmission(application: ApplicationData): 
     if (consentedCount < requiredConsent) {
       errors.push(`Only ${consentedCount} of ${requiredConsent} required members have consented to the loan`);
     }
+
+    // Leadership positions may only be assigned once per application
+    const limitedPositionCounts = new Map<string, number>();
+    members.forEach((member: Member) => {
+      if (!member.type || !isLimitedMemberPosition(member.type)) {
+        return;
+      }
+      const key = member.type.trim().toLowerCase();
+      limitedPositionCounts.set(key, (limitedPositionCounts.get(key) ?? 0) + 1);
+    });
+    limitedPositionCounts.forEach((count, positionKey) => {
+      if (count > 1) {
+        const label = limitedMemberPositionLabel(positionKey);
+        errors.push(
+          `The ${label} position can only be assigned to one member.`,
+        );
+      }
+    });
 
     // Check for duplicate phone numbers or national IDs
     const phoneNumbers = new Set<string>();

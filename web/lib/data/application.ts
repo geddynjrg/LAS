@@ -9,11 +9,11 @@ import {
 } from '@/generated/prisma';
 import { getProfile } from '@/lib/api/profile';
 import { addToSyncQueue } from '@/lib/api/sync.service';
-import { handlePrismaError, prisma } from '@/lib/db/prisma';
 import {
   AuthenticationError,
   isAuthenticationError,
 } from '@/lib/errors/auth-error';
+import { handlePrismaError, prisma } from '@/lib/db/prisma';
 import { decodeJwtPayload } from '@/lib/jwt-utils';
 import { getSession } from '@/lib/session';
 import type {
@@ -29,6 +29,20 @@ import { createApplicationId } from '@/lib/util';
 import { isFileUpload } from '@workspace/ui/lib/utils';
 
 // Helper function to safely store JSON data - prevents double encoding
+function safeParseJsonField<T>(value: unknown, fallback: T): T {
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return fallback;
+    }
+  }
+  return value as T;
+}
+
 function safeJsonStringify(data: any): string {
   // If it's already a string, check if it's valid JSON
   if (typeof data === 'string') {
@@ -50,81 +64,152 @@ function normalizePhone(phone: string | null | undefined): string | null {
   return phone.replace(/\s+/g, '');
 }
 
-// Helper function to get the current authenticated user
-export async function getCurrentUser() {
-  const session = await getSession();
-  if (!session) {
-    throw new Error('Unauthorized');
+function resolveDrupalUserIdFromSession(session: string): string {
+  if (session.startsWith('ecitizen|')) {
+    const uidStr = session.split('|')[1];
+    if (!uidStr || isNaN(Number(uidStr)) || Number(uidStr) <= 0) {
+      throw new AuthenticationError('Invalid eCitizen session token');
+    }
+    return uidStr;
   }
 
+  const tokenPayload = decodeJwtPayload(session);
+  const uid = tokenPayload?.uid;
+
+  if (uid === undefined || uid === null || uid === '') {
+    throw new AuthenticationError('No valid Drupal user ID found in JWT token');
+  }
+
+  const numericUid = typeof uid === 'number' ? uid : Number(uid);
+  if (!Number.isFinite(numericUid) || numericUid <= 0) {
+    throw new AuthenticationError('No valid Drupal user ID found in JWT token');
+  }
+
+  return String(numericUid);
+}
+
+// Helper function to get the current authenticated user
+export async function getCurrentUser() {
   try {
-    // Decode JWT to get Drupal user ID
-    const tokenPayload = decodeJwtPayload(session);
-    const drupalUserId = tokenPayload?.uid;
-
-    if (!drupalUserId) {
-      throw new Error('No Drupal user ID found in session token');
+    const session = await getSession();
+    if (!session) {
+      throw new AuthenticationError('Unauthorized');
     }
 
-    const profile = await getProfile();
-    const profileData = profile.data;
+    const drupalUserId = resolveDrupalUserIdFromSession(session);
 
-    if (!profileData) {
-      throw new Error('No profile data found');
+    let profileData:
+      | {
+          email?: string;
+          phoneNumber?: string;
+          name?: string;
+        }
+      | undefined;
+
+    try {
+      const profile = await getProfile();
+      profileData = profile.data;
+    } catch (error) {
+      console.warn(
+        '[getCurrentUser] Profile fetch failed, using local user record:',
+        error,
+      );
     }
 
-    // Helper function to determine identifier type based on priority
-    const getIdentifierType = (): 'EMAIL' | 'PHONE' | 'NAME' => {
-      if (profileData.email) return 'EMAIL';
-      if (profileData.phoneNumber) return 'PHONE';
-      if (profileData.name) return 'NAME';
-      throw new Error('No valid user identifier found in profile');
-    };
+    let identifierType: 'EMAIL' | 'PHONE' | 'NAME' = 'NAME';
+    if (profileData?.email) {
+      identifierType = 'EMAIL';
+    } else if (profileData?.phoneNumber) {
+      identifierType = 'PHONE';
+    } else if (profileData?.name) {
+      identifierType = 'NAME';
+    }
 
-    const identifierType = getIdentifierType();
+    const normalizedPhone = normalizePhone(profileData?.phoneNumber);
+    const normalizedEmail = profileData?.email?.trim() || null;
+    const displayName =
+      profileData?.name ||
+      profileData?.email ||
+      profileData?.phoneNumber ||
+      `user_${drupalUserId}`;
 
-    // Find or create user by Drupal user ID
     let user = await prisma.user.findUnique({
       where: { drupalUserId },
     });
 
-    // Create new user if not found
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          drupalUserId,
-          email: profileData.email,
-          phoneNumber: normalizePhone(profileData.phoneNumber),
-          name:
-            profileData.name ||
-            profileData.email ||
-            profileData.phoneNumber ||
-            'Unknown User',
-          identifierType: identifierType,
-        },
+    if (!user && normalizedPhone) {
+      user = await prisma.user.findUnique({
+        where: { phoneNumber: normalizedPhone },
       });
-    } else {
-      // Update existing user with any new information from profile
-      const updateData: any = {};
+    }
 
-      // Always set drupalUserId if missing (migration case)
+    if (!user && normalizedEmail) {
+      user = await prisma.user.findFirst({
+        where: { email: normalizedEmail },
+      });
+    }
+
+    if (!user) {
+      try {
+        user = await prisma.user.create({
+          data: {
+            drupalUserId,
+            email: normalizedEmail,
+            phoneNumber: normalizedPhone,
+            name: displayName,
+            identifierType,
+          },
+        });
+      } catch (error) {
+        if (
+          error &&
+          typeof error === 'object' &&
+          'code' in error &&
+          error.code === 'P2002' &&
+          normalizedPhone
+        ) {
+          user = await prisma.user.findUnique({
+            where: { phoneNumber: normalizedPhone },
+          });
+        }
+        if (!user) {
+          throw error;
+        }
+      }
+    }
+
+    if (user) {
+      if (user.drupalUserId && user.drupalUserId !== drupalUserId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { drupalUserId },
+        });
+      }
+
+      const updateData: Partial<{
+        drupalUserId: string;
+        email: string | null;
+        phoneNumber: string | null;
+        name: string;
+        identifierType: 'EMAIL' | 'PHONE' | 'NAME';
+      }> = {};
+
       if (!user.drupalUserId) {
         updateData.drupalUserId = drupalUserId;
       }
-
-      if (profileData.email && user.email !== profileData.email)
-        updateData.email = profileData.email;
+      if (normalizedEmail && user.email !== normalizedEmail) {
+        updateData.email = normalizedEmail;
+      }
       if (
-        profileData.phoneNumber &&
-        normalizePhone(user.phoneNumber) !==
-          normalizePhone(profileData.phoneNumber)
-      )
-        updateData.phoneNumber = normalizePhone(profileData.phoneNumber);
-      if (profileData.name && user.name !== profileData.name)
+        normalizedPhone &&
+        normalizePhone(user.phoneNumber) !== normalizedPhone
+      ) {
+        updateData.phoneNumber = normalizedPhone;
+      }
+      if (profileData?.name && user.name !== profileData.name) {
         updateData.name = profileData.name;
-
-      // Update identifierType if it has changed
-      if (!user.identifierType || user.identifierType !== identifierType) {
+      }
+      if (user.identifierType !== identifierType) {
         updateData.identifierType = identifierType;
       }
 
@@ -136,16 +221,17 @@ export async function getCurrentUser() {
       }
     }
 
+    if (!user) {
+      throw new AuthenticationError('Unable to resolve user account');
+    }
+
     return user;
   } catch (error) {
     console.error('Error getting current user:', error);
-
-    // Re-throw authentication errors as-is so they can be handled properly
     if (isAuthenticationError(error)) {
       throw error;
     }
-
-    throw new Error('Failed to authenticate user');
+    throw new AuthenticationError('Failed to authenticate user');
   }
 }
 
@@ -171,6 +257,9 @@ export async function getApplications() {
 
     return applications.map(transformApplicationFromDb);
   } catch (error) {
+    if (isAuthenticationError(error)) {
+      throw error;
+    }
     const { message } = handlePrismaError(error);
     throw new Error(message);
   }
@@ -206,6 +295,9 @@ export async function getApplicationById(id: string) {
 
     return transformApplicationFromDb(application);
   } catch (error) {
+    if (isAuthenticationError(error)) {
+      throw error;
+    }
     const { message } = handlePrismaError(error);
     throw new Error(message);
   }
@@ -911,21 +1003,26 @@ export async function updateApplicationStatus(
       throw new Error("Access denied: You don't own this application");
     }
 
+    const resolvedStatus = status || ApplicationStatus.SUBMITTED;
+    const shouldQueueSync = resolvedStatus === ApplicationStatus.SUBMITTED;
+
     await prisma.application.update({
       where: { id: application.id },
       data: {
-        status: status || ApplicationStatus.SUBMITTED,
+        status: resolvedStatus,
         applicationProgress: applicationProgress || 7,
-        syncStatus: SyncStatus.PENDING,
+        ...(shouldQueueSync ? { syncStatus: SyncStatus.PENDING } : {}),
       },
     });
 
-    // Add to sync queue using the helper function
-    await addToSyncQueue(
-      application.applicationId,
-      SyncAction.CREATE,
-      { priority: true }, // Prioritize status updates
-    );
+    // Only queue Drupal/LMS sync on final submission, not intermediate draft saves
+    if (shouldQueueSync) {
+      await addToSyncQueue(
+        application.applicationId,
+        SyncAction.CREATE,
+        { priority: true },
+      );
+    }
 
     const updatedApplication = await getApplicationById(id);
     return updatedApplication?.generalDetails;
@@ -950,40 +1047,40 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     const gd = dbApplication.groupData;
     result.groupData = {
       basics: {
-        groupName: gd.groupName,
-        groupRegistrationNumber: gd.groupRegistrationNumber,
-        dateFormed: gd.dateFormed.toISOString().split('T')[0],
+        groupName: gd.groupName ?? '',
+        groupRegistrationNumber: gd.groupRegistrationNumber ?? '',
+        dateFormed: gd.dateFormed
+          ? gd.dateFormed.toISOString().split('T')[0]
+          : '',
         groupRegistrationCertificate:
           typeof gd.groupRegistrationCertificate === 'string'
-            ? JSON.parse(gd.groupRegistrationCertificate)
+            ? safeParseJsonField(
+                gd.groupRegistrationCertificate,
+                gd.groupRegistrationCertificate,
+              )
             : gd.groupRegistrationCertificate,
         listOfMembersOnCertificate:
           typeof gd.listOfMembersOnCertificate === 'string'
-            ? JSON.parse(gd.listOfMembersOnCertificate)
+            ? safeParseJsonField(
+                gd.listOfMembersOnCertificate,
+                gd.listOfMembersOnCertificate,
+              )
             : gd.listOfMembersOnCertificate,
         groupMeetingMinutes:
           typeof gd.groupMeetingMinutes === 'string'
-            ? JSON.parse(gd.groupMeetingMinutes)
-            : gd.groupMeetingMinutes,
+            ? safeParseJsonField(gd.groupMeetingMinutes, [])
+            : (gd.groupMeetingMinutes ?? []),
       },
       background: {
-        purposeOfTheGroup:
-          typeof gd.purposeOfTheGroup === 'string'
-            ? JSON.parse(gd.purposeOfTheGroup)
-            : (gd.purposeOfTheGroup as string[]),
-        keyActivitiesOfTheGroup:
-          typeof gd.keyActivitiesOfTheGroup === 'string'
-            ? JSON.parse(gd.keyActivitiesOfTheGroup)
-            : (gd.keyActivitiesOfTheGroup as string[]),
-        groupCreditHistory:
-          typeof gd.groupCreditHistory === 'string'
-            ? JSON.parse(gd.groupCreditHistory)
-            : gd.groupCreditHistory,
+        purposeOfTheGroup: safeParseJsonField(gd.purposeOfTheGroup, []),
+        keyActivitiesOfTheGroup: safeParseJsonField(
+          gd.keyActivitiesOfTheGroup,
+          [],
+        ),
+        groupCreditHistory: safeParseJsonField(gd.groupCreditHistory, []),
         other: gd.other,
         valueChain: gd.valueChain
-          ? typeof gd.valueChain === 'string'
-            ? JSON.parse(gd.valueChain)
-            : (gd.valueChain as string[])
+          ? safeParseJsonField<string[]>(gd.valueChain, [])
           : null,
         tableBanking: {
           tableBankingExperience: gd.tableBankingExperience || undefined,

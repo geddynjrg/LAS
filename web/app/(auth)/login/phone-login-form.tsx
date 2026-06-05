@@ -7,9 +7,12 @@ import {
 import { Alert } from '@workspace/ui/components/alert';
 import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
+import { labelVariants } from '@workspace/ui/components/label';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { type FC, useEffect, useState } from 'react';
+import { normalizeKenyanPhoneLocal } from '@/lib/utils/string';
+import { type FC, useEffect, useId, useState } from 'react';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
 
@@ -23,14 +26,41 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   redirectTo,
 }) => {
   const t = useTranslations('LoginPage');
+  const phoneInputId = useId();
+  const phoneErrorId = `${phoneInputId}-error`;
   const [state, formAction, isPending] = useForm(action, phoneLoginSchema);
   const [phoneLoginState, setPhoneLoginState] =
     useState<PhoneLoginState>('phone_input');
   const [otpRequestId, setOtpRequestId] = useState<string>('');
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>(() => {
+    const initial = (state.values as { phone?: string } | undefined)?.phone ?? '';
+    return normalizeKenyanPhoneLocal(initial) ?? initial.replace(/\D/g, '');
+  });
+
+  useEffect(() => {
+    const submittedPhone = (state.values as { phone?: string } | undefined)?.phone;
+    if (!submittedPhone) return;
+
+    const normalized =
+      normalizeKenyanPhoneLocal(submittedPhone) ??
+      submittedPhone.replace(/\D/g, '');
+    setPhoneNumber(normalized);
+  }, [state.values]);
 
   // Hardcoded to Kenya until multi-country support is needed
   const COUNTRY_CODE = '+254';
+
+  const handlePhoneChange = (value: string) => {
+    const normalized = normalizeKenyanPhoneLocal(value);
+    setPhoneNumber(normalized ?? value.replace(/\D/g, ''));
+  };
+
+  const handlePhoneBlur = () => {
+    const normalized = normalizeKenyanPhoneLocal(phoneNumber);
+    if (normalized) {
+      setPhoneNumber(normalized);
+    }
+  };
 
   // Navigate on successful final login completion (not OTP request)
   useEffect(() => {
@@ -52,6 +82,12 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     }
   }, [state]);
 
+  const phoneFieldError = state.errors?.phone?.[0];
+  const phoneErrorMessage =
+    typeof phoneFieldError === 'string'
+      ? phoneFieldError
+      : phoneFieldError?.message;
+
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">
       {state.message && (
@@ -62,23 +98,42 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
 
       {/* Phone Input - Step 1 */}
       {phoneLoginState === 'phone_input' && (
-        <Field
-          state={state}
-          name="phone"
-          label={t('phoneNumber')}
-          required
-          control={(props) => (
+        <>
+          <input type="hidden" name="phone" value={phoneNumber} />
+          <div className="flex w-full flex-col gap-1">
+            <label
+              htmlFor={phoneInputId}
+              className={cn(labelVariants(), 'mb-1 font-bold')}
+            >
+              {t('phoneNumber')}
+              <span className="text-destructive">*</span>
+            </label>
             <Input
+              id={phoneInputId}
               type="tel"
               startDecorator={COUNTRY_CODE}
               placeholder="712345678"
-              {...props}
-              onValueChange={(value) => {
-                setPhoneNumber(value);
-              }}
+              autoComplete="tel-national"
+              value={phoneNumber}
+              onValueChange={handlePhoneChange}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              onBlur={handlePhoneBlur}
+              aria-required="true"
+              aria-invalid={phoneErrorMessage ? 'true' : 'false'}
+              aria-describedby={phoneErrorMessage ? phoneErrorId : undefined}
             />
-          )}
-        />
+            {phoneErrorMessage && (
+              <p
+                id={phoneErrorId}
+                className="text-destructive typo-body-small"
+                role="alert"
+                aria-live="polite"
+              >
+                {phoneErrorMessage}
+              </p>
+            )}
+          </div>
+        </>
       )}
 
       {/* OTP Input - Step 2 */}

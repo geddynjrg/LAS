@@ -12,6 +12,7 @@ export async function sendConfirmationSMS(
     
     // Get the JWT access token from your session
     const accessToken = await getSession();
+    console.log('[SMS] Token being sent:', accessToken?.substring(0, 50));
     
     if (!accessToken) {
       return {
@@ -35,6 +36,14 @@ export async function sendConfirmationSMS(
     });
 
     console.log('[SMS Service] Full API Response:', res);
+
+    if (res.error) {
+      console.error('[SMS] Status:', res.response?.status);
+      console.error('[SMS] Raw error:', JSON.stringify(res.error));
+      // See the actual Drupal error message
+      const text = await res.response?.text?.();
+      console.error('[SMS] Response body:', text);
+    }
 
     if (res.error) {
       console.error('[SMS Service] Error:', res.error);

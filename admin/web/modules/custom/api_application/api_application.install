@@ -1213,3 +1213,217 @@ function api_application_update_11021(): string {
 
   return !empty($messages) ? implode(' ', $messages) : t('purpose_of_loan cleanup already completed.');
 }
+
+/**
+ * Remove split barber/salon taxonomy terms and keep the merged option.
+ */
+function api_application_update_11022(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+  $database = \Drupal::database();
+
+  $broken_tids = [778, 779];
+  $canonical_tid = 766;
+  $migrated = 0;
+
+  foreach ($broken_tids as $broken_tid) {
+    $applications = $database->select('application__key_activities', 'aka')
+      ->fields('aka', ['entity_id'])
+      ->condition('key_activities_target_id', $broken_tid)
+      ->execute()
+      ->fetchCol();
+
+    foreach ($applications as $application_id) {
+      $database->delete('application__key_activities')
+        ->condition('entity_id', $application_id)
+        ->condition('key_activities_target_id', $broken_tid)
+        ->execute();
+
+      $existing = $database->select('application__key_activities', 'aka')
+        ->fields('aka', ['key_activities_target_id'])
+        ->condition('entity_id', $application_id)
+        ->condition('key_activities_target_id', $canonical_tid)
+        ->execute()
+        ->fetchField();
+
+      if (!$existing) {
+        $database->insert('application__key_activities')
+          ->fields([
+            'bundle' => 'application',
+            'deleted' => 0,
+            'entity_id' => $application_id,
+            'revision_id' => $application_id,
+            'langcode' => 'en',
+            'delta' => 0,
+            'key_activities_target_id' => $canonical_tid,
+          ])
+          ->execute();
+        $migrated++;
+      }
+    }
+
+    $term = $term_storage->load($broken_tid);
+    if ($term) {
+      $term->delete();
+    }
+  }
+
+  return t('Removed broken group activity terms and migrated @count application references to the merged salon/barber option.', [
+    '@count' => $migrated,
+  ]);
+}
+
+/**
+ * Remove current split barber/salon taxonomy terms (809/810) if still present.
+ */
+function api_application_update_11026(): string {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+  $database = \Drupal::database();
+
+  $broken_tids = [809, 810];
+  $canonical_tid = 766;
+  $migrated = 0;
+
+  foreach ($broken_tids as $broken_tid) {
+    $applications = $database->select('application__key_activities', 'aka')
+      ->fields('aka', ['entity_id'])
+      ->condition('key_activities_target_id', $broken_tid)
+      ->execute()
+      ->fetchCol();
+
+    foreach ($applications as $application_id) {
+      $database->delete('application__key_activities')
+        ->condition('entity_id', $application_id)
+        ->condition('key_activities_target_id', $broken_tid)
+        ->execute();
+
+      $existing = $database->select('application__key_activities', 'aka')
+        ->fields('aka', ['key_activities_target_id'])
+        ->condition('entity_id', $application_id)
+        ->condition('key_activities_target_id', $canonical_tid)
+        ->execute()
+        ->fetchField();
+
+      if (!$existing) {
+        $database->insert('application__key_activities')
+          ->fields([
+            'bundle' => 'application',
+            'deleted' => 0,
+            'entity_id' => $application_id,
+            'revision_id' => $application_id,
+            'langcode' => 'en',
+            'delta' => 0,
+            'key_activities_target_id' => $canonical_tid,
+          ])
+          ->execute();
+        $migrated++;
+      }
+    }
+
+    $term = $term_storage->load($broken_tid);
+    if ($term) {
+      $term->delete();
+    }
+  }
+
+  return t('Removed split salon/barber taxonomy terms (@tids) and migrated @count application references.', [
+    '@tids' => implode(', ', $broken_tids),
+    '@count' => $migrated,
+  ]);
+}
+
+/**
+ * Enable submission success SMS settings with sensible defaults.
+ */
+function api_application_update_11023(): string {
+  $config = \Drupal::configFactory()->getEditable('api_application.settings');
+
+  if ($config->get('sms_submission_success_enabled') === NULL) {
+    $config->set('sms_submission_success_enabled', TRUE);
+  }
+
+  if ($config->get('sms_submission_success_message') === NULL) {
+    $config->set('sms_submission_success_message', '');
+  }
+
+  $config->save(TRUE);
+
+  return t('Added submission success SMS notification settings.');
+}
+
+/**
+ * Enable payment success SMS settings with sensible defaults.
+ */
+function api_application_update_11024(): string {
+  $config = \Drupal::configFactory()->getEditable('api_application.settings');
+
+  if ($config->get('sms_payment_success_enabled') === NULL) {
+    $config->set('sms_payment_success_enabled', TRUE);
+  }
+
+  if ($config->get('sms_payment_success_message') === NULL) {
+    $config->set('sms_payment_success_message', '');
+  }
+
+  $config->save(TRUE);
+
+  // Enable the payment success SMS REST resource.
+  $resource_config = \Drupal::configFactory()->getEditable('rest.resource.application_payment_success_sms');
+  if ($resource_config->isNew()) {
+    $resource_config->set('langcode', 'en');
+    $resource_config->set('status', TRUE);
+    $resource_config->set('dependencies', [
+      'module' => ['api_application', 'serialization', 'user'],
+    ]);
+    $resource_config->set('id', 'application_payment_success_sms');
+    $resource_config->set('plugin_id', 'application_payment_success_sms');
+    $resource_config->set('granularity', 'resource');
+    $resource_config->set('configuration', [
+      'methods' => ['POST'],
+      'formats' => ['json'],
+      'authentication' => ['cookie'],
+    ]);
+    $resource_config->save(TRUE);
+  }
+  else {
+    $resource_config->set('status', TRUE)->save(TRUE);
+  }
+
+  return t('Added payment success SMS notification settings.');
+}
+
+/**
+ * Set limited_role flags on position_of_member terms (includes Chairperson).
+ */
+function api_application_update_11025(): string {
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  $positions = [
+    'Chairperson' => TRUE,
+    'Chairman' => TRUE,
+    'Secretary' => TRUE,
+    'Treasurer' => TRUE,
+    'Member' => FALSE,
+    'Other' => FALSE,
+  ];
+
+  foreach ($positions as $position_name => $is_limited) {
+    $existing_terms = $term_storage->loadByProperties([
+      'vid' => 'position_of_member',
+      'name' => $position_name,
+    ]);
+
+    if (empty($existing_terms)) {
+      continue;
+    }
+
+    $term = reset($existing_terms);
+    if ($term->hasField('field_limited_role')) {
+      $term->set('field_limited_role', $is_limited);
+      $term->save();
+    }
+  }
+
+  return t('Updated limited_role flags for position_of_member taxonomy terms.');
+}

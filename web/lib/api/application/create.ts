@@ -15,16 +15,57 @@ async function sendToApi(
   try {
     const validatedData = ApplicationPostRequestSchema.parse(data);
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-API-Key': apiKey,
+    };
+
+    const lmsApiUrl = process.env.LMS_API_URL?.replace(/\/$/, '') ?? '';
+    const lmsHost = process.env.LMS_API_HOST;
+    if (
+      lmsHost &&
+      lmsApiUrl &&
+      apiUrl.replace(/\/$/, '') === lmsApiUrl
+    ) {
+      headers.Host = lmsHost;
+    }
+
     const response = await fetch(`${apiUrl}/api/v1/application`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
-      },
+      headers,
       body: JSON.stringify(validatedData),
     });
 
-    const result = await response.json();
+    const responseText = await response.text();
+    const contentType = response.headers.get('content-type') ?? '';
+
+    let result: unknown;
+    if (contentType.includes('application/json')) {
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        return {
+          error: 'api_error',
+          message: `Invalid JSON response from API (HTTP ${response.status})`,
+        };
+      }
+    } else {
+      const snippet = responseText.replace(/\s+/g, ' ').slice(0, 200);
+      console.error(
+        'API returned non-JSON response:',
+        response.status,
+        contentType,
+        snippet,
+      );
+      const sizeHint =
+        response.status === 413
+          ? ' Request body too large — application files may exceed server limits.'
+          : '';
+      return {
+        error: 'api_error',
+        message: `API returned HTTP ${response.status} (${contentType || 'non-JSON'}).${sizeHint}`,
+      };
+    }
 
     if (!response.ok) {
       console.error('API error:', response.status, result);
@@ -33,9 +74,10 @@ async function sendToApi(
         const errorResult = ErrorResponseSchema.parse(result);
         return errorResult;
       } catch {
+        const err = result as { message?: string; error?: string };
         return {
           error: 'api_error',
-          message: result.message || result.error || 'Unknown API error',
+          message: err.message || err.error || `Unknown API error (HTTP ${response.status})`,
         };
       }
     }

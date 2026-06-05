@@ -4,7 +4,7 @@
  */
 
 export function decodeJwtPayload(token: string): {
-  uid?: string;
+  uid?: string | number;
   roles?: string[];
   exp?: number;
   iat?: number;

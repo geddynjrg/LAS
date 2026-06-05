@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+id: member_confirmation_otp
+plugin_id: member_confirmation_otp
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - jwt_auth

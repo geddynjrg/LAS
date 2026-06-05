@@ -740,7 +740,6 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         state={state}
         name="economicActivity"
         label={t('MembersPage.economicActivity')}
-        required
         control={(props) => (
           <Input
             {...props}
@@ -931,7 +930,6 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               if (errors.nationalIdCode) missingFields.push('National ID');
               if (errors.gender) missingFields.push('Gender');
               if (errors.type) missingFields.push('Position');
-              if (errors.economicActivity) missingFields.push('Economic Activity');
               if (errors.phoneNumber) missingFields.push('Phone Number');
               if (errors.photoOfId) missingFields.push('Photo of ID');
 

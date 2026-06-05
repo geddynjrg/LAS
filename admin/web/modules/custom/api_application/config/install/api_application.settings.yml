@@ -4,6 +4,10 @@ max_file_size: '5MB'
 allowed_extensions: 'pdf jpg jpeg png'
 sms_confirmation_enabled: false
 sms_confirmation_message: ''
+sms_submission_success_enabled: true
+sms_submission_success_message: ''
+sms_payment_success_enabled: true
+sms_payment_success_message: ''
 auto_send_sms: false
 frontend_base_url: ''
 frontend_confirmation_path: '/response/{token}'

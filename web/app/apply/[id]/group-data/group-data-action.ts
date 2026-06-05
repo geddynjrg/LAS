@@ -10,6 +10,7 @@ import {
   getConstituencyOptions,
   getCountyOptions,
 } from '@/lib/api/counties.service';
+import { getWardsForConstituencyName } from '@/lib/api/wards.service';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import {
   updateApplicationGroupData,
@@ -30,19 +31,21 @@ export const groupDataAction: FormAction<GroupData> = async (
     const redirectTo = formData.get('redirectTo')?.toString();
     const id = formData.get('id')?.toString();
 
-    const { success, data, error } = groupDataSchema.safeParse(values);
+    const parsed = groupDataSchema.safeParse(values);
 
-    if (error) {
+    if (!parsed.success) {
       console.log(
         'groupDataAction: Validation errors',
-        error.flatten().fieldErrors,
+        parsed.error.flatten().fieldErrors,
       );
       return {
-        success,
-        errors: error.flatten().fieldErrors,
+        success: false,
+        errors: parsed.error.flatten().fieldErrors,
         values,
       };
     }
+
+    const data = parsed.data;
 
     // Validate county and constituency against available options
     const [countyOptions, constituencyOptions] = await Promise.all([
@@ -93,6 +96,19 @@ export const groupDataAction: FormAction<GroupData> = async (
       }
     }
 
+    if (isValidConstituency && data.ward) {
+      const wardOptions = await getWardsForConstituencyName(data.constituency);
+      const isValidWard = wardOptions.some(
+        (w) => w.value === data.ward || w.label === data.ward,
+      );
+
+      if (wardOptions.length > 0 && !isValidWard) {
+        validationErrors.ward = [
+          'Please select a valid ward from the list for this constituency',
+        ];
+      }
+    }
+
     // If there are validation errors, return them
     if (Object.keys(validationErrors).length > 0) {
       return {
@@ -125,14 +141,12 @@ export const groupDataAction: FormAction<GroupData> = async (
       { fid: 0, filename: '', url: '' },
     ];
 
-    const groupCreditHistory = data.groupCreditHistory || [
-      { fid: 0, filename: '', url: '' },
-    ];
+    const groupCreditHistory = data.groupCreditHistory ?? [];
 
     /* Submit data to database */
     await updateApplicationGroupData(id, {
       basics: {
-        groupName: capitalizeWords(data.groupName),
+        groupName: capitalizeWords(data.groupName ?? ''),
         groupRegistrationNumber: data.groupRegistrationNumber,
         dateFormed: data.dateFormed,
         groupRegistrationCertificate,

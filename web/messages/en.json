@@ -290,6 +290,35 @@
     "group": "Group",
     "viewApplication": "View application",
     "continueFillingApplication": "Continue filling application",
+    "repay": {
+      "repayButton": "Repay loan",
+      "modalTitle": "Loan repayment",
+      "checkoutTitle": "Complete payment",
+      "modalDescription": "Enter the amount you want to pay now. Payment opens securely inside this dialog via Pesaflow.",
+      "outstandingBalance": "Outstanding balance",
+      "totalDue": "Total amount to repay",
+      "paidSoFar": "Paid so far:",
+      "originalLoan": "Original loan:",
+      "amountToPay": "Amount to pay (KES)",
+      "amountHint": "You can pay any amount up to the outstanding balance.",
+      "invalidAmount": "Enter a valid payment amount.",
+      "amountExceedsBalance": "Amount exceeds outstanding balance of KES {amount}.",
+      "fullyRepaid": "This loan is fully repaid online. Contact support if your balance still shows outstanding elsewhere.",
+      "pendingPayment": "You already have a payment in progress. Continue checkout below or wait for it to expire.",
+      "continuePayment": "Continue payment",
+      "invoiceReference": "Invoice reference: {reference}",
+      "checkoutNote": "Complete your payment in the form above. Do not close this dialog until Pesaflow confirms success.",
+      "back": "Back",
+      "close": "Close",
+      "repaymentPeriod": "Repayment period: {months} months",
+      "paymentsComingSoon": "Online repayment via Pesaflow is coming soon. You can view the amount due above; payment will be enabled when the service is connected.",
+      "pesaflowNote": "Payments are processed through Pesaflow. No automatic M-Pesa STK push is sent.",
+      "proceedToPay": "Proceed to pay",
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "paymentUnavailable": "Payment is not available right now. Please try again later.",
+      "paymentInitiated": "Payment request recorded. Pesaflow checkout will open here once integration is complete."
+    },
     "status": {
       "title": "Status",
       "unsubmitted": "<bold>Unsubmitted:</bold> Not started",
@@ -302,6 +331,7 @@
       "approved": "<bold>Approved:</bold> Loan approved",
       "rejected": "<bold>Rejected:</bold> Application rejected",
       "disbursed": "<bold>Disbursed:</bold> Loan funds disbursed",
+      "training": "<bold>Training:</bold> Group training in progress",
       "closed": "<bold>Closed:</bold> Application closed"
     },
     "rejectionDetails": {
@@ -359,6 +389,9 @@
       "email": "Email us",
       "phone": "Call us"
     },
+    "trainingCertificate": {
+      "download": "Download training certificate"
+    },
     "emptyState": {
       "title": "Start Your First Application",
       "description": "You haven't started any applications yet. Begin your journey to access financial support for your group by creating your first application.",
@@ -370,6 +403,8 @@
     "backToDashboard": "Back to dashboard",
     "applicationNotFound": "Application not found",
     "status": "Status",
+    "downloadTrainingCertificate": "Download training certificate",
+    "trainingCertificateAvailableFrom": "Training certificate will be available from {date}",
     "numberMonths": "{month, plural, =1 {# month} other {# months}}",
     "numberYears": "{year, plural, =1 {# year} other {# years}}",
     "loan": {

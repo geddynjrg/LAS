@@ -9,7 +9,7 @@ echo "[$(date)] Sync worker script started"
 WORKER_MODE=${WORKER_MODE:-nodejs}  # Options: nodejs, api
 INTERVAL_MINUTES=${SYNC_INTERVAL_MINUTES:-5}
 CRON_SECRET=${CRON_SECRET}
-APP_URL="http://uwezo:3000"
+APP_URL="${APP_URL:-http://web:3000}"
 
 # Health check function
 health_check() {

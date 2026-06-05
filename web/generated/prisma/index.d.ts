@@ -79,6 +79,11 @@ export type File = $Result.DefaultSelection<Prisma.$FilePayload>
  */
 export type LmsSyncQueue = $Result.DefaultSelection<Prisma.$LmsSyncQueuePayload>
 /**
+ * Model PaymentTransaction
+ * 
+ */
+export type PaymentTransaction = $Result.DefaultSelection<Prisma.$PaymentTransactionPayload>
+/**
  * Model CountiesCache
  * 
  */
@@ -128,6 +133,7 @@ export const ApplicationStatus: {
   IN_REVIEW: 'IN_REVIEW',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
+  TRAINING: 'TRAINING',
   DISBURSED: 'DISBURSED',
   CLOSED: 'CLOSED'
 };
@@ -206,6 +212,16 @@ export const LmsSyncStatus: {
 
 export type LmsSyncStatus = (typeof LmsSyncStatus)[keyof typeof LmsSyncStatus]
 
+
+export const PaymentStatus: {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
 }
 
 export type IdentifierType = $Enums.IdentifierType
@@ -251,6 +267,10 @@ export const QueueStatus: typeof $Enums.QueueStatus
 export type LmsSyncStatus = $Enums.LmsSyncStatus
 
 export const LmsSyncStatus: typeof $Enums.LmsSyncStatus
+
+export type PaymentStatus = $Enums.PaymentStatus
+
+export const PaymentStatus: typeof $Enums.PaymentStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -506,6 +526,16 @@ export class PrismaClient<
     * ```
     */
   get lmsSyncQueue(): Prisma.LmsSyncQueueDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.paymentTransaction`: Exposes CRUD operations for the **PaymentTransaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PaymentTransactions
+    * const paymentTransactions = await prisma.paymentTransaction.findMany()
+    * ```
+    */
+  get paymentTransaction(): Prisma.PaymentTransactionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.countiesCache`: Exposes CRUD operations for the **CountiesCache** model.
@@ -989,6 +1019,7 @@ export namespace Prisma {
     SyncQueue: 'SyncQueue',
     File: 'File',
     LmsSyncQueue: 'LmsSyncQueue',
+    PaymentTransaction: 'PaymentTransaction',
     CountiesCache: 'CountiesCache',
     County: 'County',
     Constituency: 'Constituency'
@@ -1010,7 +1041,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "application" | "groupData" | "memberData" | "loanConditions" | "proposedBusiness" | "customExpense" | "confirmations" | "taxonomyVocabulary" | "taxonomyTerm" | "syncQueue" | "file" | "lmsSyncQueue" | "countiesCache" | "county" | "constituency"
+      modelProps: "user" | "application" | "groupData" | "memberData" | "loanConditions" | "proposedBusiness" | "customExpense" | "confirmations" | "taxonomyVocabulary" | "taxonomyTerm" | "syncQueue" | "file" | "lmsSyncQueue" | "paymentTransaction" | "countiesCache" | "county" | "constituency"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1872,6 +1903,72 @@ export namespace Prisma {
           }
         }
       }
+      PaymentTransaction: {
+        payload: Prisma.$PaymentTransactionPayload<ExtArgs>
+        fields: Prisma.PaymentTransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PaymentTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PaymentTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.PaymentTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PaymentTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          findMany: {
+            args: Prisma.PaymentTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>[]
+          }
+          create: {
+            args: Prisma.PaymentTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          createMany: {
+            args: Prisma.PaymentTransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.PaymentTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          update: {
+            args: Prisma.PaymentTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.PaymentTransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PaymentTransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PaymentTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.PaymentTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePaymentTransaction>
+          }
+          groupBy: {
+            args: Prisma.PaymentTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PaymentTransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PaymentTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<PaymentTransactionCountAggregateOutputType> | number
+          }
+        }
+      }
       CountiesCache: {
         payload: Prisma.$CountiesCachePayload<ExtArgs>
         fields: Prisma.CountiesCacheFieldRefs
@@ -2167,6 +2264,7 @@ export namespace Prisma {
     syncQueue?: SyncQueueOmit
     file?: FileOmit
     lmsSyncQueue?: LmsSyncQueueOmit
+    paymentTransaction?: PaymentTransactionOmit
     countiesCache?: CountiesCacheOmit
     county?: CountyOmit
     constituency?: ConstituencyOmit
@@ -2296,10 +2394,12 @@ export namespace Prisma {
 
   export type ApplicationCountOutputType = {
     members: number
+    paymentTransactions: number
   }
 
   export type ApplicationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | ApplicationCountOutputTypeCountMembersArgs
+    paymentTransactions?: boolean | ApplicationCountOutputTypeCountPaymentTransactionsArgs
   }
 
   // Custom InputTypes
@@ -2318,6 +2418,13 @@ export namespace Prisma {
    */
   export type ApplicationCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MemberDataWhereInput
+  }
+
+  /**
+   * ApplicationCountOutputType without action
+   */
+  export type ApplicationCountOutputTypeCountPaymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentTransactionWhereInput
   }
 
 
@@ -3746,6 +3853,7 @@ export namespace Prisma {
     members?: boolean | Application$membersArgs<ExtArgs>
     proposedBusiness?: boolean | Application$proposedBusinessArgs<ExtArgs>
     lmsSyncQueue?: boolean | Application$lmsSyncQueueArgs<ExtArgs>
+    paymentTransactions?: boolean | Application$paymentTransactionsArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
 
@@ -3780,6 +3888,7 @@ export namespace Prisma {
     members?: boolean | Application$membersArgs<ExtArgs>
     proposedBusiness?: boolean | Application$proposedBusinessArgs<ExtArgs>
     lmsSyncQueue?: boolean | Application$lmsSyncQueueArgs<ExtArgs>
+    paymentTransactions?: boolean | Application$paymentTransactionsArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -3793,6 +3902,7 @@ export namespace Prisma {
       members: Prisma.$MemberDataPayload<ExtArgs>[]
       proposedBusiness: Prisma.$ProposedBusinessPayload<ExtArgs> | null
       lmsSyncQueue: Prisma.$LmsSyncQueuePayload<ExtArgs> | null
+      paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4159,6 +4269,7 @@ export namespace Prisma {
     members<T extends Application$membersArgs<ExtArgs> = {}>(args?: Subset<T, Application$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberDataPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     proposedBusiness<T extends Application$proposedBusinessArgs<ExtArgs> = {}>(args?: Subset<T, Application$proposedBusinessArgs<ExtArgs>>): Prisma__ProposedBusinessClient<$Result.GetResult<Prisma.$ProposedBusinessPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lmsSyncQueue<T extends Application$lmsSyncQueueArgs<ExtArgs> = {}>(args?: Subset<T, Application$lmsSyncQueueArgs<ExtArgs>>): Prisma__LmsSyncQueueClient<$Result.GetResult<Prisma.$LmsSyncQueuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    paymentTransactions<T extends Application$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4664,6 +4775,30 @@ export namespace Prisma {
      */
     include?: LmsSyncQueueInclude<ExtArgs> | null
     where?: LmsSyncQueueWhereInput
+  }
+
+  /**
+   * Application.paymentTransactions
+   */
+  export type Application$paymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    where?: PaymentTransactionWhereInput
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    cursor?: PaymentTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
   }
 
   /**
@@ -16251,6 +16386,1130 @@ export namespace Prisma {
 
 
   /**
+   * Model PaymentTransaction
+   */
+
+  export type AggregatePaymentTransaction = {
+    _count: PaymentTransactionCountAggregateOutputType | null
+    _avg: PaymentTransactionAvgAggregateOutputType | null
+    _sum: PaymentTransactionSumAggregateOutputType | null
+    _min: PaymentTransactionMinAggregateOutputType | null
+    _max: PaymentTransactionMaxAggregateOutputType | null
+  }
+
+  export type PaymentTransactionAvgAggregateOutputType = {
+    amountExpected: number | null
+    amountPaid: number | null
+  }
+
+  export type PaymentTransactionSumAggregateOutputType = {
+    amountExpected: number | null
+    amountPaid: number | null
+  }
+
+  export type PaymentTransactionMinAggregateOutputType = {
+    id: string | null
+    applicationId: string | null
+    billRefNumber: string | null
+    amountExpected: number | null
+    currency: string | null
+    status: $Enums.PaymentStatus | null
+    clientName: string | null
+    clientMSISDN: string | null
+    clientIDNumber: string | null
+    clientEmail: string | null
+    pesaflowPaymentRef: string | null
+    pesaflowInvoiceNumber: string | null
+    paymentChannel: string | null
+    amountPaid: number | null
+    smsSentAt: Date | null
+    completedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PaymentTransactionMaxAggregateOutputType = {
+    id: string | null
+    applicationId: string | null
+    billRefNumber: string | null
+    amountExpected: number | null
+    currency: string | null
+    status: $Enums.PaymentStatus | null
+    clientName: string | null
+    clientMSISDN: string | null
+    clientIDNumber: string | null
+    clientEmail: string | null
+    pesaflowPaymentRef: string | null
+    pesaflowInvoiceNumber: string | null
+    paymentChannel: string | null
+    amountPaid: number | null
+    smsSentAt: Date | null
+    completedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PaymentTransactionCountAggregateOutputType = {
+    id: number
+    applicationId: number
+    billRefNumber: number
+    amountExpected: number
+    currency: number
+    status: number
+    clientName: number
+    clientMSISDN: number
+    clientIDNumber: number
+    clientEmail: number
+    checkoutPayload: number
+    pesaflowPaymentRef: number
+    pesaflowInvoiceNumber: number
+    paymentChannel: number
+    amountPaid: number
+    ipnPayload: number
+    smsSentAt: number
+    completedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PaymentTransactionAvgAggregateInputType = {
+    amountExpected?: true
+    amountPaid?: true
+  }
+
+  export type PaymentTransactionSumAggregateInputType = {
+    amountExpected?: true
+    amountPaid?: true
+  }
+
+  export type PaymentTransactionMinAggregateInputType = {
+    id?: true
+    applicationId?: true
+    billRefNumber?: true
+    amountExpected?: true
+    currency?: true
+    status?: true
+    clientName?: true
+    clientMSISDN?: true
+    clientIDNumber?: true
+    clientEmail?: true
+    pesaflowPaymentRef?: true
+    pesaflowInvoiceNumber?: true
+    paymentChannel?: true
+    amountPaid?: true
+    smsSentAt?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PaymentTransactionMaxAggregateInputType = {
+    id?: true
+    applicationId?: true
+    billRefNumber?: true
+    amountExpected?: true
+    currency?: true
+    status?: true
+    clientName?: true
+    clientMSISDN?: true
+    clientIDNumber?: true
+    clientEmail?: true
+    pesaflowPaymentRef?: true
+    pesaflowInvoiceNumber?: true
+    paymentChannel?: true
+    amountPaid?: true
+    smsSentAt?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PaymentTransactionCountAggregateInputType = {
+    id?: true
+    applicationId?: true
+    billRefNumber?: true
+    amountExpected?: true
+    currency?: true
+    status?: true
+    clientName?: true
+    clientMSISDN?: true
+    clientIDNumber?: true
+    clientEmail?: true
+    checkoutPayload?: true
+    pesaflowPaymentRef?: true
+    pesaflowInvoiceNumber?: true
+    paymentChannel?: true
+    amountPaid?: true
+    ipnPayload?: true
+    smsSentAt?: true
+    completedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PaymentTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentTransaction to aggregate.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PaymentTransactions
+    **/
+    _count?: true | PaymentTransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PaymentTransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PaymentTransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PaymentTransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PaymentTransactionMaxAggregateInputType
+  }
+
+  export type GetPaymentTransactionAggregateType<T extends PaymentTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePaymentTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePaymentTransaction[P]>
+      : GetScalarType<T[P], AggregatePaymentTransaction[P]>
+  }
+
+
+
+
+  export type PaymentTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentTransactionWhereInput
+    orderBy?: PaymentTransactionOrderByWithAggregationInput | PaymentTransactionOrderByWithAggregationInput[]
+    by: PaymentTransactionScalarFieldEnum[] | PaymentTransactionScalarFieldEnum
+    having?: PaymentTransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PaymentTransactionCountAggregateInputType | true
+    _avg?: PaymentTransactionAvgAggregateInputType
+    _sum?: PaymentTransactionSumAggregateInputType
+    _min?: PaymentTransactionMinAggregateInputType
+    _max?: PaymentTransactionMaxAggregateInputType
+  }
+
+  export type PaymentTransactionGroupByOutputType = {
+    id: string
+    applicationId: string
+    billRefNumber: string
+    amountExpected: number
+    currency: string
+    status: $Enums.PaymentStatus
+    clientName: string
+    clientMSISDN: string
+    clientIDNumber: string
+    clientEmail: string
+    checkoutPayload: JsonValue
+    pesaflowPaymentRef: string | null
+    pesaflowInvoiceNumber: string | null
+    paymentChannel: string | null
+    amountPaid: number | null
+    ipnPayload: JsonValue | null
+    smsSentAt: Date | null
+    completedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PaymentTransactionCountAggregateOutputType | null
+    _avg: PaymentTransactionAvgAggregateOutputType | null
+    _sum: PaymentTransactionSumAggregateOutputType | null
+    _min: PaymentTransactionMinAggregateOutputType | null
+    _max: PaymentTransactionMaxAggregateOutputType | null
+  }
+
+  type GetPaymentTransactionGroupByPayload<T extends PaymentTransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PaymentTransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PaymentTransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PaymentTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], PaymentTransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PaymentTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    applicationId?: boolean
+    billRefNumber?: boolean
+    amountExpected?: boolean
+    currency?: boolean
+    status?: boolean
+    clientName?: boolean
+    clientMSISDN?: boolean
+    clientIDNumber?: boolean
+    clientEmail?: boolean
+    checkoutPayload?: boolean
+    pesaflowPaymentRef?: boolean
+    pesaflowInvoiceNumber?: boolean
+    paymentChannel?: boolean
+    amountPaid?: boolean
+    ipnPayload?: boolean
+    smsSentAt?: boolean
+    completedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["paymentTransaction"]>
+
+
+
+  export type PaymentTransactionSelectScalar = {
+    id?: boolean
+    applicationId?: boolean
+    billRefNumber?: boolean
+    amountExpected?: boolean
+    currency?: boolean
+    status?: boolean
+    clientName?: boolean
+    clientMSISDN?: boolean
+    clientIDNumber?: boolean
+    clientEmail?: boolean
+    checkoutPayload?: boolean
+    pesaflowPaymentRef?: boolean
+    pesaflowInvoiceNumber?: boolean
+    paymentChannel?: boolean
+    amountPaid?: boolean
+    ipnPayload?: boolean
+    smsSentAt?: boolean
+    completedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PaymentTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "applicationId" | "billRefNumber" | "amountExpected" | "currency" | "status" | "clientName" | "clientMSISDN" | "clientIDNumber" | "clientEmail" | "checkoutPayload" | "pesaflowPaymentRef" | "pesaflowInvoiceNumber" | "paymentChannel" | "amountPaid" | "ipnPayload" | "smsSentAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["paymentTransaction"]>
+  export type PaymentTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }
+
+  export type $PaymentTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PaymentTransaction"
+    objects: {
+      application: Prisma.$ApplicationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      applicationId: string
+      billRefNumber: string
+      amountExpected: number
+      currency: string
+      status: $Enums.PaymentStatus
+      clientName: string
+      clientMSISDN: string
+      clientIDNumber: string
+      clientEmail: string
+      checkoutPayload: Prisma.JsonValue
+      pesaflowPaymentRef: string | null
+      pesaflowInvoiceNumber: string | null
+      paymentChannel: string | null
+      amountPaid: number | null
+      ipnPayload: Prisma.JsonValue | null
+      smsSentAt: Date | null
+      completedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["paymentTransaction"]>
+    composites: {}
+  }
+
+  type PaymentTransactionGetPayload<S extends boolean | null | undefined | PaymentTransactionDefaultArgs> = $Result.GetResult<Prisma.$PaymentTransactionPayload, S>
+
+  type PaymentTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PaymentTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PaymentTransactionCountAggregateInputType | true
+    }
+
+  export interface PaymentTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PaymentTransaction'], meta: { name: 'PaymentTransaction' } }
+    /**
+     * Find zero or one PaymentTransaction that matches the filter.
+     * @param {PaymentTransactionFindUniqueArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PaymentTransactionFindUniqueArgs>(args: SelectSubset<T, PaymentTransactionFindUniqueArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PaymentTransaction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PaymentTransactionFindUniqueOrThrowArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PaymentTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, PaymentTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaymentTransaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionFindFirstArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PaymentTransactionFindFirstArgs>(args?: SelectSubset<T, PaymentTransactionFindFirstArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaymentTransaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionFindFirstOrThrowArgs} args - Arguments to find a PaymentTransaction
+     * @example
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PaymentTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, PaymentTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PaymentTransactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PaymentTransactions
+     * const paymentTransactions = await prisma.paymentTransaction.findMany()
+     * 
+     * // Get first 10 PaymentTransactions
+     * const paymentTransactions = await prisma.paymentTransaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const paymentTransactionWithIdOnly = await prisma.paymentTransaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PaymentTransactionFindManyArgs>(args?: SelectSubset<T, PaymentTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PaymentTransaction.
+     * @param {PaymentTransactionCreateArgs} args - Arguments to create a PaymentTransaction.
+     * @example
+     * // Create one PaymentTransaction
+     * const PaymentTransaction = await prisma.paymentTransaction.create({
+     *   data: {
+     *     // ... data to create a PaymentTransaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends PaymentTransactionCreateArgs>(args: SelectSubset<T, PaymentTransactionCreateArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PaymentTransactions.
+     * @param {PaymentTransactionCreateManyArgs} args - Arguments to create many PaymentTransactions.
+     * @example
+     * // Create many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PaymentTransactionCreateManyArgs>(args?: SelectSubset<T, PaymentTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a PaymentTransaction.
+     * @param {PaymentTransactionDeleteArgs} args - Arguments to delete one PaymentTransaction.
+     * @example
+     * // Delete one PaymentTransaction
+     * const PaymentTransaction = await prisma.paymentTransaction.delete({
+     *   where: {
+     *     // ... filter to delete one PaymentTransaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PaymentTransactionDeleteArgs>(args: SelectSubset<T, PaymentTransactionDeleteArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PaymentTransaction.
+     * @param {PaymentTransactionUpdateArgs} args - Arguments to update one PaymentTransaction.
+     * @example
+     * // Update one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PaymentTransactionUpdateArgs>(args: SelectSubset<T, PaymentTransactionUpdateArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PaymentTransactions.
+     * @param {PaymentTransactionDeleteManyArgs} args - Arguments to filter PaymentTransactions to delete.
+     * @example
+     * // Delete a few PaymentTransactions
+     * const { count } = await prisma.paymentTransaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PaymentTransactionDeleteManyArgs>(args?: SelectSubset<T, PaymentTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaymentTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PaymentTransactionUpdateManyArgs>(args: SelectSubset<T, PaymentTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PaymentTransaction.
+     * @param {PaymentTransactionUpsertArgs} args - Arguments to update or create a PaymentTransaction.
+     * @example
+     * // Update or create a PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.upsert({
+     *   create: {
+     *     // ... data to create a PaymentTransaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PaymentTransaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PaymentTransactionUpsertArgs>(args: SelectSubset<T, PaymentTransactionUpsertArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PaymentTransactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionCountArgs} args - Arguments to filter PaymentTransactions to count.
+     * @example
+     * // Count the number of PaymentTransactions
+     * const count = await prisma.paymentTransaction.count({
+     *   where: {
+     *     // ... the filter for the PaymentTransactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends PaymentTransactionCountArgs>(
+      args?: Subset<T, PaymentTransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PaymentTransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PaymentTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PaymentTransactionAggregateArgs>(args: Subset<T, PaymentTransactionAggregateArgs>): Prisma.PrismaPromise<GetPaymentTransactionAggregateType<T>>
+
+    /**
+     * Group by PaymentTransaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaymentTransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PaymentTransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PaymentTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: PaymentTransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PaymentTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPaymentTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PaymentTransaction model
+   */
+  readonly fields: PaymentTransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PaymentTransaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PaymentTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PaymentTransaction model
+   */
+  interface PaymentTransactionFieldRefs {
+    readonly id: FieldRef<"PaymentTransaction", 'String'>
+    readonly applicationId: FieldRef<"PaymentTransaction", 'String'>
+    readonly billRefNumber: FieldRef<"PaymentTransaction", 'String'>
+    readonly amountExpected: FieldRef<"PaymentTransaction", 'Float'>
+    readonly currency: FieldRef<"PaymentTransaction", 'String'>
+    readonly status: FieldRef<"PaymentTransaction", 'PaymentStatus'>
+    readonly clientName: FieldRef<"PaymentTransaction", 'String'>
+    readonly clientMSISDN: FieldRef<"PaymentTransaction", 'String'>
+    readonly clientIDNumber: FieldRef<"PaymentTransaction", 'String'>
+    readonly clientEmail: FieldRef<"PaymentTransaction", 'String'>
+    readonly checkoutPayload: FieldRef<"PaymentTransaction", 'Json'>
+    readonly pesaflowPaymentRef: FieldRef<"PaymentTransaction", 'String'>
+    readonly pesaflowInvoiceNumber: FieldRef<"PaymentTransaction", 'String'>
+    readonly paymentChannel: FieldRef<"PaymentTransaction", 'String'>
+    readonly amountPaid: FieldRef<"PaymentTransaction", 'Float'>
+    readonly ipnPayload: FieldRef<"PaymentTransaction", 'Json'>
+    readonly smsSentAt: FieldRef<"PaymentTransaction", 'DateTime'>
+    readonly completedAt: FieldRef<"PaymentTransaction", 'DateTime'>
+    readonly createdAt: FieldRef<"PaymentTransaction", 'DateTime'>
+    readonly updatedAt: FieldRef<"PaymentTransaction", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PaymentTransaction findUnique
+   */
+  export type PaymentTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction findUniqueOrThrow
+   */
+  export type PaymentTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction findFirst
+   */
+  export type PaymentTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentTransactions.
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentTransactions.
+     */
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentTransaction findFirstOrThrow
+   */
+  export type PaymentTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransaction to fetch.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaymentTransactions.
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaymentTransactions.
+     */
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentTransaction findMany
+   */
+  export type PaymentTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which PaymentTransactions to fetch.
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaymentTransactions to fetch.
+     */
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PaymentTransactions.
+     */
+    cursor?: PaymentTransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaymentTransactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaymentTransactions.
+     */
+    skip?: number
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * PaymentTransaction create
+   */
+  export type PaymentTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PaymentTransaction.
+     */
+    data: XOR<PaymentTransactionCreateInput, PaymentTransactionUncheckedCreateInput>
+  }
+
+  /**
+   * PaymentTransaction createMany
+   */
+  export type PaymentTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PaymentTransactions.
+     */
+    data: PaymentTransactionCreateManyInput | PaymentTransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PaymentTransaction update
+   */
+  export type PaymentTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PaymentTransaction.
+     */
+    data: XOR<PaymentTransactionUpdateInput, PaymentTransactionUncheckedUpdateInput>
+    /**
+     * Choose, which PaymentTransaction to update.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction updateMany
+   */
+  export type PaymentTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PaymentTransactions.
+     */
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which PaymentTransactions to update
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * Limit how many PaymentTransactions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaymentTransaction upsert
+   */
+  export type PaymentTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PaymentTransaction to update in case it exists.
+     */
+    where: PaymentTransactionWhereUniqueInput
+    /**
+     * In case the PaymentTransaction found by the `where` argument doesn't exist, create a new PaymentTransaction with this data.
+     */
+    create: XOR<PaymentTransactionCreateInput, PaymentTransactionUncheckedCreateInput>
+    /**
+     * In case the PaymentTransaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PaymentTransactionUpdateInput, PaymentTransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * PaymentTransaction delete
+   */
+  export type PaymentTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    /**
+     * Filter which PaymentTransaction to delete.
+     */
+    where: PaymentTransactionWhereUniqueInput
+  }
+
+  /**
+   * PaymentTransaction deleteMany
+   */
+  export type PaymentTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaymentTransactions to delete
+     */
+    where?: PaymentTransactionWhereInput
+    /**
+     * Limit how many PaymentTransactions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaymentTransaction without action
+   */
+  export type PaymentTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model CountiesCache
    */
 
@@ -19610,6 +20869,32 @@ export namespace Prisma {
   export type LmsSyncQueueScalarFieldEnum = (typeof LmsSyncQueueScalarFieldEnum)[keyof typeof LmsSyncQueueScalarFieldEnum]
 
 
+  export const PaymentTransactionScalarFieldEnum: {
+    id: 'id',
+    applicationId: 'applicationId',
+    billRefNumber: 'billRefNumber',
+    amountExpected: 'amountExpected',
+    currency: 'currency',
+    status: 'status',
+    clientName: 'clientName',
+    clientMSISDN: 'clientMSISDN',
+    clientIDNumber: 'clientIDNumber',
+    clientEmail: 'clientEmail',
+    checkoutPayload: 'checkoutPayload',
+    pesaflowPaymentRef: 'pesaflowPaymentRef',
+    pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
+    paymentChannel: 'paymentChannel',
+    amountPaid: 'amountPaid',
+    ipnPayload: 'ipnPayload',
+    smsSentAt: 'smsSentAt',
+    completedAt: 'completedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PaymentTransactionScalarFieldEnum = (typeof PaymentTransactionScalarFieldEnum)[keyof typeof PaymentTransactionScalarFieldEnum]
+
+
   export const CountiesCacheScalarFieldEnum: {
     id: 'id',
     lastSyncedAt: 'lastSyncedAt',
@@ -19869,6 +21154,23 @@ export namespace Prisma {
   export type LmsSyncQueueOrderByRelevanceFieldEnum = (typeof LmsSyncQueueOrderByRelevanceFieldEnum)[keyof typeof LmsSyncQueueOrderByRelevanceFieldEnum]
 
 
+  export const PaymentTransactionOrderByRelevanceFieldEnum: {
+    id: 'id',
+    applicationId: 'applicationId',
+    billRefNumber: 'billRefNumber',
+    currency: 'currency',
+    clientName: 'clientName',
+    clientMSISDN: 'clientMSISDN',
+    clientIDNumber: 'clientIDNumber',
+    clientEmail: 'clientEmail',
+    pesaflowPaymentRef: 'pesaflowPaymentRef',
+    pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
+    paymentChannel: 'paymentChannel'
+  };
+
+  export type PaymentTransactionOrderByRelevanceFieldEnum = (typeof PaymentTransactionOrderByRelevanceFieldEnum)[keyof typeof PaymentTransactionOrderByRelevanceFieldEnum]
+
+
   export const CountiesCacheOrderByRelevanceFieldEnum: {
     id: 'id'
   };
@@ -20031,6 +21333,13 @@ export namespace Prisma {
    */
   export type EnumLmsSyncStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LmsSyncStatus'>
     
+
+
+  /**
+   * Reference to a field of type 'PaymentStatus'
+   */
+  export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
+    
   /**
    * Deep Input Types
    */
@@ -20135,6 +21444,7 @@ export namespace Prisma {
     members?: MemberDataListRelationFilter
     proposedBusiness?: XOR<ProposedBusinessNullableScalarRelationFilter, ProposedBusinessWhereInput> | null
     lmsSyncQueue?: XOR<LmsSyncQueueNullableScalarRelationFilter, LmsSyncQueueWhereInput> | null
+    paymentTransactions?: PaymentTransactionListRelationFilter
   }
 
   export type ApplicationOrderByWithRelationInput = {
@@ -20162,6 +21472,7 @@ export namespace Prisma {
     members?: MemberDataOrderByRelationAggregateInput
     proposedBusiness?: ProposedBusinessOrderByWithRelationInput
     lmsSyncQueue?: LmsSyncQueueOrderByWithRelationInput
+    paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
     _relevance?: ApplicationOrderByRelevanceInput
   }
 
@@ -20193,6 +21504,7 @@ export namespace Prisma {
     members?: MemberDataListRelationFilter
     proposedBusiness?: XOR<ProposedBusinessNullableScalarRelationFilter, ProposedBusinessWhereInput> | null
     lmsSyncQueue?: XOR<LmsSyncQueueNullableScalarRelationFilter, LmsSyncQueueWhereInput> | null
+    paymentTransactions?: PaymentTransactionListRelationFilter
   }, "id" | "applicationId">
 
   export type ApplicationOrderByWithAggregationInput = {
@@ -21322,6 +22634,139 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"LmsSyncQueue"> | Date | string
   }
 
+  export type PaymentTransactionWhereInput = {
+    AND?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    OR?: PaymentTransactionWhereInput[]
+    NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    id?: StringFilter<"PaymentTransaction"> | string
+    applicationId?: StringFilter<"PaymentTransaction"> | string
+    billRefNumber?: StringFilter<"PaymentTransaction"> | string
+    amountExpected?: FloatFilter<"PaymentTransaction"> | number
+    currency?: StringFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    clientName?: StringFilter<"PaymentTransaction"> | string
+    clientMSISDN?: StringFilter<"PaymentTransaction"> | string
+    clientIDNumber?: StringFilter<"PaymentTransaction"> | string
+    clientEmail?: StringFilter<"PaymentTransaction"> | string
+    checkoutPayload?: JsonFilter<"PaymentTransaction">
+    pesaflowPaymentRef?: StringNullableFilter<"PaymentTransaction"> | string | null
+    pesaflowInvoiceNumber?: StringNullableFilter<"PaymentTransaction"> | string | null
+    paymentChannel?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amountPaid?: FloatNullableFilter<"PaymentTransaction"> | number | null
+    ipnPayload?: JsonNullableFilter<"PaymentTransaction">
+    smsSentAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+  }
+
+  export type PaymentTransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    billRefNumber?: SortOrder
+    amountExpected?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientName?: SortOrder
+    clientMSISDN?: SortOrder
+    clientIDNumber?: SortOrder
+    clientEmail?: SortOrder
+    checkoutPayload?: SortOrder
+    pesaflowPaymentRef?: SortOrderInput | SortOrder
+    pesaflowInvoiceNumber?: SortOrderInput | SortOrder
+    paymentChannel?: SortOrderInput | SortOrder
+    amountPaid?: SortOrderInput | SortOrder
+    ipnPayload?: SortOrderInput | SortOrder
+    smsSentAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    application?: ApplicationOrderByWithRelationInput
+    _relevance?: PaymentTransactionOrderByRelevanceInput
+  }
+
+  export type PaymentTransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    billRefNumber?: string
+    AND?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    OR?: PaymentTransactionWhereInput[]
+    NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    applicationId?: StringFilter<"PaymentTransaction"> | string
+    amountExpected?: FloatFilter<"PaymentTransaction"> | number
+    currency?: StringFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    clientName?: StringFilter<"PaymentTransaction"> | string
+    clientMSISDN?: StringFilter<"PaymentTransaction"> | string
+    clientIDNumber?: StringFilter<"PaymentTransaction"> | string
+    clientEmail?: StringFilter<"PaymentTransaction"> | string
+    checkoutPayload?: JsonFilter<"PaymentTransaction">
+    pesaflowPaymentRef?: StringNullableFilter<"PaymentTransaction"> | string | null
+    pesaflowInvoiceNumber?: StringNullableFilter<"PaymentTransaction"> | string | null
+    paymentChannel?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amountPaid?: FloatNullableFilter<"PaymentTransaction"> | number | null
+    ipnPayload?: JsonNullableFilter<"PaymentTransaction">
+    smsSentAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+  }, "id" | "billRefNumber">
+
+  export type PaymentTransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    billRefNumber?: SortOrder
+    amountExpected?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientName?: SortOrder
+    clientMSISDN?: SortOrder
+    clientIDNumber?: SortOrder
+    clientEmail?: SortOrder
+    checkoutPayload?: SortOrder
+    pesaflowPaymentRef?: SortOrderInput | SortOrder
+    pesaflowInvoiceNumber?: SortOrderInput | SortOrder
+    paymentChannel?: SortOrderInput | SortOrder
+    amountPaid?: SortOrderInput | SortOrder
+    ipnPayload?: SortOrderInput | SortOrder
+    smsSentAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PaymentTransactionCountOrderByAggregateInput
+    _avg?: PaymentTransactionAvgOrderByAggregateInput
+    _max?: PaymentTransactionMaxOrderByAggregateInput
+    _min?: PaymentTransactionMinOrderByAggregateInput
+    _sum?: PaymentTransactionSumOrderByAggregateInput
+  }
+
+  export type PaymentTransactionScalarWhereWithAggregatesInput = {
+    AND?: PaymentTransactionScalarWhereWithAggregatesInput | PaymentTransactionScalarWhereWithAggregatesInput[]
+    OR?: PaymentTransactionScalarWhereWithAggregatesInput[]
+    NOT?: PaymentTransactionScalarWhereWithAggregatesInput | PaymentTransactionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    applicationId?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    billRefNumber?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    amountExpected?: FloatWithAggregatesFilter<"PaymentTransaction"> | number
+    currency?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusWithAggregatesFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    clientName?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    clientMSISDN?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    clientIDNumber?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    clientEmail?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    checkoutPayload?: JsonWithAggregatesFilter<"PaymentTransaction">
+    pesaflowPaymentRef?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
+    pesaflowInvoiceNumber?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
+    paymentChannel?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
+    amountPaid?: FloatNullableWithAggregatesFilter<"PaymentTransaction"> | number | null
+    ipnPayload?: JsonNullableWithAggregatesFilter<"PaymentTransaction">
+    smsSentAt?: DateTimeNullableWithAggregatesFilter<"PaymentTransaction"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"PaymentTransaction"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PaymentTransaction"> | Date | string
+  }
+
   export type CountiesCacheWhereInput = {
     AND?: CountiesCacheWhereInput | CountiesCacheWhereInput[]
     OR?: CountiesCacheWhereInput[]
@@ -21669,6 +23114,7 @@ export namespace Prisma {
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateInput = {
@@ -21695,6 +23141,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUpdateInput = {
@@ -21721,6 +23168,7 @@ export namespace Prisma {
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateInput = {
@@ -21747,6 +23195,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateManyInput = {
@@ -23043,6 +24492,166 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PaymentTransactionCreateInput = {
+    id?: string
+    billRefNumber: string
+    amountExpected: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    clientName: string
+    clientMSISDN: string
+    clientIDNumber: string
+    clientEmail: string
+    checkoutPayload: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: string | null
+    pesaflowInvoiceNumber?: string | null
+    paymentChannel?: string | null
+    amountPaid?: number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    application: ApplicationCreateNestedOneWithoutPaymentTransactionsInput
+  }
+
+  export type PaymentTransactionUncheckedCreateInput = {
+    id?: string
+    applicationId: string
+    billRefNumber: string
+    amountExpected: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    clientName: string
+    clientMSISDN: string
+    clientIDNumber: string
+    clientEmail: string
+    checkoutPayload: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: string | null
+    pesaflowInvoiceNumber?: string | null
+    paymentChannel?: string | null
+    amountPaid?: number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billRefNumber?: StringFieldUpdateOperationsInput | string
+    amountExpected?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientMSISDN?: StringFieldUpdateOperationsInput | string
+    clientIDNumber?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    checkoutPayload?: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: NullableStringFieldUpdateOperationsInput | string | null
+    pesaflowInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    application?: ApplicationUpdateOneRequiredWithoutPaymentTransactionsNestedInput
+  }
+
+  export type PaymentTransactionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    billRefNumber?: StringFieldUpdateOperationsInput | string
+    amountExpected?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientMSISDN?: StringFieldUpdateOperationsInput | string
+    clientIDNumber?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    checkoutPayload?: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: NullableStringFieldUpdateOperationsInput | string | null
+    pesaflowInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionCreateManyInput = {
+    id?: string
+    applicationId: string
+    billRefNumber: string
+    amountExpected: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    clientName: string
+    clientMSISDN: string
+    clientIDNumber: string
+    clientEmail: string
+    checkoutPayload: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: string | null
+    pesaflowInvoiceNumber?: string | null
+    paymentChannel?: string | null
+    amountPaid?: number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billRefNumber?: StringFieldUpdateOperationsInput | string
+    amountExpected?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientMSISDN?: StringFieldUpdateOperationsInput | string
+    clientIDNumber?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    checkoutPayload?: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: NullableStringFieldUpdateOperationsInput | string | null
+    pesaflowInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    billRefNumber?: StringFieldUpdateOperationsInput | string
+    amountExpected?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientMSISDN?: StringFieldUpdateOperationsInput | string
+    clientIDNumber?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    checkoutPayload?: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: NullableStringFieldUpdateOperationsInput | string | null
+    pesaflowInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CountiesCacheCreateInput = {
     id?: string
     lastSyncedAt?: Date | string
@@ -23542,7 +25151,17 @@ export namespace Prisma {
     isNot?: LmsSyncQueueWhereInput | null
   }
 
+  export type PaymentTransactionListRelationFilter = {
+    every?: PaymentTransactionWhereInput
+    some?: PaymentTransactionWhereInput
+    none?: PaymentTransactionWhereInput
+  }
+
   export type MemberDataOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PaymentTransactionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -24751,6 +26370,104 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type EnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[]
+    notIn?: $Enums.PaymentStatus[]
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
+  export type PaymentTransactionOrderByRelevanceInput = {
+    fields: PaymentTransactionOrderByRelevanceFieldEnum | PaymentTransactionOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type PaymentTransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    billRefNumber?: SortOrder
+    amountExpected?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientName?: SortOrder
+    clientMSISDN?: SortOrder
+    clientIDNumber?: SortOrder
+    clientEmail?: SortOrder
+    checkoutPayload?: SortOrder
+    pesaflowPaymentRef?: SortOrder
+    pesaflowInvoiceNumber?: SortOrder
+    paymentChannel?: SortOrder
+    amountPaid?: SortOrder
+    ipnPayload?: SortOrder
+    smsSentAt?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentTransactionAvgOrderByAggregateInput = {
+    amountExpected?: SortOrder
+    amountPaid?: SortOrder
+  }
+
+  export type PaymentTransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    billRefNumber?: SortOrder
+    amountExpected?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientName?: SortOrder
+    clientMSISDN?: SortOrder
+    clientIDNumber?: SortOrder
+    clientEmail?: SortOrder
+    pesaflowPaymentRef?: SortOrder
+    pesaflowInvoiceNumber?: SortOrder
+    paymentChannel?: SortOrder
+    amountPaid?: SortOrder
+    smsSentAt?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentTransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    applicationId?: SortOrder
+    billRefNumber?: SortOrder
+    amountExpected?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    clientName?: SortOrder
+    clientMSISDN?: SortOrder
+    clientIDNumber?: SortOrder
+    clientEmail?: SortOrder
+    pesaflowPaymentRef?: SortOrder
+    pesaflowInvoiceNumber?: SortOrder
+    paymentChannel?: SortOrder
+    amountPaid?: SortOrder
+    smsSentAt?: SortOrder
+    completedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PaymentTransactionSumOrderByAggregateInput = {
+    amountExpected?: SortOrder
+    amountPaid?: SortOrder
+  }
+
+  export type EnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[]
+    notIn?: $Enums.PaymentStatus[]
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
+  }
+
   export type CountyListRelationFilter = {
     every?: CountyWhereInput
     some?: CountyWhereInput
@@ -25041,6 +26758,13 @@ export namespace Prisma {
     connect?: LmsSyncQueueWhereUniqueInput
   }
 
+  export type PaymentTransactionCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<PaymentTransactionCreateWithoutApplicationInput, PaymentTransactionUncheckedCreateWithoutApplicationInput> | PaymentTransactionCreateWithoutApplicationInput[] | PaymentTransactionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutApplicationInput | PaymentTransactionCreateOrConnectWithoutApplicationInput[]
+    createMany?: PaymentTransactionCreateManyApplicationInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+  }
+
   export type ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput = {
     create?: XOR<ConfirmationsCreateWithoutApplicationInput, ConfirmationsUncheckedCreateWithoutApplicationInput>
     connectOrCreate?: ConfirmationsCreateOrConnectWithoutApplicationInput
@@ -25076,6 +26800,13 @@ export namespace Prisma {
     create?: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
     connectOrCreate?: LmsSyncQueueCreateOrConnectWithoutApplicationInput
     connect?: LmsSyncQueueWhereUniqueInput
+  }
+
+  export type PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<PaymentTransactionCreateWithoutApplicationInput, PaymentTransactionUncheckedCreateWithoutApplicationInput> | PaymentTransactionCreateWithoutApplicationInput[] | PaymentTransactionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutApplicationInput | PaymentTransactionCreateOrConnectWithoutApplicationInput[]
+    createMany?: PaymentTransactionCreateManyApplicationInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
   }
 
   export type EnumApplicationStatusFieldUpdateOperationsInput = {
@@ -25170,6 +26901,20 @@ export namespace Prisma {
     update?: XOR<XOR<LmsSyncQueueUpdateToOneWithWhereWithoutApplicationInput, LmsSyncQueueUpdateWithoutApplicationInput>, LmsSyncQueueUncheckedUpdateWithoutApplicationInput>
   }
 
+  export type PaymentTransactionUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutApplicationInput, PaymentTransactionUncheckedCreateWithoutApplicationInput> | PaymentTransactionCreateWithoutApplicationInput[] | PaymentTransactionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutApplicationInput | PaymentTransactionCreateOrConnectWithoutApplicationInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutApplicationInput | PaymentTransactionUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: PaymentTransactionCreateManyApplicationInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutApplicationInput | PaymentTransactionUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutApplicationInput | PaymentTransactionUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
   export type ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput = {
     create?: XOR<ConfirmationsCreateWithoutApplicationInput, ConfirmationsUncheckedCreateWithoutApplicationInput>
     connectOrCreate?: ConfirmationsCreateOrConnectWithoutApplicationInput
@@ -25232,6 +26977,20 @@ export namespace Prisma {
     delete?: LmsSyncQueueWhereInput | boolean
     connect?: LmsSyncQueueWhereUniqueInput
     update?: XOR<XOR<LmsSyncQueueUpdateToOneWithWhereWithoutApplicationInput, LmsSyncQueueUpdateWithoutApplicationInput>, LmsSyncQueueUncheckedUpdateWithoutApplicationInput>
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutApplicationInput, PaymentTransactionUncheckedCreateWithoutApplicationInput> | PaymentTransactionCreateWithoutApplicationInput[] | PaymentTransactionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutApplicationInput | PaymentTransactionCreateOrConnectWithoutApplicationInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutApplicationInput | PaymentTransactionUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: PaymentTransactionCreateManyApplicationInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutApplicationInput | PaymentTransactionUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutApplicationInput | PaymentTransactionUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
   }
 
   export type ApplicationCreateNestedOneWithoutGroupDataInput = {
@@ -25538,6 +27297,24 @@ export namespace Prisma {
     upsert?: SyncQueueUpsertWithoutLmsSyncQueueInput
     connect?: SyncQueueWhereUniqueInput
     update?: XOR<XOR<SyncQueueUpdateToOneWithWhereWithoutLmsSyncQueueInput, SyncQueueUpdateWithoutLmsSyncQueueInput>, SyncQueueUncheckedUpdateWithoutLmsSyncQueueInput>
+  }
+
+  export type ApplicationCreateNestedOneWithoutPaymentTransactionsInput = {
+    create?: XOR<ApplicationCreateWithoutPaymentTransactionsInput, ApplicationUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPaymentTransactionsInput
+    connect?: ApplicationWhereUniqueInput
+  }
+
+  export type EnumPaymentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentStatus
+  }
+
+  export type ApplicationUpdateOneRequiredWithoutPaymentTransactionsNestedInput = {
+    create?: XOR<ApplicationCreateWithoutPaymentTransactionsInput, ApplicationUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPaymentTransactionsInput
+    upsert?: ApplicationUpsertWithoutPaymentTransactionsInput
+    connect?: ApplicationWhereUniqueInput
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutPaymentTransactionsInput, ApplicationUpdateWithoutPaymentTransactionsInput>, ApplicationUncheckedUpdateWithoutPaymentTransactionsInput>
   }
 
   export type CountyCreateNestedManyWithoutCacheInput = {
@@ -26135,6 +27912,23 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[]
+    notIn?: $Enums.PaymentStatus[]
+    not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
+  }
+
+  export type NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentStatus[]
+    notIn?: $Enums.PaymentStatus[]
+    not?: NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.PaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
+  }
+
   export type ApplicationCreateWithoutUserInput = {
     id?: string
     applicationId: string
@@ -26158,6 +27952,7 @@ export namespace Prisma {
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutUserInput = {
@@ -26183,6 +27978,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutUserInput = {
@@ -26502,6 +28298,60 @@ export namespace Prisma {
     create: XOR<LmsSyncQueueCreateWithoutApplicationInput, LmsSyncQueueUncheckedCreateWithoutApplicationInput>
   }
 
+  export type PaymentTransactionCreateWithoutApplicationInput = {
+    id?: string
+    billRefNumber: string
+    amountExpected: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    clientName: string
+    clientMSISDN: string
+    clientIDNumber: string
+    clientEmail: string
+    checkoutPayload: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: string | null
+    pesaflowInvoiceNumber?: string | null
+    paymentChannel?: string | null
+    amountPaid?: number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionUncheckedCreateWithoutApplicationInput = {
+    id?: string
+    billRefNumber: string
+    amountExpected: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    clientName: string
+    clientMSISDN: string
+    clientIDNumber: string
+    clientEmail: string
+    checkoutPayload: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: string | null
+    pesaflowInvoiceNumber?: string | null
+    paymentChannel?: string | null
+    amountPaid?: number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentTransactionCreateOrConnectWithoutApplicationInput = {
+    where: PaymentTransactionWhereUniqueInput
+    create: XOR<PaymentTransactionCreateWithoutApplicationInput, PaymentTransactionUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type PaymentTransactionCreateManyApplicationInputEnvelope = {
+    data: PaymentTransactionCreateManyApplicationInput | PaymentTransactionCreateManyApplicationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutApplicationsInput = {
     update: XOR<UserUpdateWithoutApplicationsInput, UserUncheckedUpdateWithoutApplicationsInput>
     create: XOR<UserCreateWithoutApplicationsInput, UserUncheckedCreateWithoutApplicationsInput>
@@ -26793,6 +28643,48 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PaymentTransactionUpsertWithWhereUniqueWithoutApplicationInput = {
+    where: PaymentTransactionWhereUniqueInput
+    update: XOR<PaymentTransactionUpdateWithoutApplicationInput, PaymentTransactionUncheckedUpdateWithoutApplicationInput>
+    create: XOR<PaymentTransactionCreateWithoutApplicationInput, PaymentTransactionUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type PaymentTransactionUpdateWithWhereUniqueWithoutApplicationInput = {
+    where: PaymentTransactionWhereUniqueInput
+    data: XOR<PaymentTransactionUpdateWithoutApplicationInput, PaymentTransactionUncheckedUpdateWithoutApplicationInput>
+  }
+
+  export type PaymentTransactionUpdateManyWithWhereWithoutApplicationInput = {
+    where: PaymentTransactionScalarWhereInput
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyWithoutApplicationInput>
+  }
+
+  export type PaymentTransactionScalarWhereInput = {
+    AND?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+    OR?: PaymentTransactionScalarWhereInput[]
+    NOT?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+    id?: StringFilter<"PaymentTransaction"> | string
+    applicationId?: StringFilter<"PaymentTransaction"> | string
+    billRefNumber?: StringFilter<"PaymentTransaction"> | string
+    amountExpected?: FloatFilter<"PaymentTransaction"> | number
+    currency?: StringFilter<"PaymentTransaction"> | string
+    status?: EnumPaymentStatusFilter<"PaymentTransaction"> | $Enums.PaymentStatus
+    clientName?: StringFilter<"PaymentTransaction"> | string
+    clientMSISDN?: StringFilter<"PaymentTransaction"> | string
+    clientIDNumber?: StringFilter<"PaymentTransaction"> | string
+    clientEmail?: StringFilter<"PaymentTransaction"> | string
+    checkoutPayload?: JsonFilter<"PaymentTransaction">
+    pesaflowPaymentRef?: StringNullableFilter<"PaymentTransaction"> | string | null
+    pesaflowInvoiceNumber?: StringNullableFilter<"PaymentTransaction"> | string | null
+    paymentChannel?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amountPaid?: FloatNullableFilter<"PaymentTransaction"> | number | null
+    ipnPayload?: JsonNullableFilter<"PaymentTransaction">
+    smsSentAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+  }
+
   export type ApplicationCreateWithoutGroupDataInput = {
     id?: string
     applicationId: string
@@ -26816,6 +28708,7 @@ export namespace Prisma {
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutGroupDataInput = {
@@ -26841,6 +28734,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutGroupDataInput = {
@@ -26882,6 +28776,7 @@ export namespace Prisma {
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutGroupDataInput = {
@@ -26907,6 +28802,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutMembersInput = {
@@ -26932,6 +28828,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutMembersInput = {
@@ -26957,6 +28854,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutMembersInput = {
@@ -26998,6 +28896,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutMembersInput = {
@@ -27023,6 +28922,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutLoanConditionsInput = {
@@ -27048,6 +28948,7 @@ export namespace Prisma {
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutLoanConditionsInput = {
@@ -27073,6 +28974,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutLoanConditionsInput = {
@@ -27114,6 +29016,7 @@ export namespace Prisma {
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutLoanConditionsInput = {
@@ -27139,6 +29042,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutProposedBusinessInput = {
@@ -27164,6 +29068,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutProposedBusinessInput = {
@@ -27189,6 +29094,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutProposedBusinessInput = {
@@ -27256,6 +29162,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutProposedBusinessInput = {
@@ -27281,6 +29188,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type CustomExpenseUpsertWithWhereUniqueWithoutProposedBusinessInput = {
@@ -27410,6 +29318,7 @@ export namespace Prisma {
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutConfirmationsInput = {
@@ -27435,6 +29344,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
     lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutConfirmationsInput = {
@@ -27476,6 +29386,7 @@ export namespace Prisma {
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutConfirmationsInput = {
@@ -27501,6 +29412,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type TaxonomyTermCreateWithoutVocabularyInput = {
@@ -27753,6 +29665,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
     members?: MemberDataCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutLmsSyncQueueInput = {
@@ -27778,6 +29691,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
     proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutLmsSyncQueueInput = {
@@ -27854,6 +29768,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutLmsSyncQueueInput = {
@@ -27879,6 +29794,7 @@ export namespace Prisma {
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type SyncQueueUpsertWithoutLmsSyncQueueInput = {
@@ -27920,6 +29836,126 @@ export namespace Prisma {
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApplicationCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    applicationId: string
+    status?: $Enums.ApplicationStatus
+    applicationProgress?: number
+    syncStatus?: $Enums.SyncStatus
+    syncAttempts?: number
+    lastSyncAt?: Date | string | null
+    syncError?: string | null
+    externalId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
+    user: UserCreateNestedOneWithoutApplicationsInput
+    confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
+    groupData?: GroupDataCreateNestedOneWithoutApplicationInput
+    loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
+    members?: MemberDataCreateNestedManyWithoutApplicationInput
+    proposedBusiness?: ProposedBusinessCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueCreateNestedOneWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    applicationId: string
+    status?: $Enums.ApplicationStatus
+    applicationProgress?: number
+    userId: string
+    syncStatus?: $Enums.SyncStatus
+    syncAttempts?: number
+    lastSyncAt?: Date | string | null
+    syncError?: string | null
+    externalId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lmsReferenceId?: string | null
+    lmsSyncStatus?: string | null
+    lmsSyncError?: string | null
+    lmsSyncAttempts?: number
+    lmsLastSyncAt?: Date | string | null
+    confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
+    groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
+    loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
+    members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
+    proposedBusiness?: ProposedBusinessUncheckedCreateNestedOneWithoutApplicationInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedCreateNestedOneWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutPaymentTransactionsInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutPaymentTransactionsInput, ApplicationUncheckedCreateWithoutPaymentTransactionsInput>
+  }
+
+  export type ApplicationUpsertWithoutPaymentTransactionsInput = {
+    update: XOR<ApplicationUpdateWithoutPaymentTransactionsInput, ApplicationUncheckedUpdateWithoutPaymentTransactionsInput>
+    create: XOR<ApplicationCreateWithoutPaymentTransactionsInput, ApplicationUncheckedCreateWithoutPaymentTransactionsInput>
+    where?: ApplicationWhereInput
+  }
+
+  export type ApplicationUpdateToOneWithWhereWithoutPaymentTransactionsInput = {
+    where?: ApplicationWhereInput
+    data: XOR<ApplicationUpdateWithoutPaymentTransactionsInput, ApplicationUncheckedUpdateWithoutPaymentTransactionsInput>
+  }
+
+  export type ApplicationUpdateWithoutPaymentTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    status?: EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
+    applicationProgress?: IntFieldUpdateOperationsInput | number
+    syncStatus?: EnumSyncStatusFieldUpdateOperationsInput | $Enums.SyncStatus
+    syncAttempts?: IntFieldUpdateOperationsInput | number
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    syncError?: NullableStringFieldUpdateOperationsInput | string | null
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
+    confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
+    groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
+    loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
+    members?: MemberDataUpdateManyWithoutApplicationNestedInput
+    proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutPaymentTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+    status?: EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
+    applicationProgress?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    syncStatus?: EnumSyncStatusFieldUpdateOperationsInput | $Enums.SyncStatus
+    syncAttempts?: IntFieldUpdateOperationsInput | number
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    syncError?: NullableStringFieldUpdateOperationsInput | string | null
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lmsReferenceId?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
+    lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
+    lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
+    groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
+    loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
+    members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
+    proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
+    lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
   }
 
   export type CountyCreateWithoutCacheInput = {
@@ -28228,6 +30264,7 @@ export namespace Prisma {
     members?: MemberDataUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutUserInput = {
@@ -28253,6 +30290,7 @@ export namespace Prisma {
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
     proposedBusiness?: ProposedBusinessUncheckedUpdateOneWithoutApplicationNestedInput
     lmsSyncQueue?: LmsSyncQueueUncheckedUpdateOneWithoutApplicationNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateManyWithoutUserInput = {
@@ -28295,6 +30333,28 @@ export namespace Prisma {
     confirmation_sent_at?: Date | string | null
     confirmation_confirmed_at?: Date | string | null
     confirmation_token_expires_at?: Date | string | null
+  }
+
+  export type PaymentTransactionCreateManyApplicationInput = {
+    id?: string
+    billRefNumber: string
+    amountExpected: number
+    currency?: string
+    status?: $Enums.PaymentStatus
+    clientName: string
+    clientMSISDN: string
+    clientIDNumber: string
+    clientEmail: string
+    checkoutPayload: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: string | null
+    pesaflowInvoiceNumber?: string | null
+    paymentChannel?: string | null
+    amountPaid?: number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: Date | string | null
+    completedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type MemberDataUpdateWithoutApplicationInput = {
@@ -28364,6 +30424,72 @@ export namespace Prisma {
     confirmation_sent_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmation_confirmed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmation_token_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PaymentTransactionUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billRefNumber?: StringFieldUpdateOperationsInput | string
+    amountExpected?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientMSISDN?: StringFieldUpdateOperationsInput | string
+    clientIDNumber?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    checkoutPayload?: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: NullableStringFieldUpdateOperationsInput | string | null
+    pesaflowInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUncheckedUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billRefNumber?: StringFieldUpdateOperationsInput | string
+    amountExpected?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientMSISDN?: StringFieldUpdateOperationsInput | string
+    clientIDNumber?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    checkoutPayload?: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: NullableStringFieldUpdateOperationsInput | string | null
+    pesaflowInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billRefNumber?: StringFieldUpdateOperationsInput | string
+    amountExpected?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientMSISDN?: StringFieldUpdateOperationsInput | string
+    clientIDNumber?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    checkoutPayload?: JsonNullValueInput | InputJsonValue
+    pesaflowPaymentRef?: NullableStringFieldUpdateOperationsInput | string | null
+    pesaflowInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    amountPaid?: NullableFloatFieldUpdateOperationsInput | number | null
+    ipnPayload?: NullableJsonNullValueInput | InputJsonValue
+    smsSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CustomExpenseCreateManyProposedBusinessInput = {

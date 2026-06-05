@@ -1,27 +1,8 @@
+import {
+  isValidKenyanPhoneNumber,
+  normalizeKenyanPhoneLocal,
+} from '@/lib/utils/string';
 import { z } from 'zod';
-
-// E.164 phone number regex
-const E164_PHONE_REGEX = /^\+[1-9]\d{7,15}$/;
-
-// Validate phone number in E.164 format or Kenya local format (9 digits)
-const validatePhoneNumber = (phone: string): boolean => {
-  // Strip all whitespace before validation
-  const normalized = phone.replace(/\s+/g, '');
-
-  // If it starts with +, validate as full E.164 format
-  if (normalized.startsWith('+')) {
-    return E164_PHONE_REGEX.test(normalized);
-  }
-
-  // If it doesn't start with +, validate as Kenya local format (9 digits)
-  // When prefixed with +254, it should create a valid E.164 number
-  if (!/^\d{9}$/.test(normalized)) {
-    return false;
-  }
-
-  // Verify that +254{phone} would be valid E.164
-  return E164_PHONE_REGEX.test(`+254${normalized}`);
-};
 
 // Email Login Schemas
 export const createEmailLoginSchema = (t: (key: string) => string) =>
@@ -42,7 +23,13 @@ export type EmailLogin = z.infer<typeof emailLoginSchema>;
 // Phone Login Schemas
 const phoneLoginBaseSchema = z.object({
   loginType: z.literal('phone'),
-  phone: z.string().optional(),
+  phone: z.preprocess(
+    (value) =>
+      typeof value === 'string'
+        ? (normalizeKenyanPhoneLocal(value) ?? value.replace(/\D/g, ''))
+        : value,
+    z.string().optional(),
+  ),
   otp_code: z.string().optional(),
   request_id: z.string().optional(),
 });
@@ -73,7 +60,7 @@ export const createPhoneLoginSchema = (t: (key: string) => string) =>
           path: ['phone'],
           message: t('phoneNumberRequired'),
         });
-      } else if (!validatePhoneNumber(data.phone)) {
+      } else if (!isValidKenyanPhoneNumber(data.phone)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['phone'],
@@ -109,7 +96,7 @@ export const phoneLoginSchema = phoneLoginBaseSchema.superRefine(
           path: ['phone'],
           message: 'Phone number is required',
         });
-      } else if (!validatePhoneNumber(data.phone)) {
+      } else if (!isValidKenyanPhoneNumber(data.phone)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['phone'],

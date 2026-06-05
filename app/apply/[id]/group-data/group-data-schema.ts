@@ -71,7 +71,7 @@ export const groupDataSchema = z
 
     groupCreditHistory: z.preprocess(
       (v) => (Array.isArray(v) ? v : v != null ? [v] : []),
-      z.array(validFile(FILE_ACCEPT, MAX_FILE_SIZE)).min(1),
+      z.array(validFile(FILE_ACCEPT, MAX_FILE_SIZE)).optional(),
     ),
     countyOfOperation: z.string().nonempty(),
     constituency: z.string().nonempty(),

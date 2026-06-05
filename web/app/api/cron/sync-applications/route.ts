@@ -1,3 +1,4 @@
+import { processLmsSyncBackfill } from '@/lib/api/lms-sync.service';
 import { processSyncQueue } from '@/lib/api/sync.service';
 import { prisma } from '@/lib/db/prisma';
 import { NextRequest, NextResponse } from 'next/server';
@@ -64,6 +65,9 @@ export async function GET(request: NextRequest) {
     const result = await processSyncQueue();
     logEntry.processed = result.processed;
 
+    const lmsBackfill = await processLmsSyncBackfill(15);
+    console.log('[CRON] LMS backfill:', lmsBackfill);
+
     // Get queue statistics
     const stats = await prisma.syncQueue.groupBy({
       by: ['status'],
@@ -103,6 +107,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       processed: result.processed,
+      lmsBackfill,
       duration,
       timestamp: new Date().toISOString(),
       queueStatus: statusCounts,

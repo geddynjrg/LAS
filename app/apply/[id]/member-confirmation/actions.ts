@@ -102,6 +102,7 @@ export async function sendMemberConfirmations(applicationId: string) {
 
     // Call Drupal backend to send SMS to all members
     const result = await sendConfirmationSMS(applicationId);
+    console.log('Result from sendConfirmationSMS:', result);
 
     if (result.success) {
       return { 

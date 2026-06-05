@@ -1,3 +1,5 @@
+'use client';
+
 import { ProfileMenu } from '@/components/profile-menu';
 import { Header } from '@workspace/ui/components/header';
 import { SidebarTrigger } from '@workspace/ui/components/sidebar';

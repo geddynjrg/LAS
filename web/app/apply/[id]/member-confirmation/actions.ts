@@ -1,11 +1,17 @@
 // app/apply/[id]/member-confirmation/actions.ts
 'use server';
 
+import {
+  sendMemberConfirmationOtp,
+  verifyMemberConfirmationOtp,
+  type OtpActionResponse,
+} from '@/lib/api/member-confirmation-otp.service';
 import { sendConfirmationSMS } from '@/lib/api/sms.service';
 import {
   getApplicationById,
   updateApplicationMembersSMSConfirmation,
 } from '@/lib/data/application';
+import { prisma } from '@/lib/db/prisma';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 import { redirect } from 'next/navigation';
@@ -142,4 +148,55 @@ export async function sendMemberConfirmations(applicationId: string) {
       stats: null,
     };
   }
+}
+
+export async function sendMemberOtp(
+  applicationId: string,
+  nationalIdCode: string,
+): Promise<OtpActionResponse> {
+  return sendMemberConfirmationOtp(applicationId, nationalIdCode);
+}
+
+export async function verifyMemberOtp(
+  applicationId: string,
+  nationalIdCode: string,
+  otpCode: string,
+): Promise<OtpActionResponse> {
+  const result = await verifyMemberConfirmationOtp(
+    applicationId,
+    nationalIdCode,
+    otpCode,
+  );
+
+  if (result.success) {
+    const application = await prisma.application.findUnique({
+      where: { applicationId },
+      select: { id: true },
+    });
+
+    if (application) {
+      const confirmationStatus =
+        result.member?.confirmation_status === 'declined'
+          ? 'declined'
+          : 'confirmed';
+
+      await prisma.memberData.updateMany({
+        where: {
+          applicationId: application.id,
+          nationalIdCode,
+        },
+        data: {
+          confirmation_status: confirmationStatus,
+          ...(confirmationStatus === 'confirmed'
+            ? {
+                confirmation_confirmed_at: new Date(),
+                status: 'CONFIRMED',
+              }
+            : {}),
+        },
+      });
+    }
+  }
+
+  return result;
 }

@@ -78,7 +78,7 @@ export const GroupDataForm: FC<GroupDataProps> = ({
       ? Array.isArray(applicationGroupData.background.groupCreditHistory)
         ? applicationGroupData.background.groupCreditHistory
         : [applicationGroupData.background.groupCreditHistory]
-      : undefined,
+      : [],
     countyOfOperation: applicationGroupData?.location.countyOfOperation,
     constituency: applicationGroupData?.location.constituency,
     ward: applicationGroupData?.location.ward,
@@ -356,14 +356,14 @@ export const GroupDataForm: FC<GroupDataProps> = ({
 
           <Field
             state={state}
-            name="groupCreditHistory"
+            name="groupCreditHistory"            
             label={
               <div>
                 <div>
                   {t(
                     'ApplicationDetailsPage.groupData.groupBackground.creditHistory',
                   )}
-                  <span className="text-destructive">*</span>
+                  {/* <span className="text-destructive">*</span> */}
                 </div>
                 <div className="typo-body-small text-foreground font-normal mt-1">
                   {t('ApplicationDetailsPage.loan.creditHistoryDescription')}

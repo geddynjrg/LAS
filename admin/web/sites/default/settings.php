@@ -910,7 +910,7 @@ $settings['ecitizen_oauth'] = [
   'ecitizen_token_url' => getenv('ECITIZEN_TOKEN_URL') ?: 'https://accounts.ecitizen.go.ke/oauth/access-token',
   'ecitizen_user_info_url' => getenv('ECITIZEN_USER_INFO_URL') ?: 'https://accounts.ecitizen.go.ke/api/user-info',
   'redirect_uri'  => getenv('ECITIZEN_REDIRECT_URI') ?: 'https://loans-staging-admin.uwezo.go.ke/api/oauth/ecitizen',
-  'forntend_url'    => getenv('UWEZO_UI_PUBLIC_URL') ?: 'https://loans-staging.uwezo.go.ke',
+  'frontend_url'  => getenv('UWEZO_UI_PUBLIC_URL') ?: 'https://loans-staging.uwezo.go.ke',
 ];
 
 // Hash salt from environment variable.

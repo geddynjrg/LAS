@@ -2,6 +2,7 @@
 
 namespace Drupal\api_application\Service;
 
+use Drupal\Core\Database\Database;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\sms_providers\Service\SmsServiceInterface;
@@ -56,7 +57,7 @@ class WebSmsConfirmationService {
     LoggerChannelFactoryInterface $logger_factory,
     ConfigFactoryInterface $config_factory,
     TimeInterface $time,
-    RequestStack $request_stack
+    RequestStack $request_stack,
   ) {
     $this->smsService = $sms_service;
     $this->logger = $logger_factory->get('api_application');
@@ -73,88 +74,90 @@ class WebSmsConfirmationService {
    *
    * @return array
    *   Array with 'success' and 'failed' counts.
-  */
+   */
   public function sendConfirmationSmsToAllMembers($applicationId) {
-      $db = $this->getWebDatabase();
-      $results = ['success' => 0, 'failed' => 0];
+    $db = $this->getWebDatabase();
+    $results = ['success' => 0, 'failed' => 0];
 
+    $this->logger->info('Starting SMS confirmation for all members of application @app', [
+      '@app' => $applicationId,
+    ]);
 
-      $this->logger->info('Starting SMS confirmation for all members of application @app', [
-          '@app' => $applicationId,
+    try {
+      // Get internal application ID
+      // loger.
+      $this->logger->info('Fetching internal application ID for application @app', [
+        '@app' => $applicationId,
       ]);
+      $internalAppId = $db->select('applications', 'a')
+        ->fields('a', ['id'])
+        ->condition('applicationId', $applicationId)
+        ->range(0, 1)
+        ->execute()
+        ->fetchField();
 
-      try {
-          // Get internal application ID
-          // loger
-          $this->logger->info('Fetching internal application ID for application @app', [
-              '@app' => $applicationId,
-          ]);
-          $internalAppId = $db->select('applications', 'a')
-              ->fields('a', ['id'])
-              ->condition('applicationId', $applicationId)
-              ->range(0, 1)
-              ->execute()
-              ->fetchField();
+      if (!$internalAppId) {
+        $this->logger->error('Could not find internal application ID for: @app', ['@app' => $applicationId]);
+        $results['failed']++;
+        return $results;
+      }
+      // Get all members who require confirmation and haven't responded yet.
+      $query = $db->select('member_data', 'm')
+        ->fields('m')
+      // Use internal ID.
+        ->condition('applicationId', $internalAppId)
+        ->condition('requiresConfirmation', 1)
+        ->condition('phoneNumber', '', '<>')
+        ->isNotNull('phoneNumber');
 
-          if (!$internalAppId) {
-              $this->logger->error('Could not find internal application ID for: @app', ['@app' => $applicationId]);
-              $results['failed']++;
-              return $results;
-          }
-          // Get all members who require confirmation and haven't responded yet
-          $query = $db->select('member_data', 'm')
-            ->fields('m')
-            ->condition('applicationId', $internalAppId) // Use internal ID
-            ->condition('requiresConfirmation', 1)
-            ->condition('phoneNumber', '', '<>')
-            ->isNotNull('phoneNumber');
+      // Members who haven't confirmed or declined.
+      $statusGroup = $query->orConditionGroup()
+        ->condition('confirmation_status', 'pending')
+        ->condition('confirmation_status', 'sent')
+        ->condition('confirmation_status', 'failed')
+        ->isNull('confirmation_status');
 
-          // Members who haven't confirmed or declined
-          $statusGroup = $query->orConditionGroup()
-            ->condition('confirmation_status', 'pending')
-            ->condition('confirmation_status', 'sent')
-            ->condition('confirmation_status', 'failed')
-            ->isNull('confirmation_status');
+      $query->condition($statusGroup);
 
-          $query->condition($statusGroup);
+      $members = $query->execute()->fetchAll();
 
-          $members = $query->execute()->fetchAll();
-
-          if (empty($members)) {
-              $this->logger->info('No members found requiring confirmation for application @app', [
-                  '@app' => $applicationId,
-              ]);
-              return $results;
-          }
-
-          $this->logger->info('Found @count members requiring confirmation for application @app', [
-              '@count' => count($members),
-              '@app' => $applicationId,
-          ]);
-
-          foreach ($members as $member) {
-              $memberData = (array) $member;
-
-              if ($this->sendConfirmationSmsToMember($internalAppId, $memberData)) {
-                  $results['success']++;
-              } else {
-                  $results['failed']++;
-              }
-          }
-
-          $this->logger->info('SMS confirmation completed for @app: @success success, @failed failed', [
-              '@app' => $applicationId,
-              '@success' => $results['success'],
-              '@failed' => $results['failed'],
-          ]);
-
-      } catch (\Exception $e) {
-          $this->logger->error('Error sending confirmations to all members: @error', [
-              '@error' => $e->getMessage(),
-          ]);
+      if (empty($members)) {
+        $this->logger->info('No members found requiring confirmation for application @app', [
+          '@app' => $applicationId,
+        ]);
+        return $results;
       }
 
-      return $results;
+      $this->logger->info('Found @count members requiring confirmation for application @app', [
+        '@count' => count($members),
+        '@app' => $applicationId,
+      ]);
+
+      foreach ($members as $member) {
+        $memberData = (array) $member;
+
+        if ($this->sendConfirmationSmsToMember($internalAppId, $memberData)) {
+          $results['success']++;
+        }
+        else {
+          $results['failed']++;
+        }
+      }
+
+      $this->logger->info('SMS confirmation completed for @app: @success success, @failed failed', [
+        '@app' => $applicationId,
+        '@success' => $results['success'],
+        '@failed' => $results['failed'],
+      ]);
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error sending confirmations to all members: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    return $results;
   }
 
   /**
@@ -172,22 +175,22 @@ class WebSmsConfirmationService {
     $db = $this->getWebDatabase();
 
     try {
-      // Skip if no phone number
+      // Skip if no phone number.
       if (empty($member['phoneNumber'])) {
         $this->logger->warning('Cannot send SMS to @name - no phone number', [
           '@name' => $member['fullname'] ?? 'Unknown',
         ]);
-        return false;
+        return FALSE;
       }
 
-      // Generate unique token
+      // Generate unique token.
       $token = bin2hex(random_bytes(32));
       $currentTime = date('Y-m-d H:i:s');
 
       // Set token expiration (7 days from now)
       $tokenExpiresAt = date('Y-m-d H:i:s', strtotime('+7 days'));
 
-      // Update member with token in Web database
+      // Update member with token in Web database.
       $db->update('member_data')
         ->fields([
           'confirmation_token' => $token,
@@ -200,23 +203,24 @@ class WebSmsConfirmationService {
         ->condition('applicationId', $applicationId)
         ->execute();
 
-      // Generate confirmation URL
+      // Generate confirmation URL.
       $confirmationUrl = $this->generateConfirmationUrl($token);
 
-      // Build SMS message
+      // Build SMS message.
       $message = $this->buildConfirmationMessage($member, $confirmationUrl);
 
-      // Send SMS
+      // Send SMS.
       $smsResult = $this->smsService->sendSms($member['phoneNumber'], $message);
 
-      if ($smsResult) {
+      if ($this->isSmsSendSuccessful($smsResult)) {
         $this->logger->info('SMS sent successfully to @name (@phone)', [
           '@name' => $member['fullname'],
           '@phone' => $member['phoneNumber'],
         ]);
-        return true;
-      } else {
-        // Update status to failed
+        return TRUE;
+      }
+      else {
+        // Update status to failed.
         $db->update('member_data')
           ->fields([
             'confirmation_status' => 'failed',
@@ -229,15 +233,16 @@ class WebSmsConfirmationService {
           '@name' => $member['fullname'],
           '@phone' => $member['phoneNumber'],
         ]);
-        return false;
+        return FALSE;
       }
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error('Exception sending SMS to @name: @error', [
         '@name' => $member['fullname'] ?? 'Unknown',
         '@error' => $e->getMessage(),
       ]);
-      return false;
+      return FALSE;
     }
   }
 
@@ -261,8 +266,8 @@ class WebSmsConfirmationService {
     ]);
 
     foreach ($membersData as $member) {
-      // Skip members without phone numbers or who don't require confirmation
-      if (empty($member['phoneNumber']) || ($member['requiresConfirmation'] ?? true) === false) {
+      // Skip members without phone numbers or who don't require confirmation.
+      if (empty($member['phoneNumber']) || ($member['requiresConfirmation'] ?? TRUE) === FALSE) {
         $this->logger->info('Skipping member @name - no phone number or confirmation not required', [
           '@name' => $member['fullname'] ?? 'Unknown',
         ]);
@@ -271,7 +276,8 @@ class WebSmsConfirmationService {
 
       if ($this->sendConfirmationSmsToMember($applicationId, $member)) {
         $results['success']++;
-      } else {
+      }
+      else {
         $results['failed']++;
       }
     }
@@ -295,81 +301,81 @@ class WebSmsConfirmationService {
    *
    * @return array|null
    *   Member data if found, NULL otherwise.
-  */
+   */
   public function processMemberResponse($token, $action) {
-      if (!in_array($action, ['confirmed', 'declined'])) {
-          $this->logger->error('Invalid action for member response: @action', ['@action' => $action]);
-          return null;
+    if (!in_array($action, ['confirmed', 'declined'])) {
+      $this->logger->error('Invalid action for member response: @action', ['@action' => $action]);
+      return NULL;
+    }
+
+    $db = $this->getWebDatabase();
+
+    try {
+      // Find member by token and check expiration.
+      $query = $db->select('member_data', 'm')
+        ->fields('m')
+        ->condition('confirmation_token', $token);
+
+      // Add expiration condition - token is valid if expiration is in future OR null.
+      $group = $query->orConditionGroup()
+        ->condition('confirmation_token_expires_at', date('Y-m-d H:i:s'), '>')
+        ->isNull('confirmation_token_expires_at');
+
+      $query->condition($group);
+      $query->range(0, 1);
+
+      $member = $query->execute()->fetchAssoc();
+
+      if (!$member) {
+        $this->logger->warning('Invalid or expired confirmation token used: @token', ['@token' => $token]);
+        return NULL;
       }
 
-      $db = $this->getWebDatabase();
-
-      try {
-          // Find member by token and check expiration
-          $query = $db->select('member_data', 'm')
-            ->fields('m')
-            ->condition('confirmation_token', $token);
-
-          // Add expiration condition - token is valid if expiration is in future OR null
-          $group = $query->orConditionGroup()
-            ->condition('confirmation_token_expires_at', date('Y-m-d H:i:s'), '>')
-            ->isNull('confirmation_token_expires_at');
-
-          $query->condition($group);
-          $query->range(0, 1);
-
-          $member = $query->execute()->fetchAssoc();
-
-          if (!$member) {
-              $this->logger->warning('Invalid or expired confirmation token used: @token', ['@token' => $token]);
-              return null;
-          }
-
-          // Check if token is expired (additional check for safety)
-          if (!empty($member['confirmation_token_expires_at']) &&
-              $member['confirmation_token_expires_at'] < date('Y-m-d H:i:s')) {
-              $this->logger->warning('Expired confirmation token used: @token', ['@token' => $token]);
-              return null;
-          }
-
-          // Check if already processed
-          if ($member['confirmation_status'] === $action) {
-              $this->logger->info('Member @name already @action', [
-                  '@name' => $member['fullname'],
-                  '@action' => $action,
-              ]);
-              return $member;
-          }
-
-          // Update member status
-          $currentTime = date('Y-m-d H:i:s');
-          $db->update('member_data')
-            ->fields([
-              'status' => 'CONFIRMED',
-              'confirmation_status' => $action,
-              'confirmation_confirmed_at' => $currentTime,
-              'updatedAt' => $currentTime,
-            ])
-            ->condition('id', $member['id'])
-            ->execute();
-
-          $this->logger->info('Member @name @action participation via SMS token', [
-              '@name' => $member['fullname'],
-              '@action' => $action,
-          ]);
-
-          $this->logger->info('Checking application status for application ID: @app', [
-              '@app' => $member['applicationId'],
-          ]);
-          // Check if application should be updated
-          //$this->checkApplicationStatus($member['applicationId']);
-
-          return $member;
-
-      } catch (\Exception $e) {
-          $this->logger->error('Error processing member response: @error', ['@error' => $e->getMessage()]);
-          return null;
+      // Check if token is expired (additional check for safety)
+      if (!empty($member['confirmation_token_expires_at']) &&
+            $member['confirmation_token_expires_at'] < date('Y-m-d H:i:s')) {
+        $this->logger->warning('Expired confirmation token used: @token', ['@token' => $token]);
+        return NULL;
       }
+
+      // Check if already processed.
+      if ($member['confirmation_status'] === $action) {
+        $this->logger->info('Member @name already @action', [
+          '@name' => $member['fullname'],
+          '@action' => $action,
+        ]);
+        return $member;
+      }
+
+      // Update member status.
+      $currentTime = date('Y-m-d H:i:s');
+      $db->update('member_data')
+        ->fields([
+          'status' => 'CONFIRMED',
+          'confirmation_status' => $action,
+          'confirmation_confirmed_at' => $currentTime,
+          'updatedAt' => $currentTime,
+        ])
+        ->condition('id', $member['id'])
+        ->execute();
+
+      $this->logger->info('Member @name @action participation via SMS token', [
+        '@name' => $member['fullname'],
+        '@action' => $action,
+      ]);
+
+      $this->logger->info('Checking application status for application ID: @app', [
+        '@app' => $member['applicationId'],
+      ]);
+      // Check if application should be updated
+      // $this->checkApplicationStatus($member['applicationId']);.
+      return $member;
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error processing member response: @error', ['@error' => $e->getMessage()]);
+      return NULL;
+    }
   }
 
   /**
@@ -408,14 +414,14 @@ class WebSmsConfirmationService {
     $db = $this->getWebDatabase();
 
     try {
-      // Get all members for this application
+      // Get all members for this application.
       $members = $db->select('member_data', 'm')
         ->fields('m', ['id', 'confirmation_status', 'requiresConfirmation'])
         ->condition('applicationId', $applicationId)
         ->execute()
         ->fetchAll();
 
-      // Count responses
+      // Count responses.
       $totalRequired = 0;
       $confirmedCount = 0;
 
@@ -428,31 +434,24 @@ class WebSmsConfirmationService {
         }
       }
 
-      // If no members require confirmation, nothing to do
+      // If no members require confirmation, nothing to do.
       if ($totalRequired === 0) {
         return;
       }
 
-      // Calculate approval percentage
+      // Calculate approval percentage.
       $approvalPercentage = ($confirmedCount / $totalRequired) * 100;
 
-      // If 75% or more confirmed, update application status
+      // If 75% or more confirmed, update application status.
       if ($approvalPercentage >= 75) {
-        // $db->update('applications')
-        //   ->fields([
-        //     'status' => 'SUBMITTED',
-        //     'updatedAt' => date('Y-m-d H:i:s'),
-        //   ])
-        //   ->condition('id', $applicationId)
-        //   ->execute();
-
         $this->logger->notice('Application @id transitioned to SUBMITTED (@count/@total = @percentage% confirmed)', [
           '@id' => $applicationId,
           '@count' => $confirmedCount,
           '@total' => $totalRequired,
           '@percentage' => round($approvalPercentage, 1),
         ]);
-      } else {
+      }
+      else {
         $this->logger->info('Application @id needs more confirmations (@count/@total = @percentage%, need 75%)', [
           '@id' => $applicationId,
           '@count' => $confirmedCount,
@@ -461,7 +460,8 @@ class WebSmsConfirmationService {
         ]);
       }
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error('Error checking application status: @error', ['@error' => $e->getMessage()]);
     }
   }
@@ -475,38 +475,24 @@ class WebSmsConfirmationService {
    * @return string
    *   The confirmation URL.
    */
-  // protected function generateConfirmationUrl($token) {
-  //   $config = $this->configFactory->get('api_application.settings');
-  //   $frontendBaseUrl = $config->get('frontend_base_url');
-
-  //   if ($frontendBaseUrl) {
-  //     return rtrim($frontendBaseUrl, '/') . '/apply/confirm/' . $token;
-  //   }
-
-  //   // Fallback to API endpoint
-  //   $request = $this->requestStack->getCurrentRequest();
-  //   $baseUrl = $request ? $request->getSchemeAndHttpHost() : '';
-  //   return $baseUrl . '/api/v1/member/response/' . $token;
-  // }
-
   protected function generateConfirmationUrl($token) {
     $config = $this->configFactory->get('api_application.settings');
     $frontendBaseUrl = $config->get('frontend_base_url');
 
     if (!$frontendBaseUrl) {
-      // Fallback to API endpoint if no frontend URL configured
+      // Fallback to API endpoint if no frontend URL configured.
       $request = $this->requestStack->getCurrentRequest();
       $baseUrl = $request ? $request->getSchemeAndHttpHost() : '';
       return $baseUrl . '/api/v1/member/response/' . $token;
     }
 
-    // Get the confirmation path template, default to '/confirm/{token}'
+    // Get the confirmation path template, default to '/confirm/{token}'.
     $confirmationPath = $config->get('frontend_confirmation_path') ?? '/confirm/{token}';
 
-    // Replace the {token} placeholder with the actual token
+    // Replace the {token} placeholder with the actual token.
     $path = str_replace('{token}', $token, $confirmationPath);
 
-    // Ensure the path starts with a slash
+    // Ensure the path starts with a slash.
     if (strpos($path, '/') !== 0) {
       $path = '/' . $path;
     }
@@ -539,8 +525,364 @@ class WebSmsConfirmationService {
       );
     }
 
-    // Default message
+    // Default message.
     return "Hello {$memberName}, please confirm your participation in your group loan application by clicking: {$confirmationUrl}";
+  }
+
+  /**
+   * Send submission-success SMS to all group members with phone numbers.
+   *
+   * @param string $applicationId
+   *   The public application ID (e.g. APP-20260525-3MLREI).
+   *
+   * @return array
+   *   Array with 'success', 'failed', and optional 'disabled' keys.
+   */
+  public function sendSubmissionSuccessSmsToAllMembers($applicationId) {
+    $config = $this->configFactory->get('api_application.settings');
+    $results = ['success' => 0, 'failed' => 0];
+
+    if (!$config->get('sms_submission_success_enabled')) {
+      $this->logger->info('Submission success SMS disabled for application @app', [
+        '@app' => $applicationId,
+      ]);
+      $results['disabled'] = TRUE;
+      return $results;
+    }
+
+    $db = $this->getWebDatabase();
+
+    try {
+      $internalAppId = $db->select('applications', 'a')
+        ->fields('a', ['id'])
+        ->condition('applicationId', $applicationId)
+        ->range(0, 1)
+        ->execute()
+        ->fetchField();
+
+      if (!$internalAppId) {
+        $this->logger->error('Could not find internal application ID for: @app', [
+          '@app' => $applicationId,
+        ]);
+        $results['failed']++;
+        return $results;
+      }
+
+      $groupName = $db->select('group_data', 'g')
+        ->fields('g', ['groupName'])
+        ->condition('applicationId', $internalAppId)
+        ->range(0, 1)
+        ->execute()
+        ->fetchField() ?: 'your group';
+
+      $members = $db->select('member_data', 'm')
+        ->fields('m')
+        ->condition('applicationId', $internalAppId)
+        ->condition('phoneNumber', '', '<>')
+        ->isNotNull('phoneNumber')
+        ->execute()
+        ->fetchAll();
+
+      if (empty($members)) {
+        $this->logger->info('No members with phone numbers for submission SMS on @app', [
+          '@app' => $applicationId,
+        ]);
+        return $results;
+      }
+
+      $this->logger->info('Sending submission success SMS to @count members for @app', [
+        '@count' => count($members),
+        '@app' => $applicationId,
+      ]);
+
+      foreach ($members as $member) {
+        if ($this->sendSubmissionSuccessSmsToMember(
+          (array) $member,
+          $applicationId,
+          $groupName
+        )) {
+          $results['success']++;
+        }
+        else {
+          $results['failed']++;
+        }
+      }
+
+      $this->logger->info('Submission success SMS completed for @app: @success sent, @failed failed', [
+        '@app' => $applicationId,
+        '@success' => $results['success'],
+        '@failed' => $results['failed'],
+      ]);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error sending submission success SMS: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    return $results;
+  }
+
+  /**
+   * Send submission-success SMS to a single member.
+   */
+  protected function sendSubmissionSuccessSmsToMember(
+    array $member,
+    string $applicationId,
+    string $groupName,
+  ): bool {
+    try {
+      if (empty($member['phoneNumber'])) {
+        $this->logger->warning('Cannot send submission SMS to @name - no phone number', [
+          '@name' => $member['fullname'] ?? 'Unknown',
+        ]);
+        return FALSE;
+      }
+
+      $message = $this->buildSubmissionSuccessMessage($member, $applicationId, $groupName);
+      $smsResult = $this->smsService->sendSms($member['phoneNumber'], $message);
+
+      if ($this->isSmsSendSuccessful($smsResult)) {
+        $this->logger->info('Submission success SMS sent to @name (@phone)', [
+          '@name' => $member['fullname'] ?? 'Member',
+          '@phone' => $member['phoneNumber'],
+        ]);
+        return TRUE;
+      }
+
+      $this->logger->error('Failed to send submission success SMS to @name (@phone)', [
+        '@name' => $member['fullname'] ?? 'Member',
+        '@phone' => $member['phoneNumber'],
+      ]);
+      return FALSE;
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Exception sending submission success SMS to @name: @error', [
+        '@name' => $member['fullname'] ?? 'Unknown',
+        '@error' => $e->getMessage(),
+      ]);
+      return FALSE;
+    }
+  }
+
+  /**
+   * Build submission-success SMS message.
+   */
+  protected function buildSubmissionSuccessMessage(
+    array $member,
+    string $applicationId,
+    string $groupName,
+  ): string {
+    $config = $this->configFactory->get('api_application.settings');
+    $customMessage = $config->get('sms_submission_success_message');
+    $memberName = $member['fullname'] ?? 'Member';
+
+    if (!empty($customMessage)) {
+      return str_replace(
+        ['[member:name]', '[application:id]', '[application:group_name]'],
+        [$memberName, $applicationId, $groupName],
+        $customMessage
+      );
+    }
+
+    return "Hello {$memberName}, your group ({$groupName}) loan application {$applicationId} has been submitted successfully and is now under review.";
+  }
+
+  /**
+   * Send payment-success SMS to all group members with phone numbers.
+   *
+   * @param string $applicationId
+   *   Public application ID.
+   * @param string $amount
+   *   Formatted payment amount (e.g. 20.00).
+   * @param string $billRefNumber
+   *   Pesaflow bill reference, if available.
+   *
+   * @return array
+   *   Array with 'success', 'failed', and optional 'disabled' keys.
+   */
+  public function sendPaymentSuccessSmsToAllMembers(
+    $applicationId,
+    $amount = '0.00',
+    $billRefNumber = '',
+  ) {
+    $config = $this->configFactory->get('api_application.settings');
+    $results = ['success' => 0, 'failed' => 0];
+
+    if (!$config->get('sms_payment_success_enabled')) {
+      $this->logger->info('Payment success SMS disabled for application @app', [
+        '@app' => $applicationId,
+      ]);
+      $results['disabled'] = TRUE;
+      return $results;
+    }
+
+    $db = $this->getWebDatabase();
+
+    try {
+      $internalAppId = $db->select('applications', 'a')
+        ->fields('a', ['id'])
+        ->condition('applicationId', $applicationId)
+        ->range(0, 1)
+        ->execute()
+        ->fetchField();
+
+      if (!$internalAppId) {
+        $this->logger->error('Could not find internal application ID for payment SMS: @app', [
+          '@app' => $applicationId,
+        ]);
+        $results['failed']++;
+        return $results;
+      }
+
+      $groupName = $db->select('group_data', 'g')
+        ->fields('g', ['groupName'])
+        ->condition('applicationId', $internalAppId)
+        ->range(0, 1)
+        ->execute()
+        ->fetchField() ?: 'your group';
+
+      $members = $db->select('member_data', 'm')
+        ->fields('m')
+        ->condition('applicationId', $internalAppId)
+        ->condition('phoneNumber', '', '<>')
+        ->isNotNull('phoneNumber')
+        ->execute()
+        ->fetchAll();
+
+      if (empty($members)) {
+        $this->logger->info('No members with phone numbers for payment SMS on @app', [
+          '@app' => $applicationId,
+        ]);
+        return $results;
+      }
+
+      $formattedAmount = number_format((float) $amount, 2, '.', '');
+
+      $this->logger->info('Sending payment success SMS to @count members for @app (KES @amount)', [
+        '@count' => count($members),
+        '@app' => $applicationId,
+        '@amount' => $formattedAmount,
+      ]);
+
+      foreach ($members as $member) {
+        if ($this->sendPaymentSuccessSmsToMember(
+          (array) $member,
+          $applicationId,
+          $groupName,
+          $formattedAmount,
+          $billRefNumber
+        )) {
+          $results['success']++;
+        }
+        else {
+          $results['failed']++;
+        }
+      }
+
+      $this->logger->info('Payment success SMS completed for @app: @success sent, @failed failed', [
+        '@app' => $applicationId,
+        '@success' => $results['success'],
+        '@failed' => $results['failed'],
+      ]);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error sending payment success SMS: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+
+    return $results;
+  }
+
+  /**
+   * Send payment-success SMS to a single member.
+   */
+  protected function sendPaymentSuccessSmsToMember(
+    array $member,
+    string $applicationId,
+    string $groupName,
+    string $amount,
+    string $billRefNumber,
+  ): bool {
+    try {
+      if (empty($member['phoneNumber'])) {
+        return FALSE;
+      }
+
+      $message = $this->buildPaymentSuccessMessage(
+        $member,
+        $applicationId,
+        $groupName,
+        $amount,
+        $billRefNumber
+      );
+      $smsResult = $this->smsService->sendSms($member['phoneNumber'], $message);
+
+      if ($this->isSmsSendSuccessful($smsResult)) {
+        $this->logger->info('Payment success SMS sent to @name (@phone)', [
+          '@name' => $member['fullname'] ?? 'Member',
+          '@phone' => $member['phoneNumber'],
+        ]);
+        return TRUE;
+      }
+
+      $this->logger->error('Failed to send payment success SMS to @name (@phone)', [
+        '@name' => $member['fullname'] ?? 'Member',
+        '@phone' => $member['phoneNumber'],
+      ]);
+      return FALSE;
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Exception sending payment success SMS to @name: @error', [
+        '@name' => $member['fullname'] ?? 'Unknown',
+        '@error' => $e->getMessage(),
+      ]);
+      return FALSE;
+    }
+  }
+
+  /**
+   * Build payment-success SMS message.
+   */
+  protected function buildPaymentSuccessMessage(
+    array $member,
+    string $applicationId,
+    string $groupName,
+    string $amount,
+    string $billRefNumber,
+  ): string {
+    $config = $this->configFactory->get('api_application.settings');
+    $customMessage = $config->get('sms_payment_success_message');
+    $memberName = $member['fullname'] ?? 'Member';
+    $reference = $billRefNumber ?: $applicationId;
+
+    if (!empty($customMessage)) {
+      return str_replace(
+        [
+          '[member:name]',
+          '[application:id]',
+          '[application:group_name]',
+          '[payment:amount]',
+          '[payment:reference]',
+        ],
+        [$memberName, $applicationId, $groupName, $amount, $reference],
+        $customMessage
+      );
+    }
+
+    return "Hello {$memberName}, payment of KES {$amount} for {$groupName} loan ({$applicationId}) was received successfully. Ref: {$reference}.";
+  }
+
+  /**
+   * Determine whether an SMS provider response indicates success.
+   */
+  protected function isSmsSendSuccessful($smsResult): bool {
+    if (is_array($smsResult)) {
+      return !empty($smsResult['success']);
+    }
+
+    return (bool) $smsResult;
   }
 
   /**
@@ -550,7 +892,7 @@ class WebSmsConfirmationService {
    *   Database connection.
    */
   protected function getWebDatabase() {
-    return \Drupal\Core\Database\Database::getConnection('default', 'web');
+    return Database::getConnection('default', 'web');
   }
 
   /**
@@ -591,7 +933,8 @@ class WebSmsConfirmationService {
         }
       }
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->error('Error getting confirmation stats: @error', ['@error' => $e->getMessage()]);
     }
 
@@ -606,48 +949,260 @@ class WebSmsConfirmationService {
    *
    * @return array
    *   Array with 'success' and 'failed' counts.
-  */
+   */
   public function resendPendingConfirmations($applicationId) {
-      $db = $this->getWebDatabase();
-      $results = ['success' => 0, 'failed' => 0];
+    $db = $this->getWebDatabase();
+    $results = ['success' => 0, 'failed' => 0];
 
-      try {
-          // Get members who haven't confirmed or declined
-          $query = $db->select('member_data', 'm')
-            ->fields('m')
-            ->condition('applicationId', $applicationId)
-            ->condition('requiresConfirmation', 1);
+    try {
+      // Get members who haven't confirmed or declined.
+      $query = $db->select('member_data', 'm')
+        ->fields('m')
+        ->condition('applicationId', $applicationId)
+        ->condition('requiresConfirmation', 1);
 
-          $statusGroup = $query->orConditionGroup()
-            ->condition('confirmation_status', 'pending')
-            ->condition('confirmation_status', 'sent')
-            ->condition('confirmation_status', 'failed')
-            ->isNull('confirmation_status');
+      $statusGroup = $query->orConditionGroup()
+        ->condition('confirmation_status', 'pending')
+        ->condition('confirmation_status', 'sent')
+        ->condition('confirmation_status', 'failed')
+        ->isNull('confirmation_status');
 
-          $query->condition($statusGroup);
+      $query->condition($statusGroup);
 
-          $members = $query->execute()->fetchAll();
+      $members = $query->execute()->fetchAll();
 
-          foreach ($members as $member) {
-              $memberData = (array) $member;
+      foreach ($members as $member) {
+        $memberData = (array) $member;
 
-              if ($this->sendConfirmationSmsToMember($applicationId, $memberData)) {
-                  $results['success']++;
-              } else {
-                  $results['failed']++;
-              }
-          }
-
-          $this->logger->info('Resent SMS confirmations for @app: @success success, @failed failed', [
-              '@app' => $applicationId,
-              '@success' => $results['success'],
-              '@failed' => $results['failed'],
-          ]);
-
-      } catch (\Exception $e) {
-          $this->logger->error('Error resending confirmations: @error', ['@error' => $e->getMessage()]);
+        if ($this->sendConfirmationSmsToMember($applicationId, $memberData)) {
+          $results['success']++;
+        }
+        else {
+          $results['failed']++;
+        }
       }
 
-      return $results;
+      $this->logger->info('Resent SMS confirmations for @app: @success success, @failed failed', [
+        '@app' => $applicationId,
+        '@success' => $results['success'],
+        '@failed' => $results['failed'],
+      ]);
+
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error resending confirmations: @error', ['@error' => $e->getMessage()]);
+    }
+
+    return $results;
   }
+
+  /**
+   * Resolve the internal web application ID from the public application ID.
+   */
+  protected function resolveInternalApplicationId(string $applicationId): ?string {
+    $db = $this->getWebDatabase();
+
+    $internalAppId = $db->select('applications', 'a')
+      ->fields('a', ['id'])
+      ->condition('applicationId', $applicationId)
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+
+    return $internalAppId ?: NULL;
+  }
+
+  /**
+   * Load a member requiring confirmation by national ID code.
+   */
+  protected function loadMemberForOtp(string $applicationId, string $nationalIdCode): ?array {
+    $internalAppId = $this->resolveInternalApplicationId($applicationId);
+    if (!$internalAppId) {
+      return NULL;
+    }
+
+    $db = $this->getWebDatabase();
+    $member = $db->select('member_data', 'm')
+      ->fields('m')
+      ->condition('applicationId', $internalAppId)
+      ->condition('nationalIdCode', $nationalIdCode)
+      ->range(0, 1)
+      ->execute()
+      ->fetchAssoc();
+
+    return $member ?: NULL;
+  }
+
+  /**
+   * Build cache key for member confirmation OTP.
+   */
+  protected function getMemberOtpCacheKey(string $applicationId, string $memberId): string {
+    return 'member_confirmation_otp:' . $applicationId . ':' . $memberId;
+  }
+
+  /**
+   * Generate a 6-digit OTP code.
+   */
+  protected function generateMemberOtpCode(): string {
+    return (string) random_int(100000, 999999);
+  }
+
+  /**
+   * Send a 6-digit OTP to a member for confirmation.
+   */
+  public function sendConfirmationOtpToMember(string $applicationId, string $nationalIdCode): array {
+    $member = $this->loadMemberForOtp($applicationId, $nationalIdCode);
+
+    if (!$member) {
+      return [
+        'success' => FALSE,
+        'message' => 'Member not found for this application.',
+      ];
+    }
+
+    if (empty($member['requiresConfirmation'])) {
+      return [
+        'success' => FALSE,
+        'message' => 'This member does not require confirmation.',
+      ];
+    }
+
+    if (empty($member['phoneNumber'])) {
+      return [
+        'success' => FALSE,
+        'message' => 'Member has no phone number on record.',
+      ];
+    }
+
+    if (in_array($member['confirmation_status'], ['confirmed', 'declined'], TRUE)) {
+      return [
+        'success' => FALSE,
+        'message' => 'Member has already responded.',
+        'confirmation_status' => $member['confirmation_status'],
+      ];
+    }
+
+    $otpCode = $this->generateMemberOtpCode();
+    $cache = \Drupal::cache('default');
+    $expiry = 600;
+    $cacheKey = $this->getMemberOtpCacheKey($applicationId, $member['id']);
+
+    $cache->set($cacheKey, [
+      'otp_hash' => password_hash($otpCode, PASSWORD_DEFAULT),
+      'attempts' => 0,
+      'created' => time(),
+      'member_id' => $member['id'],
+    ], time() + $expiry);
+
+    $memberName = $member['fullname'] ?? 'Member';
+    $message = "Hello {$memberName}, your Uwezo Fund member confirmation code is: {$otpCode}. Valid for 10 minutes.";
+
+    $smsResult = $this->smsService->sendSms($member['phoneNumber'], $message);
+    if (!$this->isSmsSendSuccessful($smsResult)) {
+      $cache->delete($cacheKey);
+      return [
+        'success' => FALSE,
+        'message' => 'Failed to send OTP SMS.',
+      ];
+    }
+
+    $currentTime = date('Y-m-d H:i:s');
+    $this->getWebDatabase()->update('member_data')
+      ->fields([
+        'confirmation_status' => 'sent',
+        'confirmation_sent_at' => $currentTime,
+        'updatedAt' => $currentTime,
+      ])
+      ->condition('id', $member['id'])
+      ->execute();
+
+    return [
+      'success' => TRUE,
+      'message' => 'OTP sent successfully.',
+      'expires_in' => $expiry,
+      'member' => [
+        'national_id_code' => $member['nationalIdCode'],
+        'confirmation_status' => 'sent',
+      ],
+    ];
+  }
+
+  /**
+   * Verify a member confirmation OTP.
+   */
+  public function verifyConfirmationOtp(string $applicationId, string $nationalIdCode, string $otpCode): array {
+    $member = $this->loadMemberForOtp($applicationId, $nationalIdCode);
+
+    if (!$member) {
+      return [
+        'success' => FALSE,
+        'message' => 'Member not found for this application.',
+      ];
+    }
+
+    if (in_array($member['confirmation_status'], ['confirmed', 'declined'], TRUE)) {
+      return [
+        'success' => TRUE,
+        'message' => 'Member has already responded.',
+        'already_responded' => TRUE,
+        'member' => [
+          'national_id_code' => $member['nationalIdCode'],
+          'confirmation_status' => $member['confirmation_status'],
+        ],
+      ];
+    }
+
+    $cache = \Drupal::cache('default');
+    $cacheKey = $this->getMemberOtpCacheKey($applicationId, $member['id']);
+    $cached = $cache->get($cacheKey);
+
+    if (!$cached || empty($cached->data['otp_hash'])) {
+      return [
+        'success' => FALSE,
+        'message' => 'OTP expired or not sent. Please request a new code.',
+      ];
+    }
+
+    $otpData = $cached->data;
+    $attempts = (int) ($otpData['attempts'] ?? 0);
+    if ($attempts >= 5) {
+      return [
+        'success' => FALSE,
+        'message' => 'Too many invalid attempts. Please request a new OTP.',
+      ];
+    }
+
+    if (!password_verify($otpCode, $otpData['otp_hash'])) {
+      $otpData['attempts'] = $attempts + 1;
+      $cache->set($cacheKey, $otpData, $cached->expire);
+      return [
+        'success' => FALSE,
+        'message' => 'Invalid OTP code.',
+        'attempts_remaining' => max(0, 5 - $otpData['attempts']),
+      ];
+    }
+
+    $currentTime = date('Y-m-d H:i:s');
+    $this->getWebDatabase()->update('member_data')
+      ->fields([
+        'status' => 'CONFIRMED',
+        'confirmation_status' => 'confirmed',
+        'confirmation_confirmed_at' => $currentTime,
+        'updatedAt' => $currentTime,
+      ])
+      ->condition('id', $member['id'])
+      ->execute();
+
+    $cache->delete($cacheKey);
+
+    return [
+      'success' => TRUE,
+      'message' => 'Member confirmed successfully.',
+      'member' => [
+        'national_id_code' => $member['nationalIdCode'],
+        'confirmation_status' => 'confirmed',
+      ],
+    ];
+  }
+
 }

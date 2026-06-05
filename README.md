@@ -200,7 +200,28 @@ After initial setup, the GitHub Actions pipeline will handle all deployments aut
 
 ### Cron Jobs
 
-The application requires a cron job to process the email queue for the Symfony Mailer module.
+The application requires cron jobs for email delivery and **application sync to Drupal/LMS**.
+
+**Application sync (Drupal + LMS):**
+
+Preferred: use the built-in `sync-worker` service (see `docker-compose.yml`):
+
+```bash
+docker compose up -d sync-worker
+docker compose logs -f sync-worker
+```
+
+Alternatively, add a host cron job (must run **inside** the web container — port 3000 is not published on the host):
+
+```bash
+# Edit crontab on the server
+crontab -e
+
+# Add this line (adjust path and CRON_SECRET):
+*/5 * * * * docker compose -f /path/to/deployment/docker-compose.yml exec -T web wget -qO- --timeout=120 --header="Authorization: Bearer YOUR_CRON_SECRET" --post-data="" http://127.0.0.1:3000/api/cron/sync-applications >> /var/log/uwezo-sync.log 2>&1
+```
+
+See [docs/fix-lms-application-sync.md](docs/fix-lms-application-sync.md) for the full troubleshooting guide.
 
 **Email Queue Processing:**
 

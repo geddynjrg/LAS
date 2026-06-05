@@ -1,0 +1,17 @@
+-- AlterTable: Add TRAINING to ApplicationStatus enum (between APPROVED and DISBURSED)
+
+ALTER TABLE `applications`
+  MODIFY COLUMN `status` ENUM(
+    'UNSUBMITTED',
+    'DRAFT',
+    'GROUP_MEMBER_CONFIRMATION',
+    'SUBMITTED',
+    'CONSTITUENCY_REVIEW',
+    'APPROVED_BY_CONSTITUENCY',
+    'IN_REVIEW',
+    'APPROVED',
+    'REJECTED',
+    'TRAINING',
+    'DISBURSED',
+    'CLOSED'
+  ) NOT NULL DEFAULT 'UNSUBMITTED';

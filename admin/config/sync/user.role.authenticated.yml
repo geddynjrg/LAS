@@ -17,7 +17,9 @@ dependencies:
     - rest.resource.application_list
     - rest.resource.application_pdf
     - rest.resource.application_post
+    - rest.resource.application_sms
     - rest.resource.application_taxonomy_vocabularies
+    - rest.resource.member_confirmation_otp
     - rest.resource.member_response
     - rest.resource.rest_framework_node_resource
     - rest.resource.rest_framework_path_resource
@@ -62,6 +64,8 @@ permissions:
   - 'restful post api_user_registration'
   - 'restful post application_email'
   - 'restful post application_post'
+  - 'restful post application_sms'
+  - 'restful post member_confirmation_otp'
   - 'search content'
   - 'skip comment approval'
   - 'use text format basic_html'

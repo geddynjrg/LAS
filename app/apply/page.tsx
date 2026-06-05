@@ -16,6 +16,7 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { FC, ReactNode } from 'react';
+import { resolveApiUrl } from '@/lib/utils/url';
 
 // Helper function to format image filename into a readable title
 function formatImageTitle(filename: string): string {
@@ -130,7 +131,8 @@ const DocumentRequirementSection: FC<{
               </p>
               <Image
                 // className="md:border md:border-neutral-300 md:shadow-lg"
-                src={document.example_images[0].url}
+                // src={document.example_images[0].url}
+                src={resolveApiUrl(document.example_images[0].url)}
                 alt={document.example_images[0].filename}
                 width={300}
                 height={200}
@@ -150,7 +152,7 @@ const DocumentRequirementSection: FC<{
                     </p>
                     <Image
                       // className="md:border md:border-neutral-300 md:shadow-lg"
-                      src={example.url}
+                      src={resolveApiUrl(example.url)}
                       alt={example.filename}
                       width={300}
                       height={200}

@@ -327,6 +327,29 @@ exports.Prisma.LmsSyncQueueScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PaymentTransactionScalarFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  billRefNumber: 'billRefNumber',
+  amountExpected: 'amountExpected',
+  currency: 'currency',
+  status: 'status',
+  clientName: 'clientName',
+  clientMSISDN: 'clientMSISDN',
+  clientIDNumber: 'clientIDNumber',
+  clientEmail: 'clientEmail',
+  checkoutPayload: 'checkoutPayload',
+  pesaflowPaymentRef: 'pesaflowPaymentRef',
+  pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
+  paymentChannel: 'paymentChannel',
+  amountPaid: 'amountPaid',
+  ipnPayload: 'ipnPayload',
+  smsSentAt: 'smsSentAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.CountiesCacheScalarFieldEnum = {
   id: 'id',
   lastSyncedAt: 'lastSyncedAt',
@@ -520,6 +543,20 @@ exports.Prisma.LmsSyncQueueOrderByRelevanceFieldEnum = {
   error: 'error'
 };
 
+exports.Prisma.PaymentTransactionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  billRefNumber: 'billRefNumber',
+  currency: 'currency',
+  clientName: 'clientName',
+  clientMSISDN: 'clientMSISDN',
+  clientIDNumber: 'clientIDNumber',
+  clientEmail: 'clientEmail',
+  pesaflowPaymentRef: 'pesaflowPaymentRef',
+  pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
+  paymentChannel: 'paymentChannel'
+};
+
 exports.Prisma.CountiesCacheOrderByRelevanceFieldEnum = {
   id: 'id'
 };
@@ -559,6 +596,7 @@ exports.ApplicationStatus = exports.$Enums.ApplicationStatus = {
   IN_REVIEW: 'IN_REVIEW',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
+  TRAINING: 'TRAINING',
   DISBURSED: 'DISBURSED',
   CLOSED: 'CLOSED'
 };
@@ -619,6 +657,13 @@ exports.LmsSyncStatus = exports.$Enums.LmsSyncStatus = {
   SKIPPED: 'SKIPPED'
 };
 
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Application: 'Application',
@@ -633,6 +678,7 @@ exports.Prisma.ModelName = {
   SyncQueue: 'SyncQueue',
   File: 'File',
   LmsSyncQueue: 'LmsSyncQueue',
+  PaymentTransaction: 'PaymentTransaction',
   CountiesCache: 'CountiesCache',
   County: 'County',
   Constituency: 'Constituency'

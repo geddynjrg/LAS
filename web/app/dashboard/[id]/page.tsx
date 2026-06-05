@@ -3,6 +3,8 @@ import { ApplicationReviewLoanConditions } from '@/components/application-review
 import { ApplicationReviewMembers } from '@/components/application-review-members';
 import { ApplicationReviewProposedBusiness } from '@/components/application-review-proposed-business';
 import { ApplicationStatus } from '@/components/application-status';
+import { LoanRepayModal } from '@/components/loan-repay-modal';
+import { TrainingCertificateDownload } from '@/components/training-certificate-download';
 import { getApplicationById } from '@/lib/data/application';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
@@ -45,6 +47,20 @@ export default async function Page({ params }: Props) {
           status={data.generalDetails.status}
           rejectionDetails={data.generalDetails.rejectionDetails}
         />
+        <div className="space-y-3 pt-4">
+          <TrainingCertificateDownload
+            applicationId={data.generalDetails.applicationId}
+          />
+          {(data.generalDetails.status === 'APPROVED' ||
+            data.generalDetails.status === 'DISBURSED') &&
+          data.loanConditions?.loanAmount ? (
+            <LoanRepayModal
+              applicationId={data.generalDetails.applicationId}
+              loanAmount={data.loanConditions.loanAmount}
+              repaymentPeriod={data.loanConditions.repaymentPeriod}
+            />
+          ) : null}
+        </div>
       </div>
 
       <ApplicationReviewLoanConditions

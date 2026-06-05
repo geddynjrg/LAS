@@ -28,19 +28,19 @@ model User {
 }
 
 model Application {
-  id                  String            @id @default(cuid())
-  applicationId       String            @unique
-  status              ApplicationStatus @default(UNSUBMITTED)
-  applicationProgress Int               @default(1)
+  id                  String               @id @default(cuid())
+  applicationId       String               @unique
+  status              ApplicationStatus    @default(UNSUBMITTED)
+  applicationProgress Int                  @default(1)
   userId              String
-  syncStatus          SyncStatus        @default(PENDING)
-  syncAttempts        Int               @default(0)
+  syncStatus          SyncStatus           @default(PENDING)
+  syncAttempts        Int                  @default(0)
   lastSyncAt          DateTime?
-  syncError           String?           @db.Text
+  syncError           String?              @db.Text
   externalId          String?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
-  user                User              @relation(fields: [userId], references: [id])
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  user                User                 @relation(fields: [userId], references: [id])
   confirmations       Confirmations?
   groupData           GroupData?
   loanConditions      LoanConditions?
@@ -49,9 +49,10 @@ model Application {
   lmsReferenceId      String?
   lmsSyncStatus       String? // Can be: 'PENDING', 'COMPLETED', 'FAILED'
   lmsSyncError        String?
-  lmsSyncAttempts     Int               @default(0)
+  lmsSyncAttempts     Int                  @default(0)
   lmsLastSyncAt       DateTime?
   lmsSyncQueue        LmsSyncQueue?
+  paymentTransactions PaymentTransaction[]
 
   @@index([userId])
   @@index([status])
@@ -289,6 +290,7 @@ enum ApplicationStatus {
   IN_REVIEW
   APPROVED
   REJECTED
+  TRAINING
   DISBURSED
   CLOSED
 }
@@ -362,6 +364,42 @@ enum LmsSyncStatus {
   COMPLETED
   FAILED
   SKIPPED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model PaymentTransaction {
+  id                    String        @id @default(cuid())
+  applicationId         String
+  billRefNumber         String        @unique
+  amountExpected        Float
+  currency              String        @default("KES")
+  status                PaymentStatus @default(PENDING)
+  clientName            String
+  clientMSISDN          String
+  clientIDNumber        String
+  clientEmail           String
+  checkoutPayload       Json
+  pesaflowPaymentRef    String?
+  pesaflowInvoiceNumber String?
+  paymentChannel        String?
+  amountPaid            Float?
+  ipnPayload            Json?
+  smsSentAt             DateTime?
+  completedAt           DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  application           Application   @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payment_transactions")
 }
 
 model CountiesCache {

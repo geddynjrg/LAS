@@ -149,15 +149,41 @@ class NotificationManager {
    *   Array of recipients with 'email' and optionally 'phone'.
    */
   protected function getRecipients($application, array $config): array {
-    $recipients = [];
     $recipient_type = $config['recipient'] ?? 'customer';
 
+    $recipients = [];
+
     if ($recipient_type === 'customer') {
+      $memberRecipients = $this->getGroupMemberRecipients($application);
+      if (!empty($memberRecipients)) {
+        return $memberRecipients;
+      }
       $owner = $application->getOwner();
+      $phone = NULL;
       if ($owner) {
+        if ($owner->hasField('field_phone_number') && !$owner->get('field_phone_number')->isEmpty()) {
+          $phone = $owner->get('field_phone_number')->value;
+        }
+      }
+
+      // Fall back to the chairperson / first member phone on the application.
+      if (empty($phone) && $application->hasField('group_members') && !$application->get('group_members')->isEmpty()) {
+        foreach ($application->get('group_members') as $member_item) {
+          $member = $member_item->entity;
+          if ($member && method_exists($member, 'getPhoneNumber')) {
+            $member_phone = $member->getPhoneNumber();
+            if (!empty($member_phone)) {
+              $phone = $member_phone;
+              break;
+            }
+          }
+        }
+      }
+
+      if ($owner || $phone) {
         $recipients[] = [
-          'email' => $owner->getEmail(),
-          'phone' => $owner->hasField('field_phone_number') ? $owner->get('field_phone_number')->value : NULL,
+          'email' => $owner ? $owner->getEmail() : NULL,
+          'phone' => $phone,
           'type' => 'customer',
         ];
       }
@@ -165,6 +191,39 @@ class NotificationManager {
     elseif ($recipient_type === 'admin') {
       $roles = $config['admin_roles'] ?? ['reviewer'];
       $recipients = $this->getUsersByRoles($roles);
+    }
+
+    return $recipients;
+  }
+
+  /**
+   * Gets one SMS recipient per group member phone number.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $application
+   *   The application entity.
+   *
+   * @return array
+   *   Array of recipients with phone numbers.
+   */
+  protected function getGroupMemberRecipients($application): array {
+    $recipients = [];
+    $seenPhones = [];
+
+    if ($application->hasField('group_members') && !$application->get('group_members')->isEmpty()) {
+      foreach ($application->get('group_members') as $member_item) {
+        $member = $member_item->entity;
+        if ($member && method_exists($member, 'getPhoneNumber')) {
+          $phone = $member->getPhoneNumber();
+          if (!empty($phone) && !isset($seenPhones[$phone])) {
+            $seenPhones[$phone] = TRUE;
+            $recipients[] = [
+              'email' => NULL,
+              'phone' => $phone,
+              'type' => 'customer',
+            ];
+          }
+        }
+      }
     }
 
     return $recipients;

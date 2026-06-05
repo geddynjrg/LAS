@@ -5,6 +5,7 @@ core_version_requirement: ^9 || ^10 || ^11
 package: Status Manager
 dependencies:
   - status_manager:status_manager
+  - sms_providers:sms_providers
   - drupal:user
   - drupal:field
   - drupal:text

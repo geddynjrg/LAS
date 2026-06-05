@@ -10,24 +10,33 @@ const LOGOUT_URL = `${process.env.API_URL}/api/v1/user/logout`;
 const ACCESS_TOKEN_COOKIE_NAME = 'access-token';
 const REFRESH_TOKEN_COOKIE_NAME = 'refresh-token';
 
+function shouldUseSecureCookies(): boolean {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
+  if (appUrl.startsWith('http://')) {
+    return false;
+  }
+  return process.env.NODE_ENV === 'production';
+}
+
 export async function createSession(data: {
   accessToken: string;
   refreshToken: string;
 }) {
   const cookieStore = await cookies();
   const now = Date.now();
+  const secure = shouldUseSecureCookies();
 
   const refreshTokenExpiresAt = new Date(now + 7 * 24 * 60 * 60 * 1000);
 
   cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, data.accessToken, {
     httpOnly: true,
-    secure: true,
+    secure,
     sameSite: 'lax',
     path: '/',
   });
   cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, data.refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure,
     expires: refreshTokenExpiresAt,
     sameSite: 'lax',
     path: '/',

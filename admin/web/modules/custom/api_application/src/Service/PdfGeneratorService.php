@@ -2,7 +2,6 @@
 
 namespace Drupal\api_application\Service;
 
-use Drupal\api_application\Entity\Application;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -116,8 +115,8 @@ class PdfGeneratorService {
     $file_name = 'application-' . $application->getApplicationId() . '.pdf';
     $file_path = $pdf_directory . $file_name;
 
-    // Check if the file already exists and is recent (less than 1 hour old).
-    if (file_exists($file_path) && (time() - filemtime($file_path) < 3600)) {
+    // Reuse cached PDF only when it is newer than the latest application save.
+    if (file_exists($file_path) && filemtime($file_path) >= $application->getChangedTime()) {
       return $file_path;
     }
 
@@ -169,232 +168,23 @@ class PdfGeneratorService {
    *   The HTML representation of the application.
    */
   protected function generateApplicationHtml(ApplicationInterface $application) {
-    // Normalize application data using the same preprocessing logic.
-    $normalized_data = $this->normalizeApplicationData($application);
+    // Reuse the same preprocessing logic as the admin application view.
+    $variables = [
+      'elements' => [
+        '#application' => $application,
+      ],
+    ];
+    template_preprocess_application($variables);
 
-    // Prepare the render array for the PDF template.
     $build = [
       '#theme' => 'application_pdf',
-      '#application' => $normalized_data,
+      '#application' => $variables['application'],
       '#entity' => $application,
+      '#confirmation_status_labels' => $variables['confirmation_status_labels'] ?? [],
       '#site_name' => $this->configFactory->get('system.site')->get('name') ?: 'Uwezo Fund',
     ];
 
-    // Render the application to HTML.
-    $html = $this->renderer->renderPlain($build);
-
-    return $html;
-  }
-
-  /**
-   * Normalizes application data for template rendering.
-   *
-   * @param \Drupal\api_application\Entity\ApplicationInterface $application
-   *   The application entity.
-   *
-   * @return array
-   *   The normalized application data.
-   */
-  protected function normalizeApplicationData(ApplicationInterface $application) {
-    // This mirrors the logic from template_preprocess_application()
-    $variables = [];
-
-    // Basic info.
-    $variables['id'] = $application->id();
-    $variables['application_id'] = $application->getApplicationId() ?: 'APP-' . $application->id();
-    $variables['status'] = $application->get('status')->value ?: 'draft';
-    $variables['created'] = $application->getCreatedTime();
-    $variables['changed'] = $application->getChangedTime();
-
-    // Group information.
-    $variables['group_name'] = $application->get('group_name')->value ?: '';
-    $variables['group_registration_number'] = $application->get('group_registration_number')->value ?: '';
-    $variables['date_registered'] = $application->get('date_registered')->value ?: '';
-    $variables['meeting_point'] = $application->get('meeting_point')->value ?: '';
-    $variables['nearest_landmark'] = $application->get('nearest_landmark')->value ?: '';
-    $variables['nature_of_group'] = $application->get('nature_of_group')->value ?: '';
-
-    // Location.
-    $variables['ward'] = $application->get('ward')->value ?: '';
-    $variables['county'] = '';
-    $variables['constituency'] = '';
-
-    // Handle county.
-    if (!$application->get('county')->isEmpty()) {
-      $county = $application->get('county')->entity;
-      if ($county) {
-        $variables['county'] = $county->getName();
-      }
-    }
-
-    // Handle constituency.
-    if (!$application->get('constituency')->isEmpty()) {
-      $constituency = $application->get('constituency')->entity;
-      if ($constituency) {
-        $variables['constituency'] = $constituency->getName();
-      }
-    }
-
-    // Table banking fields.
-    $variables['table_banking_duration'] = $application->get('table_banking_duration')->value ?: '';
-    $variables['monthly_share_contribution'] = $application->get('monthly_share_contribution')->value ?: 0;
-    $variables['total_amount_loaned'] = $application->get('total_amount_loaned')->value ?: 0;
-    $variables['total_revolving_fund'] = $application->get('total_revolving_fund')->value ?: 0;
-
-    // Loan details.
-    $variables['loan_amount'] = $application->get('loan_amount')->value ?: 0;
-    $variables['proposed_repayment_period'] = $application->get('proposed_repayment_period')->value ?: 0;
-
-    // Bank details.
-    $variables['bank_name'] = $application->get('bank_name')->entity ? $application->get('bank_name')->entity->getName() : '';
-    $variables['bank_branch'] = $application->get('bank_branch')->value ?: '';
-    $variables['bank_account_number'] = $application->get('bank_account_number')->value ?: '';
-
-    // Business details.
-    $variables['nature_of_business'] = $application->get('nature_of_business')->value ?: '';
-    $variables['years_in_operation'] = $application->get('years_in_operation')->value ?: 0;
-    $variables['average_income'] = $application->get('average_income')->value ?: 0;
-
-    // Other activities.
-    $variables['other_activities'] = $application->get('other_activities')->value ?: '';
-
-    // Rejection details.
-    $variables['rejection_reason'] = $application->get('rejection_reason')->value ?: '';
-    $variables['rejection_message'] = $application->get('rejection_message')->value ?: '';
-
-    // Handle arrays/collections.
-    $variables['group_background'] = [];
-    $variables['key_activities'] = [];
-    $variables['value_chain'] = [];
-    $variables['business_type'] = [];
-    $variables['group_members'] = [];
-    $variables['expenses'] = [];
-
-    // Group background.
-    if (!$application->get('group_background')->isEmpty()) {
-      foreach ($application->get('group_background') as $item) {
-        if ($item->entity) {
-          $variables['group_background'][] = $item->entity->getName();
-        }
-      }
-    }
-
-    // Key activities.
-    if (!$application->get('key_activities')->isEmpty()) {
-      foreach ($application->get('key_activities') as $item) {
-        $variables['key_activities'][] = $item->value;
-      }
-    }
-
-    // Value chain.
-    if (!$application->get('value_chain')->isEmpty()) {
-      foreach ($application->get('value_chain') as $item) {
-        if ($item->entity) {
-          $variables['value_chain'][] = $item->entity->getName();
-        }
-      }
-    }
-
-    // Business type.
-    if (!$application->get('business_type')->isEmpty()) {
-      foreach ($application->get('business_type') as $item) {
-        if ($item->entity) {
-          $variables['business_type'][] = $item->entity->getName();
-        }
-      }
-    }
-
-    // Group members.
-    $variables['group_members_count'] = 0;
-    $group_members = $application->get('group_members');
-    if ($group_members && !$group_members->isEmpty()) {
-      $variables['group_members_count'] = count($group_members);
-
-      foreach ($group_members as $member_item) {
-        if ($member_item->entity) {
-          $member = $member_item->entity;
-          $position = $member->get('position')->entity;
-          $variables['group_members'][] = [
-            'id' => $member->id(),
-            'name' => $member->getName(),
-            'id_number' => $member->getIdNumber(),
-            'gender' => $member->getGender(),
-            'phone_number' => $member->getPhoneNumber(),
-            'position' => $position ? $position->getName() : '',
-            'is_pwd' => $member->isPersonWithDisability(),
-            'pwd_number' => $member->getPwdNumber(),
-            'confirmation_status' => $member->getConfirmationStatus(),
-          ];
-        }
-      }
-    }
-
-    // Handle expenses.
-    $variables['total_expenses'] = 0;
-    if (!$application->get('expenses')->isEmpty()) {
-      foreach ($application->get('expenses') as $item) {
-        $itemValue = $item->getValue();
-        if (is_array($itemValue['value']) && !empty($itemValue['value'])) {
-          foreach ($itemValue['value'] as $key => $value) {
-            $variables['expenses'][] = [
-              'key' => $key,
-              'value' => $value,
-            ];
-            $variables['total_expenses'] += $value;
-          }
-        }
-      }
-    }
-
-    // Balance between income and expenses.
-    $variables['balance'] = $variables['average_income'] - $variables['total_expenses'];
-
-    // Loan type.
-    $variables['loan_type'] = ['name' => '', 'description' => ''];
-    if (!$application->get('loan_type')->isEmpty()) {
-      $loan_type = $application->get('loan_type')->entity;
-      if ($loan_type) {
-        $variables['loan_type'] = [
-          'name' => $loan_type->getName(),
-          'description' => $loan_type->getDescription(),
-        ];
-      }
-    }
-
-    // Format dates.
-    if ($variables['date_registered']) {
-      $variables['date_registered_formatted'] = $this->dateFormatter->format(
-        strtotime($variables['date_registered']),
-        'custom',
-        'Y-m-d'
-      );
-    }
-
-    // Format created date.
-    $variables['created_formatted'] = $this->dateFormatter->format(
-      $variables['created'],
-      'long'
-    );
-
-    // Get status label.
-    $status_options = Application::getStatusOptions();
-    $variables['status_label'] = $status_options[$variables['status']] ?? $variables['status'];
-
-    // Get rejection reason label if rejected.
-    if ($variables['status'] === 'rejected' && $variables['rejection_reason']) {
-      $rejection_reasons = [
-        'incomplete_information' => $this->t('Incomplete or incorrect information'),
-        'missing_documents' => $this->t('Required documents missing or invalid'),
-        'eligibility_criteria' => $this->t('Does not meet eligibility criteria'),
-        'duplicate_application' => $this->t('Duplicate application'),
-        'insufficient_collateral' => $this->t('Insufficient collateral'),
-        'poor_credit_history' => $this->t('Poor credit history'),
-        'other' => $this->t('Other reason'),
-      ];
-      $variables['rejection_reason_label'] = $rejection_reasons[$variables['rejection_reason']] ?? $variables['rejection_reason'];
-    }
-
-    return $variables;
+    return (string) $this->renderer->renderPlain($build);
   }
 
   /**

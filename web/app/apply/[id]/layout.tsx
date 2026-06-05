@@ -1,5 +1,6 @@
 import { ApplyFormStepper } from '@/app/apply/[id]/apply-form-stepper';
 import { getApplicationById } from '@/lib/data/application';
+import { isAuthenticationError } from '@/lib/errors/auth-error';
 import { getSession } from '@/lib/session';
 import type { Step } from '@workspace/ui/components/stepper';
 import { getTranslations } from 'next-intl/server';
@@ -20,7 +21,15 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
     redirect(`/login?callbackUrl=/apply/${id}`);
   }
 
-  const application = await getApplicationById(id);
+  let application;
+  try {
+    application = await getApplicationById(id);
+  } catch (error) {
+    if (isAuthenticationError(error)) {
+      redirect(`/login?callbackUrl=/apply/${id}`);
+    }
+    throw error;
+  }
 
   const steps: Step[] = [
     {
