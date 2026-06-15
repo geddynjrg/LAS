@@ -13,6 +13,7 @@ use Drupal\Component\Datetime\TimeInterface;
  * Service for handling SMS confirmations for group members using Web database.
  */
 class WebSmsConfirmationService {
+  // phpcs:disable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
 
   /**
    * The SMS service.
@@ -67,7 +68,7 @@ class WebSmsConfirmationService {
   }
 
   /**
-   * Send confirmation SMS to all members of an application who haven't confirmed.
+   * Send confirmation SMS to all members who have not confirmed.
    *
    * @param string $applicationId
    *   The application ID.
@@ -316,7 +317,7 @@ class WebSmsConfirmationService {
         ->fields('m')
         ->condition('confirmation_token', $token);
 
-      // Add expiration condition - token is valid if expiration is in future OR null.
+      // Token valid if expiration is in the future or null.
       $group = $query->orConditionGroup()
         ->condition('confirmation_token_expires_at', date('Y-m-d H:i:s'), '>')
         ->isNull('confirmation_token_expires_at');
@@ -1206,3 +1207,5 @@ class WebSmsConfirmationService {
   }
 
 }
+
+// phpcs:enable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal

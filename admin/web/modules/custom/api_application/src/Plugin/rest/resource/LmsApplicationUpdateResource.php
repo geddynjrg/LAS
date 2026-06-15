@@ -101,7 +101,7 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
    * Responds to PATCH requests to update a single application (e.g., status).
    *
    * @param string $application
-   *   The application ID (your custom application_id string, e.g. "APP-20260206-VOIG7A").
+   *   The custom application_id string (e.g. APP-20260206-VOIG7A).
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
    *
@@ -271,7 +271,8 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
   /**
    * Responds to POST requests for batch status updates (multiple applications).
    *
-   * Payload example: { "updates": [ { "application_id": "APP-123", "status": "disbursed" }, ... ] }
+   * Payload example: { "updates": [ { "application_id": "APP-123",
+   *   "status": "disbursed" }, ... ] }
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.

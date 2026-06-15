@@ -20,6 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class ApplicationPaymentSuccessSmsResource extends ResourceBase {
+  // phpcs:disable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
 
   /**
    * The Web SMS confirmation service.
@@ -191,3 +192,5 @@ class ApplicationPaymentSuccessSmsResource extends ResourceBase {
   }
 
 }
+
+// phpcs:enable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal

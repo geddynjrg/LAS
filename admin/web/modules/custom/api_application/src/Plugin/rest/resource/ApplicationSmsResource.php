@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class ApplicationSmsResource extends ResourceBase {
+  // phpcs:disable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
 
   /**
    * Supported SMS trigger types.
@@ -291,3 +292,5 @@ class ApplicationSmsResource extends ResourceBase {
   }
 
 }
+
+// phpcs:enable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
