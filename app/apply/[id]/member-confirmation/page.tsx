@@ -1,6 +1,7 @@
 // app/apply/[id]/member-confirmation/page.tsx
 import { MemberConfirmationForm } from './member-confirmation-form';
 import { getApplicationById } from '@/lib/data/application';
+import type { Member } from '@/lib/types/application.types';
 import { getTranslations } from 'next-intl/server';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
@@ -25,7 +26,7 @@ export default async function MemberConfirmationPage({ params }: PageProps) {
 
   // Calculate confirmation progress
   const confirmedCount = application.members.members.filter(
-    (member) => member.confirmation_status === 'confirmed',
+    (member: Member) => member.confirmation_status === 'confirmed',
   ).length;
   const totalMembers = application.members.members.length;
   const confirmationPercentage = totalMembers > 0 

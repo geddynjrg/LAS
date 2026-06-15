@@ -29,13 +29,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # eun code quality scripts
+      - name: Generate Prisma client
+        run: pnpm --filter web db:generate
+
       - name: 'lint'
         run: pnpm lint
         continue-on-error: true
 
       - name: 'check types'
-        run: pnpm check-types
+        run: pnpm --filter web check-types
 
       - name: 'format code'
         run: pnpm format
