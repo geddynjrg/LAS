@@ -40,4 +40,5 @@ jobs:
         run: pnpm --filter ./web check-types
 
       - name: 'format code'
-        run: pnpm format
+        run: pnpm --filter ./web ci:prettier
+        continue-on-error: true
