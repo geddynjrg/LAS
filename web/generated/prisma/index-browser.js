@@ -327,29 +327,6 @@ exports.Prisma.LmsSyncQueueScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.PaymentTransactionScalarFieldEnum = {
-  id: 'id',
-  applicationId: 'applicationId',
-  billRefNumber: 'billRefNumber',
-  amountExpected: 'amountExpected',
-  currency: 'currency',
-  status: 'status',
-  clientName: 'clientName',
-  clientMSISDN: 'clientMSISDN',
-  clientIDNumber: 'clientIDNumber',
-  clientEmail: 'clientEmail',
-  checkoutPayload: 'checkoutPayload',
-  pesaflowPaymentRef: 'pesaflowPaymentRef',
-  pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
-  paymentChannel: 'paymentChannel',
-  amountPaid: 'amountPaid',
-  ipnPayload: 'ipnPayload',
-  smsSentAt: 'smsSentAt',
-  completedAt: 'completedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.CountiesCacheScalarFieldEnum = {
   id: 'id',
   lastSyncedAt: 'lastSyncedAt',
@@ -383,6 +360,29 @@ exports.Prisma.ConstituencyScalarFieldEnum = {
   url: 'url',
   language: 'language',
   countyId: 'countyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentTransactionScalarFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  billRefNumber: 'billRefNumber',
+  amountExpected: 'amountExpected',
+  currency: 'currency',
+  status: 'status',
+  clientName: 'clientName',
+  clientMSISDN: 'clientMSISDN',
+  clientIDNumber: 'clientIDNumber',
+  clientEmail: 'clientEmail',
+  checkoutPayload: 'checkoutPayload',
+  pesaflowPaymentRef: 'pesaflowPaymentRef',
+  pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
+  paymentChannel: 'paymentChannel',
+  amountPaid: 'amountPaid',
+  ipnPayload: 'ipnPayload',
+  smsSentAt: 'smsSentAt',
+  completedAt: 'completedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -543,20 +543,6 @@ exports.Prisma.LmsSyncQueueOrderByRelevanceFieldEnum = {
   error: 'error'
 };
 
-exports.Prisma.PaymentTransactionOrderByRelevanceFieldEnum = {
-  id: 'id',
-  applicationId: 'applicationId',
-  billRefNumber: 'billRefNumber',
-  currency: 'currency',
-  clientName: 'clientName',
-  clientMSISDN: 'clientMSISDN',
-  clientIDNumber: 'clientIDNumber',
-  clientEmail: 'clientEmail',
-  pesaflowPaymentRef: 'pesaflowPaymentRef',
-  pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
-  paymentChannel: 'paymentChannel'
-};
-
 exports.Prisma.CountiesCacheOrderByRelevanceFieldEnum = {
   id: 'id'
 };
@@ -580,6 +566,20 @@ exports.Prisma.ConstituencyOrderByRelevanceFieldEnum = {
   language: 'language',
   countyId: 'countyId'
 };
+
+exports.Prisma.PaymentTransactionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  billRefNumber: 'billRefNumber',
+  currency: 'currency',
+  clientName: 'clientName',
+  clientMSISDN: 'clientMSISDN',
+  clientIDNumber: 'clientIDNumber',
+  clientEmail: 'clientEmail',
+  pesaflowPaymentRef: 'pesaflowPaymentRef',
+  pesaflowInvoiceNumber: 'pesaflowInvoiceNumber',
+  paymentChannel: 'paymentChannel'
+};
 exports.IdentifierType = exports.$Enums.IdentifierType = {
   EMAIL: 'EMAIL',
   PHONE: 'PHONE',
@@ -595,9 +595,13 @@ exports.ApplicationStatus = exports.$Enums.ApplicationStatus = {
   APPROVED_BY_CONSTITUENCY: 'APPROVED_BY_CONSTITUENCY',
   IN_REVIEW: 'IN_REVIEW',
   APPROVED: 'APPROVED',
+  PENDING_SECRETARIAT_REVIEW: 'PENDING_SECRETARIAT_REVIEW',
+  PENDING_FUND_TRANSFER: 'PENDING_FUND_TRANSFER',
+  PENDING_FINAL_DISBURSEMENT: 'PENDING_FINAL_DISBURSEMENT',
   REJECTED: 'REJECTED',
   TRAINING: 'TRAINING',
   DISBURSED: 'DISBURSED',
+  DISBURSEMENT_FAILED: 'DISBURSEMENT_FAILED',
   CLOSED: 'CLOSED'
 };
 
@@ -678,10 +682,10 @@ exports.Prisma.ModelName = {
   SyncQueue: 'SyncQueue',
   File: 'File',
   LmsSyncQueue: 'LmsSyncQueue',
-  PaymentTransaction: 'PaymentTransaction',
   CountiesCache: 'CountiesCache',
   County: 'County',
-  Constituency: 'Constituency'
+  Constituency: 'Constituency',
+  PaymentTransaction: 'PaymentTransaction'
 };
 
 /**
