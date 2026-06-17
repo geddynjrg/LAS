@@ -10,7 +10,15 @@ const BROKEN_GROUP_ACTIVITY_TERMS = new Set([
 ]);
 
 export function isBrokenGroupActivityTerm(name: string): boolean {
-  return BROKEN_GROUP_ACTIVITY_TERMS.has(name) || BROKEN_GROUP_ACTIVITY_TERMS.has(name.trim());
+  const trimmed = name.trim();
+  if (
+    BROKEN_GROUP_ACTIVITY_TERMS.has(name) ||
+    BROKEN_GROUP_ACTIVITY_TERMS.has(trimmed)
+  ) {
+    return true;
+  }
+
+  return /^barber\)?$/i.test(trimmed);
 }
 
 export function normalizeGroupActivitySelection(name: string): string {
@@ -32,7 +40,10 @@ export function sanitizeGroupActivityOptions(
   const sanitized: TaxonomyOption[] = [];
 
   for (const option of options) {
-    if (isBrokenGroupActivityTerm(option.label) || isBrokenGroupActivityTerm(option.value)) {
+    if (
+      isBrokenGroupActivityTerm(option.label) ||
+      isBrokenGroupActivityTerm(option.value)
+    ) {
       if (!seen.has(GROUP_ACTIVITIES_CANONICAL_SALON_BARBER)) {
         sanitized.push({
           label: GROUP_ACTIVITIES_CANONICAL_SALON_BARBER,

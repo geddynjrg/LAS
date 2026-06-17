@@ -10,12 +10,18 @@ import {
 } from '@/app/apply/[id]/members/members-data-schema';
 import {
   type MemberValidationResult,
-  canAssignRole,
-  canAssignPhoneNumber,
   canAssignNationalId,
+  canAssignPhoneNumber,
+  canAssignRole,
   getMemberValidationErrorMessages,
   validateMembersAgainstTaxonomy,
 } from '@/app/apply/[id]/members/members-validation';
+import { OutstandingDebtModal } from '@/components/outstanding-debt-modal';
+import {
+  checkMemberLoanHistory,
+  checkMembersForOutstandingDebt,
+} from '@/lib/api/lms-loan-history.service';
+import type { LmsDebtCheckResult } from '@/lib/api/lms-loan-history.types';
 import { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
 import { updateApplicationMembersData } from '@/lib/data/application';
@@ -52,7 +58,7 @@ import {
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { formatBytes } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 // Helper function to extract error message from various error types
 const getErrorMessage = (error: any): string => {
@@ -89,6 +95,50 @@ export const MembersDataForm: FC<MembersDataProps> = ({
   const [membersInEdit, setMembersInEdit] = useState<number[]>([]);
   const [membersValidation, setMembersValidation] =
     useState<MemberValidationResult>({ isValid: true, errors: [] });
+  const [activeDebt, setActiveDebt] = useState<LmsDebtCheckResult | null>(null);
+  const [debtModalOpen, setDebtModalOpen] = useState(false);
+  const [isCheckingDebt, setIsCheckingDebt] = useState(false);
+  const lastCheckedMemberIds = useRef<string>('');
+
+  const debtBlocksProceed = Boolean(
+    activeDebt?.has_debt && !activeDebt?.can_proceed,
+  );
+
+  const runMembersDebtCheck = useCallback(
+    async (memberList: Partial<Member>[]) => {
+      const nationalIds = memberList
+        .map((member) => member.nationalIdCode?.trim())
+        .filter((value): value is string => Boolean(value));
+
+      if (nationalIds.length === 0) {
+        setActiveDebt(null);
+        return;
+      }
+
+      const signature = nationalIds.sort().join('|');
+      if (signature === lastCheckedMemberIds.current) {
+        return;
+      }
+
+      setIsCheckingDebt(true);
+      try {
+        const result = await checkMembersForOutstandingDebt(nationalIds);
+        lastCheckedMemberIds.current = signature;
+
+        if (result?.has_debt && !result.can_proceed) {
+          setActiveDebt(result);
+          setDebtModalOpen(true);
+        } else {
+          setActiveDebt(null);
+        }
+      } catch (error) {
+        console.error('Member debt check failed:', error);
+      } finally {
+        setIsCheckingDebt(false);
+      }
+    },
+    [],
+  );
 
   // Real-time validation whenever members or taxonomy options change
   useEffect(() => {
@@ -102,6 +152,14 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       setMembersValidation({ isValid: true, errors: [] });
     }
   }, [members, memberTypeOptions]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void runMembersDebtCheck(members);
+    }, 700);
+
+    return () => window.clearTimeout(timer);
+  }, [members, runMembersDebtCheck]);
 
   const prevUrl = `/apply/${id}/group-data`;
   const nextUrl = `/apply/${id}/loan-conditions`;
@@ -254,6 +312,26 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             </div>
           )}
 
+          {isCheckingDebt ? (
+            <p className="text-muted-foreground typo-body-small">
+              Checking member loan history…
+            </p>
+          ) : null}
+
+          {debtBlocksProceed ? (
+            <p className="text-destructive typo-body-small font-medium">
+              A group member has an outstanding Uwezo Fund loan. Repay at least
+              80% before continuing.
+              <button
+                type="button"
+                className="ml-1 underline"
+                onClick={() => setDebtModalOpen(true)}
+              >
+                View details & pay
+              </button>
+            </p>
+          ) : null}
+
           {displayNewMemberForm && (
             <EditMemberFormFields
               onSuccess={async (member) => {
@@ -264,6 +342,10 @@ export const MembersDataForm: FC<MembersDataProps> = ({
               }}
               onReject={() => setDisplayNewMemberForm(false)}
               isNew
+              onMemberDebtFound={(debt) => {
+                setActiveDebt(debt);
+                setDebtModalOpen(true);
+              }}
               applicationId={id}
               memberTypeOptions={memberTypeOptions}
               members={members}
@@ -280,6 +362,10 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                         key={index}
                         existingMember={member}
                         isNew={false}
+                        onMemberDebtFound={(debt) => {
+                          setActiveDebt(debt);
+                          setDebtModalOpen(true);
+                        }}
                         applicationId={id}
                         memberTypeOptions={memberTypeOptions}
                         members={members}
@@ -375,10 +461,30 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       <input type="hidden" name="redirectTo" value={nextUrl} />
 
       <ApplyFormActionBar
-        disabled={isPending || !membersValidation.isValid}
+        disabled={isPending || !membersValidation.isValid || debtBlocksProceed}
         nextUrl={nextUrl}
         prevUrl={prevUrl}
+        nextTooltip={
+          debtBlocksProceed
+            ? 'Outstanding member loan must be repaid before continuing'
+            : undefined
+        }
       />
+
+      {activeDebt ? (
+        <OutstandingDebtModal
+          open={debtModalOpen}
+          onOpenChange={setDebtModalOpen}
+          applicationId={id}
+          debt={activeDebt}
+          checkLabel="A member in this application belongs to a group with an outstanding Uwezo Fund loan. Please repay before continuing."
+          onDebtCleared={() => {
+            setActiveDebt(null);
+            lastCheckedMemberIds.current = '';
+            void runMembersDebtCheck(members);
+          }}
+        />
+      ) : null}
     </Form>
   );
 };
@@ -429,17 +535,23 @@ const MemberAccordionFooter = ({
 interface NewMemberFormFieldsProps {
   onSuccess: (member: Partial<Member>) => void;
   onReject: () => void;
+  onMemberDebtFound?: (debt: LmsDebtCheckResult) => void;
   existingMember?: Partial<Member>;
   isNew: boolean; // differentiate between new and existing members for form fields
   applicationId?: string; // for file uploads
   memberTypeOptions?: TaxonomyOption[];
   members: Partial<Member>[];
-  existingMembers?: { id: string; phoneNumber: string; nationalIdCode: string }[];
+  existingMembers?: {
+    id: string;
+    phoneNumber: string;
+    nationalIdCode: string;
+  }[];
 }
 
 const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   onReject,
   onSuccess,
+  onMemberDebtFound,
   existingMember,
   isNew,
   applicationId,
@@ -478,6 +590,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   );
   const [member, setMember] = useState<Partial<Member> | undefined>(
     existingMember,
+  );
+  const nationalIdCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
   );
   const t = useTranslations();
 
@@ -519,7 +634,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         value,
         members,
         existingMembers,
-        existingMember?.id
+        existingMember?.id,
       );
       if (!nationalIdCheck.canAssign) {
         console.warn(nationalIdCheck.reason);
@@ -530,17 +645,32 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       ...member,
       nationalIdCode: value,
     }));
+
+    if (nationalIdCheckTimer.current) {
+      clearTimeout(nationalIdCheckTimer.current);
+    }
+
+    const trimmed = value.trim();
+    if (trimmed.length >= 6 && onMemberDebtFound) {
+      nationalIdCheckTimer.current = setTimeout(() => {
+        void checkMemberLoanHistory(trimmed).then((result) => {
+          if (result.has_debt && !result.can_proceed) {
+            onMemberDebtFound(result);
+          }
+        });
+      }, 700);
+    }
   };
 
   const handlePhoneNumberChange = (value: string) => {
     const phoneWithCountryCode = value ? `+254${value}` : '';
-    
+
     if (phoneWithCountryCode) {
       const phoneCheck = canAssignPhoneNumber(
         phoneWithCountryCode,
         members,
         existingMembers,
-        existingMember?.id
+        existingMember?.id,
       );
       if (!phoneCheck.canAssign) {
         console.warn(phoneCheck.reason);
@@ -553,8 +683,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     }));
   };
 
-  
-  const validateAllMembers = (members: Partial<Member>[]): { isValid: boolean; errors: string[] } => {
+  const validateAllMembers = (
+    members: Partial<Member>[],
+  ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
     const phoneNumbers = new Set<string>();
     const nationalIds = new Set<string>();
@@ -563,7 +694,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       // Check for duplicate phone numbers
       if (member.phoneNumber) {
         if (phoneNumbers.has(member.phoneNumber)) {
-          errors.push(`Phone number ${member.phoneNumber} is used by multiple members.`);
+          errors.push(
+            `Phone number ${member.phoneNumber} is used by multiple members.`,
+          );
         } else {
           phoneNumbers.add(member.phoneNumber);
         }
@@ -572,7 +705,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       // Check for duplicate national IDs
       if (member.nationalIdCode) {
         if (nationalIds.has(member.nationalIdCode)) {
-          errors.push(`National ID ${member.nationalIdCode} is used by multiple members.`);
+          errors.push(
+            `National ID ${member.nationalIdCode} is used by multiple members.`,
+          );
         } else {
           nationalIds.add(member.nationalIdCode);
         }
@@ -595,7 +730,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   };
 
@@ -916,12 +1051,15 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               economicActivity: member.economicActivity,
               photoOfId: member.photoOfId,
               disability: member.disability ? 'on' : null,
-              certificateOfDisability: member.disability?.certificateOfDisability,
+              certificateOfDisability:
+                member.disability?.certificateOfDisability,
               pwdNumber: member.disability?.pwdNumber,
             };
 
             // Validate member data before saving
-            const validationResult = memberSchema.safeParse(formDataForValidation);
+            const validationResult = memberSchema.safeParse(
+              formDataForValidation,
+            );
 
             if (!validationResult.success) {
               const errors = validationResult.error.flatten().fieldErrors;
@@ -933,38 +1071,50 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               if (errors.phoneNumber) missingFields.push('Phone Number');
               if (errors.photoOfId) missingFields.push('Photo of ID');
 
-              alert(`Please fill the required fields: ${missingFields.join(', ')}`);
+              alert(
+                `Please fill the required fields: ${missingFields.join(', ')}`,
+              );
               return;
             }
 
             // Enhanced validation: Check for duplicates in current members array
             // For new members, check if phone/nationalId already exists in the current members list
             // For existing members, check if phone/nationalId exists in other members (not themselves)
-            
+
             // Check for duplicate phone number in current members
             if (member.phoneNumber) {
-              const duplicatePhoneMember = members.find(m => 
-                m.phoneNumber === member.phoneNumber && 
-                // For existing members, exclude themselves; for new members, check all
-                (isNew ? true : m.nationalIdCode !== existingMember?.nationalIdCode)
+              const duplicatePhoneMember = members.find(
+                (m) =>
+                  m.phoneNumber === member.phoneNumber &&
+                  // For existing members, exclude themselves; for new members, check all
+                  (isNew
+                    ? true
+                    : m.nationalIdCode !== existingMember?.nationalIdCode),
               );
-              
+
               if (duplicatePhoneMember) {
-                alert(`Phone number ${member.phoneNumber} is already used by ${duplicatePhoneMember.fullname || 'another member'}. Each member must have a unique phone number.`);
+                alert(
+                  `Phone number ${member.phoneNumber} is already used by ${duplicatePhoneMember.fullname || 'another member'}. Each member must have a unique phone number.`,
+                );
                 return;
               }
             }
 
             // Check for duplicate national ID in current members
             if (member.nationalIdCode) {
-              const duplicateNationalIdMember = members.find(m => 
-                m.nationalIdCode === member.nationalIdCode && 
-                // For existing members, exclude themselves; for new members, check all
-                (isNew ? true : m.nationalIdCode !== existingMember?.nationalIdCode)
+              const duplicateNationalIdMember = members.find(
+                (m) =>
+                  m.nationalIdCode === member.nationalIdCode &&
+                  // For existing members, exclude themselves; for new members, check all
+                  (isNew
+                    ? true
+                    : m.nationalIdCode !== existingMember?.nationalIdCode),
               );
-              
+
               if (duplicateNationalIdMember) {
-                alert(`National ID ${member.nationalIdCode} is already used by ${duplicateNationalIdMember.fullname || 'another member'}. Each member must have a unique National ID.`);
+                alert(
+                  `National ID ${member.nationalIdCode} is already used by ${duplicateNationalIdMember.fullname || 'another member'}. Each member must have a unique National ID.`,
+                );
                 return;
               }
             }
@@ -975,7 +1125,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                 member.nationalIdCode,
                 members,
                 existingMembers || [],
-                existingMember?.id
+                existingMember?.id,
               );
               if (!nationalIdCheck.canAssign) {
                 alert(nationalIdCheck.reason);
@@ -989,7 +1139,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                 member.phoneNumber,
                 members,
                 existingMembers || [],
-                existingMember?.id
+                existingMember?.id,
               );
               if (!phoneCheck.canAssign) {
                 alert(phoneCheck.reason);
@@ -1006,7 +1156,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                 currentMemberIndex,
               );
               if (!assignmentCheck.canAssign) {
-                alert(assignmentCheck.reason || 'This role cannot be assigned.');
+                alert(
+                  assignmentCheck.reason || 'This role cannot be assigned.',
+                );
                 return;
               }
             }

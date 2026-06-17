@@ -44,6 +44,15 @@ export const loanConditionsDataSchema = z
 
         break;
       case loanTypeValues.Wezesha.title:
+        if (data.loanAmount < loanTypeValues.Wezesha.minLoanAmount) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['loanAmount'],
+            message: 'ApplicationDetailsPage.loan.minimumLoan',
+            params: { count: loanTypeValues.Wezesha.minLoanAmount },
+          });
+        }
+
         if (data.loanAmount > loanTypeValues.Wezesha.maxLoanAmount) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,

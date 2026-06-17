@@ -6,11 +6,12 @@ import {
   loanConditionsDataSchema,
 } from '@/app/apply/[id]/loan-conditions/loan-conditions-schema';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
+import { loanTypeValues } from '@/lib/constants';
 import {
+  type BankBranch,
   getBranchesForBank,
   getUniqueBanks,
   loadKenyaBankBranches,
-  type BankBranch,
 } from '@/lib/data/kenya-bank-branches';
 import { LoanConditionsData as ApplicationLoanConditionsData } from '@/lib/types/application.types';
 import { Container } from '@workspace/ui/components/container';
@@ -126,6 +127,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
     Wezesha: {
       title: 'Wezesha',
       maxLoanAmount: '100 000',
+      minLoanAmount: '50 000',
       content: {
         title: t('ApplicationDetailsPage.loan.LoanDescriptionWezesha'),
         underText: t('ApplicationDetailsPage.loan.Interest'),
@@ -161,6 +163,11 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
     ? loanTypes[selectedType]?.maxLoanAmount
     : undefined;
 
+  const minAmount =
+    selectedType === loanTypeValues.Wezesha.title
+      ? loanTypes.Wezesha.minLoanAmount
+      : undefined;
+
   const prevUrl = `/apply/${id}/members`;
   const nextUrl = `/apply/${id}/proposed-business`;
 
@@ -189,9 +196,11 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
                     description: (
                       <div>
                         <div>{loanTypes.Wezesha.content.title}</div>
-                        <div className="font-bold">{loanTypes.Wezesha.content.underText}</div>
+                        <div className="font-bold">
+                          {loanTypes.Wezesha.content.underText}
+                        </div>
                       </div>
-                    )
+                    ),
                   },
                   {
                     label: loanTypes.Endeleza.title,
@@ -199,9 +208,11 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
                     description: (
                       <div>
                         <div>{loanTypes.Endeleza.content.title}</div>
-                        <div className="font-bold">{loanTypes.Endeleza.content.underText}</div>
+                        <div className="font-bold">
+                          {loanTypes.Endeleza.content.underText}
+                        </div>
                       </div>
-                    )
+                    ),
                   },
                 ]}
               />
@@ -214,11 +225,13 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
             label={t('ApplicationDetailsPage.loan.loanAmount')}
             required
             description={
-              maxAmount
-                ? t('ApplicationDetailsPage.loan.maximumLoan', {
-                    count: maxAmount,
-                  })
-                : ''
+              minAmount
+                ? `${t('ApplicationDetailsPage.loan.minimumLoan', { count: minAmount })} · ${t('ApplicationDetailsPage.loan.maximumLoan', { count: maxAmount ?? '' })}`
+                : maxAmount
+                  ? t('ApplicationDetailsPage.loan.maximumLoan', {
+                      count: maxAmount,
+                    })
+                  : ''
             }
             control={(props) => (
               <Input
@@ -304,14 +317,12 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
         <FormCard
           title={t('ApplicationDetailsPage.loan.bankAccountDetails')}
           className="space-y-4"
-          >
+        >
           <Field
             state={state}
             name="institutionType"
             label={
-              <div>
-                {t('ApplicationDetailsPage.loan.institutionType')}
-              </div>
+              <div>{t('ApplicationDetailsPage.loan.institutionType')}</div>
             }
             required
             control={(props) => (
@@ -348,9 +359,7 @@ export const LoanConditionsDataForm: FC<LoanConditionsDataProps> = ({
                 isBankInstitution ? (
                   <SearchInput
                     {...props}
-                    defaultValue={
-                      props.defaultValue ?? state.values?.bankName
-                    }
+                    defaultValue={props.defaultValue ?? state.values?.bankName}
                     placeholder={t(
                       'ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch',
                     )}

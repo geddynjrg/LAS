@@ -24,5 +24,6 @@ export const loanTypeValues = {
   Wezesha: {
     title: 'Wezesha',
     maxLoanAmount: 100000,
+    minLoanAmount: 50000,
   },
 };

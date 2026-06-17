@@ -5,11 +5,16 @@ import {
   membersDataSchema,
 } from '@/app/apply/[id]/members/members-data-schema';
 import {
-  validateMembersAgainstTaxonomy,
   getMemberValidationErrorMessages,
+  validateMembersAgainstTaxonomy,
 } from '@/app/apply/[id]/members/members-validation';
-import { updateApplicationMembersData, checkPhoneNumberExistsInApplication, checkNationalIdExistsInApplication } from '@/lib/data/application';
+import { checkMembersForOutstandingDebt } from '@/lib/api/lms-loan-history.service';
 import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
+import {
+  checkNationalIdExistsInApplication,
+  checkPhoneNumberExistsInApplication,
+  updateApplicationMembersData,
+} from '@/lib/data/application';
 import { capitalizeWords } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { redirect } from 'next/navigation';
@@ -56,6 +61,25 @@ export const membersDataAction: FormAction<MembersData> = async (
     throw new Error('No application ID provided');
   }
 
+  const memberDebt = await checkMembersForOutstandingDebt(
+    data.members.map((member) => member.nationalIdCode).filter(Boolean),
+  );
+
+  if (memberDebt?.has_debt && !memberDebt.can_proceed) {
+    return {
+      success: false,
+      errors: {
+        members: [
+          `Member belongs to group "${memberDebt.group_name ?? 'Unknown'}" with an outstanding balance of KES ${memberDebt.outstanding_balance.toLocaleString('en-KE')}. Repay at least 80% via Pesaflow before continuing.`,
+        ],
+      },
+      values: {
+        natureOfGroup: data.natureOfGroup,
+        members: data.members,
+      },
+    };
+  }
+
   /* Additional validation against taxonomy constraints */
   try {
     const memberTypeOptions = await getFormFieldOptions('memberType');
@@ -64,7 +88,9 @@ export const membersDataAction: FormAction<MembersData> = async (
       return {
         success: false,
         errors: {
-          members: ['Member position types are currently unavailable. Please try again later.'],
+          members: [
+            'Member position types are currently unavailable. Please try again later.',
+          ],
         },
         values: {
           natureOfGroup: data.natureOfGroup,
@@ -80,14 +106,16 @@ export const membersDataAction: FormAction<MembersData> = async (
         const phoneExists = await checkPhoneNumberExistsInApplication(
           id,
           member.phoneNumber,
-          member.nationalIdCode // Exclude current member if updating
+          member.nationalIdCode, // Exclude current member if updating
         );
 
         if (phoneExists) {
           return {
             success: false,
             errors: {
-              members: [`Phone number ${member.phoneNumber} is already used by another member in this group. Each member must have a unique phone number.`],
+              members: [
+                `Phone number ${member.phoneNumber} is already used by another member in this group. Each member must have a unique phone number.`,
+              ],
             },
             values: {
               natureOfGroup: data.natureOfGroup,
@@ -102,14 +130,16 @@ export const membersDataAction: FormAction<MembersData> = async (
         const nationalIdExists = await checkNationalIdExistsInApplication(
           id,
           member.nationalIdCode,
-          member.nationalIdCode // Exclude current member if updating
+          member.nationalIdCode, // Exclude current member if updating
         );
 
         if (nationalIdExists) {
           return {
             success: false,
             errors: {
-              members: [`National ID ${member.nationalIdCode} is already used by another member in this group. Each member must have a unique National ID.`],
+              members: [
+                `National ID ${member.nationalIdCode} is already used by another member in this group. Each member must have a unique National ID.`,
+              ],
             },
             values: {
               natureOfGroup: data.natureOfGroup,
@@ -120,7 +150,10 @@ export const membersDataAction: FormAction<MembersData> = async (
       }
     }
 
-    const membersValidation = validateMembersAgainstTaxonomy(data.members, memberTypeOptions);
+    const membersValidation = validateMembersAgainstTaxonomy(
+      data.members,
+      memberTypeOptions,
+    );
 
     if (!membersValidation.isValid) {
       return {
@@ -135,11 +168,16 @@ export const membersDataAction: FormAction<MembersData> = async (
       };
     }
   } catch (taxonomyError) {
-    console.error('Failed to validate members against taxonomy:', taxonomyError);
+    console.error(
+      'Failed to validate members against taxonomy:',
+      taxonomyError,
+    );
     return {
       success: false,
       errors: {
-        members: ['Unable to validate member positions. Please try again later.'],
+        members: [
+          'Unable to validate member positions. Please try again later.',
+        ],
       },
       values: {
         natureOfGroup: data.natureOfGroup,
@@ -149,9 +187,11 @@ export const membersDataAction: FormAction<MembersData> = async (
   }
 
   /* Submit validated data */
-  const capitalizedMembers = data.members.map(member => ({
+  const capitalizedMembers = data.members.map((member) => ({
     ...member,
-    fullname: member.fullname ? capitalizeWords(member.fullname) : member.fullname,
+    fullname: member.fullname
+      ? capitalizeWords(member.fullname)
+      : member.fullname,
   }));
 
   await updateApplicationMembersData(id, {

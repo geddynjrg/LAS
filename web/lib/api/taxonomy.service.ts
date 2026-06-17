@@ -1,6 +1,7 @@
 'use server';
 
 import { getTaxonomyVocabularies } from '@/lib/api/application/taxonomy-vocabularies';
+import { sanitizeGroupActivityOptions } from '@/lib/constants/group-activities-taxonomy';
 import { prisma } from '@/lib/db/prisma';
 
 // import type { TaxonomyVocabulary, TaxonomyTerm } from "@/lib/api/schema/application/taxonomy-vocabularies.schema";
@@ -12,6 +13,23 @@ export interface TaxonomyOption {
   label: string;
   value: string;
   limitedRole?: boolean; // For position_of_member terms - indicates if only one allowed per application
+}
+
+function termsToOptions(
+  terms: Array<{ name: string; weight: number; limitedRole?: boolean | null }>,
+  sanitizeGroupActivities = false,
+): TaxonomyOption[] {
+  const options = terms
+    .sort((a, b) => a.weight - b.weight)
+    .map((term) => ({
+      label: term.name,
+      value: term.name,
+      limitedRole: term.limitedRole ?? undefined,
+    }));
+
+  return sanitizeGroupActivities
+    ? sanitizeGroupActivityOptions(options)
+    : options;
 }
 
 /**
@@ -30,13 +48,7 @@ export async function getTaxonomyOptions(
 
     // Check if cache is still valid
     if (cached && Date.now() - cached.lastSyncedAt.getTime() < CACHE_DURATION) {
-      return cached.terms
-        .sort((a: any, b: any) => a.weight - b.weight)
-        .map((term: any) => ({
-          label: term.name,
-          value: term.name,
-          limitedRole: term.limitedRole,
-        }));
+      return termsToOptions(cached.terms, fieldName === 'group_activities');
     }
 
     // Try to fetch fresh data from API, but don't fail if it's not available
@@ -58,13 +70,7 @@ export async function getTaxonomyOptions(
       return [];
     }
 
-    return updated.terms
-      .sort((a: any, b: any) => a.weight - b.weight)
-      .map((term: any) => ({
-        label: term.name,
-        value: term.name,
-        limitedRole: term.limitedRole,
-      }));
+    return termsToOptions(updated.terms, fieldName === 'group_activities');
   } catch (error) {
     console.error(`Error fetching taxonomy options for ${fieldName}:`, error);
     return [];
@@ -178,13 +184,7 @@ export async function getTopLevelTaxonomyOptions(
       );
     });
 
-    return topLevelTerms
-      .sort((a: any, b: any) => a.weight - b.weight)
-      .map((term: any) => ({
-        label: term.name,
-        value: term.name,
-        limitedRole: term.limitedRole,
-      }));
+    return termsToOptions(topLevelTerms, vocabularyId === 'group_activities');
   } catch (error) {
     console.error(
       `Error fetching top-level taxonomy options for vocabulary ${vocabularyId}:`,

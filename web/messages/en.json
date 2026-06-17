@@ -416,13 +416,14 @@
       "bankAccountDetails": "Bank account details",
       "groupsBankName": "Group bank name",
       "groupsSaccoName": "Group SACCO name",
-      "groupsSaccoBranch" : "Group's SACCO branch",
+      "groupsSaccoBranch": "Group's SACCO branch",
       "groupsBankBranch": "Group's bank branch",
       "bankAccountNumber": "Account number",
       "LoanDescriptionWezesha": "Wezesha is for first time borrowers. Loan amount range is 50 000 KSh - 100 000 KSh. Maximum repayment period is 24 months.",
       "LoanDescriptionEndeleza": "Endeleza is a subsequent loan for repeat borrowers. The Loan amount is up to Kshs. 500,000 upgraded as a percentage (150%  to not more than 200%) of the initial amount.",
       "Interest": "The loan has a 1% administrative fee deductable upfront.",
       "maximumLoan": "Maximum amount is {count} KSh",
+      "minimumLoan": "Minimum amount is {count} KSh",
       "bankName": "Group bank name",
       "bankBranch": "Group bank branch",
       "accountNumber": "Bank account number",
@@ -435,7 +436,6 @@
       "saccoName": "SACCO Name",
       "enterBankName": "Enter bank name",
       "enterSaccoName": "Enter SACCO name"
-
     },
     "members": {
       "members": "Members",
@@ -558,10 +558,10 @@
       "member-status": "Member Status",
       "resend-timer": "Resend available in {time}"
     },
-     "Common": {
+    "Common": {
       "status": {
         "confirmed": "Confirmed",
-        "declined": "Declined", 
+        "declined": "Declined",
         "pending": "SMS Not Sent",
         "sent": "SMS Sent",
         "failed": "Failed To Send"

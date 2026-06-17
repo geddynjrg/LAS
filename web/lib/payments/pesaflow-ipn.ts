@@ -1,5 +1,6 @@
 'use server';
 
+import { syncLmsPortalRepayment } from '@/lib/api/lms-loan-history.service';
 import { sendPaymentSuccessNotificationSMS } from '@/lib/api/payment-success-sms.service';
 import {
   getPaymentTransactionByBillRef,
@@ -7,15 +8,16 @@ import {
   markPaymentTransactionCompleted,
   markPaymentTransactionFailed,
 } from '@/lib/data/payment-transaction';
-import { getPesaflowConfig } from '@/lib/payments/pesaflow.config';
+import { extractCheckoutMeta } from '@/lib/payments/lms-debt-repayment';
 import { verifyPesaflowIpnTokenHash } from '@/lib/payments/pesaflow-hash';
-import { isPaymentAmountSufficient } from '@/lib/payments/pesaflow-utils';
 import {
   extractStatusPaidAmount,
   isPesaflowStatusPaid,
   isPesaflowStatusUnderpaid,
   queryPesaflowPaymentStatus,
 } from '@/lib/payments/pesaflow-status';
+import { isPaymentAmountSufficient } from '@/lib/payments/pesaflow-utils';
+import { getPesaflowConfig } from '@/lib/payments/pesaflow.config';
 import type {
   PesaflowIpnPayload,
   ProcessPaymentResult,
@@ -35,11 +37,7 @@ function normalizeIpnPayload(raw: Record<string, unknown>): PesaflowIpnPayload {
 }
 
 function extractBillRef(payload: PesaflowIpnPayload): string {
-  return (
-    payload.client_invoice_ref ||
-    payload.billRefNumber ||
-    ''
-  ).trim();
+  return (payload.client_invoice_ref || payload.billRefNumber || '').trim();
 }
 
 function extractPaymentReference(payload: PesaflowIpnPayload): string {
@@ -172,12 +170,32 @@ export async function processPesaflowPaymentConfirmation(
 
   const { transaction, alreadyProcessed } = result;
 
-  await sendMemberSmsIfNeeded(
-    transaction.applicationId,
-    amountPaid,
-    billRefNumber,
-    Boolean(transaction.smsSentAt),
-  );
+  const meta = extractCheckoutMeta(transaction.checkoutPayload);
+  if (
+    meta.paymentType === 'lms_debt' &&
+    meta.lmsGroupLoanId &&
+    !alreadyProcessed
+  ) {
+    const paymentRef =
+      extractPaymentReference(ipnPayload as PesaflowIpnPayload) ||
+      String(ipnPayload.payment_reference ?? billRefNumber);
+
+    await syncLmsPortalRepayment({
+      groupLoanId: meta.lmsGroupLoanId,
+      amount: amountPaid,
+      referenceNumber: paymentRef,
+      billRefNumber,
+    });
+  }
+
+  if (meta.paymentType !== 'lms_debt') {
+    await sendMemberSmsIfNeeded(
+      transaction.applicationId,
+      amountPaid,
+      billRefNumber,
+      Boolean(transaction.smsSentAt),
+    );
+  }
 
   return {
     success: true,
@@ -198,7 +216,10 @@ export async function handlePesaflowIpn(
   const billRefNumber = extractBillRef(payload);
 
   if (!billRefNumber) {
-    return { success: false, error: 'Missing client_invoice_ref / billRefNumber' };
+    return {
+      success: false,
+      error: 'Missing client_invoice_ref / billRefNumber',
+    };
   }
 
   const existing = await getPaymentTransactionByBillRef(billRefNumber);
@@ -230,7 +251,11 @@ export async function handlePesaflowIpn(
   }
 
   if (!isSuccessfulPaymentStatus(payload.status)) {
-    console.warn('[Pesaflow IPN] Non-success status:', payload.status, billRefNumber);
+    console.warn(
+      '[Pesaflow IPN] Non-success status:',
+      payload.status,
+      billRefNumber,
+    );
     return {
       success: false,
       error: `Unconfirmed payment status: ${payload.status ?? 'unknown'}`,
@@ -257,7 +282,10 @@ export async function handlePesaflowIpn(
     );
 
     if (!tokenValid) {
-      console.warn('[Pesaflow IPN] token_hash verification failed:', billRefNumber);
+      console.warn(
+        '[Pesaflow IPN] token_hash verification failed:',
+        billRefNumber,
+      );
     }
   }
 
@@ -329,7 +357,8 @@ export async function confirmPaymentByBillRef(
   if (!statusConfirmation.confirmed) {
     return {
       success: false,
-      error: statusConfirmation.error ?? 'Payment not confirmed by Pesaflow yet',
+      error:
+        statusConfirmation.error ?? 'Payment not confirmed by Pesaflow yet',
       billRefNumber,
       applicationId: existing.applicationId,
     };

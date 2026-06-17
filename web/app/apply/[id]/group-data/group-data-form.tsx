@@ -9,10 +9,14 @@ import {
   type GroupData,
   groupDataSchema,
 } from '@/app/apply/[id]/group-data/group-data-schema';
+import { OutstandingDebtModal } from '@/components/outstanding-debt-modal';
 import { getConstituenciesForCountyName } from '@/lib/api/counties.service';
-import { getWardsForConstituencyName } from '@/lib/api/wards.service';
+import { checkGroupLoanHistory } from '@/lib/api/lms-loan-history.service';
+import type { LmsDebtCheckResult } from '@/lib/api/lms-loan-history.types';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
+import { getWardsForConstituencyName } from '@/lib/api/wards.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
+import { normalizeGroupActivitySelections } from '@/lib/constants/group-activities-taxonomy';
 import { GroupData as ApplicationGroupData } from '@/lib/types/application.types';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
@@ -27,7 +31,7 @@ import { FormCard } from '@workspace/ui/components/uwezo/form-card';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { type FC, useCallback, useEffect, useState } from 'react';
+import { type FC, useCallback, useEffect, useRef, useState } from 'react';
 
 export interface GroupDataProps {
   id: string;
@@ -69,8 +73,11 @@ export const GroupDataForm: FC<GroupDataProps> = ({
         : [applicationGroupData.basics.groupMeetingMinutes]
       : undefined,
     groupPurpose: applicationGroupData?.background?.purposeOfTheGroup,
-    groupActivities:
-      applicationGroupData?.background?.keyActivitiesOfTheGroup,
+    groupActivities: applicationGroupData?.background?.keyActivitiesOfTheGroup
+      ? normalizeGroupActivitySelections(
+          applicationGroupData.background.keyActivitiesOfTheGroup,
+        )
+      : undefined,
     valueChain: applicationGroupData?.background?.valueChain ?? undefined,
     tableBankingExperience:
       applicationGroupData?.background?.tableBanking?.tableBankingExperience,
@@ -78,7 +85,8 @@ export const GroupDataForm: FC<GroupDataProps> = ({
       applicationGroupData?.background?.tableBanking
         ?.tableBankingShareContribution,
     tableBankingTotalLoanedOut:
-      applicationGroupData?.background?.tableBanking?.tableBankingTotalLoanedOut,
+      applicationGroupData?.background?.tableBanking
+        ?.tableBankingTotalLoanedOut,
     tableBankingTotalRevolvingFund:
       applicationGroupData?.background?.tableBanking
         ?.tableBankingTotalRevolvingFund,
@@ -109,6 +117,57 @@ export const GroupDataForm: FC<GroupDataProps> = ({
   const [chosenKeyActivities, setChosenKeyActivities] = useState(
     state.values?.groupActivities,
   );
+  const [activeDebt, setActiveDebt] = useState<LmsDebtCheckResult | null>(null);
+  const [debtModalOpen, setDebtModalOpen] = useState(false);
+  const [isCheckingDebt, setIsCheckingDebt] = useState(false);
+  const lastCheckedRegNumber = useRef<string>('');
+
+  const debtBlocksProceed = Boolean(
+    activeDebt?.has_debt && !activeDebt?.can_proceed,
+  );
+
+  const runGroupDebtCheck = useCallback(async (registrationNumber: string) => {
+    const trimmed = registrationNumber.trim();
+    if (trimmed.length < 3) {
+      setActiveDebt(null);
+      return;
+    }
+
+    if (trimmed === lastCheckedRegNumber.current) {
+      return;
+    }
+
+    setIsCheckingDebt(true);
+    try {
+      const result = await checkGroupLoanHistory(trimmed);
+      lastCheckedRegNumber.current = trimmed;
+
+      if (result.has_debt && !result.can_proceed) {
+        setActiveDebt(result);
+        setDebtModalOpen(true);
+      } else {
+        setActiveDebt(null);
+      }
+    } catch (error) {
+      console.error('Group debt check failed:', error);
+    } finally {
+      setIsCheckingDebt(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const registrationNumber = state.values?.groupRegistrationNumber?.trim();
+    if (!registrationNumber || registrationNumber.length < 3) {
+      setActiveDebt(null);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void runGroupDebtCheck(registrationNumber);
+    }, 700);
+
+    return () => window.clearTimeout(timer);
+  }, [state.values?.groupRegistrationNumber, runGroupDebtCheck]);
 
   const constituencyOptionsForValidation = useCallback(
     (constituencyName: string) => {
@@ -168,7 +227,10 @@ export const GroupDataForm: FC<GroupDataProps> = ({
   );
 
   const updateWardsForConstituency = useCallback(
-    async (constituencyName: string, options?: { requireValidOption?: boolean }) => {
+    async (
+      constituencyName: string,
+      options?: { requireValidOption?: boolean },
+    ) => {
       const trimmed = constituencyName?.trim();
       if (!trimmed) {
         setFilteredWards([]);
@@ -243,6 +305,24 @@ export const GroupDataForm: FC<GroupDataProps> = ({
               <Input type="text" placeholder="Registration number" {...props} />
             )}
           />
+          {isCheckingDebt ? (
+            <p className="text-muted-foreground typo-body-small">
+              Checking group loan history…
+            </p>
+          ) : null}
+          {debtBlocksProceed ? (
+            <p className="text-destructive typo-body-small font-medium">
+              This group has an outstanding loan. Repay at least 80% via
+              Pesaflow before continuing.
+              <button
+                type="button"
+                className="ml-1 underline"
+                onClick={() => setDebtModalOpen(true)}
+              >
+                View details & pay
+              </button>
+            </p>
+          ) : null}
           <Field
             label={t(
               'ApplicationDetailsPage.groupData.basicInfo.dateRegistered',
@@ -291,17 +371,21 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             )}
           />
 
-                    <Field
+          <Field
             state={state}
             name="groupMeetingMinutes"
             label={
               <div>
                 <div>
-                  {t('ApplicationDetailsPage.groupData.basicInfo.groupMeetingMinutes')}
+                  {t(
+                    'ApplicationDetailsPage.groupData.basicInfo.groupMeetingMinutes',
+                  )}
                   <span className="text-destructive">*</span>
                 </div>
                 <div className="typo-body-small text-foreground font-normal mt-1">
-                  {t('ApplicationDetailsPage.groupData.basicInfo.groupMeetingMinutesDescription')}
+                  {t(
+                    'ApplicationDetailsPage.groupData.basicInfo.groupMeetingMinutesDescription',
+                  )}
                 </div>
               </div>
             }
@@ -511,7 +595,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             control={(props) => (
               <SearchInput
                 {...props}
-                defaultValue={props.defaultValue ?? state.values?.countyOfOperation}
+                defaultValue={
+                  props.defaultValue ?? state.values?.countyOfOperation
+                }
                 onValueChange={(value) => {
                   setChosenCounty(value);
                 }}
@@ -647,10 +733,33 @@ export const GroupDataForm: FC<GroupDataProps> = ({
       <input type="hidden" name="redirectTo" value={nextUrl} />
 
       <ApplyFormActionBar
-        disabled={isPending}
+        disabled={isPending || debtBlocksProceed}
         nextUrl={nextUrl}
         prevUrl={prevUrl}
+        nextTooltip={
+          debtBlocksProceed
+            ? 'Outstanding group loan must be repaid before continuing'
+            : undefined
+        }
       />
+
+      {activeDebt ? (
+        <OutstandingDebtModal
+          open={debtModalOpen}
+          onOpenChange={setDebtModalOpen}
+          applicationId={id}
+          debt={activeDebt}
+          checkLabel="This group certificate matches a previous Uwezo Fund loan that is not sufficiently repaid. Please repay before continuing."
+          onDebtCleared={() => {
+            setActiveDebt(null);
+            lastCheckedRegNumber.current = '';
+            const reg = state.values?.groupRegistrationNumber?.trim();
+            if (reg) {
+              void runGroupDebtCheck(reg);
+            }
+          }}
+        />
+      ) : null}
     </Form>
   );
 };

@@ -411,6 +411,7 @@
       "LoanDescriptionEndeleza": "Endeleza ni mkopo wa pili kwa wakopaji wa mara ya pili. Kiasi cha mkopo ni hadi Kshs. 500,000 kikiwa kimeboreshwa kwa asilimia (150% hadi si zaidi ya 200%) ya kiasi cha awali.",
       "Interest": "Mkopo una riba ya 1%.",
       "maximumLoan": "Kiasi cha juu zaidi ni {count} KSh",
+      "minimumLoan": "Kiasi cha chini ni {count} KSh",
       "bankName": "Jina la Benki ya Kikundi",
       "bankBranch": "Tawi la Benki ya Kikundi",
       "accountNumber": "Nambari ya Akaunti ya Benki",

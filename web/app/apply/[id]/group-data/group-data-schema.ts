@@ -1,4 +1,5 @@
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
+import { normalizeGroupActivitySelections } from '@/lib/constants/group-activities-taxonomy';
 import { validFile } from '@workspace/ui/lib/zod';
 import { z } from 'zod';
 
@@ -27,15 +28,14 @@ export const groupDataSchema = z
       z.array(z.string()).min(1),
     ),
 
-    groupActivities: z.preprocess(
-      (v) =>
-        Array.isArray(v)
-          ? v
-          : typeof v === 'string'
-            ? v.split(',').filter(Boolean)
-            : [],
-      z.array(z.string()).min(1),
-    ),
+    groupActivities: z.preprocess((v) => {
+      const values = Array.isArray(v)
+        ? v
+        : typeof v === 'string'
+          ? v.split(',').filter(Boolean)
+          : [];
+      return normalizeGroupActivitySelections(values);
+    }, z.array(z.string()).min(1)),
     valueChain: z
       .preprocess(
         (v) =>
@@ -89,7 +89,6 @@ export const groupDataSchema = z
     nearestLandmark: z.string(),
   })
   .superRefine((data, ctx) => {
-
     if (data.groupMeetingMinutes.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.too_small,
