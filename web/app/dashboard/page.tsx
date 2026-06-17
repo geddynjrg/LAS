@@ -6,7 +6,6 @@ import { getSiteInfo } from '@/lib/api/site-info';
 import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import { isAuthenticationError } from '@/lib/errors/auth-error';
 import { getTrainingCertificateAvailability } from '@/lib/lms/training-certificate';
-import { redirect } from 'next/navigation';
 import {
   type GeneralDetails,
   type MembersData,
@@ -28,6 +27,7 @@ import { Underline } from '@workspace/ui/components/underline';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 // Status configuration for dynamic content rendering
@@ -98,6 +98,20 @@ const STATUS_CONFIGS: Partial<Record<Status, StatusConfig>> = {
     showProcessTimeline: false,
     stepDescription: {
       key: 'stepDescription.disbursed',
+    },
+  },
+  TRAINING: {
+    showStepDescription: true,
+    showProcessTimeline: false,
+    stepDescription: {
+      key: 'stepDescription.training',
+    },
+  },
+  PENDING_FINAL_DISBURSEMENT: {
+    showStepDescription: true,
+    showProcessTimeline: false,
+    stepDescription: {
+      key: 'stepDescription.pendingFinalDisbursement',
     },
   },
   GROUP_MEMBER_CONFIRMATION: {
@@ -254,7 +268,10 @@ export default async function Page() {
     })),
   );
   const certificateAvailableById = new Map(
-    certificateAvailability.map((entry) => [entry.applicationId, entry.available]),
+    certificateAvailability.map((entry) => [
+      entry.applicationId,
+      entry.available,
+    ]),
   );
 
   // Only fetch site info if we need it (no applications = empty state)
@@ -468,9 +485,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
             className="mt-3 w-full text-neutral-700"
             asChild
           >
-            <a
-              href={`/api/applications/${applicationId}/training-certificate`}
-            >
+            <a href={`/api/applications/${applicationId}/training-certificate`}>
               <IconDownload className="mr-2 inline size-4" />
               {t('trainingCertificate.download')}
             </a>

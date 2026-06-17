@@ -332,6 +332,7 @@
       "rejected": "<bold>Rejected:</bold> Application rejected",
       "disbursed": "<bold>Disbursed:</bold> Loan funds disbursed",
       "training": "<bold>Training:</bold> Group training in progress",
+      "pendingFinalDisbursement": "<bold>Pending disbursement:</bold> Awaiting loan disbursement",
       "closed": "<bold>Closed:</bold> Application closed"
     },
     "rejectionDetails": {

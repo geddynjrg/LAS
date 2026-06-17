@@ -10,31 +10,19 @@ import type {
   ApplicationDetail,
   ApplicationsListQuery,
 } from '@/lib/api/schema/application/applications-list.schema';
-import { fromApiStatus } from '@/lib/constants/application-status';
 import { getApplications as getLocalApplications } from '@/lib/data/application';
+import {
+  mapDrupalApiStatusToLocal,
+  shouldApplyApiStatusUpdate,
+} from '@/lib/data/drupal-status-sync';
 import { prisma } from '@/lib/db/prisma';
 import type { ApplicationData } from '@/lib/types/application.types';
 
 /**
  * Maps API status to local ApplicationStatus enum using centralized constants.
- * Note: constituency_review and approved_by_constituency are mapped to IN_REVIEW
- * to simplify the user experience and hide internal review workflows.
  */
 function mapApiStatusToLocal(apiStatus?: string): ApplicationStatus {
-  if (!apiStatus) return ApplicationStatus.DRAFT;
-
-  // Use centralized mapping
-  const mapped = fromApiStatus(apiStatus);
-
-  // Special case: map constituency-level statuses to IN_REVIEW for user-facing displays
-  if (
-    mapped === ApplicationStatus.CONSTITUENCY_REVIEW ||
-    mapped === ApplicationStatus.APPROVED_BY_CONSTITUENCY
-  ) {
-    return ApplicationStatus.IN_REVIEW;
-  }
-
-  return mapped;
+  return mapDrupalApiStatusToLocal(apiStatus);
 }
 
 /**
@@ -291,17 +279,22 @@ async function syncApplicationDataChanges(
         ? new Date(parseTimestamp(apiApp.changed) * 1000)
         : null;
 
-      // Check if application status has changed or if there's a newer timestamp
-      const needsUpdate =
-        localApp.status !== newStatus ||
-        (apiUpdatedAt && localApp.updatedAt < apiUpdatedAt);
+      const statusShouldUpdate =
+        localApp.status !== newStatus &&
+        shouldApplyApiStatusUpdate(localApp.status, newStatus);
+      const timestampShouldUpdate =
+        apiUpdatedAt !== null && localApp.updatedAt < apiUpdatedAt;
 
-      if (needsUpdate) {
+      if (!statusShouldUpdate && !timestampShouldUpdate) {
+        continue;
+      }
+
+      if (statusShouldUpdate || timestampShouldUpdate) {
         const changes: string[] = [];
-        if (localApp.status !== newStatus) {
+        if (statusShouldUpdate) {
           changes.push(`status: ${localApp.status} -> ${newStatus}`);
         }
-        if (apiUpdatedAt && localApp.updatedAt < apiUpdatedAt) {
+        if (timestampShouldUpdate && apiUpdatedAt) {
           changes.push(
             `updated timestamp: ${localApp.updatedAt.toISOString()} -> ${apiUpdatedAt.toISOString()}`,
           );
@@ -310,9 +303,10 @@ async function syncApplicationDataChanges(
         await prisma.application.update({
           where: { id: localApp.id },
           data: {
-            status: newStatus,
-            updatedAt: apiUpdatedAt || new Date(),
-            // Update external ID if available
+            ...(statusShouldUpdate && { status: newStatus }),
+            ...(timestampShouldUpdate && {
+              updatedAt: apiUpdatedAt || new Date(),
+            }),
             ...(apiApp.id && { externalId: String(apiApp.id) }),
           },
         });
