@@ -105,31 +105,15 @@ const emptyDebtResult = (): LmsDebtCheckResult => ({
 export async function checkMemberLoanHistory(
   nationalId: string,
 ): Promise<LmsDebtCheckResult> {
-  const trimmed = nationalId.trim();
-  if (!trimmed) {
-    return emptyDebtResult();
-  }
-
-  const data = await fetchLmsJson<LmsDebtCheckResult>(
-    `/api/v1/loans/member/${encodeURIComponent(trimmed)}`,
-  );
-
-  return data ?? emptyDebtResult();
+  void nationalId;
+  return emptyDebtResult();
 }
 
 export async function checkGroupLoanHistory(
   registrationNumber: string,
 ): Promise<LmsDebtCheckResult> {
-  const trimmed = registrationNumber.trim();
-  if (!trimmed) {
-    return emptyDebtResult();
-  }
-
-  const data = await fetchLmsJson<LmsDebtCheckResult>(
-    `/api/v1/loans/group/${encodeURIComponent(trimmed)}`,
-  );
-
-  return data ?? emptyDebtResult();
+  void registrationNumber;
+  return emptyDebtResult();
 }
 
 export async function getLmsGroupLoanStatus(
@@ -248,12 +232,6 @@ export async function syncLmsPortalRepayment(input: {
 export async function checkMembersForOutstandingDebt(
   nationalIds: string[],
 ): Promise<LmsDebtCheckResult | null> {
-  for (const nationalId of nationalIds) {
-    const result = await checkMemberLoanHistory(nationalId);
-    if (result.has_debt && !result.can_proceed) {
-      return result;
-    }
-  }
-
+  void nationalIds;
   return null;
 }
