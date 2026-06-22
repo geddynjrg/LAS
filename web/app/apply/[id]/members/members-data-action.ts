@@ -8,7 +8,6 @@ import {
   getMemberValidationErrorMessages,
   validateMembersAgainstTaxonomy,
 } from '@/app/apply/[id]/members/members-validation';
-import { checkMembersForOutstandingDebt } from '@/lib/api/lms-loan-history.service';
 import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
 import {
   checkNationalIdExistsInApplication,
@@ -59,25 +58,6 @@ export const membersDataAction: FormAction<MembersData> = async (
 
   if (!id) {
     throw new Error('No application ID provided');
-  }
-
-  const memberDebt = await checkMembersForOutstandingDebt(
-    data.members.map((member) => member.nationalIdCode).filter(Boolean),
-  );
-
-  if (memberDebt?.has_debt && !memberDebt.can_proceed) {
-    return {
-      success: false,
-      errors: {
-        members: [
-          `Member belongs to group "${memberDebt.group_name ?? 'Unknown'}" with an outstanding balance of KES ${memberDebt.outstanding_balance.toLocaleString('en-KE')}. Repay at least 80% via Pesaflow before continuing.`,
-        ],
-      },
-      values: {
-        natureOfGroup: data.natureOfGroup,
-        members: data.members,
-      },
-    };
   }
 
   /* Additional validation against taxonomy constraints */

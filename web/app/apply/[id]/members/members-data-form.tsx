@@ -16,12 +16,6 @@ import {
   getMemberValidationErrorMessages,
   validateMembersAgainstTaxonomy,
 } from '@/app/apply/[id]/members/members-validation';
-import { OutstandingDebtModal } from '@/components/outstanding-debt-modal';
-import {
-  checkMemberLoanHistory,
-  checkMembersForOutstandingDebt,
-} from '@/lib/api/lms-loan-history.service';
-import type { LmsDebtCheckResult } from '@/lib/api/lms-loan-history.types';
 import { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
 import { updateApplicationMembersData } from '@/lib/data/application';
@@ -58,7 +52,7 @@ import {
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { formatBytes } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 // Helper function to extract error message from various error types
 const getErrorMessage = (error: any): string => {
@@ -95,50 +89,6 @@ export const MembersDataForm: FC<MembersDataProps> = ({
   const [membersInEdit, setMembersInEdit] = useState<number[]>([]);
   const [membersValidation, setMembersValidation] =
     useState<MemberValidationResult>({ isValid: true, errors: [] });
-  const [activeDebt, setActiveDebt] = useState<LmsDebtCheckResult | null>(null);
-  const [debtModalOpen, setDebtModalOpen] = useState(false);
-  const [isCheckingDebt, setIsCheckingDebt] = useState(false);
-  const lastCheckedMemberIds = useRef<string>('');
-
-  const debtBlocksProceed = Boolean(
-    activeDebt?.has_debt && !activeDebt?.can_proceed,
-  );
-
-  const runMembersDebtCheck = useCallback(
-    async (memberList: Partial<Member>[]) => {
-      const nationalIds = memberList
-        .map((member) => member.nationalIdCode?.trim())
-        .filter((value): value is string => Boolean(value));
-
-      if (nationalIds.length === 0) {
-        setActiveDebt(null);
-        return;
-      }
-
-      const signature = nationalIds.sort().join('|');
-      if (signature === lastCheckedMemberIds.current) {
-        return;
-      }
-
-      setIsCheckingDebt(true);
-      try {
-        const result = await checkMembersForOutstandingDebt(nationalIds);
-        lastCheckedMemberIds.current = signature;
-
-        if (result?.has_debt && !result.can_proceed) {
-          setActiveDebt(result);
-          setDebtModalOpen(true);
-        } else {
-          setActiveDebt(null);
-        }
-      } catch (error) {
-        console.error('Member debt check failed:', error);
-      } finally {
-        setIsCheckingDebt(false);
-      }
-    },
-    [],
-  );
 
   // Real-time validation whenever members or taxonomy options change
   useEffect(() => {
@@ -152,14 +102,6 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       setMembersValidation({ isValid: true, errors: [] });
     }
   }, [members, memberTypeOptions]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void runMembersDebtCheck(members);
-    }, 700);
-
-    return () => window.clearTimeout(timer);
-  }, [members, runMembersDebtCheck]);
 
   const prevUrl = `/apply/${id}/group-data`;
   const nextUrl = `/apply/${id}/loan-conditions`;
@@ -312,26 +254,6 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             </div>
           )}
 
-          {isCheckingDebt ? (
-            <p className="text-muted-foreground typo-body-small">
-              Checking member loan history…
-            </p>
-          ) : null}
-
-          {debtBlocksProceed ? (
-            <p className="text-destructive typo-body-small font-medium">
-              A group member has an outstanding Uwezo Fund loan. Repay at least
-              80% before continuing.
-              <button
-                type="button"
-                className="ml-1 underline"
-                onClick={() => setDebtModalOpen(true)}
-              >
-                View details & pay
-              </button>
-            </p>
-          ) : null}
-
           {displayNewMemberForm && (
             <EditMemberFormFields
               onSuccess={async (member) => {
@@ -342,10 +264,6 @@ export const MembersDataForm: FC<MembersDataProps> = ({
               }}
               onReject={() => setDisplayNewMemberForm(false)}
               isNew
-              onMemberDebtFound={(debt) => {
-                setActiveDebt(debt);
-                setDebtModalOpen(true);
-              }}
               applicationId={id}
               memberTypeOptions={memberTypeOptions}
               members={members}
@@ -362,10 +280,6 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                         key={index}
                         existingMember={member}
                         isNew={false}
-                        onMemberDebtFound={(debt) => {
-                          setActiveDebt(debt);
-                          setDebtModalOpen(true);
-                        }}
                         applicationId={id}
                         memberTypeOptions={memberTypeOptions}
                         members={members}
@@ -461,30 +375,10 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       <input type="hidden" name="redirectTo" value={nextUrl} />
 
       <ApplyFormActionBar
-        disabled={isPending || !membersValidation.isValid || debtBlocksProceed}
+        disabled={isPending || !membersValidation.isValid}
         nextUrl={nextUrl}
         prevUrl={prevUrl}
-        nextTooltip={
-          debtBlocksProceed
-            ? 'Outstanding member loan must be repaid before continuing'
-            : undefined
-        }
       />
-
-      {activeDebt ? (
-        <OutstandingDebtModal
-          open={debtModalOpen}
-          onOpenChange={setDebtModalOpen}
-          applicationId={id}
-          debt={activeDebt}
-          checkLabel="A member in this application belongs to a group with an outstanding Uwezo Fund loan. Please repay before continuing."
-          onDebtCleared={() => {
-            setActiveDebt(null);
-            lastCheckedMemberIds.current = '';
-            void runMembersDebtCheck(members);
-          }}
-        />
-      ) : null}
     </Form>
   );
 };
@@ -535,7 +429,6 @@ const MemberAccordionFooter = ({
 interface NewMemberFormFieldsProps {
   onSuccess: (member: Partial<Member>) => void;
   onReject: () => void;
-  onMemberDebtFound?: (debt: LmsDebtCheckResult) => void;
   existingMember?: Partial<Member>;
   isNew: boolean; // differentiate between new and existing members for form fields
   applicationId?: string; // for file uploads
@@ -551,7 +444,6 @@ interface NewMemberFormFieldsProps {
 const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   onReject,
   onSuccess,
-  onMemberDebtFound,
   existingMember,
   isNew,
   applicationId,
@@ -590,9 +482,6 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   );
   const [member, setMember] = useState<Partial<Member> | undefined>(
     existingMember,
-  );
-  const nationalIdCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
   );
   const t = useTranslations();
 
@@ -645,21 +534,6 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
       ...member,
       nationalIdCode: value,
     }));
-
-    if (nationalIdCheckTimer.current) {
-      clearTimeout(nationalIdCheckTimer.current);
-    }
-
-    const trimmed = value.trim();
-    if (trimmed.length >= 6 && onMemberDebtFound) {
-      nationalIdCheckTimer.current = setTimeout(() => {
-        void checkMemberLoanHistory(trimmed).then((result) => {
-          if (result.has_debt && !result.can_proceed) {
-            onMemberDebtFound(result);
-          }
-        });
-      }, 700);
-    }
   };
 
   const handlePhoneNumberChange = (value: string) => {

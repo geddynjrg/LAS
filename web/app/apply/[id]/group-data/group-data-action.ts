@@ -10,7 +10,6 @@ import {
   getConstituencyOptions,
   getCountyOptions,
 } from '@/lib/api/counties.service';
-import { checkGroupLoanHistory } from '@/lib/api/lms-loan-history.service';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { getWardsForConstituencyName } from '@/lib/api/wards.service';
 import {
@@ -125,21 +124,6 @@ export const groupDataAction: FormAction<GroupData> = async (
 
     if (!id) {
       throw new Error('No application ID provided');
-    }
-
-    const groupDebt = await checkGroupLoanHistory(
-      data.groupRegistrationNumber ?? '',
-    );
-    if (groupDebt.has_debt && !groupDebt.can_proceed) {
-      return {
-        success: false,
-        errors: {
-          groupRegistrationNumber: [
-            `Group "${groupDebt.group_name ?? 'Unknown'}" has an outstanding loan balance of KES ${groupDebt.outstanding_balance.toLocaleString('en-KE')}. Repay at least 80% via Pesaflow before continuing.`,
-          ],
-        },
-        values,
-      };
     }
 
     // Files are already uploaded via API, just use the metadata
