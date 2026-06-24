@@ -138,6 +138,63 @@ export async function syncApplicationToLms(
   return { success: true, referenceId: applicationId };
 }
 
+export async function ensureApplicationLmsSync(
+  applicationId: string,
+): Promise<{ success: boolean; error?: string }> {
+  const application = await prisma.application.findUnique({
+    where: { applicationId },
+    include: applicationInclude,
+  });
+
+  if (!application) {
+    return { success: false, error: 'Application not found' };
+  }
+
+  if (application.syncStatus !== SyncStatus.COMPLETED) {
+    return {
+      success: false,
+      error: 'Application must be synced to Drupal before LMS import',
+    };
+  }
+
+  const hasLoanData =
+    application.loanConditions != null && application.proposedBusiness != null;
+  if (!hasLoanData) {
+    return {
+      success: false,
+      error: 'Loan and business details are required before LMS import',
+    };
+  }
+
+  const importStatus = await getLmsImportStatus(applicationId);
+  if (importStatus.status === 'completed') {
+    await prisma.application.update({
+      where: { applicationId },
+      data: {
+        lmsSyncStatus: 'COMPLETED',
+        lmsSyncError: null,
+        lmsReferenceId: applicationId,
+        lmsLastSyncAt: new Date(),
+      },
+    });
+    return { success: true };
+  }
+
+  if (application.lmsSyncStatus === 'COMPLETED') {
+    return { success: true };
+  }
+
+  const { transformApplicationForExternalApi } =
+    await import('@/lib/api/sync.service');
+  const payload = await transformApplicationForExternalApi(application);
+  const result = await syncApplicationToLms(applicationId, payload);
+
+  return {
+    success: result.success,
+    error: result.error,
+  };
+}
+
 const applicationInclude = {
   user: true,
   groupData: true,

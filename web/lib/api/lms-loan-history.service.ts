@@ -100,20 +100,45 @@ const emptyDebtResult = (): LmsDebtCheckResult => ({
   minimum_payment_required: 0,
   repayment_threshold_percent: 80,
   members: [],
+  group_found: false,
+  has_prior_financed_loan: false,
+  loan_cleared: false,
+  eligible_for_endeleza: false,
+  eligible_for_wezesha: true,
+  endeleza_min_amount: 75000,
+  endeleza_max_amount: 500000,
+  wezesha_min_amount: 50000,
+  wezesha_max_amount: 100000,
 });
-
-export async function checkMemberLoanHistory(
-  nationalId: string,
-): Promise<LmsDebtCheckResult> {
-  void nationalId;
-  return emptyDebtResult();
-}
 
 export async function checkGroupLoanHistory(
   registrationNumber: string,
 ): Promise<LmsDebtCheckResult> {
-  void registrationNumber;
-  return emptyDebtResult();
+  const normalized = registrationNumber.trim();
+  if (!normalized) {
+    return emptyDebtResult();
+  }
+
+  const data = await fetchLmsJson<LmsDebtCheckResult>(
+    `/api/v1/loans/group/${encodeURIComponent(normalized)}`,
+  );
+
+  return data ?? emptyDebtResult();
+}
+
+export async function checkMemberLoanHistory(
+  nationalId: string,
+): Promise<LmsDebtCheckResult> {
+  const normalized = nationalId.trim();
+  if (!normalized) {
+    return emptyDebtResult();
+  }
+
+  const data = await fetchLmsJson<LmsDebtCheckResult>(
+    `/api/v1/loans/member/${encodeURIComponent(normalized)}`,
+  );
+
+  return data ?? emptyDebtResult();
 }
 
 export async function getLmsGroupLoanStatus(

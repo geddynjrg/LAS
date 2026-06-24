@@ -23,6 +23,15 @@ export interface LmsDebtCheckResult {
   minimum_payment_required: number;
   repayment_threshold_percent: number;
   members: LmsDebtMember[];
+  group_found?: boolean;
+  has_prior_financed_loan?: boolean;
+  loan_cleared?: boolean;
+  eligible_for_endeleza?: boolean;
+  eligible_for_wezesha?: boolean;
+  endeleza_min_amount?: number;
+  endeleza_max_amount?: number;
+  wezesha_min_amount?: number;
+  wezesha_max_amount?: number;
 }
 
 export interface LmsGroupLoanStatus {

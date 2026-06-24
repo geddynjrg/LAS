@@ -147,7 +147,7 @@ server {
 
     # Proxy all requests to LMS application
     location / {
-        set $lms_backend "http://uwezo-lms-app:8000";
+        set $lms_backend "http://uwezo-lms-app";
         proxy_pass $lms_backend;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
@@ -179,8 +179,8 @@ server {
     }
 
     # SSL Configuration
-    ssl_certificate /etc/nginx/certs/uwezo.crt;
-    ssl_certificate_key /etc/nginx/certs/uwezo.key;
+    ssl_certificate /etc/letsencrypt/live/${ADMIN_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${ADMIN_DOMAIN}/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
@@ -255,8 +255,8 @@ server {
     }
 
     # SSL Configuration
-    ssl_certificate /etc/nginx/certs/uwezo.crt;
-    ssl_certificate_key /etc/nginx/certs/uwezo.key;
+    ssl_certificate /etc/letsencrypt/live/${WEB_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${WEB_DOMAIN}/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;

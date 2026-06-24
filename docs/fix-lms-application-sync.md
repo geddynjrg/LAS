@@ -56,7 +56,7 @@ EXTERNAL_API_KEY=<your-drupal-api-key>
 # LMS — staging environment
 # Public URL (browser): https://lms-staging.uwezo.go.ke
 # Server-side sync uses internal Docker URL (set in docker-compose.yml):
-LMS_INTERNAL_API_URL=http://uwezo-lms-app:8000
+LMS_INTERNAL_API_URL=http://uwezo-lms-app
 LMS_API_HOST=lms-staging.uwezo.go.ke
 LMS_API_URL=https://lms-staging.uwezo.go.ke          # overridden at runtime by LMS_INTERNAL_API_URL
 LMS_API_KEY=<your-lms-staging-api-key>
@@ -120,7 +120,7 @@ When LMS runs on the **same server** as the loan app (e.g. `lms-staging.uwezo.go
 
 ```bash
 # In .env
-LMS_INTERNAL_API_URL=http://uwezo-lms-app:8000
+LMS_INTERNAL_API_URL=http://uwezo-lms-app
 LMS_API_HOST=lms-staging.uwezo.go.ke
 ```
 

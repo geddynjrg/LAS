@@ -20,7 +20,7 @@ services:
       - NEXT_PUBLIC_ADMIN_DOMAIN=https://${ADMIN_DOMAIN}
       # Server-side sync uses internal Docker services (avoids nginx/IP whitelist + hairpin NAT)
       - API_URL=http://admin
-      - LMS_API_URL=${LMS_INTERNAL_API_URL:-http://uwezo-lms-app:8000}
+      - LMS_API_URL=${LMS_INTERNAL_API_URL:-http://uwezo-lms-app}
       - LMS_API_HOST=${LMS_API_HOST:-lms-staging.uwezo.go.ke}
       - LMS_API_KEY=${LMS_API_KEY}
       - CRON_SECRET=${CRON_SECRET}
@@ -104,10 +104,10 @@ services:
       ECITIZEN_USER_INFO_URL: ${ECITIZEN_USER_INFO_URL}
       ECITIZEN_REDIRECT_URI: https://${ADMIN_DOMAIN}/api/oauth/ecitizen
       # SMTP configuration
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_HOST: ${SMTP_HOST:-${PROD_SMTP_HOST}}
+      SMTP_PORT: ${SMTP_PORT:-${PROD_SMTP_PORT}}
+      SMTP_USER: ${SMTP_USER:-${PROD_SMTP_USER}}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-${PROD_SMTP_PASSWORD}}
     depends_on:
       db:
         condition: service_healthy
@@ -147,8 +147,8 @@ services:
       - "${HTTPS_PORT:-443}:443"
     volumes:
       - certbot_www:/var/www/certbot:rw
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./certs:/etc/nginx/certs
+      - /home/administrator/ssl/uwezo.go.ke:/etc/nginx/ssl:ro
+      - /home/administrator/loan_app_staging/live_fix.conf:/etc/nginx/templates/default.conf.template:ro
     environment:
       - WEB_DOMAIN=${WEB_DOMAIN:-localhost}
       - ADMIN_DOMAIN=${ADMIN_DOMAIN:-admin.localhost}

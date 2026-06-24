@@ -7,7 +7,10 @@ import {
   SyncStatus,
 } from '@/generated/prisma';
 import { createOrUpdateApplication } from '@/lib/api/application/create';
-import { syncApplicationToLms } from '@/lib/api/lms-sync.service';
+import {
+  ensureApplicationLmsSync,
+  syncApplicationToLms,
+} from '@/lib/api/lms-sync.service';
 import type {
   ApplicationPostRequest,
   FileUpload,
@@ -158,23 +161,13 @@ async function processSyncItem(queueItemId: string) {
           `[SYNC] Skipping LMS sync for ${application.applicationId}: loan/business data not yet saved`,
         );
       } else {
-        try {
-          const lmsPayload =
-            await transformApplicationForExternalApi(application);
-          const lmsResult = await syncApplicationToLms(
-            application.applicationId,
-            lmsPayload,
-          );
-          if (!lmsResult.success) {
-            console.error(
-              `[SYNC] LMS sync failed for ${application.applicationId}:`,
-              lmsResult.error,
-            );
-          }
-        } catch (lmsError) {
+        const lmsResult = await ensureApplicationLmsSync(
+          application.applicationId,
+        );
+        if (!lmsResult.success) {
           console.error(
-            `[SYNC] LMS sync error for ${application.applicationId}:`,
-            lmsError,
+            `[SYNC] LMS sync failed for ${application.applicationId}:`,
+            lmsResult.error,
           );
         }
       }
@@ -239,7 +232,6 @@ async function processSyncItem(queueItemId: string) {
           error: errorMessage,
         },
       });
-
     }
   }
 }
@@ -399,7 +391,6 @@ async function deleteApplicationInExternalApi(
 export async function transformApplicationForExternalApi(
   application: any,
 ): Promise<ApplicationPostRequest> {
-  
   // Helper function to read file and convert to base64
   const readFileAsBase64 = async (filePath: string): Promise<string | null> => {
     try {
@@ -644,39 +635,48 @@ export async function transformApplicationForExternalApi(
   const groupCreditHistory = await transformFiles(
     application.groupData?.groupCreditHistory,
   );
-  
+
   // Enhanced member transformation with better data preservation
   const transformedMembers = await Promise.all(
     (application.members || []).map(async (member: any) => {
-
       // Preserve ALL existing confirmation data exactly as in database
       const confirmationData = {
         requires_confirmation: member.requiresConfirmation !== false,
         confirmation_token: member.confirmation_token,
         confirmation_sent_at: toUnixTimestamp(member.confirmation_sent_at),
-        confirmation_confirmed_at: toUnixTimestamp(member.confirmation_confirmed_at),
+        confirmation_confirmed_at: toUnixTimestamp(
+          member.confirmation_confirmed_at,
+        ),
         confirmation_status: member.confirmation_status,
-        confirmation_token_expires_at: toUnixTimestamp(member.confirmation_token_expires_at),
+        confirmation_token_expires_at: toUnixTimestamp(
+          member.confirmation_token_expires_at,
+        ),
       };
 
       // Determine the correct status to send to API
       let apiConfirmationStatus = confirmationData.confirmation_status;
-      
+
       // Logic for status determination:
       // 1. If member has confirmed/declined, keep that status
-      // 2. If token exists but no response yet, status should be 'sent' 
+      // 2. If token exists but no response yet, status should be 'sent'
       // 3. If no token and no response, status should be 'pending'
-      
-      if (confirmationData.confirmation_status === 'confirmed' || 
-          confirmationData.confirmation_status === 'declined') {
+
+      if (
+        confirmationData.confirmation_status === 'confirmed' ||
+        confirmationData.confirmation_status === 'declined'
+      ) {
         // Member has already responded - preserve their decision
         apiConfirmationStatus = confirmationData.confirmation_status;
-      } else if (confirmationData.confirmation_token && 
-                !confirmationData.confirmation_confirmed_at) {
+      } else if (
+        confirmationData.confirmation_token &&
+        !confirmationData.confirmation_confirmed_at
+      ) {
         // Token exists but no confirmation yet - status should be 'sent'
         apiConfirmationStatus = 'sent';
-      } else if (!confirmationData.confirmation_token && 
-                !confirmationData.confirmation_confirmed_at) {
+      } else if (
+        !confirmationData.confirmation_token &&
+        !confirmationData.confirmation_confirmed_at
+      ) {
         // No token and no confirmation - status should be 'pending'
         apiConfirmationStatus = 'pending';
       }
@@ -825,11 +825,19 @@ export async function syncApplication(
       throw new Error('Application not found');
     }
 
-    // Don't queue applications that already have externalId (already synced)
+    // Drupal already synced — still ensure LMS import when needed
     if (application.externalId) {
+      const lmsResult = await ensureApplicationLmsSync(applicationId);
+      if (!lmsResult.success) {
+        return {
+          success: false,
+          error: lmsResult.error || 'Failed to sync application to LMS',
+        };
+      }
+
       return {
         success: true,
-        message: 'Application already synced to Drupal',
+        message: 'Application already synced to Drupal and LMS',
       };
     }
 
@@ -837,7 +845,7 @@ export async function syncApplication(
     if (
       application.status === ApplicationStatus.DRAFT ||
       application.status === ApplicationStatus.UNSUBMITTED
-      ) {
+    ) {
       return {
         success: true,
         message: 'Application not ready for sync',
@@ -855,7 +863,6 @@ export async function syncApplication(
     });
 
     if (existingQueueItem) {
-
       // If it's processing, wait for it to complete
       if (existingQueueItem.status === QueueStatus.PROCESSING) {
         return {
@@ -940,9 +947,18 @@ export async function syncApplication(
           return { success: false, error: 'Application not found after sync' };
         }
 
+        if (updatedApp.syncStatus !== SyncStatus.COMPLETED) {
+          return {
+            success: false,
+            error: updatedApp.syncError || undefined,
+          };
+        }
+
+        const lmsResult = await ensureApplicationLmsSync(applicationId);
+
         return {
-          success: updatedApp.syncStatus === SyncStatus.COMPLETED,
-          error: updatedApp.syncError || undefined,
+          success: lmsResult.success,
+          error: lmsResult.error,
         };
       }
     }

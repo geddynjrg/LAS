@@ -32,6 +32,7 @@ export interface RadioOption<T extends string = string>
   value: T;
   description?: ReactNode;
   limitedRole?: boolean;
+  disabled?: boolean;
 }
 
 export interface RadioGroupProps<T extends string = string>

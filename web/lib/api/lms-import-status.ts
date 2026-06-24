@@ -122,6 +122,11 @@ export async function waitForLmsImport(
     }
 
     if (result.status === 'not_found') {
+      if (attempt < maxAttempts - 1) {
+        await sleep(intervalMs);
+        continue;
+      }
+
       return {
         success: false,
         error: 'Application not found in LMS after submission',

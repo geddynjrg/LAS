@@ -33,6 +33,15 @@ export const loanConditionsDataSchema = z
 
     switch (loanType) {
       case loanTypeValues.Endeleza.title:
+        if (data.loanAmount < loanTypeValues.Endeleza.minLoanAmount) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['loanAmount'],
+            message: 'ApplicationDetailsPage.loan.minimumLoan',
+            params: { count: loanTypeValues.Endeleza.minLoanAmount },
+          });
+        }
+
         if (data.loanAmount > loanTypeValues.Endeleza.maxLoanAmount) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
