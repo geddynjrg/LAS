@@ -53,14 +53,14 @@ export const proposedBusinessAction: FormAction<ProposedBusinessData> = async (
   }
 
   /* Submit data to database */
-  const capitalizedCustomExpenses = data.customExpenses?.map(expense => ({
+  const capitalizedCustomExpenses = data.customExpenses?.map((expense) => ({
     ...expense,
     name: capitalizeWords(expense.name),
   }));
 
   await updateApplicationProposedBusinessData(id, {
     averageIncome: data.averageIncome,
-    businessType: data.businessType,
+    businessType: [data.businessType],
     costOfGoods: data.costOfGoods,
     natureOfBusiness: data.natureOfBusiness,
     rentForBusiness: data.rentForBusiness,

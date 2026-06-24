@@ -1,4 +1,4 @@
-import type { ProposedBusinessData } from '@/app/apply/[id]/proposed-business/proposed-business-data-schema';
+import type { ProposedBusinessData } from '@/lib/types/application.types';
 import { IconPencil } from '@tabler/icons-react';
 import {
   Accordion,

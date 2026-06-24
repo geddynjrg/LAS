@@ -11,7 +11,6 @@ import { parseNumber } from '@/lib/util';
 import { capitalizeWords } from '@/lib/utils/string';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { Button } from '@workspace/ui/components/button';
-import { CheckboxGroup } from '@workspace/ui/components/checkbox-group';
 import { Container } from '@workspace/ui/components/container';
 import { Currency } from '@workspace/ui/components/currency';
 import { Field, Form } from '@workspace/ui/components/form';
@@ -44,7 +43,9 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
     proposedBusinessFormSchema,
     {
       averageIncome: applicationBusinessData?.averageIncome,
-      businessType: applicationBusinessData?.businessType,
+      businessType: Array.isArray(applicationBusinessData?.businessType)
+        ? applicationBusinessData.businessType[0]
+        : applicationBusinessData?.businessType,
       costOfGoods: applicationBusinessData?.costOfGoods,
       natureOfBusiness: applicationBusinessData?.natureOfBusiness,
       rentForBusiness: applicationBusinessData?.rentForBusiness,
@@ -172,7 +173,7 @@ export const ProposedBusinessDataForm: FC<ProposedBusinessDataProps> = ({
             )}
             required
             control={(props) => (
-              <CheckboxGroup
+              <RadioGroup
                 {...props}
                 options={taxonomyOptions?.businessType || []}
               />

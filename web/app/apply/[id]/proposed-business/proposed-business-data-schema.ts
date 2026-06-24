@@ -18,15 +18,7 @@ export type CustomExpenseForm = {
 // Schema for form validation (excludes customExpenses which we handle separately)
 export const proposedBusinessFormSchema = z.object({
   natureOfBusiness: z.string().nonempty(),
-  businessType: z.preprocess(
-    (v) =>
-      Array.isArray(v)
-        ? v
-        : typeof v === 'string'
-          ? v.split(',').filter(Boolean)
-          : [],
-    z.array(z.string()).min(1),
-  ),
+  businessType: z.string().nonempty(),
   yearsInBusiness: z
     .string()
     .nonempty()
