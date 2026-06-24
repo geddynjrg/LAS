@@ -4,6 +4,8 @@ import {
   type PhoneLogin,
   phoneLoginSchema,
 } from '@/app/(auth)/login/login-schema';
+import { resolveReturnPath } from '@/lib/return-path';
+import { normalizeKenyanPhoneLocal } from '@/lib/utils/string';
 import { Alert } from '@workspace/ui/components/alert';
 import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
@@ -11,7 +13,6 @@ import { labelVariants } from '@workspace/ui/components/label';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { normalizeKenyanPhoneLocal } from '@/lib/utils/string';
 import { type FC, useEffect, useId, useState } from 'react';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
@@ -33,12 +34,21 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     useState<PhoneLoginState>('phone_input');
   const [otpRequestId, setOtpRequestId] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>(() => {
-    const initial = (state.values as { phone?: string } | undefined)?.phone ?? '';
+    const initial =
+      (state.values as { phone?: string } | undefined)?.phone ?? '';
     return normalizeKenyanPhoneLocal(initial) ?? initial.replace(/\D/g, '');
   });
+  const [redirectTarget, setRedirectTarget] = useState(
+    redirectTo ?? '/dashboard',
+  );
 
   useEffect(() => {
-    const submittedPhone = (state.values as { phone?: string } | undefined)?.phone;
+    setRedirectTarget(resolveReturnPath(redirectTo));
+  }, [redirectTo]);
+
+  useEffect(() => {
+    const submittedPhone = (state.values as { phone?: string } | undefined)
+      ?.phone;
     if (!submittedPhone) return;
 
     const normalized =
@@ -69,9 +79,9 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
       // Only redirect if success is true AND we don't have an OTP request ID
       // (meaning this is final login, not just OTP sent)
       // Hard navigation to ensure cookies are properly read
-      window.location.href = redirectTo ?? '/dashboard';
+      window.location.href = redirectTarget;
     }
-  }, [redirectTo, state.success, state]);
+  }, [redirectTarget, state.success, state]);
 
   // handle OTP request ID from server response
   useEffect(() => {

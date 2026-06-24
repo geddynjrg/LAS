@@ -51,8 +51,7 @@ export default async function Page({ params }: Props) {
           <TrainingCertificateDownload
             applicationId={data.generalDetails.applicationId}
           />
-          {(data.generalDetails.status === 'APPROVED' ||
-            data.generalDetails.status === 'DISBURSED') &&
+          {data.generalDetails.status === 'DISBURSED' &&
           data.loanConditions?.loanAmount ? (
             <LoanRepayModal
               applicationId={data.generalDetails.applicationId}

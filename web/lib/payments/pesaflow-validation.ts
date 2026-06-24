@@ -5,17 +5,13 @@ import {
   getActivePendingPayment,
 } from '@/lib/data/payment-transaction';
 import { prisma } from '@/lib/db/prisma';
-import {
-  getRepaymentSummary,
-} from '@/lib/payments/pesaflow-repayment';
+import { getPesaflowCheckoutUrl } from '@/lib/payments/pesaflow-checkout';
+import { extractStoredInvoiceLink } from '@/lib/payments/pesaflow-invoice';
+import { getRepaymentSummary } from '@/lib/payments/pesaflow-repayment';
 import {
   isRepaymentEligibleStatus,
   roundMoney,
 } from '@/lib/payments/pesaflow-utils';
-import {
-  extractStoredInvoiceLink,
-} from '@/lib/payments/pesaflow-invoice';
-import { getPesaflowCheckoutUrl } from '@/lib/payments/pesaflow-checkout';
 import type {
   PesaflowCheckoutPayload,
   PesaflowPaymentRequest,
@@ -48,7 +44,8 @@ export async function validateRepaymentRequest(
   if (!application || !isRepaymentEligibleStatus(application.status)) {
     return {
       valid: false,
-      error: 'Online repayment is only available for approved or disbursed loans',
+      error:
+        'Online repayment is only available after the loan has been disbursed',
     };
   }
 
@@ -64,8 +61,10 @@ export async function validateRepaymentRequest(
   const pending = await getActivePendingPayment(request.applicationId);
   if (pending) {
     const checkoutUrl = getPesaflowCheckoutUrl() ?? undefined;
-    const checkoutPayload = pending.checkoutPayload as unknown as PesaflowCheckoutPayload;
-    const invoiceLink = extractStoredInvoiceLink(pending.checkoutPayload) ?? undefined;
+    const checkoutPayload =
+      pending.checkoutPayload as unknown as PesaflowCheckoutPayload;
+    const invoiceLink =
+      extractStoredInvoiceLink(pending.checkoutPayload) ?? undefined;
 
     return {
       valid: false,
@@ -74,7 +73,10 @@ export async function validateRepaymentRequest(
       resumePaymentId: pending.id,
       resumeInvoiceLink: invoiceLink,
       resumeCheckoutUrl: checkoutUrl,
-      resumeCheckoutPayload: checkoutPayload as unknown as Record<string, string>,
+      resumeCheckoutPayload: checkoutPayload as unknown as Record<
+        string,
+        string
+      >,
     };
   }
 

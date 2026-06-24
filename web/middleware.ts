@@ -1,3 +1,7 @@
+import {
+  getReturnPathFromCookieValue,
+  isValidReturnPath,
+} from '@/lib/return-path';
 import { updateSession } from '@/lib/session';
 import { type NextRequest, NextResponse, userAgent } from 'next/server';
 
@@ -52,9 +56,14 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.some((r) => path.startsWith(r));
   const session = await updateSession();
 
-  // redirect logged in user to dashboard if they try to access public route
-  if (isPublicRoute && session && !path.startsWith(loggedInRedirect)) {
-    return NextResponse.redirect(new URL(loggedInRedirect, request.nextUrl), {
+  // redirect logged in user away from auth pages to their last visited page
+  if (isPublicRoute && session && path.startsWith('/login')) {
+    const savedPath =
+      getReturnPathFromCookieValue(
+        request.cookies.get('uwezo_return_path')?.value,
+      ) ?? loggedInRedirect;
+
+    return NextResponse.redirect(new URL(savedPath, request.nextUrl), {
       headers: requestHeaders,
     });
   }
@@ -64,7 +73,9 @@ export async function middleware(request: NextRequest) {
     const newUrl = new URL(loggedOutRedirect, request.nextUrl);
     // Include the full path with search params
     const callbackUrl = request.nextUrl.pathname + request.nextUrl.search;
-    newUrl.searchParams.set('callbackUrl', callbackUrl);
+    if (isValidReturnPath(callbackUrl)) {
+      newUrl.searchParams.set('callbackUrl', callbackUrl);
+    }
 
     return NextResponse.redirect(newUrl, {
       headers: requestHeaders,

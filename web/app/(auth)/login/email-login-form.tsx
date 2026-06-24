@@ -1,12 +1,13 @@
 'use client';
 
 import { type Login, loginSchema } from '@/app/(auth)/login/login-schema';
+import { resolveReturnPath } from '@/lib/return-path';
 import { Alert } from '@workspace/ui/components/alert';
 import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
-import { type FC, useEffect } from 'react';
+import { type FC, useEffect, useState } from 'react';
 
 export interface EmailLoginFormProps {
   action: FormAction<Login>;
@@ -19,15 +20,20 @@ export const EmailLoginForm: FC<EmailLoginFormProps> = ({
 }) => {
   const t = useTranslations('LoginPage');
   const [state, formAction, isPending] = useForm(action, loginSchema);
+  const [redirectTarget, setRedirectTarget] = useState(
+    redirectTo ?? '/dashboard',
+  );
+
+  useEffect(() => {
+    setRedirectTarget(resolveReturnPath(redirectTo));
+  }, [redirectTo]);
 
   // Navigate on successful login
   useEffect(() => {
     if (state.success) {
-      // The server action has already created the session
-      // Hard navigation to ensure cookies are properly read
-      window.location.href = redirectTo ?? '/dashboard';
+      window.location.href = redirectTarget;
     }
-  }, [redirectTo, state.success]);
+  }, [redirectTarget, state.success]);
 
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">
@@ -60,8 +66,8 @@ export const EmailLoginForm: FC<EmailLoginFormProps> = ({
       />
 
       <input type="hidden" name="loginType" value="email" />
-      {redirectTo && (
-        <input type="hidden" name="redirectTo" value={redirectTo} />
+      {redirectTarget && (
+        <input type="hidden" name="redirectTo" value={redirectTarget} />
       )}
 
       <SubmitButton className="w-full" disabled={isPending}>

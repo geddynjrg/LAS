@@ -1,7 +1,7 @@
 // app/(auth)/ecitizen/callback/page.tsx
 'use client';
 
-import React from 'react';
+import { resolveReturnPath } from '@/lib/return-path';
 import { createSession } from '@/lib/session';
 import {
   IconAlertCircle,
@@ -13,12 +13,19 @@ import { Alert } from '@workspace/ui/components/alert';
 import { Button } from '@workspace/ui/components/button';
 import { Container } from '@workspace/ui/components/container';
 import { useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
 import { useEffect, useState } from 'react';
 
 // app/(auth)/ecitizen/callback/page.tsx
 
+// app/(auth)/ecitizen/callback/page.tsx
+
+// app/(auth)/ecitizen/callback/page.tsx
+
+// app/(auth)/ecitizen/callback/page.tsx
+
 export default function ECitizenCallbackPage() {
-  const router = useRouter(); 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
     'loading',
@@ -36,9 +43,12 @@ export default function ECitizenCallbackPage() {
           callbackUrl: searchParams.get('callback_url') || '/dashboard',
         };
 
-        const decodedCallback = decodeURIComponent(params.callbackUrl);
-        const finalPath = decodedCallback.startsWith('/') ? decodedCallback : `/${decodedCallback}`;
-
+        const decodedCallback = resolveReturnPath(
+          decodeURIComponent(params.callbackUrl),
+        );
+        const finalPath = decodedCallback.startsWith('/')
+          ? decodedCallback
+          : `/${decodedCallback}`;
 
         if (params.error) {
           throw new Error(
@@ -65,7 +75,10 @@ export default function ECitizenCallbackPage() {
       } catch (error: any) {
         setStatus('error');
 
-        const displayMessage = searchParams.get('error_description') || error.message || 'Authentication failed';
+        const displayMessage =
+          searchParams.get('error_description') ||
+          error.message ||
+          'Authentication failed';
 
         setMessage(displayMessage);
 

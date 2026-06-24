@@ -492,7 +492,7 @@ const GroupDetails: FC<GroupDetailsProps> = ({
           </Button>
         )}
 
-        {(status === 'APPROVED' || status === 'DISBURSED') && loanAmount ? (
+        {status === 'DISBURSED' && loanAmount ? (
           <div className="mt-3">
             <LoanRepayModal
               applicationId={applicationId}

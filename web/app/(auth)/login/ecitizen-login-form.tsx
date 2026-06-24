@@ -1,9 +1,16 @@
 // app/(auth)/login/ecitizen-login-form.tsx
 'use client';
 
+import { resolveReturnPath } from '@/lib/return-path';
 import { Alert } from '@workspace/ui/components/alert';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+
+// app/(auth)/login/ecitizen-login-form.tsx
+
+// app/(auth)/login/ecitizen-login-form.tsx
+
+// app/(auth)/login/ecitizen-login-form.tsx
 
 // app/(auth)/login/ecitizen-login-form.tsx
 
@@ -60,7 +67,7 @@ export const ECitizenLoginForm = () => {
       const state = generateRandomString(32);
 
       // Get callback URL
-      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+      const callbackUrl = resolveReturnPath(searchParams.get('callbackUrl'));
 
       console.log('Generated PKCE:', {
         codeVerifier: codeVerifier.substring(0, 10) + '...',
@@ -178,9 +185,7 @@ export const ECitizenLoginForm = () => {
         </button>
 
         <div className="mt-3 text-xs text-gray-500 space-y-1">
-          <p>
-            You will be redirected to the official eCitizen portal.
-          </p>
+          <p>You will be redirected to the official eCitizen portal.</p>
         </div>
       </div>
     </div>

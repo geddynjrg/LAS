@@ -6,7 +6,7 @@ export function roundMoney(value: number): number {
 }
 
 export function isRepaymentEligibleStatus(status: string): boolean {
-  return status === 'APPROVED' || status === 'DISBURSED';
+  return status === 'DISBURSED';
 }
 
 export function isPaymentAmountSufficient(

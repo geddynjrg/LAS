@@ -1,6 +1,7 @@
 'use client';
 
 import type { UserProfileResponseType } from '@/lib/api/schema/response/auth-response.schema';
+import { resolveReturnPath } from '@/lib/return-path';
 import { usePathname, useRouter } from 'next/navigation';
 import React, {
   ReactNode,
@@ -133,8 +134,8 @@ export const SessionProvider: React.FC<{
         error: null,
       });
 
-      // Redirect to login page
-      router.push('/login');
+      const returnPath = resolveReturnPath();
+      router.push(`/login?callbackUrl=${encodeURIComponent(returnPath)}`);
     } catch (error) {
       setSessionData((prev) => ({
         ...prev,
