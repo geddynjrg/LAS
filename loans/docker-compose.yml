@@ -1,0 +1,126 @@
+name: uwezo-prod
+
+# Production loans portal — builds from this repo, uses the SAME MariaDB as
+# loans-staging (service hostname: db on external network uwezo_default).
+#
+# Usage (from repo root):
+#   cp loans/.env.example loans/.env   # fill in secrets on the server
+#   docker compose -f loans/docker-compose.yml build --no-cache prod-admin prod-web
+#   docker compose -f loans/docker-compose.yml up -d --force-recreate prod-admin prod-web
+
+services:
+  prod-web:
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+      args:
+        - NODE_VERSION=20
+        - NEXT_PUBLIC_APP_URL=https://${PROD_WEB_DOMAIN}
+        - NEXT_PUBLIC_ADMIN_DOMAIN=https://${PROD_ADMIN_DOMAIN}
+        - NEXT_PUBLIC_API_URL=https://${PROD_ADMIN_DOMAIN}
+        - DATABASE_URL=mysql://${STAGING_DB_USER:-drupal}:${STAGING_DB_PASSWORD}@db:3306/web
+    image: uwezo-prod-web
+    container_name: uwezo-prod-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://${STAGING_DB_USER:-drupal}:${STAGING_DB_PASSWORD}@db:3306/web
+      NEXT_PUBLIC_ADMIN_DOMAIN: https://${PROD_ADMIN_DOMAIN}
+      NEXT_PUBLIC_API_URL: https://${PROD_ADMIN_DOMAIN}
+      NEXT_PUBLIC_APP_URL: https://${PROD_WEB_DOMAIN}
+      API_URL: http://prod-admin
+      LMS_API_URL: ${LMS_API_URL}
+      LMS_API_HOST: ${LMS_API_HOST:-lms.uwezo.go.ke}
+      LMS_API_KEY: ${LMS_API_KEY}
+      CRON_SECRET: ${CRON_SECRET}
+      EXTERNAL_API_KEY: ${EXTERNAL_API_KEY}
+      PESAFLOW_CHECKOUT_URL: ${PESAFLOW_CHECKOUT_URL:-}
+      PESAFLOW_STATUS_URL: ${PESAFLOW_STATUS_URL:-}
+      PESAFLOW_API_CLIENT_ID: ${PESAFLOW_API_CLIENT_ID:-}
+      PESAFLOW_SERVICE_ID: ${PESAFLOW_SERVICE_ID:-}
+      PESAFLOW_HMAC_KEY: ${PESAFLOW_HMAC_KEY:-}
+      PESAFLOW_HMAC_SECRET: ${PESAFLOW_HMAC_SECRET:-}
+      PESAFLOW_BILL_DESC: ${PESAFLOW_BILL_DESC:-Uwezo Fund Repayment}
+      PESAFLOW_SEND_STK: ${PESAFLOW_SEND_STK:-false}
+      PESAFLOW_CALLBACK_SECRET: ${PESAFLOW_CALLBACK_SECRET:-}
+    env_file:
+      - .env
+    extra_hosts:
+      - "${PROD_ADMIN_DOMAIN}:host-gateway"
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q UP"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - default
+      - lms
+    depends_on:
+      prod-admin:
+        condition: service_healthy
+
+  prod-admin:
+    build:
+      context: ../admin
+      dockerfile: Dockerfile
+      args:
+        - PHP_VERSION=8.3
+    image: uwezo-prod-admin
+    container_name: uwezo-prod-admin
+    restart: unless-stopped
+    volumes:
+      - prod_drupal_files:/var/www/html/web/sites/default/files
+      - prod_drupal_private:/var/www/private
+    environment:
+      DRUPAL_DATABASE_HOST: db
+      DRUPAL_DATABASE_NAME: ${STAGING_DB_NAME:-drupal}
+      DRUPAL_DATABASE_USER: ${STAGING_DB_USER:-drupal}
+      DRUPAL_DATABASE_PASSWORD: ${STAGING_DB_PASSWORD}
+      DRUPAL_DATABASE_PORT: 3306
+      DRUPAL_HASH_SALT: ${HASH_SALT}
+      DRUPAL_ENV: production
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      UWEZO_UI_PUBLIC_URL: https://${PROD_WEB_DOMAIN}
+      EBISCLOUD_SMS_API_KEY: ${EBISCLOUD_SMS_API_KEY}
+      EBISCLOUD_SMS_API_URL: ${EBISCLOUD_SMS_API_URL}
+      EBISCLOUD_SMS_SHORTCODE: ${EBISCLOUD_SMS_SHORTCODE}
+      EBISCLOUD_SMS_SERVICE_ID: ${EBISCLOUD_SMS_SERVICE_ID:-0}
+      ECITIZEN_CLIENT_ID: ${ECITIZEN_CLIENT_ID}
+      ECITIZEN_CLIENT_SECRET: ${ECITIZEN_CLIENT_SECRET}
+      ECITIZEN_AUTH_URL: ${ECITIZEN_AUTH_URL}
+      ECITIZEN_TOKEN_URL: ${ECITIZEN_TOKEN_URL}
+      ECITIZEN_USER_INFO_URL: ${ECITIZEN_USER_INFO_URL}
+      ECITIZEN_REDIRECT_URI: https://${PROD_ADMIN_DOMAIN}/api/oauth/ecitizen
+      SMTP_HOST: ${PROD_SMTP_HOST}
+      SMTP_PORT: ${PROD_SMTP_PORT}
+      SMTP_USER: ${PROD_SMTP_USER}
+      SMTP_PASSWORD: ${PROD_SMTP_PASSWORD}
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - default
+
+volumes:
+  prod_drupal_files:
+  prod_drupal_private:
+
+networks:
+  default:
+    external: true
+    name: uwezo_default
+  lms:
+    external: true
+    name: uwezo-network

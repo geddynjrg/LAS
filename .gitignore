@@ -8,6 +8,7 @@ node_modules
 # Environment files (but keep .env.example)
 .env
 !.env.example
+loans/.env
 .env.local
 .env.development.local
 .env.test.local
