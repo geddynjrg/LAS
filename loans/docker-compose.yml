@@ -29,7 +29,7 @@ services:
       NEXT_PUBLIC_API_URL: https://${PROD_ADMIN_DOMAIN}
       NEXT_PUBLIC_APP_URL: https://${PROD_WEB_DOMAIN}
       API_URL: http://prod-admin
-      LMS_API_URL: ${LMS_API_URL}
+      LMS_API_URL: ${LMS_INTERNAL_API_URL:-http://uwezo-lms-app}
       LMS_API_HOST: ${LMS_API_HOST:-lms.uwezo.go.ke}
       LMS_API_KEY: ${LMS_API_KEY}
       CRON_SECRET: ${CRON_SECRET}

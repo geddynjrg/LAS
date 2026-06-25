@@ -1,11 +1,11 @@
 import { ApplicationStatus } from '@/components/application-status';
 import { LoanRepayModal } from '@/components/loan-repay-modal';
 import { MemberSummary } from '@/components/member-summary';
+import { TrainingCertificateDownload } from '@/components/training-certificate-download';
 import type { SiteInformationResponse } from '@/lib/api/schema/site-info/site-info.schema';
 import { getSiteInfo } from '@/lib/api/site-info';
 import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import { isAuthenticationError } from '@/lib/errors/auth-error';
-import { getTrainingCertificateAvailability } from '@/lib/lms/training-certificate';
 import {
   type GeneralDetails,
   type MembersData,
@@ -13,7 +13,6 @@ import {
 } from '@/lib/types/application.types';
 import {
   IconChevronRight,
-  IconDownload,
   IconFileText,
   IconMail,
   IconPhone,
@@ -259,21 +258,6 @@ export default async function Page() {
     throw error;
   }
 
-  const certificateAvailability = await Promise.all(
-    data.map(async (application) => ({
-      applicationId: application.generalDetails.applicationId,
-      available: await getTrainingCertificateAvailability(
-        application.generalDetails.applicationId,
-      ),
-    })),
-  );
-  const certificateAvailableById = new Map(
-    certificateAvailability.map((entry) => [
-      entry.applicationId,
-      entry.available,
-    ]),
-  );
-
   // Only fetch site info if we need it (no applications = empty state)
   let siteInfo: SiteInformationResponse | null = null;
   if (data.length === 0) {
@@ -322,11 +306,6 @@ export default async function Page() {
               siteInfo={siteInfo}
               members={application.members}
               rejectionDetails={application.generalDetails.rejectionDetails}
-              certificateAvailable={
-                certificateAvailableById.get(
-                  application.generalDetails.applicationId,
-                ) ?? false
-              }
             />
           ))}
         </div>
@@ -416,7 +395,6 @@ interface GroupDetailsProps extends PropsWithChildren {
   siteInfo: SiteInformationResponse | null;
   members?: MembersData;
   rejectionDetails?: GeneralDetails['rejectionDetails'];
-  certificateAvailable?: boolean;
 }
 
 const GroupDetails: FC<GroupDetailsProps> = ({
@@ -428,7 +406,6 @@ const GroupDetails: FC<GroupDetailsProps> = ({
   members,
   rejectionDetails,
   applicationProgress,
-  certificateAvailable = false,
 }) => {
   const t = useTranslations('DashboardPage');
 
@@ -479,18 +456,9 @@ const GroupDetails: FC<GroupDetailsProps> = ({
           <Link href={getApplicationUrl()}>{getButtonText()}</Link>
         </Button>
 
-        {certificateAvailable && (
-          <Button
-            variant="secondary"
-            className="mt-3 w-full text-neutral-700"
-            asChild
-          >
-            <a href={`/api/applications/${applicationId}/training-certificate`}>
-              <IconDownload className="mr-2 inline size-4" />
-              {t('trainingCertificate.download')}
-            </a>
-          </Button>
-        )}
+        <div className="mt-3">
+          <TrainingCertificateDownload applicationId={applicationId} />
+        </div>
 
         {status === 'DISBURSED' && loanAmount ? (
           <div className="mt-3">

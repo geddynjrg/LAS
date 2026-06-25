@@ -15,17 +15,21 @@ export const TrainingCertificateDownload: FC<
   const status = await getTrainingCertificateStatus(applicationId);
 
   if (!status.available) {
-    if (!status.hasTrainingRecord || !status.eligibleFrom) {
+    if (!status.hasTrainingRecord) {
       return null;
     }
 
-    return (
-      <p className="text-muted-foreground text-sm">
-        {t('trainingCertificateAvailableFrom', {
-          date: status.eligibleFrom,
-        })}
-      </p>
-    );
+    if (status.eligibleFrom) {
+      return (
+        <p className="text-muted-foreground text-sm">
+          {t('trainingCertificateAvailableFrom', {
+            date: status.eligibleFrom,
+          })}
+        </p>
+      );
+    }
+
+    return null;
   }
 
   return (

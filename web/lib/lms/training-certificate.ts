@@ -5,6 +5,7 @@ export interface TrainingCertificateStatus {
   eligibleFrom: string | null;
   /** True when LMS has a trained phase application for this ID */
   hasTrainingRecord: boolean;
+  isTrained: boolean;
 }
 
 interface TrainingCertificateStatusResponse {
@@ -14,6 +15,7 @@ interface TrainingCertificateStatusResponse {
     eligible_from?: string;
     application_id?: string;
     disbursed?: boolean;
+    is_trained?: boolean;
   };
 }
 
@@ -35,6 +37,7 @@ export async function getTrainingCertificateStatus(
     available: false,
     eligibleFrom: null,
     hasTrainingRecord: false,
+    isTrained: false,
   };
 
   const config = getLmsConfig();
@@ -61,14 +64,19 @@ export async function getTrainingCertificateStatus(
       return empty;
     }
 
-    const payload = (await response.json()) as TrainingCertificateStatusResponse;
+    const payload =
+      (await response.json()) as TrainingCertificateStatusResponse;
     const data = payload.data;
 
     return {
       available: data?.available === true,
       eligibleFrom: data?.eligible_from ?? null,
+      isTrained: data?.is_trained === true,
       hasTrainingRecord: Boolean(
-        data?.eligible_from || data?.available || data?.disbursed,
+        data?.is_trained ||
+        data?.eligible_from ||
+        data?.available ||
+        data?.disbursed,
       ),
     };
   } catch (error) {
