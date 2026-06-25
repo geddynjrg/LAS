@@ -84,6 +84,7 @@
     "submit": "Wasilisha",
     "send": "Tuma",
     "help": "Msaada",
+    "helpAndSupport": "Msaada na Usaidizi",
     "faq": "Maswali yanayoulizwa mara kwa mara",
     "monthCount": "{count, plural, =1 {# mwezi} other {# miezi}}",
     "trade": "Biashara",
@@ -124,6 +125,63 @@
     "relatedAgencies": "Mashirika Yanayohusiana",
     "usefulLinks": "Viungo vya Manufaa",
     "quickContacts": "Mawasiliano ya Haraka"
+  },
+
+  "HelpPage": {
+    "title": "Msaada na Usaidizi",
+    "intro": "Pata majibu, mwongozo, na mawasiliano kwa tovuti ya maombi ya mkopo wa Mfuko wa Uwezo.",
+    "sections": {
+      "gettingStarted": {
+        "title": "Kuanza",
+        "description": "Jifunze jinsi ya kujiandikisha na kuanza ombi la mkopo la kikundi chako.",
+        "link": "Vigezo vya kustahiki kwenye ukurasa wa nyumbani",
+        "apply": "Anza ombi jipya kutoka dashibodi au ukurasa wa nyumbani baada ya kuingia."
+      },
+      "applicationProcess": {
+        "title": "Mchakato wa maombi",
+        "description": "Ombi la kawaida hupitia hatua hizi:",
+        "steps": "Maelezo ya kikundi → Wanachama → Masharti ya mkopo → Mpango wa biashara → Uthibitisho wa wanachama → Ukaguzi → Ukaguzi wa jimbo → Mafunzo → Utoaji wa mkopo"
+      },
+      "memberConfirmation": {
+        "title": "Uthibitisho wa wanachama",
+        "description": "Baada ya kuwasilisha, wanachama wa kikundi hupokea viungo vya SMS ili kuthibitisha ushiriki. Angalau 75% lazima wathibitishe kabla ombi halijaendelea."
+      },
+      "statusUpdates": {
+        "title": "Kufuatilia ombi lako",
+        "description": "Tembelea Maombi Yangu kwenye dashibodi ili kuona hali yako ya sasa na kinachotokea katika kila hatua."
+      },
+      "repayment": {
+        "title": "Marejesho ya mkopo",
+        "description": "Mkopo wako ukitolewa, unaweza kulipa mtandaoni kutoka dashibodi kupitia Pesaflow wakati malipo yatakapowashwa kwa akaunti yako."
+      },
+      "faq": {
+        "title": "Maswali yanayoulizwa mara kwa mara",
+        "q1": "Nani anaweza kuomba?",
+        "a1": "Vikundi vya kujisaidia vilivyosajiliwa vinavyokidhi vigezo vya Mfuko wa Uwezo (vikundi vya wanawake, vijana, au watu wenye ulemavu).",
+        "q2": "Wanachama wanathibitishaje?",
+        "a2": "Kila mwanachama hupokea SMS yenye kiungo salama cha kuthibitisha au kukataa kushiriki.",
+        "q3": "Uidhinishaji unachukua muda gani?",
+        "a3": "Mchakato mzima kawaida huchukua wiki kadhaa, kulingana na ratiba ya ukaguzi wa jimbo na mafunzo.",
+        "q4": "Nawasiliana na nani kwa msaada?",
+        "a4": "Tumia maelezo ya mawasiliano hapa chini au tutumie barua pepe/upigie timu ya usaidizi ya Mfuko wa Uwezo."
+      },
+      "contact": {
+        "title": "Wasiliana na usaidizi",
+        "description": "Timu yetu inapatikana wakati wa saa za kazi kusaidia na matatizo ya maombi.",
+        "email": "Barua pepe",
+        "phone": "Simu",
+        "address": "Anwani"
+      }
+    },
+    "nav": {
+      "gettingStarted": "Kuanza",
+      "applicationProcess": "Mchakato wa maombi",
+      "memberConfirmation": "Uthibitisho wa wanachama",
+      "statusUpdates": "Fuatilia ombi",
+      "repayment": "Marejesho ya mkopo",
+      "faq": "Maswali ya kawaida",
+      "contact": "Wasiliana nasi"
+    }
   },
 
   "FrontPage": {
@@ -327,6 +385,7 @@
       "rejected": "<bold>Imekataliwa:</bold> Ombi limekataliwa",
       "disbursed": "<bold>Imetolewa:</bold> Fedha za mkopo zimetolewa",
       "training": "<bold>Mafunzo:</bold> Mafunzo ya kikundi yanaendelea",
+      "pendingFinalDisbursement": "<bold>Inasubiri utoaji:</bold> Inasubiri kutolewa kwa mkopo",
       "closed": "<bold>Imefungwa:</bold> Ombi limefungwa"
     },
     "rejectionDetails": {
@@ -345,6 +404,7 @@
     },
     "stepDescription": {
       "title": "Nini kinafanyika katika hatua hii?",
+      "memberConfirmation": "Ombi lako limewasilishwa na ujumbe wa SMS umetumwa kwa wanachama wote wa kikundi wanaohitaji uthibitisho. Kila mwanachama atapokea kiungo cha kuthibitisha au kukataa kushiriki katika ombi la mkopo. Mara tu angalau 75% ya wanachama watakapothibitisha, ombi lako litaendelea kiotomatiki hadi hatua inayofuata.",
       "inReview": "<li>Maombi yatakaguliwa katika ngazi ya eneo bunge kwa dosari zozote.</li> <li>Uhakiki na ofisi husika (chifu wa eneo, mashirika ya mikopo, ofisi ya huduma za kijamii, nk).</li> <li>Ikihitajika, wanachama wa kikundi chako watawasiliana kwa mahojiano ya ziada.</li>",
       "readMoreInReview": "Soma zaidi kuhusu hatua ya ukaguzi",
       "pending": "Mara tu maombi 15 yatakapopita hatua ya ukaguzi, Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge itakusanyika kujadili maombi na kutoa mapendekezo kuhusu ombi la mkopo. Mapendekezo ya kamati yatapitishwa na Bodi ya Uwezo.",
@@ -352,12 +412,19 @@
       "approved": "Hongera! Ombi lako la mkopo limeidhinishwa na Kamati ya Usimamizi wa Mfuko wa Uwezo. Utawasiliana nao hivi karibuni kuhusu hatua zinazofuata za kutoa mkopo.",
       "rejected": "Kwa bahati mbaya, ombi lako limekataliwa. Tafadhali angalia maelezo ya kukataliwa hapo juu kwa sababu maalumu. Unaweza kuwasilisha ombi jipya baada ya kushughulikia masuala yaliyotajwa.",
       "disbursed": "Mkopo wako umetolewa kikamilifu kwenye akaunti ya benki ya kikundi chako. Tafadhali hakikisha unalipa kwa wakati kulingana na ratiba yenu iliyokubaliwa.",
+      "training": "Kikundi chako kimepangwa kwa mafunzo ya lazima ya biashara. Hudhuria vikao vyote kama ilivyoarifiwa na ofisi ya jimbo. Baada ya kukamilisha mafunzo kwa mafanikio, ombi lako litaendelea hadi hatua ya utoaji wa mkopo wa mwisho.",
+      "pendingFinalDisbursement": "Ombi lako limekamilisha mafunzo na idhini za mwisho. Ofisi ya jimbo inaandaa kutoa fedha za mkopo kwenye akaunti ya benki ya kikundi chako. Utaarifiwa mara utoaji utakapokamilika.",
+      "constituencyReview": "Ombi lako linakaguliwa na Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge. Watakagua maelezo ya kikundi chako, ustahiki, na nyaraka za kusaidia kabla ya kutoa mapendekezo.",
+      "approvedByConstituency": "Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge imeidhinisha ombi lako. Sasa litaendelea kwa ukaguzi wa kitaifa na uchakataji wa mwisho.",
       "closed": "Ombi hili limefungwa. Hakuna kitendo kingine kinachohitajika. Ikiwa una maswali, tafadhali wasiliana na timu yetu ya usaidizi."
     },
     "processTimeline": {
       "title": "Itachukua muda gani?",
-      "inReview": "Maombi kawaida huchukua siku chache kufika hatua inayofuata ambapo yatakaguliwa na Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge. Mchakato mzima unapaswa kuchukua takriban wiki moja.",
-      "pending": "Maombi kawaida huchukua siku chache kufika hatua inayofuata. Mchakato mzima unapaswa kuchukua takriban wiki moja."
+      "memberConfirmation": "Uthibitisho wa wanachama kawaida huchukua siku 1-3. Utaarifiwa kupitia SMS wanachama wengi watakapothibitisha. Ikiwa hawajibu kwa muda unaofaa, huenda ukahitaji kuwasiliana nao moja kwa moja.",
+      "inReview": "Maombi kawaida huchukua siku chache kufika hatua inayofuata ambapo yatakaguliwa na Kamati ya Usimamizi wa Mfuko wa Uwezo ya Eneo Bunge.",
+      "pending": "Maombi kawaida huchukua siku chache kufika hatua inayofuata. Mchakato mzima unapaswa kuchukua takriban wiki moja.",
+      "constituencyReview": "Ukaguzi wa jimbo kawaida huchukua wiki 1-2 kulingana na ratiba ya ukaguzi wa kamati.",
+      "approvedByConstituency": "Uchakataji wa kitaifa kawaida hufuata ndani ya wiki chache baada ya idhini ya jimbo."
     },
     "memberStatus": {
       "title": "Wanachama",
@@ -367,7 +434,10 @@
       "confirmedLabel": "Wamethibitisha",
       "pendingShort": "wanasubiri",
       "pendingLabel": "Wanasubiri",
+      "declinedShort": "wamekataa",
+      "declinedLabel": "Wamekataa",
       "progress": "wamethibitisha",
+      "responded": "wamejibu",
       "totalMembers": "Jumla ya Wanachama",
       "roleDistribution": "Mgawanyiko wa Majukumu",
       "chairman": "Mwenyekiti",

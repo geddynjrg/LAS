@@ -64,9 +64,12 @@ export const ApplicationStatus: FC<ApplicationStatusProps> = ({
         return t.rich('status.training', {
           bold: strongText,
         });
+      case 'PENDING_FINAL_DISBURSEMENT':
+        return t.rich('status.pendingFinalDisbursement', {
+          bold: strongText,
+        });
       case 'PENDING_SECRETARIAT_REVIEW':
       case 'PENDING_FUND_TRANSFER':
-      case 'PENDING_FINAL_DISBURSEMENT':
         return t.rich('status.approved', {
           bold: strongText,
         });

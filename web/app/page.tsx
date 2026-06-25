@@ -132,7 +132,7 @@ async function StaticCriteriaSection() {
 
   return (
     <Container className="my-9" asChild>
-      <section>
+      <section id="criteria">
         <h1 className="typo-h3 mb-4">{t('criteria.title')}</h1>
 
         <div className="border-primary typo-body-medium grid gap-4 border-t pt-4 md:grid-cols-2">
@@ -181,7 +181,7 @@ function CriteriaSection() {
 
   return (
     <Container className="my-9" asChild>
-      <section>
+      <section id="criteria">
         <h1 className="typo-h3 mb-4">{t('criteria.title')}</h1>
 
         <div className="border-primary typo-body-medium grid gap-4 border-t pt-4 md:grid-cols-2">
