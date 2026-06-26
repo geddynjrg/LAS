@@ -101,6 +101,8 @@ const DocumentRequirementSection: FC<{
   index: number;
 }> = ({ document, index }) => {
   const exampleImages = getApplyExampleImages(document);
+  const singleExample =
+    exampleImages.length === 1 ? exampleImages[0] : undefined;
 
   return (
     <ApplyContentContainer>
@@ -124,19 +126,19 @@ const DocumentRequirementSection: FC<{
       {/* Example Images */}
       {exampleImages.length > 0 && (
         <div className="flex flex-col items-center">
-          {exampleImages.length === 1 ? (
+          {singleExample ? (
             <div className="flex flex-col items-center">
               <p className="typo-body-medium mb-3 font-bold">
-                {formatImageTitle(exampleImages[0].label)}
+                {formatImageTitle(singleExample.label)}
               </p>
               <Image
-                src={exampleImages[0].src}
-                alt={exampleImages[0].alt}
+                src={singleExample.src}
+                alt={singleExample.alt}
                 width={300}
                 height={200}
               />
             </div>
-          ) : (
+          ) : exampleImages.length > 1 ? (
             <Carousel>
               <CarouselContent>
                 {exampleImages.map((example, exampleIndex) => (
@@ -158,7 +160,7 @@ const DocumentRequirementSection: FC<{
               </CarouselContent>
               <CarouselControls />
             </Carousel>
-          )}
+          ) : null}
 
           {/* Examples subtitle */}
           {document.examples_subtitle && (
