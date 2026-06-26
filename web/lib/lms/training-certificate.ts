@@ -61,6 +61,9 @@ export async function getTrainingCertificateStatus(
     });
 
     if (!response.ok) {
+      console.warn(
+        `Training certificate status check failed for ${applicationId}: HTTP ${response.status}`,
+      );
       return empty;
     }
 

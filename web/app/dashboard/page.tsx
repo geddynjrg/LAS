@@ -1,11 +1,15 @@
 import { ApplicationStatus } from '@/components/application-status';
 import { LoanRepayModal } from '@/components/loan-repay-modal';
 import { MemberSummary } from '@/components/member-summary';
-import { TrainingCertificateDownload } from '@/components/training-certificate-download';
+import { TrainingCertificateActions } from '@/components/training-certificate-actions';
 import type { SiteInformationResponse } from '@/lib/api/schema/site-info/site-info.schema';
 import { getSiteInfo } from '@/lib/api/site-info';
 import { getHybridApplications } from '@/lib/data/applications-hybrid';
 import { isAuthenticationError } from '@/lib/errors/auth-error';
+import {
+  type TrainingCertificateStatus,
+  getTrainingCertificateStatus,
+} from '@/lib/lms/training-certificate';
 import {
   type GeneralDetails,
   type MembersData,
@@ -23,7 +27,6 @@ import { Card } from '@workspace/ui/components/card';
 import { Container } from '@workspace/ui/components/container';
 import { Currency } from '@workspace/ui/components/currency';
 import { Underline } from '@workspace/ui/components/underline';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -248,6 +251,7 @@ const ProcessTimelineSection: FC<{
 
 export default async function Page() {
   const t = await getTranslations('DashboardPage');
+  const certificateT = await getTranslations('ApplicationDetailsPage');
   let data;
   try {
     data = await getHybridApplications();
@@ -257,6 +261,22 @@ export default async function Page() {
     }
     throw error;
   }
+
+  const certificateStatusById = new Map<string, TrainingCertificateStatus>(
+    await Promise.all(
+      data.map(async (application) => {
+        const applicationId = application.generalDetails.applicationId;
+        const status = await getTrainingCertificateStatus(applicationId);
+        return [applicationId, status] as const;
+      }),
+    ),
+  );
+
+  const certificateLabels = {
+    download: certificateT('downloadTrainingCertificate'),
+    availableFrom: (date: string) =>
+      certificateT('trainingCertificateAvailableFrom', { date }),
+  };
 
   // Only fetch site info if we need it (no applications = empty state)
   let siteInfo: SiteInformationResponse | null = null;
@@ -306,6 +326,17 @@ export default async function Page() {
               siteInfo={siteInfo}
               members={application.members}
               rejectionDetails={application.generalDetails.rejectionDetails}
+              certificateStatus={
+                certificateStatusById.get(
+                  application.generalDetails.applicationId,
+                ) ?? {
+                  available: false,
+                  eligibleFrom: null,
+                  hasTrainingRecord: false,
+                  isTrained: false,
+                }
+              }
+              certificateLabels={certificateLabels}
             />
           ))}
         </div>
@@ -318,10 +349,10 @@ interface EmptyApplicationsStateProps {
   siteInfo: SiteInformationResponse | null;
 }
 
-const EmptyApplicationsState: FC<EmptyApplicationsStateProps> = ({
+const EmptyApplicationsState: FC<EmptyApplicationsStateProps> = async ({
   siteInfo,
 }) => {
-  const t = useTranslations('DashboardPage');
+  const t = await getTranslations('DashboardPage');
 
   const contact = siteInfo?.data?.site?.contact;
 
@@ -395,9 +426,14 @@ interface GroupDetailsProps extends PropsWithChildren {
   siteInfo: SiteInformationResponse | null;
   members?: MembersData;
   rejectionDetails?: GeneralDetails['rejectionDetails'];
+  certificateStatus: TrainingCertificateStatus;
+  certificateLabels: {
+    download: string;
+    availableFrom: (date: string) => string;
+  };
 }
 
-const GroupDetails: FC<GroupDetailsProps> = ({
+const GroupDetails: FC<GroupDetailsProps> = async ({
   applicationId,
   groupName,
   loanAmount,
@@ -406,8 +442,10 @@ const GroupDetails: FC<GroupDetailsProps> = ({
   members,
   rejectionDetails,
   applicationProgress,
+  certificateStatus,
+  certificateLabels,
 }) => {
-  const t = useTranslations('DashboardPage');
+  const t = await getTranslations('DashboardPage');
 
   const contact = siteInfo?.data?.site?.contact;
 
@@ -457,7 +495,18 @@ const GroupDetails: FC<GroupDetailsProps> = ({
         </Button>
 
         <div className="mt-3">
-          <TrainingCertificateDownload applicationId={applicationId} />
+          <TrainingCertificateActions
+            applicationId={applicationId}
+            status={certificateStatus}
+            downloadLabel={certificateLabels.download}
+            availableFromLabel={
+              certificateStatus.eligibleFrom
+                ? certificateLabels.availableFrom(
+                    certificateStatus.eligibleFrom,
+                  )
+                : null
+            }
+          />
         </div>
 
         {status === 'DISBURSED' && loanAmount ? (
