@@ -43,8 +43,11 @@ services:
       PESAFLOW_BILL_DESC: ${PESAFLOW_BILL_DESC:-Uwezo Fund Repayment}
       PESAFLOW_SEND_STK: ${PESAFLOW_SEND_STK:-false}
       PESAFLOW_CALLBACK_SECRET: ${PESAFLOW_CALLBACK_SECRET:-}
+      UPLOAD_DIR: /app/web/uploads
     env_file:
       - .env
+    volumes:
+      - prod_web_uploads:/app/web/uploads
     extra_hosts:
       - "${PROD_ADMIN_DOMAIN}:host-gateway"
     expose:
@@ -116,6 +119,7 @@ services:
 volumes:
   prod_drupal_files:
   prod_drupal_private:
+  prod_web_uploads:
 
 networks:
   default:

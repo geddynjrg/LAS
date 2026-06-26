@@ -15,12 +15,6 @@ import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useRef, useState, useTransition } from 'react';
 
-import {
-  checkUserEmailAction,
-  getPdfBlobAction,
-  sendApplicationEmailAction,
-} from './server-actions';
-
 interface DonePageActionsProps {
   applicationId: string;
 }
@@ -37,15 +31,21 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
   const [isEmailValid, setIsEmailValid] = useState<boolean | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if user has email on component mount
   useEffect(() => {
-    checkUserEmailAction().then((response) => {
-      if (response.success && response.data) {
-        setUserHasEmail(
-          (response.data as { hasEmail?: boolean }).hasEmail || false,
-        );
-      }
-    });
+    fetch('/api/profile')
+      .then(async (response) => {
+        if (!response.ok) {
+          return;
+        }
+
+        const profile = (await response.json()) as {
+          data?: { email?: string };
+        };
+        setUserHasEmail(Boolean(profile.data?.email));
+      })
+      .catch(() => {
+        setUserHasEmail(false);
+      });
   }, []);
 
   const handleDownloadPdf = () => {
@@ -53,55 +53,31 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
       try {
         setError(null);
 
-        const response = await getPdfBlobAction(applicationId);
+        const response = await fetch(
+          `/api/applications/${encodeURIComponent(applicationId)}/pdf`,
+        );
 
-        if (response.success && response.data) {
-          const data = response.data as {
-            content?: string;
-            filename?: string;
-            mimeType?: string;
-            size?: number;
-          };
-
-          if (data.content) {
-            // Convert base64 to blob and download
-            try {
-              const binaryString = atob(data.content);
-              const bytes = new Uint8Array(binaryString.length);
-              for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-              }
-
-              const blob = new Blob([bytes], {
-                type: data.mimeType || 'application/pdf',
-              });
-
-              // Create download link
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download =
-                data.filename || `Application-${applicationId}.pdf`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-
-              // Clean up the URL object
-              URL.revokeObjectURL(url);
-
-              setSuccessMessage(t('ApplyPage.DonePage.download-success'));
-            } catch (decodeError) {
-              console.error('Error decoding PDF content:', decodeError);
-              setError(t('ApplyPage.DonePage.errors.download-failed'));
-            }
-          } else {
-            setError(t('ApplyPage.DonePage.errors.download-failed'));
-          }
-        } else {
+        if (!response.ok) {
+          const payload = (await response.json().catch(() => null)) as {
+            error?: string;
+          } | null;
           setError(
-            response.error || t('ApplyPage.DonePage.errors.download-failed'),
+            payload?.error || t('ApplyPage.DonePage.errors.download-failed'),
           );
+          return;
         }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Application-${applicationId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        setSuccessMessage(t('ApplyPage.DonePage.download-success'));
       } catch (error) {
         console.error('Error downloading PDF:', error);
         setError(t('ApplyPage.DonePage.errors.download-failed'));
@@ -115,17 +91,30 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
         setError(null);
         setSuccessMessage(null);
 
-        const response = await sendApplicationEmailAction(applicationId, email);
+        const response = await fetch(
+          `/api/applications/${encodeURIComponent(applicationId)}/email`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(email ? { email } : {}),
+          },
+        );
 
-        if (response.success) {
+        const payload = (await response.json().catch(() => null)) as {
+          success?: boolean;
+          message?: string;
+          error?: string;
+        } | null;
+
+        if (response.ok && payload?.success) {
           setSuccessMessage(
-            response.message || t('ApplyPage.DonePage.email.success'),
+            payload.message || t('ApplyPage.DonePage.email.success'),
           );
           setIsEmailModalOpen(false);
           setEmailInput('');
         } else {
           setError(
-            response.error || t('ApplyPage.DonePage.errors.email-failed'),
+            payload?.error || t('ApplyPage.DonePage.errors.email-failed'),
           );
         }
       } catch (error) {

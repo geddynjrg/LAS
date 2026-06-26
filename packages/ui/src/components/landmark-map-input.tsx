@@ -75,6 +75,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState(defaultValue);
   const [selected, setSelected] = useState<GeocodeSuggestion | null>(null);
+  const [preview, setPreview] = useState<GeocodeSuggestion | null>(null);
   const [suggestions, setSuggestions] = useState<GeocodeSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -82,6 +83,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
   const updateSelection = useCallback(
     (location: GeocodeSuggestion | null, value: string) => {
       setSelected(location);
+      setPreview(location);
       setSearch(value);
       onValueChange?.(value);
       onLocationSelect?.(location);
@@ -123,7 +125,9 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       }
 
       setSuggestions(data.results || []);
-      setIsOpen((data.results || []).length > 0);
+      const results = data.results || [];
+      setPreview(results[0] ?? null);
+      setIsOpen(results.length > 0);
     } catch (error) {
       setSuggestions([]);
       setSearchError(
@@ -159,7 +163,9 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
 
   const mapCenter = selected
     ? { lat: selected.lat, lng: selected.lng }
-    : DEFAULT_CENTER;
+    : preview
+      ? { lat: preview.lat, lng: preview.lng }
+      : DEFAULT_CENTER;
 
   return (
     <div className={cn("min-w-0 max-w-full space-y-3", className)}>
@@ -187,6 +193,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
                   setSearch(value);
                   onValueChange?.(value);
                   setSelected(null);
+                  setPreview(null);
                   onLocationSelect?.(null);
                   void fetchSuggestions(value);
                 }}
@@ -269,11 +276,16 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
         <p className="text-muted-foreground min-w-0 break-words">
           {selected
             ? `Selected: ${shortLabel(selected.label)}`
-            : "Search for a landmark to pin its location on the map."}
+            : preview
+              ? `Showing: ${shortLabel(preview.label)}`
+              : "Search for a landmark to pin its location on the map."}
         </p>
-        {selected && (
+        {(selected || preview) && (
           <a
-            href={buildMapLink(selected.lat, selected.lng)}
+            href={buildMapLink(
+              (selected ?? preview)!.lat,
+              (selected ?? preview)!.lng,
+            )}
             target="_blank"
             rel="noreferrer"
             className="shrink-0 text-green-700 underline"

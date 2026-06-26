@@ -161,15 +161,16 @@ async function processSyncItem(queueItemId: string) {
           `[SYNC] Skipping LMS sync for ${application.applicationId}: loan/business data not yet saved`,
         );
       } else {
-        const lmsResult = await ensureApplicationLmsSync(
-          application.applicationId,
+        void ensureApplicationLmsSync(application.applicationId).then(
+          (lmsResult) => {
+            if (!lmsResult.success) {
+              console.error(
+                `[SYNC] LMS sync failed for ${application.applicationId}:`,
+                lmsResult.error,
+              );
+            }
+          },
         );
-        if (!lmsResult.success) {
-          console.error(
-            `[SYNC] LMS sync failed for ${application.applicationId}:`,
-            lmsResult.error,
-          );
-        }
       }
     } else {
       throw new Error(result.error || 'Unknown error');
