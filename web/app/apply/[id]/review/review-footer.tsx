@@ -1,9 +1,7 @@
 'use client';
 
-import { updateApplicationStatusById } from '@/app/apply/[id]/review/update-application-status-by-id-action';
+import { submitApplicationAction } from '@/app/apply/[id]/review/submit-application-action';
 import { validateApplicationSubmission } from '@/app/apply/[id]/review/validate-application-submission-action';
-import { ApplicationStatus } from '@/generated/prisma';
-import { syncApplication } from '@/lib/api/sync.service';
 import {
   IconAlertCircle,
   IconArrowLeft,
@@ -88,24 +86,8 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
 
       console.log('[SUBMIT] Proceeding with submission for:', id);
 
-      // Step 1: Update application status
-      const result = await updateApplicationStatusById(
-        id,
-        ApplicationStatus.SUBMITTED,
-      );
-      console.log('[SUBMIT] Status update result:', result);
+      await submitApplicationAction(id);
 
-      // Step 2: Sync to Drupal immediately
-      console.log('[SUBMIT] Syncing application to Drupal...');
-      const syncResult = await syncApplication(id, true);
-
-      if (!syncResult.success) {
-        throw new Error(
-          syncResult.error || 'Failed to sync application to Drupal',
-        );
-      }
-
-      // Step 3: Navigate to done page only after successful sync
       router.push(`/apply/${id}/done`);
     } catch (error) {
       console.error('[SUBMIT] Error submitting application:', error);
