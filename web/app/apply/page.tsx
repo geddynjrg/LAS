@@ -1,3 +1,4 @@
+import { getApplyExampleImages } from '@/lib/apply-example-images';
 import { getApplicationInstructions } from '@/lib/api/application/instruction';
 import type { DocumentRequirement } from '@/lib/api/schema/application/instruction.schema';
 import { IconArrowLeft, IconPinEnd } from '@tabler/icons-react';
@@ -99,6 +100,8 @@ const DocumentRequirementSection: FC<{
   document: DocumentRequirement;
   index: number;
 }> = ({ document, index }) => {
+  const exampleImages = getApplyExampleImages(document);
+
   return (
     <ApplyContentContainer>
       <SectionHeader index={index}>{document.title}</SectionHeader>
@@ -119,39 +122,34 @@ const DocumentRequirementSection: FC<{
         )}
 
       {/* Example Images */}
-      {document.example_images && document.example_images.length > 0 && (
+      {exampleImages.length > 0 && (
         <div className="flex flex-col items-center">
-          {document.example_images.length === 1 &&
-          document.example_images[0] ? (
-            // Single image display
+          {exampleImages.length === 1 ? (
             <div className="flex flex-col items-center">
               <p className="typo-body-medium mb-3 font-bold">
-                {formatImageTitle(document.example_images[0].filename)}
+                {formatImageTitle(exampleImages[0].label)}
               </p>
               <Image
-                // className="md:border md:border-neutral-300 md:shadow-lg"
-                src={document.example_images[0].url}
-                alt={document.example_images[0].filename}
+                src={exampleImages[0].src}
+                alt={exampleImages[0].alt}
                 width={300}
                 height={200}
               />
             </div>
           ) : (
-            // Multiple images in carousel
             <Carousel>
               <CarouselContent>
-                {document.example_images.filter(Boolean).map((example) => (
+                {exampleImages.map((example, exampleIndex) => (
                   <CarouselItem
-                    key={example.fid}
+                    key={`${example.src}-${exampleIndex}`}
                     className="flex flex-col items-center"
                   >
                     <p className="typo-body-medium mb-3 font-bold">
-                      {formatImageTitle(example.filename)}
+                      {formatImageTitle(example.label)}
                     </p>
                     <Image
-                      // className="md:border md:border-neutral-300 md:shadow-lg"
-                      src={example.url}
-                      alt={example.filename}
+                      src={example.src}
+                      alt={example.alt}
                       width={300}
                       height={200}
                     />
