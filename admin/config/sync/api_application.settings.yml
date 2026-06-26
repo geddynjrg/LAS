@@ -6,6 +6,8 @@ max_file_size: 5MB
 allowed_extensions: 'pdf jpg jpeg png webp'
 sms_confirmation_enabled: true
 sms_confirmation_message: ''
+sms_submission_success_enabled: true
+sms_submission_success_message: ''
 auto_send_sms: false
 # frontend_base_url: 'https://uwezo.uwezo_e-services-fe-qa.fusion.adm.ee'
 frontend_base_url: 'http://localhost:3000'
