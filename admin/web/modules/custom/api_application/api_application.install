@@ -1427,3 +1427,58 @@ function api_application_update_11025(): string {
 
   return t('Updated limited_role flags for position_of_member taxonomy terms.');
 }
+
+/**
+ * Enable LMS Drupal sync + submission success SMS REST endpoints for anonymous.
+ */
+function api_application_update_11027(): string {
+  $permissions = [
+    'restful patch lms_application_update',
+    'restful post lms_application_update',
+    'restful post application_payment_success_sms',
+    'restful post application_submission_success_sms',
+  ];
+
+  $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
+  /** @var \Drupal\user\RoleInterface|null $anonymous */
+  $anonymous = $role_storage->load('anonymous');
+  if ($anonymous) {
+    foreach ($permissions as $permission) {
+      if (!$anonymous->hasPermission($permission)) {
+        $anonymous->grantPermission($permission);
+      }
+    }
+    $anonymous->save();
+  }
+
+  $resource_ids = [
+    'rest.resource.lms_application_update',
+    'rest.resource.application_payment_success_sms',
+    'rest.resource.application_submission_success_sms',
+  ];
+
+  foreach ($resource_ids as $resource_id) {
+    $resource_config = \Drupal::configFactory()->getEditable($resource_id);
+    if ($resource_config->isNew() && $resource_id === 'rest.resource.application_submission_success_sms') {
+      $resource_config->set('langcode', 'en');
+      $resource_config->set('status', TRUE);
+      $resource_config->set('dependencies', [
+        'module' => ['api_application', 'serialization', 'user'],
+      ]);
+      $resource_config->set('id', 'application_submission_success_sms');
+      $resource_config->set('plugin_id', 'application_submission_success_sms');
+      $resource_config->set('granularity', 'resource');
+      $resource_config->set('configuration', [
+        'methods' => ['POST'],
+        'formats' => ['json'],
+        'authentication' => ['cookie'],
+      ]);
+    }
+    else {
+      $resource_config->set('status', TRUE);
+    }
+    $resource_config->save(TRUE);
+  }
+
+  return t('Granted LMS sync and submission SMS REST permissions.');
+}

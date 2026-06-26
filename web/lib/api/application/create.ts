@@ -11,9 +11,12 @@ async function sendToApi(
   data: ApplicationPostRequest,
   apiUrl: string,
   apiKey: string,
+  options?: { skipSchemaValidation?: boolean },
 ): Promise<ApplicationPostResponse | ErrorResponse> {
   try {
-    const validatedData = ApplicationPostRequestSchema.parse(data);
+    const validatedData = options?.skipSchemaValidation
+      ? data
+      : ApplicationPostRequestSchema.parse(data);
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -129,5 +132,6 @@ export async function sendToLms(
     data,
     process.env.LMS_API_URL || '',
     process.env.LMS_API_KEY || '',
+    { skipSchemaValidation: true },
   );
 }

@@ -95,6 +95,18 @@ services:
     tags:
       - { name: rest_resource }
 
+  plugin.rest.application_submission_success_sms:
+    class: Drupal\api_application\Plugin\rest\resource\ApplicationSubmissionSuccessSmsResource
+    arguments:
+      - []
+      - 'application_submission_success_sms'
+      - []
+      - ['json']
+      - '@logger.factory'
+      - '@api_application.web_sms_confirmation'
+    tags:
+      - { name: rest_resource }
+
   plugin.rest.web_member_confirmation:
     class: Drupal\api_application\Plugin\rest\resource\WebMemberConfirmationResource
     arguments:

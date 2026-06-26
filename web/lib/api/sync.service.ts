@@ -11,6 +11,7 @@ import {
   ensureApplicationLmsSync,
   syncApplicationToLms,
 } from '@/lib/api/lms-sync.service';
+import { sendSubmissionSuccessNotificationSMS } from '@/lib/api/submission-success-sms.service';
 import type {
   ApplicationPostRequest,
   FileUpload,
@@ -151,6 +152,23 @@ async function processSyncItem(queueItemId: string) {
           syncError: null,
         },
       });
+
+      if (queueItem.action === 'CREATE') {
+        void sendSubmissionSuccessNotificationSMS(
+          application.applicationId,
+        ).then((smsResult) => {
+          if (!smsResult.success) {
+            console.error(
+              `[SYNC] Submission SMS failed for ${application.applicationId}:`,
+              smsResult.error,
+            );
+          } else {
+            console.log(
+              `[SYNC] Submission SMS sent for ${application.applicationId}: ${smsResult.smsSent ?? 0} sent`,
+            );
+          }
+        });
+      }
 
       // Push to LMS after Drupal sync succeeds, only when application is complete
       const hasLoanData =
@@ -749,7 +767,11 @@ export async function transformApplicationForExternalApi(
     ward: application.groupData?.ward || '',
     meeting_point: application.groupData?.meetingPoint || '',
     nearest_landmark: application.groupData?.nearestLandmark || '',
-    nature_of_group: application.members?.[0]?.natureOfTheGroup,
+    nature_of_group:
+      application.members?.find(
+        (member: { natureOfTheGroup?: string | null }) =>
+          member.natureOfTheGroup,
+      )?.natureOfTheGroup?.toLowerCase() || undefined,
 
     // Members
     group_members: transformedMembers,

@@ -14,6 +14,9 @@ dependencies:
     - rest.resource.application_detail
     - rest.resource.application_instructions
     - rest.resource.application_post
+    - rest.resource.application_payment_success_sms
+    - rest.resource.application_submission_success_sms
+    - rest.resource.lms_application_update
     - rest.resource.application_taxonomy_vocabularies
     - rest.resource.member_response
     - rest.resource.rest_framework_node_resource
@@ -51,5 +54,9 @@ permissions:
   - 'restful post api_token_refresh'
   - 'restful post api_user_registration'
   - 'restful post application_post'
+  - 'restful post application_payment_success_sms'
+  - 'restful post application_submission_success_sms'
+  - 'restful patch lms_application_update'
+  - 'restful post lms_application_update'
   - 'search content'
   - 'use text format restricted_html'
