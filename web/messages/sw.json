@@ -338,6 +338,19 @@
     "success": "Barua pepe ya kuweka upya imetumwa",
     "successDescription": "Barua pepe imetumwa kwa anwani yako ya barua pepe na maelekezo ya jinsi ya kuweka upya nenosiri lako."
   },
+  "ResetConfirmPage": {
+    "title": "Weka nenosiri jipya",
+    "description": "Chagua nenosiri jipya la akaunti yako.",
+    "password": "Nenosiri jipya",
+    "passwordConfirm": "Thibitisha nenosiri",
+    "submit": "Weka nenosiri",
+    "login": "Ingia",
+    "success": "Nenosiri limebadilishwa",
+    "successDescription": "Nenosiri lako limebadilishwa. Sasa unaweza kuingia kwa nenosiri jipya.",
+    "invalidLinkTitle": "Kiungo cha kuweka upya si sahihi",
+    "invalidLinkDescription": "Kiungo hiki cha kuweka upya nenosiri hakina taarifa zinazohitajika au kimeisha muda. Omba kiungo kipya ili kuendelea.",
+    "requestNewLink": "Omba kiungo kipya cha kuweka upya"
+  },
   "DashboardPage": {
     "myApplications": "Maombi Yangu",
     "group": "Kikundi",

@@ -94,6 +94,29 @@ function api_auth_token_info() {
 }
 
 /**
+ * Resolves the public frontend URL for password-reset links.
+ */
+function api_auth_get_frontend_base_url(): string {
+  $settings = \Drupal::service('settings');
+  foreach ([
+    $settings->get('uwezo_ui_public_url'),
+    $settings->get('api_ui_public_url'),
+    getenv('UWEZO_UI_PUBLIC_URL') ?: NULL,
+  ] as $url) {
+    if (!empty($url)) {
+      return rtrim($url, '/');
+    }
+  }
+
+  $ecitizen = $settings->get('ecitizen_oauth');
+  if (!empty($ecitizen['frontend_url'])) {
+    return rtrim($ecitizen['frontend_url'], '/');
+  }
+
+  return \Drupal::request()->getSchemeAndHttpHost();
+}
+
+/**
  * Implements hook_tokens().
  */
 function api_auth_tokens($type, $tokens, array $data, array $options, $bubbleable_metadata) {
@@ -102,14 +125,16 @@ function api_auth_tokens($type, $tokens, array $data, array $options, $bubbleabl
   if ($type == 'api_auth') {
     foreach ($tokens as $name => $original) {
       if ($name == 'api-one-time-login-url') {
-        // Generate one-time login URL.
         $account = $data['user'] ?? NULL;
         if ($account) {
-          $settings = \Drupal::service('settings')->get('api_ui_public_url');
-          $base_url = $settings ?: \Drupal::request()->getSchemeAndHttpHost();
           $timestamp = \Drupal::time()->getRequestTime();
           $hash = user_pass_rehash($account, $timestamp);
-          $replacements[$original] = $base_url . "/user/reset/{$account->id()}/$timestamp/$hash/login";
+          $query = http_build_query([
+            'uid' => $account->id(),
+            'timestamp' => $timestamp,
+            'hash' => $hash,
+          ]);
+          $replacements[$original] = api_auth_get_frontend_base_url() . '/reset/confirm?' . $query;
         }
       }
     }

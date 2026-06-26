@@ -343,6 +343,19 @@
     "success": "Reset email sent",
     "successDescription": "An email has been sent to your e-mail address with instructions on how to reset your password."
   },
+  "ResetConfirmPage": {
+    "title": "Set new password",
+    "description": "Choose a new password for your account.",
+    "password": "New password",
+    "passwordConfirm": "Confirm password",
+    "submit": "Set password",
+    "login": "Log in",
+    "success": "Password updated",
+    "successDescription": "Your password has been changed. You can now log in with your new password.",
+    "invalidLinkTitle": "Invalid reset link",
+    "invalidLinkDescription": "This password reset link is missing required information or has expired. Request a new link to continue.",
+    "requestNewLink": "Request a new reset link"
+  },
   "DashboardPage": {
     "myApplications": "My Applications",
     "group": "Group",

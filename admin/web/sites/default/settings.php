@@ -941,8 +941,11 @@ if (getenv('DRUPAL_ENV')) {
   $settings['file_temp_path'] = '/tmp';
 }
 
-// Web domain URL from environment variable.
-if (getenv('WEB_DOMAIN')) {
+// Public frontend URL for password-reset and OAuth redirects.
+if (getenv('UWEZO_UI_PUBLIC_URL')) {
+  $settings['uwezo_ui_public_url'] = rtrim(getenv('UWEZO_UI_PUBLIC_URL'), '/');
+}
+elseif (getenv('WEB_DOMAIN')) {
   $settings['uwezo_ui_public_url'] = 'https://' . getenv('WEB_DOMAIN');
 }
 
