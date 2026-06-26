@@ -9,11 +9,11 @@ import {
 } from '@/generated/prisma';
 import { getProfile } from '@/lib/api/profile';
 import { addToSyncQueue } from '@/lib/api/sync.service';
+import { handlePrismaError, prisma } from '@/lib/db/prisma';
 import {
   AuthenticationError,
   isAuthenticationError,
 } from '@/lib/errors/auth-error';
-import { handlePrismaError, prisma } from '@/lib/db/prisma';
 import { decodeJwtPayload } from '@/lib/jwt-utils';
 import { getSession } from '@/lib/session';
 import type {
@@ -41,6 +41,23 @@ function safeParseJsonField<T>(value: unknown, fallback: T): T {
     }
   }
   return value as T;
+}
+
+function serializeDateField(value: unknown): number | null | undefined {
+  if (value == null) {
+    return value as null | undefined;
+  }
+
+  if (value instanceof Date) {
+    return value.getTime();
+  }
+
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  const parsed = new Date(String(value));
+  return Number.isNaN(parsed.getTime()) ? null : parsed.getTime();
 }
 
 function safeJsonStringify(data: any): string {
@@ -1017,11 +1034,9 @@ export async function updateApplicationStatus(
 
     // Only queue Drupal/LMS sync on final submission, not intermediate draft saves
     if (shouldQueueSync) {
-      await addToSyncQueue(
-        application.applicationId,
-        SyncAction.CREATE,
-        { priority: true },
-      );
+      await addToSyncQueue(application.applicationId, SyncAction.CREATE, {
+        priority: true,
+      });
     }
 
     const updatedApplication = await getApplicationById(id);
@@ -1130,9 +1145,13 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
         requiresConfirmation: m.requiresConfirmation || false,
         confirmation_status: m.confirmation_status,
         confirmation_token: m.confirmation_token,
-        confirmation_sent_at: m.confirmation_sent_at,
-        confirmation_confirmed_at: m.confirmation_confirmed_at,
-        confirmation_token_expires_at: m.confirmation_token_expires_at,
+        confirmation_sent_at: serializeDateField(m.confirmation_sent_at),
+        confirmation_confirmed_at: serializeDateField(
+          m.confirmation_confirmed_at,
+        ),
+        confirmation_token_expires_at: serializeDateField(
+          m.confirmation_token_expires_at,
+        ),
       })),
     };
   }

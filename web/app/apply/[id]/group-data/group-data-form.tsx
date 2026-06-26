@@ -257,7 +257,13 @@ export const GroupDataForm: FC<GroupDataProps> = ({
             )}
             name="dateFormed"
             required
-            control={(props) => <Input type="date" {...props} />}
+            control={(props) => (
+              <Input
+                type="date"
+                max={new Date().toISOString().split('T')[0]}
+                {...props}
+              />
+            )}
             state={state}
           />
 

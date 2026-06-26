@@ -515,7 +515,8 @@
         "groupRegistrationCert": "Cheti cha Usajili wa Kikundi",
         "listOfMembersOnCert": "Orodha ya Wanachama kwenye Cheti",
         "groupRegistrationNumber": "Nambari ya Usajili wa Kikundi",
-        "dateRegistered": "Tarehe ya Usajili"
+        "dateRegistered": "Tarehe ya Usajili",
+        "dateRegisteredFuture": "Tarehe ya usajili haiwezi kuwa ya baadaye"
       },
       "locationInfo": {
         "locationOfTheGroup": "Mahali pa kikundi",

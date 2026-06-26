@@ -531,7 +531,8 @@
         "groupRegistrationNumber": "Group registration number",
         "groupMeetingMinutes": "Group meeting minutes",
         "groupMeetingMinutesDescription": "Upload minutes from at least 3 recent group meetings",
-        "dateRegistered": "Date registered"
+        "dateRegistered": "Date registered",
+        "dateRegisteredFuture": "Registration date cannot be in the future"
       },
       "locationInfo": {
         "locationOfTheGroup": "Location of the group",

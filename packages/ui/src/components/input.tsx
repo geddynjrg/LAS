@@ -28,6 +28,8 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
+  min?: string;
+  max?: string;
   autoComplete?: string;
   disabled?: boolean;
   invalid?: boolean;

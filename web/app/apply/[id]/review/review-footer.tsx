@@ -1,11 +1,9 @@
 'use client';
 
 import { updateApplicationStatusById } from '@/app/apply/[id]/review/update-application-status-by-id-action';
+import { validateApplicationSubmission } from '@/app/apply/[id]/review/validate-application-submission-action';
 import { ApplicationStatus } from '@/generated/prisma';
 import { syncApplication } from '@/lib/api/sync.service';
-import { getApplicationById } from '@/lib/data/application';
-import type { ApplicationData } from '@/lib/types/application.types';
-import { validateApplicationForSubmission } from '@/lib/validation/application-validation';
 import {
   IconAlertCircle,
   IconArrowLeft,
@@ -51,16 +49,8 @@ export const ReviewFooter: FC<ReviewDataProps> = ({ id }) => {
     try {
       setIsValidating(true);
 
-      // Fetch the latest application data
-      const application: ApplicationData | undefined =
-        await getApplicationById(id);
-
-      if (!application) {
-        throw new Error('Application not found');
-      }
-
-      // Validate the application
-      const validation = validateApplicationForSubmission(application);
+      // Validate the application on the server
+      const validation = await validateApplicationSubmission(id);
 
       if (!validation.isValid) {
         setIsValidating(false);

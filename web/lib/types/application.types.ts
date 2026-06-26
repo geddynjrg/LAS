@@ -82,10 +82,16 @@ export interface Member {
   };
   status?: 'confirmed' | 'pending';
   requiresConfirmation?: boolean;
-  confirmation_status?: 'confirmed' | 'declined' | 'pending' | 'sent' | 'failed';
+  confirmation_status?:
+    | 'confirmed'
+    | 'declined'
+    | 'pending'
+    | 'sent'
+    | 'failed';
   confirmation_token?: string | null;
   confirmation_sent_at?: number | null;
   confirmation_confirmed_at?: number | null;
+  confirmation_token_expires_at?: number | null;
 }
 
 export interface MembersData {

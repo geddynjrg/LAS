@@ -7,7 +7,16 @@ export const groupDataSchema = z
   .object({
     groupName: z.string().nonempty(),
     groupRegistrationNumber: z.string().nonempty(),
-    dateFormed: z.string().trim().date(),
+    dateFormed: z
+      .string()
+      .trim()
+      .date()
+      .refine((value) => {
+        const selected = new Date(`${value}T00:00:00`);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return selected <= today;
+      }, 'ApplicationDetailsPage.groupData.basicInfo.dateRegisteredFuture'),
     groupRegistrationCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
     listOfMembersOnCertificate: validFile(FILE_ACCEPT, MAX_FILE_SIZE),
 
