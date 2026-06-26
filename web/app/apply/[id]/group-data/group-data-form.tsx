@@ -611,6 +611,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   onValueChange={(value) => {
                     setChosenWard(value);
                   }}
+                  onValueSelect={(value) => {
+                    setChosenWard(value);
+                  }}
                 />
                 {wardLoadHint ? (
                   <p className="text-muted-foreground typo-body-small">

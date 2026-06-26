@@ -3,7 +3,15 @@
 import * as Popover from "@radix-ui/react-popover";
 import { IconLoader, IconMapPin, IconSearch } from "@tabler/icons-react";
 import { Command as CommandPrimitive } from "cmdk";
-import { useCallback, useEffect, useId, useState, type FC } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+} from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 import {
@@ -21,11 +29,19 @@ export interface LandmarkLocationContext {
   ward?: string;
 }
 
+export interface GeocodeBoundingBox {
+  south: number;
+  north: number;
+  west: number;
+  east: number;
+}
+
 export interface GeocodeSuggestion {
   placeId: string;
   label: string;
   lat: number;
   lng: number;
+  boundingBox?: GeocodeBoundingBox;
 }
 
 export interface LandmarkMapInputProps extends Omit<InputProps, "onValueChange"> {
@@ -36,24 +52,88 @@ export interface LandmarkMapInputProps extends Omit<InputProps, "onValueChange">
 
 const DEFAULT_CENTER = { lat: -1.2921, lng: 36.8219 };
 
-function buildMapEmbedUrl(lat: number, lng: number) {
-  const delta = 0.015;
-  const bbox = [
-    lng - delta,
-    lat - delta,
-    lng + delta,
-    lat + delta,
-  ].join("%2C");
+const ZOOM_DELTAS = {
+  default: 0.45,
+  county: 0.32,
+  constituency: 0.09,
+  ward: 0.028,
+  landmark: 0.012,
+} as const;
 
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}`;
+type MapView = {
+  lat: number;
+  lng: number;
+  delta: number;
+  bounds?: GeocodeBoundingBox;
+  label?: string;
+};
+
+function buildMapEmbedUrl(view: MapView) {
+  const bbox =
+    view.bounds != null
+      ? [
+          view.bounds.west,
+          view.bounds.south,
+          view.bounds.east,
+          view.bounds.north,
+        ].join("%2C")
+      : [
+          view.lng - view.delta,
+          view.lat - view.delta,
+          view.lng + view.delta,
+          view.lat + view.delta,
+        ].join("%2C");
+
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${view.lat}%2C${view.lng}`;
 }
 
-function buildMapLink(lat: number, lng: number) {
-  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+function buildMapLink(view: MapView) {
+  const zoom = deltaToZoom(view.delta);
+  return `https://www.openstreetmap.org/?mlat=${view.lat}&mlon=${view.lng}#map=${zoom}/${view.lat}/${view.lng}`;
+}
+
+function deltaToZoom(delta: number) {
+  if (delta >= 0.3) {
+    return 9;
+  }
+  if (delta >= 0.1) {
+    return 11;
+  }
+  if (delta >= 0.05) {
+    return 13;
+  }
+  if (delta >= 0.02) {
+    return 14;
+  }
+
+  return 16;
 }
 
 function shortLabel(label: string) {
   return label.split(",").slice(0, 3).join(", ").trim();
+}
+
+function suggestionFromResult(result: GeocodeSuggestion): GeocodeSuggestion {
+  return {
+    placeId: result.placeId,
+    label: result.label,
+    lat: result.lat,
+    lng: result.lng,
+    boundingBox: result.boundingBox,
+  };
+}
+
+function mapViewFromSuggestion(
+  suggestion: GeocodeSuggestion,
+  delta: number,
+): MapView {
+  return {
+    lat: suggestion.lat,
+    lng: suggestion.lng,
+    delta,
+    bounds: suggestion.boundingBox,
+    label: shortLabel(suggestion.label),
+  };
 }
 
 export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
@@ -79,6 +159,25 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
   const [suggestions, setSuggestions] = useState<GeocodeSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [areaView, setAreaView] = useState<MapView | null>(null);
+  const [isAreaLoading, setIsAreaLoading] = useState(false);
+
+  const locationContextRef = useRef(locationContext);
+  locationContextRef.current = locationContext;
+
+  const suggestionCacheRef = useRef(new Map<string, GeocodeSuggestion[]>());
+  const fetchAbortRef = useRef<AbortController | null>(null);
+  const areaAbortRef = useRef<AbortController | null>(null);
+
+  const buildContextCacheKey = useCallback((query: string) => {
+    const context = locationContextRef.current;
+    return [
+      query.trim().toLowerCase(),
+      context?.county?.trim().toLowerCase() || "",
+      context?.constituency?.trim().toLowerCase() || "",
+      context?.ward?.trim().toLowerCase() || "",
+    ].join("|");
+  }, []);
 
   const updateSelection = useCallback(
     (location: GeocodeSuggestion | null, value: string) => {
@@ -91,30 +190,50 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
     [onLocationSelect, onValueChange],
   );
 
-  const fetchSuggestions = useDebouncedCallback(async (query: string) => {
-    if (!query || query.trim().length < 2) {
+  const fetchSuggestionsNow = useCallback(async (query: string) => {
+    const trimmed = query.trim();
+
+    if (!trimmed || trimmed.length < 2) {
       setSuggestions([]);
+      setSearchError(null);
+      setPreview(null);
+      return;
+    }
+
+    const cacheKey = buildContextCacheKey(trimmed);
+    const cached = suggestionCacheRef.current.get(cacheKey);
+    if (cached) {
+      setSuggestions(cached);
+      setPreview(cached[0] ?? null);
+      setIsOpen(cached.length > 0);
       setSearchError(null);
       return;
     }
+
+    fetchAbortRef.current?.abort();
+    const controller = new AbortController();
+    fetchAbortRef.current = controller;
 
     setIsLoading(true);
     setSearchError(null);
 
     try {
-      const params = new URLSearchParams({ q: query.trim() });
+      const context = locationContextRef.current;
+      const params = new URLSearchParams({ q: trimmed });
 
-      if (locationContext?.county) {
-        params.set("county", locationContext.county);
+      if (context?.county) {
+        params.set("county", context.county);
       }
-      if (locationContext?.constituency) {
-        params.set("constituency", locationContext.constituency);
+      if (context?.constituency) {
+        params.set("constituency", context.constituency);
       }
-      if (locationContext?.ward) {
-        params.set("ward", locationContext.ward);
+      if (context?.ward) {
+        params.set("ward", context.ward);
       }
 
-      const response = await fetch(`/api/geocode?${params.toString()}`);
+      const response = await fetch(`/api/geocode?${params.toString()}`, {
+        signal: controller.signal,
+      });
       const data = (await response.json()) as {
         results?: GeocodeSuggestion[];
         error?: string;
@@ -124,19 +243,83 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
         throw new Error(data.error || "Location search failed");
       }
 
-      setSuggestions(data.results || []);
-      const results = data.results || [];
+      const results = (data.results || []).map(suggestionFromResult);
+      suggestionCacheRef.current.set(cacheKey, results);
+      setSuggestions(results);
       setPreview(results[0] ?? null);
       setIsOpen(results.length > 0);
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
       setSuggestions([]);
       setSearchError(
         error instanceof Error ? error.message : "Location search failed",
       );
     } finally {
-      setIsLoading(false);
+      if (!controller.signal.aborted) {
+        setIsLoading(false);
+      }
     }
-  }, 400);
+  }, [buildContextCacheKey]);
+
+  const fetchSuggestions = useDebouncedCallback(fetchSuggestionsNow, 180);
+
+  const loadAreaView = useCallback(async (context: LandmarkLocationContext) => {
+    if (!context.county?.trim()) {
+      setAreaView(null);
+      return;
+    }
+
+    areaAbortRef.current?.abort();
+    const controller = new AbortController();
+    areaAbortRef.current = controller;
+
+    const delta = context.ward?.trim()
+      ? ZOOM_DELTAS.ward
+      : context.constituency?.trim()
+        ? ZOOM_DELTAS.constituency
+        : ZOOM_DELTAS.county;
+
+    setIsAreaLoading(true);
+
+    try {
+      const params = new URLSearchParams({ type: "area" });
+      params.set("county", context.county.trim());
+
+      if (context.constituency?.trim()) {
+        params.set("constituency", context.constituency.trim());
+      }
+      if (context.ward?.trim()) {
+        params.set("ward", context.ward.trim());
+      }
+
+      const response = await fetch(`/api/geocode?${params.toString()}`, {
+        signal: controller.signal,
+      });
+      const data = (await response.json()) as {
+        results?: GeocodeSuggestion[];
+      };
+
+      const match = data.results?.[0];
+      if (!match) {
+        return;
+      }
+
+      setAreaView(
+        mapViewFromSuggestion(suggestionFromResult(match), delta),
+      );
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setIsAreaLoading(false);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!defaultValue) {
@@ -144,8 +327,32 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
     }
 
     setSearch(defaultValue);
-    void fetchSuggestions(defaultValue);
-  }, [defaultValue, fetchSuggestions]);
+    void fetchSuggestionsNow(defaultValue);
+  }, [defaultValue, fetchSuggestionsNow]);
+
+  useEffect(() => {
+    void loadAreaView(locationContext || {});
+  }, [
+    locationContext?.county,
+    locationContext?.constituency,
+    locationContext?.ward,
+    loadAreaView,
+    locationContext,
+  ]);
+
+  useEffect(() => {
+    if (!search || search.trim().length < 2) {
+      return;
+    }
+
+    void fetchSuggestionsNow(search);
+  }, [
+    locationContext?.county,
+    locationContext?.constituency,
+    locationContext?.ward,
+    search,
+    fetchSuggestionsNow,
+  ]);
 
   useEffect(() => {
     if (suggestions.length !== 1 || selected || !search) {
@@ -161,11 +368,41 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
     }
   }, [search, selected, suggestions, updateSelection]);
 
-  const mapCenter = selected
-    ? { lat: selected.lat, lng: selected.lng }
-    : preview
-      ? { lat: preview.lat, lng: preview.lng }
-      : DEFAULT_CENTER;
+  useEffect(() => {
+    return () => {
+      fetchAbortRef.current?.abort();
+      areaAbortRef.current?.abort();
+      fetchSuggestions.cancel();
+    };
+  }, [fetchSuggestions]);
+
+  const mapView = useMemo<MapView>(() => {
+    if (selected) {
+      return mapViewFromSuggestion(selected, ZOOM_DELTAS.landmark);
+    }
+
+    if (preview && search.trim().length >= 2) {
+      return mapViewFromSuggestion(preview, ZOOM_DELTAS.landmark);
+    }
+
+    if (areaView) {
+      return areaView;
+    }
+
+    return {
+      lat: DEFAULT_CENTER.lat,
+      lng: DEFAULT_CENTER.lng,
+      delta: ZOOM_DELTAS.default,
+    };
+  }, [areaView, preview, search, selected]);
+
+  const mapStatusLabel = selected
+    ? `Selected: ${shortLabel(selected.label)}`
+    : preview && search.trim().length >= 2
+      ? `Showing: ${shortLabel(preview.label)}`
+      : areaView?.label
+        ? `Area: ${areaView.label}`
+        : "Search for a landmark to pin its location on the map.";
 
   return (
     <div className={cn("min-w-0 max-w-full space-y-3", className)}>
@@ -205,7 +442,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
                   aria-autocomplete="list"
                   aria-haspopup="listbox"
                   endDecorator={
-                    isLoading ? (
+                    isLoading || isAreaLoading ? (
                       <IconLoader className="size-4 animate-spin" />
                     ) : (
                       <IconSearch className="size-4" />
@@ -264,7 +501,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
         <div className="relative aspect-[16/10] w-full max-w-full">
           <iframe
             title="Selected landmark map"
-            src={buildMapEmbedUrl(mapCenter.lat, mapCenter.lng)}
+            src={buildMapEmbedUrl(mapView)}
             className="absolute inset-0 h-full w-full max-w-full border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -274,25 +511,16 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
 
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
         <p className="text-muted-foreground min-w-0 break-words">
-          {selected
-            ? `Selected: ${shortLabel(selected.label)}`
-            : preview
-              ? `Showing: ${shortLabel(preview.label)}`
-              : "Search for a landmark to pin its location on the map."}
+          {mapStatusLabel}
         </p>
-        {(selected || preview) && (
-          <a
-            href={buildMapLink(
-              (selected ?? preview)!.lat,
-              (selected ?? preview)!.lng,
-            )}
-            target="_blank"
-            rel="noreferrer"
-            className="shrink-0 text-green-700 underline"
-          >
-            Open in OpenStreetMap
-          </a>
-        )}
+        <a
+          href={buildMapLink(mapView)}
+          target="_blank"
+          rel="noreferrer"
+          className="shrink-0 text-green-700 underline"
+        >
+          Open in OpenStreetMap
+        </a>
       </div>
     </div>
   );
