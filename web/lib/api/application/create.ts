@@ -25,11 +25,7 @@ async function sendToApi(
 
     const lmsApiUrl = process.env.LMS_API_URL?.replace(/\/$/, '') ?? '';
     const lmsHost = process.env.LMS_API_HOST;
-    if (
-      lmsHost &&
-      lmsApiUrl &&
-      apiUrl.replace(/\/$/, '') === lmsApiUrl
-    ) {
+    if (lmsHost && lmsApiUrl && apiUrl.replace(/\/$/, '') === lmsApiUrl) {
       headers.Host = lmsHost;
     }
 
@@ -53,13 +49,54 @@ async function sendToApi(
         };
       }
     } else {
-      const snippet = responseText.replace(/\s+/g, ' ').slice(0, 200);
+      const snippet = responseText.replace(/\s+/g, ' ').slice(0, 500);
       console.error(
         'API returned non-JSON response:',
         response.status,
         contentType,
         snippet,
       );
+
+      const postLimitMatch = responseText.match(
+        /POST Content-Length of (\d+) bytes exceeds the limit of (\d+) bytes/i,
+      );
+      if (postLimitMatch) {
+        const actualMb = Math.round(Number(postLimitMatch[1]) / 1024 / 1024);
+        const limitMb = Math.round(Number(postLimitMatch[2]) / 1024 / 1024);
+        return {
+          error: 'api_error',
+          message: `Request payload too large (${actualMb}MB exceeds LMS limit of ${limitMb}MB).`,
+        };
+      }
+
+      const jsonStart = responseText.indexOf('{');
+      if (jsonStart >= 0) {
+        try {
+          result = JSON.parse(responseText.slice(jsonStart));
+        } catch {
+          // fall through to generic non-JSON handling
+        }
+      }
+
+      if (result !== undefined) {
+        if (!response.ok) {
+          const err = result as { message?: string; error?: string };
+          return {
+            error: 'api_error',
+            message:
+              err.message ||
+              err.error ||
+              `Unknown API error (HTTP ${response.status})`,
+          };
+        }
+
+        try {
+          return ApplicationPostResponseSchema.parse(result);
+        } catch {
+          return result as ApplicationPostResponse;
+        }
+      }
+
       const sizeHint =
         response.status === 413
           ? ' Request body too large — application files may exceed server limits.'
@@ -80,7 +117,10 @@ async function sendToApi(
         const err = result as { message?: string; error?: string };
         return {
           error: 'api_error',
-          message: err.message || err.error || `Unknown API error (HTTP ${response.status})`,
+          message:
+            err.message ||
+            err.error ||
+            `Unknown API error (HTTP ${response.status})`,
         };
       }
     }

@@ -16,6 +16,17 @@ function isRateLimitError(message?: string): boolean {
   return lower.includes('too many requests') || lower.includes('rate_limited');
 }
 
+function isRetryableLmsError(message?: string): boolean {
+  if (!message) return false;
+  if (isRateLimitError(message)) return true;
+  const lower = message.toLowerCase();
+  return (
+    lower.includes('payload too large') ||
+    lower.includes('request body too large') ||
+    lower.includes('exceeds lms limit')
+  );
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -108,7 +119,7 @@ export async function syncApplicationToLms(
 
   if ('error' in result && result.error) {
     const message = result.message || result.error;
-    const retryable = isRateLimitError(message);
+    const retryable = isRetryableLmsError(message);
 
     await prisma.application.update({
       where: { applicationId },
@@ -289,7 +300,7 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
 
     if (result.success) {
       succeeded += 1;
-    } else if (isRateLimitError(result.error)) {
+    } else if (isRetryableLmsError(result.error)) {
       console.warn(
         `[LMS SYNC] Rate limited while syncing ${application.applicationId}; will retry later`,
       );
