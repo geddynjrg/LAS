@@ -1,4 +1,7 @@
-import { downloadApplicationPdf } from '@/lib/api/application/pdf';
+import {
+  downloadApplicationPdf,
+  warmApplicationPdfCache,
+} from '@/lib/api/application/pdf';
 import { getCurrentUser } from '@/lib/data/application';
 import { prisma } from '@/lib/db/prisma';
 import { NextResponse } from 'next/server';
@@ -7,10 +10,11 @@ interface RouteParams {
   params: Promise<{ applicationId: string }>;
 }
 
-export async function GET(_request: Request, { params }: RouteParams) {
+export async function GET(request: Request, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
     const { applicationId } = await params;
+    const { searchParams } = new URL(request.url);
 
     const application = await prisma.application.findUnique({
       where: { applicationId },
@@ -22,6 +26,11 @@ export async function GET(_request: Request, { params }: RouteParams) {
         { error: 'Application not found' },
         { status: 404 },
       );
+    }
+
+    if (searchParams.get('warmup') === '1') {
+      await warmApplicationPdfCache(applicationId);
+      return NextResponse.json({ ok: true });
     }
 
     const pdfBlob = await downloadApplicationPdf(applicationId);

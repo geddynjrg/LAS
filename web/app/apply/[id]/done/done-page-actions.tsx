@@ -46,7 +46,11 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
       .catch(() => {
         setUserHasEmail(false);
       });
-  }, []);
+
+    void fetch(
+      `/api/applications/${encodeURIComponent(applicationId)}/pdf?warmup=1`,
+    ).catch(() => undefined);
+  }, [applicationId]);
 
   const handleDownloadPdf = () => {
     startPdfTransition(async () => {
@@ -58,12 +62,24 @@ export function DonePageActions({ applicationId }: DonePageActionsProps) {
         );
 
         if (!response.ok) {
-          const payload = (await response.json().catch(() => null)) as {
-            error?: string;
-          } | null;
-          setError(
-            payload?.error || t('ApplyPage.DonePage.errors.download-failed'),
-          );
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const payload = (await response.json().catch(() => null)) as {
+              error?: string;
+            } | null;
+            setError(
+              payload?.error || t('ApplyPage.DonePage.errors.download-failed'),
+            );
+            return;
+          }
+
+          setError(t('ApplyPage.DonePage.errors.download-failed'));
+          return;
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/pdf')) {
+          setError(t('ApplyPage.DonePage.errors.download-failed'));
           return;
         }
 
