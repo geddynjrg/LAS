@@ -150,7 +150,10 @@ export async function ensureApplicationLmsSync(
     return { success: false, error: 'Application not found' };
   }
 
-  if (application.syncStatus !== SyncStatus.COMPLETED) {
+  if (
+    application.syncStatus !== SyncStatus.COMPLETED &&
+    !application.externalId
+  ) {
     return {
       success: false,
       error: 'Application must be synced to Drupal before LMS import',

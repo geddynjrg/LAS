@@ -825,8 +825,11 @@ export async function syncApplication(
       throw new Error('Application not found');
     }
 
-    // Drupal already synced — still ensure LMS import when needed
-    if (application.externalId) {
+    // Drupal already synced — only run LMS import when Drupal sync is complete
+    if (
+      application.externalId &&
+      application.syncStatus === SyncStatus.COMPLETED
+    ) {
       const lmsResult = await ensureApplicationLmsSync(applicationId);
       if (!lmsResult.success) {
         return {

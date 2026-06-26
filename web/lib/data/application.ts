@@ -1022,21 +1022,29 @@ export async function updateApplicationStatus(
 
     const resolvedStatus = status || ApplicationStatus.SUBMITTED;
     const shouldQueueSync = resolvedStatus === ApplicationStatus.SUBMITTED;
+    const drupalAlreadySynced =
+      Boolean(application.externalId) &&
+      application.syncStatus === SyncStatus.COMPLETED;
+    const needsDrupalSync = shouldQueueSync && !drupalAlreadySynced;
 
     await prisma.application.update({
       where: { id: application.id },
       data: {
         status: resolvedStatus,
         applicationProgress: applicationProgress || 7,
-        ...(shouldQueueSync ? { syncStatus: SyncStatus.PENDING } : {}),
+        ...(needsDrupalSync ? { syncStatus: SyncStatus.PENDING } : {}),
       },
     });
 
-    // Only queue Drupal/LMS sync on final submission, not intermediate draft saves
-    if (shouldQueueSync) {
-      await addToSyncQueue(application.applicationId, SyncAction.CREATE, {
-        priority: true,
-      });
+    // Only queue Drupal sync when the application is not already in Drupal
+    if (needsDrupalSync) {
+      await addToSyncQueue(
+        application.applicationId,
+        application.externalId ? SyncAction.UPDATE : SyncAction.CREATE,
+        {
+          priority: true,
+        },
+      );
     }
 
     const updatedApplication = await getApplicationById(id);
