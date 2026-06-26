@@ -10,6 +10,54 @@ import { mapStatusForLms } from '@/lib/api/lms-status-map';
 import type { ApplicationPostRequest } from '@/lib/api/schema/application/application.schema';
 import { prisma } from '@/lib/db/prisma';
 
+function isRateLimitError(message?: string): boolean {
+  if (!message) return false;
+  const lower = message.toLowerCase();
+  return lower.includes('too many requests') || lower.includes('rate_limited');
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForQueuedLmsImport(
+  applicationId: string,
+): Promise<{ success: boolean; error?: string; referenceId?: string }> {
+  const importResult = await waitForLmsImport(applicationId, {
+    maxAttempts: 40,
+    intervalMs: 5000,
+  });
+
+  if (!importResult.success) {
+    await prisma.application.update({
+      where: { applicationId },
+      data: {
+        lmsSyncStatus: 'PENDING',
+        lmsSyncError: importResult.error ?? 'LMS import still in progress',
+        lmsSyncAttempts: { increment: 1 },
+        lmsLastSyncAt: new Date(),
+      },
+    });
+
+    return {
+      success: false,
+      error: importResult.error ?? 'LMS import did not complete in time',
+    };
+  }
+
+  await prisma.application.update({
+    where: { applicationId },
+    data: {
+      lmsSyncStatus: 'COMPLETED',
+      lmsSyncError: null,
+      lmsReferenceId: applicationId,
+      lmsLastSyncAt: new Date(),
+    },
+  });
+
+  return { success: true, referenceId: applicationId };
+}
+
 export async function syncApplicationToLms(
   applicationId: string,
   payload: ApplicationPostRequest,
@@ -36,6 +84,15 @@ export async function syncApplicationToLms(
     return { success: true, referenceId: applicationId };
   }
 
+  if (existing.status === 'queued' || existing.status === 'processing') {
+    await prisma.application.update({
+      where: { applicationId },
+      data: { lmsSyncStatus: 'PENDING', lmsSyncError: null },
+    });
+
+    return waitForQueuedLmsImport(applicationId);
+  }
+
   await prisma.application.update({
     where: { applicationId },
     data: { lmsSyncStatus: 'PENDING' },
@@ -51,10 +108,12 @@ export async function syncApplicationToLms(
 
   if ('error' in result && result.error) {
     const message = result.message || result.error;
+    const retryable = isRateLimitError(message);
+
     await prisma.application.update({
       where: { applicationId },
       data: {
-        lmsSyncStatus: 'FAILED',
+        lmsSyncStatus: retryable ? 'PENDING' : 'FAILED',
         lmsSyncError: message,
         lmsSyncAttempts: { increment: 1 },
         lmsLastSyncAt: new Date(),
@@ -71,36 +130,7 @@ export async function syncApplicationToLms(
     result.data.status === 'queued';
 
   if (queued) {
-    const importResult = await waitForLmsImport(applicationId);
-
-    if (!importResult.success) {
-      await prisma.application.update({
-        where: { applicationId },
-        data: {
-          lmsSyncStatus: 'PENDING',
-          lmsSyncError: importResult.error ?? 'LMS import still in progress',
-          lmsSyncAttempts: { increment: 1 },
-          lmsLastSyncAt: new Date(),
-        },
-      });
-
-      return {
-        success: false,
-        error: importResult.error ?? 'LMS import did not complete in time',
-      };
-    }
-
-    await prisma.application.update({
-      where: { applicationId },
-      data: {
-        lmsSyncStatus: 'COMPLETED',
-        lmsSyncError: null,
-        lmsReferenceId: applicationId,
-        lmsLastSyncAt: new Date(),
-      },
-    });
-
-    return { success: true, referenceId: applicationId };
+    return waitForQueuedLmsImport(applicationId);
   }
 
   const verified = await waitForLmsImport(applicationId, {
@@ -211,7 +241,7 @@ const applicationInclude = {
   confirmations: true,
 } as const;
 
-export async function processLmsSyncBackfill(batchSize = 10): Promise<{
+export async function processLmsSyncBackfill(batchSize = 5): Promise<{
   processed: number;
   succeeded: number;
   failed: number;
@@ -219,6 +249,8 @@ export async function processLmsSyncBackfill(batchSize = 10): Promise<{
   const candidates = await prisma.application.findMany({
     where: {
       syncStatus: SyncStatus.COMPLETED,
+      loanConditions: { isNot: null },
+      proposedBusiness: { isNot: null },
       OR: [
         { lmsSyncStatus: null },
         { lmsSyncStatus: 'PENDING' },
@@ -226,10 +258,9 @@ export async function processLmsSyncBackfill(batchSize = 10): Promise<{
           lmsSyncStatus: 'FAILED',
           lmsSyncAttempts: { lt: 5 },
         },
-        { lmsSyncStatus: 'COMPLETED' },
       ],
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { updatedAt: 'asc' },
     take: batchSize,
     select: { applicationId: true, lmsSyncStatus: true },
   });
@@ -238,13 +269,6 @@ export async function processLmsSyncBackfill(batchSize = 10): Promise<{
   let failed = 0;
 
   for (const candidate of candidates) {
-    if (candidate.lmsSyncStatus === 'COMPLETED') {
-      const status = await getLmsImportStatus(candidate.applicationId);
-      if (status.status === 'completed') {
-        continue;
-      }
-    }
-
     const application = await prisma.application.findUnique({
       where: { applicationId: candidate.applicationId },
       include: applicationInclude,
@@ -265,6 +289,11 @@ export async function processLmsSyncBackfill(batchSize = 10): Promise<{
 
     if (result.success) {
       succeeded += 1;
+    } else if (isRateLimitError(result.error)) {
+      console.warn(
+        `[LMS SYNC] Rate limited while syncing ${application.applicationId}; will retry later`,
+      );
+      break;
     } else {
       failed += 1;
       console.error(
@@ -272,6 +301,8 @@ export async function processLmsSyncBackfill(batchSize = 10): Promise<{
         result.error,
       );
     }
+
+    await sleep(300);
   }
 
   return {

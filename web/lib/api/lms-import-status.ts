@@ -76,13 +76,24 @@ export async function getLmsImportStatus(
       },
     );
 
-    const payload = (await response.json()) as LmsImportStatusResponse;
+    const payload = (await response.json()) as LmsImportStatusResponse & {
+      error?: string;
+      message?: string;
+    };
+
+    if (response.status === 401 && payload.error === 'rate_limited') {
+      return {
+        status: 'not_found',
+        error: payload.message ?? 'Too many requests',
+      };
+    }
+
     const status = payload.data?.status ?? 'not_found';
 
     return {
       status,
       tempApplicationId: payload.data?.temp_application_id,
-      error: payload.data?.error,
+      error: payload.data?.error ?? payload.message,
     };
   } catch (error) {
     console.error('[LMS import status] Request failed:', error);
