@@ -35,6 +35,21 @@ export function formatKenyanPhoneForApi(phone: string): string | null {
   return local ? `+254${local}` : null;
 }
 
+/** Compare two Kenyan phone inputs after normalizing to +254XXXXXXXXX. */
+export function phonesEqual(
+  left?: string | null,
+  right?: string | null,
+): boolean {
+  const normalizedLeft = left ? formatKenyanPhoneForApi(left) : null;
+  const normalizedRight = right ? formatKenyanPhoneForApi(right) : null;
+
+  return (
+    normalizedLeft !== null &&
+    normalizedRight !== null &&
+    normalizedLeft === normalizedRight
+  );
+}
+
 /**
  * Capitalizes the first letter of each word in a string
  * Handles special cases like hyphens, apostrophes, and multiple spaces

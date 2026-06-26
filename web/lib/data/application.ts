@@ -26,6 +26,7 @@ import type {
   ProposedBusinessData,
 } from '@/lib/types/application.types';
 import { createApplicationId } from '@/lib/util';
+import { formatKenyanPhoneForApi } from '@/lib/utils/string';
 import { isFileUpload } from '@workspace/ui/lib/utils';
 
 // Helper function to safely store JSON data - prevents double encoding
@@ -78,7 +79,7 @@ function safeJsonStringify(data: any): string {
 // Helper function to normalize phone numbers for consistent storage
 function normalizePhone(phone: string | null | undefined): string | null {
   if (!phone) return null;
-  return phone.replace(/\s+/g, '');
+  return formatKenyanPhoneForApi(phone) ?? phone.replace(/\s+/g, '');
 }
 
 function resolveDrupalUserIdFromSession(session: string): string {
@@ -496,8 +497,9 @@ export async function updateApplicationMembersData(
 
     // Track phone numbers and national IDs from existing members
     existingMembers.forEach((member) => {
-      if (member.phoneNumber) {
-        phoneNumberMap.set(member.phoneNumber, member.nationalIdCode);
+      const normalizedPhone = normalizePhone(member.phoneNumber);
+      if (normalizedPhone) {
+        phoneNumberMap.set(normalizedPhone, member.nationalIdCode);
       }
       if (member.nationalIdCode) {
         nationalIdMap.set(member.nationalIdCode, member.nationalIdCode);
@@ -512,25 +514,34 @@ export async function updateApplicationMembersData(
     for (const member of data.members) {
       // Check for duplicate phone numbers
       if (member.phoneNumber) {
+        const normalizedPhone = normalizePhone(member.phoneNumber);
+        if (!normalizedPhone) {
+          continue;
+        }
+
         // Check for duplicates within the incoming data
-        if (incomingPhoneNumbers.has(member.phoneNumber)) {
+        if (incomingPhoneNumbers.has(normalizedPhone)) {
           duplicateErrors.push(
-            `Phone number ${member.phoneNumber} is used by multiple members in your current changes.`,
+            `Phone number ${normalizedPhone} is used by multiple members in your current changes.`,
           );
           continue;
         }
-        incomingPhoneNumbers.add(member.phoneNumber);
+        incomingPhoneNumbers.add(normalizedPhone);
 
         // Check if phone number exists in other existing members
-        const existingMemberWithSamePhone = phoneNumberMap.get(
-          member.phoneNumber,
-        );
+        const existingMemberWithSamePhone = phoneNumberMap.get(normalizedPhone);
         if (
           existingMemberWithSamePhone &&
           existingMemberWithSamePhone !== member.nationalIdCode
         ) {
+          const conflictingMember = existingMembers.find(
+            (existing) =>
+              normalizePhone(existing.phoneNumber) === normalizedPhone,
+          );
           duplicateErrors.push(
-            `Phone number ${member.phoneNumber} is already used by another member in this group.`,
+            conflictingMember?.fullname
+              ? `Phone number ${normalizedPhone} is already used by ${conflictingMember.fullname}. Each member must have a unique phone number.`
+              : `Phone number ${normalizedPhone} is already used by another member in this group.`,
           );
         }
       }
@@ -588,7 +599,7 @@ export async function updateApplicationMembersData(
           nationalIdCode: member.nationalIdCode || '',
           gender: member.gender as any,
           type: member.type as any,
-          phoneNumber: member.phoneNumber || '',
+          phoneNumber: normalizePhone(member.phoneNumber || '') || '',
           economicActivity: member.economicActivity || '',
           photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
           certificateOfDisability: member.disability?.certificateOfDisability
@@ -637,7 +648,7 @@ export async function updateApplicationMembersData(
           gender: member.gender as any,
           type: member.type as any,
           economicActivity: member.economicActivity || '',
-          phoneNumber: member.phoneNumber || '',
+          phoneNumber: normalizePhone(member.phoneNumber || '') || '',
           photoOfId: safeJsonStringify((member.photoOfId as any) || {}),
           certificateOfDisability: member.disability?.certificateOfDisability
             ? safeJsonStringify(
@@ -1130,6 +1141,7 @@ function transformApplicationFromDb(dbApplication: any): ApplicationData {
     result.members = {
       natureOfTheGroup: dbApplication.members[0].natureOfTheGroup,
       members: dbApplication.members.map((m: any) => ({
+        id: m.id,
         fullname: m.fullname,
         nationalIdCode: m.nationalIdCode,
         gender: m.gender,
@@ -1226,6 +1238,19 @@ export async function checkPhoneNumberExistsInApplication(
   phoneNumber: string,
   excludeNationalIdCode?: string,
 ): Promise<boolean> {
+  const conflict = await getPhoneConflictInApplication(
+    applicationId,
+    phoneNumber,
+    excludeNationalIdCode,
+  );
+  return conflict !== null;
+}
+
+export async function getPhoneConflictInApplication(
+  applicationId: string,
+  phoneNumber: string,
+  excludeNationalIdCode?: string,
+): Promise<{ fullname: string; phoneNumber: string } | null> {
   try {
     const application = await prisma.application.findUnique({
       where: { applicationId },
@@ -1233,19 +1258,31 @@ export async function checkPhoneNumberExistsInApplication(
     });
 
     if (!application) {
-      return false;
+      return null;
+    }
+
+    const normalizedPhone = normalizePhone(phoneNumber);
+    if (!normalizedPhone) {
+      return null;
     }
 
     const existingMember = application.members.find(
       (member) =>
-        member.phoneNumber === phoneNumber &&
+        normalizePhone(member.phoneNumber) === normalizedPhone &&
         member.nationalIdCode !== excludeNationalIdCode,
     );
 
-    return !!existingMember;
+    if (!existingMember) {
+      return null;
+    }
+
+    return {
+      fullname: existingMember.fullname,
+      phoneNumber: normalizedPhone,
+    };
   } catch (error) {
     console.error('Error checking phone number existence:', error);
-    return false;
+    return null;
   }
 }
 

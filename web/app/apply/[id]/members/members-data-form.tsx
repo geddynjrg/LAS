@@ -24,7 +24,12 @@ import {
   type GenderType,
   type Member,
 } from '@/lib/types/application.types';
-import { capitalizeWords } from '@/lib/utils/string';
+import {
+  capitalizeWords,
+  formatKenyanPhoneForApi,
+  normalizeKenyanPhoneLocal,
+  phonesEqual,
+} from '@/lib/utils/string';
 import {
   IconCheck,
   IconPencil,
@@ -105,6 +110,17 @@ export const MembersDataForm: FC<MembersDataProps> = ({
 
   const prevUrl = `/apply/${id}/group-data`;
   const nextUrl = `/apply/${id}/loan-conditions`;
+
+  const existingMembersForValidation =
+    applicationMembersData?.members
+      ?.filter(
+        (member) => member.id && member.phoneNumber && member.nationalIdCode,
+      )
+      .map((member) => ({
+        id: member.id as string,
+        phoneNumber: member.phoneNumber as string,
+        nationalIdCode: member.nationalIdCode as string,
+      })) ?? [];
 
   const saveMembersData = async (updatedMembers: Partial<Member>[]) => {
     try {
@@ -267,6 +283,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
               applicationId={id}
               memberTypeOptions={memberTypeOptions}
               members={members}
+              existingMembers={existingMembersForValidation}
             />
           )}
 
@@ -283,6 +300,7 @@ export const MembersDataForm: FC<MembersDataProps> = ({
                         applicationId={id}
                         memberTypeOptions={memberTypeOptions}
                         members={members}
+                        existingMembers={existingMembersForValidation}
                         onReject={() => {
                           setMembersInEdit(
                             membersInEdit.filter((val) => val !== index),
@@ -537,7 +555,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   };
 
   const handlePhoneNumberChange = (value: string) => {
-    const phoneWithCountryCode = value ? `+254${value}` : '';
+    const phoneWithCountryCode = value
+      ? (formatKenyanPhoneForApi(value) ?? '')
+      : '';
 
     if (phoneWithCountryCode) {
       const phoneCheck = canAssignPhoneNumber(
@@ -545,6 +565,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         members,
         existingMembers,
         existingMember?.id,
+        existingMember?.nationalIdCode,
       );
       if (!phoneCheck.canAssign) {
         console.warn(phoneCheck.reason);
@@ -567,12 +588,17 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
     members.forEach((member, index) => {
       // Check for duplicate phone numbers
       if (member.phoneNumber) {
-        if (phoneNumbers.has(member.phoneNumber)) {
+        const normalizedPhone = formatKenyanPhoneForApi(member.phoneNumber);
+        if (!normalizedPhone) {
+          return;
+        }
+
+        if (phoneNumbers.has(normalizedPhone)) {
           errors.push(
-            `Phone number ${member.phoneNumber} is used by multiple members.`,
+            `Phone number ${normalizedPhone} is used by multiple members.`,
           );
         } else {
-          phoneNumbers.add(member.phoneNumber);
+          phoneNumbers.add(normalizedPhone);
         }
       }
 
@@ -687,7 +713,9 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
             type="tel"
             startDecorator="+254"
             {...props}
-            defaultValue={member?.phoneNumber?.replace(/^\+254/, '')}
+            defaultValue={
+              normalizeKenyanPhoneLocal(member?.phoneNumber || '') ?? ''
+            }
             onValueChange={(value) => handlePhoneNumberChange(value)}
           />
         )}
@@ -957,10 +985,13 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
             // Check for duplicate phone number in current members
             if (member.phoneNumber) {
+              const normalizedPhone = formatKenyanPhoneForApi(
+                member.phoneNumber,
+              );
               const duplicatePhoneMember = members.find(
                 (m) =>
-                  m.phoneNumber === member.phoneNumber &&
-                  // For existing members, exclude themselves; for new members, check all
+                  normalizedPhone &&
+                  phonesEqual(m.phoneNumber, normalizedPhone) &&
                   (isNew
                     ? true
                     : m.nationalIdCode !== existingMember?.nationalIdCode),
@@ -968,7 +999,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
 
               if (duplicatePhoneMember) {
                 alert(
-                  `Phone number ${member.phoneNumber} is already used by ${duplicatePhoneMember.fullname || 'another member'}. Each member must have a unique phone number.`,
+                  `Phone number ${normalizedPhone} is already used by ${duplicatePhoneMember.fullname || 'another member'}. Each member must have a unique phone number.`,
                 );
                 return;
               }
@@ -1014,6 +1045,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
                 members,
                 existingMembers || [],
                 existingMember?.id,
+                existingMember?.nationalIdCode,
               );
               if (!phoneCheck.canAssign) {
                 alert(phoneCheck.reason);
@@ -1037,7 +1069,14 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
               }
             }
 
-            onSuccess(member);
+            onSuccess({
+              ...existingMember,
+              ...member,
+              id: existingMember?.id ?? member.id,
+              phoneNumber:
+                formatKenyanPhoneForApi(member.phoneNumber || '') ??
+                member.phoneNumber,
+            });
           }}
         >
           <Underline className="border-b-green-400 text-green-400">

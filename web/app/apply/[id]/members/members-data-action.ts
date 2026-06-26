@@ -11,7 +11,7 @@ import {
 import { getFormFieldOptions } from '@/lib/api/taxonomy.service';
 import {
   checkNationalIdExistsInApplication,
-  checkPhoneNumberExistsInApplication,
+  getPhoneConflictInApplication,
   updateApplicationMembersData,
 } from '@/lib/data/application';
 import { capitalizeWords } from '@/lib/utils/string';
@@ -83,18 +83,18 @@ export const membersDataAction: FormAction<MembersData> = async (
     for (const member of data.members) {
       // Check phone number uniqueness
       if (member.phoneNumber) {
-        const phoneExists = await checkPhoneNumberExistsInApplication(
+        const phoneConflict = await getPhoneConflictInApplication(
           id,
           member.phoneNumber,
-          member.nationalIdCode, // Exclude current member if updating
+          member.nationalIdCode,
         );
 
-        if (phoneExists) {
+        if (phoneConflict) {
           return {
             success: false,
             errors: {
               members: [
-                `Phone number ${member.phoneNumber} is already used by another member in this group. Each member must have a unique phone number.`,
+                `Phone number ${phoneConflict.phoneNumber} is already used by ${phoneConflict.fullname}. Each member must have a unique phone number.`,
               ],
             },
             values: {
