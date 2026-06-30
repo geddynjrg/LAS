@@ -10,6 +10,7 @@ import { Container } from '@workspace/ui/components/container';
 import { Divider } from '@workspace/ui/components/divider';
 import { Underline } from '@workspace/ui/components/underline';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default async function Page({
@@ -31,6 +32,15 @@ export default async function Page({
     <Container className="max-w-[500px] pt-8">
       <main>
         <header className="flex flex-col gap-2 pb-4">
+          <div className="mb-2 flex justify-center">
+            <Image
+              alt="Uwezo Fund Logo"
+              src="/images/uwezo_logo_full.png"
+              width={220}
+              height={83}
+              priority
+            />
+          </div>
           <h1 className="typo-h2">{t('title')}</h1>
           <p className="typo-body-medium">{t('description')}</p>
           <p className="typo-body-medium">
