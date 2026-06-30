@@ -16,8 +16,8 @@ export const AppHeader: FC = () => {
           <Image
             alt="Uwezo Fund Logo"
             src="/images/uwezo_logo_full.png"
-            width={69}
-            height={58}
+            width={82}
+            height={69}
           />
         </Link>
       }

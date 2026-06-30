@@ -36,8 +36,8 @@ export default async function Page({
             <Image
               alt="Uwezo Fund Logo"
               src="/images/uwezo_logo_full.png"
-              width={220}
-              height={83}
+              width={255}
+              height={96}
               priority
             />
           </div>

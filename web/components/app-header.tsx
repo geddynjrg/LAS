@@ -23,8 +23,8 @@ export const AppHeader: FC = () => {
           <Image
             alt="Uwezo Fund Logo"
             src="/images/uwezo_logo_full.png"
-            width={isAuthRoute ? 133 : 69}
-            height={isAuthRoute ? 50 : 58}
+            width={isAuthRoute ? 158 : 82}
+            height={isAuthRoute ? 60 : 69}
             priority={isAuthRoute}
           />
         </Link>

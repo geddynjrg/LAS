@@ -30,7 +30,7 @@ export const Header: FC<HeaderProps> = ({
         className,
       )}
     >
-      <div className="h-[80%] [&>*]:h-full">{startDecorator}</div>
+      <div className="h-[90%] [&>*]:h-full">{startDecorator}</div>
 
       <div className="flex flex-1 flex-row items-center justify-center">
         {children}
