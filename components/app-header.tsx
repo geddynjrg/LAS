@@ -13,7 +13,12 @@ export const AppHeader: FC = () => {
     <Header
       startDecorator={
         <Link href="/">
-          <Image alt="Logo" src="/logo.jpeg" width={69} height={58} />
+          <Image
+            alt="Uwezo Fund Logo"
+            src="/images/uwezo_logo_full.png"
+            width={69}
+            height={58}
+          />
         </Link>
       }
       className="bg-background"
