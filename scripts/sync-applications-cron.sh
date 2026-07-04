@@ -7,8 +7,10 @@ set -eu
 APP_URL="${APP_URL:-http://web:3000}"
 INTERVAL_MINUTES="${SYNC_INTERVAL_MINUTES:-5}"
 CRON_SECRET="${CRON_SECRET:-}"
+# Allow long-running queue/status pulls (default was 300s and timed out under load).
+SYNC_HTTP_TIMEOUT="${SYNC_HTTP_TIMEOUT:-900}"
 
-echo "[$(date -Iseconds)] sync-applications-cron started (APP_URL=${APP_URL}, interval=${INTERVAL_MINUTES}m)"
+echo "[$(date -Iseconds)] sync-applications-cron started (APP_URL=${APP_URL}, interval=${INTERVAL_MINUTES}m, timeout=${SYNC_HTTP_TIMEOUT}s)"
 
 health_check() {
   curl -fsS --max-time 10 -X HEAD "${APP_URL}/api/cron/sync-applications" >/dev/null 2>&1 && echo "ok" || echo "fail"
@@ -24,11 +26,11 @@ while true; do
   echo "[$(date -Iseconds)] Processing sync queue..."
 
   if [ -n "$CRON_SECRET" ]; then
-    RESPONSE=$(curl -sS --max-time 300 -w "\n%{http_code}" -X POST \
+    RESPONSE=$(curl -sS --max-time "${SYNC_HTTP_TIMEOUT}" -w "\n%{http_code}" -X POST \
       -H "Authorization: Bearer ${CRON_SECRET}" \
       "${APP_URL}/api/cron/sync-applications" || printf '\n000')
   else
-    RESPONSE=$(curl -sS --max-time 300 -w "\n%{http_code}" -X POST \
+    RESPONSE=$(curl -sS --max-time "${SYNC_HTTP_TIMEOUT}" -w "\n%{http_code}" -X POST \
       "${APP_URL}/api/cron/sync-applications" || printf '\n000')
   fi
 
@@ -44,11 +46,11 @@ while true; do
   echo "[$(date -Iseconds)] Pulling Drupal status into portal..."
 
   if [ -n "$CRON_SECRET" ]; then
-    STATUS_RESPONSE=$(curl -sS --max-time 300 -w "\n%{http_code}" -X POST \
+    STATUS_RESPONSE=$(curl -sS --max-time "${SYNC_HTTP_TIMEOUT}" -w "\n%{http_code}" -X POST \
       -H "Authorization: Bearer ${CRON_SECRET}" \
       "${APP_URL}/api/cron/sync-status-from-drupal" || printf '\n000')
   else
-    STATUS_RESPONSE=$(curl -sS --max-time 300 -w "\n%{http_code}" -X POST \
+    STATUS_RESPONSE=$(curl -sS --max-time "${SYNC_HTTP_TIMEOUT}" -w "\n%{http_code}" -X POST \
       "${APP_URL}/api/cron/sync-status-from-drupal" || printf '\n000')
   fi
 
