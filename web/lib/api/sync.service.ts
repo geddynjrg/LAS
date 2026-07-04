@@ -11,11 +11,11 @@ import {
   ensureApplicationLmsSync,
   syncApplicationToLms,
 } from '@/lib/api/lms-sync.service';
-import { sendSubmissionSuccessNotificationSMS } from '@/lib/api/submission-success-sms.service';
 import type {
   ApplicationPostRequest,
   FileUpload,
 } from '@/lib/api/schema/application/application.schema';
+import { sendSubmissionSuccessNotificationSMS } from '@/lib/api/submission-success-sms.service';
 import { toApiStatus } from '@/lib/constants/application-status';
 import { prisma } from '@/lib/db/prisma';
 import { promises as fs } from 'fs';
@@ -60,7 +60,8 @@ export async function processSyncQueue() {
       orderBy: {
         scheduledFor: 'asc',
       },
-      take: 10,
+      // Smaller batches keep cron HTTP calls under the worker timeout.
+      take: 5,
     });
 
     for (const item of pendingItems) {
@@ -768,10 +769,12 @@ export async function transformApplicationForExternalApi(
     meeting_point: application.groupData?.meetingPoint || '',
     nearest_landmark: application.groupData?.nearestLandmark || '',
     nature_of_group:
-      application.members?.find(
-        (member: { natureOfTheGroup?: string | null }) =>
-          member.natureOfTheGroup,
-      )?.natureOfTheGroup?.toLowerCase() || undefined,
+      application.members
+        ?.find(
+          (member: { natureOfTheGroup?: string | null }) =>
+            member.natureOfTheGroup,
+        )
+        ?.natureOfTheGroup?.toLowerCase() || undefined,
 
     // Members
     group_members: transformedMembers,

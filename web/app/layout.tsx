@@ -9,14 +9,20 @@ import { SidebarInset } from '@workspace/ui/components/sidebar';
 import '@workspace/ui/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
-import { DM_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 import { headers } from 'next/headers';
 import { userAgent } from 'next/server';
 import { type ReactNode, Suspense } from 'react';
 
-const dmSans = DM_Sans({
-  subsets: ['latin'],
+// Local files avoid Google Fonts fetch failures during offline/CI builds.
+const dmSans = localFont({
+  src: [
+    { path: '../fonts/dm-sans-400.ttf', weight: '400', style: 'normal' },
+    { path: '../fonts/dm-sans-500.ttf', weight: '500', style: 'normal' },
+    { path: '../fonts/dm-sans-700.ttf', weight: '700', style: 'normal' },
+  ],
   variable: '--font-sans',
+  display: 'swap',
 });
 
 export interface RootLayoutProps {

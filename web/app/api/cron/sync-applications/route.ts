@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     const result = await processSyncQueue();
     logEntry.processed = result.processed;
 
-    const lmsBackfill = await processLmsSyncBackfill(5);
+    const lmsBackfill = await processLmsSyncBackfill(3);
     console.log('[CRON] LMS backfill:', lmsBackfill);
 
     // Get queue statistics
