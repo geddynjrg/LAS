@@ -6,6 +6,14 @@ import {
   getLmsImportStatus,
   waitForLmsImport,
 } from '@/lib/api/lms-import-status';
+import {
+  LMS_MAX_TOTAL_ATTEMPTS,
+  LMS_PERMANENT_ATTEMPTS,
+  computeLmsNextRetryAt,
+  describeLmsRetryTier,
+  isNonRetryableLmsError,
+  isReadyForLmsRetry,
+} from '@/lib/api/lms-retry-policy';
 import { mapStatusForLms } from '@/lib/api/lms-status-map';
 import type { ApplicationPostRequest } from '@/lib/api/schema/application/application.schema';
 import { recoverApplicationDataFromDrupal } from '@/lib/data/drupal-application-recovery';
@@ -32,6 +40,45 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function recordLmsSyncFailure(
+  applicationId: string,
+  error: string,
+  options?: { permanent?: boolean; attempts?: number },
+): Promise<void> {
+  const current = await prisma.application.findUnique({
+    where: { applicationId },
+    select: { lmsSyncAttempts: true },
+  });
+  const attempts = options?.attempts ?? (current?.lmsSyncAttempts ?? 0) + 1;
+  const permanent =
+    options?.permanent ||
+    isNonRetryableLmsError(error) ||
+    attempts >= LMS_MAX_TOTAL_ATTEMPTS;
+  const nextRetryAt = permanent ? null : computeLmsNextRetryAt(attempts);
+  const tier = describeLmsRetryTier(attempts);
+
+  if (permanent) {
+    console.error(
+      `[LMS SYNC] Permanent failure for ${applicationId} after ${attempts} attempt(s): ${error}`,
+    );
+  } else {
+    console.warn(
+      `[LMS SYNC] Scheduled ${tier} retry for ${applicationId} (attempt ${attempts}/${LMS_MAX_TOTAL_ATTEMPTS}) at ${nextRetryAt?.toISOString() ?? 'never'}: ${error}`,
+    );
+  }
+
+  await prisma.application.update({
+    where: { applicationId },
+    data: {
+      lmsSyncStatus: permanent ? 'FAILED' : 'PENDING',
+      lmsSyncError: error,
+      lmsSyncAttempts: permanent ? LMS_PERMANENT_ATTEMPTS : attempts,
+      lmsLastSyncAt: new Date(),
+      lmsNextRetryAt: nextRetryAt,
+    },
+  });
+}
+
 async function waitForQueuedLmsImport(
   applicationId: string,
 ): Promise<{ success: boolean; error?: string; referenceId?: string }> {
@@ -41,15 +88,10 @@ async function waitForQueuedLmsImport(
   });
 
   if (!importResult.success) {
-    await prisma.application.update({
-      where: { applicationId },
-      data: {
-        lmsSyncStatus: 'PENDING',
-        lmsSyncError: importResult.error ?? 'LMS import still in progress',
-        lmsSyncAttempts: { increment: 1 },
-        lmsLastSyncAt: new Date(),
-      },
-    });
+    await recordLmsSyncFailure(
+      applicationId,
+      importResult.error ?? 'LMS import still in progress',
+    );
 
     return {
       success: false,
@@ -64,6 +106,7 @@ async function waitForQueuedLmsImport(
       lmsSyncError: null,
       lmsReferenceId: applicationId,
       lmsLastSyncAt: new Date(),
+      lmsNextRetryAt: null,
     },
   });
 
@@ -90,6 +133,7 @@ export async function syncApplicationToLms(
         lmsSyncError: null,
         lmsReferenceId: applicationId,
         lmsLastSyncAt: new Date(),
+        lmsNextRetryAt: null,
       },
     });
 
@@ -120,17 +164,7 @@ export async function syncApplicationToLms(
 
   if ('error' in result && result.error) {
     const message = result.message || result.error;
-    const retryable = isRetryableLmsError(message);
-
-    await prisma.application.update({
-      where: { applicationId },
-      data: {
-        lmsSyncStatus: retryable ? 'PENDING' : 'FAILED',
-        lmsSyncError: message,
-        lmsSyncAttempts: { increment: 1 },
-        lmsLastSyncAt: new Date(),
-      },
-    });
+    await recordLmsSyncFailure(applicationId, message);
     return { success: false, error: message };
   }
 
@@ -151,15 +185,10 @@ export async function syncApplicationToLms(
   });
 
   if (!verified.success) {
-    await prisma.application.update({
-      where: { applicationId },
-      data: {
-        lmsSyncStatus: 'PENDING',
-        lmsSyncError: verified.error ?? 'Could not verify LMS import',
-        lmsSyncAttempts: { increment: 1 },
-        lmsLastSyncAt: new Date(),
-      },
-    });
+    await recordLmsSyncFailure(
+      applicationId,
+      verified.error ?? 'Could not verify LMS import',
+    );
 
     return {
       success: false,
@@ -174,6 +203,7 @@ export async function syncApplicationToLms(
       lmsSyncError: null,
       lmsReferenceId: applicationId,
       lmsLastSyncAt: new Date(),
+      lmsNextRetryAt: null,
     },
   });
 
@@ -242,6 +272,7 @@ export async function ensureApplicationLmsSync(
         lmsSyncError: null,
         lmsReferenceId: applicationId,
         lmsLastSyncAt: new Date(),
+        lmsNextRetryAt: null,
       },
     });
     return { success: true };
@@ -279,44 +310,58 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
   processed: number;
   succeeded: number;
   failed: number;
+  skipped: number;
+  waiting: number;
 }> {
+  const now = new Date();
+
   const candidates = await prisma.application.findMany({
     where: {
       syncStatus: SyncStatus.COMPLETED,
+      lmsSyncAttempts: { lt: LMS_MAX_TOTAL_ATTEMPTS },
       OR: [
-        {
-          loanConditions: { isNot: null },
-          proposedBusiness: { isNot: null },
-          OR: [
-            { lmsSyncStatus: null },
-            { lmsSyncStatus: 'PENDING' },
-            {
-              lmsSyncStatus: 'FAILED',
-              lmsSyncAttempts: { lt: 5 },
-            },
-          ],
-        },
-        {
-          groupData: null,
-          OR: [
-            { lmsSyncStatus: 'PENDING' },
-            {
-              lmsSyncStatus: 'FAILED',
-              lmsSyncAttempts: { lt: 6 },
-            },
-          ],
-        },
+        { lmsSyncStatus: null },
+        { lmsSyncStatus: 'PENDING' },
+        { lmsSyncStatus: 'FAILED' },
       ],
     },
-    orderBy: { updatedAt: 'asc' },
-    take: batchSize,
-    select: { applicationId: true, lmsSyncStatus: true },
+    orderBy: [{ lmsNextRetryAt: 'asc' }, { updatedAt: 'asc' }],
+    take: batchSize * 4,
+    select: {
+      applicationId: true,
+      lmsSyncStatus: true,
+      lmsSyncError: true,
+      lmsSyncAttempts: true,
+      lmsNextRetryAt: true,
+      lmsLastSyncAt: true,
+    },
   });
+
+  const ready = candidates.filter((candidate) => {
+    if (isNonRetryableLmsError(candidate.lmsSyncError)) {
+      return false;
+    }
+    return isReadyForLmsRetry(
+      candidate.lmsNextRetryAt,
+      candidate.lmsLastSyncAt,
+      now,
+    );
+  });
+
+  const waiting = candidates.length - ready.length;
+  const batch = ready.slice(0, batchSize);
+
+  if (batch.length > 0) {
+    console.log(
+      `[LMS SYNC RETRY] Processing ${batch.length} application(s); ${waiting} waiting for next retry window`,
+    );
+  }
 
   let succeeded = 0;
   let failed = 0;
+  let skipped = 0;
 
-  for (const candidate of candidates) {
+  for (const candidate of batch) {
     let application = await prisma.application.findUnique({
       where: { applicationId: candidate.applicationId },
       include: applicationInclude,
@@ -340,10 +385,13 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
           include: applicationInclude,
         });
       } else if (!application.loanConditions || !application.proposedBusiness) {
-        failed += 1;
-        console.error(
-          `[LMS SYNC] Missing loan data for ${candidate.applicationId}:`,
-          recovery.error ?? 'loan/business data not in portal or Drupal',
+        const error =
+          recovery.error ??
+          'Loan and business details are required before LMS import';
+        await recordLmsSyncFailure(application.applicationId, error);
+        skipped += 1;
+        console.warn(
+          `[LMS SYNC RETRY] Skipped ${candidate.applicationId} (missing loan data): ${error}`,
         );
         continue;
       }
@@ -353,6 +401,10 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
       failed += 1;
       continue;
     }
+
+    console.log(
+      `[LMS SYNC RETRY] Attempting ${application.applicationId} (status=${application.lmsSyncStatus}, attempts=${application.lmsSyncAttempts}, tier=${describeLmsRetryTier(application.lmsSyncAttempts)})`,
+    );
 
     const { transformApplicationForExternalApi } =
       await import('@/lib/api/sync.service');
@@ -364,15 +416,18 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
 
     if (result.success) {
       succeeded += 1;
+      console.log(
+        `[LMS SYNC RETRY] Succeeded for ${application.applicationId}`,
+      );
     } else if (isRetryableLmsError(result.error)) {
       console.warn(
-        `[LMS SYNC] Rate limited while syncing ${application.applicationId}; will retry later`,
+        `[LMS SYNC RETRY] Rate limited while syncing ${application.applicationId}; stopping batch`,
       );
       break;
     } else {
       failed += 1;
       console.error(
-        `[LMS SYNC] Failed for ${application.applicationId}:`,
+        `[LMS SYNC RETRY] Failed for ${application.applicationId}:`,
         result.error,
       );
     }
@@ -381,8 +436,10 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
   }
 
   return {
-    processed: candidates.length,
+    processed: batch.length,
     succeeded,
     failed,
+    skipped,
+    waiting,
   };
 }

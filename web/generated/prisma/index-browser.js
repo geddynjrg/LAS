@@ -148,7 +148,8 @@ exports.Prisma.ApplicationScalarFieldEnum = {
   lmsSyncStatus: 'lmsSyncStatus',
   lmsSyncError: 'lmsSyncError',
   lmsSyncAttempts: 'lmsSyncAttempts',
-  lmsLastSyncAt: 'lmsLastSyncAt'
+  lmsLastSyncAt: 'lmsLastSyncAt',
+  lmsNextRetryAt: 'lmsNextRetryAt'
 };
 
 exports.Prisma.GroupDataScalarFieldEnum = {

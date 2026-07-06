@@ -3590,6 +3590,7 @@ export namespace Prisma {
     lmsSyncError: string | null
     lmsSyncAttempts: number | null
     lmsLastSyncAt: Date | null
+    lmsNextRetryAt: Date | null
   }
 
   export type ApplicationMaxAggregateOutputType = {
@@ -3610,6 +3611,7 @@ export namespace Prisma {
     lmsSyncError: string | null
     lmsSyncAttempts: number | null
     lmsLastSyncAt: Date | null
+    lmsNextRetryAt: Date | null
   }
 
   export type ApplicationCountAggregateOutputType = {
@@ -3630,6 +3632,7 @@ export namespace Prisma {
     lmsSyncError: number
     lmsSyncAttempts: number
     lmsLastSyncAt: number
+    lmsNextRetryAt: number
     _all: number
   }
 
@@ -3664,6 +3667,7 @@ export namespace Prisma {
     lmsSyncError?: true
     lmsSyncAttempts?: true
     lmsLastSyncAt?: true
+    lmsNextRetryAt?: true
   }
 
   export type ApplicationMaxAggregateInputType = {
@@ -3684,6 +3688,7 @@ export namespace Prisma {
     lmsSyncError?: true
     lmsSyncAttempts?: true
     lmsLastSyncAt?: true
+    lmsNextRetryAt?: true
   }
 
   export type ApplicationCountAggregateInputType = {
@@ -3704,6 +3709,7 @@ export namespace Prisma {
     lmsSyncError?: true
     lmsSyncAttempts?: true
     lmsLastSyncAt?: true
+    lmsNextRetryAt?: true
     _all?: true
   }
 
@@ -3811,6 +3817,7 @@ export namespace Prisma {
     lmsSyncError: string | null
     lmsSyncAttempts: number
     lmsLastSyncAt: Date | null
+    lmsNextRetryAt: Date | null
     _count: ApplicationCountAggregateOutputType | null
     _avg: ApplicationAvgAggregateOutputType | null
     _sum: ApplicationSumAggregateOutputType | null
@@ -3850,6 +3857,7 @@ export namespace Prisma {
     lmsSyncError?: boolean
     lmsSyncAttempts?: boolean
     lmsLastSyncAt?: boolean
+    lmsNextRetryAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     confirmations?: boolean | Application$confirmationsArgs<ExtArgs>
     groupData?: boolean | Application$groupDataArgs<ExtArgs>
@@ -3881,9 +3889,10 @@ export namespace Prisma {
     lmsSyncError?: boolean
     lmsSyncAttempts?: boolean
     lmsLastSyncAt?: boolean
+    lmsNextRetryAt?: boolean
   }
 
-  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "applicationId" | "status" | "applicationProgress" | "userId" | "syncStatus" | "syncAttempts" | "lastSyncAt" | "syncError" | "externalId" | "createdAt" | "updatedAt" | "lmsReferenceId" | "lmsSyncStatus" | "lmsSyncError" | "lmsSyncAttempts" | "lmsLastSyncAt", ExtArgs["result"]["application"]>
+  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "applicationId" | "status" | "applicationProgress" | "userId" | "syncStatus" | "syncAttempts" | "lastSyncAt" | "syncError" | "externalId" | "createdAt" | "updatedAt" | "lmsReferenceId" | "lmsSyncStatus" | "lmsSyncError" | "lmsSyncAttempts" | "lmsLastSyncAt" | "lmsNextRetryAt", ExtArgs["result"]["application"]>
   export type ApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     confirmations?: boolean | Application$confirmationsArgs<ExtArgs>
@@ -3926,6 +3935,7 @@ export namespace Prisma {
       lmsSyncError: string | null
       lmsSyncAttempts: number
       lmsLastSyncAt: Date | null
+      lmsNextRetryAt: Date | null
     }, ExtArgs["result"]["application"]>
     composites: {}
   }
@@ -4320,6 +4330,7 @@ export namespace Prisma {
     readonly lmsSyncError: FieldRef<"Application", 'String'>
     readonly lmsSyncAttempts: FieldRef<"Application", 'Int'>
     readonly lmsLastSyncAt: FieldRef<"Application", 'DateTime'>
+    readonly lmsNextRetryAt: FieldRef<"Application", 'DateTime'>
   }
     
 
@@ -20658,7 +20669,8 @@ export namespace Prisma {
     lmsSyncStatus: 'lmsSyncStatus',
     lmsSyncError: 'lmsSyncError',
     lmsSyncAttempts: 'lmsSyncAttempts',
-    lmsLastSyncAt: 'lmsLastSyncAt'
+    lmsLastSyncAt: 'lmsLastSyncAt',
+    lmsNextRetryAt: 'lmsNextRetryAt'
   };
 
   export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum]
@@ -21441,6 +21453,7 @@ export namespace Prisma {
     lmsSyncError?: StringNullableFilter<"Application"> | string | null
     lmsSyncAttempts?: IntFilter<"Application"> | number
     lmsLastSyncAt?: DateTimeNullableFilter<"Application"> | Date | string | null
+    lmsNextRetryAt?: DateTimeNullableFilter<"Application"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     confirmations?: XOR<ConfirmationsNullableScalarRelationFilter, ConfirmationsWhereInput> | null
     groupData?: XOR<GroupDataNullableScalarRelationFilter, GroupDataWhereInput> | null
@@ -21469,6 +21482,7 @@ export namespace Prisma {
     lmsSyncError?: SortOrderInput | SortOrder
     lmsSyncAttempts?: SortOrder
     lmsLastSyncAt?: SortOrderInput | SortOrder
+    lmsNextRetryAt?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     confirmations?: ConfirmationsOrderByWithRelationInput
     groupData?: GroupDataOrderByWithRelationInput
@@ -21501,6 +21515,7 @@ export namespace Prisma {
     lmsSyncError?: StringNullableFilter<"Application"> | string | null
     lmsSyncAttempts?: IntFilter<"Application"> | number
     lmsLastSyncAt?: DateTimeNullableFilter<"Application"> | Date | string | null
+    lmsNextRetryAt?: DateTimeNullableFilter<"Application"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     confirmations?: XOR<ConfirmationsNullableScalarRelationFilter, ConfirmationsWhereInput> | null
     groupData?: XOR<GroupDataNullableScalarRelationFilter, GroupDataWhereInput> | null
@@ -21529,6 +21544,7 @@ export namespace Prisma {
     lmsSyncError?: SortOrderInput | SortOrder
     lmsSyncAttempts?: SortOrder
     lmsLastSyncAt?: SortOrderInput | SortOrder
+    lmsNextRetryAt?: SortOrderInput | SortOrder
     _count?: ApplicationCountOrderByAggregateInput
     _avg?: ApplicationAvgOrderByAggregateInput
     _max?: ApplicationMaxOrderByAggregateInput
@@ -21557,6 +21573,7 @@ export namespace Prisma {
     lmsSyncError?: StringNullableWithAggregatesFilter<"Application"> | string | null
     lmsSyncAttempts?: IntWithAggregatesFilter<"Application"> | number
     lmsLastSyncAt?: DateTimeNullableWithAggregatesFilter<"Application"> | Date | string | null
+    lmsNextRetryAt?: DateTimeNullableWithAggregatesFilter<"Application"> | Date | string | null
   }
 
   export type GroupDataWhereInput = {
@@ -23111,6 +23128,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
@@ -23139,6 +23157,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
@@ -23165,6 +23184,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
@@ -23193,6 +23213,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
@@ -23220,6 +23241,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
   }
 
   export type ApplicationUpdateManyMutationInput = {
@@ -23239,6 +23261,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ApplicationUncheckedUpdateManyInput = {
@@ -23259,6 +23282,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type GroupDataCreateInput = {
@@ -25193,6 +25217,7 @@ export namespace Prisma {
     lmsSyncError?: SortOrder
     lmsSyncAttempts?: SortOrder
     lmsLastSyncAt?: SortOrder
+    lmsNextRetryAt?: SortOrder
   }
 
   export type ApplicationAvgOrderByAggregateInput = {
@@ -25219,6 +25244,7 @@ export namespace Prisma {
     lmsSyncError?: SortOrder
     lmsSyncAttempts?: SortOrder
     lmsLastSyncAt?: SortOrder
+    lmsNextRetryAt?: SortOrder
   }
 
   export type ApplicationMinOrderByAggregateInput = {
@@ -25239,6 +25265,7 @@ export namespace Prisma {
     lmsSyncError?: SortOrder
     lmsSyncAttempts?: SortOrder
     lmsLastSyncAt?: SortOrder
+    lmsNextRetryAt?: SortOrder
   }
 
   export type ApplicationSumOrderByAggregateInput = {
@@ -27950,6 +27977,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
@@ -27976,6 +28004,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
@@ -28032,6 +28061,7 @@ export namespace Prisma {
     lmsSyncError?: StringNullableFilter<"Application"> | string | null
     lmsSyncAttempts?: IntFilter<"Application"> | number
     lmsLastSyncAt?: DateTimeNullableFilter<"Application"> | Date | string | null
+    lmsNextRetryAt?: DateTimeNullableFilter<"Application"> | Date | string | null
   }
 
   export type UserCreateWithoutApplicationsInput = {
@@ -28706,6 +28736,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
@@ -28733,6 +28764,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
@@ -28774,6 +28806,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
@@ -28801,6 +28834,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
@@ -28826,6 +28860,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
@@ -28853,6 +28888,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
@@ -28894,6 +28930,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
@@ -28921,6 +28958,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
@@ -28946,6 +28984,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
@@ -28973,6 +29012,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
@@ -29014,6 +29054,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
@@ -29041,6 +29082,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
@@ -29066,6 +29108,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
@@ -29093,6 +29136,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
@@ -29160,6 +29204,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
@@ -29187,6 +29232,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
@@ -29316,6 +29362,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsCreateNestedOneWithoutApplicationInput
@@ -29343,6 +29390,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
     members?: MemberDataUncheckedCreateNestedManyWithoutApplicationInput
@@ -29384,6 +29432,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
@@ -29411,6 +29460,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
     members?: MemberDataUncheckedUpdateManyWithoutApplicationNestedInput
@@ -29663,6 +29713,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
@@ -29690,6 +29741,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
@@ -29766,6 +29818,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
@@ -29793,6 +29846,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
@@ -30123,6 +30177,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     user: UserCreateNestedOneWithoutApplicationsInput
     confirmations?: ConfirmationsCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataCreateNestedOneWithoutApplicationInput
@@ -30150,6 +30205,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
     confirmations?: ConfirmationsUncheckedCreateNestedOneWithoutApplicationInput
     groupData?: GroupDataUncheckedCreateNestedOneWithoutApplicationInput
     loanConditions?: LoanConditionsUncheckedCreateNestedOneWithoutApplicationInput
@@ -30191,6 +30247,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
@@ -30218,6 +30275,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
@@ -30243,6 +30301,7 @@ export namespace Prisma {
     lmsSyncError?: string | null
     lmsSyncAttempts?: number
     lmsLastSyncAt?: Date | string | null
+    lmsNextRetryAt?: Date | string | null
   }
 
   export type ApplicationUpdateWithoutUserInput = {
@@ -30262,6 +30321,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUpdateOneWithoutApplicationNestedInput
@@ -30288,6 +30348,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmations?: ConfirmationsUncheckedUpdateOneWithoutApplicationNestedInput
     groupData?: GroupDataUncheckedUpdateOneWithoutApplicationNestedInput
     loanConditions?: LoanConditionsUncheckedUpdateOneWithoutApplicationNestedInput
@@ -30314,6 +30375,7 @@ export namespace Prisma {
     lmsSyncError?: NullableStringFieldUpdateOperationsInput | string | null
     lmsSyncAttempts?: IntFieldUpdateOperationsInput | number
     lmsLastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lmsNextRetryAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MemberDataCreateManyApplicationInput = {

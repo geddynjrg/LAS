@@ -51,6 +51,7 @@ model Application {
   lmsSyncError        String?
   lmsSyncAttempts     Int                  @default(0)
   lmsLastSyncAt       DateTime?
+  lmsNextRetryAt      DateTime?
   lmsSyncQueue        LmsSyncQueue?
   paymentTransactions PaymentTransaction[]
 

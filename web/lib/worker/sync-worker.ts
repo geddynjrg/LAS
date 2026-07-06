@@ -1,3 +1,4 @@
+import { processLmsSyncBackfill } from '@/lib/api/lms-sync.service';
 import { processSyncQueue } from '@/lib/api/sync.service';
 import { prisma } from '@/lib/db/prisma';
 
@@ -91,6 +92,9 @@ class SyncWorker {
 
       // Process the queue
       const result = await processSyncQueue();
+
+      const lmsBackfill = await processLmsSyncBackfill(5);
+      console.log('[SyncWorker] LMS backfill/retry:', lmsBackfill);
 
       const duration = Date.now() - startTime;
       console.log(

@@ -65,8 +65,8 @@ export async function GET(request: NextRequest) {
     const result = await processSyncQueue();
     logEntry.processed = result.processed;
 
-    const lmsBackfill = await processLmsSyncBackfill(3);
-    console.log('[CRON] LMS backfill:', lmsBackfill);
+    const lmsBackfill = await processLmsSyncBackfill(5);
+    console.log('[CRON] LMS backfill/retry:', lmsBackfill);
 
     // Get queue statistics
     const stats = await prisma.syncQueue.groupBy({
