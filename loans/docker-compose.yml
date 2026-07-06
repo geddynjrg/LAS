@@ -3,6 +3,10 @@ name: uwezo-prod
 # Production loans portal — builds from this repo, uses the SAME MariaDB as
 # loans-staging (service hostname: db on external network uwezo_default).
 #
+# Required for prod-web build/runtime (defaults match production if unset):
+#   PROD_WEB_DOMAIN=loans.uwezo.go.ke
+#   PROD_ADMIN_DOMAIN=loans-admin.uwezo.go.ke
+#
 # Usage (from repo root):
 #   cp loans/.env.example loans/.env   # fill in secrets on the server
 #   docker compose -f loans/docker-compose.yml build --no-cache prod-admin prod-web
@@ -15,9 +19,9 @@ services:
       dockerfile: web/Dockerfile
       args:
         - NODE_VERSION=20
-        - NEXT_PUBLIC_APP_URL=https://${PROD_WEB_DOMAIN}
-        - NEXT_PUBLIC_ADMIN_DOMAIN=https://${PROD_ADMIN_DOMAIN}
-        - NEXT_PUBLIC_API_URL=https://${PROD_ADMIN_DOMAIN}
+        - NEXT_PUBLIC_APP_URL=https://${PROD_WEB_DOMAIN:-loans.uwezo.go.ke}
+        - NEXT_PUBLIC_ADMIN_DOMAIN=https://${PROD_ADMIN_DOMAIN:-loans-admin.uwezo.go.ke}
+        - NEXT_PUBLIC_API_URL=https://${PROD_ADMIN_DOMAIN:-loans-admin.uwezo.go.ke}
         - DATABASE_URL=mysql://${STAGING_DB_USER:-drupal}:${STAGING_DB_PASSWORD}@db:3306/web
     image: uwezo-prod-web
     container_name: uwezo-prod-web
@@ -25,9 +29,9 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: mysql://${STAGING_DB_USER:-drupal}:${STAGING_DB_PASSWORD}@db:3306/web
-      NEXT_PUBLIC_ADMIN_DOMAIN: https://${PROD_ADMIN_DOMAIN}
-      NEXT_PUBLIC_API_URL: https://${PROD_ADMIN_DOMAIN}
-      NEXT_PUBLIC_APP_URL: https://${PROD_WEB_DOMAIN}
+      NEXT_PUBLIC_ADMIN_DOMAIN: https://${PROD_ADMIN_DOMAIN:-loans-admin.uwezo.go.ke}
+      NEXT_PUBLIC_API_URL: https://${PROD_ADMIN_DOMAIN:-loans-admin.uwezo.go.ke}
+      NEXT_PUBLIC_APP_URL: https://${PROD_WEB_DOMAIN:-loans.uwezo.go.ke}
       API_URL: http://prod-admin
       LMS_API_URL: ${LMS_INTERNAL_API_URL:-http://uwezo-lms-app}
       LMS_API_HOST: ${LMS_API_HOST:-lms.uwezo.go.ke}
@@ -49,7 +53,7 @@ services:
     volumes:
       - prod_web_uploads:/app/web/uploads
     extra_hosts:
-      - "${PROD_ADMIN_DOMAIN}:host-gateway"
+      - "${PROD_ADMIN_DOMAIN:-loans-admin.uwezo.go.ke}:host-gateway"
     expose:
       - "3000"
     healthcheck:
@@ -92,7 +96,7 @@ services:
       DRUPAL_ENV: production
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      UWEZO_UI_PUBLIC_URL: https://${PROD_WEB_DOMAIN}
+      UWEZO_UI_PUBLIC_URL: https://${PROD_WEB_DOMAIN:-loans.uwezo.go.ke}
       EBISCLOUD_SMS_API_KEY: ${EBISCLOUD_SMS_API_KEY}
       EBISCLOUD_SMS_API_URL: ${EBISCLOUD_SMS_API_URL}
       EBISCLOUD_SMS_SHORTCODE: ${EBISCLOUD_SMS_SHORTCODE}
@@ -102,7 +106,7 @@ services:
       ECITIZEN_AUTH_URL: ${ECITIZEN_AUTH_URL}
       ECITIZEN_TOKEN_URL: ${ECITIZEN_TOKEN_URL}
       ECITIZEN_USER_INFO_URL: ${ECITIZEN_USER_INFO_URL}
-      ECITIZEN_REDIRECT_URI: https://${PROD_ADMIN_DOMAIN}/api/oauth/ecitizen
+      ECITIZEN_REDIRECT_URI: https://${PROD_ADMIN_DOMAIN:-loans-admin.uwezo.go.ke}/api/oauth/ecitizen
       SMTP_HOST: ${PROD_SMTP_HOST}
       SMTP_PORT: ${PROD_SMTP_PORT}
       SMTP_USER: ${PROD_SMTP_USER}
