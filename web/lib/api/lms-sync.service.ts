@@ -8,6 +8,7 @@ import {
 } from '@/lib/api/lms-import-status';
 import { mapStatusForLms } from '@/lib/api/lms-status-map';
 import type { ApplicationPostRequest } from '@/lib/api/schema/application/application.schema';
+import { recoverApplicationDataFromDrupal } from '@/lib/data/drupal-application-recovery';
 import { prisma } from '@/lib/db/prisma';
 
 function isRateLimitError(message?: string): boolean {
@@ -182,7 +183,7 @@ export async function syncApplicationToLms(
 export async function ensureApplicationLmsSync(
   applicationId: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const application = await prisma.application.findUnique({
+  let application = await prisma.application.findUnique({
     where: { applicationId },
     include: applicationInclude,
   });
@@ -201,12 +202,34 @@ export async function ensureApplicationLmsSync(
     };
   }
 
+  let recovery: { recovered: boolean; error?: string } | undefined;
   const hasLoanData =
     application.loanConditions != null && application.proposedBusiness != null;
   if (!hasLoanData) {
+    recovery = await recoverApplicationDataFromDrupal(applicationId);
+    if (recovery.recovered) {
+      application = await prisma.application.findUnique({
+        where: { applicationId },
+        include: applicationInclude,
+      });
+
+      if (!application) {
+        return {
+          success: false,
+          error: 'Application not found after recovery',
+        };
+      }
+    }
+  }
+
+  const hasLoanDataAfterRecovery =
+    application.loanConditions != null && application.proposedBusiness != null;
+  if (!hasLoanDataAfterRecovery) {
     return {
       success: false,
-      error: 'Loan and business details are required before LMS import',
+      error:
+        recovery?.error ??
+        'Loan and business details are required before LMS import',
     };
   }
 
