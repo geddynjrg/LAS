@@ -283,14 +283,28 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
   const candidates = await prisma.application.findMany({
     where: {
       syncStatus: SyncStatus.COMPLETED,
-      loanConditions: { isNot: null },
-      proposedBusiness: { isNot: null },
       OR: [
-        { lmsSyncStatus: null },
-        { lmsSyncStatus: 'PENDING' },
         {
-          lmsSyncStatus: 'FAILED',
-          lmsSyncAttempts: { lt: 5 },
+          loanConditions: { isNot: null },
+          proposedBusiness: { isNot: null },
+          OR: [
+            { lmsSyncStatus: null },
+            { lmsSyncStatus: 'PENDING' },
+            {
+              lmsSyncStatus: 'FAILED',
+              lmsSyncAttempts: { lt: 5 },
+            },
+          ],
+        },
+        {
+          groupData: null,
+          OR: [
+            { lmsSyncStatus: 'PENDING' },
+            {
+              lmsSyncStatus: 'FAILED',
+              lmsSyncAttempts: { lt: 6 },
+            },
+          ],
         },
       ],
     },
@@ -303,10 +317,37 @@ export async function processLmsSyncBackfill(batchSize = 5): Promise<{
   let failed = 0;
 
   for (const candidate of candidates) {
-    const application = await prisma.application.findUnique({
+    let application = await prisma.application.findUnique({
       where: { applicationId: candidate.applicationId },
       include: applicationInclude,
     });
+
+    if (!application) {
+      failed += 1;
+      continue;
+    }
+
+    if (
+      application.loanConditions == null ||
+      application.proposedBusiness == null
+    ) {
+      const recovery = await recoverApplicationDataFromDrupal(
+        application.applicationId,
+      );
+      if (recovery.recovered) {
+        application = await prisma.application.findUnique({
+          where: { applicationId: candidate.applicationId },
+          include: applicationInclude,
+        });
+      } else if (!application.loanConditions || !application.proposedBusiness) {
+        failed += 1;
+        console.error(
+          `[LMS SYNC] Missing loan data for ${candidate.applicationId}:`,
+          recovery.error ?? 'loan/business data not in portal or Drupal',
+        );
+        continue;
+      }
+    }
 
     if (!application) {
       failed += 1;
