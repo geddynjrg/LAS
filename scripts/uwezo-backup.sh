@@ -77,14 +77,13 @@ backup_volume() {
   if [[ "$DRY_RUN" == "--dry-run" ]]; then
     return 0
   fi
-  # Run tar as root inside the container so root-owned LMS storage paths are readable.
-  # --ignore-failed-read keeps going on unreadable entries; failures are logged, not fatal.
+  # Run tar as root inside the container so www-data-owned LMS storage paths are readable.
   set +e
   docker run --rm \
     -v "${vol}:/data:ro" \
     -v "${DEST}/volumes:/backup" \
     alpine:3.20 \
-    tar --ignore-failed-read -czf "/backup/$(basename "$archive")" -C /data .
+    tar czf "/backup/$(basename "$archive")" -C /data .
   local tar_rc=$?
   set -e
   if [[ -f "$archive_path" ]]; then
