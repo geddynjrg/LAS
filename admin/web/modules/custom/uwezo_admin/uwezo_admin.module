@@ -48,4 +48,8 @@ function uwezo_admin_page_attachments_alter(array &$attachments): void {
   $module_path = \Drupal::service('extension.list.module')->getPath('gin_login');
   $attachments['#attached']['drupalSettings']['gin_login']['path'] =
     $proto . '://' . $host . '/' . $module_path;
+
+  // Staging and production admin share one database; vary cached login pages
+  // by public host so gin_login wallpaper URLs stay environment-correct.
+  $attachments['#cache']['contexts'][] = 'url.site';
 }
