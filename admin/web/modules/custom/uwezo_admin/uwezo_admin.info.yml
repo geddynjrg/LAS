@@ -1,0 +1,5 @@
+name: Uwezo Admin
+type: module
+description: 'Admin fixes for HTTPS-aware asset URLs behind reverse proxies.'
+package: Custom
+core_version_requirement: ^10 || ^11

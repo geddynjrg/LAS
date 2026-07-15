@@ -880,6 +880,26 @@ if (getenv('DRUPAL_DATABASE_PASSWORD')) {
 $is_docker_env = getenv('DRUPAL_DATABASE_PASSWORD') !== false;
 
 if ($is_docker_env) {
+  // Behind nginx TLS termination: use public HTTPS host for generated URLs.
+  $settings['reverse_proxy'] = TRUE;
+  $settings['reverse_proxy_addresses'] = [
+    '127.0.0.1',
+    '10.0.0.0/8',
+    '172.16.0.0/12',
+    '192.168.0.0/16',
+  ];
+  $settings['reverse_proxy_trusted_headers'] =
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST |
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT |
+    \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO;
+  $settings['trusted_host_patterns'] = [
+    '^loans-staging-admin\.uwezo\.go\.ke$',
+    '^loans-admin\.uwezo\.go\.ke$',
+    '^admin$',
+    '^localhost$',
+    '^127\.0\.0\.1$',
+  ];
     $databases['web']['default'] = [
       'database'  => 'web',
       'username'  => getenv('DRUPAL_DATABASE_USER'),
@@ -1050,7 +1070,12 @@ if (extension_loaded('redis')) {
   ];
 
   /** Optional prefix for cache entries */
-  $settings['cache_prefix'] = 'drupal_';
+  if (getenv('ECITIZEN_REDIRECT_URI') && str_contains((string) getenv('ECITIZEN_REDIRECT_URI'), 'loans-admin.uwezo.go.ke')) {
+    $settings['cache_prefix'] = 'drupal_prod_';
+  }
+  else {
+    $settings['cache_prefix'] = 'drupal_staging_';
+  }
 
   // Always set the fast backend for bootstrap, discover and config, otherwise
   // this gets lost when redis is enabled.
