@@ -13,7 +13,7 @@ import { labelVariants } from '@workspace/ui/components/label';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { type FC, useEffect, useId, useState } from 'react';
+import { type FC, useCallback, useEffect, useId, useState } from 'react';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
 
@@ -29,7 +29,17 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   const t = useTranslations('LoginPage');
   const phoneInputId = useId();
   const phoneErrorId = `${phoneInputId}-error`;
-  const [state, formAction, isPending] = useForm(action, phoneLoginSchema);
+  const [state, baseFormAction, isPending] = useForm(action, phoneLoginSchema);
+
+  const formAction = useCallback<typeof baseFormAction>(
+    (prev, formData) => {
+      if (phoneNumber) {
+        formData.set('phone', phoneNumber);
+      }
+      return baseFormAction(prev, formData);
+    },
+    [baseFormAction, phoneNumber],
+  );
   const [phoneLoginState, setPhoneLoginState] =
     useState<PhoneLoginState>('phone_input');
   const [otpRequestId, setOtpRequestId] = useState<string>('');
@@ -109,7 +119,6 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
       {/* Phone Input - Step 1 */}
       {phoneLoginState === 'phone_input' && (
         <>
-          <input type="hidden" name="phone" value={phoneNumber} />
           <div className="flex w-full flex-col gap-1">
             <label
               htmlFor={phoneInputId}
@@ -120,10 +129,12 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
             </label>
             <Input
               id={phoneInputId}
+              name="phone"
               type="tel"
               startDecorator={COUNTRY_CODE}
               placeholder="712345678"
               autoComplete="tel-national"
+              maxLength={10}
               value={phoneNumber}
               onValueChange={handlePhoneChange}
               onChange={(e) => handlePhoneChange(e.target.value)}
