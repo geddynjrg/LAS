@@ -13,7 +13,7 @@ import { labelVariants } from '@workspace/ui/components/label';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { type FC, useCallback, useEffect, useId, useState } from 'react';
+import { type FC, useEffect, useId, useState } from 'react';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
 
@@ -29,43 +29,36 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   const t = useTranslations('LoginPage');
   const phoneInputId = useId();
   const phoneErrorId = `${phoneInputId}-error`;
-  const [state, baseFormAction, isPending] = useForm(action, phoneLoginSchema);
-
-  const formAction = useCallback<typeof baseFormAction>(
-    (prev, formData) => {
-      if (phoneNumber) {
-        formData.set('phone', phoneNumber);
-      }
-      return baseFormAction(prev, formData);
-    },
-    [baseFormAction, phoneNumber],
-  );
   const [phoneLoginState, setPhoneLoginState] =
     useState<PhoneLoginState>('phone_input');
   const [otpRequestId, setOtpRequestId] = useState<string>('');
-  const [phoneNumber, setPhoneNumber] = useState<string>(() => {
-    const initial =
-      (state.values as { phone?: string } | undefined)?.phone ?? '';
-    return normalizeKenyanPhoneLocal(initial) ?? initial.replace(/\D/g, '');
-  });
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [redirectTarget, setRedirectTarget] = useState(
     redirectTo ?? '/dashboard',
   );
+  const [state, formAction, isPending] = useForm(
+    action,
+    phoneLoginSchema,
+    {},
+    (formData) => {
+      if (phoneNumber) {
+        formData.set('phone', phoneNumber);
+      }
+    },
+  );
+
+  useEffect(() => {
+    const initial =
+      (state.values as { phone?: string } | undefined)?.phone ?? '';
+    if (!initial) return;
+    const normalized =
+      normalizeKenyanPhoneLocal(initial) ?? initial.replace(/\D/g, '');
+    setPhoneNumber(normalized);
+  }, [state.values]);
 
   useEffect(() => {
     setRedirectTarget(resolveReturnPath(redirectTo));
   }, [redirectTo]);
-
-  useEffect(() => {
-    const submittedPhone = (state.values as { phone?: string } | undefined)
-      ?.phone;
-    if (!submittedPhone) return;
-
-    const normalized =
-      normalizeKenyanPhoneLocal(submittedPhone) ??
-      submittedPhone.replace(/\D/g, '');
-    setPhoneNumber(normalized);
-  }, [state.values]);
 
   // Hardcoded to Kenya until multi-country support is needed
   const COUNTRY_CODE = '+254';

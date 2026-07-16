@@ -50,11 +50,13 @@ export function useForm<
   action: FormAction<TValues>,
   schema: TSchema,
   defaultValues: DeepPartial<TValues> = {},
+  prepareFormData?: (formData: FormData) => void,
 ) {
   const validate = useFormValidate(schema);
 
   const formAction = useCallback<FormAction<TValues>>(
     (_prev, formData) => {
+      prepareFormData?.(formData);
       const validationResult = validate(formData);
 
       if (validationResult.success) {
@@ -63,7 +65,7 @@ export function useForm<
 
       return validationResult;
     },
-    [action, validate],
+    [action, validate, prepareFormData],
   );
 
   return useActionState(formAction, { values: defaultValues });
