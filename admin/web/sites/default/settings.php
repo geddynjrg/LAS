@@ -897,6 +897,7 @@ if ($is_docker_env) {
     '^loans-staging-admin\.uwezo\.go\.ke$',
     '^loans-admin\.uwezo\.go\.ke$',
     '^admin$',
+    '^prod-admin$',
     '^localhost$',
     '^127\.0\.0\.1$',
   ];
