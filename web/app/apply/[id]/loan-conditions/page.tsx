@@ -29,8 +29,14 @@ export default async function Page({ params }: LoanConditionsPageProps) {
 
   const groupRegistrationNumber =
     application?.groupData?.basics?.groupRegistrationNumber?.trim() ?? '';
+  const groupName = application?.groupData?.basics?.groupName?.trim() ?? '';
+  const constituencyName =
+    application?.groupData?.location?.constituency?.trim() ?? '';
   const groupEligibility = groupRegistrationNumber
-    ? await checkGroupLoanHistory(groupRegistrationNumber)
+    ? await checkGroupLoanHistory(groupRegistrationNumber, {
+        groupName,
+        constituencyName,
+      })
     : null;
 
   return (

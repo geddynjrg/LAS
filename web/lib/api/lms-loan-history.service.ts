@@ -113,15 +113,28 @@ const emptyDebtResult = (): LmsDebtCheckResult => ({
 
 export async function checkGroupLoanHistory(
   registrationNumber: string,
+  options?: {
+    groupName?: string;
+    constituencyName?: string;
+  },
 ): Promise<LmsDebtCheckResult> {
   const normalized = registrationNumber.trim();
   if (!normalized) {
     return emptyDebtResult();
   }
 
-  const data = await fetchLmsJson<LmsDebtCheckResult>(
-    `/api/v1/loans/group/${encodeURIComponent(normalized)}`,
-  );
+  const params = new URLSearchParams();
+  if (options?.groupName?.trim()) {
+    params.set('group_name', options.groupName.trim());
+  }
+  if (options?.constituencyName?.trim()) {
+    params.set('constituency_name', options.constituencyName.trim());
+  }
+
+  const query = params.toString();
+  const path = `/api/v1/loans/group/${encodeURIComponent(normalized)}${query ? `?${query}` : ''}`;
+
+  const data = await fetchLmsJson<LmsDebtCheckResult>(path);
 
   return data ?? emptyDebtResult();
 }

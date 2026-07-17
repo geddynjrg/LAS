@@ -43,9 +43,15 @@ export const loanConditionsAction: FormAction<LoanConditionsData> = async (
   const application = await getApplicationById(id);
   const registrationNumber =
     application?.groupData?.basics?.groupRegistrationNumber?.trim() ?? '';
+  const groupName = application?.groupData?.basics?.groupName?.trim() ?? '';
+  const constituencyName =
+    application?.groupData?.location?.constituency?.trim() ?? '';
 
   if (registrationNumber) {
-    const eligibility = await checkGroupLoanHistory(registrationNumber);
+    const eligibility = await checkGroupLoanHistory(registrationNumber, {
+      groupName,
+      constituencyName,
+    });
     const fieldErrors: Record<string, string[]> = {};
 
     if (!eligibility.can_proceed) {
