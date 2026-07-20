@@ -111,6 +111,14 @@ const emptyDebtResult = (): LmsDebtCheckResult => ({
   wezesha_max_amount: 100000,
 });
 
+/** Matches LMS LoanDebtCheckService::compactRegNumber for URL path segments. */
+function compactRegistrationNumberForPath(registrationNumber: string): string {
+  return registrationNumber
+    .trim()
+    .replace(/[\s/]+/g, '')
+    .toUpperCase();
+}
+
 export async function checkGroupLoanHistory(
   registrationNumber: string,
   options?: {
@@ -132,7 +140,12 @@ export async function checkGroupLoanHistory(
   }
 
   const query = params.toString();
-  const path = `/api/v1/loans/group/${encodeURIComponent(normalized)}${query ? `?${query}` : ''}`;
+  // Slashes in reg numbers (e.g. DAG/N/SHG/5/4/2020/932) must not appear in the
+  // path: encodeURIComponent produces %2F which Apache rejects with 404.
+  const pathSegment = encodeURIComponent(
+    compactRegistrationNumberForPath(normalized),
+  );
+  const path = `/api/v1/loans/group/${pathSegment}${query ? `?${query}` : ''}`;
 
   const data = await fetchLmsJson<LmsDebtCheckResult>(path);
 
