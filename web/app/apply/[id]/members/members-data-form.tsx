@@ -147,6 +147,9 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       });
     } catch (error) {
       console.error('Failed to save members:', error);
+      alert(
+        'Unable to save member changes. Please refresh the page and try again.',
+      );
     }
   };
 
@@ -158,6 +161,9 @@ export const MembersDataForm: FC<MembersDataProps> = ({
       });
     } catch (error) {
       console.error('Failed to save nature of group:', error);
+      alert(
+        'Unable to save group type. Please refresh the page and try again.',
+      );
     }
   };
 

@@ -222,7 +222,34 @@ export async function getCurrentUser() {
         normalizedPhone &&
         normalizePhone(user.phoneNumber) !== normalizedPhone
       ) {
-        updateData.phoneNumber = normalizedPhone;
+        const phoneOwner = await prisma.user.findUnique({
+          where: { phoneNumber: normalizedPhone },
+          select: { id: true, drupalUserId: true },
+        });
+
+        if (!phoneOwner || phoneOwner.id === user.id) {
+          updateData.phoneNumber = normalizedPhone;
+        } else if (
+          !phoneOwner.drupalUserId ||
+          phoneOwner.drupalUserId === drupalUserId
+        ) {
+          // Same person: phone account exists — link Drupal ID to that record.
+          user = await prisma.user.update({
+            where: { id: phoneOwner.id },
+            data: {
+              drupalUserId,
+              ...(normalizedEmail ? { email: normalizedEmail } : {}),
+              ...(profileData?.name ? { name: profileData.name } : {}),
+              identifierType,
+            },
+          });
+          return user;
+        } else {
+          console.warn(
+            '[getCurrentUser] Profile phone already linked to another Drupal account; skipping phone sync',
+            { drupalUserId, phoneNumber: normalizedPhone },
+          );
+        }
       }
       if (profileData?.name && user.name !== profileData.name) {
         updateData.name = profileData.name;
@@ -232,10 +259,26 @@ export async function getCurrentUser() {
       }
 
       if (Object.keys(updateData).length > 0) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: updateData,
-        });
+        try {
+          user = await prisma.user.update({
+            where: { id: user.id },
+            data: updateData,
+          });
+        } catch (error) {
+          if (
+            error &&
+            typeof error === 'object' &&
+            'code' in error &&
+            error.code === 'P2002'
+          ) {
+            console.warn(
+              '[getCurrentUser] Unique constraint on profile sync; returning existing user record',
+              error,
+            );
+          } else {
+            throw error;
+          }
+        }
       }
     }
 

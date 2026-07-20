@@ -59,11 +59,33 @@ export function useForm<
       prepareFormData?.(formData);
       const validationResult = validate(formData);
 
-      if (validationResult.success) {
-        return action(null, formData);
+      if (!validationResult?.success) {
+        return (
+          validationResult ?? {
+            success: false,
+            errors: {},
+            values: {},
+          }
+        );
       }
 
-      return validationResult;
+      return Promise.resolve(action(null, formData)).then(
+        (result) =>
+          result ?? {
+            success: false as const,
+            errors: {},
+            message:
+              'Unable to submit the form. Please refresh the page and try again.',
+            values: validationResult.values ?? {},
+          },
+        () => ({
+          success: false as const,
+          errors: {},
+          message:
+            'Unable to submit the form. Please refresh the page and try again.',
+          values: validationResult.values ?? {},
+        }),
+      );
     },
     [action, validate, prepareFormData],
   );

@@ -163,11 +163,11 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
 
         if (!response.ok) {
           throw new Error(
-            result.error || `Upload failed with status: ${response.status}`,
+            result?.error || `Upload failed with status: ${response.status}`,
           );
         }
 
-        if (result.success) {
+        if (result?.success) {
           return {
             fid: result.fid?.toString() || "",
             filename: result.filename || file.name,
@@ -248,7 +248,15 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
             }
 
             const uploadResult = await uploadAction(null, formData);
-            const result = uploadResult as UploadActionResult;
+            const result = uploadResult as UploadActionResult | undefined;
+
+            if (!result) {
+              const staleActionMessage =
+                "Upload failed. Please refresh the page and try again.";
+              setUploadError(staleActionMessage);
+              onUploadError?.(staleActionMessage);
+              return;
+            }
 
             if (result.success) {
               // Handle successful upload
@@ -408,8 +416,8 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
       if (deleteAction) {
         try {
           const result = await deleteAction(fileToDelete);
-          if (!result.success) {
-            const errorMessage = result.error || "Failed to delete file";
+          if (!result?.success) {
+            const errorMessage = result?.error || "Failed to delete file";
             setUploadError(errorMessage);
             onUploadError?.(errorMessage);
             setDeletingFiles((prev) => {
