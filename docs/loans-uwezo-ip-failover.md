@@ -5,7 +5,7 @@
 | IP | Role | Interface | Status |
 |---|---|---|---|
 | `41.76.170.249` | Primary public (ISP NAT) | `eth0` → `10.190.12.249` | Working — NAT on ISP router |
-| `197.248.173.243` | Secondary public (Safaricom) | Not on server; gateway `197.248.173.241` on `eth1` (`192.168.1.172`) | **Not reachable externally** |
+| `197.248.173.243` | Secondary public (Safaricom) | `eth1` direct (`00:15:5d:79:83:26`), gateway `197.248.173.241` | **Local OK; not reachable externally** |
 
 DNS (`ns1/ns2/ns3.treasury.go.ke`) publishes **both** A records. Clients resolve one IP at random (~50% hit the dead address).
 
@@ -13,35 +13,42 @@ Nginx (`uwezo-nginx-1`) publishes `0.0.0.0:80` and `0.0.0.0:443`. Once both publ
 
 ## What works on this server today
 
-- Nginx serves `loans.uwezo.go.ke` on localhost, `10.190.12.249`, and `192.168.1.172`
+- Nginx serves `loans.uwezo.go.ke` on localhost, `10.190.12.249`, and `197.248.173.243` (eth1)
+- IP-based health probe: `https://41.76.170.249/failover-health` and `https://197.248.173.243/failover-health` (no Host header required)
 - Outbound route failover script prefers `eth0` NAT, falls back to `eth1` Safaricom (`/usr/local/sbin/uwezo-route-failover.sh`)
 - Health monitor: `/usr/local/sbin/uwezo-ip-failover-health.sh` (every 5 min via timer)
 - Failover probe endpoint: `https://loans.uwezo.go.ke/failover-health`
 
 ## Required network team actions
 
-### Option A — Safaricom port-forward (fastest if direct IP assignment unavailable)
+### Option A — Safaricom router ARP / static route (required for direct eth1 IP)
 
-On the Safaricom router (`197.248.173.241`, public `197.248.173.243`):
+Server `eth1` MAC: `00:15:5d:79:83:26`, address: `197.248.173.243/24`, gateway: `197.248.173.241`.
 
-1. Forward **TCP 80** → `192.168.1.172:80`
-2. Forward **TCP 443** → `192.168.1.172:443`
-3. Confirm from an **external** host: `curl -k -H 'Host: loans.uwezo.go.ke' https://197.248.173.243/failover-health`
+On the Safaricom router (`197.248.173.241`):
 
-### Option B — Direct secondary IP on server (preferred for true dual-homed failover)
+1. Confirm `197.248.173.243` is assigned to this server's MAC (not held on the router LAN interface only).
+2. Ensure upstream Safaricom routing advertises `197.248.173.243` to the internet (ping from external host must reach the server).
+3. Allow inbound **TCP 80** and **TCP 443** to `197.248.173.243`.
+4. Confirm from an **external** host: `curl -sk https://197.248.173.243/failover-health`
 
-Request Safaricom to assign `197.248.173.243/32` (or `/24`) routed to this server's `eth1` MAC.
+If the router previously NAT-forwarded to `192.168.1.172`, update rules now that the server uses the public IP directly on `eth1`.
 
-Then apply netplan from `network-fix/00-installer-config.yaml`:
+### Option B — Safaricom port-forward (legacy / if direct IP not possible)
 
-```bash
-sudo cp network-fix/00-installer-config.yaml /etc/netplan/00-installer-config.yaml
-sudo netplan apply
-```
+On the Safaricom router (`197.248.173.241`):
 
-Verify: `ip addr show eth1` includes `197.248.173.243`.
+1. Forward **TCP 80** → server `eth1` `:80`
+2. Forward **TCP 443** → server `eth1` `:443`
+3. Confirm from an **external** host: `curl -sk https://197.248.173.243/failover-health`
 
-### Option C — Safaricom load balancer / floating IP
+### Option C — Direct secondary IP on server (done locally; Safaricom upstream still required)
+
+Server already has `197.248.173.243/24` on `eth1` (see `uwezo-eth1-static.service`). Safaricom must still route that IP to MAC `00:15:5d:79:83:26` from the internet.
+
+Verify locally: `ip addr show eth1` includes `197.248.173.243`.
+
+### Option D — Safaricom load balancer / floating IP
 
 Configure Safaricom to health-check both paths and present a single VIP, or automate VIP movement between links.
 
@@ -58,8 +65,8 @@ Recommended verification from outside this network:
 
 ```bash
 dig +short loans.uwezo.go.ke A
-curl -sk -H 'Host: loans.uwezo.go.ke' https://41.76.170.249/failover-health
-curl -sk -H 'Host: loans.uwezo.go.ke' https://197.248.173.243/failover-health
+curl -sk https://41.76.170.249/failover-health
+curl -sk https://197.248.173.243/failover-health
 ```
 
 ## Install / verify on server
