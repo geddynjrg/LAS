@@ -1,11 +1,11 @@
 #!/bin/bash
-# Prevent dhclient from overriding eth1 static IP (197.248.173.243/24).
+# Prevent dhclient from overriding eth1 static IP (197.248.173.243/29).
 # Netplan sets dhcp4: no; this stops stray dhclient processes and restores the address if missing.
 set -euo pipefail
 
 ETH1_IF=eth1
 ETH1_IP=197.248.173.243
-ETH1_PREFIX=24
+ETH1_PREFIX=29
 ETH1_GW=197.248.173.241
 
 log() {

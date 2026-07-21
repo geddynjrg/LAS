@@ -18,13 +18,13 @@ network:
     eth1:
       dhcp4: no
       addresses:
-        - 197.248.173.243/24
+        - 197.248.173.243/29
       routes:
         - to: default
           via: 197.248.173.241
           metric: 100
       nameservers:
         addresses:
+          - 41.139.176.247
           - 8.8.8.8
-          - 41.203.208.18
   version: 2
