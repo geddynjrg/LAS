@@ -1,0 +1,13 @@
+[Unit]
+Description=Route public internet traffic via eth1
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/ip route del default via 10.190.12.254 dev eth0
+ExecStart=/sbin/ip route replace default via 197.248.173.241 dev eth1 metric 50
+
+[Install]
+WantedBy=multi-user.target

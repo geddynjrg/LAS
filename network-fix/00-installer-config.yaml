@@ -1,0 +1,30 @@
+# eth0 (10.190.12.249) — NATed to a public IP on the ISP router (preferred when up).
+# eth1 (197.248.173.243) — direct public IP (fallback when eth0 has no internet path).
+# Active default route is selected by uwezo-route-failover.service.
+network:
+  ethernets:
+    eth0:
+      dhcp4: no
+      addresses:
+        - 10.190.12.249/24
+      routes:
+        - to: default
+          via: 10.190.12.254
+          metric: 50
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 41.203.208.18
+    eth1:
+      dhcp4: no
+      addresses:
+        - 197.248.173.243/24
+      routes:
+        - to: default
+          via: 197.248.173.241
+          metric: 100
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 41.203.208.18
+  version: 2

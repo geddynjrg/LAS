@@ -1,0 +1,2 @@
+# Uwezo loans.uwezo.go.ke dual-IP failover health check (every 5 minutes)
+*/5 * * * * root /usr/local/sbin/uwezo-ip-failover-health.sh >> /var/log/uwezo-ip-failover-health.log 2>&1

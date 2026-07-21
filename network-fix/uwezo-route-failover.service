@@ -1,0 +1,11 @@
+[Unit]
+Description=Select default route: prefer eth0 NAT, fallback to eth1 public IP
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/uwezo-route-failover.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Check loans.uwezo.go.ke dual-IP failover health
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/uwezo-ip-failover-health.sh
+
+[Install]
+WantedBy=multi-user.target

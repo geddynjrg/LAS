@@ -1,0 +1,13 @@
+[Unit]
+Description=Ensure eth1 static IP 197.248.173.243 (disable dhclient override)
+After=network-pre.target
+Before=network-online.target uwezo-route-failover.service
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/uwezo-eth1-static.sh
+
+[Install]
+WantedBy=multi-user.target
