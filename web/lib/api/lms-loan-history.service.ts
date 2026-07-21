@@ -121,31 +121,18 @@ function compactRegistrationNumberForPath(registrationNumber: string): string {
 
 export async function checkGroupLoanHistory(
   registrationNumber: string,
-  options?: {
-    groupName?: string;
-    constituencyName?: string;
-  },
 ): Promise<LmsDebtCheckResult> {
   const normalized = registrationNumber.trim();
   if (!normalized) {
     return emptyDebtResult();
   }
 
-  const params = new URLSearchParams();
-  if (options?.groupName?.trim()) {
-    params.set('group_name', options.groupName.trim());
-  }
-  if (options?.constituencyName?.trim()) {
-    params.set('constituency_name', options.constituencyName.trim());
-  }
-
-  const query = params.toString();
   // Slashes in reg numbers (e.g. DAG/N/SHG/5/4/2020/932) must not appear in the
   // path: encodeURIComponent produces %2F which Apache rejects with 404.
   const pathSegment = encodeURIComponent(
     compactRegistrationNumberForPath(normalized),
   );
-  const path = `/api/v1/loans/group/${pathSegment}${query ? `?${query}` : ''}`;
+  const path = `/api/v1/loans/group/${pathSegment}`;
 
   const data = await fetchLmsJson<LmsDebtCheckResult>(path);
 
