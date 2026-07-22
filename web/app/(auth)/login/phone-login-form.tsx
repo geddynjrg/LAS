@@ -36,15 +36,19 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   const [redirectTarget, setRedirectTarget] = useState(
     redirectTo ?? '/dashboard',
   );
+  const syncPhoneToFormData = (formData: FormData) => {
+    const raw = formData.get('phone')?.toString().trim() || phoneNumber.trim();
+    const normalized = normalizeKenyanPhoneLocal(raw) ?? raw.replace(/\D/g, '');
+    if (normalized) {
+      formData.set('phone', normalized);
+    }
+  };
+
   const [state, formAction, isPending] = useForm(
     action,
     phoneLoginSchema,
     {},
-    (formData) => {
-      if (phoneNumber) {
-        formData.set('phone', phoneNumber);
-      }
-    },
+    syncPhoneToFormData,
   );
 
   useEffect(() => {
