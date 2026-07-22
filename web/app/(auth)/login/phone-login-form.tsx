@@ -13,7 +13,14 @@ import { labelVariants } from '@workspace/ui/components/label';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
 import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { type FC, useEffect, useId, useState } from 'react';
+import {
+  type FC,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+} from 'react';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
 
@@ -36,13 +43,25 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   const [redirectTarget, setRedirectTarget] = useState(
     redirectTo ?? '/dashboard',
   );
-  const syncPhoneToFormData = (formData: FormData) => {
-    const raw = formData.get('phone')?.toString().trim() || phoneNumber.trim();
-    const normalized = normalizeKenyanPhoneLocal(raw) ?? raw.replace(/\D/g, '');
-    if (normalized) {
-      formData.set('phone', normalized);
-    }
-  };
+  const normalizedSubmitPhone = useMemo(() => {
+    const normalized = normalizeKenyanPhoneLocal(phoneNumber);
+    return normalized ?? phoneNumber.replace(/\D/g, '');
+  }, [phoneNumber]);
+
+  const syncPhoneToFormData = useCallback(
+    (formData: FormData) => {
+      // Controlled tel input: React state is authoritative; DOM can lag or hold partial digits.
+      const fromState = phoneNumber.trim();
+      const fromDom = formData.get('phone')?.toString().trim() ?? '';
+      const raw = fromState || fromDom;
+      const normalized =
+        normalizeKenyanPhoneLocal(raw) ?? raw.replace(/\D/g, '');
+      if (normalized) {
+        formData.set('phone', normalized);
+      }
+    },
+    [phoneNumber],
+  );
 
   const [state, formAction, isPending] = useForm(
     action,
@@ -116,6 +135,7 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
       {/* Phone Input - Step 1 */}
       {phoneLoginState === 'phone_input' && (
         <>
+          <input type="hidden" name="phone" value={normalizedSubmitPhone} />
           <div className="flex w-full flex-col gap-1">
             <label
               htmlFor={phoneInputId}
@@ -126,7 +146,6 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
             </label>
             <Input
               id={phoneInputId}
-              name="phone"
               type="tel"
               startDecorator={COUNTRY_CODE}
               placeholder="712345678"
