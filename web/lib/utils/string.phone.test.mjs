@@ -32,9 +32,52 @@ function formatKenyanPhoneForApi(phone) {
   return local ? `+254${local}` : null;
 }
 
+function resolveKenyanPhoneFromSources(...sources) {
+  for (const source of sources) {
+    if (!source) continue;
+    const normalized = normalizeKenyanPhoneLocal(source);
+    if (normalized) return normalized;
+  }
+  return null;
+}
+
+function coercePhoneFormValue(value) {
+  if (value == null) return undefined;
+
+  if (Array.isArray(value)) {
+    const normalized = resolveKenyanPhoneFromSources(...value.map(String));
+    if (normalized) return normalized;
+    const digits = value
+      .map((entry) => String(entry).replace(/\D/g, ''))
+      .find((entry) => entry.length > 0);
+    return digits || undefined;
+  }
+
+  if (typeof value !== 'string') return undefined;
+
+  return (
+    (normalizeKenyanPhoneLocal(value) ?? value.replace(/\D/g, '')) || undefined
+  );
+}
+
+function resolveKenyanPhoneForSubmit(...sources) {
+  const normalized = resolveKenyanPhoneFromSources(...sources);
+  if (normalized) return normalized;
+
+  for (const source of sources) {
+    if (!source) continue;
+    const digits = source.replace(/\D/g, '');
+    if (digits) return digits;
+  }
+
+  return '';
+}
+
 const cases = [
   { input: '720501239', local: '720501239', api: '+254720501239', valid: true },
+  { input: '701349113', local: '701349113', api: '+254701349113', valid: true },
   { input: '0720501239', local: '720501239', api: '+254720501239', valid: true },
+  { input: '0701349113', local: '701349113', api: '+254701349113', valid: true },
   { input: '254720501239', local: '720501239', api: '+254720501239', valid: true },
   { input: '+254720501239', local: '720501239', api: '+254720501239', valid: true },
   { input: '+254 720 501 239', local: '720501239', api: '+254720501239', valid: true },
@@ -57,9 +100,53 @@ for (const { input, local, api, valid } of cases) {
   }
 }
 
+const submitCases = [
+  {
+    sources: ['701349113', '70134911'],
+    expected: '701349113',
+    label: 'prefers valid DOM value over stale state',
+  },
+  {
+    sources: ['', '701349113', '70134911'],
+    expected: '701349113',
+    label: 'skips empty sources',
+  },
+  {
+    sources: ['70134911', '701349113'],
+    expected: '701349113',
+    label: 'uses later valid source',
+  },
+  {
+    sources: ['70134911', '7013491'],
+    expected: '70134911',
+    label: 'falls back to digits when invalid',
+  },
+];
+
+for (const { sources, expected, label } of submitCases) {
+  const resolved = resolveKenyanPhoneForSubmit(...sources);
+  if (resolved !== expected) {
+    console.error('FAIL submit:', { label, sources, resolved, expected });
+    failed++;
+  }
+}
+
+const coerceCases = [
+  { input: ['', '701349113'], expected: '701349113' },
+  { input: ['70134911', '701349113'], expected: '701349113' },
+];
+
+for (const { input, expected } of coerceCases) {
+  const coerced = coercePhoneFormValue(input);
+  if (coerced !== expected) {
+    console.error('FAIL coerce:', { input, coerced, expected });
+    failed++;
+  }
+}
+
 if (failed > 0) {
   console.error(`${failed} test(s) failed`);
   process.exit(1);
 }
 
-console.log(`All ${cases.length} phone normalization tests passed`);
+console.log(`All ${cases.length + submitCases.length + coerceCases.length} phone normalization tests passed`);

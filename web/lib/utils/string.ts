@@ -29,6 +29,60 @@ export function isValidKenyanPhoneNumber(phone: string): boolean {
   return normalizeKenyanPhoneLocal(phone) !== null;
 }
 
+/**
+ * Resolve a valid 9-digit Kenyan mobile from the first matching source.
+ * Used by login submit to avoid stale React state / hidden-field desync.
+ */
+export function resolveKenyanPhoneFromSources(
+  ...sources: Array<string | null | undefined>
+): string | null {
+  for (const source of sources) {
+    if (!source) continue;
+    const normalized = normalizeKenyanPhoneLocal(source);
+    if (normalized) return normalized;
+  }
+  return null;
+}
+
+/**
+ * Best-effort phone value for form validation (client + server).
+ * Accepts duplicate FormData values; prefers the first valid normalization.
+ */
+export function coercePhoneFormValue(value: unknown): string | undefined {
+  if (value == null) return undefined;
+
+  if (Array.isArray(value)) {
+    const normalized = resolveKenyanPhoneFromSources(...value.map(String));
+    if (normalized) return normalized;
+    const digits = value
+      .map((entry) => String(entry).replace(/\D/g, ''))
+      .find((entry) => entry.length > 0);
+    return digits || undefined;
+  }
+
+  if (typeof value !== 'string') return undefined;
+
+  return (
+    (normalizeKenyanPhoneLocal(value) ?? value.replace(/\D/g, '')) || undefined
+  );
+}
+
+/** Phone value to write into FormData on submit (DOM ref > sync ref > state). */
+export function resolveKenyanPhoneForSubmit(
+  ...sources: Array<string | null | undefined>
+): string {
+  const normalized = resolveKenyanPhoneFromSources(...sources);
+  if (normalized) return normalized;
+
+  for (const source of sources) {
+    if (!source) continue;
+    const digits = source.replace(/\D/g, '');
+    if (digits) return digits;
+  }
+
+  return '';
+}
+
 /** Format a Kenyan phone number for API submission (+254XXXXXXXXX). */
 export function formatKenyanPhoneForApi(phone: string): string | null {
   const local = normalizeKenyanPhoneLocal(phone);

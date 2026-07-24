@@ -5,7 +5,10 @@ import {
   phoneLoginSchema,
 } from '@/app/(auth)/login/login-schema';
 import { resolveReturnPath } from '@/lib/return-path';
-import { normalizeKenyanPhoneLocal } from '@/lib/utils/string';
+import {
+  normalizeKenyanPhoneLocal,
+  resolveKenyanPhoneForSubmit,
+} from '@/lib/utils/string';
 import { Alert } from '@workspace/ui/components/alert';
 import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
@@ -18,7 +21,7 @@ import {
   useCallback,
   useEffect,
   useId,
-  useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -36,6 +39,8 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   const t = useTranslations('LoginPage');
   const phoneInputId = useId();
   const phoneErrorId = `${phoneInputId}-error`;
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const latestPhoneRef = useRef('');
   const [phoneLoginState, setPhoneLoginState] =
     useState<PhoneLoginState>('phone_input');
   const [otpRequestId, setOtpRequestId] = useState<string>('');
@@ -43,21 +48,20 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   const [redirectTarget, setRedirectTarget] = useState(
     redirectTo ?? '/dashboard',
   );
-  const normalizedSubmitPhone = useMemo(() => {
-    const normalized = normalizeKenyanPhoneLocal(phoneNumber);
-    return normalized ?? phoneNumber.replace(/\D/g, '');
-  }, [phoneNumber]);
 
   const syncPhoneToFormData = useCallback(
     (formData: FormData) => {
-      // Controlled tel input: React state is authoritative; DOM can lag or hold partial digits.
-      const fromState = phoneNumber.trim();
-      const fromDom = formData.get('phone')?.toString().trim() ?? '';
-      const raw = fromState || fromDom;
-      const normalized =
-        normalizeKenyanPhoneLocal(raw) ?? raw.replace(/\D/g, '');
-      if (normalized) {
-        formData.set('phone', normalized);
+      // Refs read synchronously on submit — avoids stale React state after fast typing.
+      const resolved = resolveKenyanPhoneForSubmit(
+        phoneInputRef.current?.value,
+        latestPhoneRef.current,
+        phoneNumber,
+        formData.get('phone')?.toString(),
+      );
+      if (resolved) {
+        formData.set('phone', resolved);
+      } else {
+        formData.delete('phone');
       }
     },
     [phoneNumber],
@@ -76,6 +80,7 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     if (!initial) return;
     const normalized =
       normalizeKenyanPhoneLocal(initial) ?? initial.replace(/\D/g, '');
+    latestPhoneRef.current = normalized;
     setPhoneNumber(normalized);
   }, [state.values]);
 
@@ -87,13 +92,18 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   const COUNTRY_CODE = '+254';
 
   const handlePhoneChange = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    latestPhoneRef.current = digits;
     const normalized = normalizeKenyanPhoneLocal(value);
-    setPhoneNumber(normalized ?? value.replace(/\D/g, ''));
+    setPhoneNumber(normalized ?? digits);
   };
 
   const handlePhoneBlur = () => {
-    const normalized = normalizeKenyanPhoneLocal(phoneNumber);
+    const normalized = normalizeKenyanPhoneLocal(
+      phoneInputRef.current?.value ?? phoneNumber,
+    );
     if (normalized) {
+      latestPhoneRef.current = normalized;
       setPhoneNumber(normalized);
     }
   };
@@ -134,43 +144,41 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
 
       {/* Phone Input - Step 1 */}
       {phoneLoginState === 'phone_input' && (
-        <>
-          <input type="hidden" name="phone" value={normalizedSubmitPhone} />
-          <div className="flex w-full flex-col gap-1">
-            <label
-              htmlFor={phoneInputId}
-              className={cn(labelVariants(), 'mb-1 font-bold')}
+        <div className="flex w-full flex-col gap-1">
+          <label
+            htmlFor={phoneInputId}
+            className={cn(labelVariants(), 'mb-1 font-bold')}
+          >
+            {t('phoneNumber')}
+            <span className="text-destructive">*</span>
+          </label>
+          <Input
+            ref={phoneInputRef}
+            id={phoneInputId}
+            type="tel"
+            startDecorator={COUNTRY_CODE}
+            placeholder="712345678"
+            autoComplete="tel-national"
+            maxLength={10}
+            value={phoneNumber}
+            onValueChange={handlePhoneChange}
+            onChange={(e) => handlePhoneChange(e.target.value)}
+            onBlur={handlePhoneBlur}
+            aria-required="true"
+            aria-invalid={phoneErrorMessage ? 'true' : 'false'}
+            aria-describedby={phoneErrorMessage ? phoneErrorId : undefined}
+          />
+          {phoneErrorMessage && (
+            <p
+              id={phoneErrorId}
+              className="text-destructive typo-body-small"
+              role="alert"
+              aria-live="polite"
             >
-              {t('phoneNumber')}
-              <span className="text-destructive">*</span>
-            </label>
-            <Input
-              id={phoneInputId}
-              type="tel"
-              startDecorator={COUNTRY_CODE}
-              placeholder="712345678"
-              autoComplete="tel-national"
-              maxLength={10}
-              value={phoneNumber}
-              onValueChange={handlePhoneChange}
-              onChange={(e) => handlePhoneChange(e.target.value)}
-              onBlur={handlePhoneBlur}
-              aria-required="true"
-              aria-invalid={phoneErrorMessage ? 'true' : 'false'}
-              aria-describedby={phoneErrorMessage ? phoneErrorId : undefined}
-            />
-            {phoneErrorMessage && (
-              <p
-                id={phoneErrorId}
-                className="text-destructive typo-body-small"
-                role="alert"
-                aria-live="polite"
-              >
-                {phoneErrorMessage}
-              </p>
-            )}
-          </div>
-        </>
+              {phoneErrorMessage}
+            </p>
+          )}
+        </div>
       )}
 
       {/* OTP Input - Step 2 */}

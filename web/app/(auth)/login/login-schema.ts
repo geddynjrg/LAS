@@ -1,6 +1,6 @@
 import {
+  coercePhoneFormValue,
   isValidKenyanPhoneNumber,
-  normalizeKenyanPhoneLocal,
 } from '@/lib/utils/string';
 import { z } from 'zod';
 
@@ -23,13 +23,7 @@ export type EmailLogin = z.infer<typeof emailLoginSchema>;
 // Phone Login Schemas
 const phoneLoginBaseSchema = z.object({
   loginType: z.literal('phone'),
-  phone: z.preprocess(
-    (value) =>
-      typeof value === 'string'
-        ? (normalizeKenyanPhoneLocal(value) ?? value.replace(/\D/g, ''))
-        : value,
-    z.string().optional(),
-  ),
+  phone: z.preprocess(coercePhoneFormValue, z.string().optional()),
   otp_code: z.string().optional(),
   request_id: z.string().optional(),
 });
