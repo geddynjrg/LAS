@@ -31,6 +31,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   min?: string;
   max?: string;
   autoComplete?: string;
+  inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
   disabled?: boolean;
   invalid?: boolean;
   readonly?: boolean;
@@ -40,6 +41,7 @@ export interface InputProps extends VariantProps<typeof inputVariants> {
   className?: string;
   onValueChange?: (value: string) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   ref?: React.Ref<HTMLInputElement>;
   // ARIA attributes for accessibility
@@ -63,6 +65,7 @@ export const Input: FC<InputProps> = ({
   readonly,
   onValueChange,
   onChange,
+  ref,
   ...props
 }) => {
   return (
@@ -70,6 +73,7 @@ export const Input: FC<InputProps> = ({
       {startDecorator && <Decorator>{startDecorator}</Decorator>}
 
       <input
+        ref={ref}
         type={type}
         readOnly={readonly}
         onKeyDown={(e) => {

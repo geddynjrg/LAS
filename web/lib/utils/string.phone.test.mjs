@@ -107,6 +107,11 @@ const submitCases = [
     label: 'prefers valid DOM value over stale state',
   },
   {
+    sources: ['720501239', '72050123'],
+    expected: '720501239',
+    label: 'prefers complete 9-digit number over stale partial',
+  },
+  {
     sources: ['', '701349113', '70134911'],
     expected: '701349113',
     label: 'skips empty sources',

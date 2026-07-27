@@ -155,7 +155,9 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
           <Input
             ref={phoneInputRef}
             id={phoneInputId}
+            name="phone"
             type="tel"
+            inputMode="numeric"
             startDecorator={COUNTRY_CODE}
             placeholder="712345678"
             autoComplete="tel-national"
@@ -163,6 +165,7 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
             value={phoneNumber}
             onValueChange={handlePhoneChange}
             onChange={(e) => handlePhoneChange(e.target.value)}
+            onInput={(e) => handlePhoneChange(e.currentTarget.value)}
             onBlur={handlePhoneBlur}
             aria-required="true"
             aria-invalid={phoneErrorMessage ? 'true' : 'false'}
