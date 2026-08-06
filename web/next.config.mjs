@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 const nextConfig = {
   transpilePackages: ['@workspace/ui'],
   output: 'standalone',
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {

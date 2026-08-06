@@ -2,7 +2,9 @@ import { AppFooter } from '@/components/app-footer';
 import { AppHeader } from '@/components/app-header';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Providers } from '@/components/providers';
+import { LoansJsonLd } from '@/components/seo/json-ld';
 import { type Locale } from '@/i18n/config';
+import { createLoansMetadata } from '@/lib/seo/site';
 import { getSession } from '@/lib/session';
 import { Loader } from '@workspace/ui/components/loader';
 import { SidebarInset } from '@workspace/ui/components/sidebar';
@@ -25,6 +27,8 @@ const dmSans = localFont({
   display: 'swap',
 });
 
+export const metadata = createLoansMetadata();
+
 export interface RootLayoutProps {
   children: ReactNode;
 }
@@ -42,6 +46,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       className={`${dmSans.variable} font-sans device-type-${getDeviceType(headersList)}`}
     >
       <body className="min-h-svh antialiased [--header-height:4.5rem]">
+        <LoansJsonLd />
         <NextIntlClientProvider messages={messages}>
           <Providers initialSession={!!session}>
             <AppHeader />

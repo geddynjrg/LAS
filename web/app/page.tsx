@@ -1,6 +1,7 @@
 import { ApplyButton } from '@/components/apply-button';
 import { PageComponents } from '@/components/page-components';
 import { getLanding } from '@/lib/api/landing';
+import { createLoansMetadata } from '@/lib/seo/site';
 import {
   Carousel,
   CarouselContent,
@@ -53,6 +54,13 @@ const NEWS_ITEMS: {
     category: 'Uwezo news & events',
   },
 ];
+
+export const metadata = createLoansMetadata({
+  title: 'Home',
+  description:
+    'Apply for Uwezo Fund loans online. Affordable financing for youth groups, women groups, and persons with disabilities across Kenya.',
+  path: '/',
+});
 
 export default async function Page() {
   const t = await getTranslations('FrontPage');
