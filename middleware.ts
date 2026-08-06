@@ -95,6 +95,6 @@ export const config = {
     /*
      * Run on all routes except static assets
      */
-    '/((?!_next/static|_next/image|favicon.ico|robots.txt).*)',
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
   ],
 };

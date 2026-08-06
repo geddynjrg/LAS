@@ -1,10 +1,13 @@
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
+import { LOANS_NOINDEX_METADATA } from '@/lib/seo/site';
 import { Container } from '@workspace/ui/components/container';
 import {
   SidebarProvider,
   SidebarTrigger,
 } from '@workspace/ui/components/sidebar';
 import { ReactNode } from 'react';
+
+export const metadata = LOANS_NOINDEX_METADATA;
 
 export interface AdminLayoutProps {
   children?: ReactNode;
