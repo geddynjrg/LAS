@@ -309,6 +309,7 @@
     "invalidPhoneFormat": "Please enter a valid phone number (9 digits)",
     "tooManyOtpRequests": "Too many OTP requests. Please try again later.",
     "otpRequestFailed": "OTP request failed",
+    "otpDeliveryFailed": "Unable to send the verification code right now. Please try again later, or log in with eCitizen or email.",
     "phoneNumber": "Phone Number",
     "sendOtp": "Send code",
     "changePhoneNumber": "Change phone number",

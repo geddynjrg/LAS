@@ -246,6 +246,7 @@
     "invalidPhoneFormat": "Muundo wa nambari ya simu si sahihi",
     "tooManyOtpRequests": "Maombi mengi ya OTP. Tafadhali jaribu tena baadaye.",
     "otpRequestFailed": "Ombi la OTP limeshindwa",
+    "otpDeliveryFailed": "Imeshindikana kutuma msimbo wa uthibitishaji sasa hivi. Jaribu tena baadaye, au ingia kupitia eCitizen au barua pepe.",
     "phoneNumber": "Nambari ya Simu",
     "sendOtp": "Tuma msimbo",
     "changePhoneNumber": "Badilisha nambari ya simu",

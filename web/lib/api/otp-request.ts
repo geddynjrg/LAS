@@ -57,12 +57,36 @@ export async function requestOtp(data: { phone: string }) {
   }
 
   if (!response.ok) {
-    if (response.status === 400) {
-      throw new Error(t('invalidPhoneFormat'));
+    let apiError = '';
+    try {
+      const errorBody = (await response.json()) as {
+        error?: string;
+        message?: string;
+      };
+      apiError = String(errorBody.error || errorBody.message || '').trim();
+    } catch {
+      // Response body may be empty or non-JSON.
     }
+
     if (response.status === 429) {
       throw new Error(t('tooManyOtpRequests'));
     }
+
+    // SMS / provider failures must not look like a phone validation error.
+    if (
+      /sms|provider|configured|delivery|send/i.test(apiError) ||
+      response.status >= 500
+    ) {
+      throw new Error(t('otpDeliveryFailed'));
+    }
+
+    if (
+      response.status === 400 &&
+      (/phone/i.test(apiError) || /required/i.test(apiError) || !apiError)
+    ) {
+      throw new Error(t('invalidPhoneFormat'));
+    }
+
     throw new Error(t('otpRequestFailed'));
   }
 

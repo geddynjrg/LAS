@@ -1,21 +1,12 @@
 name: uwezo-prod
 
-# Production loans portal — builds from this repo, uses the SAME MariaDB as
-# loans-staging (service hostname: db on external network uwezo_default).
-#
-# Required for prod-web build/runtime (defaults match production if unset):
-#   PROD_WEB_DOMAIN=loans.uwezo.go.ke
-#   PROD_ADMIN_DOMAIN=loans-admin.uwezo.go.ke
-#
-# Usage (from repo root):
-#   cp loans/.env.example loans/.env   # fill in secrets on the server
-#   docker compose -f loans/docker-compose.yml build --no-cache prod-admin prod-web
-#   docker compose -f loans/docker-compose.yml up -d --force-recreate prod-admin prod-web
+# Production loans portal — builds from staging source (Loan_Application),
+# uses the SAME MariaDB as loans-staging (service hostname: db).
 
 services:
   prod-web:
     build:
-      context: ..
+      context: ../Loan_Application
       dockerfile: web/Dockerfile
       args:
         - NODE_VERSION=20
@@ -76,13 +67,15 @@ services:
 
   prod-admin:
     build:
-      context: ../admin
+      context: ../Loan_Application/admin
       dockerfile: Dockerfile
       args:
         - PHP_VERSION=8.3
     image: uwezo-prod-admin
     container_name: uwezo-prod-admin
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
       - prod_drupal_files:/var/www/html/web/sites/default/files
       - prod_drupal_private:/var/www/private
@@ -97,9 +90,10 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       UWEZO_UI_PUBLIC_URL: https://${PROD_WEB_DOMAIN:-loans.uwezo.go.ke}
-      EBISCLOUD_SMS_API_KEY: ${EBISCLOUD_SMS_API_KEY}
-      EBISCLOUD_SMS_API_URL: ${EBISCLOUD_SMS_API_URL}
-      EBISCLOUD_SMS_SHORTCODE: ${EBISCLOUD_SMS_SHORTCODE}
+      # Prefer project .env values so OTP SMS cannot start empty in production.
+      EBISCLOUD_SMS_API_KEY: ${EBISCLOUD_SMS_API_KEY:?EBISCLOUD_SMS_API_KEY is required}
+      EBISCLOUD_SMS_API_URL: ${EBISCLOUD_SMS_API_URL:-https://sms.ebisclouderp.com/api/sms/sendsms}
+      EBISCLOUD_SMS_SHORTCODE: ${EBISCLOUD_SMS_SHORTCODE:-Uwezo Fund}
       EBISCLOUD_SMS_SERVICE_ID: ${EBISCLOUD_SMS_SERVICE_ID:-0}
       ECITIZEN_CLIENT_ID: ${ECITIZEN_CLIENT_ID}
       ECITIZEN_CLIENT_SECRET: ${ECITIZEN_CLIENT_SECRET}
