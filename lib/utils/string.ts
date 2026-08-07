@@ -56,7 +56,10 @@ export function coercePhoneFormValue(value: unknown): string | undefined {
     if (normalized) return normalized;
     const digits = value
       .map((entry) => String(entry).replace(/\D/g, ''))
-      .find((entry) => entry.length > 0);
+      .reduce(
+        (longest, entry) => (entry.length > longest.length ? entry : longest),
+        '',
+      );
     return digits || undefined;
   }
 
@@ -67,20 +70,22 @@ export function coercePhoneFormValue(value: unknown): string | undefined {
   );
 }
 
-/** Phone value to write into FormData on submit (sync ref > DOM ref > state). */
+/** Phone value to write into FormData on submit (DOM > sync ref > state). */
 export function resolveKenyanPhoneForSubmit(
   ...sources: Array<string | null | undefined>
 ): string {
   const normalized = resolveKenyanPhoneFromSources(...sources);
   if (normalized) return normalized;
 
+  // Prefer the longest digit run so a stale partial ref does not win on fast submit.
+  let longest = '';
   for (const source of sources) {
     if (!source) continue;
     const digits = source.replace(/\D/g, '');
-    if (digits) return digits;
+    if (digits.length > longest.length) longest = digits;
   }
 
-  return '';
+  return longest;
 }
 
 /** Format a Kenyan phone number for API submission (+254XXXXXXXXX). */

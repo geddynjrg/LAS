@@ -48,9 +48,16 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
 
   const syncPhoneToFormData = useCallback(
     (formData: FormData) => {
+      const domValue = phoneInputRef.current?.value;
+      if (domValue != null) {
+        const fromDom =
+          normalizeKenyanPhoneLocal(domValue) ?? domValue.replace(/\D/g, '');
+        latestPhoneRef.current = fromDom;
+      }
+
       const resolved = resolveKenyanPhoneForSubmit(
-        latestPhoneRef.current,
         phoneInputRef.current?.value,
+        latestPhoneRef.current,
         phoneNumber,
         formData.get('phone')?.toString(),
       );
@@ -142,7 +149,6 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
           <Input
             ref={phoneInputRef}
             id={phoneInputId}
-            name="phone"
             type="tel"
             inputMode="numeric"
             startDecorator={COUNTRY_CODE}
@@ -158,6 +164,7 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
             aria-invalid={phoneErrorMessage ? 'true' : 'false'}
             aria-describedby={phoneErrorMessage ? phoneErrorId : undefined}
           />
+          <input type="hidden" name="phone" value={phoneNumber} />
           {phoneErrorMessage && (
             <p
               id={phoneErrorId}

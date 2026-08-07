@@ -49,7 +49,10 @@ function coercePhoneFormValue(value) {
     if (normalized) return normalized;
     const digits = value
       .map((entry) => String(entry).replace(/\D/g, ''))
-      .find((entry) => entry.length > 0);
+      .reduce(
+        (longest, entry) => (entry.length > longest.length ? entry : longest),
+        '',
+      );
     return digits || undefined;
   }
 
@@ -64,13 +67,14 @@ function resolveKenyanPhoneForSubmit(...sources) {
   const normalized = resolveKenyanPhoneFromSources(...sources);
   if (normalized) return normalized;
 
+  let longest = '';
   for (const source of sources) {
     if (!source) continue;
     const digits = source.replace(/\D/g, '');
-    if (digits) return digits;
+    if (digits.length > longest.length) longest = digits;
   }
 
-  return '';
+  return longest;
 }
 
 const cases = [
@@ -129,7 +133,12 @@ const submitCases = [
   {
     sources: ['70134911', '7013491'],
     expected: '70134911',
-    label: 'falls back to digits when invalid',
+    label: 'falls back to longest partial digits when invalid',
+  },
+  {
+    sources: ['72050123', '720501239'],
+    expected: '720501239',
+    label: 'prefers longest digit run over stale partial ref on fast submit',
   },
 ];
 
@@ -144,6 +153,7 @@ for (const { sources, expected, label } of submitCases) {
 const coerceCases = [
   { input: ['', '701349113'], expected: '701349113' },
   { input: ['70134911', '701349113'], expected: '701349113' },
+  { input: ['72050123', '720501239'], expected: '720501239' },
 ];
 
 for (const { input, expected } of coerceCases) {
