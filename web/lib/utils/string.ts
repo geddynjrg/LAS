@@ -67,7 +67,7 @@ export function coercePhoneFormValue(value: unknown): string | undefined {
   );
 }
 
-/** Phone value to write into FormData on submit (DOM ref > sync ref > state). */
+/** Phone value to write into FormData on submit (sync ref > DOM ref > state). */
 export function resolveKenyanPhoneForSubmit(
   ...sources: Array<string | null | undefined>
 ): string {

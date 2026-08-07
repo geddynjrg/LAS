@@ -102,6 +102,11 @@ for (const { input, local, api, valid } of cases) {
 
 const submitCases = [
   {
+    sources: ['720501239', '72050123'],
+    expected: '720501239',
+    label: 'prefers sync ref over stale DOM/state on fast submit',
+  },
+  {
     sources: ['701349113', '70134911'],
     expected: '701349113',
     label: 'prefers valid DOM value over stale state',

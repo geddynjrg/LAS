@@ -13,6 +13,7 @@ import { login, loginWithECitizen } from '@/lib/api/login';
 import { requestOtp } from '@/lib/api/otp-request';
 import { verifyOtp } from '@/lib/api/otp-verify';
 import { createSession } from '@/lib/session';
+import { formatKenyanPhoneForApi } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
 import { getTranslations } from 'next-intl/server';
@@ -126,10 +127,15 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (
   try {
     // Two-step OTP flow
     if (!data.otp_code) {
-      // Step 1: Request OTP
-      const fullPhoneNumber = data.phone!.startsWith('+')
-        ? data.phone!
-        : `+254${data.phone!}`;
+      // Step 1: Request OTP — normalize to +254XXXXXXXXX for Drupal API
+      const fullPhoneNumber = formatKenyanPhoneForApi(data.phone!);
+      if (!fullPhoneNumber) {
+        return {
+          success: false,
+          errors: { phone: [t('invalidPhoneFormat')] },
+          values,
+        };
+      }
       const otpResponse = await requestOtp({ phone: fullPhoneNumber });
 
       return {

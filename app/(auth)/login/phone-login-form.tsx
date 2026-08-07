@@ -4,12 +4,26 @@ import {
   type PhoneLogin,
   phoneLoginSchema,
 } from '@/app/(auth)/login/login-schema';
+import {
+  normalizeKenyanPhoneLocal,
+  resolveKenyanPhoneForSubmit,
+} from '@/lib/utils/string';
 import { Alert } from '@workspace/ui/components/alert';
 import { Field, Form, SubmitButton } from '@workspace/ui/components/form';
 import { Input } from '@workspace/ui/components/input';
+import { labelVariants } from '@workspace/ui/components/label';
 import { type FormAction, useForm } from '@workspace/ui/hooks/use-form';
+import { cn } from '@workspace/ui/lib/utils';
 import { useTranslations } from 'next-intl';
-import { type FC, useEffect, useState } from 'react';
+import {
+  type FC,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
+import { flushSync } from 'react-dom';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
 
@@ -23,27 +37,77 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
   redirectTo,
 }) => {
   const t = useTranslations('LoginPage');
-  const [state, formAction, isPending] = useForm(action, phoneLoginSchema);
+  const phoneInputId = useId();
+  const phoneErrorId = `${phoneInputId}-error`;
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const latestPhoneRef = useRef('');
   const [phoneLoginState, setPhoneLoginState] =
     useState<PhoneLoginState>('phone_input');
   const [otpRequestId, setOtpRequestId] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
 
-  // Hardcoded to Kenya until multi-country support is needed
+  const syncPhoneToFormData = useCallback(
+    (formData: FormData) => {
+      const resolved = resolveKenyanPhoneForSubmit(
+        latestPhoneRef.current,
+        phoneInputRef.current?.value,
+        phoneNumber,
+        formData.get('phone')?.toString(),
+      );
+      if (resolved) {
+        formData.set('phone', resolved);
+      } else {
+        formData.delete('phone');
+      }
+    },
+    [phoneNumber],
+  );
+
+  const [state, formAction, isPending] = useForm(
+    action,
+    phoneLoginSchema,
+    {},
+    syncPhoneToFormData,
+  );
+
+  useEffect(() => {
+    const initial =
+      (state.values as { phone?: string } | undefined)?.phone ?? '';
+    if (!initial) return;
+    const normalized =
+      normalizeKenyanPhoneLocal(initial) ?? initial.replace(/\D/g, '');
+    latestPhoneRef.current = normalized;
+    setPhoneNumber(normalized);
+  }, [state.values]);
+
   const COUNTRY_CODE = '+254';
 
-  // Navigate on successful final login completion (not OTP request)
+  const handlePhoneChange = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    const normalized = normalizeKenyanPhoneLocal(value) ?? digits;
+    latestPhoneRef.current = normalized;
+    flushSync(() => {
+      setPhoneNumber(normalized);
+    });
+  };
+
+  const handlePhoneBlur = () => {
+    const normalized = normalizeKenyanPhoneLocal(
+      phoneInputRef.current?.value ?? phoneNumber,
+    );
+    if (normalized) {
+      latestPhoneRef.current = normalized;
+      setPhoneNumber(normalized);
+    }
+  };
+
   useEffect(() => {
     const stateWithOtp = state as typeof state & { otpRequestId?: string };
     if (state.success && !stateWithOtp.otpRequestId) {
-      // Only redirect if success is true AND we don't have an OTP request ID
-      // (meaning this is final login, not just OTP sent)
-      // Hard navigation to ensure cookies are properly read
       window.location.href = redirectTo ?? '/dashboard';
     }
   }, [redirectTo, state.success, state]);
 
-  // handle OTP request ID from server response
   useEffect(() => {
     const stateWithOtp = state as typeof state & { otpRequestId?: string };
     if (stateWithOtp.otpRequestId) {
@@ -51,6 +115,12 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
       setPhoneLoginState('otp_input');
     }
   }, [state]);
+
+  const phoneFieldError = state.errors?.phone?.[0];
+  const phoneErrorMessage =
+    typeof phoneFieldError === 'string'
+      ? phoneFieldError
+      : phoneFieldError?.message;
 
   return (
     <Form action={formAction} className="space-y-6" autoComplete="on">
@@ -60,28 +130,47 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
         </Alert>
       )}
 
-      {/* Phone Input - Step 1 */}
       {phoneLoginState === 'phone_input' && (
-        <Field
-          state={state}
-          name="phone"
-          label={t('phoneNumber')}
-          required
-          control={(props) => (
-            <Input
-              type="tel"
-              startDecorator={COUNTRY_CODE}
-              placeholder="712345678"
-              {...props}
-              onValueChange={(value) => {
-                setPhoneNumber(value);
-              }}
-            />
+        <div className="flex w-full flex-col gap-1">
+          <label
+            htmlFor={phoneInputId}
+            className={cn(labelVariants(), 'mb-1 font-bold')}
+          >
+            {t('phoneNumber')}
+            <span className="text-destructive">*</span>
+          </label>
+          <Input
+            ref={phoneInputRef}
+            id={phoneInputId}
+            name="phone"
+            type="tel"
+            inputMode="numeric"
+            startDecorator={COUNTRY_CODE}
+            placeholder="712345678"
+            autoComplete="tel-national"
+            maxLength={10}
+            value={phoneNumber}
+            onValueChange={handlePhoneChange}
+            onChange={(e) => handlePhoneChange(e.target.value)}
+            onInput={(e) => handlePhoneChange(e.currentTarget.value)}
+            onBlur={handlePhoneBlur}
+            aria-required="true"
+            aria-invalid={phoneErrorMessage ? 'true' : 'false'}
+            aria-describedby={phoneErrorMessage ? phoneErrorId : undefined}
+          />
+          {phoneErrorMessage && (
+            <p
+              id={phoneErrorId}
+              className="text-destructive typo-body-small"
+              role="alert"
+              aria-live="polite"
+            >
+              {phoneErrorMessage}
+            </p>
           )}
-        />
+        </div>
       )}
 
-      {/* OTP Input - Step 2 */}
       {phoneLoginState === 'otp_input' && (
         <>
           <div className="space-y-2">
@@ -120,7 +209,6 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
         </>
       )}
 
-      {/* Hidden fields for OTP flow */}
       <input type="hidden" name="loginType" value="phone" />
       {otpRequestId && (
         <input type="hidden" name="request_id" value={otpRequestId} />

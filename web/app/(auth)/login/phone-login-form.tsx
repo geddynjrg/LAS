@@ -24,6 +24,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { flushSync } from 'react-dom';
 
 type PhoneLoginState = 'phone_input' | 'otp_input';
 
@@ -53,8 +54,8 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
     (formData: FormData) => {
       // Refs read synchronously on submit — avoids stale React state after fast typing.
       const resolved = resolveKenyanPhoneForSubmit(
-        phoneInputRef.current?.value,
         latestPhoneRef.current,
+        phoneInputRef.current?.value,
         phoneNumber,
         formData.get('phone')?.toString(),
       );
@@ -93,9 +94,11 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
 
   const handlePhoneChange = (value: string) => {
     const digits = value.replace(/\D/g, '');
-    latestPhoneRef.current = digits;
-    const normalized = normalizeKenyanPhoneLocal(value);
-    setPhoneNumber(normalized ?? digits);
+    const normalized = normalizeKenyanPhoneLocal(value) ?? digits;
+    latestPhoneRef.current = normalized;
+    flushSync(() => {
+      setPhoneNumber(normalized);
+    });
   };
 
   const handlePhoneBlur = () => {
