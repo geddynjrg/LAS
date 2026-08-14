@@ -16,6 +16,7 @@ import {
   updateApplicationGroupData,
   updateApplicationStatus,
 } from '@/lib/data/application';
+import { validateCoreGroupDocuments } from '@/lib/document-completeness';
 import { capitalizeWords } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { getFormZodDataValues } from '@workspace/ui/lib/utils';
@@ -126,20 +127,35 @@ export const groupDataAction: FormAction<GroupData> = async (
       throw new Error('No application ID provided');
     }
 
-    // Files are already uploaded via API, just use the metadata
-    const groupRegistrationCertificate = data.groupRegistrationCertificate || {
-      fid: 0,
-      filename: '',
-      url: '',
+    // Files are already uploaded via API; enforce completeness before continue
+    const completeness = validateCoreGroupDocuments({
+      groupRegistrationCertificate: data.groupRegistrationCertificate,
+      listOfMembersOnCertificate: data.listOfMembersOnCertificate,
+      groupMeetingMinutes: data.groupMeetingMinutes,
+    });
+    if (!completeness.ok) {
+      return {
+        success: false,
+        errors: completeness.errors,
+        values,
+      };
+    }
+
+    const groupRegistrationCertificate = data.groupRegistrationCertificate as {
+      fid: number;
+      filename: string;
+      url: string;
     };
-    const listOfMembersOnCertificate = data.listOfMembersOnCertificate || {
-      fid: 0,
-      filename: '',
-      url: '',
+    const listOfMembersOnCertificate = data.listOfMembersOnCertificate as {
+      fid: number;
+      filename: string;
+      url: string;
     };
-    const groupMeetingMinutes = data.groupMeetingMinutes || [
-      { fid: 0, filename: '', url: '' },
-    ];
+    const groupMeetingMinutes = (
+      Array.isArray(data.groupMeetingMinutes)
+        ? data.groupMeetingMinutes
+        : [data.groupMeetingMinutes]
+    ) as { fid: number; filename: string; url: string }[];
 
     const groupCreditHistory = data.groupCreditHistory ?? [];
 
