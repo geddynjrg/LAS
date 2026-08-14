@@ -9,6 +9,7 @@ import {
   type GroupData,
   groupDataSchema,
 } from '@/app/apply/[id]/group-data/group-data-schema';
+import { FieldGuidance } from '@/components/field-guidance';
 import { getConstituenciesForCountyName } from '@/lib/api/counties.service';
 import type { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { getWardsForConstituencyName } from '@/lib/api/wards.service';
@@ -233,24 +234,32 @@ export const GroupDataForm: FC<GroupDataProps> = ({
           title={t('ApplicationDetailsPage.groupData.basicInfo.groupBasics')}
           className="mt-7 grid gap-4"
         >
-          <Field
-            state={state}
-            name="groupName"
-            label={t('ApplicationDetailsPage.groupData.basicInfo.groupName')}
-            required
-            control={(props) => <Input placeholder="Enter name" {...props} />}
-          />
-          <Field
-            state={state}
-            name="groupRegistrationNumber"
-            label={t(
-              'ApplicationDetailsPage.groupData.basicInfo.groupRegistrationNumber',
-            )}
-            required
-            control={(props) => (
-              <Input type="text" placeholder="Registration number" {...props} />
-            )}
-          />
+          <FieldGuidance fieldKey="groupName">
+            <Field
+              state={state}
+              name="groupName"
+              label={t('ApplicationDetailsPage.groupData.basicInfo.groupName')}
+              required
+              control={(props) => <Input placeholder="Enter name" {...props} />}
+            />
+          </FieldGuidance>
+          <FieldGuidance fieldKey="registrationNumber">
+            <Field
+              state={state}
+              name="groupRegistrationNumber"
+              label={t(
+                'ApplicationDetailsPage.groupData.basicInfo.groupRegistrationNumber',
+              )}
+              required
+              control={(props) => (
+                <Input
+                  type="text"
+                  placeholder="Registration number"
+                  {...props}
+                />
+              )}
+            />
+          </FieldGuidance>
           <Field
             label={t(
               'ApplicationDetailsPage.groupData.basicInfo.dateRegistered',

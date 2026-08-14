@@ -122,13 +122,11 @@
     "email-placeholder": "Enter your email address",
     "invalid-email": "Please enter a valid email address"
   },
-
   "Footer": {
     "relatedAgencies": "Related Agencies",
     "usefulLinks": "Useful Links",
     "quickContacts": "Quick Contacts"
   },
-
   "HelpPage": {
     "title": "Help & Support",
     "intro": "Find answers, guides, and contact details for the Uwezo Fund loan application portal.",
@@ -185,7 +183,6 @@
       "contact": "Contact us"
     }
   },
-
   "FrontPage": {
     "title": "<title>Uwezo Fund’s</title> <lineBreak></lineBreak> <subTitle><light>aim is to enable</light> women, youth <light>and</light> persons with disabilities <light>to access finances to</light> promote businesses <light>and</light> enterprises <light>at the constituency level.</light></subTitle>",
     "description": "Self-help groups that meet <underline>eligibility criteria</underline> can apply for a loan to advance their projects and enterprises.",
@@ -704,5 +701,12 @@
       "file_too_large": "File is too large (maximum {maximum} bytes)",
       "phone_invalid": "Please enter a valid phone number in international format (e.g., +254712345678)"
     }
+  },
+  "ApplicationGuidance": {
+    "ariaLabel": "Step-by-step application guidance",
+    "title": "Guidance for {step}",
+    "subtitle": "What to prepare and common mistakes for this step. Assistive only.",
+    "prepareHeading": "Prepare",
+    "mistakesHeading": "Common mistakes"
   }
 }

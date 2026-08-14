@@ -16,6 +16,8 @@ import {
   getMemberValidationErrorMessages,
   validateMembersAgainstTaxonomy,
 } from '@/app/apply/[id]/members/members-validation';
+import { FieldGuidance } from '@/components/field-guidance';
+import { SoftDuplicateBanner } from '@/components/soft-duplicate-banner';
 import { TaxonomyOption } from '@/lib/api/taxonomy.service';
 import { FILE_ACCEPT, MAX_FILE_SIZE } from '@/lib/constants';
 import { updateApplicationMembersData } from '@/lib/data/application';
@@ -94,6 +96,8 @@ export const MembersDataForm: FC<MembersDataProps> = ({
   const [membersInEdit, setMembersInEdit] = useState<number[]>([]);
   const [membersValidation, setMembersValidation] =
     useState<MemberValidationResult>({ isValid: true, errors: [] });
+  const [softDuplicateAcknowledged, setSoftDuplicateAcknowledged] =
+    useState(false);
 
   // Real-time validation whenever members or taxonomy options change
   useEffect(() => {
@@ -187,6 +191,11 @@ export const MembersDataForm: FC<MembersDataProps> = ({
     >
       <Container>
         <FormCard title={t('MembersPage.member')} className="mt-7 grid gap-4">
+          <input
+            type="hidden"
+            name="softDuplicateAcknowledged"
+            value={softDuplicateAcknowledged ? 'true' : 'false'}
+          />
           <Field
             className="border-b border-neutral-400 pb-4"
             state={state}
@@ -248,19 +257,51 @@ export const MembersDataForm: FC<MembersDataProps> = ({
             {t('MembersPage.membersInfoInserted', { count: members.length })}
           </p>
 
-          {state.errors?.members && (
-            <div className="text-destructive text-sm font-medium">
-              {(() => {
-                const errorMsg = Array.isArray(state.errors.members)
-                  ? getErrorMessage(state.errors.members[0])
-                  : getErrorMessage(state.errors.members);
+          {Array.isArray(state.errors?.members) &&
+            String(state.errors.members[0] || '').includes(
+              'in-progress application',
+            ) && (
+              <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+                <p className="font-medium">
+                  Possible cross-application duplicate
+                </p>
+                <p className="mt-1 text-xs">
+                  {String(state.errors.members[0])}
+                </p>
+                <label className="mt-2 flex items-start gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5"
+                    checked={softDuplicateAcknowledged}
+                    onChange={(e) =>
+                      setSoftDuplicateAcknowledged(e.target.checked)
+                    }
+                  />
+                  <span>
+                    I understand and want to continue with these member details.
+                  </span>
+                </label>
+              </div>
+            )}
 
-                return errorMsg === 'members_required'
-                  ? t('MembersPage.errors.atLeastOneMemberRequired')
-                  : errorMsg;
-              })()}
-            </div>
-          )}
+          {state.errors?.members &&
+            !String(
+              Array.isArray(state.errors.members)
+                ? state.errors.members[0]
+                : state.errors.members,
+            ).includes('in-progress application') && (
+              <div className="text-destructive text-sm font-medium">
+                {(() => {
+                  const errorMsg = Array.isArray(state.errors.members)
+                    ? getErrorMessage(state.errors.members[0])
+                    : getErrorMessage(state.errors.members);
+
+                  return errorMsg === 'members_required'
+                    ? t('MembersPage.errors.atLeastOneMemberRequired')
+                    : errorMsg;
+                })()}
+              </div>
+            )}
 
           {/* Members validation errors */}
           {!membersValidation.isValid && (
@@ -475,6 +516,7 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
   members,
   existingMembers = [],
 }) => {
+  const [softAckMember, setSoftAckMember] = useState(false);
   const formInitialValues = {
     fullname: existingMember?.fullname,
     nationalIdCode: existingMember?.nationalIdCode,
@@ -662,18 +704,27 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         )}
       />
 
-      <Field
-        state={state}
-        name="nationalIdCode"
-        label={t('MembersPage.nationalIdCodeAlienId')}
-        required
-        control={(props) => (
-          <Input
-            {...props}
-            defaultValue={member?.nationalIdCode}
-            onValueChange={handleNationalIdChange}
-          />
-        )}
+      <FieldGuidance fieldKey="nationalId">
+        <Field
+          state={state}
+          name="nationalIdCode"
+          label={t('MembersPage.nationalIdCodeAlienId')}
+          required
+          control={(props) => (
+            <Input
+              {...props}
+              defaultValue={member?.nationalIdCode}
+              onValueChange={handleNationalIdChange}
+            />
+          )}
+        />
+      </FieldGuidance>
+      <SoftDuplicateBanner
+        applicationId={applicationId}
+        phone={member?.phoneNumber}
+        nationalId={member?.nationalIdCode}
+        acknowledged={softAckMember}
+        onAcknowledgedChange={setSoftAckMember}
       />
 
       <Field
@@ -709,23 +760,25 @@ const EditMemberFormFields: FC<NewMemberFormFieldsProps> = ({
         )}
       />
 
-      <Field
-        state={state}
-        name="phoneNumber"
-        label={t('MembersPage.phoneNumber')}
-        required
-        control={(props) => (
-          <Input
-            type="tel"
-            startDecorator="+254"
-            {...props}
-            defaultValue={
-              normalizeKenyanPhoneLocal(member?.phoneNumber || '') ?? ''
-            }
-            onValueChange={(value) => handlePhoneNumberChange(value)}
-          />
-        )}
-      />
+      <FieldGuidance fieldKey="phone">
+        <Field
+          state={state}
+          name="phoneNumber"
+          label={t('MembersPage.phoneNumber')}
+          required
+          control={(props) => (
+            <Input
+              type="tel"
+              startDecorator="+254"
+              {...props}
+              defaultValue={
+                normalizeKenyanPhoneLocal(member?.phoneNumber || '') ?? ''
+              }
+              onValueChange={(value) => handlePhoneNumberChange(value)}
+            />
+          )}
+        />
+      </FieldGuidance>
 
       <Field
         state={state}

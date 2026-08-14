@@ -14,6 +14,7 @@ import {
   getPhoneConflictInApplication,
   updateApplicationMembersData,
 } from '@/lib/data/application';
+import { checkSoftDuplicatesForMembers } from '@/lib/soft-duplicate-check';
 import { capitalizeWords } from '@/lib/utils/string';
 import type { FormAction } from '@workspace/ui/hooks/use-form';
 import { redirect } from 'next/navigation';
@@ -128,6 +129,27 @@ export const membersDataAction: FormAction<MembersData> = async (
           };
         }
       }
+    }
+
+    // Soft cross-application duplicate check (advisory; allow continue when acknowledged)
+    const softAck =
+      formData.get('softDuplicateAcknowledged')?.toString() === 'true';
+    const soft = await checkSoftDuplicatesForMembers({
+      applicationId: id,
+      members: data.members,
+    });
+    if ((soft.phoneDuplicate || soft.nationalIdDuplicate) && !softAck) {
+      return {
+        success: false,
+        errors: {
+          members: [soft.message],
+        },
+        values: {
+          natureOfGroup: data.natureOfGroup,
+          members: data.members,
+          softDuplicateAcknowledged: false,
+        },
+      };
     }
 
     const membersValidation = validateMembersAgainstTaxonomy(

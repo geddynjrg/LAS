@@ -1,4 +1,5 @@
 import { ApplyFormStepper } from '@/app/apply/[id]/apply-form-stepper';
+import { ApplicationGuidance } from '@/components/application-guidance';
 import { getApplicationById } from '@/lib/data/application';
 import { isAuthenticationError } from '@/lib/errors/auth-error';
 import { getSession } from '@/lib/session';
@@ -78,6 +79,8 @@ export default async function IdLayout({ params, children }: ApplyLayoutProps) {
         }
         baseUrl={`/apply/${id}`}
       />
+
+      <ApplicationGuidance />
 
       {children}
     </>
