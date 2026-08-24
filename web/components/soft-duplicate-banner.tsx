@@ -1,5 +1,6 @@
 'use client';
 
+import { checkSoftDuplicatesAction } from '@/lib/soft-duplicate-action';
 import type { SoftDuplicateResult } from '@/lib/soft-duplicate-check';
 import { type FC, useEffect, useState } from 'react';
 
@@ -36,21 +37,12 @@ export const SoftDuplicateBanner: FC<{
 
     const handle = window.setTimeout(() => {
       setChecking(true);
-      void fetch('/api/soft-duplicates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: phoneValue,
-          nationalId: idValue,
-          applicationId,
-        }),
+      void checkSoftDuplicatesAction({
+        phone: phoneValue,
+        nationalId: idValue,
+        applicationId,
       })
-        .then(async (res) => {
-          if (!res.ok) {
-            setResult(null);
-            return;
-          }
-          const data = (await res.json()) as SoftDuplicateResult;
+        .then((data) => {
           setResult(data);
           if (!data.phoneDuplicate && !data.nationalIdDuplicate) {
             onAcknowledgedChange(false);

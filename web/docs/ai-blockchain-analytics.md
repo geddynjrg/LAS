@@ -19,6 +19,8 @@
 - Statuses: `DRAFT`, `UNSUBMITTED`, `GROUP_MEMBER_CONFIRMATION`.
 - Returns boolean flags + generic message only (no other member names).
 - Banner with acknowledgment on members form; continue allowed after acknowledge.
+- Client banner uses a server action (`lib/soft-duplicate-action.ts`) so the check is not rewritten by middleware to Drupal `/api/*`.
+- `POST /api/soft-duplicates` is also on the Next internal API allowlist in `middleware.ts`.
 
 ## Real-time field guidance
 

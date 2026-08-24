@@ -97,6 +97,7 @@ export async function middleware(request: NextRequest) {
   // Exclude internal Next.js API routes
   const internalApiRoutes = [
     '/api/health',
+    '/api/soft-duplicates',
     '/api/profile',
     '/api/logout',
     '/api/upload',

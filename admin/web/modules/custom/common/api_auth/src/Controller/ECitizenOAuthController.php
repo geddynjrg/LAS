@@ -96,13 +96,21 @@ class ECitizenOAuthController extends ControllerBase {
   }
 
   /**
+   * Returns trusted frontend origins for OAuth return redirects.
+   */
+  private function getAllowedOrigins(): array {
+    return [
+      'https://loans-staging.uwezo.go.ke',
+      'https://loans.uwezo.go.ke',
+      'https://majuu.uwezo.go.ke',
+    ];
+  }
+
+  /**
    * Starts the eCitizen OAuth flow.
    */
   public function startEcitizenOauth(Request $request) {
-    $allowedUrls = [
-      'https://loans-staging.uwezo.go.ke',
-      'https://loans.uwezo.go.ke',
-    ];
+    $allowedUrls = $this->getAllowedOrigins();
 
     $origin = $request->query->get('origin');
     $callbackUrl = $request->query->get('callbackUrl') ?: '/dashboard';
@@ -186,11 +194,39 @@ class ECitizenOAuthController extends ControllerBase {
     $user = $this->handleUserData($userInfo['email'], $userInfo);
     $tokens = $this->jwtService->generateTokens($user);
 
-    $redirectUrl = $this->buildFrontendRedirect('/ecitizen/callback', [
+    $redirectParams = [
       'access_token' => $tokens['access_token'],
       'refresh_token' => $tokens['refresh_token'],
       'callback_url' => $pkceData['callback_url'] ?? '/dashboard',
-    ], $pkceData['origin'] ?? NULL);
+    ];
+
+    $origin = $pkceData['origin'] ?? NULL;
+    if ($origin === 'https://majuu.uwezo.go.ke') {
+      $redirectParams['email'] = $userInfo['email'] ?? '';
+      $redirectParams['name'] = trim(implode(' ', array_filter([
+        $userInfo['first_name'] ?? '',
+        $userInfo['last_name'] ?? '',
+        $userInfo['surname'] ?? '',
+      ])));
+      if (!empty($userInfo['mobile_number'])) {
+        $redirectParams['mobile_number'] = $userInfo['mobile_number'];
+      }
+      if (!empty($userInfo['id_number'])) {
+        $redirectParams['id_number'] = $userInfo['id_number'];
+      }
+      if (!empty($userInfo['kra_pin_number'])) {
+        $redirectParams['kra_pin'] = $userInfo['kra_pin_number'];
+      }
+      if (!empty($userInfo['id'])) {
+        $redirectParams['ecitizen_id'] = $userInfo['id'];
+      }
+    }
+
+    $redirectUrl = $this->buildFrontendRedirect(
+      '/ecitizen/callback',
+      $redirectParams,
+      $origin,
+    );
 
     return new TrustedRedirectResponse($redirectUrl);
   }
@@ -275,10 +311,7 @@ class ECitizenOAuthController extends ControllerBase {
    * Builds the frontend redirect URL.
    */
   private function buildFrontendRedirect($path, $params, $origin = NULL) {
-    $allowedUrls = [
-      'https://loans-staging.uwezo.go.ke',
-      'https://loans.uwezo.go.ke',
-    ];
+    $allowedUrls = $this->getAllowedOrigins();
 
     if ($origin && in_array($origin, $allowedUrls)) {
       $frontendBase = $origin;
