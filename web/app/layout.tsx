@@ -1,6 +1,7 @@
 import { AppFooter } from '@/components/app-footer';
 import { AppHeader } from '@/components/app-header';
 import { AppSidebar } from '@/components/app-sidebar';
+import { AssistiveChatbot } from '@/components/assistive-chatbot';
 import { Providers } from '@/components/providers';
 import { LoansJsonLd } from '@/components/seo/json-ld';
 import { type Locale } from '@/i18n/config';
@@ -63,6 +64,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               </Suspense>
             </SidebarInset>
             <AppFooter />
+            <AssistiveChatbot productLabel="Uwezo Loans Assistant" />
           </Providers>
         </NextIntlClientProvider>
       </body>
