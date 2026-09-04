@@ -1,10 +1,14 @@
+import { saveLoanUploadMeta } from '@/lib/assistive-chat-apply-flow';
 import {
   type DocDeclaredType,
   formatAuthenticityReply,
   validateDocumentBuffer,
 } from '@/lib/document-authenticity';
 import { getSession } from '@/lib/session';
+import crypto from 'crypto';
+import { promises as fs } from 'fs';
 import { NextResponse } from 'next/server';
+import path from 'path';
 
 export const runtime = 'nodejs';
 
@@ -17,6 +21,17 @@ const TYPE_MAP: Record<string, DocDeclaredType> = {
   'kra-pin': 'kra_pin',
   passport: 'passport',
 };
+
+const UPLOAD_DIR =
+  process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
+const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || '10485760', 10);
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+];
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -31,6 +46,9 @@ export async function POST(request: Request) {
   const file = form.get('file');
   const declaredRaw = String(form.get('declaredType') || 'other').toLowerCase();
   const declaredType: DocDeclaredType = TYPE_MAP[declaredRaw] || 'other';
+  const applicationId = String(form.get('applicationId') || '');
+  const category = String(form.get('category') || '');
+  const persist = String(form.get('persist') || '') === '1';
 
   if (!(file instanceof File)) {
     return NextResponse.json(
@@ -46,12 +64,65 @@ export async function POST(request: Request) {
     fileName: file.name,
     declaredType,
   });
+  const authenticity = formatAuthenticityReply(result);
+
+  if (persist && applicationId && category) {
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { ok: false, error: 'File too large', reply: authenticity },
+        { status: 400 },
+      );
+    }
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `File type ${file.type} not allowed`,
+          reply: authenticity,
+        },
+        { status: 400 },
+      );
+    }
+    try {
+      const appDir = path.join(UPLOAD_DIR, applicationId);
+      await fs.mkdir(appDir, { recursive: true });
+      const ext = path.extname(file.name) || '.bin';
+      const unique = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`;
+      const filePath = path.join(appDir, unique);
+      await fs.writeFile(filePath, buffer);
+      const meta = {
+        fid: Date.now().toString(),
+        filename: file.name,
+        url: `/files/${applicationId}/${unique}`,
+        size: file.size,
+        type: file.type,
+      };
+      await saveLoanUploadMeta(applicationId, category, meta);
+      return NextResponse.json({
+        ok: true,
+        result,
+        persisted: true,
+        reply: `${authenticity}\nSaved to application as ${category}.`,
+        nextHint: 'Pick another field or stage to continue editing in chat.',
+        phase: 'field_pick',
+      });
+    } catch (err) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: err instanceof Error ? err.message : 'Upload save failed',
+          reply: authenticity,
+        },
+        { status: 400 },
+      );
+    }
+  }
 
   return NextResponse.json({
     ok: true,
     result,
-    reply: formatAuthenticityReply(result),
+    reply: authenticity,
     nextHint:
-      'Continue official uploads on your apply steps (group-data / members documents) so the file is stored on your application. Open /dashboard to resume.',
+      'Continue official uploads on your apply steps so the file is stored on your application, or select a document field in chat to save it.',
   });
 }

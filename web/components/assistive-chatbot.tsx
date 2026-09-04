@@ -26,9 +26,22 @@ type Phase =
   | 'apply_choice'
   | 'status_wait'
   | 'apply_docs'
+  | 'stage_pick'
+  | 'field_pick'
+  | 'await_field'
+  | 'await_upload'
   | 'open';
 
 type QuickReply = { id: string; label: string; value: string };
+
+type FieldContext = {
+  kind: 'loan';
+  appId: string;
+  stage: number;
+  field: string;
+  label: string;
+  uploadCategory?: string;
+};
 
 const MAIN_MENU: QuickReply[] = [
   { id: 'apply', label: '1. Apply for a loan', value: 'apply' },
@@ -90,6 +103,7 @@ export const AssistiveChatbot: FC<{
   const [docType, setDocType] = useState<
     'national_id' | 'kra_pin' | 'passport'
   >('national_id');
+  const [fieldContext, setFieldContext] = useState<FieldContext | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const autoOpened = useRef(false);
@@ -100,6 +114,7 @@ export const AssistiveChatbot: FC<{
   );
   const hide = pathname.startsWith('/ps');
   const passwordMode = phase === 'await_password';
+  const showUpload = phase === 'apply_docs' || phase === 'await_upload';
 
   useEffect(() => {
     if (autoOpened.current || hide) return;
@@ -114,6 +129,7 @@ export const AssistiveChatbot: FC<{
     setPhase('await_username');
     setUsername('');
     setQuickReplies([]);
+    setFieldContext(null);
     setMessages([
       {
         role: 'assistant',
@@ -126,6 +142,7 @@ export const AssistiveChatbot: FC<{
   const showSignedInMenu = useCallback(() => {
     setPhase('menu');
     setQuickReplies(MAIN_MENU);
+    setFieldContext(null);
     setMessages([
       {
         role: 'assistant',
@@ -159,28 +176,63 @@ export const AssistiveChatbot: FC<{
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: user, password }),
     });
-    return (await res.json()) as {
-      ok?: boolean;
-      error?: string;
-      message?: string;
-    };
+    return (await res.json()) as { ok?: boolean; error?: string };
   }, []);
 
+  type ServerPayload = {
+    reply?: string;
+    needAuth?: boolean;
+    expectReference?: boolean;
+    expectFieldValue?: boolean;
+    expectUpload?: boolean;
+    quickReplies?: QuickReply[];
+    phase?: string;
+    openUrl?: string;
+    navigate?: boolean;
+    fieldContext?: FieldContext;
+  };
+
+  const applyServerPayload = useCallback(
+    (data: ServerPayload) => {
+      if (data.needAuth) {
+        startAuthFlow();
+        return;
+      }
+      if (data.expectReference) setPhase('status_wait');
+      if (data.expectFieldValue || data.phase === 'await_field')
+        setPhase('await_field');
+      if (data.expectUpload || data.phase === 'await_upload')
+        setPhase('await_upload');
+      if (data.phase === 'stage_pick') setPhase('stage_pick');
+      if (data.phase === 'field_pick') setPhase('field_pick');
+      if (data.phase === 'apply_docs') setPhase('apply_docs');
+      if (data.fieldContext) setFieldContext(data.fieldContext);
+      else if (data.phase === 'stage_pick' || data.phase === 'field_pick') {
+        setFieldContext(null);
+      }
+      if (data.quickReplies) setQuickReplies(data.quickReplies);
+      pushAssistant(setMessages, data.reply || 'OK');
+      if (
+        data.navigate &&
+        data.openUrl?.startsWith('/') &&
+        typeof window !== 'undefined'
+      ) {
+        window.setTimeout(() => {
+          window.location.href = data.openUrl!;
+        }, 400);
+      }
+    },
+    [startAuthFlow],
+  );
+
   const postChat = useCallback(
-    async (payload: Record<string, string>) => {
+    async (payload: Record<string, string | number>) => {
       const res = await fetch('/api/assistive-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload, path: pathname }),
       });
-      return (await res.json()) as {
-        reply?: string;
-        needAuth?: boolean;
-        expectReference?: boolean;
-        quickReplies?: QuickReply[];
-        openUrl?: string;
-        navigate?: boolean;
-      };
+      return (await res.json()) as ServerPayload;
     },
     [pathname],
   );
@@ -230,30 +282,45 @@ export const AssistiveChatbot: FC<{
           return;
         }
 
+        if (phase === 'await_field' && fieldContext) {
+          if (/^menu$/i.test(trimmed)) {
+            showSignedInMenu();
+            setBusy(false);
+            return;
+          }
+          if (
+            trimmed.startsWith('stage:') ||
+            trimmed.startsWith('select_app:') ||
+            trimmed.startsWith('field:')
+          ) {
+            applyServerPayload(
+              await postChat({ action: trimmed, message: trimmed }),
+            );
+            setBusy(false);
+            return;
+          }
+          applyServerPayload(
+            await postChat({
+              action: 'set_field',
+              message: trimmed,
+              value: trimmed,
+              appId: fieldContext.appId,
+              stage: fieldContext.stage,
+              field: fieldContext.field,
+            }),
+          );
+          setBusy(false);
+          return;
+        }
+
         if (phase === 'status_wait') {
           const data = await postChat({
             action: 'status',
             reference: trimmed,
             message: trimmed,
           });
-          if (data.needAuth) startAuthFlow();
-          else {
-            pushAssistant(
-              setMessages,
-              data.reply || 'Unable to look up that ID.',
-            );
-            setQuickReplies(data.quickReplies || MAIN_MENU);
-            if (!data.expectReference) setPhase('menu');
-            if (
-              data.navigate &&
-              data.openUrl?.startsWith('/') &&
-              typeof window !== 'undefined'
-            ) {
-              window.setTimeout(() => {
-                window.location.href = data.openUrl!;
-              }, 400);
-            }
-          }
+          applyServerPayload(data);
+          if (!data.expectReference && !data.phase) setPhase('menu');
           setBusy(false);
           return;
         }
@@ -288,24 +355,7 @@ export const AssistiveChatbot: FC<{
             action: 'list_continue',
             message: 'continue_app',
           });
-          if (data.needAuth) startAuthFlow();
-          else {
-            pushAssistant(
-              setMessages,
-              data.reply || 'Tap an application below to continue.',
-            );
-            setPhase('apply_docs');
-            setQuickReplies(
-              data.quickReplies || [
-                {
-                  id: 'dash',
-                  label: 'Open dashboard',
-                  value: 'open:/dashboard',
-                },
-                { id: 'menu', label: 'Back to menu', value: 'menu' },
-              ],
-            );
-          }
+          applyServerPayload(data);
           setBusy(false);
           return;
         }
@@ -322,7 +372,7 @@ export const AssistiveChatbot: FC<{
           ]);
           pushAssistant(
             setMessages,
-            'Start a new application at /apply/create (group-data → members → … → review). Attach ID/KRA here for an assistive authenticity check.',
+            'Start a new application at /apply/create. Attach ID/KRA here for an assistive authenticity check.',
           );
           setBusy(false);
           return;
@@ -335,52 +385,68 @@ export const AssistiveChatbot: FC<{
         }
 
         if (phase === 'apply_docs') {
+          if (
+            trimmed.startsWith('select_app:') ||
+            trimmed.startsWith('stage:') ||
+            trimmed.startsWith('field:') ||
+            trimmed.startsWith('status_ref:')
+          ) {
+            applyServerPayload(
+              await postChat({ action: trimmed, message: trimmed }),
+            );
+            setBusy(false);
+            return;
+          }
           const lower = trimmed.toLowerCase();
           if (lower.includes('kra')) setDocType('kra_pin');
           else if (lower.includes('passport')) setDocType('passport');
           else if (lower.includes('id')) setDocType('national_id');
           pushAssistant(
             setMessages,
-            `Ready for ${lower.includes('kra') ? 'KRA PIN' : lower.includes('passport') ? 'passport' : 'National ID'} upload. Use Attach below.`,
+            `Ready for ${
+              lower.includes('kra')
+                ? 'KRA PIN'
+                : lower.includes('passport')
+                  ? 'passport'
+                  : 'National ID'
+            } upload. Use Attach below.`,
           );
           setBusy(false);
           return;
         }
 
+        let action = 'auto';
+        if (/^list$/i.test(trimmed)) action = 'status';
+        else if (/^status_ref:/i.test(trimmed)) action = trimmed;
+        else if (/^continue_app$/i.test(trimmed)) action = 'list_continue';
+        else if (/^select_app:/i.test(trimmed)) action = trimmed;
+        else if (/^stage:/i.test(trimmed)) action = trimmed;
+        else if (/^field:/i.test(trimmed)) action = trimmed;
+
         const data = await postChat({
-          action: /^list$/i.test(trimmed)
-            ? 'status'
-            : /^status_ref:/i.test(trimmed)
-              ? trimmed
-              : /^continue_app$/i.test(trimmed)
-                ? 'list_continue'
-                : 'auto',
+          action,
           message: trimmed,
           reference: trimmed,
         });
-        if (data.needAuth) startAuthFlow();
-        else {
-          pushAssistant(
-            setMessages,
-            data.reply || answerAssistiveChat(trimmed),
-          );
-          if (data.expectReference) setPhase('status_wait');
-          if (data.quickReplies) setQuickReplies(data.quickReplies);
-          if (
-            data.navigate &&
-            data.openUrl?.startsWith('/') &&
-            typeof window !== 'undefined'
-          ) {
-            window.setTimeout(() => {
-              window.location.href = data.openUrl!;
-            }, 400);
-          }
+        if (!data.reply && !data.needAuth) {
+          pushAssistant(setMessages, answerAssistiveChat(trimmed));
+        } else {
+          applyServerPayload(data);
         }
       } finally {
         setBusy(false);
       }
     },
-    [busy, phase, username, login, postChat, startAuthFlow, showSignedInMenu],
+    [
+      busy,
+      phase,
+      username,
+      fieldContext,
+      login,
+      postChat,
+      applyServerPayload,
+      showSignedInMenu,
+    ],
   );
 
   const onUpload = useCallback(
@@ -395,6 +461,14 @@ export const AssistiveChatbot: FC<{
         const form = new FormData();
         form.set('file', file);
         form.set('declaredType', docType);
+        if (fieldContext?.appId) {
+          form.set('applicationId', fieldContext.appId);
+          form.set(
+            'category',
+            fieldContext.uploadCategory || fieldContext.field,
+          );
+          form.set('persist', '1');
+        }
         const res = await fetch('/api/assistive-chat/upload', {
           method: 'POST',
           body: form,
@@ -412,13 +486,20 @@ export const AssistiveChatbot: FC<{
             setMessages,
             `${data.reply || 'Checked.'}\n${data.nextHint || ''}`,
           );
+          if (fieldContext?.appId) {
+            const again = await postChat({
+              action: `stage:${fieldContext.appId}:${fieldContext.stage}`,
+              message: `stage:${fieldContext.appId}:${fieldContext.stage}`,
+            });
+            applyServerPayload(again);
+          }
         }
       } catch {
         pushAssistant(setMessages, 'Could not check that file.');
       }
       setBusy(false);
     },
-    [busy, docType, startAuthFlow],
+    [busy, docType, fieldContext, startAuthFlow, postChat, applyServerPayload],
   );
 
   if (hide) return null;
@@ -473,7 +554,7 @@ export const AssistiveChatbot: FC<{
               </div>
             ) : null}
           </div>
-          {phase === 'apply_docs' ? (
+          {showUpload ? (
             <div className="flex items-center gap-2 border-t px-2 py-1.5">
               <input
                 ref={fileRef}
@@ -494,18 +575,18 @@ export const AssistiveChatbot: FC<{
                 disabled={busy}
                 onClick={() => fileRef.current?.click()}
               >
-                Attach{' '}
-                {docType === 'kra_pin'
-                  ? 'KRA'
-                  : docType === 'passport'
-                    ? 'passport'
-                    : 'ID'}
+                {phase === 'await_upload'
+                  ? `Attach ${fieldContext?.label || 'document'}`
+                  : `Attach ${
+                      docType === 'kra_pin'
+                        ? 'KRA'
+                        : docType === 'passport'
+                          ? 'passport'
+                          : 'ID'
+                    }`}
               </Button>
-              <a
-                href="/apply/create"
-                className="text-xs text-sky-800 underline"
-              >
-                Open apply
+              <a href="/dashboard" className="text-xs text-sky-800 underline">
+                Open dashboard
               </a>
             </div>
           ) : null}
@@ -535,7 +616,9 @@ export const AssistiveChatbot: FC<{
                     ? 'Email / username'
                     : phase === 'status_wait'
                       ? 'Application ID…'
-                      : 'Type a message…'
+                      : phase === 'await_field'
+                        ? `Enter ${fieldContext?.label || 'value'}…`
+                        : 'Type a message…'
               }
               type={passwordMode ? 'password' : 'text'}
               autoComplete={passwordMode ? 'current-password' : 'username'}

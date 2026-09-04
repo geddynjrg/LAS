@@ -1,4 +1,10 @@
 import { ApplicationStatus } from '@/generated/prisma';
+import {
+  beginLoanFieldEdit,
+  loanFieldPicker,
+  loanStagePicker,
+  saveLoanField,
+} from '@/lib/assistive-chat-apply-flow';
 import { answerAssistiveChat } from '@/lib/assistive-chatbot-faq';
 import { getStatusLabel } from '@/lib/constants/application-status';
 import { getApplicationById } from '@/lib/data/application';
@@ -32,7 +38,7 @@ const MAIN_MENU: QuickReply[] = [
 const APPLY_REPLY =
   'Start or continue a Uwezo loan application:\n' +
   '• New: /apply/create\n' +
-  '• Continue: pick an application below or open /dashboard\n' +
+  '• Continue: pick an application below, then a stage and fields in chat\n' +
   'Steps: group-data → members → loan-conditions → proposed-business → member-confirmation → confirmations → review.\n\n' +
   'Reply ID, KRA, or passport then Attach a file for an assistive document check.';
 
@@ -119,14 +125,12 @@ async function listApplications(mode: 'continue' | 'status'): Promise<{
     const quickReplies: QuickReply[] = rows.map((a, i) => {
       const id = a.generalDetails?.applicationId || `row-${i}`;
       const status = a.generalDetails?.status;
-      const progress = a.generalDetails?.applicationProgress;
       const label = `${i + 1}. ${appChipLabel(a)}`;
       if (mode === 'continue' || isDraftStatus(status)) {
-        const href = continueHref(id, progress, status);
         return {
           id: `app-${id}`,
           label,
-          value: `open:${href}`,
+          value: `select_app:${id}`,
         };
       }
       return {
@@ -141,8 +145,8 @@ async function listApplications(mode: 'continue' | 'status'): Promise<{
     return {
       reply:
         mode === 'continue'
-          ? 'Tap an application to continue (opens the next step or dashboard):'
-          : 'Tap an application to view status (drafts open the apply form):',
+          ? 'Tap an application to choose a stage and edit fields in chat:'
+          : 'Tap an application to view status (drafts open stage editing):',
       quickReplies,
     };
   } catch {
@@ -193,16 +197,15 @@ async function statusLookup(reference: string): Promise<{
       app.generalDetails.status,
     );
     const name = app.groupData?.basics?.groupName?.trim() || 'Application';
+    const draft = isDraftStatus(app.generalDetails.status);
     return {
       reply: `${name} (${id}): ${label}.`,
       openUrl: href,
       quickReplies: [
         {
-          id: 'open',
-          label: isDraftStatus(app.generalDetails.status)
-            ? 'Continue this application'
-            : 'Open dashboard',
-          value: `open:${href}`,
+          id: 'cont',
+          label: draft ? 'Edit stages in chat' : 'Open dashboard',
+          value: draft ? `select_app:${id}` : `open:${href}`,
         },
         { id: 'menu', label: 'Back to menu', value: 'menu' },
       ],
@@ -221,17 +224,29 @@ export async function POST(request: Request) {
   let path = '';
   let action = 'auto';
   let reference = '';
+  let fieldAppId = '';
+  let fieldStage = 0;
+  let fieldKey = '';
+  let fieldValue = '';
   try {
     const body = (await request.json()) as {
       message?: string;
       path?: string;
       action?: string;
       reference?: string;
+      appId?: string;
+      stage?: number | string;
+      field?: string;
+      value?: string;
     };
     message = String(body.message || '');
     path = String(body.path || '');
     action = String(body.action || 'auto');
     reference = String(body.reference || message || '');
+    fieldAppId = String(body.appId || '');
+    fieldStage = Number(body.stage || 0);
+    fieldKey = String(body.field || '');
+    fieldValue = String(body.value || body.message || '');
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
@@ -270,6 +285,81 @@ export async function POST(request: Request) {
       source: 'list_continue',
       authenticated: true,
       phase: 'apply_docs',
+    });
+  }
+
+  const selectMatch =
+    action.match(/^select_app:(.+)$/i) || trimmed.match(/^select_app:(.+)$/i);
+  if (selectMatch) {
+    if (!session) {
+      return NextResponse.json({ reply: 'Sign in first.', needAuth: true });
+    }
+    const payload = await loanStagePicker(selectMatch[1]!.trim());
+    return NextResponse.json({
+      ...payload,
+      authenticated: true,
+      source: 'stage_pick',
+    });
+  }
+
+  const stageMatch =
+    action.match(/^stage:([^:]+):(\d+)$/i) ||
+    trimmed.match(/^stage:([^:]+):(\d+)$/i);
+  if (stageMatch) {
+    if (!session) {
+      return NextResponse.json({ reply: 'Sign in first.', needAuth: true });
+    }
+    const payload = await loanFieldPicker(
+      stageMatch[1]!.trim(),
+      Number(stageMatch[2]),
+    );
+    return NextResponse.json({
+      ...payload,
+      authenticated: true,
+      source: 'field_pick',
+    });
+  }
+
+  const fieldMatch =
+    action.match(/^field:([^:]+):(\d+):([a-z0-9_]+)$/i) ||
+    trimmed.match(/^field:([^:]+):(\d+):([a-z0-9_]+)$/i);
+  if (fieldMatch) {
+    if (!session) {
+      return NextResponse.json({ reply: 'Sign in first.', needAuth: true });
+    }
+    const payload = await beginLoanFieldEdit(
+      fieldMatch[1]!.trim(),
+      Number(fieldMatch[2]),
+      fieldMatch[3]!,
+    );
+    return NextResponse.json({
+      ...payload,
+      authenticated: true,
+      source: 'field_edit',
+    });
+  }
+
+  if (action === 'set_field') {
+    if (!session) {
+      return NextResponse.json({ reply: 'Sign in first.', needAuth: true });
+    }
+    if (!fieldAppId || !fieldStage || !fieldKey) {
+      return NextResponse.json({
+        reply: 'Missing field context. Pick a stage and field again.',
+        quickReplies: MAIN_MENU,
+        authenticated: true,
+      });
+    }
+    const payload = await saveLoanField(
+      fieldAppId,
+      fieldStage,
+      fieldKey,
+      fieldValue,
+    );
+    return NextResponse.json({
+      ...payload,
+      authenticated: true,
+      source: 'set_field',
     });
   }
 
