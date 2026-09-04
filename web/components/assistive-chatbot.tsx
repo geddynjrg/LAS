@@ -179,6 +179,7 @@ export const AssistiveChatbot: FC<{
         expectReference?: boolean;
         quickReplies?: QuickReply[];
         openUrl?: string;
+        navigate?: boolean;
       };
     },
     [pathname],
@@ -242,7 +243,16 @@ export const AssistiveChatbot: FC<{
               data.reply || 'Unable to look up that ID.',
             );
             setQuickReplies(data.quickReplies || MAIN_MENU);
-            setPhase('menu');
+            if (!data.expectReference) setPhase('menu');
+            if (
+              data.navigate &&
+              data.openUrl?.startsWith('/') &&
+              typeof window !== 'undefined'
+            ) {
+              window.setTimeout(() => {
+                window.location.href = data.openUrl!;
+              }, 400);
+            }
           }
           setBusy(false);
           return;
@@ -275,20 +285,27 @@ export const AssistiveChatbot: FC<{
 
         if (phase === 'apply_choice' && /^(continue_app|1)/i.test(trimmed)) {
           const data = await postChat({
-            action: 'status',
-            reference: 'list',
-            message: 'list',
+            action: 'list_continue',
+            message: 'continue_app',
           });
-          pushAssistant(
-            setMessages,
-            (data.reply || 'Open /dashboard to continue.') +
-              '\n\nUse Attach for assistive ID/KRA checks, then finish uploads on the apply steps.',
-          );
-          setPhase('apply_docs');
-          setQuickReplies([
-            { id: 'dash', label: 'Open dashboard', value: 'open:/dashboard' },
-            { id: 'menu', label: 'Back to menu', value: 'menu' },
-          ]);
+          if (data.needAuth) startAuthFlow();
+          else {
+            pushAssistant(
+              setMessages,
+              data.reply || 'Tap an application below to continue.',
+            );
+            setPhase('apply_docs');
+            setQuickReplies(
+              data.quickReplies || [
+                {
+                  id: 'dash',
+                  label: 'Open dashboard',
+                  value: 'open:/dashboard',
+                },
+                { id: 'menu', label: 'Back to menu', value: 'menu' },
+              ],
+            );
+          }
           setBusy(false);
           return;
         }
@@ -331,7 +348,13 @@ export const AssistiveChatbot: FC<{
         }
 
         const data = await postChat({
-          action: /^list$/i.test(trimmed) ? 'status' : 'auto',
+          action: /^list$/i.test(trimmed)
+            ? 'status'
+            : /^status_ref:/i.test(trimmed)
+              ? trimmed
+              : /^continue_app$/i.test(trimmed)
+                ? 'list_continue'
+                : 'auto',
           message: trimmed,
           reference: trimmed,
         });
@@ -343,6 +366,15 @@ export const AssistiveChatbot: FC<{
           );
           if (data.expectReference) setPhase('status_wait');
           if (data.quickReplies) setQuickReplies(data.quickReplies);
+          if (
+            data.navigate &&
+            data.openUrl?.startsWith('/') &&
+            typeof window !== 'undefined'
+          ) {
+            window.setTimeout(() => {
+              window.location.href = data.openUrl!;
+            }, 400);
+          }
         }
       } finally {
         setBusy(false);

@@ -8,12 +8,33 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
+type QuickReply = { id: string; label: string; value: string };
+
+const APPLY_STEPS = [
+  '/group-data',
+  '/members',
+  '/loan-conditions',
+  '/proposed-business',
+  '/member-confirmation',
+  '/confirmations',
+  '/review',
+] as const;
+
+const MAIN_MENU: QuickReply[] = [
+  { id: 'apply', label: '1. Apply for a loan', value: 'apply' },
+  {
+    id: 'status',
+    label: '2. Check status of loan application',
+    value: 'status',
+  },
+];
+
 const APPLY_REPLY =
   'Start or continue a Uwezo loan application:\n' +
   '• New: /apply/create\n' +
-  '• Continue: /dashboard\n' +
+  '• Continue: pick an application below or open /dashboard\n' +
   'Steps: group-data → members → loan-conditions → proposed-business → member-confirmation → confirmations → review.\n\n' +
-  'Reply ID, KRA, or passport then Attach a file for an assistive document check. Official storage still happens on the apply forms.';
+  'Reply ID, KRA, or passport then Attach a file for an assistive document check.';
 
 function formatAppStatus(status: string | undefined): string {
   if (!status) return 'Unknown';
@@ -24,43 +45,174 @@ function formatAppStatus(status: string | undefined): string {
   }
 }
 
-async function statusLookup(reference: string): Promise<string> {
+function isDraftStatus(status: string | undefined): boolean {
+  if (!status) return true;
+  return (
+    status === ApplicationStatus.DRAFT ||
+    status === ApplicationStatus.UNSUBMITTED ||
+    status === 'DRAFT' ||
+    status === 'UNSUBMITTED' ||
+    status.toLowerCase() === 'draft' ||
+    status.toLowerCase() === 'not started'
+  );
+}
+
+function continueHref(
+  applicationId: string,
+  progress: number | undefined,
+  status: string | undefined,
+): string {
+  if (
+    !isDraftStatus(status) &&
+    status !== ApplicationStatus.GROUP_MEMBER_CONFIRMATION
+  ) {
+    return `/dashboard/${applicationId}`;
+  }
+  const stepIndex = Math.max(
+    0,
+    Math.min((progress || 1) - 1, APPLY_STEPS.length - 1),
+  );
+  return `/apply/${applicationId}${APPLY_STEPS[stepIndex]}`;
+}
+
+function appChipLabel(a: {
+  generalDetails?: {
+    applicationId?: string;
+    status?: string;
+    applicationProgress?: number;
+  };
+  groupData?: { basics?: { groupName?: string } };
+}): string {
+  const id = a.generalDetails?.applicationId || '—';
+  const name = a.groupData?.basics?.groupName?.trim() || 'Loan application';
+  const status = formatAppStatus(a.generalDetails?.status);
+  const progress = a.generalDetails?.applicationProgress;
+  const stage =
+    isDraftStatus(a.generalDetails?.status) && progress
+      ? `step ${progress}/7`
+      : status;
+  return `${name} · ${id} · ${stage}`;
+}
+
+async function listApplications(mode: 'continue' | 'status'): Promise<{
+  reply: string;
+  quickReplies: QuickReply[];
+}> {
+  try {
+    const apps = await getHybridApplications();
+    const rows = (apps || []).slice(0, 8);
+    if (!rows.length) {
+      return {
+        reply:
+          'No applications found on your account. Choose Apply for a loan to start.',
+        quickReplies: [
+          ...MAIN_MENU,
+          {
+            id: 'create',
+            label: 'Start new application',
+            value: 'open:/apply/create',
+          },
+        ],
+      };
+    }
+
+    const quickReplies: QuickReply[] = rows.map((a, i) => {
+      const id = a.generalDetails?.applicationId || `row-${i}`;
+      const status = a.generalDetails?.status;
+      const progress = a.generalDetails?.applicationProgress;
+      const label = `${i + 1}. ${appChipLabel(a)}`;
+      if (mode === 'continue' || isDraftStatus(status)) {
+        const href = continueHref(id, progress, status);
+        return {
+          id: `app-${id}`,
+          label,
+          value: `open:${href}`,
+        };
+      }
+      return {
+        id: `st-${id}`,
+        label,
+        value: `status_ref:${id}`,
+      };
+    });
+
+    quickReplies.push({ id: 'menu', label: 'Back to menu', value: 'menu' });
+
+    return {
+      reply:
+        mode === 'continue'
+          ? 'Tap an application to continue (opens the next step or dashboard):'
+          : 'Tap an application to view status (drafts open the apply form):',
+      quickReplies,
+    };
+  } catch {
+    return {
+      reply: 'Could not list applications. Open /dashboard or sign in again.',
+      quickReplies: MAIN_MENU,
+    };
+  }
+}
+
+async function statusLookup(reference: string): Promise<{
+  reply: string;
+  quickReplies?: QuickReply[];
+  openUrl?: string;
+  navigate?: boolean;
+}> {
   const ref = reference.trim();
-  if (!ref)
-    return 'Send your application ID (APP-YYYYMMDD-XXXXXX) or type “list”.';
+  if (!ref) {
+    return {
+      reply: 'Send your application ID (APP-YYYYMMDD-XXXXXX) or tap List.',
+      quickReplies: [
+        { id: 'list', label: 'List my applications', value: 'list' },
+        { id: 'menu', label: 'Back to menu', value: 'menu' },
+      ],
+    };
+  }
 
   if (/^(list|all|mine)$/i.test(ref)) {
-    try {
-      const apps = await getHybridApplications();
-      const rows = (apps || []).slice(0, 8);
-      if (!rows.length) {
-        return 'No applications found on your account. Choose Apply for a loan to start.';
-      }
-      return (
-        'Your applications:\n' +
-        rows
-          .map((a) => {
-            const id = a.generalDetails?.applicationId || '—';
-            const label = formatAppStatus(a.generalDetails?.status);
-            return `• ${id}: ${label}`;
-          })
-          .join('\n')
-      );
-    } catch {
-      return 'Could not list applications. Open /dashboard or sign in again.';
-    }
+    return listApplications('status');
   }
 
   try {
     const app = await getApplicationById(ref);
     if (!app?.generalDetails) {
-      return 'No application with that ID was found on your account.';
+      return {
+        reply: 'No application with that ID was found on your account.',
+        quickReplies: [
+          { id: 'list', label: 'List my applications', value: 'list' },
+          { id: 'menu', label: 'Back to menu', value: 'menu' },
+        ],
+      };
     }
     const id = app.generalDetails.applicationId;
     const label = formatAppStatus(app.generalDetails.status);
-    return `Application ${id}: ${label}. Open /dashboard/${id} for details.`;
+    const href = continueHref(
+      id,
+      app.generalDetails.applicationProgress,
+      app.generalDetails.status,
+    );
+    const name = app.groupData?.basics?.groupName?.trim() || 'Application';
+    return {
+      reply: `${name} (${id}): ${label}.`,
+      openUrl: href,
+      quickReplies: [
+        {
+          id: 'open',
+          label: isDraftStatus(app.generalDetails.status)
+            ? 'Continue this application'
+            : 'Open dashboard',
+          value: `open:${href}`,
+        },
+        { id: 'menu', label: 'Back to menu', value: 'menu' },
+      ],
+    };
   } catch {
-    return 'Unable to look up that application. Confirm you are signed in and the ID is correct.';
+    return {
+      reply:
+        'Unable to look up that application. Confirm you are signed in and the ID is correct.',
+      quickReplies: MAIN_MENU,
+    };
   }
 }
 
@@ -85,12 +237,13 @@ export async function POST(request: Request) {
   }
 
   const session = await getSession();
+  const trimmed = message.trim();
 
   if (action === 'session') {
     return NextResponse.json({ authenticated: Boolean(session) });
   }
 
-  if (action === 'menu') {
+  if (action === 'menu' || /^menu$/i.test(trimmed)) {
     if (!session) {
       return NextResponse.json({
         reply: 'Please sign in first (username/email, then password).',
@@ -99,54 +252,113 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({
       reply: 'Signed in successfully.\nWhat would you like to do?',
-      quickReplies: [
-        { id: 'apply', label: '1. Apply for a loan', value: 'apply' },
-        {
-          id: 'status',
-          label: '2. Check status of loan application',
-          value: 'status',
-        },
-      ],
+      quickReplies: MAIN_MENU,
       authenticated: true,
     });
   }
 
-  if (action === 'status') {
+  if (action === 'list_continue' || /^continue_app$/i.test(trimmed)) {
+    if (!session) {
+      return NextResponse.json({
+        reply: 'Sign in first.',
+        needAuth: true,
+      });
+    }
+    const payload = await listApplications('continue');
+    return NextResponse.json({
+      ...payload,
+      source: 'list_continue',
+      authenticated: true,
+      phase: 'apply_docs',
+    });
+  }
+
+  if (
+    action === 'status' ||
+    action.startsWith('status_ref:') ||
+    /^status_ref:/i.test(trimmed) ||
+    /^list$/i.test(trimmed)
+  ) {
     if (!session) {
       return NextResponse.json({
         reply: 'Sign in first to check status on your account.',
         needAuth: true,
       });
     }
+    let ref = reference;
+    if (action.startsWith('status_ref:'))
+      ref = action.slice('status_ref:'.length);
+    else if (/^status_ref:/i.test(trimmed))
+      ref = trimmed.slice('status_ref:'.length);
+    else if (
+      /^list$/i.test(trimmed) ||
+      (action === 'status' && /^(status|2|list)?$/i.test(ref))
+    ) {
+      if (/^(status|2)?$/i.test(ref.trim()) || !ref.trim()) {
+        return NextResponse.json({
+          reply:
+            'Send your application ID (APP-…) or tap List. Lookups are limited to your account.',
+          expectReference: true,
+          quickReplies: [
+            { id: 'list', label: 'List my applications', value: 'list' },
+            { id: 'menu', label: 'Back to menu', value: 'menu' },
+          ],
+          authenticated: true,
+        });
+      }
+    }
+    if (/^list$/i.test(trimmed)) ref = 'list';
+
+    const result = await statusLookup(ref.trim() || 'list');
     return NextResponse.json({
-      reply: await statusLookup(reference),
+      ...result,
       source: 'status',
       authenticated: true,
     });
   }
 
-  if (action === 'apply_guide' || /^(1|apply)\b/i.test(message.trim())) {
+  if (action === 'apply_guide' || /^(1|apply)\b/i.test(trimmed)) {
     return NextResponse.json({
       reply: APPLY_REPLY,
       source: 'apply',
       authenticated: Boolean(session),
       needAuth: !session,
+      quickReplies: session
+        ? [
+            {
+              id: 'continue',
+              label: '1. Continue existing application',
+              value: 'continue_app',
+            },
+            {
+              id: 'new',
+              label: '2. Start new Group Application',
+              value: 'new_app',
+            },
+            { id: 'menu', label: 'Back to menu', value: 'menu' },
+          ]
+        : [],
     });
   }
 
-  if (/^(2|status)\b/i.test(message.trim())) {
+  if (/^(2|status)\b/i.test(trimmed)) {
     return NextResponse.json({
       reply:
-        'Send your application ID (APP-…) or type “list”. Lookups are limited to your account.',
+        'Send your application ID (APP-…) or tap List. Lookups are limited to your account.',
       source: 'status_prompt',
       expectReference: true,
       needAuth: !session,
+      quickReplies: [
+        { id: 'list', label: 'List my applications', value: 'list' },
+        { id: 'menu', label: 'Back to menu', value: 'menu' },
+      ],
     });
   }
 
-  if (session && /^APP-[\w-]+$/i.test(message.trim())) {
+  if (session && /^APP-[\w-]+$/i.test(trimmed)) {
+    const result = await statusLookup(trimmed);
     return NextResponse.json({
-      reply: await statusLookup(message.trim()),
+      ...result,
       source: 'status',
       authenticated: true,
     });
@@ -185,5 +397,6 @@ export async function POST(request: Request) {
     reply: answerAssistiveChat(message),
     source: 'faq',
     authenticated: Boolean(session),
+    quickReplies: session ? MAIN_MENU : [],
   });
 }
