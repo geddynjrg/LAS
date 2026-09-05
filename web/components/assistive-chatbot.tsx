@@ -1,9 +1,14 @@
 'use client';
 
 import {
+  type OcrCaptureResult,
+  OcrDocumentCapture,
+} from '@/components/ocr-document-capture';
+import {
   type ChatMessage,
   answerAssistiveChat,
 } from '@/lib/assistive-chatbot-faq';
+import type { OcrDocType } from '@/lib/kenyan-id-ocr';
 import { Button } from '@workspace/ui/components/button';
 import { usePathname } from 'next/navigation';
 import {
@@ -20,8 +25,11 @@ import {
 
 type Phase =
   | 'boot'
+  | 'await_auth_method'
   | 'await_username'
   | 'await_password'
+  | 'await_phone'
+  | 'await_otp'
   | 'menu'
   | 'apply_choice'
   | 'status_wait'
@@ -61,6 +69,12 @@ const APPLY_TYPE: QuickReply[] = [
   { id: 'new', label: '2. Start new Group Application', value: 'new_app' },
 ];
 
+const AUTH_METHOD_REPLIES: QuickReply[] = [
+  { id: 'auth-email', label: 'Email / password', value: 'auth:email' },
+  { id: 'auth-phone', label: 'Mobile phone (OTP)', value: 'auth:phone' },
+  { id: 'auth-ecitizen', label: 'eCitizen', value: 'auth:ecitizen' },
+];
+
 const WHATSAPP_ENV =
   typeof process !== 'undefined'
     ? process.env.NEXT_PUBLIC_WHATSAPP_SUPPORT_NUMBER || ''
@@ -86,6 +100,18 @@ function isMobileViewport(): boolean {
   return window.matchMedia('(max-width: 768px)').matches;
 }
 
+function mapDocType(docType: string): OcrDocType {
+  if (docType === 'kra_pin') return 'kra_pin';
+  if (docType === 'passport') return 'passport';
+  return 'national_id';
+}
+
+function docTypeLabel(docType: string): string {
+  if (docType === 'kra_pin') return 'KRA PIN';
+  if (docType === 'passport') return 'passport';
+  return 'National ID';
+}
+
 export const AssistiveChatbot: FC<{
   productLabel?: string;
   supportWhatsApp?: string;
@@ -99,6 +125,8 @@ export const AssistiveChatbot: FC<{
   const [busy, setBusy] = useState(false);
   const [phase, setPhase] = useState<Phase>('boot');
   const [username, setUsername] = useState('');
+  const [otpRequestId, setOtpRequestId] = useState('');
+  const [allowPdfOnly, setAllowPdfOnly] = useState(false);
   const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
   const [docType, setDocType] = useState<
     'national_id' | 'kra_pin' | 'passport'
@@ -114,7 +142,10 @@ export const AssistiveChatbot: FC<{
   );
   const hide = pathname.startsWith('/ps');
   const passwordMode = phase === 'await_password';
+  const otpMode = phase === 'await_otp';
+  const sensitiveMode = passwordMode || otpMode;
   const showUpload = phase === 'apply_docs' || phase === 'await_upload';
+  const showOcr = phase === 'await_upload' || phase === 'apply_docs';
 
   useEffect(() => {
     if (autoOpened.current || hide) return;
@@ -126,15 +157,16 @@ export const AssistiveChatbot: FC<{
   }, [hide]);
 
   const startAuthFlow = useCallback(() => {
-    setPhase('await_username');
+    setPhase('await_auth_method');
     setUsername('');
-    setQuickReplies([]);
+    setOtpRequestId('');
+    setQuickReplies(AUTH_METHOD_REPLIES);
     setFieldContext(null);
+    setAllowPdfOnly(false);
     setMessages([
       {
         role: 'assistant',
-        content:
-          'Welcome to the Uwezo Loans assistant. To continue, enter your account email (username).',
+        content: 'Welcome to the Uwezo Loans assistant. Choose how to sign in.',
       },
     ]);
   }, []);
@@ -143,6 +175,8 @@ export const AssistiveChatbot: FC<{
     setPhase('menu');
     setQuickReplies(MAIN_MENU);
     setFieldContext(null);
+    setOtpRequestId('');
+    setAllowPdfOnly(false);
     setMessages([
       {
         role: 'assistant',
@@ -177,6 +211,21 @@ export const AssistiveChatbot: FC<{
       body: JSON.stringify({ username: user, password }),
     });
     return (await res.json()) as { ok?: boolean; error?: string };
+  }, []);
+
+  const loginWithMethod = useCallback(async (body: Record<string, string>) => {
+    const res = await fetch('/api/assistive-chat/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    return (await res.json()) as {
+      ok?: boolean;
+      error?: string;
+      message?: string;
+      requestId?: string;
+      redirect?: string;
+    };
   }, []);
 
   type ServerPayload = {
@@ -242,7 +291,10 @@ export const AssistiveChatbot: FC<{
       const trimmed = text.trim();
       if (!trimmed || busy) return;
       setBusy(true);
-      const displayUser = phase === 'await_password' ? '••••••••' : trimmed;
+      const displayUser =
+        phase === 'await_password' || phase === 'await_otp'
+          ? '••••••••'
+          : trimmed;
       setMessages((prev) => [...prev, { role: 'user', content: displayUser }]);
       setInput('');
 
@@ -251,6 +303,66 @@ export const AssistiveChatbot: FC<{
           window.location.href = trimmed.slice(5);
           setBusy(false);
           return;
+        }
+
+        if (phase === 'await_auth_method' || trimmed.startsWith('auth:')) {
+          if (trimmed === 'auth:email') {
+            setPhase('await_username');
+            setQuickReplies([]);
+            pushAssistant(setMessages, 'Enter your account email (username).');
+            setBusy(false);
+            return;
+          }
+          if (trimmed === 'auth:phone') {
+            setPhase('await_phone');
+            setOtpRequestId('');
+            setQuickReplies([
+              {
+                id: 'back-auth',
+                label: 'Back to sign-in options',
+                value: 'auth:back',
+              },
+            ]);
+            pushAssistant(
+              setMessages,
+              'Enter your Kenyan mobile number (e.g. 07… or +254…).',
+            );
+            setBusy(false);
+            return;
+          }
+          if (trimmed === 'auth:ecitizen') {
+            const result = await loginWithMethod({
+              method: 'ecitizen',
+              callbackUrl: pathname || '/',
+            });
+            pushAssistant(
+              setMessages,
+              result.message ||
+                'eCitizen needs browser OAuth. Complete sign-in in the browser, then reopen Help.',
+            );
+            if (result.redirect && typeof window !== 'undefined') {
+              window.location.href = result.redirect;
+            } else {
+              setQuickReplies(AUTH_METHOD_REPLIES);
+              setPhase('await_auth_method');
+            }
+            setBusy(false);
+            return;
+          }
+          if (trimmed === 'auth:back') {
+            startAuthFlow();
+            setBusy(false);
+            return;
+          }
+          if (phase === 'await_auth_method') {
+            pushAssistant(
+              setMessages,
+              'Choose Email / password, Mobile phone (OTP), or eCitizen.',
+            );
+            setQuickReplies(AUTH_METHOD_REPLIES);
+            setBusy(false);
+            return;
+          }
         }
 
         if (phase === 'await_username') {
@@ -270,10 +382,60 @@ export const AssistiveChatbot: FC<{
           if (!result.ok) {
             pushAssistant(
               setMessages,
-              `${result.error || 'Sign-in failed.'}\nEnter your email again to retry.`,
+              `${result.error || 'Sign-in failed.'}\nChoose how to sign in again.`,
             );
-            setPhase('await_username');
-            setUsername('');
+            startAuthFlow();
+            setBusy(false);
+            return;
+          }
+          showSignedInMenu();
+          setBusy(false);
+          return;
+        }
+
+        if (phase === 'await_phone') {
+          const result = await loginWithMethod({
+            method: 'phone_send',
+            phone: trimmed,
+          });
+          if (!result.ok || !result.requestId) {
+            pushAssistant(
+              setMessages,
+              result.error ||
+                'Could not send OTP. Check the number and try again.',
+            );
+            setBusy(false);
+            return;
+          }
+          setOtpRequestId(result.requestId);
+          setPhase('await_otp');
+          setQuickReplies([
+            {
+              id: 'back-auth',
+              label: 'Back to sign-in options',
+              value: 'auth:back',
+            },
+          ]);
+          pushAssistant(
+            setMessages,
+            result.message ||
+              'OTP sent by SMS. Enter the 6-digit code (it stays masked).',
+          );
+          setBusy(false);
+          return;
+        }
+
+        if (phase === 'await_otp') {
+          const result = await loginWithMethod({
+            method: 'phone_verify',
+            requestId: otpRequestId,
+            otp: trimmed,
+          });
+          if (!result.ok) {
+            pushAssistant(
+              setMessages,
+              `${result.error || 'Invalid or expired OTP.'}\nEnter the code again, or go back to sign-in options.`,
+            );
             setBusy(false);
             return;
           }
@@ -362,6 +524,7 @@ export const AssistiveChatbot: FC<{
 
         if (phase === 'apply_choice' && /^(new_app|2)/i.test(trimmed)) {
           setPhase('apply_docs');
+          setAllowPdfOnly(false);
           setQuickReplies([
             {
               id: 'create',
@@ -372,7 +535,7 @@ export const AssistiveChatbot: FC<{
           ]);
           pushAssistant(
             setMessages,
-            'Start a new application at /apply/create. Attach ID/KRA here for an assistive authenticity check.',
+            'Start a new application at /apply/create. Scan ID/KRA with OCR below for an assistive authenticity check.',
           );
           setBusy(false);
           return;
@@ -398,9 +561,25 @@ export const AssistiveChatbot: FC<{
             return;
           }
           const lower = trimmed.toLowerCase();
-          if (lower.includes('kra')) setDocType('kra_pin');
-          else if (lower.includes('passport')) setDocType('passport');
-          else if (lower.includes('id')) setDocType('national_id');
+          if (lower === 'pdf_only' || lower.includes('pdf only')) {
+            setAllowPdfOnly(true);
+            pushAssistant(
+              setMessages,
+              `PDF only (no camera OCR) for ${docTypeLabel(docType)}. Use the PDF attach control below.`,
+            );
+            setBusy(false);
+            return;
+          }
+          if (lower.includes('kra')) {
+            setDocType('kra_pin');
+            setAllowPdfOnly(false);
+          } else if (lower.includes('passport')) {
+            setDocType('passport');
+            setAllowPdfOnly(false);
+          } else if (lower.includes('id')) {
+            setDocType('national_id');
+            setAllowPdfOnly(false);
+          }
           pushAssistant(
             setMessages,
             `Ready for ${
@@ -409,7 +588,7 @@ export const AssistiveChatbot: FC<{
                 : lower.includes('passport')
                   ? 'passport'
                   : 'National ID'
-            } upload. Use Attach below.`,
+            }. Use the OCR scanner below (images), or PDF only if you have a PDF.`,
           );
           setBusy(false);
           return;
@@ -441,16 +620,24 @@ export const AssistiveChatbot: FC<{
       busy,
       phase,
       username,
+      otpRequestId,
+      docType,
       fieldContext,
+      pathname,
       login,
+      loginWithMethod,
       postChat,
       applyServerPayload,
       showSignedInMenu,
+      startAuthFlow,
     ],
   );
 
-  const onUpload = useCallback(
-    async (file: File) => {
+  const uploadFile = useCallback(
+    async (
+      file: File,
+      options?: { ocrPassed?: boolean; ocrConfidence?: number },
+    ) => {
       if (busy) return;
       setBusy(true);
       setMessages((prev) => [
@@ -461,6 +648,10 @@ export const AssistiveChatbot: FC<{
         const form = new FormData();
         form.set('file', file);
         form.set('declaredType', docType);
+        if (options?.ocrPassed) {
+          form.set('ocrPassed', '1');
+          form.set('ocrConfidence', String(options.ocrConfidence ?? 0));
+        }
         if (fieldContext?.appId) {
           form.set('applicationId', fieldContext.appId);
           form.set(
@@ -477,6 +668,8 @@ export const AssistiveChatbot: FC<{
           reply?: string;
           nextHint?: string;
           error?: string;
+          quickReplies?: QuickReply[];
+          phase?: string;
         };
         if (!res.ok) {
           pushAssistant(setMessages, data.error || 'Upload check failed.');
@@ -486,6 +679,10 @@ export const AssistiveChatbot: FC<{
             setMessages,
             `${data.reply || 'Checked.'}\n${data.nextHint || ''}`,
           );
+          if (Array.isArray(data.quickReplies)) {
+            setQuickReplies(data.quickReplies);
+          }
+          if (data.phase === 'field_pick') setPhase('field_pick');
           if (fieldContext?.appId) {
             const again = await postChat({
               action: `stage:${fieldContext.appId}:${fieldContext.stage}`,
@@ -502,7 +699,29 @@ export const AssistiveChatbot: FC<{
     [busy, docType, fieldContext, startAuthFlow, postChat, applyServerPayload],
   );
 
+  const onOcrCaptured = useCallback(
+    (result: OcrCaptureResult) => {
+      void uploadFile(result.file, {
+        ocrPassed: true,
+        ocrConfidence: result.ocr.confidence,
+      });
+    },
+    [uploadFile],
+  );
+
+  const onPdfUpload = useCallback(
+    (file: File) => {
+      void uploadFile(file);
+    },
+    [uploadFile],
+  );
+
   if (hide) return null;
+
+  const ocrLabel =
+    phase === 'await_upload'
+      ? fieldContext?.label || 'document'
+      : docTypeLabel(docType);
 
   return (
     <div className="pointer-events-none fixed bottom-4 right-4 z-[60] flex flex-col items-end gap-2 sm:bottom-6 sm:right-6">
@@ -538,7 +757,7 @@ export const AssistiveChatbot: FC<{
                 {m.content}
               </div>
             ))}
-            {quickReplies.length > 0 && !passwordMode ? (
+            {quickReplies.length > 0 && !sensitiveMode ? (
               <div className="mr-2 flex flex-wrap gap-1.5 pt-1">
                 {quickReplies.map((qr) => (
                   <button
@@ -553,17 +772,53 @@ export const AssistiveChatbot: FC<{
                 ))}
               </div>
             ) : null}
+            {showOcr ? (
+              <div className="space-y-2 pt-1">
+                <OcrDocumentCapture
+                  declaredType={mapDocType(
+                    fieldContext?.uploadCategory ||
+                      fieldContext?.field ||
+                      docType,
+                  )}
+                  label={ocrLabel}
+                  onCaptured={onOcrCaptured}
+                />
+                {phase === 'apply_docs' ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs"
+                      disabled={busy}
+                      onClick={() => {
+                        setAllowPdfOnly(true);
+                        pushAssistant(
+                          setMessages,
+                          `PDF only (no camera OCR) for ${docTypeLabel(docType)}. Attach a PDF below.`,
+                        );
+                      }}
+                    >
+                      PDF only (no camera)
+                    </Button>
+                    <span className="text-[11px] text-muted-foreground">
+                      Images use OCR; PDFs may attach without camera OCR.
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
-          {showUpload ? (
+          {showUpload && allowPdfOnly ? (
             <div className="flex items-center gap-2 border-t px-2 py-1.5">
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/jpeg,image/png,application/pdf"
+                accept="application/pdf"
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) void onUpload(f);
+                  if (f) onPdfUpload(f);
                   e.target.value = '';
                 }}
               />
@@ -575,16 +830,14 @@ export const AssistiveChatbot: FC<{
                 disabled={busy}
                 onClick={() => fileRef.current?.click()}
               >
-                {phase === 'await_upload'
-                  ? `Attach ${fieldContext?.label || 'document'}`
-                  : `Attach ${
-                      docType === 'kra_pin'
-                        ? 'KRA'
-                        : docType === 'passport'
-                          ? 'passport'
-                          : 'ID'
-                    }`}
+                Attach PDF ({docTypeLabel(docType)})
               </Button>
+              <a href="/dashboard" className="text-xs text-sky-800 underline">
+                Open dashboard
+              </a>
+            </div>
+          ) : showUpload ? (
+            <div className="flex items-center gap-2 border-t px-2 py-1.5">
               <a href="/dashboard" className="text-xs text-sky-800 underline">
                 Open dashboard
               </a>
@@ -612,19 +865,40 @@ export const AssistiveChatbot: FC<{
               placeholder={
                 passwordMode
                   ? 'Password'
-                  : phase === 'await_username'
-                    ? 'Email / username'
-                    : phase === 'status_wait'
-                      ? 'Application ID…'
-                      : phase === 'await_field'
-                        ? `Enter ${fieldContext?.label || 'value'}…`
-                        : 'Type a message…'
+                  : otpMode
+                    ? 'OTP code'
+                    : phase === 'await_phone'
+                      ? 'Mobile number…'
+                      : phase === 'await_username'
+                        ? 'Email / username'
+                        : phase === 'await_auth_method'
+                          ? 'Or tap a sign-in option…'
+                          : phase === 'status_wait'
+                            ? 'Application ID…'
+                            : phase === 'await_field'
+                              ? `Enter ${fieldContext?.label || 'value'}…`
+                              : 'Type a message…'
               }
-              type={passwordMode ? 'password' : 'text'}
-              autoComplete={passwordMode ? 'current-password' : 'username'}
+              type={sensitiveMode ? 'password' : 'text'}
+              autoComplete={
+                passwordMode
+                  ? 'current-password'
+                  : otpMode
+                    ? 'one-time-code'
+                    : phase === 'await_phone'
+                      ? 'tel'
+                      : 'username'
+              }
+              inputMode={otpMode ? 'numeric' : undefined}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              aria-label={passwordMode ? 'Password' : 'Chat message'}
+              aria-label={
+                passwordMode
+                  ? 'Password'
+                  : otpMode
+                    ? 'OTP code'
+                    : 'Chat message'
+              }
             />
             <Button type="submit" size="sm" disabled={busy || !input.trim()}>
               Send
