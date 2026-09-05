@@ -9,6 +9,11 @@ import {
   answerAssistiveChat,
 } from '@/lib/assistive-chatbot-faq';
 import type { OcrDocType } from '@/lib/kenyan-id-ocr';
+import {
+  expectedDocLabel,
+  resolveOcrDocType,
+  toAuthenticityDeclaredType,
+} from '@/lib/kenyan-id-ocr';
 import { Button } from '@workspace/ui/components/button';
 import { usePathname } from 'next/navigation';
 import {
@@ -101,15 +106,11 @@ function isMobileViewport(): boolean {
 }
 
 function mapDocType(docType: string): OcrDocType {
-  if (docType === 'kra_pin') return 'kra_pin';
-  if (docType === 'passport') return 'passport';
-  return 'national_id';
+  return resolveOcrDocType(docType);
 }
 
 function docTypeLabel(docType: string): string {
-  if (docType === 'kra_pin') return 'KRA PIN';
-  if (docType === 'passport') return 'passport';
-  return 'National ID';
+  return expectedDocLabel(resolveOcrDocType(docType));
 }
 
 export const AssistiveChatbot: FC<{
@@ -647,7 +648,11 @@ export const AssistiveChatbot: FC<{
       try {
         const form = new FormData();
         form.set('file', file);
-        form.set('declaredType', docType);
+        const fieldKey =
+          fieldContext?.uploadCategory || fieldContext?.field || docType;
+        const ocrType = resolveOcrDocType(fieldKey);
+        form.set('declaredType', toAuthenticityDeclaredType(ocrType));
+        form.set('expectedDocType', ocrType);
         if (options?.ocrPassed) {
           form.set('ocrPassed', '1');
           form.set('ocrConfidence', String(options.ocrConfidence ?? 0));

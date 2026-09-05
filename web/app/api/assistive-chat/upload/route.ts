@@ -60,18 +60,30 @@ export async function POST(request: Request) {
   }
 
   const isImage = (file.type || '').startsWith('image/');
+  const gatedFields = [
+    'groupregistrationcertificate',
+    'listofmembersoncertificate',
+    'groupmeetingminutes',
+    'groupcredithistory',
+    'national_id',
+    'kra_pin',
+    'passport',
+  ];
+  const catKey = category.replace(/[^a-z0-9]/gi, '').toLowerCase();
   const needsOcrGate =
     isImage &&
     (declaredType === 'national_id' ||
       declaredType === 'kra_pin' ||
-      declaredType === 'passport');
+      declaredType === 'passport' ||
+      gatedFields.includes(catKey) ||
+      Boolean(category));
 
   if (needsOcrGate && (!ocrPassed || ocrConfidence < 0.5)) {
     return NextResponse.json(
       {
         ok: false,
         error:
-          'Capture rejected: scan the document in chat until OCR confidence is high enough, then Capture.',
+          'Capture rejected: scan the document required for this field until OCR confidence is high enough, then Capture. Wrong document types stay locked (~20%).',
       },
       { status: 400 },
     );
