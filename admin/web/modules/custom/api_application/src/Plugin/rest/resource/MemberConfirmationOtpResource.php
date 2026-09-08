@@ -2,8 +2,8 @@
 
 namespace Drupal\api_application\Plugin\rest\resource;
 
+use Drupal\rest\ModifiedResourceResponse;
 use Drupal\rest\Plugin\ResourceBase;
-use Drupal\rest\ResourceResponse;
 use Drupal\api_application\Service\WebSmsConfirmationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,14 +66,14 @@ class MemberConfirmationOtpResource extends ResourceBase {
     $nationalIdCode = trim((string) ($payload['national_id_code'] ?? ''));
 
     if (empty($application)) {
-      return new ResourceResponse([
+      return new ModifiedResourceResponse([
         'success' => FALSE,
         'message' => 'Application ID is required.',
       ], 400);
     }
 
     if ($nationalIdCode === '') {
-      return new ResourceResponse([
+      return new ModifiedResourceResponse([
         'success' => FALSE,
         'message' => 'national_id_code is required.',
       ], 400);
@@ -85,13 +85,13 @@ class MemberConfirmationOtpResource extends ResourceBase {
         $nationalIdCode
       );
       $status = !empty($result['success']) ? 200 : 400;
-      return new ResourceResponse($result, $status);
+      return new ModifiedResourceResponse($result, $status);
     }
 
     if ($action === 'verify') {
-      $otpCode = trim((string) ($payload['otp_code'] ?? ''));
+      $otpCode = preg_replace('/\D+/', '', (string) ($payload['otp_code'] ?? ''));
       if (!preg_match('/^\d{6}$/', $otpCode)) {
-        return new ResourceResponse([
+        return new ModifiedResourceResponse([
           'success' => FALSE,
           'message' => 'A valid 6-digit OTP code is required.',
         ], 400);
@@ -103,10 +103,10 @@ class MemberConfirmationOtpResource extends ResourceBase {
         $otpCode
       );
       $status = !empty($result['success']) ? 200 : 400;
-      return new ResourceResponse($result, $status);
+      return new ModifiedResourceResponse($result, $status);
     }
 
-    return new ResourceResponse([
+    return new ModifiedResourceResponse([
       'success' => FALSE,
       'message' => 'Unsupported action. Use send or verify.',
     ], 400);

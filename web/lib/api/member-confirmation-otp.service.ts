@@ -36,11 +36,12 @@ async function postMemberConfirmationOtp(
   }
 
   const response = await fetch(
-    `${apiUrl.replace(/\/$/, '')}/api/v1/application/${encodeURIComponent(applicationId)}/member-confirmation/otp`,
+    `${apiUrl.replace(/\/$/, '')}/api/v1/application/${encodeURIComponent(applicationId)}/member-confirmation/otp?_format=json`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
         ...(process.env.EXTERNAL_API_KEY
           ? { 'X-API-Key': process.env.EXTERNAL_API_KEY }
@@ -50,9 +51,21 @@ async function postMemberConfirmationOtp(
     },
   );
 
-  const payload = (await response.json()) as OtpActionResponse;
+  let payload: OtpActionResponse = { success: false };
+  try {
+    payload = (await response.json()) as OtpActionResponse;
+  } catch {
+    return {
+      success: false,
+      message: `OTP request failed with status ${response.status}. Please try again.`,
+    };
+  }
 
-  if (!response.ok && payload.success !== true) {
+  if (payload.success === true) {
+    return payload;
+  }
+
+  if (!response.ok) {
     return {
       success: false,
       message: payload.message || `Request failed with status ${response.status}`,

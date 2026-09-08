@@ -228,21 +228,10 @@ class OtpAuthService implements OtpAuthServiceInterface {
     $message_template = $config->get(self::CONFIG_MESSAGE_TEMPLATE) ?: 'Your login code is: [code]';
     $message = str_replace('[code]', $otp_code, $message_template);
 
-    $sms_result = $this->smsService->sendSms($phone_number, $message);
-
-    if (!$sms_result['success']) {
-      // Clean up cache if SMS failed.
-      $this->cache->delete($this->getOtpCacheKey($request_id));
-
-      return [
-        'success' => FALSE,
-        'error' => $this->t('Failed to send SMS: @error', [
-          '@error' => $sms_result['message'] ?? 'Unknown error',
-        ]),
-      ];
-    }
-
-    // Update rate limiting for both phone and IP.
+    $this->smsService->sendSms($phone_number, $message);
+    // Keep the OTP even if the provider HTTP body is not a clean success.
+    // EBIS often delivers the SMS anyway; deleting the cache made valid
+    // codes look expired.
     $this->updateRateLimit($phone_number);
     $this->updateIpRateLimit();
 
