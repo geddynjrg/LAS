@@ -54,6 +54,7 @@ type FieldContext = {
   field: string;
   label: string;
   uploadCategory?: string;
+  memberId?: string;
 };
 
 const MAIN_MENU: QuickReply[] = [
@@ -63,6 +64,7 @@ const MAIN_MENU: QuickReply[] = [
     label: '2. Check status of loan application',
     value: 'status',
   },
+  { id: 'new_app', label: '3. New application', value: 'new_app' },
 ];
 
 const APPLY_TYPE: QuickReply[] = [
@@ -454,7 +456,8 @@ export const AssistiveChatbot: FC<{
           if (
             trimmed.startsWith('stage:') ||
             trimmed.startsWith('select_app:') ||
-            trimmed.startsWith('field:')
+            trimmed.startsWith('field:') ||
+            trimmed.startsWith('member:')
           ) {
             applyServerPayload(
               await postChat({ action: trimmed, message: trimmed }),
@@ -470,6 +473,9 @@ export const AssistiveChatbot: FC<{
               appId: fieldContext.appId,
               stage: fieldContext.stage,
               field: fieldContext.field,
+              ...(fieldContext.memberId
+                ? { memberId: fieldContext.memberId }
+                : {}),
             }),
           );
           setBusy(false);
@@ -524,19 +530,16 @@ export const AssistiveChatbot: FC<{
         }
 
         if (phase === 'apply_choice' && /^(new_app|2)/i.test(trimmed)) {
-          setPhase('apply_docs');
-          setAllowPdfOnly(false);
-          setQuickReplies([
-            {
-              id: 'create',
-              label: 'Open /apply/create',
-              value: 'open:/apply/create',
-            },
-            { id: 'menu', label: 'Back to menu', value: 'menu' },
-          ]);
-          pushAssistant(
-            setMessages,
-            'Start a new application at /apply/create. Scan ID/KRA with OCR below for an assistive authenticity check.',
+          applyServerPayload(
+            await postChat({ action: 'new_app', message: 'new_app' }),
+          );
+          setBusy(false);
+          return;
+        }
+
+        if (/^new_app$/i.test(trimmed)) {
+          applyServerPayload(
+            await postChat({ action: 'new_app', message: 'new_app' }),
           );
           setBusy(false);
           return;
@@ -553,6 +556,7 @@ export const AssistiveChatbot: FC<{
             trimmed.startsWith('select_app:') ||
             trimmed.startsWith('stage:') ||
             trimmed.startsWith('field:') ||
+            trimmed.startsWith('member:') ||
             trimmed.startsWith('status_ref:')
           ) {
             applyServerPayload(
@@ -602,6 +606,8 @@ export const AssistiveChatbot: FC<{
         else if (/^select_app:/i.test(trimmed)) action = trimmed;
         else if (/^stage:/i.test(trimmed)) action = trimmed;
         else if (/^field:/i.test(trimmed)) action = trimmed;
+        else if (/^member:/i.test(trimmed)) action = trimmed;
+        else if (/^new_app$/i.test(trimmed)) action = 'new_app';
 
         const data = await postChat({
           action,

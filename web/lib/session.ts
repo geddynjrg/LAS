@@ -76,6 +76,23 @@ export async function updateSession() {
   return newTokens.accessToken;
 }
 
+/** Force a refresh even if the access token still looks unexpired locally. */
+export async function forceRefreshSession(): Promise<string | null> {
+  const { refreshToken } = await getStoredTokens();
+  if (!refreshToken) {
+    return null;
+  }
+
+  const newTokens = await getNewTokens();
+  if (!newTokens || isTokenExpired(newTokens.accessToken)) {
+    await deleteCookies();
+    return null;
+  }
+
+  await createSession(newTokens);
+  return newTokens.accessToken;
+}
+
 export async function invalidateSession() {
   const accessToken = await getSession();
 

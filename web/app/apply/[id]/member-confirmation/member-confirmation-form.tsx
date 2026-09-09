@@ -18,6 +18,18 @@ import { useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
 import { type FC, type ReactNode, useEffect, useState } from 'react';
 
+// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
+
+// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
+
+// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
+
+// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
+
+// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
+
+// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
+
 interface MemberConfirmationDataProps {
   id: string;
   members: Member[];
@@ -172,10 +184,24 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
           ),
         );
       } else {
+        const needReauth =
+          (result as { needReauth?: boolean }).needReauth === true ||
+          /session|log\s*in|jwt|expired/i.test(String(result.message || ''));
         setOtpErrors((prev) => ({
           ...prev,
-          [memberKey]: result.message || 'Failed to send OTP.',
+          [memberKey]: needReauth
+            ? result.message ||
+              'Your login session expired. Please log out, sign in again, then tap Send OTP.'
+            : result.message || 'Failed to send OTP.',
         }));
+        if (needReauth && typeof window !== 'undefined') {
+          // Soft prompt — do not hard-redirect mid-form without user action
+          window.dispatchEvent(
+            new CustomEvent('uwezo:session-expired', {
+              detail: { source: 'member-confirmation-otp' },
+            }),
+          );
+        }
       }
     } catch {
       setOtpErrors((prev) => ({
@@ -223,9 +249,15 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
           [memberKey]: result.message || 'OTP verified successfully.',
         }));
       } else {
+        const needReauth =
+          (result as { needReauth?: boolean }).needReauth === true ||
+          /session|log\s*in|jwt|expired/i.test(String(result.message || ''));
         setOtpErrors((prev) => ({
           ...prev,
-          [memberKey]: result.message || 'Invalid OTP code.',
+          [memberKey]: needReauth
+            ? result.message ||
+              'Your login session expired. Please log out, sign in again, then retry OTP.'
+            : result.message || 'Invalid OTP code.',
         }));
       }
     } catch {
@@ -270,7 +302,9 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
       },
     } as const;
 
-    const key = (status in statusConfig ? status : 'pending') as keyof typeof statusConfig;
+    const key = (
+      status in statusConfig ? status : 'pending'
+    ) as keyof typeof statusConfig;
     const config = statusConfig[key];
 
     return (
@@ -313,8 +347,8 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
           <div className="prose">
             <p>
               Send a 6-digit OTP to each member, then enter the code they
-              receive. When at least 75% of members have verified their OTP,
-              you can proceed to the next step.
+              receive. When at least 75% of members have verified their OTP, you
+              can proceed to the next step.
             </p>
             <p>
               {t.rich('ConfirmationsPage.confirmMembersForm.progress-saved', {
@@ -470,6 +504,19 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
                           {otpErrors[memberKey] ? (
                             <p className="mt-1 text-xs text-red-600">
                               {otpErrors[memberKey]}
+                              {/log\s*in|session|jwt|expired/i.test(
+                                otpErrors[memberKey],
+                              ) ? (
+                                <>
+                                  {' '}
+                                  <a
+                                    href={`/login?callbackUrl=${encodeURIComponent(`/apply/${id}/member-confirmation`)}`}
+                                    className="underline font-medium"
+                                  >
+                                    Log in again
+                                  </a>
+                                </>
+                              ) : null}
                             </p>
                           ) : null}
                           {otpSuccess[memberKey] ? (
