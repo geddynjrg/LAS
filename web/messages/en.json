@@ -306,7 +306,7 @@
     "invalidPhoneFormat": "Please enter a valid phone number (9 digits)",
     "tooManyOtpRequests": "Too many OTP requests. Please try again later.",
     "otpRequestFailed": "OTP request failed",
-    "otpDeliveryFailed": "Unable to send the verification code right now. Please try again later, or log in with eCitizen or email.",
+    "otpDeliveryFailed": "Unable to send the verification code by SMS or email. Please try eCitizen or email/password login.",
     "phoneNumber": "Phone Number",
     "sendOtp": "Send code",
     "changePhoneNumber": "Change phone number",
@@ -316,7 +316,8 @@
     "invalidOtpFormat": "Invalid OTP code format",
     "invalidOrExpiredOtp": "Invalid or expired OTP code",
     "tooManyVerificationAttempts": "Too many verification attempts. Please try again later.",
-    "otpVerificationFailed": "OTP verification failed"
+    "otpVerificationFailed": "OTP verification failed",
+    "otpSentEmail": "SMS unavailable — code sent to your email"
   },
   "SignUpPage": {
     "title": "Create an Account",
@@ -707,6 +708,89 @@
     "title": "Guidance for {step}",
     "subtitle": "What to prepare and common mistakes for this step. Assistive only.",
     "prepareHeading": "Prepare",
-    "mistakesHeading": "Common mistakes"
+    "mistakesHeading": "Common mistakes",
+    "steps": {
+      "group-data": {
+        "title": "Group data",
+        "prepare": {
+          "0": "Have the group registration certificate, members list, and meeting minutes ready.",
+          "1": "Confirm county, constituency, ward, and meeting point.",
+          "2": "Match the group name and registration number to the certificate."
+        },
+        "mistakes": {
+          "0": "Uploading unclear scans or empty placeholder files.",
+          "1": "Selecting the wrong constituency for the group location.",
+          "2": "Typing a registration number that does not match the certificate."
+        }
+      },
+      "members": {
+        "title": "Group members",
+        "prepare": {
+          "0": "Collect each member’s National ID and mobile number.",
+          "1": "Assign chairperson, secretary, and treasurer correctly.",
+          "2": "Use phones that can receive SMS confirmation."
+        },
+        "mistakes": {
+          "0": "Reusing the same phone or National ID within the group.",
+          "1": "Wrong mobile digits that block SMS confirmation.",
+          "2": "Leaving required officer roles unassigned."
+        }
+      },
+      "loan-conditions": {
+        "title": "Loan conditions",
+        "prepare": {
+          "0": "Agree the loan amount and repayment period with members.",
+          "1": "Confirm the group bank account details if required."
+        },
+        "mistakes": {
+          "0": "Requesting an amount the group cannot justify.",
+          "1": "Mismatched repayment period versus group capacity."
+        }
+      },
+      "proposed-business": {
+        "title": "Proposed business",
+        "prepare": {
+          "0": "Describe the business activities clearly and honestly.",
+          "1": "Link activities to the group’s purpose and value chain."
+        },
+        "mistakes": {
+          "0": "Vague or copy-pasted business descriptions.",
+          "1": "Activities that do not match the group type."
+        }
+      },
+      "member-confirmation": {
+        "title": "Member confirmation",
+        "prepare": {
+          "0": "Ensure every member has a valid phone for SMS links.",
+          "1": "Brief members before they receive confirmation messages."
+        },
+        "mistakes": {
+          "0": "Sending confirmations before member details are correct.",
+          "1": "Using phones members cannot access."
+        }
+      },
+      "confirmations": {
+        "title": "Confirmations",
+        "prepare": {
+          "0": "Track who has confirmed or declined.",
+          "1": "Follow up with pending members promptly."
+        },
+        "mistakes": {
+          "0": "Submitting while required confirmations are still pending.",
+          "1": "Ignoring declined members without updating the group."
+        }
+      },
+      "review": {
+        "title": "Review & submit",
+        "prepare": {
+          "0": "Review every section for accuracy before submit.",
+          "1": "Confirm documents and member details are complete."
+        },
+        "mistakes": {
+          "0": "Submitting with placeholder documents.",
+          "1": "Skipping a final check of phone numbers and IDs."
+        }
+      }
+    }
   }
 }

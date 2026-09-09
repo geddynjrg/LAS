@@ -190,6 +190,22 @@ export const PhoneLoginForm: FC<PhoneLoginFormProps> = ({
               {phoneErrorMessage}
             </p>
           )}
+          {(state as { needEmail?: boolean }).needEmail ? (
+            <div className="mt-3 flex w-full flex-col gap-1">
+              <label className={cn(labelVariants(), 'mb-1 font-bold')}>
+                Email for OTP failover
+              </label>
+              <Input
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder="name@example.com"
+              />
+              <p className="text-xs text-neutral-600">
+                SMS was unavailable. Enter the email linked to this phone.
+              </p>
+            </div>
+          ) : null}
         </div>
       )}
 

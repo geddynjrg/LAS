@@ -109,6 +109,7 @@ export async function middleware(request: NextRequest) {
     '/api/applications',
     '/api/test',
     '/api/assistive-chat',
+    '/api/auth/qr',
   ];
   const isInternalRoute = internalApiRoutes.some((route) =>
     path.startsWith(route),
