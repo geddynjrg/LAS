@@ -239,7 +239,7 @@ class OtpAuthService implements OtpAuthServiceInterface {
     $message = str_replace('[code]', $otp_code, $message_template);
 
     $sms_result = $this->smsService->sendSms($phone_number, $message);
-    // Dual-channel: also notify signed-in Uwezo Fund app (inbox/FCM) when configured.
+    // Also notify signed-in Uwezo Fund app (inbox/FCM).
     $this->notifyAppPushOtp($phone_number, $message, $email);
     if (!empty($sms_result['success'])) {
       $this->updateRateLimit($phone_number);
@@ -263,36 +263,60 @@ class OtpAuthService implements OtpAuthServiceInterface {
     ]);
 
     $resolved_email = $this->normalizeEmail($email) ?: $this->findEmailForPhone($phone_number);
-    if (!$resolved_email) {
+    if ($resolved_email) {
+      if ($this->sendOtpEmail($resolved_email, $otp_code)) {
+        $this->updateRateLimit($phone_number);
+        $this->updateIpRateLimit();
+        $masked = $this->maskEmail($resolved_email);
+        return [
+          'success' => TRUE,
+          'request_id' => $request_id,
+          'delivery_channel' => 'email',
+          'masked_email' => $masked,
+          'message' => $this->t('SMS unavailable — we sent a code to your email (@email). Enter it here.', [
+            '@email' => $masked,
+          ]),
+          'expires_in' => $expiry,
+        ];
+      }
+      \Drupal::logger('api_auth')->warning('OTP email failed for @phone; attempting Uwezo Fund app delivery.', [
+        '@phone' => $this->maskPhoneNumber($phone_number),
+      ]);
+      if ($this->notifyAppPushOtp($phone_number, $message, $resolved_email)) {
+        $this->updateRateLimit($phone_number);
+        $this->updateIpRateLimit();
+        return [
+          'success' => TRUE,
+          'request_id' => $request_id,
+          'delivery_channel' => 'app',
+          'message' => $this->t('SMS and email were unavailable — we sent your login code to the Uwezo Fund app. Open the app (check Notifications) and enter the 6-digit code here.'),
+          'expires_in' => $expiry,
+        ];
+      }
       $this->cache->delete($this->getOtpCacheKey($request_id));
       return [
         'success' => FALSE,
-        'need_email' => TRUE,
-        'error' => $this->t('SMS unavailable. Provide the email linked to this phone to receive a code, or use eCitizen / password login.'),
+        'error' => $this->t('SMS, email, and Uwezo Fund app delivery all failed. Try eCitizen or email/password login.'),
       ];
     }
 
-    if (!$this->sendOtpEmail($resolved_email, $otp_code)) {
-      $this->cache->delete($this->getOtpCacheKey($request_id));
+    if ($this->notifyAppPushOtp($phone_number, $message, $email)) {
+      $this->updateRateLimit($phone_number);
+      $this->updateIpRateLimit();
       return [
-        'success' => FALSE,
-        'error' => $this->t('SMS and email delivery both failed. Try eCitizen or email/password login.'),
+        'success' => TRUE,
+        'request_id' => $request_id,
+        'delivery_channel' => 'app',
+        'message' => $this->t('SMS unavailable — we sent your login code to the Uwezo Fund app. Open the app (check Notifications) and enter the 6-digit code here.'),
+        'expires_in' => $expiry,
       ];
     }
 
-    $this->updateRateLimit($phone_number);
-    $this->updateIpRateLimit();
-    $masked = $this->maskEmail($resolved_email);
-
+    $this->cache->delete($this->getOtpCacheKey($request_id));
     return [
-      'success' => TRUE,
-      'request_id' => $request_id,
-      'delivery_channel' => 'email',
-      'masked_email' => $masked,
-      'message' => $this->t('SMS unavailable — we sent a code to your email (@email). Enter it here.', [
-        '@email' => $masked,
-      ]),
-      'expires_in' => $expiry,
+      'success' => FALSE,
+      'need_email' => TRUE,
+      'error' => $this->t('SMS unavailable. Provide the email linked to this phone, open the Uwezo Fund app if signed in, or use eCitizen / password login.'),
     ];
   }
 
@@ -654,15 +678,20 @@ class OtpAuthService implements OtpAuthServiceInterface {
     return !empty($uids);
   }
 
-
   /**
-   * Best-effort app push companion for EBIS OTP SMS.
+   * Notify signed-in Uwezo Fund app (inbox/FCM).
+   *
+   * Returns TRUE when a device was targeted.
    */
-  protected function notifyAppPushOtp(string $phone_number, string $message, ?string $email = NULL): void {
+  protected function notifyAppPushOtp(
+    string $phone_number,
+    string $message,
+    ?string $email = NULL,
+  ): bool {
     $url = getenv('APP_PUSH_NOTIFY_URL') ?: '';
     $secret = getenv('APP_PUSH_WEBHOOK_SECRET') ?: '';
     if ($url === '' || $secret === '') {
-      return;
+      return FALSE;
     }
     try {
       $payload = json_encode([
@@ -681,11 +710,17 @@ class OtpAuthService implements OtpAuthServiceInterface {
       curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-      curl_exec($ch);
+      $raw = curl_exec($ch);
+      $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
       curl_close($ch);
+      if ($code < 200 || $code >= 300 || !is_string($raw) || $raw === '') {
+        return FALSE;
+      }
+      $json = json_decode($raw, TRUE);
+      return !empty($json['delivered']) || (!empty($json['devices']) && (int) $json['devices'] > 0);
     }
     catch (\Throwable $e) {
-      // Non-fatal.
+      return FALSE;
     }
   }
 

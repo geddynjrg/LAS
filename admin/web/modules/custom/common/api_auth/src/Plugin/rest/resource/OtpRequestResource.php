@@ -97,9 +97,10 @@ class OtpRequestResource extends ResourceBase {
     }
 
     $phone_number = trim($data['phone_number']);
+    $email = isset($data['email']) ? trim((string) $data['email']) : NULL;
 
-    // Request OTP via the service.
-    $result = $this->otpAuthService->requestOtp($phone_number);
+    // Request OTP via the service (SMS first, email failover).
+    $result = $this->otpAuthService->requestOtp($phone_number, $email ?: NULL);
 
     if (!$result['success']) {
       $this->logger->warning('OTP request failed for phone @phone: @error', [
@@ -107,22 +108,34 @@ class OtpRequestResource extends ResourceBase {
         '@error' => $result['error'],
       ]);
 
-      return new ModifiedResourceResponse([
+      $payload = [
         'success' => FALSE,
         'error' => $result['error'],
-      ], 400);
+      ];
+      if (!empty($result['need_email'])) {
+        $payload['need_email'] = TRUE;
+      }
+
+      return new ModifiedResourceResponse($payload, 400);
     }
 
-    $this->logger->info('OTP request successful for phone @phone', [
+    $this->logger->info('OTP request successful for phone @phone via @channel', [
       '@phone' => $phone_number,
+      '@channel' => $result['delivery_channel'] ?? 'sms',
     ]);
 
-    return new ModifiedResourceResponse([
+    $response = [
       'success' => TRUE,
       'request_id' => $result['request_id'],
       'message' => $result['message'],
       'expires_in' => $result['expires_in'],
-    ], 200);
+      'delivery_channel' => $result['delivery_channel'] ?? 'sms',
+    ];
+    if (!empty($result['masked_email'])) {
+      $response['masked_email'] = $result['masked_email'];
+    }
+
+    return new ModifiedResourceResponse($response, 200);
   }
 
 }

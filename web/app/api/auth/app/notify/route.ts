@@ -19,7 +19,8 @@ export async function POST(request: Request) {
       NextResponse.json(
         {
           ok: false,
-          error: 'Unauthorized. Set APP_PUSH_WEBHOOK_SECRET and pass it as Bearer token.',
+          error:
+            'Unauthorized. Set APP_PUSH_WEBHOOK_SECRET and pass it as Bearer token.',
           env: pushEnvDocs(),
         },
         { status: 401 },
@@ -54,8 +55,10 @@ export async function POST(request: Request) {
     request,
     NextResponse.json({
       ok: true,
+      delivered: result.delivered,
       inboxKeys: result.inboxKeys,
       devices: result.devices,
+      fcmSent: result.fcmSent,
       fcm: result.fcm,
       fcmConfigured: result.fcmConfigured,
     }),

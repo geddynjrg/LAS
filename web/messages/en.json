@@ -306,7 +306,7 @@
     "invalidPhoneFormat": "Please enter a valid phone number (9 digits)",
     "tooManyOtpRequests": "Too many OTP requests. Please try again later.",
     "otpRequestFailed": "OTP request failed",
-    "otpDeliveryFailed": "Unable to send the verification code by SMS or email. Please try eCitizen or email/password login.",
+    "otpDeliveryFailed": "Unable to send the verification code by SMS, email, or the Uwezo Fund app. Please try eCitizen or email/password login.",
     "phoneNumber": "Phone Number",
     "sendOtp": "Send code",
     "changePhoneNumber": "Change phone number",
@@ -317,7 +317,8 @@
     "invalidOrExpiredOtp": "Invalid or expired OTP code",
     "tooManyVerificationAttempts": "Too many verification attempts. Please try again later.",
     "otpVerificationFailed": "OTP verification failed",
-    "otpSentEmail": "SMS unavailable — code sent to your email"
+    "otpSentEmail": "SMS unavailable — code sent to your email",
+    "otpSentApp": "SMS/email unavailable — code sent to the Uwezo Fund app. Open the app and check Notifications."
   },
   "SignUpPage": {
     "title": "Create an Account",

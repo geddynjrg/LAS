@@ -7,7 +7,7 @@ const OtpRequestResponseSchema = z.object({
   message: z.string().optional(),
   expires_in: z.number().optional(),
   phone_number: z.string().optional(),
-  delivery_channel: z.enum(['sms', 'email']).optional(),
+  delivery_channel: z.enum(['sms', 'email', 'app']).optional(),
   masked_email: z.string().optional(),
   need_email: z.boolean().optional(),
   error: z.string().optional(),
@@ -17,7 +17,7 @@ export type OtpRequestResult = z.infer<typeof OtpRequestResponseSchema> & {
   request_id: string;
   message: string;
   expires_in: number;
-  delivery_channel?: 'sms' | 'email';
+  delivery_channel?: 'sms' | 'email' | 'app';
   masked_email?: string;
 };
 
@@ -99,7 +99,7 @@ export async function requestOtp(data: { phone: string; email?: string }) {
     ) {
       throw new OtpNeedEmailError(
         apiError ||
-          'SMS unavailable. Enter the email linked to this phone to receive a code, or use eCitizen / password login.',
+          'SMS unavailable. Enter the email linked to this phone, open the Uwezo Fund app if signed in, or use eCitizen / password login.',
       );
     }
 
@@ -149,7 +149,9 @@ export async function requestOtp(data: { phone: string; email?: string }) {
       responseData.message ||
       (responseData.delivery_channel === 'email'
         ? t('otpSentEmail')
-        : t('otpSent')),
+        : responseData.delivery_channel === 'app'
+          ? t('otpSentApp')
+          : t('otpSent')),
     expires_in: responseData.expires_in ?? 300,
     delivery_channel: responseData.delivery_channel,
     masked_email: responseData.masked_email,

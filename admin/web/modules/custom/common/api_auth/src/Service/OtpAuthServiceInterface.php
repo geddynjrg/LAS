@@ -43,20 +43,20 @@ interface OtpAuthServiceInterface {
   public function isValidRequest(string $request_id): bool;
 
   /**
-   * Initiates an OTP request for a phone number.
+   * Requests an OTP for the given phone number.
+   *
+   * Tries SMS first; on failure falls back to the account email (or optional
+   * email argument). WhatsApp failover is not enabled yet.
    *
    * @param string $phone_number
-   *   The phone number to send the OTP to.
+   *   The phone number.
+   * @param string|null $email
+   *   Optional email for failover when SMS fails and no linked email exists.
    *
    * @return array
-   *   An array containing:
-   *   - success: Boolean indicating success/failure
-   *   - request_id: Unique identifier for this OTP request
-   *   - message: Human-readable message
-   *   - expires_in: Time until OTP expires in seconds
-   *   - error: Error message if success is false
+   *   Result payload with success flag and request metadata.
    */
-  public function requestOtp(string $phone_number): array;
+  public function requestOtp(string $phone_number, ?string $email = NULL): array;
 
   /**
    * Verifies an OTP code and logs in the user.

@@ -439,7 +439,7 @@ export const AssistiveChatbot: FC<{
             pushAssistant(
               setMessages,
               result.error ||
-                'SMS unavailable. Enter the email linked to this phone to receive a code (or use eCitizen / password).',
+                'SMS unavailable. Enter the email linked to this phone, open the Uwezo Fund app if signed in, or use eCitizen / password.',
             );
             setBusy(false);
             return;
@@ -447,7 +447,7 @@ export const AssistiveChatbot: FC<{
           if (!result.ok || !result.requestId) {
             pushAssistant(
               setMessages,
-              `${result.error || 'Could not send OTP. Check the number and try again.'}\nYou can also use eCitizen or email/password.`,
+              `${result.error || 'Could not send OTP. Check the number and try again.'}\nIf the Uwezo Fund app is signed in, check Notifications there; otherwise try eCitizen or email/password.`,
             );
             setBusy(false);
             return;
@@ -464,7 +464,7 @@ export const AssistiveChatbot: FC<{
           pushAssistant(
             setMessages,
             result.message ||
-              'OTP sent by SMS. Enter the 6-digit code (it stays masked).',
+              'OTP sent. Enter the 6-digit code (it stays masked).',
           );
           setBusy(false);
           return;
@@ -479,7 +479,7 @@ export const AssistiveChatbot: FC<{
           if (!result.ok || !result.requestId) {
             pushAssistant(
               setMessages,
-              `${result.error || 'Could not send the code by email.'}\nTry another email, or use eCitizen / password login.`,
+              `${result.error || 'Could not send the code by email.'}\nIf signed into the Uwezo Fund app, check Notifications there; otherwise try eCitizen / password login.`,
             );
             setBusy(false);
             return;

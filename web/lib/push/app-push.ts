@@ -22,13 +22,17 @@ export type PushMessage = {
 };
 
 function deviceStore(): Map<string, PushDevice> {
-  const g = globalThis as unknown as { __appPushDevices?: Map<string, PushDevice> };
+  const g = globalThis as unknown as {
+    __appPushDevices?: Map<string, PushDevice>;
+  };
   if (!g.__appPushDevices) g.__appPushDevices = new Map();
   return g.__appPushDevices;
 }
 
 function inboxStore(): Map<string, PushMessage[]> {
-  const g = globalThis as unknown as { __appPushInbox?: Map<string, PushMessage[]> };
+  const g = globalThis as unknown as {
+    __appPushInbox?: Map<string, PushMessage[]>;
+  };
   if (!g.__appPushInbox) g.__appPushInbox = new Map();
   return g.__appPushInbox;
 }
@@ -71,7 +75,8 @@ export function listInbox(input: {
 }
 
 async function sendFcm(token: string, title: string, body: string) {
-  const serverKey = process.env.FCM_SERVER_KEY || process.env.FIREBASE_SERVER_KEY || '';
+  const serverKey =
+    process.env.FCM_SERVER_KEY || process.env.FIREBASE_SERVER_KEY || '';
   if (!serverKey) {
     return { sent: false, reason: 'FCM_SERVER_KEY not configured' as const };
   }
@@ -90,7 +95,10 @@ async function sendFcm(token: string, title: string, body: string) {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
-    return { sent: false, reason: `FCM HTTP ${res.status}: ${text.slice(0, 120)}` as const };
+    return {
+      sent: false,
+      reason: `FCM HTTP ${res.status}: ${text.slice(0, 120)}` as const,
+    };
   }
   return { sent: true as const };
 }
@@ -135,31 +143,59 @@ export async function notifyAppUser(input: {
 
   const devices = [...deviceStore().values()].filter((d) => {
     if (input.userId && d.userId === input.userId) return true;
-    if (input.phone && d.phone && d.phone.replace(/\D/g, '') === input.phone.replace(/\D/g, ''))
-      return true;
     if (
-      input.email &&
-      d.email &&
-      d.email === input.email.trim().toLowerCase()
+      input.phone &&
+      d.phone &&
+      d.phone.replace(/\D/g, '') === input.phone.replace(/\D/g, '')
     )
+      return true;
+    if (input.email && d.email && d.email === input.email.trim().toLowerCase())
       return true;
     return false;
   });
 
   const fcmResults = [];
+  let fcmSent = 0;
   for (const d of devices) {
-    fcmResults.push(await sendFcm(d.token, input.title, input.body));
+    const r = await sendFcm(d.token, input.title, input.body);
+    fcmResults.push(r);
+    if (r.sent) fcmSent += 1;
   }
+
+  // Delivered if at least one registered device is linked to this phone/email
+  // (inbox is always written for that device's poll), or FCM accepted.
+  const delivered = devices.length > 0;
 
   return {
     ok: true,
+    delivered,
     inboxKeys: keys,
     devices: devices.length,
+    fcmSent,
     fcm: fcmResults,
     fcmConfigured: Boolean(
       process.env.FCM_SERVER_KEY || process.env.FIREBASE_SERVER_KEY,
     ),
   };
+}
+
+export function countRegisteredDevices(input: {
+  phone?: string;
+  email?: string;
+  userId?: string;
+}): number {
+  return [...deviceStore().values()].filter((d) => {
+    if (input.userId && d.userId === input.userId) return true;
+    if (
+      input.phone &&
+      d.phone &&
+      d.phone.replace(/\D/g, '') === input.phone.replace(/\D/g, '')
+    )
+      return true;
+    if (input.email && d.email && d.email === input.email.trim().toLowerCase())
+      return true;
+    return false;
+  }).length;
 }
 
 export function pushEnvDocs() {

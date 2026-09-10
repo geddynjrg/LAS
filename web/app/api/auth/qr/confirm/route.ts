@@ -1,11 +1,11 @@
+import { login } from '@/lib/api/login';
+import { verifyOtp } from '@/lib/api/otp-verify';
+import { optionsCors, withCors } from '@/lib/auth/cors-app';
 import {
   confirmQrChallenge,
   getQrChallenge,
   isQrLoginEnabled,
 } from '@/lib/auth/qr-login';
-import { optionsCors, withCors } from '@/lib/auth/cors-app';
-import { login } from '@/lib/api/login';
-import { verifyOtp } from '@/lib/api/otp-verify';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -96,6 +96,16 @@ export async function POST(request: Request) {
 
   let tokens: { accessToken: string; refreshToken: string } | null = null;
   const method = String(body.method || 'phone_verify').toLowerCase();
+  const bearer = (request.headers.get('authorization') || '').replace(
+    /^Bearer\s+/i,
+    '',
+  );
+  const presentedAccess = String(
+    body.accessToken || body.access_token || bearer || '',
+  ).trim();
+  const presentedRefresh = String(
+    body.refreshToken || body.refresh_token || '',
+  ).trim();
 
   try {
     if (method === 'phone_verify' || method === 'otp_verify') {
@@ -133,6 +143,57 @@ export async function POST(request: Request) {
       tokens = {
         accessToken: res.data.access_token,
         refreshToken: res.data.refresh_token,
+      };
+    } else if (
+      method === 'session' ||
+      method === 'bearer' ||
+      method === 'access_token'
+    ) {
+      // Option A: reuse tokens from the already signed-in app session.
+      if (!presentedAccess || !presentedRefresh) {
+        return withCors(
+          request,
+          NextResponse.json(
+            {
+              ok: false,
+              needAuth: true,
+              error:
+                'App session tokens missing. Sign in again, or verify with OTP/password.',
+            },
+            { status: 401 },
+          ),
+        );
+      }
+      // Lightweight validation against Drupal profile API.
+      const apiUrl = (process.env.API_URL || '').replace(/\/$/, '');
+      if (apiUrl) {
+        const profile = await fetch(`${apiUrl}/api/v1/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${presentedAccess}`,
+            Accept: 'application/json',
+            ...(process.env.EXTERNAL_API_KEY
+              ? { 'X-API-Key': process.env.EXTERNAL_API_KEY }
+              : {}),
+          },
+        });
+        if (!profile.ok) {
+          return withCors(
+            request,
+            NextResponse.json(
+              {
+                ok: false,
+                needAuth: true,
+                error:
+                  'App session expired. Sign in again, then rescan the QR.',
+              },
+              { status: 401 },
+            ),
+          );
+        }
+      }
+      tokens = {
+        accessToken: presentedAccess,
+        refreshToken: presentedRefresh,
       };
     } else {
       return withCors(
