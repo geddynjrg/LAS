@@ -5,6 +5,7 @@ namespace Drupal\api_auth\Service;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\sms_providers\Service\SmsServiceInterface;
 use Drupal\user\UserInterface;
@@ -64,6 +65,11 @@ class OtpAuthService implements OtpAuthServiceInterface {
   protected SmsServiceInterface $smsService;
 
   /**
+   * The mail manager.
+   */
+  protected MailManagerInterface $mailManager;
+
+  /**
    * Constructs an OtpAuthService object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -76,6 +82,8 @@ class OtpAuthService implements OtpAuthServiceInterface {
    *   The JWT service.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
    *   The cache backend.
+   * @param \Drupal\Core\Mail\MailManagerInterface $mail_manager
+   *   The mail manager (email OTP failover).
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -83,12 +91,14 @@ class OtpAuthService implements OtpAuthServiceInterface {
     SmsServiceInterface $sms_service,
     ApiJwtService $jwt_service,
     CacheBackendInterface $cache,
+    MailManagerInterface $mail_manager,
   ) {
     $this->configFactory = $config_factory;
     $this->entityTypeManager = $entity_type_manager;
     $this->smsService = $sms_service;
     $this->jwtService = $jwt_service;
     $this->cache = $cache;
+    $this->mailManager = $mail_manager;
   }
 
   /**
@@ -175,7 +185,7 @@ class OtpAuthService implements OtpAuthServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function requestOtp(string $phone_number): array {
+  public function requestOtp(string $phone_number, ?string $email = NULL): array {
     // Validate phone number format.
     if (!$this->isValidPhoneNumber($phone_number)) {
       return [
@@ -224,22 +234,63 @@ class OtpAuthService implements OtpAuthServiceInterface {
       [self::CACHE_TAG_OTP]
     );
 
-    // Send SMS.
+    // Send SMS first.
     $message_template = $config->get(self::CONFIG_MESSAGE_TEMPLATE) ?: 'Your login code is: [code]';
     $message = str_replace('[code]', $otp_code, $message_template);
 
-    $this->smsService->sendSms($phone_number, $message);
-    // Keep the OTP even if the provider HTTP body is not a clean success.
-    // EBIS often delivers the SMS anyway; deleting the cache made valid
-    // codes look expired.
+    $sms_result = $this->smsService->sendSms($phone_number, $message);
+    // Dual-channel: also notify signed-in Uwezo Fund app (inbox/FCM) when configured.
+    $this->notifyAppPushOtp($phone_number, $message, $email);
+    if (!empty($sms_result['success'])) {
+      $this->updateRateLimit($phone_number);
+      $this->updateIpRateLimit();
+
+      return [
+        'success' => TRUE,
+        'request_id' => $request_id,
+        'delivery_channel' => 'sms',
+        'message' => $this->t('Verification code sent by SMS to @phone', [
+          '@phone' => $this->maskPhoneNumber($phone_number),
+        ]),
+        'expires_in' => $expiry,
+      ];
+    }
+
+    // SMS failed — email failover (same OTP). WhatsApp is not used yet
+    // (Meta Business API still test-only for this tenant).
+    \Drupal::logger('api_auth')->warning('OTP SMS failed for @phone; attempting email failover.', [
+      '@phone' => $this->maskPhoneNumber($phone_number),
+    ]);
+
+    $resolved_email = $this->normalizeEmail($email) ?: $this->findEmailForPhone($phone_number);
+    if (!$resolved_email) {
+      $this->cache->delete($this->getOtpCacheKey($request_id));
+      return [
+        'success' => FALSE,
+        'need_email' => TRUE,
+        'error' => $this->t('SMS unavailable. Provide the email linked to this phone to receive a code, or use eCitizen / password login.'),
+      ];
+    }
+
+    if (!$this->sendOtpEmail($resolved_email, $otp_code)) {
+      $this->cache->delete($this->getOtpCacheKey($request_id));
+      return [
+        'success' => FALSE,
+        'error' => $this->t('SMS and email delivery both failed. Try eCitizen or email/password login.'),
+      ];
+    }
+
     $this->updateRateLimit($phone_number);
     $this->updateIpRateLimit();
+    $masked = $this->maskEmail($resolved_email);
 
     return [
       'success' => TRUE,
       'request_id' => $request_id,
-      'message' => $this->t('Verification code sent to @phone', [
-        '@phone' => $this->maskPhoneNumber($phone_number),
+      'delivery_channel' => 'email',
+      'masked_email' => $masked,
+      'message' => $this->t('SMS unavailable — we sent a code to your email (@email). Enter it here.', [
+        '@email' => $masked,
       ]),
       'expires_in' => $expiry,
     ];
@@ -428,6 +479,96 @@ class OtpAuthService implements OtpAuthServiceInterface {
   }
 
   /**
+   * Masks an email for display (a***@domain).
+   */
+  protected function maskEmail(string $email): string {
+    $email = trim($email);
+    $at = strpos($email, '@');
+    if ($at === FALSE || $at === 0) {
+      return '***';
+    }
+    $local = substr($email, 0, $at);
+    $domain = substr($email, $at + 1);
+    $visible = substr($local, 0, 1);
+    return $visible . '***@' . $domain;
+  }
+
+  /**
+   * Normalizes and validates an email address.
+   */
+  protected function normalizeEmail(?string $email): ?string {
+    $email = strtolower(trim((string) $email));
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return NULL;
+    }
+    return $email;
+  }
+
+  /**
+   * Finds the account email linked to a phone number, if any.
+   */
+  protected function findEmailForPhone(string $phone_number): ?string {
+    $config = $this->configFactory->get('api_auth.settings');
+    $phone_field = $config->get(self::CONFIG_PHONE_FIELD) ?: 'field_phone_number';
+    $digits = preg_replace('/\D+/', '', $phone_number) ?: '';
+    $variants = array_values(array_unique(array_filter([
+      $phone_number,
+      ltrim($phone_number, '+'),
+      $digits !== '' ? '+' . $digits : NULL,
+      $digits,
+      (str_starts_with($digits, '254') && strlen($digits) === 12)
+        ? ('0' . substr($digits, 3))
+        : NULL,
+    ])));
+
+    $user_storage = $this->entityTypeManager->getStorage('user');
+    foreach ($variants as $variant) {
+      $uids = $user_storage->getQuery()
+        ->condition($phone_field, $variant)
+        ->condition('status', 1)
+        ->accessCheck(FALSE)
+        ->range(0, 1)
+        ->execute();
+      if (empty($uids)) {
+        continue;
+      }
+      /** @var \Drupal\user\UserInterface|null $user */
+      $user = $user_storage->load(reset($uids));
+      if ($user) {
+        $mail = $this->normalizeEmail($user->getEmail());
+        if ($mail) {
+          return $mail;
+        }
+      }
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Sends the OTP code by email via Drupal's mail system.
+   *
+   * Does not log the OTP code.
+   */
+  protected function sendOtpEmail(string $email, string $otp_code): bool {
+    $params = [
+      'subject' => 'Your Uwezo Fund login code',
+      // Body built in hook_mail; code via params (not logged).
+      'otp_code' => $otp_code,
+    ];
+    $result = $this->mailManager->mail(
+      'api_auth',
+      'otp_login',
+      $email,
+      'en',
+      $params,
+      NULL,
+      TRUE
+    );
+    return !empty($result['result']);
+  }
+
+  /**
    * Checks if a phone number already exists for any user.
    *
    * @param string $phone_number
@@ -511,6 +652,41 @@ class OtpAuthService implements OtpAuthServiceInterface {
     $uids = $query->execute();
 
     return !empty($uids);
+  }
+
+
+  /**
+   * Best-effort app push companion for EBIS OTP SMS.
+   */
+  protected function notifyAppPushOtp(string $phone_number, string $message, ?string $email = NULL): void {
+    $url = getenv('APP_PUSH_NOTIFY_URL') ?: '';
+    $secret = getenv('APP_PUSH_WEBHOOK_SECRET') ?: '';
+    if ($url === '' || $secret === '') {
+      return;
+    }
+    try {
+      $payload = json_encode([
+        'kind' => 'otp',
+        'title' => 'Uwezo Fund login code',
+        'body' => $message,
+        'phone' => $phone_number,
+        'email' => $email,
+      ]);
+      $ch = curl_init($url);
+      curl_setopt($ch, CURLOPT_POST, TRUE);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $secret,
+      ]);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+      curl_exec($ch);
+      curl_close($ch);
+    }
+    catch (\Throwable $e) {
+      // Non-fatal.
+    }
   }
 
 }

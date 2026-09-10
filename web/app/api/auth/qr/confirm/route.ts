@@ -116,7 +116,9 @@ export async function POST(request: Request) {
         refreshToken: result.refresh_token,
       };
     } else if (method === 'password' || method === 'email') {
-      const username = String(body.username || body.email || '').trim();
+      const username = String(body.username || body.email || '')
+        .trim()
+        .toLowerCase();
       const password = String(body.password || '');
       if (!username || !password) {
         return withCors(

@@ -22,8 +22,8 @@ const MAX_TTL_MS = 120000;
 const MIN_TTL_MS = 60000;
 const resolvedTtl = Math.min(MAX_TTL_MS, Math.max(MIN_TTL_MS, TTL_MS));
 
-/** Keep QR login available for user testing through tomorrow 3:00 PM EAT. */
-const DEFAULT_UNTIL = '2026-09-10T15:00:00+03:00';
+/** Keep QR login available for user testing through Mon 14 Sep 2026 23:59:59 EAT. */
+const DEFAULT_UNTIL = '2026-09-14T23:59:59+03:00';
 
 function getStore(): Map<string, QrChallengeRecord> {
   const g = globalThis as unknown as {
