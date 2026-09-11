@@ -39,6 +39,7 @@ services:
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://${WEB_DOMAIN:-localhost}}
       - EXTERNAL_API_KEY=${EXTERNAL_API_KEY:-}
       - APP_PUSH_WEBHOOK_SECRET=${APP_PUSH_WEBHOOK_SECRET:-${EXTERNAL_API_KEY}}
+      - APP_PUSH_STORE_PATH=/app/web/uploads/app-push.json
     env_file:
       - .env
     volumes:

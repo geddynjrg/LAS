@@ -1,15 +1,38 @@
-import { optionsCors, withCors } from '@/lib/auth/cors-app';
 import { login } from '@/lib/api/login';
-import { register } from '@/lib/api/register';
-import { passwordResetRequest } from '@/lib/api/password-reset-request';
 import { verifyOtp } from '@/lib/api/otp-verify';
+import { passwordResetRequest } from '@/lib/api/password-reset-request';
+import { register } from '@/lib/api/register';
+import { optionsCors, withCors } from '@/lib/auth/cors-app';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
+function isExistingAccountError(message: string) {
+  return /already exist|duplicate|taken|registered|username.*exist|email.*exist|mail.*exist/i.test(
+    message,
+  );
+}
+
+async function loginLoansAccount(email: string, password: string) {
+  const usernames = [email, email.split('@')[0] || email].filter(
+    (value, index, all) => all.indexOf(value) === index,
+  );
+  let lastError: unknown;
+  for (const username of usernames) {
+    try {
+      return await login({ username, password });
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new Error('Invalid email or password');
+}
+
 /**
  * Loans app account endpoints (Option A) via Drupal.
- * login_or_register attempts login, then register+login when missing.
+ * login_or_register attempts login, then register+login only when the account is missing.
  */
 export async function POST(request: Request) {
   let body: Record<string, unknown> = {};
@@ -41,29 +64,45 @@ export async function POST(request: Request) {
         );
       }
       try {
-        const res = await login({ username: email, password });
+        const res = await loginLoansAccount(email, password);
         return withCors(
           request,
           NextResponse.json({
             ok: true,
             accessToken: res.data.access_token,
             refreshToken: res.data.refresh_token,
+            access_token: res.data.access_token,
+            refresh_token: res.data.refresh_token,
             created: false,
             message: 'Signed in.',
           }),
         );
       } catch (loginErr) {
         if (body.createIfMissing === false) throw loginErr;
-        // Upsert: create then login.
-        const username = email.split('@')[0] || email;
-        await register({ username, email, password });
-        const res = await login({ username: email, password });
+        try {
+          const username = email.split('@')[0] || email;
+          await register({ username, email, password });
+        } catch (registerErr) {
+          const registerMessage =
+            registerErr instanceof Error ? registerErr.message : '';
+          if (isExistingAccountError(registerMessage)) {
+            throw new Error(
+              loginErr instanceof Error && loginErr.message
+                ? loginErr.message
+                : 'Could not sign in. This email is already registered — check the password or use Reset password.',
+            );
+          }
+          throw registerErr;
+        }
+        const res = await loginLoansAccount(email, password);
         return withCors(
           request,
           NextResponse.json({
             ok: true,
             accessToken: res.data.access_token,
             refreshToken: res.data.refresh_token,
+            access_token: res.data.access_token,
+            refresh_token: res.data.refresh_token,
             created: true,
             phone,
             message: 'Account created and signed in.',
@@ -138,7 +177,10 @@ export async function POST(request: Request) {
 
     return withCors(
       request,
-      NextResponse.json({ ok: false, error: 'Unknown action.' }, { status: 400 }),
+      NextResponse.json(
+        { ok: false, error: 'Unknown action.' },
+        { status: 400 },
+      ),
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Account action failed';

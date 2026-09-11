@@ -464,7 +464,7 @@ export const AssistiveChatbot: FC<{
           pushAssistant(
             setMessages,
             result.message ||
-              'OTP sent. Enter the 6-digit code (it stays masked).',
+              'OTP sent by SMS and to the Uwezo Fund app if you stayed signed in. Enter the 6-digit code (it stays masked).',
           );
           setBusy(false);
           return;

@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 export type PushDevice = {
   token: string;
@@ -21,27 +23,106 @@ export type PushMessage = {
   meta?: Record<string, string>;
 };
 
-function deviceStore(): Map<string, PushDevice> {
+const STORE_PATH =
+  process.env.APP_PUSH_STORE_PATH || '/tmp/uwezo-app-push.json';
+
+const DEFAULT_PEER_NOTIFY_URLS = [
+  'https://loans.uwezo.go.ke/api/auth/app/notify',
+  'https://majuu.uwezo.go.ke/api/auth/app/notify',
+  'https://loans-staging.uwezo.go.ke/api/auth/app/notify',
+];
+
+type Stores = {
+  devices: Map<string, PushDevice>;
+  inbox: Map<string, PushMessage[]>;
+};
+
+function stores(): Stores {
   const g = globalThis as unknown as {
     __appPushDevices?: Map<string, PushDevice>;
+    __appPushInbox?: Map<string, PushMessage[]>;
+    __appPushHydrated?: boolean;
   };
   if (!g.__appPushDevices) g.__appPushDevices = new Map();
-  return g.__appPushDevices;
+  if (!g.__appPushInbox) g.__appPushInbox = new Map();
+  if (!g.__appPushHydrated) {
+    g.__appPushHydrated = true;
+    hydrateFromDisk(g.__appPushDevices, g.__appPushInbox);
+  }
+  return { devices: g.__appPushDevices, inbox: g.__appPushInbox };
 }
 
-function inboxStore(): Map<string, PushMessage[]> {
-  const g = globalThis as unknown as {
-    __appPushInbox?: Map<string, PushMessage[]>;
-  };
-  if (!g.__appPushInbox) g.__appPushInbox = new Map();
-  return g.__appPushInbox;
+function hydrateFromDisk(
+  devices: Map<string, PushDevice>,
+  inbox: Map<string, PushMessage[]>,
+) {
+  try {
+    if (!existsSync(STORE_PATH)) return;
+    const parsed = JSON.parse(readFileSync(STORE_PATH, 'utf8')) as {
+      devices?: PushDevice[];
+      inbox?: Array<{ key: string; items: PushMessage[] }>;
+    };
+    for (const d of parsed.devices || []) {
+      if (d?.token) devices.set(d.token, d);
+    }
+    for (const row of parsed.inbox || []) {
+      if (row?.key && Array.isArray(row.items)) inbox.set(row.key, row.items);
+    }
+  } catch (e) {
+    console.warn('[app-push] could not load store', e);
+  }
+}
+
+function persistToDisk() {
+  try {
+    const { devices, inbox } = stores();
+    mkdirSync(dirname(STORE_PATH), { recursive: true });
+    writeFileSync(
+      STORE_PATH,
+      JSON.stringify({
+        devices: [...devices.values()],
+        inbox: [...inbox.entries()].map(([key, items]) => ({ key, items })),
+      }),
+      { encoding: 'utf8', mode: 0o600 },
+    );
+  } catch (e) {
+    console.warn('[app-push] could not persist store', e);
+  }
+}
+
+/** Canonical Kenyan mobile digits: 2547XXXXXXXX */
+export function kenyanMsisdnDigits(raw?: string): string {
+  if (!raw) return '';
+  let d = raw.replace(/\D/g, '');
+  if (d.startsWith('2540') && d.length === 13) d = `254${d.slice(4)}`;
+  if (d.startsWith('0') && d.length === 10) d = `254${d.slice(1)}`;
+  if (d.length === 9 && d.startsWith('7')) d = `254${d}`;
+  return d;
+}
+
+function phoneKeys(phone?: string): string[] {
+  const canonical = kenyanMsisdnDigits(phone);
+  if (!canonical) return [];
+  const keys = new Set<string>([`p:${canonical}`]);
+  const raw = String(phone || '').replace(/\D/g, '');
+  if (raw) keys.add(`p:${raw}`);
+  if (canonical.startsWith('254') && canonical.length === 12) {
+    keys.add(`p:0${canonical.slice(3)}`);
+    keys.add(`p:${canonical.slice(3)}`);
+  }
+  return [...keys];
+}
+
+function allKeys(parts: { phone?: string; email?: string; userId?: string }) {
+  const keys: string[] = [];
+  if (parts.userId) keys.push(`u:${parts.userId}`);
+  keys.push(...phoneKeys(parts.phone));
+  if (parts.email) keys.push(`e:${parts.email.trim().toLowerCase()}`);
+  return [...new Set(keys.filter(Boolean))];
 }
 
 function keyFor(parts: { phone?: string; email?: string; userId?: string }) {
-  if (parts.userId) return `u:${parts.userId}`;
-  if (parts.phone) return `p:${parts.phone.replace(/\D/g, '')}`;
-  if (parts.email) return `e:${parts.email.trim().toLowerCase()}`;
-  return '';
+  return allKeys(parts)[0] || '';
 }
 
 export function registerPushDevice(input: {
@@ -53,14 +134,16 @@ export function registerPushDevice(input: {
 }) {
   const token = input.token.trim();
   if (!token) throw new Error('deviceToken is required');
-  deviceStore().set(token, {
+  const msisdn = kenyanMsisdnDigits(input.phone);
+  stores().devices.set(token, {
     token,
     platform: input.platform || 'android',
     email: input.email?.trim().toLowerCase(),
-    phone: input.phone,
+    phone: msisdn ? `+${msisdn}` : input.phone,
     userId: input.userId,
     updatedAt: Date.now(),
   });
+  persistToDisk();
   return { ok: true };
 }
 
@@ -69,9 +152,22 @@ export function listInbox(input: {
   email?: string;
   userId?: string;
 }) {
-  const k = keyFor(input);
-  if (!k) return [];
-  return inboxStore().get(k) || [];
+  const keys = allKeys(input);
+  if (!keys.length) return [];
+  const inbox = stores().inbox;
+  const byId = new Map<string, PushMessage>();
+  for (const k of keys) {
+    for (const msg of inbox.get(k) || []) {
+      byId.set(msg.id, msg);
+    }
+  }
+  return [...byId.values()].sort((a, b) => b.createdAt - a.createdAt);
+}
+
+function phonesMatch(a?: string, b?: string) {
+  const x = kenyanMsisdnDigits(a);
+  const y = kenyanMsisdnDigits(b);
+  return Boolean(x && y && x === y);
 }
 
 async function sendFcm(token: string, title: string, body: string) {
@@ -103,6 +199,74 @@ async function sendFcm(token: string, title: string, body: string) {
   return { sent: true as const };
 }
 
+function selfNotifyUrls(): string[] {
+  return [
+    process.env.APP_PUSH_SELF_NOTIFY_URL,
+    process.env.NEXT_PUBLIC_APP_URL
+      ? `${String(process.env.NEXT_PUBLIC_APP_URL).replace(/\/$/, '')}/api/auth/app/notify`
+      : '',
+    process.env.APP_URL
+      ? `${String(process.env.APP_URL).replace(/\/$/, '')}/api/auth/app/notify`
+      : '',
+  ]
+    .map((u) => String(u || '').trim())
+    .filter(Boolean);
+}
+
+function peerNotifyUrls(): string[] {
+  const extra = String(process.env.APP_PUSH_PEER_NOTIFY_URLS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const self = new Set(selfNotifyUrls());
+  return [...new Set([...DEFAULT_PEER_NOTIFY_URLS, ...extra])].filter(
+    (url) => !self.has(url),
+  );
+}
+
+async function fanoutToPeers(input: {
+  title: string;
+  body: string;
+  kind: 'otp' | 'loan_status' | 'system';
+  phone?: string;
+  email?: string;
+  userId?: string;
+}) {
+  if (process.env.APP_PUSH_FANOUT === 'false') return;
+  const secret = process.env.APP_PUSH_WEBHOOK_SECRET || '';
+  if (!secret) return;
+  const urls = peerNotifyUrls();
+  await Promise.allSettled(
+    urls.map(async (url) => {
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), 2500);
+      try {
+        await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${secret}`,
+            'X-Uwezo-App-Push-Fanout': '1',
+          },
+          body: JSON.stringify({
+            kind: input.kind,
+            title: input.title,
+            body: input.body,
+            phone: input.phone,
+            email: input.email,
+            userId: input.userId,
+          }),
+          signal: ac.signal,
+        });
+      } catch {
+        // Peer may be down or use a different webhook secret.
+      } finally {
+        clearTimeout(timer);
+      }
+    }),
+  );
+}
+
 /**
  * Deliver OTP / loan status to registered app devices.
  * Always stores an in-app inbox copy; also attempts FCM when configured.
@@ -115,6 +279,7 @@ export async function notifyAppUser(input: {
   email?: string;
   userId?: string;
   meta?: Record<string, string>;
+  skipFanout?: boolean;
 }) {
   const msg: PushMessage = {
     id: randomUUID(),
@@ -128,27 +293,23 @@ export async function notifyAppUser(input: {
     meta: input.meta,
   };
 
-  const keys = [
-    keyFor({ userId: input.userId }),
-    keyFor({ phone: input.phone }),
-    keyFor({ email: input.email }),
-  ].filter(Boolean);
+  const keys = allKeys({
+    userId: input.userId,
+    phone: input.phone,
+    email: input.email,
+  });
 
-  const inbox = inboxStore();
+  const { inbox, devices: deviceMap } = stores();
   for (const k of keys) {
     const list = inbox.get(k) || [];
     list.unshift(msg);
     inbox.set(k, list.slice(0, 50));
   }
+  persistToDisk();
 
-  const devices = [...deviceStore().values()].filter((d) => {
+  const devices = [...deviceMap.values()].filter((d) => {
     if (input.userId && d.userId === input.userId) return true;
-    if (
-      input.phone &&
-      d.phone &&
-      d.phone.replace(/\D/g, '') === input.phone.replace(/\D/g, '')
-    )
-      return true;
+    if (phonesMatch(input.phone, d.phone)) return true;
     if (input.email && d.email && d.email === input.email.trim().toLowerCase())
       return true;
     return false;
@@ -162,9 +323,19 @@ export async function notifyAppUser(input: {
     if (r.sent) fcmSent += 1;
   }
 
-  // Delivered if at least one registered device is linked to this phone/email
-  // (inbox is always written for that device's poll), or FCM accepted.
-  const delivered = devices.length > 0;
+  if (!input.skipFanout) {
+    await fanoutToPeers({
+      title: input.title,
+      body: input.body,
+      kind: input.kind,
+      phone: input.phone,
+      email: input.email,
+      userId: input.userId,
+    });
+  }
+
+  // Inbox is written for polling even when FCM is off / no device token yet.
+  const delivered = keys.length > 0;
 
   return {
     ok: true,
@@ -184,14 +355,9 @@ export function countRegisteredDevices(input: {
   email?: string;
   userId?: string;
 }): number {
-  return [...deviceStore().values()].filter((d) => {
+  return [...stores().devices.values()].filter((d) => {
     if (input.userId && d.userId === input.userId) return true;
-    if (
-      input.phone &&
-      d.phone &&
-      d.phone.replace(/\D/g, '') === input.phone.replace(/\D/g, '')
-    )
-      return true;
+    if (phonesMatch(input.phone, d.phone)) return true;
     if (input.email && d.email && d.email === input.email.trim().toLowerCase())
       return true;
     return false;
@@ -204,5 +370,11 @@ export function pushEnvDocs() {
       'Legacy FCM server key for HTTP push (optional). Without it, OTP/status still land in app inbox API.',
     FIREBASE_SERVER_KEY: 'Alias of FCM_SERVER_KEY',
     APP_PUSH_ENABLED: 'Set to "false" to disable dual SMS+push delivery',
+    APP_PUSH_STORE_PATH:
+      'JSON file used so inbox/devices survive process restarts',
+    APP_PUSH_PEER_NOTIFY_URLS:
+      'Comma-separated extra notify URLs (majuu/loans/staging)',
   };
 }
+
+export { keyFor };

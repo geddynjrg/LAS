@@ -58,19 +58,19 @@ export async function POST(request: Request) {
         phone: normalized,
         email: email || undefined,
       });
-      if (process.env.APP_PUSH_ENABLED !== "false") {
+      if (process.env.APP_PUSH_ENABLED !== 'false') {
         try {
-          const { notifyAppUser } = await import("@/lib/push/app-push");
+          const { notifyAppUser } = await import('@/lib/push/app-push');
           await notifyAppUser({
-            title: "Uwezo Fund OTP",
-            body: "Your login code was sent by SMS. Open Notifications in the app if you are signed in.",
-            kind: "otp",
+            title: 'Uwezo Fund OTP',
+            body: 'Your login code was sent by SMS. Open Notifications in the app if you are signed in.',
+            kind: 'otp',
             phone: normalized,
             email: email || undefined,
             meta: { requestId: result.request_id },
           });
         } catch (err) {
-          console.warn("[assistive-chat] app push notify failed", err);
+          console.warn('[assistive-chat] app push notify failed', err);
         }
       }
       return withCors(
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
           maskedEmail: result.masked_email || null,
           message:
             result.message ||
-            'OTP sent by SMS. Enter the 6-digit code here. First-time numbers follow the same account creation as portal phone login.',
+            'OTP sent by SMS (and to the Uwezo Fund app if you stayed signed in). Enter the 6-digit code here. First-time numbers follow the same account creation as portal phone login.',
         }),
       );
     } catch (e) {

@@ -49,6 +49,7 @@ export async function POST(request: Request) {
     phone: body.phone ? String(body.phone) : undefined,
     email: body.email ? String(body.email) : undefined,
     userId: body.userId ? String(body.userId) : undefined,
+    skipFanout: request.headers.get('x-uwezo-app-push-fanout') === '1',
   });
 
   return withCors(
