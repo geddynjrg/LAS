@@ -22,8 +22,8 @@ const MAX_TTL_MS = 120000;
 const MIN_TTL_MS = 60000;
 const resolvedTtl = Math.min(MAX_TTL_MS, Math.max(MIN_TTL_MS, TTL_MS));
 
-/** Keep QR login available for user testing through Mon 14 Sep 2026 23:59:59 EAT. */
-const DEFAULT_UNTIL = '2026-09-14T23:59:59+03:00';
+/** QR login stays enabled unless QR_LOGIN_ENABLED_UNTIL is a parseable cutoff date. */
+const INDEFINITE = 'indefinite';
 
 function getStore(): Map<string, QrChallengeRecord> {
   const g = globalThis as unknown as {
@@ -35,11 +35,19 @@ function getStore(): Map<string, QrChallengeRecord> {
   return g.__qrChallengeStore;
 }
 
-export function isQrLoginEnabled(now = Date.now()): boolean {
-  const untilRaw =
+function resolveEnabledUntil(): string {
+  return (
     process.env.QR_LOGIN_ENABLED_UNTIL ||
     process.env.NEXT_PUBLIC_QR_LOGIN_ENABLED_UNTIL ||
-    DEFAULT_UNTIL;
+    INDEFINITE
+  );
+}
+
+export function isQrLoginEnabled(now = Date.now()): boolean {
+  const untilRaw = resolveEnabledUntil().trim();
+  if (!untilRaw || /^(never|indefinite|unlimited|permanent)$/i.test(untilRaw)) {
+    return true;
+  }
   const until = Date.parse(untilRaw);
   if (Number.isNaN(until)) return true;
   return now <= until;
@@ -49,10 +57,7 @@ export function getQrConfig() {
   return {
     ttlMs: resolvedTtl,
     pollMs: POLL_MS,
-    enabledUntil:
-      process.env.QR_LOGIN_ENABLED_UNTIL ||
-      process.env.NEXT_PUBLIC_QR_LOGIN_ENABLED_UNTIL ||
-      DEFAULT_UNTIL,
+    enabledUntil: resolveEnabledUntil(),
   };
 }
 
