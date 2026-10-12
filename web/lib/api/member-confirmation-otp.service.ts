@@ -54,6 +54,7 @@ async function callOtpEndpoint(
         ...(process.env.EXTERNAL_API_KEY
           ? { 'X-API-Key': process.env.EXTERNAL_API_KEY }
           : {}),
+        ...(body.client ? { 'X-Uwezo-Client': body.client } : {}),
       },
       body: JSON.stringify(body),
     },
@@ -153,10 +154,13 @@ export async function verifyMemberConfirmationOtp(
   applicationId: string,
   nationalIdCode: string,
   otpCode: string,
+  client: 'uwezo_app' | 'loans_portal' = 'loans_portal',
 ): Promise<OtpActionResponse> {
   return postMemberConfirmationOtp(applicationId, {
     action: 'verify',
     national_id_code: nationalIdCode,
     otp_code: otpCode,
+    client,
+    source_hint: client,
   });
 }

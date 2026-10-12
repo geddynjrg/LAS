@@ -1,5 +1,31 @@
 import { getTranslations } from 'next-intl/server';
+import { headers } from 'next/headers';
 import { z } from 'zod';
+
+async function otpRequestHeaders(): Promise<Record<string, string>> {
+  const out: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (process.env.EXTERNAL_API_KEY) {
+    out['X-API-Key'] = process.env.EXTERNAL_API_KEY;
+  }
+  try {
+    const h = await headers();
+    const raw =
+      h.get('x-forwarded-for') ||
+      h.get('x-real-ip') ||
+      h.get('cf-connecting-ip') ||
+      '';
+    const ip = raw.split(',')[0]?.trim();
+    if (ip) {
+      out['X-Forwarded-For'] = ip;
+      out['X-Real-IP'] = ip;
+    }
+  } catch {
+    // Not in a request context (scripts/tests).
+  }
+  return out;
+}
 
 const OtpRequestResponseSchema = z.object({
   success: z.boolean(),
@@ -55,9 +81,7 @@ export async function requestOtp(data: { phone: string; email?: string }) {
     try {
       response = await fetch(OTP_REQUEST, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: await otpRequestHeaders(),
         body: JSON.stringify(body),
       });
     } finally {
@@ -70,9 +94,7 @@ export async function requestOtp(data: { phone: string; email?: string }) {
   } else {
     response = await fetch(OTP_REQUEST, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: await otpRequestHeaders(),
       body: JSON.stringify(body),
     });
   }
@@ -103,7 +125,7 @@ export async function requestOtp(data: { phone: string; email?: string }) {
       );
     }
 
-    if (response.status === 429) {
+    if (response.status === 429 || /too many requests/i.test(apiError)) {
       throw new Error(t('tooManyOtpRequests'));
     }
 

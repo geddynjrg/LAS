@@ -150,7 +150,44 @@ export async function POST(request: Request) {
       method === 'access_token'
     ) {
       // Option A: reuse tokens from the already signed-in app session.
-      if (!presentedAccess || !presentedRefresh) {
+      const apiUrl = (process.env.API_URL || '').replace(/\/$/, '');
+      const apiHeaders = {
+        Accept: 'application/json',
+        ...(process.env.EXTERNAL_API_KEY
+          ? { 'X-API-Key': process.env.EXTERNAL_API_KEY }
+          : {}),
+      };
+
+      async function refreshLoansTokens(refreshToken: string) {
+        if (!apiUrl || !refreshToken) return null;
+        const refreshed = await fetch(`${apiUrl}/api/v1/user/token/refresh`, {
+          method: 'POST',
+          headers: {
+            ...apiHeaders,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        });
+        if (!refreshed.ok) return null;
+        const json = (await refreshed.json().catch(() => ({}))) as {
+          data?: { access_token?: string; refresh_token?: string };
+        };
+        const accessToken = String(json.data?.access_token || '');
+        const nextRefresh = String(json.data?.refresh_token || refreshToken);
+        if (!accessToken) return null;
+        return { accessToken, refreshToken: nextRefresh };
+      }
+
+      let access = presentedAccess;
+      let refresh = presentedRefresh;
+      if (!access && refresh) {
+        const renewed = await refreshLoansTokens(refresh);
+        if (renewed) {
+          access = renewed.accessToken;
+          refresh = renewed.refreshToken;
+        }
+      }
+      if (!access || !refresh) {
         return withCors(
           request,
           NextResponse.json(
@@ -158,42 +195,42 @@ export async function POST(request: Request) {
               ok: false,
               needAuth: true,
               error:
-                'App session tokens missing. Sign in again, or verify with OTP/password.',
+                'Could not confirm with the saved app session. Verify with OTP or email/password — you do not need to sign out of the app.',
             },
             { status: 401 },
           ),
         );
       }
-      // Lightweight validation against Drupal profile API.
-      const apiUrl = (process.env.API_URL || '').replace(/\/$/, '');
       if (apiUrl) {
         const profile = await fetch(`${apiUrl}/api/v1/user/profile`, {
           headers: {
-            Authorization: `Bearer ${presentedAccess}`,
-            Accept: 'application/json',
-            ...(process.env.EXTERNAL_API_KEY
-              ? { 'X-API-Key': process.env.EXTERNAL_API_KEY }
-              : {}),
+            ...apiHeaders,
+            Authorization: `Bearer ${access}`,
           },
         });
         if (!profile.ok) {
-          return withCors(
-            request,
-            NextResponse.json(
-              {
-                ok: false,
-                needAuth: true,
-                error:
-                  'App session expired. Sign in again, then rescan the QR.',
-              },
-              { status: 401 },
-            ),
-          );
+          const renewed = await refreshLoansTokens(refresh);
+          if (!renewed) {
+            return withCors(
+              request,
+              NextResponse.json(
+                {
+                  ok: false,
+                  needAuth: true,
+                  error:
+                    'Could not confirm with the saved app session. Verify with OTP or email/password — you do not need to sign out of the app.',
+                },
+                { status: 401 },
+              ),
+            );
+          }
+          access = renewed.accessToken;
+          refresh = renewed.refreshToken;
         }
       }
       tokens = {
-        accessToken: presentedAccess,
-        refreshToken: presentedRefresh,
+        accessToken: access,
+        refreshToken: refresh,
       };
     } else {
       return withCors(
@@ -243,6 +280,8 @@ export async function POST(request: Request) {
     NextResponse.json({
       ok: true,
       status: 'confirmed',
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
       message:
         'Confirmed. Return to the browser — it will finish signing you in automatically.',
     }),

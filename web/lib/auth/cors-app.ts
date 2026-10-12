@@ -1,34 +1,16 @@
 import { NextResponse } from 'next/server';
 
-const ALLOWED = new Set([
-  'capacitor://localhost',
-  'ionic://localhost',
-  'http://localhost',
-  'https://localhost',
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:8080',
-]);
-
-function isAppOrigin(origin: string) {
-  return (
-    ALLOWED.has(origin) ||
-    origin.endsWith('.uwezo.go.ke') ||
-    origin.includes('localhost') ||
-    origin.startsWith('capacitor:') ||
-    origin.startsWith('ionic:')
-  );
-}
-
 export function corsHeaders(request: Request): HeadersInit {
   const origin = request.headers.get('origin') || '';
-  const allow = !origin ? '*' : isAppOrigin(origin) ? origin : '';
-  if (!allow) return {};
+  // App login returns JWTs in JSON (credentials: omit). Reflect any Capacitor/WebView origin.
+  const allow = !origin || origin === 'null' ? '*' : origin;
   return {
     'Access-Control-Allow-Origin': allow,
     'Access-Control-Allow-Credentials': allow === '*' ? 'false' : 'true',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
+    'Access-Control-Allow-Headers':
+      'Content-Type, Authorization, Accept, Origin, X-Requested-With, X-API-Key',
+    'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
 }

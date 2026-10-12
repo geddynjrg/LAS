@@ -27,9 +27,9 @@ const STORE_PATH =
   process.env.APP_PUSH_STORE_PATH || '/tmp/uwezo-app-push.json';
 
 const DEFAULT_PEER_NOTIFY_URLS = [
-  'https://loans.uwezo.go.ke/api/auth/app/notify',
-  'https://majuu.uwezo.go.ke/api/auth/app/notify',
-  'https://loans-staging.uwezo.go.ke/api/auth/app/notify',
+  'http://prod-web:3000/api/auth/app/notify',
+  'http://web:3000/api/auth/app/notify',
+  'http://majuu-applicant-portal:3000/api/auth/app/notify',
 ];
 
 type Stores = {
@@ -121,6 +121,29 @@ function allKeys(parts: { phone?: string; email?: string; userId?: string }) {
   return [...new Set(keys.filter(Boolean))];
 }
 
+function otpDigits(body?: string): string {
+  const match = String(body || '').match(/\b(\d{6})\b/);
+  return match?.[1] ?? '';
+}
+
+function recentOtpDuplicate(
+  inbox: Map<string, PushMessage[]>,
+  keys: string[],
+  input: { body: string; kind: string; phone?: string },
+): PushMessage | null {
+  if (input.kind !== 'otp') return null;
+  const code = otpDigits(input.body);
+  if (!code) return null;
+  const cutoff = Date.now() - 15 * 60 * 1000;
+  for (const k of keys) {
+    for (const msg of inbox.get(k) || []) {
+      if (msg.kind !== 'otp' || msg.createdAt < cutoff) continue;
+      if (otpDigits(msg.body) === code) return msg;
+    }
+  }
+  return null;
+}
+
 function keyFor(parts: { phone?: string; email?: string; userId?: string }) {
   return allKeys(parts)[0] || '';
 }
@@ -200,6 +223,15 @@ async function sendFcm(token: string, title: string, body: string) {
 }
 
 function selfNotifyUrls(): string[] {
+  const app =
+    `${process.env.NEXT_PUBLIC_APP_URL || ''} ${process.env.APP_URL || ''}`.toLowerCase();
+  const extra: string[] = [];
+  if (app.includes('loans-staging'))
+    extra.push('http://web:3000/api/auth/app/notify');
+  else if (app.includes('loans.uwezo'))
+    extra.push('http://prod-web:3000/api/auth/app/notify');
+  if (app.includes('majuu'))
+    extra.push('http://majuu-applicant-portal:3000/api/auth/app/notify');
   return [
     process.env.APP_PUSH_SELF_NOTIFY_URL,
     process.env.NEXT_PUBLIC_APP_URL
@@ -208,6 +240,7 @@ function selfNotifyUrls(): string[] {
     process.env.APP_URL
       ? `${String(process.env.APP_URL).replace(/\/$/, '')}/api/auth/app/notify`
       : '',
+    ...extra,
   ]
     .map((u) => String(u || '').trim())
     .filter(Boolean);
@@ -281,6 +314,39 @@ export async function notifyAppUser(input: {
   meta?: Record<string, string>;
   skipFanout?: boolean;
 }) {
+  const keys = allKeys({
+    userId: input.userId,
+    phone: input.phone,
+    email: input.email,
+  });
+
+  const { inbox, devices: deviceMap } = stores();
+  const duplicate = recentOtpDuplicate(inbox, keys, input);
+  if (duplicate) {
+    if (!input.skipFanout) {
+      await fanoutToPeers({
+        title: input.title,
+        body: input.body,
+        kind: input.kind,
+        phone: input.phone,
+        email: input.email,
+        userId: input.userId,
+      });
+    }
+    return {
+      ok: true,
+      delivered: true,
+      duplicate: true,
+      inboxKeys: keys,
+      devices: 0,
+      fcmSent: 0,
+      fcm: [],
+      fcmConfigured: Boolean(
+        process.env.FCM_SERVER_KEY || process.env.FIREBASE_SERVER_KEY,
+      ),
+    };
+  }
+
   const msg: PushMessage = {
     id: randomUUID(),
     title: input.title,
@@ -293,13 +359,6 @@ export async function notifyAppUser(input: {
     meta: input.meta,
   };
 
-  const keys = allKeys({
-    userId: input.userId,
-    phone: input.phone,
-    email: input.email,
-  });
-
-  const { inbox, devices: deviceMap } = stores();
   for (const k of keys) {
     const list = inbox.get(k) || [];
     list.unshift(msg);

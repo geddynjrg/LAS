@@ -1,3 +1,4 @@
+import { appSetPassword } from '@/lib/api/app-set-password';
 import { login } from '@/lib/api/login';
 import { verifyOtp } from '@/lib/api/otp-verify';
 import { passwordResetRequest } from '@/lib/api/password-reset-request';
@@ -30,9 +31,22 @@ async function loginLoansAccount(email: string, password: string) {
     : new Error('Invalid email or password');
 }
 
+function tokensFromDrupal(res: {
+  data: { access_token: string; refresh_token: string };
+}) {
+  return {
+    ok: true,
+    accessToken: res.data.access_token,
+    refreshToken: res.data.refresh_token,
+    access_token: res.data.access_token,
+    refresh_token: res.data.refresh_token,
+  };
+}
+
 /**
  * Loans app account endpoints (Option A) via Drupal.
- * login_or_register attempts login, then register+login only when the account is missing.
+ * login_or_register attempts login, then saves a password on passwordless
+ * eCitizen accounts, then register+login only when the account is missing.
  */
 export async function POST(request: Request) {
   let body: Record<string, unknown> = {};
@@ -68,17 +82,33 @@ export async function POST(request: Request) {
         return withCors(
           request,
           NextResponse.json({
-            ok: true,
-            accessToken: res.data.access_token,
-            refreshToken: res.data.refresh_token,
-            access_token: res.data.access_token,
-            refresh_token: res.data.refresh_token,
+            ...tokensFromDrupal(res),
             created: false,
             message: 'Signed in.',
           }),
         );
       } catch (loginErr) {
         if (body.createIfMissing === false) throw loginErr;
+        const attached = await appSetPassword({ email, password, phone }).catch(
+          (setErr) => {
+            const msg = setErr instanceof Error ? setErr.message : '';
+            if (/invalid email or password/i.test(msg)) return null;
+            throw setErr;
+          },
+        );
+        if (attached) {
+          return withCors(
+            request,
+            NextResponse.json({
+              ...tokensFromDrupal(attached),
+              created: attached.created,
+              phone,
+              message: attached.created
+                ? 'Password saved and you are signed in.'
+                : 'Signed in.',
+            }),
+          );
+        }
         try {
           const username = email.split('@')[0] || email;
           await register({ username, email, password });
@@ -98,11 +128,7 @@ export async function POST(request: Request) {
         return withCors(
           request,
           NextResponse.json({
-            ok: true,
-            accessToken: res.data.access_token,
-            refreshToken: res.data.refresh_token,
-            access_token: res.data.access_token,
-            refresh_token: res.data.refresh_token,
+            ...tokensFromDrupal(res),
             created: true,
             phone,
             message: 'Account created and signed in.',
@@ -150,6 +176,69 @@ export async function POST(request: Request) {
       );
     }
 
+    if (action === 'refresh') {
+      const refreshToken = String(
+        body.refreshToken || body.refresh_token || '',
+      ).trim();
+      if (!refreshToken) {
+        return withCors(
+          request,
+          NextResponse.json(
+            { ok: false, error: 'refreshToken is required.' },
+            { status: 400 },
+          ),
+        );
+      }
+      const apiUrl = (process.env.API_URL || '').replace(/\/$/, '');
+      if (!apiUrl) {
+        throw new Error('Token refresh is not configured.');
+      }
+      const refreshed = await fetch(`${apiUrl}/api/v1/user/token/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(process.env.EXTERNAL_API_KEY
+            ? { 'X-API-Key': process.env.EXTERNAL_API_KEY }
+            : {}),
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      const json = (await refreshed.json().catch(() => ({}))) as {
+        data?: { access_token?: string; refresh_token?: string };
+        error?: string;
+        message?: string;
+      };
+      const accessToken = String(json.data?.access_token || '');
+      const nextRefresh = String(json.data?.refresh_token || '');
+      if (!refreshed.ok || !accessToken || !nextRefresh) {
+        return withCors(
+          request,
+          NextResponse.json(
+            {
+              ok: false,
+              error:
+                json.error ||
+                json.message ||
+                'Session could not be renewed. Stay in the app and scan again.',
+            },
+            { status: 401 },
+          ),
+        );
+      }
+      return withCors(
+        request,
+        NextResponse.json({
+          ok: true,
+          accessToken,
+          refreshToken: nextRefresh,
+          access_token: accessToken,
+          refresh_token: nextRefresh,
+          message: 'Session renewed.',
+        }),
+      );
+    }
+
     if (action === 'reset_request') {
       if (!email) {
         return withCors(
@@ -163,14 +252,39 @@ export async function POST(request: Request) {
       try {
         await passwordResetRequest({ email });
       } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
         console.warn('[app/account] reset request', e);
+        if (/too many/i.test(msg)) {
+          return withCors(
+            request,
+            NextResponse.json(
+              {
+                ok: false,
+                error:
+                  'Too many password reset requests. Please wait about an hour, then try again.',
+              },
+              { status: 429 },
+            ),
+          );
+        }
+        return withCors(
+          request,
+          NextResponse.json(
+            {
+              ok: false,
+              error:
+                'Could not send the reset email right now. Try again shortly, or use the website Reset page.',
+            },
+            { status: 502 },
+          ),
+        );
       }
       return withCors(
         request,
         NextResponse.json({
           ok: true,
           message:
-            'If that email exists, a password reset message was sent. You can also use the website Reset page.',
+            'If that email exists, a password reset message was sent. Check inbox and spam. You can also use the website Reset page.',
         }),
       );
     }
