@@ -144,34 +144,53 @@ export const GroupDataForm: FC<GroupDataProps> = ({
     );
   };
 
-  // Update constituencies when county selection is made (not while typing)
-  const updateConstituenciesForCounty = useCallback(
-    async (countyName: string) => {
-      // Only fetch if it's a valid county from our options list
-      const isValidCounty = taxonomyOptions?.county?.some(
-        (c) => c.value === countyName || c.label === countyName,
-      );
+  // Load constituencies whenever the chosen county is a valid option.
+  // Do not gate on chosenCounty inequality — typing the full county name
+  // updates chosenCounty before onValueSelect, which previously skipped the fetch.
+  useEffect(() => {
+    const countyName = chosenCounty?.trim();
+    if (!countyName) {
+      setFilteredConstituencies(taxonomyOptions?.constituency || []);
+      return;
+    }
 
-      if (countyName && isValidCounty && countyName !== chosenCounty) {
-        console.log('Fetching constituencies for county:', countyName);
-        setIsLoadingConstituencies(true);
-        try {
-          const constituencies =
-            await getConstituenciesForCountyName(countyName);
+    const isValidCounty = taxonomyOptions?.county?.some(
+      (c) => c.value === countyName || c.label === countyName,
+    );
+    if (!isValidCounty) {
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoadingConstituencies(true);
+
+    void (async () => {
+      try {
+        const constituencies =
+          await getConstituenciesForCountyName(countyName);
+        if (!cancelled) {
           setFilteredConstituencies(constituencies);
-          console.log('Found constituencies:', constituencies.length);
-        } catch (error) {
-          console.error('Error fetching constituencies:', error);
+        }
+      } catch (error) {
+        console.error('Error fetching constituencies:', error);
+        if (!cancelled) {
           setFilteredConstituencies([]);
-        } finally {
+        }
+      } finally {
+        if (!cancelled) {
           setIsLoadingConstituencies(false);
         }
-      } else if (!countyName) {
-        setFilteredConstituencies(taxonomyOptions?.constituency || []);
       }
-    },
-    [chosenCounty, taxonomyOptions?.county, taxonomyOptions?.constituency],
-  );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chosenCounty, taxonomyOptions?.county, taxonomyOptions?.constituency]);
+
+  const updateConstituenciesForCounty = useCallback((countyName: string) => {
+    setChosenCounty(countyName || undefined);
+  }, []);
 
   const updateWardsForConstituency = useCallback(
     async (
@@ -549,14 +568,9 @@ export const GroupDataForm: FC<GroupDataProps> = ({
                   setChosenConstituency(undefined);
                   setChosenWard(undefined);
                   setFilteredWards([]);
+                  setFilteredConstituencies([]);
                   setWardLoadHint(null);
-                  if (value) {
-                    void updateConstituenciesForCounty(value);
-                  } else {
-                    setFilteredConstituencies(
-                      taxonomyOptions?.constituency || [],
-                    );
-                  }
+                  updateConstituenciesForCounty(value);
                 }}
                 placeholder={t(
                   'ApplicationDetailsPage.groupData.groupBackground.chooseOrSearch',
