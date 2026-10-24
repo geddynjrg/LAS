@@ -18,6 +18,20 @@ import { useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
 import { type FC, type ReactNode, useEffect, useState } from 'react';
 
+function detectOtpClient(): 'uwezo_app' | 'loans_portal' {
+  if (typeof navigator === 'undefined') {
+    return 'loans_portal';
+  }
+  const ua = navigator.userAgent || '';
+  if (
+    /UwezoFundApp/i.test(ua) ||
+    /Capacitor/i.test(ua)
+  ) {
+    return 'uwezo_app';
+  }
+  return 'loans_portal';
+}
+
 interface MemberConfirmationDataProps {
   id: string;
   members: Member[];
@@ -172,10 +186,24 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
           ),
         );
       } else {
+        const needReauth =
+          (result as { needReauth?: boolean }).needReauth === true ||
+          /session|log\s*in|jwt|expired/i.test(String(result.message || ''));
         setOtpErrors((prev) => ({
           ...prev,
-          [memberKey]: result.message || 'Failed to send OTP.',
+          [memberKey]: needReauth
+            ? result.message ||
+              'Your login session expired. Please log out, sign in again, then tap Send OTP.'
+            : result.message || 'Failed to send OTP.',
         }));
+        if (needReauth && typeof window !== 'undefined') {
+          // Soft prompt — do not hard-redirect mid-form without user action
+          window.dispatchEvent(
+            new CustomEvent('uwezo:session-expired', {
+              detail: { source: 'member-confirmation-otp' },
+            }),
+          );
+        }
       }
     } catch {
       setOtpErrors((prev) => ({
@@ -205,7 +233,12 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     setVerifyingOtpFor((prev) => ({ ...prev, [memberKey]: true }));
 
     try {
-      const result = await verifyMemberOtp(id, memberKey, value);
+      const result = await verifyMemberOtp(
+        id,
+        memberKey,
+        value,
+        detectOtpClient(),
+      );
 
       if (result.success) {
         const status =
@@ -223,9 +256,15 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
           [memberKey]: result.message || 'OTP verified successfully.',
         }));
       } else {
+        const needReauth =
+          (result as { needReauth?: boolean }).needReauth === true ||
+          /session|log\s*in|jwt|expired/i.test(String(result.message || ''));
         setOtpErrors((prev) => ({
           ...prev,
-          [memberKey]: result.message || 'Invalid OTP code.',
+          [memberKey]: needReauth
+            ? result.message ||
+              'Your login session expired. Please log out, sign in again, then retry OTP.'
+            : result.message || 'Invalid OTP code.',
         }));
       }
     } catch {
@@ -394,6 +433,21 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
               <h3 className="font-semibold text-gray-800">
                 Member Status ({members.length} members)
               </h3>
+              <p className="mt-1 text-sm text-gray-600">
+                Members do not need the Uwezo Fund app. The code is sent by SMS.
+                For a basic (feature) phone, ask the member to read the 6-digit
+                SMS, then enter it here. If SMS is down, constituency officers
+                may see the code in LMS — they must get the member&apos;s
+                consent before typing it here. Members signed in on the Uwezo
+                Fund app can still copy the code from Notifications.
+              </p>
+              <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
+                <strong>Consent required.</strong> A constituency officer must
+                receive consent from the members of the group before typing a
+                code shown on lms.uwezo.go.ke or lms-staging.uwezo.go.ke into
+                loans.uwezo.go.ke or loans-staging.uwezo.go.ke. Do not enter an
+                LMS-shown code unless the member is present and has agreed.
+              </div>
             </div>
             <div className="divide-y">
               {members.map((member, index) => {
@@ -470,6 +524,19 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
                           {otpErrors[memberKey] ? (
                             <p className="mt-1 text-xs text-red-600">
                               {otpErrors[memberKey]}
+                              {/log\s*in|session|jwt|expired/i.test(
+                                otpErrors[memberKey],
+                              ) ? (
+                                <>
+                                  {' '}
+                                  <a
+                                    href={`/login?callbackUrl=${encodeURIComponent(`/apply/${id}/member-confirmation`)}`}
+                                    className="underline font-medium"
+                                  >
+                                    Log in again
+                                  </a>
+                                </>
+                              ) : null}
                             </p>
                           ) : null}
                           {otpSuccess[memberKey] ? (

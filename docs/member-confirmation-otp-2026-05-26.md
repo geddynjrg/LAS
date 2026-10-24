@@ -36,7 +36,7 @@ Portal member-confirmation page
   │
   ├─ Send OTP  →  POST /api/v1/application/{id}/member-confirmation/otp  { action: send, national_id_code }
   │                    → WebSmsConfirmationService::sendConfirmationOtpToMember()
-  │                    → 6-digit code in Drupal cache (10 min) + EBIS SMS
+  │                    → 6-digit code in member_data + cache (15 min) + EBIS SMS
   │
   └─ Verify OTP (auto on 6 digits)
          →  POST .../member-confirmation/otp  { action: verify, national_id_code, otp_code }
@@ -170,8 +170,8 @@ const canProceed = hasEnoughResponses && hasEnoughConsents;
 | Setting | Value |
 |---------|--------|
 | OTP length | 6 digits |
-| OTP expiry | 10 minutes (600s) |
+| OTP expiry | 15 minutes (900s) |
 | Max verify attempts | 5 per OTP |
 | Resend cooldown (UI) | 120 seconds per member |
 
-SMS template (code): `Hello {name}, your Uwezo Fund member confirmation code is: {code}. Valid for 10 minutes.`
+SMS template (code): `Hello {name}, your Uwezo Fund member confirmation code is: {code}. Valid for 15 minutes.`

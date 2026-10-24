@@ -19,6 +19,7 @@ export type ApplyFlowResult = {
     field: string;
     label: string;
     uploadCategory?: string;
+    memberId?: string;
   };
 };
 
@@ -194,6 +195,42 @@ const STAGE_FIELDS: Record<number, FieldDef[]> = {
   7: [],
 };
 
+const LOAN_MEMBER_WIZARD: FieldDef[] = [
+  { key: 'member.fullname', label: 'Member full name', kind: 'text' },
+  { key: 'member.nationalIdCode', label: 'National ID number', kind: 'text' },
+  { key: 'member.gender', label: 'Gender (Male/Female)', kind: 'text' },
+  {
+    key: 'member.type',
+    label: 'Position / type (e.g. Chairperson)',
+    kind: 'text',
+  },
+  { key: 'member.phoneNumber', label: 'Phone number', kind: 'text' },
+];
+
+const MAX_LOAN_STAGE = 7;
+
+function withNextStageChip(
+  replies: QuickReply[],
+  nextValue: string,
+  stage: number,
+  maxStage: number,
+): QuickReply[] {
+  if (stage >= maxStage) return replies;
+  return [
+    { id: 'next-stage', label: 'Next stage', value: nextValue },
+    ...replies.filter((r) => r.id !== 'next-stage'),
+  ];
+}
+
+function stageAllNonUploadFilled(
+  fields: FieldDef[],
+  isFilled: (f: FieldDef) => boolean,
+): boolean {
+  const editable = fields.filter((f) => f.kind !== 'upload');
+  if (!editable.length) return false;
+  return editable.every(isFilled);
+}
+
 function stageChipLabel(
   index: number,
   title: string,
@@ -226,6 +263,43 @@ function emptyJson(): string {
 
 function emptyArrayJson(): string {
   return '[]';
+}
+
+function memberCol(fieldKey: string): string {
+  return fieldKey.replace(/^member\./, '');
+}
+
+function isLoanMemberComplete(m: {
+  fullname?: string | null;
+  nationalIdCode?: string | null;
+  gender?: string | null;
+  type?: string | null;
+  phoneNumber?: string | null;
+}): boolean {
+  return Boolean(
+    m.fullname?.trim() &&
+    m.nationalIdCode?.trim() &&
+    !m.nationalIdCode.startsWith('DRAFT-') &&
+    m.gender &&
+    m.type?.trim() &&
+    m.phoneNumber?.trim() &&
+    m.phoneNumber !== 'pending',
+  );
+}
+
+function navChips(applicationId: string, href?: string): QuickReply[] {
+  const chips: QuickReply[] = [
+    {
+      id: 'back',
+      label: 'Back to stages',
+      value: `select_app:${applicationId}`,
+    },
+  ];
+  if (href) {
+    chips.push({ id: 'open', label: 'Open full form', value: `open:${href}` });
+  }
+  chips.push({ id: 'menu', label: 'Back to menu', value: 'menu' });
+  return chips;
 }
 
 export async function loanStagePicker(
@@ -313,6 +387,400 @@ function readFieldValue(
   return null;
 }
 
+export async function loanMemberPicker(
+  applicationId: string,
+): Promise<ApplyFlowResult> {
+  const app = await loadOwnedApp(applicationId);
+  if (!app) {
+    return {
+      reply: 'Application not found on your account.',
+      quickReplies: [{ id: 'menu', label: 'Back to menu', value: 'menu' }],
+    };
+  }
+  const members = app.members || [];
+  const completeCount = members.filter(isLoanMemberComplete).length;
+  const done = completeCount >= 1;
+  const href = `/apply/${applicationId}/members`;
+
+  const lines = [
+    'Stage 2: Members. Add or edit members in chat.',
+    members.length
+      ? members
+          .map((m, i) => {
+            const mark = isLoanMemberComplete(m) ? '✓' : '○';
+            return `${mark} ${i + 1}. ${m.fullname || 'Unnamed'} · ${m.nationalIdCode}`;
+          })
+          .join('\n')
+      : 'No members yet.',
+    `Saved members: ${completeCount}.`,
+  ];
+
+  const quickReplies: QuickReply[] = [
+    {
+      id: 'member-add',
+      label: 'Add member',
+      value: `member:add:loan:${applicationId}`,
+    },
+  ];
+  members.forEach((m, i) => {
+    quickReplies.push({
+      id: `member-edit-${m.id}`,
+      label: `Edit ${i + 1}. ${(m.fullname || 'Member').slice(0, 20)}`,
+      value: `member:edit:loan:${applicationId}:${m.id}`,
+    });
+  });
+  quickReplies.push({
+    id: 'member-done',
+    label: done ? 'Done (advance)' : 'Done (need ≥1 member)',
+    value: `member:done:loan:${applicationId}`,
+  });
+  quickReplies.push(...navChips(applicationId, href));
+
+  return {
+    reply: lines.join('\n'),
+    quickReplies: done
+      ? withNextStageChip(
+          quickReplies,
+          `stage:${applicationId}:3`,
+          2,
+          MAX_LOAN_STAGE,
+        )
+      : quickReplies,
+    phase: 'field_pick',
+  };
+}
+
+function beginLoanMemberField(
+  applicationId: string,
+  memberId: string | undefined,
+  field: FieldDef,
+): ApplyFlowResult {
+  return {
+    reply: `Enter ${field.label}.`,
+    quickReplies: [
+      {
+        id: 'back',
+        label: 'Back to members',
+        value: `stage:${applicationId}:2`,
+      },
+      { id: 'menu', label: 'Back to menu', value: 'menu' },
+    ],
+    phase: 'await_field',
+    expectFieldValue: true,
+    fieldContext: {
+      kind: 'loan',
+      appId: applicationId,
+      stage: 2,
+      field: field.key,
+      label: field.label,
+      memberId,
+    },
+  };
+}
+
+export async function handleLoanMemberAction(
+  action: string,
+): Promise<ApplyFlowResult> {
+  const addMatch = action.match(/^member:add:loan:(.+)$/i);
+  if (addMatch) {
+    const applicationId = addMatch[1]!.trim();
+    const app = await loadOwnedApp(applicationId);
+    if (!app) {
+      return {
+        reply: 'Application not found.',
+        quickReplies: [{ id: 'menu', label: 'Back to menu', value: 'menu' }],
+      };
+    }
+    return beginLoanMemberField(
+      applicationId,
+      undefined,
+      LOAN_MEMBER_WIZARD[0]!,
+    );
+  }
+
+  const editMatch = action.match(/^member:edit:loan:([^:]+):([a-z0-9-]+)$/i);
+  if (editMatch) {
+    const applicationId = editMatch[1]!.trim();
+    const memberId = editMatch[2]!;
+    const app = await loadOwnedApp(applicationId);
+    if (!app) {
+      return {
+        reply: 'Application not found.',
+        quickReplies: [{ id: 'menu', label: 'Back to menu', value: 'menu' }],
+      };
+    }
+    const member = app.members.find((m) => m.id === memberId);
+    if (!member) return loanMemberPicker(applicationId);
+    return beginLoanMemberField(
+      applicationId,
+      memberId,
+      LOAN_MEMBER_WIZARD[0]!,
+    );
+  }
+
+  const doneMatch = action.match(/^member:done:loan:(.+)$/i);
+  if (doneMatch) {
+    const applicationId = doneMatch[1]!.trim();
+    const app = await loadOwnedApp(applicationId);
+    if (!app) {
+      return {
+        reply: 'Application not found.',
+        quickReplies: [{ id: 'menu', label: 'Back to menu', value: 'menu' }],
+      };
+    }
+    const completeCount = (app.members || []).filter(
+      isLoanMemberComplete,
+    ).length;
+    if (completeCount < 1) {
+      const again = await loanMemberPicker(applicationId);
+      return {
+        ...again,
+        reply: `Add at least one complete member before continuing.\n\n${again.reply}`,
+      };
+    }
+    await prisma.application.update({
+      where: { id: app.id },
+      data: {
+        applicationProgress: Math.max(app.applicationProgress || 1, 3),
+        syncStatus: SyncStatus.PENDING,
+      },
+    });
+    const next = await loanFieldPicker(applicationId, 3);
+    return {
+      ...next,
+      reply: `Members saved (${completeCount}). Progress advanced to stage 3.\n\n${next.reply}`,
+    };
+  }
+
+  return {
+    reply: 'Unknown member action.',
+    quickReplies: [{ id: 'menu', label: 'Back to menu', value: 'menu' }],
+  };
+}
+
+export async function saveLoanMemberField(
+  applicationId: string,
+  fieldKey: string,
+  rawValue: string,
+  memberId?: string,
+): Promise<ApplyFlowResult> {
+  const app = await loadOwnedApp(applicationId);
+  if (!app) {
+    return {
+      reply: 'Application not found.',
+      quickReplies: [{ id: 'menu', label: 'Back to menu', value: 'menu' }],
+    };
+  }
+  const value = rawValue.trim();
+  if (!value) {
+    return {
+      reply: 'Please enter a non-empty value.',
+      phase: 'await_field',
+      expectFieldValue: true,
+      fieldContext: {
+        kind: 'loan',
+        appId: applicationId,
+        stage: 2,
+        field: fieldKey,
+        label: fieldKey,
+        memberId,
+      },
+      quickReplies: [
+        {
+          id: 'back',
+          label: 'Back to members',
+          value: `stage:${applicationId}:2`,
+        },
+      ],
+    };
+  }
+
+  const col = memberCol(fieldKey);
+  const wizardIdx = LOAN_MEMBER_WIZARD.findIndex((f) => f.key === fieldKey);
+  if (wizardIdx < 0) return loanMemberPicker(applicationId);
+
+  const natureOfTheGroup =
+    app.members.find((m) => m.natureOfTheGroup?.trim())?.natureOfTheGroup ||
+    app.groupData?.groupName ||
+    'Group';
+
+  try {
+    let currentId = memberId;
+
+    if (col === 'gender') {
+      const g = value.toLowerCase();
+      if (!/^(male|female|m|f)$/i.test(value)) {
+        return {
+          reply: 'Enter Male or Female.',
+          phase: 'await_field',
+          expectFieldValue: true,
+          fieldContext: {
+            kind: 'loan',
+            appId: applicationId,
+            stage: 2,
+            field: fieldKey,
+            label: 'Gender (Male/Female)',
+            memberId: currentId,
+          },
+          quickReplies: [
+            {
+              id: 'back',
+              label: 'Back to members',
+              value: `stage:${applicationId}:2`,
+            },
+          ],
+        };
+      }
+    }
+
+    const genderValue =
+      col === 'gender'
+        ? /^(f|female)$/i.test(value)
+          ? 'Female'
+          : 'Male'
+        : undefined;
+
+    if (!currentId) {
+      if (col !== 'fullname') {
+        return beginLoanMemberField(
+          applicationId,
+          undefined,
+          LOAN_MEMBER_WIZARD[0]!,
+        );
+      }
+      const created = await prisma.memberData.create({
+        data: {
+          applicationId: app.id,
+          natureOfTheGroup,
+          fullname: value,
+          nationalIdCode: `DRAFT-${Date.now()}`,
+          gender: 'Male',
+          type: 'Member',
+          phoneNumber: `pending-${Date.now()}`,
+          photoOfId: '{}',
+        },
+      });
+      currentId = created.id;
+    } else {
+      const existing = await prisma.memberData.findFirst({
+        where: { id: currentId, applicationId: app.id },
+      });
+      if (!existing) return loanMemberPicker(applicationId);
+
+      if (col === 'nationalIdCode') {
+        const clash = await prisma.memberData.findFirst({
+          where: {
+            applicationId: app.id,
+            nationalIdCode: value,
+            NOT: { id: currentId },
+          },
+        });
+        if (clash) {
+          return {
+            reply: `National ID ${value} is already on this application.`,
+            phase: 'await_field',
+            expectFieldValue: true,
+            fieldContext: {
+              kind: 'loan',
+              appId: applicationId,
+              stage: 2,
+              field: fieldKey,
+              label: 'National ID number',
+              memberId: currentId,
+            },
+            quickReplies: [
+              {
+                id: 'back',
+                label: 'Back to members',
+                value: `stage:${applicationId}:2`,
+              },
+            ],
+          };
+        }
+        await prisma.memberData.update({
+          where: { id: currentId },
+          data: { nationalIdCode: value },
+        });
+      } else if (col === 'gender') {
+        await prisma.memberData.update({
+          where: { id: currentId },
+          data: { gender: genderValue as 'Male' | 'Female' },
+        });
+      } else if (col === 'phoneNumber') {
+        const clash = await prisma.memberData.findFirst({
+          where: {
+            applicationId: app.id,
+            phoneNumber: value,
+            NOT: { id: currentId },
+          },
+        });
+        if (clash) {
+          return {
+            reply: `Phone ${value} is already used by another member.`,
+            phase: 'await_field',
+            expectFieldValue: true,
+            fieldContext: {
+              kind: 'loan',
+              appId: applicationId,
+              stage: 2,
+              field: fieldKey,
+              label: 'Phone number',
+              memberId: currentId,
+            },
+            quickReplies: [
+              {
+                id: 'back',
+                label: 'Back to members',
+                value: `stage:${applicationId}:2`,
+              },
+            ],
+          };
+        }
+        await prisma.memberData.update({
+          where: { id: currentId },
+          data: { phoneNumber: value },
+        });
+      } else {
+        await prisma.memberData.update({
+          where: { id: currentId },
+          data: { [col]: value },
+        });
+      }
+    }
+
+    await prisma.application.update({
+      where: { id: app.id },
+      data: { syncStatus: SyncStatus.PENDING },
+    });
+
+    const nextField = LOAN_MEMBER_WIZARD[wizardIdx + 1];
+    if (nextField) {
+      return {
+        ...beginLoanMemberField(applicationId, currentId, nextField),
+        reply: `Saved ${LOAN_MEMBER_WIZARD[wizardIdx]!.label}.\n\nEnter ${nextField.label}.`,
+      };
+    }
+
+    const list = await loanMemberPicker(applicationId);
+    return {
+      ...list,
+      reply: `Member saved.\n\n${list.reply}`,
+    };
+  } catch (err) {
+    return {
+      reply: `Could not save member: ${err instanceof Error ? err.message : 'unknown error'}`,
+      quickReplies: [
+        {
+          id: 'back',
+          label: 'Back to members',
+          value: `stage:${applicationId}:2`,
+        },
+        { id: 'menu', label: 'Back to menu', value: 'menu' },
+      ],
+    };
+  }
+}
+
 export async function loanFieldPicker(
   applicationId: string,
   stage: number,
@@ -326,12 +794,17 @@ export async function loanFieldPicker(
   }
   const step = APPLY_STEPS.find((s) => s.index === stage);
   const href = `/apply/${applicationId}${step?.path || '/group-data'}`;
+
+  if (stage === 2) {
+    return loanMemberPicker(applicationId);
+  }
+
   const fields = STAGE_FIELDS[stage] || [];
 
   if (!fields.length) {
     return {
       reply:
-        `${step?.title || `Stage ${stage}`} needs the full form (members, confirmations, or review).\n` +
+        `${step?.title || `Stage ${stage}`} needs the full form (confirmations or review).\n` +
         `Open it to continue, or pick another stage.`,
       quickReplies: [
         {
@@ -339,12 +812,7 @@ export async function loanFieldPicker(
           label: `Open ${step?.title || 'stage'}`,
           value: `open:${href}`,
         },
-        {
-          id: 'back',
-          label: 'Back to stages',
-          value: `select_app:${applicationId}`,
-        },
-        { id: 'menu', label: 'Back to menu', value: 'menu' },
+        ...navChips(applicationId),
       ],
       phase: 'field_pick',
     };
@@ -361,19 +829,23 @@ export async function loanFieldPicker(
       value: `field:${applicationId}:${stage}:${f.key}`,
     };
   });
-  quickReplies.push(
-    {
-      id: 'back',
-      label: 'Back to stages',
-      value: `select_app:${applicationId}`,
-    },
-    { id: 'open', label: 'Open full form', value: `open:${href}` },
-    { id: 'menu', label: 'Back to menu', value: 'menu' },
-  );
+  let replies = [...quickReplies, ...navChips(applicationId, href)];
+  if (
+    stageAllNonUploadFilled(fields, (f) =>
+      Boolean(readFieldValue(app, stage, f.key)),
+    )
+  ) {
+    replies = withNextStageChip(
+      replies,
+      `stage:${applicationId}:${stage + 1}`,
+      stage,
+      MAX_LOAN_STAGE,
+    );
+  }
 
   return {
     reply: `Stage ${stage}: ${step?.title}. Tap a field to type a value, or an upload slot to attach a file.`,
-    quickReplies,
+    quickReplies: replies,
     phase: 'field_pick',
   };
 }
@@ -389,6 +861,12 @@ export async function beginLoanFieldEdit(
       reply: 'Application not found.',
       quickReplies: [{ id: 'menu', label: 'Back to menu', value: 'menu' }],
     };
+  }
+  if (stage === 2 || fieldKey.startsWith('member.')) {
+    const field =
+      LOAN_MEMBER_WIZARD.find((f) => f.key === fieldKey) ||
+      LOAN_MEMBER_WIZARD[0]!;
+    return beginLoanMemberField(applicationId, undefined, field);
   }
   const field = (STAGE_FIELDS[stage] || []).find((f) => f.key === fieldKey);
   if (!field) {
@@ -459,7 +937,12 @@ export async function saveLoanField(
   stage: number,
   fieldKey: string,
   rawValue: string,
+  memberId?: string,
 ): Promise<ApplyFlowResult> {
+  if (stage === 2 || fieldKey.startsWith('member.')) {
+    return saveLoanMemberField(applicationId, fieldKey, rawValue, memberId);
+  }
+
   const app = await loadOwnedApp(applicationId);
   if (!app) {
     return {
@@ -675,7 +1158,16 @@ export async function saveLoanField(
     }
 
     const again = await loanFieldPicker(applicationId, stage);
-    return { ...again, reply: `Saved ${field.label}.\n\n${again.reply}` };
+    return {
+      ...again,
+      reply: `Saved ${field.label}.\n\n${again.reply}`,
+      quickReplies: withNextStageChip(
+        again.quickReplies,
+        `stage:${applicationId}:${stage + 1}`,
+        stage,
+        MAX_LOAN_STAGE,
+      ),
+    };
   } catch (err) {
     return {
       reply: `Could not save: ${err instanceof Error ? err.message : 'unknown error'}`,

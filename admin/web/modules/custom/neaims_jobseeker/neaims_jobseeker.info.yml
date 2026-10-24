@@ -1,0 +1,8 @@
+name: 'NEAIMS Jobseeker'
+type: module
+description: 'REST proxies for NEAIMS/Kazi254 jobseeker and agency APIs (IP-allowlisted outbound).'
+core_version_requirement: ^10 || ^11
+package: Uwezo
+dependencies:
+  - drupal:rest
+  - drupal:serialization

@@ -1,9 +1,9 @@
 'use client';
 
 import {
-  type StepGuidance,
   getStepGuidance,
   guidanceKeyFromPathname,
+  type StepGuidance,
 } from '@/lib/application-guidance';
 import { Container } from '@workspace/ui/components/container';
 import { useTranslations } from 'next-intl';
@@ -25,7 +25,7 @@ export const ApplicationGuidancePanel: FC<{
   }
 
   return (
-    <Container>
+    <Container className="mt-4">
       <aside
         aria-label={t('ariaLabel')}
         className="mb-4 rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950"

@@ -33,7 +33,8 @@ type Props = {
 
 /**
  * Camera / file preview with OCR overlay. Capture stays disabled until
- * confidence is high for the *expected* document type for this field.
+ * confidence meets the unlock threshold for the expected document type.
+ * Auto-scans the live camera and shows a static preview of the last scan.
  */
 export const OcrDocumentCapture: FC<Props> = ({
   declaredType,
@@ -50,17 +51,22 @@ export const OcrDocumentCapture: FC<Props> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const scanningRef = useRef(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [autoScan, setAutoScan] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [score, setScore] = useState<
     (OcrScoreResult & { text: string }) | null
   >(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showLive, setShowLive] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+    setCameraReady(false);
   }, []);
 
   useEffect(() => {
@@ -80,6 +86,7 @@ export const OcrDocumentCapture: FC<Props> = ({
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch(() => undefined);
+          setCameraReady(true);
         }
       } catch {
         /* camera optional */
@@ -90,6 +97,12 @@ export const OcrDocumentCapture: FC<Props> = ({
       stopCamera();
     };
   }, [stopCamera]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   const drawOverlay = useCallback((lines: string[], pass: boolean) => {
     const overlay = overlayRef.current;
@@ -127,11 +140,31 @@ export const OcrDocumentCapture: FC<Props> = ({
     return canvas;
   }, []);
 
+  const freezePreviewFromCanvas = useCallback((canvas: HTMLCanvasElement) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) return;
+        setPreviewUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return URL.createObjectURL(blob);
+        });
+        setShowLive(false);
+      },
+      'image/jpeg',
+      0.85,
+    );
+  }, []);
+
   const scanSource = useCallback(
-    async (source: HTMLCanvasElement | File) => {
+    async (source: HTMLCanvasElement | File, freeze = false) => {
+      if (scanningRef.current) return;
+      scanningRef.current = true;
       setScanning(true);
       setError(null);
       try {
+        if (freeze && source instanceof HTMLCanvasElement) {
+          freezePreviewFromCanvas(source);
+        }
         const result = await runClientOcr(source, expectedType);
         setScore(result);
         drawOverlay(result.overlayLines, result.pass);
@@ -146,10 +179,11 @@ export const OcrDocumentCapture: FC<Props> = ({
             : 'OCR failed. Check connection and try again.',
         );
       } finally {
+        scanningRef.current = false;
         setScanning(false);
       }
     },
-    [expectedType, drawOverlay],
+    [expectedType, drawOverlay, freezePreviewFromCanvas],
   );
 
   const onScanCamera = useCallback(async () => {
@@ -158,12 +192,28 @@ export const OcrDocumentCapture: FC<Props> = ({
       setError('Camera not ready. Use Choose photo instead.');
       return;
     }
-    await scanSource(frame);
+    await scanSource(frame, true);
   }, [grabFrameToCanvas, scanSource]);
+
+  // Automatic scanning while live camera is showing
+  useEffect(() => {
+    if (!autoScan || !cameraReady || !showLive) return;
+    const id = window.setInterval(() => {
+      if (scanningRef.current) return;
+      const frame = grabFrameToCanvas();
+      if (!frame) return;
+      void scanSource(frame, true);
+    }, 2200);
+    return () => window.clearInterval(id);
+  }, [autoScan, cameraReady, showLive, grabFrameToCanvas, scanSource]);
 
   const onFile = useCallback(
     async (file: File) => {
-      setPreviewUrl(URL.createObjectURL(file));
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(file);
+      });
+      setShowLive(false);
       await scanSource(file);
     },
     [scanSource],
@@ -174,19 +224,27 @@ export const OcrDocumentCapture: FC<Props> = ({
     setScanning(true);
     try {
       let file: File | null = null;
-      const frame = grabFrameToCanvas();
-      if (frame) {
-        const blob = await new Promise<Blob | null>((resolve) =>
-          frame.toBlob(resolve, 'image/jpeg', 0.92),
-        );
-        if (blob) {
-          file = new File([blob], `${expectedType}-${Date.now()}.jpg`, {
-            type: 'image/jpeg',
-          });
+      if (fileInputRef.current?.files?.[0] && !showLive) {
+        file = fileInputRef.current.files[0];
+      }
+      if (!file) {
+        const frame = grabFrameToCanvas();
+        if (frame) {
+          const blob = await new Promise<Blob | null>((resolve) =>
+            frame.toBlob(resolve, 'image/jpeg', 0.92),
+          );
+          if (blob) {
+            file = new File([blob], `${expectedType}-${Date.now()}.jpg`, {
+              type: 'image/jpeg',
+            });
+          }
         }
       }
-      if (!file && fileInputRef.current?.files?.[0]) {
-        file = fileInputRef.current.files[0];
+      if (!file && previewUrl) {
+        const blob = await fetch(previewUrl).then((r) => r.blob());
+        file = new File([blob], `${expectedType}-${Date.now()}.jpg`, {
+          type: blob.type || 'image/jpeg',
+        });
       }
       if (!file) {
         setError('Nothing to capture. Scan a frame or choose a photo first.');
@@ -203,7 +261,15 @@ export const OcrDocumentCapture: FC<Props> = ({
     } finally {
       setScanning(false);
     }
-  }, [score, grabFrameToCanvas, expectedType, onCaptured, stopCamera]);
+  }, [
+    score,
+    grabFrameToCanvas,
+    expectedType,
+    onCaptured,
+    stopCamera,
+    showLive,
+    previewUrl,
+  ]);
 
   const canCapture = Boolean(score?.pass) && !scanning;
   const pct = score ? Math.round(score.confidence * 100) : 0;
@@ -215,11 +281,11 @@ export const OcrDocumentCapture: FC<Props> = ({
         {Math.round(OCR_CAPTURE_THRESHOLD * 100)}% for this document type
       </p>
       <div className="relative overflow-hidden rounded bg-black">
-        {previewUrl && !streamRef.current ? (
+        {previewUrl && !showLive ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={previewUrl}
-            alt="Preview"
+            alt="Static scan preview"
             className="max-h-48 w-full object-contain"
           />
         ) : (
@@ -247,6 +313,29 @@ export const OcrDocumentCapture: FC<Props> = ({
         >
           {scanning ? 'Scanning…' : 'Scan frame'}
         </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          className="text-xs"
+          onClick={() => {
+            setAutoScan((v) => !v);
+            if (!showLive) setShowLive(true);
+          }}
+        >
+          {autoScan ? 'Auto-scan on' : 'Auto-scan off'}
+        </Button>
+        {previewUrl ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            className="text-xs"
+            onClick={() => setShowLive((v) => !v)}
+          >
+            {showLive ? 'Show preview' : 'Show live'}
+          </Button>
+        ) : null}
         <Button
           type="button"
           size="sm"

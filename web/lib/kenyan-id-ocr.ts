@@ -30,7 +30,7 @@ export type OcrScoreResult = {
 };
 
 /** Minimum confidence when the scan matches the expected document. */
-export const OCR_CAPTURE_THRESHOLD = 0.58;
+export const OCR_CAPTURE_THRESHOLD = 0.2;
 
 /** Forced confidence when the scan does not match the field’s document. */
 export const OCR_MISMATCH_CONFIDENCE = 0.2;

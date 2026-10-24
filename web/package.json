@@ -70,5 +70,14 @@
     "ts-prune": "^0.10.3",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
-  }
+  },
+  "description": "This is a monorepo for the frontend of the Kenya e-services project. It contains the following packages:",
+  "main": "eslint.config.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

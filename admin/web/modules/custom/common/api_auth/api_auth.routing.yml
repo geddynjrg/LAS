@@ -66,6 +66,18 @@ api_auth.ecitizen_oauth:
   options:
     _auth: []
 
+api_auth.app_set_password:
+  path: '/api/v1/user/app-set-password'
+  defaults:
+    _controller: '\Drupal\api_auth\Controller\AppSetPasswordController::setPassword'
+    _title: 'App set password'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+    _auth: []
+
 api_auth.test_callback:
   path: '/test-callback'
   defaults:

@@ -6,6 +6,7 @@ import {
   phoneLoginAction,
 } from '@/app/(auth)/login/login-actions';
 import { PhoneLoginForm } from '@/app/(auth)/login/phone-login-form';
+import { QrLoginPanel } from '@/components/qr-login-panel';
 import { Container } from '@workspace/ui/components/container';
 import { Divider } from '@workspace/ui/components/divider';
 import { Underline } from '@workspace/ui/components/underline';
@@ -24,7 +25,9 @@ export default async function Page({
       ? 'email'
       : params.type === 'phone'
         ? 'phone'
-        : 'ecitizen'; // Fixed logic
+        : params.type === 'qr'
+          ? 'qr'
+          : 'ecitizen';
   const callbackUrl = params.callbackUrl;
   const t = await getTranslations('LoginPage');
 
@@ -89,6 +92,15 @@ export default async function Page({
                       Use Phone
                     </Underline>
                   </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=qr${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use App QR
+                    </Underline>
+                  </Link>
                 </div>
               </nav>
             </div>
@@ -124,6 +136,15 @@ export default async function Page({
                   >
                     <Underline variant="primary" className="text-primary">
                       Use Phone
+                    </Underline>
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=qr${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use App QR
                     </Underline>
                   </Link>
                 </div>
@@ -181,6 +202,60 @@ export default async function Page({
                   >
                     <Underline variant="primary" className="text-primary">
                       Use Email
+                    </Underline>
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=qr${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use App QR
+                    </Underline>
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          )}
+
+          {loginType === 'qr' && (
+            <div className="space-y-4">
+              <QrLoginPanel
+                redirectTo={callbackUrl || '/dashboard'}
+                source="web"
+              />
+
+              <Divider className="my-6">{t('or')}</Divider>
+
+              <nav
+                aria-label="Authentication options"
+                className="flex flex-col items-center gap-3"
+              >
+                <div className="flex justify-center gap-4 flex-wrap">
+                  <Link
+                    href={`/login?type=ecitizen${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use eCitizen
+                    </Underline>
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=email${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use Email
+                    </Underline>
+                  </Link>
+                  <span className="text-gray-400">|</span>
+                  <Link
+                    href={`/login?type=phone${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-primary"
+                  >
+                    <Underline variant="primary" className="text-primary">
+                      Use Phone
                     </Underline>
                   </Link>
                 </div>

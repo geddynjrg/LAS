@@ -13,6 +13,8 @@ use Drupal\Component\Datetime\TimeInterface;
  * Service for handling SMS confirmations for group members using Web database.
  */
 class WebSmsConfirmationService {
+  use WebSmsConfirmationOtpFallbackTrait;
+
   // phpcs:disable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
 
   /**
@@ -1014,7 +1016,17 @@ class WebSmsConfirmationService {
   }
 
   /**
-   * Load a member requiring confirmation by national ID code.
+   * OTP lifetime in seconds.
+   */
+  protected const MEMBER_OTP_TTL = 900;
+
+  /**
+   * Maximum verify attempts per OTP.
+   */
+  protected const MEMBER_OTP_MAX_ATTEMPTS = 5;
+
+  /**
+   * Load a member requiring confirmation by national ID or phone.
    */
   protected function loadMemberForOtp(string $applicationId, string $nationalIdCode): ?array {
     $internalAppId = $this->resolveInternalApplicationId($applicationId);
@@ -1022,16 +1034,37 @@ class WebSmsConfirmationService {
       return NULL;
     }
 
+    $lookup = preg_replace('/\s+/', '', trim($nationalIdCode));
     $db = $this->getWebDatabase();
+
     $member = $db->select('member_data', 'm')
       ->fields('m')
       ->condition('applicationId', $internalAppId)
-      ->condition('nationalIdCode', $nationalIdCode)
+      ->condition('nationalIdCode', $lookup)
       ->range(0, 1)
       ->execute()
       ->fetchAssoc();
 
-    return $member ?: NULL;
+    if ($member) {
+      return $member;
+    }
+
+    $members = $db->select('member_data', 'm')
+      ->fields('m')
+      ->condition('applicationId', $internalAppId)
+      ->execute()
+      ->fetchAll(\PDO::FETCH_ASSOC);
+
+    $lookupDigits = preg_replace('/\D+/', '', $lookup);
+    foreach ($members as $row) {
+      $rowId = preg_replace('/\s+/', '', (string) ($row['nationalIdCode'] ?? ''));
+      $rowPhone = preg_replace('/\D+/', '', (string) ($row['phoneNumber'] ?? ''));
+      if ($rowId === $lookup || ($lookupDigits !== '' && $rowPhone !== '' && $rowPhone === $lookupDigits)) {
+        return $row;
+      }
+    }
+
+    return NULL;
   }
 
   /**
@@ -1046,6 +1079,101 @@ class WebSmsConfirmationService {
    */
   protected function generateMemberOtpCode(): string {
     return (string) random_int(100000, 999999);
+  }
+
+  /**
+   * Persist OTP hash in the web database so it survives Redis/cache eviction.
+   */
+  protected function persistMemberOtp(string $applicationId, array $member, string $otpHash, int $attempts = 0): void {
+    $now = $this->time->getCurrentTime();
+    $ttl = self::MEMBER_OTP_TTL;
+    $nowSql = date('Y-m-d H:i:s', $now);
+    $expiresSql = date('Y-m-d H:i:s', $now + $ttl);
+
+    try {
+      $this->getWebDatabase()->update('member_data')
+        ->fields([
+          'confirmation_token' => $otpHash,
+          'confirmation_token_expires_at' => $expiresSql,
+          'confirmation_status' => 'sent',
+          'confirmation_sent_at' => $nowSql,
+          'updatedAt' => $nowSql,
+        ])
+        ->condition('id', $member['id'])
+        ->execute();
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Failed to persist member OTP hash for member @id: @error', [
+        '@id' => $member['id'] ?? 'unknown',
+        '@error' => $e->getMessage(),
+      ]);
+      throw $e;
+    }
+
+    \Drupal::cache('default')->set(
+      $this->getMemberOtpCacheKey($applicationId, (string) $member['id']),
+      [
+        'otp_hash' => $otpHash,
+        'attempts' => $attempts,
+        'created' => $now,
+        'member_id' => $member['id'],
+        'expires' => $now + $ttl,
+      ],
+      $now + $ttl
+    );
+  }
+
+  /**
+   * Load a still-valid OTP hash for a member (database first, cache fallback).
+   */
+  protected function loadStoredMemberOtp(string $applicationId, array $member): ?array {
+    $now = $this->time->getCurrentTime();
+    $fresh = $this->getWebDatabase()->select('member_data', 'm')
+      ->fields('m', ['confirmation_token', 'confirmation_token_expires_at'])
+      ->condition('id', $member['id'])
+      ->range(0, 1)
+      ->execute()
+      ->fetchAssoc();
+    if ($fresh) {
+      $member['confirmation_token'] = $fresh['confirmation_token'];
+      $member['confirmation_token_expires_at'] = $fresh['confirmation_token_expires_at'];
+    }
+    $hash = (string) ($member['confirmation_token'] ?? '');
+    $expiresAt = $member['confirmation_token_expires_at'] ?? NULL;
+
+    if ($hash !== '' && str_starts_with($hash, '$2') && !empty($expiresAt)) {
+      $expiresTs = strtotime((string) $expiresAt);
+      if ($expiresTs !== FALSE && $expiresTs >= $now) {
+        $cache = \Drupal::cache('default')->get(
+          $this->getMemberOtpCacheKey($applicationId, (string) $member['id'])
+        );
+        $attempts = 0;
+        if (is_object($cache) && isset($cache->data['attempts'])) {
+          $attempts = (int) $cache->data['attempts'];
+        }
+        return [
+          'otp_hash' => $hash,
+          'attempts' => $attempts,
+          'expires' => $expiresTs,
+        ];
+      }
+    }
+
+    $cached = \Drupal::cache('default')->get(
+      $this->getMemberOtpCacheKey($applicationId, (string) $member['id'])
+    );
+    if ($cached && !empty($cached->data['otp_hash'])) {
+      $expires = (int) ($cached->data['expires'] ?? $cached->expire ?? 0);
+      if ($expires >= $now || $cached->expire >= $now) {
+        return [
+          'otp_hash' => $cached->data['otp_hash'],
+          'attempts' => (int) ($cached->data['attempts'] ?? 0),
+          'expires' => $expires ?: (int) $cached->expire,
+        ];
+      }
+    }
+
+    return NULL;
   }
 
   /**
@@ -1084,43 +1212,58 @@ class WebSmsConfirmationService {
     }
 
     $otpCode = $this->generateMemberOtpCode();
-    $cache = \Drupal::cache('default');
-    $expiry = 600;
-    $cacheKey = $this->getMemberOtpCacheKey($applicationId, $member['id']);
-
-    $cache->set($cacheKey, [
-      'otp_hash' => password_hash($otpCode, PASSWORD_DEFAULT),
-      'attempts' => 0,
-      'created' => time(),
-      'member_id' => $member['id'],
-    ], time() + $expiry);
+    $otpHash = password_hash($otpCode, PASSWORD_BCRYPT);
+    $this->persistMemberOtp($applicationId, $member, $otpHash);
 
     $memberName = $member['fullname'] ?? 'Member';
-    $message = "Hello {$memberName}, your Uwezo Fund member confirmation code is: {$otpCode}. Valid for 10 minutes.";
+    $ttlMinutes = (int) (self::MEMBER_OTP_TTL / 60);
+    $message = "Hello {$memberName}, your Uwezo Fund member confirmation code is: {$otpCode}. Valid for {$ttlMinutes} minutes.";
 
-    $smsResult = $this->smsService->sendSms($member['phoneNumber'], $message);
+    $smsResult = ['success' => FALSE];
+    try {
+      $smsResult = $this->smsService->sendSms($member['phoneNumber'], $message);
+    }
+    catch (\Exception $e) {
+      $this->logger->error('OTP SMS exception for @name (@phone): @error', [
+        '@name' => $memberName,
+        '@phone' => $member['phoneNumber'],
+        '@error' => $e->getMessage(),
+      ]);
+    }
     if (!$this->isSmsSendSuccessful($smsResult)) {
-      $cache->delete($cacheKey);
-      return [
-        'success' => FALSE,
-        'message' => 'Failed to send OTP SMS.',
-      ];
+      // Keep the stored OTP. EBIS often delivers even when the HTTP
+      // response is missing status 1000; deleting the code made a delivered
+      // SMS look expired on every application.
+      $this->logger->warning('OTP SMS provider reported failure for @name (@phone); code is still valid until @expiry.', [
+        '@name' => $memberName,
+        '@phone' => $member['phoneNumber'],
+        '@expiry' => date('Y-m-d H:i:s', $this->time->getCurrentTime() + self::MEMBER_OTP_TTL),
+      ]);
     }
 
-    $currentTime = date('Y-m-d H:i:s');
-    $this->getWebDatabase()->update('member_data')
-      ->fields([
-        'confirmation_status' => 'sent',
-        'confirmation_sent_at' => $currentTime,
-        'updatedAt' => $currentTime,
-      ])
-      ->condition('id', $member['id'])
-      ->execute();
+    $sms_ok = $this->isSmsSendSuccessful($smsResult);
+    $app_ok = $this->notifyAppPushOtp($member['phoneNumber'], $message, $member['email'] ?? NULL);
+    $this->storeMemberOtpFallback($applicationId, $member, $otpCode, $sms_ok, $app_ok);
+
+    if ($sms_ok && $app_ok) {
+      $user_message = 'OTP sent by SMS. If the member stayed signed in on the Uwezo Fund app, the same code is in Notifications.';
+    }
+    elseif ($sms_ok) {
+      $user_message = 'OTP sent by SMS. Ask the member to read the 6-digit code from the text message (no app needed).';
+    }
+    elseif ($app_ok) {
+      $user_message = 'SMS could not be sent. If this member stayed signed in on the Uwezo Fund app, they can copy the code from Notifications. A feature phone cannot receive the code until SMS is working — wait and tap Send OTP again.';
+    }
+    else {
+      $user_message = 'SMS could not be sent, and this number is not signed in on the Uwezo Fund app. Feature phones need SMS. Wait a few minutes and tap Send OTP again after the SMS service recovers. Do not type a guessed code.';
+    }
 
     return [
       'success' => TRUE,
-      'message' => 'OTP sent successfully.',
-      'expires_in' => $expiry,
+      'message' => $user_message,
+      'sms_sent' => $sms_ok,
+      'app_sent' => $app_ok,
+      'expires_in' => self::MEMBER_OTP_TTL,
       'member' => [
         'national_id_code' => $member['nationalIdCode'],
         'confirmation_status' => 'sent',
@@ -1131,7 +1274,7 @@ class WebSmsConfirmationService {
   /**
    * Verify a member confirmation OTP.
    */
-  public function verifyConfirmationOtp(string $applicationId, string $nationalIdCode, string $otpCode): array {
+  public function verifyConfirmationOtp(string $applicationId, string $nationalIdCode, string $otpCode, array $context = []): array {
     $member = $this->loadMemberForOtp($applicationId, $nationalIdCode);
 
     if (!$member) {
@@ -1153,48 +1296,73 @@ class WebSmsConfirmationService {
       ];
     }
 
-    $cache = \Drupal::cache('default');
-    $cacheKey = $this->getMemberOtpCacheKey($applicationId, $member['id']);
-    $cached = $cache->get($cacheKey);
-
-    if (!$cached || empty($cached->data['otp_hash'])) {
+    $otpCode = preg_replace('/\D+/', '', (string) $otpCode);
+    $otpData = $this->loadStoredMemberOtp($applicationId, $member);
+    if (!$otpData) {
       return [
         'success' => FALSE,
         'message' => 'OTP expired or not sent. Please request a new code.',
       ];
     }
 
-    $otpData = $cached->data;
     $attempts = (int) ($otpData['attempts'] ?? 0);
-    if ($attempts >= 5) {
+    if ($attempts >= self::MEMBER_OTP_MAX_ATTEMPTS) {
       return [
         'success' => FALSE,
         'message' => 'Too many invalid attempts. Please request a new OTP.',
       ];
     }
 
-    if (!password_verify($otpCode, $otpData['otp_hash'])) {
-      $otpData['attempts'] = $attempts + 1;
-      $cache->set($cacheKey, $otpData, $cached->expire);
+    if ($otpCode === '' || !password_verify($otpCode, $otpData['otp_hash'])) {
+      $attempts++;
+      \Drupal::cache('default')->set(
+        $this->getMemberOtpCacheKey($applicationId, (string) $member['id']),
+        [
+          'otp_hash' => $otpData['otp_hash'],
+          'attempts' => $attempts,
+          'created' => $this->time->getCurrentTime(),
+          'member_id' => $member['id'],
+          'expires' => $otpData['expires'],
+        ],
+        (int) $otpData['expires']
+      );
       return [
         'success' => FALSE,
         'message' => 'Invalid OTP code.',
-        'attempts_remaining' => max(0, 5 - $otpData['attempts']),
+        'attempts_remaining' => max(0, self::MEMBER_OTP_MAX_ATTEMPTS - $attempts),
       ];
     }
 
-    $currentTime = date('Y-m-d H:i:s');
+    $currentTime = date('Y-m-d H:i:s', $this->time->getCurrentTime());
     $this->getWebDatabase()->update('member_data')
       ->fields([
         'status' => 'CONFIRMED',
         'confirmation_status' => 'confirmed',
         'confirmation_confirmed_at' => $currentTime,
+        'confirmation_token' => NULL,
+        'confirmation_token_expires_at' => NULL,
         'updatedAt' => $currentTime,
       ])
       ->condition('id', $member['id'])
       ->execute();
 
-    $cache->delete($cacheKey);
+    \Drupal::cache('default')->delete(
+      $this->getMemberOtpCacheKey($applicationId, (string) $member['id'])
+    );
+
+    $request = $this->requestStack->getCurrentRequest();
+    $context += [
+      'user_agent' => $request ? (string) $request->headers->get('User-Agent', '') : '',
+      'client' => $context['client'] ?? ($request ? (string) $request->headers->get('X-Uwezo-Client', '') : ''),
+    ];
+    $inferred = $this->inferOtpEntrySource($applicationId, $member, $otpCode, $context);
+    $this->writeConfirmationAudit('verify', $applicationId, $member, $inferred, $context);
+    \Drupal::cache('default')->delete(
+      $this->getMemberOtpFallbackCacheKey($applicationId, (string) $member['id'])
+    );
+    \Drupal::cache('default')->delete(
+      $this->getMemberOtpRevealCacheKey($applicationId, (string) $member['id'])
+    );
 
     return [
       'success' => TRUE,
@@ -1204,6 +1372,75 @@ class WebSmsConfirmationService {
         'confirmation_status' => 'confirmed',
       ],
     ];
+  }
+
+  /**
+   * Notify signed-in Uwezo Fund app (inbox/FCM) for member confirmation OTP.
+   */
+  protected function notifyAppPushOtp(string $phone_number, string $message, ?string $email = NULL): bool {
+    $secret = getenv('APP_PUSH_WEBHOOK_SECRET') ?: '';
+    if ($secret === '') {
+      return FALSE;
+    }
+    $email = trim((string) $email);
+    if ($email === '') {
+      $email = $this->lookupLikelyEmail(['phoneNumber' => $phone_number, 'email' => '']);
+    }
+    $urls = [];
+    foreach ([getenv('APP_PUSH_NOTIFY_URL'), getenv('APP_PUSH_NOTIFY_URLS')] as $raw_urls) {
+      if (!is_string($raw_urls) || $raw_urls === '') {
+        continue;
+      }
+      foreach (explode(',', $raw_urls) as $candidate) {
+        $candidate = trim($candidate);
+        if ($candidate !== '') {
+          $urls[] = $candidate;
+        }
+      }
+    }
+    foreach ([
+      'http://prod-web:3000/api/auth/app/notify',
+      'http://web:3000/api/auth/app/notify',
+      'http://majuu-applicant-portal:3000/api/auth/app/notify',
+    ] as $peer) {
+      $urls[] = $peer;
+    }
+    $delivered = FALSE;
+    foreach (array_values(array_unique($urls)) as $url) {
+      try {
+        $payload = json_encode([
+          'kind' => 'otp',
+          'title' => 'Uwezo Fund confirmation code',
+          'body' => $message,
+          'phone' => $phone_number,
+          'email' => $email !== '' ? $email : NULL,
+        ]);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+          'Content-Type: application/json',
+          'Authorization: Bearer ' . $secret,
+          'X-Uwezo-App-Push-Fanout: 1',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $raw = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($code < 200 || $code >= 300 || !is_string($raw) || $raw === '') {
+          continue;
+        }
+        $json = json_decode($raw, TRUE);
+        if (!empty($json['delivered']) || !empty($json['ok']) || !empty($json['devices']) || !empty($json['fcmSent'])) {
+          $delivered = TRUE;
+        }
+      }
+      catch (\Throwable $e) {
+        continue;
+      }
+    }
+    return $delivered;
   }
 
 }

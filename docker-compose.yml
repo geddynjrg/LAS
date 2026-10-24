@@ -38,6 +38,11 @@ services:
       - PESAFLOW_CALLBACK_SECRET=${PESAFLOW_CALLBACK_SECRET:-}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://${WEB_DOMAIN:-localhost}}
       - EXTERNAL_API_KEY=${EXTERNAL_API_KEY:-}
+      - APP_PUSH_WEBHOOK_SECRET=${APP_PUSH_WEBHOOK_SECRET:-${EXTERNAL_API_KEY}}
+      - APP_PUSH_STORE_PATH=/app/web/uploads/app-push.json
+      - QR_LOGIN_ENABLED_UNTIL=indefinite
+      - NEXT_PUBLIC_QR_LOGIN_ENABLED_UNTIL=indefinite
+
     env_file:
       - .env
     volumes:
@@ -108,6 +113,10 @@ services:
       SMTP_PORT: ${SMTP_PORT:-${PROD_SMTP_PORT}}
       SMTP_USER: ${SMTP_USER:-${PROD_SMTP_USER}}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-${PROD_SMTP_PASSWORD}}
+      APP_PUSH_NOTIFY_URL: ${APP_PUSH_NOTIFY_URL:-http://web:3000/api/auth/app/notify}
+      APP_PUSH_WEBHOOK_SECRET: ${APP_PUSH_WEBHOOK_SECRET:-${EXTERNAL_API_KEY}}
+      NEAMIS_CONSUMER_KEY: ${NEAMIS_CONSUMER_KEY:-}
+      NEAMIS_CONSUMER_SECRET: ${NEAMIS_CONSUMER_SECRET:-}
     depends_on:
       db:
         condition: service_healthy
