@@ -100,7 +100,12 @@ class MemberConfirmationOtpResource extends ResourceBase {
       $result = $this->webSmsConfirmationService->verifyConfirmationOtp(
         $application,
         $nationalIdCode,
-        $otpCode
+        $otpCode,
+        [
+          'client' => (string) ($payload['client'] ?? $request->headers->get('X-Uwezo-Client', '')),
+          'source_hint' => (string) ($payload['source_hint'] ?? ''),
+          'user_agent' => (string) $request->headers->get('User-Agent', ''),
+        ]
       );
       $status = !empty($result['success']) ? 200 : 400;
       return new ModifiedResourceResponse($result, $status);

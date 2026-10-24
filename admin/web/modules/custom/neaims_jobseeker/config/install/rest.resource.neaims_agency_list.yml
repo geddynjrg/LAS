@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - neaims_jobseeker
+    - serialization
+id: neaims_agency_list
+plugin_id: neaims_agency_list
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie
+    - anonymous

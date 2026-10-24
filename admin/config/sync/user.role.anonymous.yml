@@ -17,6 +17,7 @@ dependencies:
     - rest.resource.application_payment_success_sms
     - rest.resource.application_submission_success_sms
     - rest.resource.lms_application_update
+    - rest.resource.lms_member_otp_fallback
     - rest.resource.application_taxonomy_vocabularies
     - rest.resource.member_response
     - rest.resource.rest_framework_node_resource
@@ -58,5 +59,7 @@ permissions:
   - 'restful post application_submission_success_sms'
   - 'restful patch lms_application_update'
   - 'restful post lms_application_update'
+  - 'restful get lms_member_otp_fallback'
+  - 'restful post lms_member_otp_fallback'
   - 'search content'
   - 'use text format restricted_html'

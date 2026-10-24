@@ -1,6 +1,9 @@
 'use client';
 
-import { type FieldGuidanceKey, tipForField } from '@/lib/field-guidance';
+import {
+  tipForField,
+  type FieldGuidanceKey,
+} from '@/lib/field-guidance';
 import { type FC, type ReactNode, useState } from 'react';
 
 export {

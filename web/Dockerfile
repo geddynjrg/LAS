@@ -23,6 +23,8 @@ ARG NEXT_PUBLIC_API_URL
 
 COPY --from=deps /app ./
 COPY web/ ./web/
+# Drop host-built Prisma engines so alpine generate produces musl binaries
+RUN rm -rf ./web/generated/prisma/libquery_engine-*.node ./web/node_modules/.prisma 2>/dev/null || true
 RUN npx prisma generate --schema=./web/prisma/schema.prisma
 ENV NODE_ENV=production
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}

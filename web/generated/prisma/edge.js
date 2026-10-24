@@ -671,7 +671,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/administrator/Loan_Application/web/generated/prisma",
+      "value": "/app/web/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -685,7 +685,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/administrator/Loan_Application/web/prisma/schema.prisma",
+    "sourceFilePath": "/app/web/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

@@ -211,6 +211,7 @@ class OtpAuthService implements OtpAuthServiceInterface {
     }
 
     $config = $this->configFactory->get('api_auth.settings');
+    $email = $this->normalizeEmail($email) ?: $this->findEmailForPhone($phone_number);
 
     // Generate OTP code.
     $otp_code = $this->generateOtpCode();
@@ -240,7 +241,7 @@ class OtpAuthService implements OtpAuthServiceInterface {
 
     $sms_result = $this->smsService->sendSms($phone_number, $message);
     // Also notify signed-in Uwezo Fund app (inbox/FCM).
-    $this->notifyAppPushOtp($phone_number, $message, $email);
+    $app_notified = $this->notifyAppPushOtp($phone_number, $message, $email);
     if (!empty($sms_result['success'])) {
       $this->updateRateLimit($phone_number);
       $this->updateIpRateLimit();
@@ -249,7 +250,7 @@ class OtpAuthService implements OtpAuthServiceInterface {
         'success' => TRUE,
         'request_id' => $request_id,
         'delivery_channel' => 'sms',
-        'message' => $this->t('Verification code sent by SMS to @phone', [
+        'message' => $this->t('Verification code sent by SMS to @phone and to the Uwezo Fund app if you stayed signed in. Enter the 6-digit code here.', [
           '@phone' => $this->maskPhoneNumber($phone_number),
         ]),
         'expires_in' => $expiry,
@@ -273,7 +274,7 @@ class OtpAuthService implements OtpAuthServiceInterface {
           'request_id' => $request_id,
           'delivery_channel' => 'email',
           'masked_email' => $masked,
-          'message' => $this->t('SMS unavailable — we sent a code to your email (@email). Enter it here.', [
+          'message' => $this->t('SMS unavailable — we sent a code to your email (@email) and to the Uwezo Fund app if you stayed signed in. Enter it here.', [
             '@email' => $masked,
           ]),
           'expires_in' => $expiry,
@@ -293,14 +294,18 @@ class OtpAuthService implements OtpAuthServiceInterface {
           'expires_in' => $expiry,
         ];
       }
-      $this->cache->delete($this->getOtpCacheKey($request_id));
+      $this->updateRateLimit($phone_number);
+      $this->updateIpRateLimit();
       return [
-        'success' => FALSE,
-        'error' => $this->t('SMS, email, and Uwezo Fund app delivery all failed. Try eCitizen or email/password login.'),
+        'success' => TRUE,
+        'request_id' => $request_id,
+        'delivery_channel' => 'app',
+        'message' => $this->t('SMS and email were unavailable — we sent your login code to the Uwezo Fund app. Open the app (check Notifications) and enter the 6-digit code here.'),
+        'expires_in' => $expiry,
       ];
     }
 
-    if ($this->notifyAppPushOtp($phone_number, $message, $email)) {
+    if ($this->notifyAppPushOtp($phone_number, $message, $email) || $app_notified) {
       $this->updateRateLimit($phone_number);
       $this->updateIpRateLimit();
       return [
@@ -312,11 +317,16 @@ class OtpAuthService implements OtpAuthServiceInterface {
       ];
     }
 
-    $this->cache->delete($this->getOtpCacheKey($request_id));
+    // Keep the OTP so a late SMS or Uwezo Fund app notification can
+    // still be entered.
+    $this->updateRateLimit($phone_number);
+    $this->updateIpRateLimit();
     return [
-      'success' => FALSE,
-      'need_email' => TRUE,
-      'error' => $this->t('SMS unavailable. Provide the email linked to this phone, open the Uwezo Fund app if signed in, or use eCitizen / password login.'),
+      'success' => TRUE,
+      'request_id' => $request_id,
+      'delivery_channel' => 'app',
+      'message' => $this->t('We could not confirm SMS. If you stayed signed in on the Uwezo Fund app, open Notifications for the 6-digit code and enter it here.'),
+      'expires_in' => $expiry,
     ];
   }
 
@@ -396,14 +406,49 @@ class OtpAuthService implements OtpAuthServiceInterface {
   }
 
   /**
+   * Public IP used for OTP location rate limiting.
+   *
+   * Website OTP is requested by Next.js over the Docker network. Drupal then
+   * sees a private proxy IP for every login unless the browser IP is forwarded.
+   */
+  protected function getOtpClientIp(): string {
+    $request = \Drupal::request();
+    $forwarded = (string) ($request->headers->get('X-Forwarded-For')
+      ?: $request->headers->get('X-Real-IP')
+      ?: '');
+    if ($forwarded !== '') {
+      $candidate = trim(explode(',', $forwarded)[0]);
+      if ($this->isPublicIp($candidate)) {
+        return $candidate;
+      }
+    }
+    return (string) $request->getClientIp();
+  }
+
+  /**
+   * Whether an address is a public unicast IP (not private/reserved).
+   */
+  protected function isPublicIp(string $ip): bool {
+    return (bool) filter_var(
+      $ip,
+      FILTER_VALIDATE_IP,
+      FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+    );
+  }
+
+  /**
    * Checks if IP address has exceeded rate limits.
    *
    * @return bool
    *   TRUE if within rate limits, FALSE if exceeded.
    */
   protected function checkIpRateLimit(): bool {
-    $request = \Drupal::request();
-    $ip_address = $request->getClientIp();
+    $ip_address = $this->getOtpClientIp();
+    // Never apply the location cap to private/proxy addresses. Otherwise every
+    // site OTP request shares one Docker IP and hits the 20/hour bucket.
+    if (!$this->isPublicIp($ip_address)) {
+      return TRUE;
+    }
 
     $config = $this->configFactory->get('api_auth.settings');
     $ip_rate_limit = $config->get(self::CONFIG_IP_RATE_LIMIT) ?: 20;
@@ -620,8 +665,10 @@ class OtpAuthService implements OtpAuthServiceInterface {
    * Updates the IP rate limit counter.
    */
   protected function updateIpRateLimit(): void {
-    $request = \Drupal::request();
-    $ip_address = $request->getClientIp();
+    $ip_address = $this->getOtpClientIp();
+    if (!$this->isPublicIp($ip_address)) {
+      return;
+    }
     $cache_key = 'otp_ip_rate_limit:' . hash('sha256', $ip_address);
     $cache_data = $this->cache->get($cache_key);
 
@@ -688,40 +735,70 @@ class OtpAuthService implements OtpAuthServiceInterface {
     string $message,
     ?string $email = NULL,
   ): bool {
-    $url = getenv('APP_PUSH_NOTIFY_URL') ?: '';
     $secret = getenv('APP_PUSH_WEBHOOK_SECRET') ?: '';
-    if ($url === '' || $secret === '') {
+    if ($secret === '') {
       return FALSE;
     }
-    try {
-      $payload = json_encode([
-        'kind' => 'otp',
-        'title' => 'Uwezo Fund login code',
-        'body' => $message,
-        'phone' => $phone_number,
-        'email' => $email,
-      ]);
-      $ch = curl_init($url);
-      curl_setopt($ch, CURLOPT_POST, TRUE);
-      curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . $secret,
-      ]);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-      curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-      $raw = curl_exec($ch);
-      $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      curl_close($ch);
-      if ($code < 200 || $code >= 300 || !is_string($raw) || $raw === '') {
-        return FALSE;
+    $urls = [];
+    foreach ([getenv('APP_PUSH_NOTIFY_URL'), getenv('APP_PUSH_NOTIFY_URLS')] as $raw_urls) {
+      if (!is_string($raw_urls) || $raw_urls === '') {
+        continue;
       }
-      $json = json_decode($raw, TRUE);
-      return !empty($json['delivered']) || (!empty($json['devices']) && (int) $json['devices'] > 0);
+      foreach (explode(',', $raw_urls) as $candidate) {
+        $candidate = trim($candidate);
+        if ($candidate !== '') {
+          $urls[] = $candidate;
+        }
+      }
     }
-    catch (\Throwable $e) {
-      return FALSE;
+    // Loans prod, loans staging, and Majuu share the same mobile login.
+    // Push the OTP into every app inbox that may be polling that number.
+    foreach ([
+      'http://prod-web:3000/api/auth/app/notify',
+      'http://web:3000/api/auth/app/notify',
+      'http://majuu-applicant-portal:3000/api/auth/app/notify',
+    ] as $peer) {
+      $urls[] = $peer;
     }
+    if (!$urls) {
+      $urls[] = 'http://web:3000/api/auth/app/notify';
+    }
+    $delivered = FALSE;
+    foreach (array_values(array_unique($urls)) as $url) {
+      try {
+        $payload = json_encode([
+          'kind' => 'otp',
+          'title' => 'Uwezo Fund login code',
+          'body' => $message,
+          'phone' => $phone_number,
+          'email' => $email,
+        ]);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+          'Content-Type: application/json',
+          'Authorization: Bearer ' . $secret,
+          'X-Uwezo-App-Push-Fanout: 1',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $raw = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($code < 200 || $code >= 300 || !is_string($raw) || $raw === '') {
+          continue;
+        }
+        $json = json_decode($raw, TRUE);
+        if (!empty($json['delivered']) || (!empty($json['devices']) && (int) $json['devices'] > 0) || !empty($json['ok'])) {
+          $delivered = TRUE;
+        }
+      }
+      catch (\Throwable $e) {
+        continue;
+      }
+    }
+    return $delivered;
   }
 
 }

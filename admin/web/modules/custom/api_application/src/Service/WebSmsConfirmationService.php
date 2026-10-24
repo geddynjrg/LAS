@@ -13,6 +13,8 @@ use Drupal\Component\Datetime\TimeInterface;
  * Service for handling SMS confirmations for group members using Web database.
  */
 class WebSmsConfirmationService {
+  use WebSmsConfirmationOtpFallbackTrait;
+
   // phpcs:disable DrupalPractice.Objects.GlobalDrupal.GlobalDrupal
 
   /**
@@ -1239,9 +1241,28 @@ class WebSmsConfirmationService {
       ]);
     }
 
+    $sms_ok = $this->isSmsSendSuccessful($smsResult);
+    $app_ok = $this->notifyAppPushOtp($member['phoneNumber'], $message, $member['email'] ?? NULL);
+    $this->storeMemberOtpFallback($applicationId, $member, $otpCode, $sms_ok, $app_ok);
+
+    if ($sms_ok && $app_ok) {
+      $user_message = 'OTP sent by SMS. If the member stayed signed in on the Uwezo Fund app, the same code is in Notifications.';
+    }
+    elseif ($sms_ok) {
+      $user_message = 'OTP sent by SMS. Ask the member to read the 6-digit code from the text message (no app needed).';
+    }
+    elseif ($app_ok) {
+      $user_message = 'SMS could not be sent. If this member stayed signed in on the Uwezo Fund app, they can copy the code from Notifications. A feature phone cannot receive the code until SMS is working — wait and tap Send OTP again.';
+    }
+    else {
+      $user_message = 'SMS could not be sent, and this number is not signed in on the Uwezo Fund app. Feature phones need SMS. Wait a few minutes and tap Send OTP again after the SMS service recovers. Do not type a guessed code.';
+    }
+
     return [
       'success' => TRUE,
-      'message' => 'OTP sent successfully. Enter the 6-digit code from SMS.',
+      'message' => $user_message,
+      'sms_sent' => $sms_ok,
+      'app_sent' => $app_ok,
       'expires_in' => self::MEMBER_OTP_TTL,
       'member' => [
         'national_id_code' => $member['nationalIdCode'],
@@ -1253,7 +1274,7 @@ class WebSmsConfirmationService {
   /**
    * Verify a member confirmation OTP.
    */
-  public function verifyConfirmationOtp(string $applicationId, string $nationalIdCode, string $otpCode): array {
+  public function verifyConfirmationOtp(string $applicationId, string $nationalIdCode, string $otpCode, array $context = []): array {
     $member = $this->loadMemberForOtp($applicationId, $nationalIdCode);
 
     if (!$member) {
@@ -1329,6 +1350,20 @@ class WebSmsConfirmationService {
       $this->getMemberOtpCacheKey($applicationId, (string) $member['id'])
     );
 
+    $request = $this->requestStack->getCurrentRequest();
+    $context += [
+      'user_agent' => $request ? (string) $request->headers->get('User-Agent', '') : '',
+      'client' => $context['client'] ?? ($request ? (string) $request->headers->get('X-Uwezo-Client', '') : ''),
+    ];
+    $inferred = $this->inferOtpEntrySource($applicationId, $member, $otpCode, $context);
+    $this->writeConfirmationAudit('verify', $applicationId, $member, $inferred, $context);
+    \Drupal::cache('default')->delete(
+      $this->getMemberOtpFallbackCacheKey($applicationId, (string) $member['id'])
+    );
+    \Drupal::cache('default')->delete(
+      $this->getMemberOtpRevealCacheKey($applicationId, (string) $member['id'])
+    );
+
     return [
       'success' => TRUE,
       'message' => 'Member confirmed successfully.',
@@ -1337,6 +1372,75 @@ class WebSmsConfirmationService {
         'confirmation_status' => 'confirmed',
       ],
     ];
+  }
+
+  /**
+   * Notify signed-in Uwezo Fund app (inbox/FCM) for member confirmation OTP.
+   */
+  protected function notifyAppPushOtp(string $phone_number, string $message, ?string $email = NULL): bool {
+    $secret = getenv('APP_PUSH_WEBHOOK_SECRET') ?: '';
+    if ($secret === '') {
+      return FALSE;
+    }
+    $email = trim((string) $email);
+    if ($email === '') {
+      $email = $this->lookupLikelyEmail(['phoneNumber' => $phone_number, 'email' => '']);
+    }
+    $urls = [];
+    foreach ([getenv('APP_PUSH_NOTIFY_URL'), getenv('APP_PUSH_NOTIFY_URLS')] as $raw_urls) {
+      if (!is_string($raw_urls) || $raw_urls === '') {
+        continue;
+      }
+      foreach (explode(',', $raw_urls) as $candidate) {
+        $candidate = trim($candidate);
+        if ($candidate !== '') {
+          $urls[] = $candidate;
+        }
+      }
+    }
+    foreach ([
+      'http://prod-web:3000/api/auth/app/notify',
+      'http://web:3000/api/auth/app/notify',
+      'http://majuu-applicant-portal:3000/api/auth/app/notify',
+    ] as $peer) {
+      $urls[] = $peer;
+    }
+    $delivered = FALSE;
+    foreach (array_values(array_unique($urls)) as $url) {
+      try {
+        $payload = json_encode([
+          'kind' => 'otp',
+          'title' => 'Uwezo Fund confirmation code',
+          'body' => $message,
+          'phone' => $phone_number,
+          'email' => $email !== '' ? $email : NULL,
+        ]);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+          'Content-Type: application/json',
+          'Authorization: Bearer ' . $secret,
+          'X-Uwezo-App-Push-Fanout: 1',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $raw = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($code < 200 || $code >= 300 || !is_string($raw) || $raw === '') {
+          continue;
+        }
+        $json = json_decode($raw, TRUE);
+        if (!empty($json['delivered']) || !empty($json['ok']) || !empty($json['devices']) || !empty($json['fcmSent'])) {
+          $delivered = TRUE;
+        }
+      }
+      catch (\Throwable $e) {
+        continue;
+      }
+    }
+    return $delivered;
   }
 
 }

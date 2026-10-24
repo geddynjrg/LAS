@@ -18,17 +18,19 @@ import { useForm } from '@workspace/ui/hooks/use-form';
 import { useTranslations } from 'next-intl';
 import { type FC, type ReactNode, useEffect, useState } from 'react';
 
-// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
-
-// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
-
-// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
-
-// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
-
-// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
-
-// app/apply/[id]/member-confirmation/member-confirmation-form.tsx
+function detectOtpClient(): 'uwezo_app' | 'loans_portal' {
+  if (typeof navigator === 'undefined') {
+    return 'loans_portal';
+  }
+  const ua = navigator.userAgent || '';
+  if (
+    /UwezoFundApp/i.test(ua) ||
+    /Capacitor/i.test(ua)
+  ) {
+    return 'uwezo_app';
+  }
+  return 'loans_portal';
+}
 
 interface MemberConfirmationDataProps {
   id: string;
@@ -231,7 +233,12 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
     setVerifyingOtpFor((prev) => ({ ...prev, [memberKey]: true }));
 
     try {
-      const result = await verifyMemberOtp(id, memberKey, value);
+      const result = await verifyMemberOtp(
+        id,
+        memberKey,
+        value,
+        detectOtpClient(),
+      );
 
       if (result.success) {
         const status =
@@ -302,9 +309,7 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
       },
     } as const;
 
-    const key = (
-      status in statusConfig ? status : 'pending'
-    ) as keyof typeof statusConfig;
+    const key = (status in statusConfig ? status : 'pending') as keyof typeof statusConfig;
     const config = statusConfig[key];
 
     return (
@@ -347,8 +352,8 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
           <div className="prose">
             <p>
               Send a 6-digit OTP to each member, then enter the code they
-              receive. When at least 75% of members have verified their OTP, you
-              can proceed to the next step.
+              receive. When at least 75% of members have verified their OTP,
+              you can proceed to the next step.
             </p>
             <p>
               {t.rich('ConfirmationsPage.confirmMembersForm.progress-saved', {
@@ -428,6 +433,21 @@ export const MemberConfirmationForm: FC<MemberConfirmationDataProps> = ({
               <h3 className="font-semibold text-gray-800">
                 Member Status ({members.length} members)
               </h3>
+              <p className="mt-1 text-sm text-gray-600">
+                Members do not need the Uwezo Fund app. The code is sent by SMS.
+                For a basic (feature) phone, ask the member to read the 6-digit
+                SMS, then enter it here. If SMS is down, constituency officers
+                may see the code in LMS — they must get the member&apos;s
+                consent before typing it here. Members signed in on the Uwezo
+                Fund app can still copy the code from Notifications.
+              </p>
+              <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
+                <strong>Consent required.</strong> A constituency officer must
+                receive consent from the members of the group before typing a
+                code shown on lms.uwezo.go.ke or lms-staging.uwezo.go.ke into
+                loans.uwezo.go.ke or loans-staging.uwezo.go.ke. Do not enter an
+                LMS-shown code unless the member is present and has agreed.
+              </div>
             </div>
             <div className="divide-y">
               {members.map((member, index) => {
