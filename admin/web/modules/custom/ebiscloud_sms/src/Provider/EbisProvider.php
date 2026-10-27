@@ -145,7 +145,7 @@ class EbisProvider implements SmsProviderInterface {
       // Make the API request.
       $response = $this->httpClient->request('POST', $api_url, [
         'json' => $request_data,
-        'timeout' => 30,
+        'timeout' => 12,
         'headers' => [
           'User-Agent' => 'Drupal-SMS-Providers/1.0',
           'Content-Type' => 'application/json',
@@ -222,18 +222,33 @@ class EbisProvider implements SmsProviderInterface {
     $json_data = json_decode($response_body, TRUE);
 
     if ($status_code === 200) {
-      if ($json_data && isset($json_data['status'])) {
-        // Handle EBIS Cloud JSON response format.
-        // Success status code is 1000 according to documentation.
-        if ((string) $json_data['status'] === self::RESPONSE_SUCCESS) {
+      if (is_array($json_data)) {
+        // Explicit failure from the current EBIS batch API.
+        if (array_key_exists('success', $json_data) && $json_data['success'] === FALSE) {
+          return [
+            'success' => FALSE,
+            'error' => $json_data['message'] ?? $json_data['error'] ?? 'SMS could not be sent',
+          ];
+        }
+
+        if ($this->isEbisSuccessPayload($json_data)) {
+          $message_id = $json_data['data']['message_id']
+            ?? $json_data['message_id']
+            ?? NULL;
+          if ($message_id === NULL && !empty($json_data['details'][0]['message_id'])) {
+            $message_id = $json_data['details'][0]['message_id'];
+          }
+
           $result = [
             'success' => TRUE,
-            'message_id' => $json_data['data']['message_id'] ?? uniqid('ebis_'),
+            'message_id' => $message_id ?? uniqid('ebis_'),
           ];
 
-          // Include cost if available.
           if (isset($json_data['data']['cost'])) {
             $result['cost'] = $json_data['data']['cost'];
+          }
+          elseif (isset($json_data['details'][0]['message_cost'])) {
+            $result['cost'] = $json_data['details'][0]['message_cost'];
           }
 
           return $result;
@@ -241,12 +256,13 @@ class EbisProvider implements SmsProviderInterface {
 
         return [
           'success' => FALSE,
-          'error' => $json_data['message'] ?? 'Unknown error from API',
+          'error' => $json_data['message'] ?? $json_data['error'] ?? 'Unknown error from API',
         ];
       }
 
-      // Handle plain text response - assume success if status is 200.
-      if (stripos($response_body, 'success') !== FALSE || stripos($response_body, 'sent') !== FALSE) {
+      // Plain-text response only — never regex the JSON body (avoids matching
+      // the key name "success" inside {"success":false,...}).
+      if (preg_match('/\b(success|sent|accepted|queued|submitted)\b/i', $response_body)) {
         return [
           'success' => TRUE,
           'message_id' => uniqid('ebis_'),
@@ -262,10 +278,10 @@ class EbisProvider implements SmsProviderInterface {
     // Handle error status codes.
     $error_message = 'HTTP error ' . $status_code;
 
-    if ($json_data && isset($json_data['message'])) {
+    if (is_array($json_data) && isset($json_data['message'])) {
       $error_message = $json_data['message'];
     }
-    elseif ($json_data && isset($json_data['error'])) {
+    elseif (is_array($json_data) && isset($json_data['error'])) {
       $error_message = $json_data['error'];
     }
     elseif (!empty($response_body)) {
@@ -276,6 +292,64 @@ class EbisProvider implements SmsProviderInterface {
       'success' => FALSE,
       'error' => $error_message,
     ];
+  }
+
+  /**
+   * Whether an EBIS JSON body indicates the SMS was accepted.
+   */
+  protected function isEbisSuccessPayload(array $json_data): bool {
+    // Current EBIS API: {"success":true,"summary":{"successful":1},...}
+    if (array_key_exists('success', $json_data)) {
+      if ($json_data['success'] === TRUE || $json_data['success'] === 1 || $json_data['success'] === '1') {
+        $summary = $json_data['summary'] ?? NULL;
+        if (is_array($summary) && array_key_exists('successful', $summary)) {
+          return (int) $summary['successful'] > 0;
+        }
+        return TRUE;
+      }
+      return FALSE;
+    }
+
+    $status = $json_data['status'] ?? $json_data['status_code'] ?? $json_data['code'] ?? NULL;
+    if ($status !== NULL) {
+      $normalized = strtoupper(trim((string) $status));
+      $success_codes = [
+        self::RESPONSE_SUCCESS,
+        '0',
+        '00',
+        '200',
+        '1001',
+        'SUCCESS',
+        'OK',
+        'SENT',
+        'ACCEPTED',
+        'QUEUED',
+      ];
+      if (in_array($normalized, $success_codes, TRUE)) {
+        return TRUE;
+      }
+    }
+
+    // Legacy array payload: [{"status_code":"1000",...}]
+    if (array_is_list($json_data) && isset($json_data[0]) && is_array($json_data[0])) {
+      $code = (string) ($json_data[0]['status_code'] ?? $json_data[0]['status'] ?? '');
+      return $code === self::RESPONSE_SUCCESS || $code === '1';
+    }
+
+    if (!empty($json_data['details']) && is_array($json_data['details'])) {
+      $first = $json_data['details'][0] ?? NULL;
+      if (is_array($first)) {
+        $code = (string) ($first['status_code'] ?? '');
+        return $code === self::RESPONSE_SUCCESS || $code === '1';
+      }
+    }
+
+    $message = (string) ($json_data['message'] ?? $json_data['description'] ?? '');
+    if ($message === '') {
+      return FALSE;
+    }
+
+    return (bool) preg_match('/\b(success|sent|accepted|queued|submitted)\b/i', $message);
   }
 
 }
