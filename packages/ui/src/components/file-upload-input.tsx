@@ -198,9 +198,8 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
         return;
       }
 
-      // Prioritize server action over legacy upload
-      if (uploadAction && applicationId) {
-        // Handle file upload with server action
+      // Prefer fast REST /api/upload; fall back to server action if needed.
+      if (applicationId && (enableUpload || uploadAction)) {
         const filesToUpload = newFiles.filter(
           (file): file is File => file instanceof File,
         );
@@ -230,8 +229,99 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
           return;
         }
 
+        const applyUploadResults = (uploadResults: ServerFile[]) => {
+          setUploadedFiles((prev) => [...prev, ...uploadResults]);
+          onUploadComplete?.(uploadResults);
+          setFiles((prevFiles) => {
+            if (!multiple) {
+              return uploadResults;
+            }
+            const allFiles = [...(prevFiles || []), ...uploadResults];
+            return allFiles.filter(
+              (file, index, arr) =>
+                arr.findIndex((f) => getFileName(f) === getFileName(file)) ===
+                index,
+            );
+          });
+        };
+
+        const uploadViaRest = async (): Promise<ServerFile[] | null> => {
+          setIsUploading(true);
+          setUploadProgress(0);
+          try {
+            const uploaded: ServerFile[] = [];
+            for (let i = 0; i < filesToUpload.length; i++) {
+              const file = filesToUpload[i]!;
+              const formData = new FormData();
+              formData.append("file", file);
+              formData.append("applicationId", applicationId);
+
+              const response = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+              });
+              const result = await response.json().catch(() => null);
+
+              if (!response.ok || !result?.success) {
+                throw new Error(
+                  result?.error ||
+                    `Upload failed with status: ${response.status}`,
+                );
+              }
+
+              const mapped: ServerFile[] = Array.isArray(result.files)
+                ? result.files.map(
+                    (item: {
+                      fid?: string;
+                      filename?: string;
+                      url?: string;
+                    }) => ({
+                      fid: item.fid?.toString() || "",
+                      filename: item.filename || file.name,
+                      url: item.url || "",
+                    }),
+                  )
+                : [
+                    {
+                      fid: result.fid?.toString() || "",
+                      filename: result.filename || file.name,
+                      url: result.url || "",
+                    },
+                  ];
+
+              uploaded.push(...mapped);
+              const progress = ((i + 1) / filesToUpload.length) * 100;
+              setUploadProgress(progress);
+              onUploadProgress?.(progress);
+            }
+            return uploaded;
+          } finally {
+            setIsUploading(false);
+          }
+        };
+
         startTransition(async () => {
           try {
+            try {
+              const restResults = await uploadViaRest();
+              if (restResults && restResults.length > 0) {
+                applyUploadResults(restResults);
+                return;
+              }
+            } catch (restError) {
+              console.warn(
+                "REST upload failed, falling back to server action:",
+                restError,
+              );
+              if (!uploadAction) {
+                throw restError;
+              }
+            }
+
+            if (!uploadAction) {
+              throw new Error("Upload is not configured");
+            }
+
             const formData = new FormData();
 
             if (applicationId) {
@@ -261,25 +351,7 @@ export const FileUploadInput: FC<FileUploadInputProps> = ({
             if (result.success) {
               // Handle successful upload
               const uploadResults = result.files || [];
-              setUploadedFiles((prev) => [...prev, ...uploadResults]);
-              onUploadComplete?.(uploadResults);
-
-              // Add uploaded files to the files state
-              setFiles((prevFiles) => {
-                if (!multiple) {
-                  // For single file uploads, replace existing files
-                  return uploadResults;
-                }
-
-                // For multiple file uploads, append and remove duplicates
-                const allFiles = [...(prevFiles || []), ...uploadResults];
-                return allFiles.filter(
-                  (file, index, arr) =>
-                    arr.findIndex(
-                      (f) => getFileName(f) === getFileName(file),
-                    ) === index,
-                );
-              });
+              applyUploadResults(uploadResults);
             } else {
               // Handle upload errors
               const errorMessages: string = result.errors

@@ -1,6 +1,7 @@
 import { ApplicationStatus } from '@/generated/prisma';
 import {
   beginLoanFieldEdit,
+  handleLoanMemberAction,
   loanFieldPicker,
   loanStagePicker,
   saveLoanField,
@@ -33,6 +34,7 @@ const MAIN_MENU: QuickReply[] = [
     label: '2. Check status of loan application',
     value: 'status',
   },
+  { id: 'new_app', label: '3. New application', value: 'new_app' },
 ];
 
 const APPLY_REPLY =
@@ -228,6 +230,7 @@ export async function POST(request: Request) {
   let fieldStage = 0;
   let fieldKey = '';
   let fieldValue = '';
+  let fieldMemberId = '';
   try {
     const body = (await request.json()) as {
       message?: string;
@@ -238,6 +241,7 @@ export async function POST(request: Request) {
       stage?: number | string;
       field?: string;
       value?: string;
+      memberId?: string;
     };
     message = String(body.message || '');
     path = String(body.path || '');
@@ -247,6 +251,7 @@ export async function POST(request: Request) {
     fieldStage = Number(body.stage || 0);
     fieldKey = String(body.field || '');
     fieldValue = String(body.value || body.message || '');
+    fieldMemberId = String(body.memberId || '');
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
@@ -321,8 +326,8 @@ export async function POST(request: Request) {
   }
 
   const fieldMatch =
-    action.match(/^field:([^:]+):(\d+):([a-z0-9_]+)$/i) ||
-    trimmed.match(/^field:([^:]+):(\d+):([a-z0-9_]+)$/i);
+    action.match(/^field:([^:]+):(\d+):([a-z0-9_.]+)$/i) ||
+    trimmed.match(/^field:([^:]+):(\d+):([a-z0-9_.]+)$/i);
   if (fieldMatch) {
     if (!session) {
       return NextResponse.json({ reply: 'Sign in first.', needAuth: true });
@@ -336,6 +341,63 @@ export async function POST(request: Request) {
       ...payload,
       authenticated: true,
       source: 'field_edit',
+    });
+  }
+
+  const memberAction =
+    action.match(/^member:(add|edit|done):loan:.+/i) ||
+    trimmed.match(/^member:(add|edit|done):loan:.+/i);
+  if (memberAction) {
+    if (!session) {
+      return NextResponse.json({ reply: 'Sign in first.', needAuth: true });
+    }
+    const payload = await handleLoanMemberAction(memberAction[0]!);
+    return NextResponse.json({
+      ...payload,
+      authenticated: true,
+      source: 'member',
+    });
+  }
+
+  if (action === 'new_app' || /^new_app$/i.test(trimmed)) {
+    if (!session) {
+      return NextResponse.json({ reply: 'Sign in first.', needAuth: true });
+    }
+    try {
+      const mod = await import('@/lib/data/application');
+      const createFn = (
+        mod as {
+          createApplication?: () => Promise<{ applicationId?: string } | null>;
+        }
+      ).createApplication;
+      if (typeof createFn === 'function') {
+        const created = await createFn();
+        const id = created?.applicationId;
+        if (id) {
+          const payload = await loanFieldPicker(id, 1);
+          return NextResponse.json({
+            ...payload,
+            reply: `New application ${id} created. Continuing at stage 1.\n\n${payload.reply}`,
+            authenticated: true,
+            source: 'new_app',
+          });
+        }
+      }
+    } catch {
+      /* fall through */
+    }
+    return NextResponse.json({
+      reply: 'Open /apply/create to start a new application.',
+      openUrl: '/apply/create',
+      quickReplies: [
+        {
+          id: 'create',
+          label: 'Open /apply/create',
+          value: 'open:/apply/create',
+        },
+        { id: 'menu', label: 'Back to menu', value: 'menu' },
+      ],
+      authenticated: true,
     });
   }
 
@@ -355,6 +417,7 @@ export async function POST(request: Request) {
       fieldStage,
       fieldKey,
       fieldValue,
+      fieldMemberId || undefined,
     );
     return NextResponse.json({
       ...payload,

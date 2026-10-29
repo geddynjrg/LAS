@@ -28,10 +28,20 @@ export function shouldApplyApiStatusUpdate(
   localStatus: ApplicationStatus,
   newStatus: ApplicationStatus,
 ): boolean {
+  // Constituency returned the application for correction — unlock as DRAFT.
+  if (
+    newStatus === ApplicationStatus.DRAFT &&
+    (localStatus === ApplicationStatus.SUBMITTED ||
+      localStatus === ApplicationStatus.CONSTITUENCY_REVIEW ||
+      localStatus === ApplicationStatus.GROUP_MEMBER_CONFIRMATION ||
+      localStatus === ApplicationStatus.IN_REVIEW)
+  ) {
+    return true;
+  }
+
   if (
     STATUS_PROGRESS_RANK[newStatus] < STATUS_PROGRESS_RANK[localStatus] &&
-    (newStatus === ApplicationStatus.UNSUBMITTED ||
-      newStatus === ApplicationStatus.DRAFT)
+    newStatus === ApplicationStatus.UNSUBMITTED
   ) {
     return false;
   }
@@ -100,10 +110,17 @@ export async function applyDrupalStatusToLocalApplication(
     return false;
   }
 
+  const returningToDraft =
+    statusShouldUpdate &&
+    newStatus === ApplicationStatus.DRAFT &&
+    localApp.status !== ApplicationStatus.DRAFT;
+
   await prisma.application.update({
     where: { id: localApp.id },
     data: {
       ...(statusShouldUpdate && { status: newStatus }),
+      // Let the group reopen the form (group-data / documents) after a return.
+      ...(returningToDraft && { applicationProgress: 1 }),
       ...(timestampShouldUpdate && {
         updatedAt: apiUpdatedAt || new Date(),
       }),

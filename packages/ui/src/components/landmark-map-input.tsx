@@ -123,15 +123,73 @@ function suggestionFromResult(result: GeocodeSuggestion): GeocodeSuggestion {
   };
 }
 
+
+type GeocodeApiResponse = {
+  results?: GeocodeSuggestion[];
+  error?: string;
+  degraded?: boolean;
+};
+
+const GEOCODE_TIMEOUT_MSG =
+  "Location search timed out. Try again or type the landmark manually.";
+const GEOCODE_UNAVAILABLE_MSG =
+  "Location search is temporarily unavailable. Try again or type the landmark manually.";
+
+async function parseGeocodeResponse(response: Response): Promise<GeocodeApiResponse> {
+  const text = await response.text();
+  const contentType = response.headers.get("content-type") || "";
+  const trimmed = text.trimStart();
+  const looksHtml =
+    trimmed.startsWith("<") || !contentType.toLowerCase().includes("application/json");
+
+  if (looksHtml) {
+    if (response.status === 504 || response.status === 502 || response.status === 408) {
+      throw new Error(GEOCODE_TIMEOUT_MSG);
+    }
+    throw new Error(GEOCODE_UNAVAILABLE_MSG);
+  }
+
+  let data: GeocodeApiResponse;
+  try {
+    data = JSON.parse(text) as GeocodeApiResponse;
+  } catch {
+    throw new Error(GEOCODE_TIMEOUT_MSG);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || GEOCODE_UNAVAILABLE_MSG);
+  }
+
+  return data;
+}
+
+function usableBounds(bounds?: GeocodeBoundingBox) {
+  if (!bounds) {
+    return undefined;
+  }
+
+  const latSpan = Math.abs(bounds.north - bounds.south);
+  const lngSpan = Math.abs(bounds.east - bounds.west);
+  // Tiny POI boxes over-zoom the OSM embed and look blurred.
+  if (latSpan < 0.02 && lngSpan < 0.02) {
+    return undefined;
+  }
+
+  return bounds;
+}
+
 function mapViewFromSuggestion(
   suggestion: GeocodeSuggestion,
   delta: number,
+  options?: { preferDelta?: boolean },
 ): MapView {
   return {
     lat: suggestion.lat,
     lng: suggestion.lng,
     delta,
-    bounds: suggestion.boundingBox,
+    bounds: options?.preferDelta
+      ? undefined
+      : usableBounds(suggestion.boundingBox),
     label: shortLabel(suggestion.label),
   };
 }
@@ -234,14 +292,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       const response = await fetch(`/api/geocode?${params.toString()}`, {
         signal: controller.signal,
       });
-      const data = (await response.json()) as {
-        results?: GeocodeSuggestion[];
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error || "Location search failed");
-      }
+      const data = await parseGeocodeResponse(response);
 
       const results = (data.results || []).map(suggestionFromResult);
       suggestionCacheRef.current.set(cacheKey, results);
@@ -253,6 +304,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
         return;
       }
 
+      // Keep any existing pin/selection visible; only surface the error.
       setSuggestions([]);
       setSearchError(
         error instanceof Error ? error.message : "Location search failed",
@@ -264,7 +316,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
     }
   }, [buildContextCacheKey]);
 
-  const fetchSuggestions = useDebouncedCallback(fetchSuggestionsNow, 180);
+  const fetchSuggestions = useDebouncedCallback(fetchSuggestionsNow, 280);
 
   const loadAreaView = useCallback(async (context: LandmarkLocationContext) => {
     if (!context.county?.trim()) {
@@ -298,9 +350,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       const response = await fetch(`/api/geocode?${params.toString()}`, {
         signal: controller.signal,
       });
-      const data = (await response.json()) as {
-        results?: GeocodeSuggestion[];
-      };
+      const data = await parseGeocodeResponse(response);
 
       const match = data.results?.[0];
       if (!match) {
@@ -345,12 +395,22 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       return;
     }
 
+    // Avoid re-hitting geocoders when the user already pinned this landmark.
+    if (
+      selected &&
+      shortLabel(selected.label).toLowerCase() === search.trim().toLowerCase()
+    ) {
+      setSearchError(null);
+      return;
+    }
+
     void fetchSuggestionsNow(search);
   }, [
     locationContext?.county,
     locationContext?.constituency,
     locationContext?.ward,
     search,
+    selected,
     fetchSuggestionsNow,
   ]);
 
@@ -378,11 +438,15 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
 
   const mapView = useMemo<MapView>(() => {
     if (selected) {
-      return mapViewFromSuggestion(selected, ZOOM_DELTAS.landmark);
+      return mapViewFromSuggestion(selected, ZOOM_DELTAS.landmark, {
+        preferDelta: true,
+      });
     }
 
     if (preview && search.trim().length >= 2) {
-      return mapViewFromSuggestion(preview, ZOOM_DELTAS.landmark);
+      return mapViewFromSuggestion(preview, ZOOM_DELTAS.landmark, {
+        preferDelta: true,
+      });
     }
 
     if (areaView) {

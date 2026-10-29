@@ -9,7 +9,7 @@ import {
   ecitizenLoginSchema,
 } from '@/app/(auth)/login/login-schema';
 import { login } from '@/lib/api/login';
-import { requestOtp } from '@/lib/api/otp-request';
+import { OtpNeedEmailError, requestOtp } from '@/lib/api/otp-request';
 import { verifyOtp } from '@/lib/api/otp-verify';
 import { createSession } from '@/lib/session';
 import { formatKenyanPhoneForApi } from '@/lib/utils/string';
@@ -98,14 +98,21 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (
           values,
         };
       }
-      const otpResponse = await requestOtp({ phone: fullPhoneNumber });
+      const otpResponse = await requestOtp({
+        phone: fullPhoneNumber,
+        email:
+          typeof (values as { email?: string }).email === 'string'
+            ? String((values as { email?: string }).email)
+            : undefined,
+      });
 
       return {
         success: true,
-        message: t('otpSent'),
+        message: otpResponse.message || t('otpSent'),
         values,
         // Custom field to trigger UI state change
         otpRequestId: otpResponse.request_id,
+        otpChannel: otpResponse.delivery_channel,
       };
     } else {
       // Step 2: Verify OTP
@@ -131,6 +138,15 @@ export const phoneLoginAction: FormAction<PhoneLogin> = async (
       return { success: true, otpRequestId: undefined };
     }
   } catch (error) {
+    if (error instanceof OtpNeedEmailError) {
+      return {
+        success: false,
+        errors: {},
+        message: error.message,
+        values,
+        needEmail: true,
+      };
+    }
     return {
       success: false,
       errors: {},

@@ -1,0 +1,17 @@
+ARG NODE_VERSION=20
+FROM node:${NODE_VERSION}-alpine
+RUN apk add --no-cache libc6-compat wget su-exec
+WORKDIR /app
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
+RUN npm install -g prisma@6.11.1
+COPY --chown=nextjs:nodejs web/.next/standalone ./
+COPY --chown=nextjs:nodejs web/.next/static ./web/.next/static
+COPY --chown=nextjs:nodejs web/public ./web/public
+COPY --chown=nextjs:nodejs web/prisma ./web/prisma
+COPY --chown=nextjs:nodejs web/scripts/docker-entrypoint.sh ./web/scripts/docker-entrypoint.sh
+RUN chmod +x ./web/scripts/docker-entrypoint.sh && sed -i 's/\r$//' ./web/scripts/docker-entrypoint.sh
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+EXPOSE 3000
+ENTRYPOINT ["/app/web/scripts/docker-entrypoint.sh"]
+CMD []

@@ -161,11 +161,13 @@ export async function verifyMemberOtp(
   applicationId: string,
   nationalIdCode: string,
   otpCode: string,
+  client: 'uwezo_app' | 'loans_portal' = 'loans_portal',
 ): Promise<OtpActionResponse> {
   const result = await verifyMemberConfirmationOtp(
     applicationId,
     nationalIdCode,
     otpCode,
+    client,
   );
 
   if (result.success) {

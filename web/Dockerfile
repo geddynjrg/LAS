@@ -2,7 +2,8 @@ ARG NODE_VERSION=20
 
 # Base image with dependencies
 FROM node:${NODE_VERSION}-alpine AS base
-RUN apk add --no-cache libc6-compat wget
+# Base node:alpine already includes wget. Skip apk (alpine CDN often unreachable here).
+# RUN apk add --no-cache libc6-compat wget
 RUN npm install -g pnpm@10
 WORKDIR /app
 
@@ -23,6 +24,8 @@ ARG NEXT_PUBLIC_API_URL
 
 COPY --from=deps /app ./
 COPY web/ ./web/
+# Drop host-built Prisma engines so alpine generate produces musl binaries
+RUN rm -rf ./web/generated/prisma/libquery_engine-*.node ./web/node_modules/.prisma 2>/dev/null || true
 RUN npx prisma generate --schema=./web/prisma/schema.prisma
 ENV NODE_ENV=production
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
@@ -34,7 +37,8 @@ RUN cd web && NEXT_FONT_GOOGLE_MOCKED_RESPONSES=/app/web/mocked-google-fonts.cjs
 # Production image
 FROM base AS production
 
-RUN apk add --no-cache su-exec
+# su-exec unused when USER nextjs; skip apk to avoid mirror dependency
+# RUN apk add --no-cache su-exec
 
 WORKDIR /app
 
@@ -46,8 +50,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/web/public ./web/public
 COPY --from=builder --chown=nextjs:nodejs /app/web/prisma ./web/prisma
 COPY --from=builder --chown=nextjs:nodejs /app/web/scripts/docker-entrypoint.sh ./web/scripts/docker-entrypoint.sh
 RUN chmod +x ./web/scripts/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /app/web/scripts/docker-entrypoint.sh
 
-USER root
+# Drop privileges for the running Next.js process (migrations still need write to nothing critical)
+USER nextjs
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
@@ -55,8 +61,6 @@ EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD wget -qO- http://localhost:3000/api/health | grep -q UP || exit 1
-
-RUN sed -i 's/\r$//' /app/web/scripts/docker-entrypoint.sh
 
 ENTRYPOINT ["/app/web/scripts/docker-entrypoint.sh"]
 CMD []

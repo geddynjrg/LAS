@@ -11,6 +11,8 @@ export interface TaxonomyOption {
 // Cache duration in milliseconds (24 hours)
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
 
+let syncInFlight: Promise<void> | null = null;
+
 export interface CountyOption {
   label: string;
   value: string;
@@ -158,25 +160,23 @@ export async function getConstituenciesForCountyName(
   countyName: string,
 ): Promise<TaxonomyOption[]> {
   try {
+    const trimmed = countyName.trim();
+    if (!trimmed) {
+      return [];
+    }
+
+    // Prefer the direct county query (avoids loading all 290 constituencies).
+    const direct = await getConstituenciesForCounty(trimmed);
+    if (direct.length > 0) {
+      return direct.map((c) => ({ label: c.label, value: c.value }));
+    }
+
+    // Case-insensitive fallback for slight naming mismatches.
     const allConstituencies = await getConstituencyOptions();
-
-    // Debug logging
-    console.log(`Filtering constituencies for county: "${countyName}"`);
-    console.log(`Total constituencies available: ${allConstituencies.length}`);
-
-    // Get unique county names for debugging
-    const uniqueCounties = [
-      ...new Set(allConstituencies.map((c) => c.countyName)),
-    ];
-    console.log(`Available counties in data:`, uniqueCounties);
-
-    const filtered = allConstituencies
-      .filter((c) => c.countyName === countyName)
+    const needle = trimmed.toLowerCase();
+    return allConstituencies
+      .filter((c) => c.countyName.trim().toLowerCase() === needle)
       .map((c) => ({ label: c.label, value: c.value }));
-
-    console.log(`Found ${filtered.length} constituencies for "${countyName}"`);
-
-    return filtered;
   } catch (error) {
     console.error(
       `Error filtering constituencies for county ${countyName}:`,
@@ -256,68 +256,77 @@ export async function getConstituenciesForCounty(
  * Sync counties data from external API
  */
 export async function syncCountiesData() {
-  try {
-    console.log('Syncing counties data...');
+  if (syncInFlight) {
+    return syncInFlight;
+  }
 
-    const response = await getCounties();
+  syncInFlight = (async () => {
+    try {
+      console.log('Syncing counties data...');
 
-    if (!response || !response.data) {
-      console.warn('No valid data received from counties API', response);
-      return;
-    }
+      const response = await getCounties();
 
-    // Use transaction to ensure atomicity
-    await prisma.$transaction(async (tx) => {
-      // Delete existing cache
-      await tx.countiesCache.deleteMany();
+      if (!response || !response.data) {
+        console.warn('No valid data received from counties API', response);
+        return;
+      }
 
-      // Create new cache entry
-      const cacheEntry = await tx.countiesCache.create({
-        data: {
-          lastSyncedAt: new Date(),
-          totalCounties: response.meta.total_counties,
-          totalConstituencies: response.meta.total_constituencies,
-        },
-      });
-
-      // Create counties and constituencies
-      for (const county of response.data) {
-        const createdCounty = await tx.county.create({
+      // Create the new cache first, then delete older rows so readers never
+      // observe an empty counties table mid-sync.
+      await prisma.$transaction(async (tx) => {
+        const cacheEntry = await tx.countiesCache.create({
           data: {
-            tid: county.tid,
-            uuid: county.tid.toString(), // Use tid as uuid since we simplified the response
-            name: county.name,
-            description: '', // Empty since we removed description from API
-            weight: 0, // Default weight since we removed it from API
-            url: '', // Empty since we removed URL from API
-            language: '{}', // Empty JSON since we removed language from API
-            cacheId: cacheEntry.id,
+            lastSyncedAt: new Date(),
+            totalCounties: response.meta.total_counties,
+            totalConstituencies: response.meta.total_constituencies,
           },
         });
 
-        // Create constituencies for this county
-        for (const constituency of county.constituencies) {
-          await tx.constituency.create({
+        for (const county of response.data) {
+          const createdCounty = await tx.county.create({
             data: {
-              tid: constituency.tid,
-              uuid: constituency.tid.toString(), // Use tid as uuid since we simplified the response
-              name: constituency.name,
-              description: '', // Empty since we removed description from API
-              weight: 0, // Default weight since we removed it from API
-              url: '', // Empty since we removed URL from API
-              language: '{}', // Empty JSON since we removed language from API
-              countyId: createdCounty.id,
+              tid: county.tid,
+              uuid: county.tid.toString(),
+              name: county.name,
+              description: '',
+              weight: 0,
+              url: '',
+              language: '{}',
+              cacheId: cacheEntry.id,
             },
           });
-        }
-      }
-    });
 
-    console.log(
-      `Successfully synced ${response.data.length} counties with ${response.meta.total_constituencies} constituencies`,
-    );
-  } catch (error) {
-    console.error('Error syncing counties data:', error);
-    throw error;
-  }
+          for (const constituency of county.constituencies) {
+            await tx.constituency.create({
+              data: {
+                tid: constituency.tid,
+                uuid: constituency.tid.toString(),
+                name: constituency.name,
+                description: '',
+                weight: 0,
+                url: '',
+                language: '{}',
+                countyId: createdCounty.id,
+              },
+            });
+          }
+        }
+
+        await tx.countiesCache.deleteMany({
+          where: { id: { not: cacheEntry.id } },
+        });
+      });
+
+      console.log(
+        `Successfully synced ${response.data.length} counties with ${response.meta.total_constituencies} constituencies`,
+      );
+    } catch (error) {
+      console.error('Error syncing counties data:', error);
+      throw error;
+    } finally {
+      syncInFlight = null;
+    }
+  })();
+
+  return syncInFlight;
 }

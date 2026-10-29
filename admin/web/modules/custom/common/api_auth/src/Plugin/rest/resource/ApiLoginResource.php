@@ -67,7 +67,7 @@ class ApiLoginResource extends ResourceBase {
    * Constructs a new ApiLoginResource object.
    *
    * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
+   *   A configuration array containing plugin configuration.
    * @param string $plugin_id
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
@@ -160,8 +160,21 @@ class ApiLoginResource extends ResourceBase {
       throw new UnauthorizedHttpException('Bearer', 'Invalid credentials.');
     }
 
-    if (!$this->passwordService->check($data['password'], $user->getPassword())) {
-      throw new UnauthorizedHttpException('Bearer', 'Invalid credentials.');
+    $stored = $user->getPassword();
+    $has_password = is_string($stored) && $stored !== '';
+    if ($has_password) {
+      if (!$this->passwordService->check($data['password'], $stored)) {
+        throw new UnauthorizedHttpException('Bearer', 'Invalid credentials.');
+      }
+    }
+    else {
+      // eCitizen SSO creates users without a password. First successful
+      // username+password attempt from the app/website saves it.
+      if (strlen((string) $data['password']) < 8) {
+        throw new BadRequestHttpException('Password must be at least 8 characters.');
+      }
+      $user->setPassword($data['password']);
+      $user->save();
     }
 
     // Generate JWT tokens.

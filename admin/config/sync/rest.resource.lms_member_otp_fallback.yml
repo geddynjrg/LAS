@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - api_application
+    - serialization
+    - user
+id: lms_member_otp_fallback
+plugin_id: lms_member_otp_fallback
+granularity: resource
+configuration:
+  methods:
+    - GET
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie

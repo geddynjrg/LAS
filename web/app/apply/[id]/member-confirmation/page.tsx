@@ -2,6 +2,7 @@
 import { MemberConfirmationForm } from './member-confirmation-form';
 import { getApplicationById } from '@/lib/data/application';
 import { getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import { Container } from '@workspace/ui/components/container';
 import { InfoPopover } from '@workspace/ui/components/uwezo/info-popover';
 
@@ -19,8 +20,9 @@ export default async function MemberConfirmationPage({ params }: PageProps) {
     throw new Error('Application not found');
   }
 
-  if (!application.members) {
-    throw new Error('Members data not found');
+  if (!application.members?.members?.length) {
+    // No members saved yet — send applicant back to the members step.
+    redirect(`/apply/${id}/members`);
   }
 
   const members = application.members.members;

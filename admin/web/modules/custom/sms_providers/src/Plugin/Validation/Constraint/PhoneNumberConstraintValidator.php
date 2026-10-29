@@ -62,6 +62,9 @@ class PhoneNumberConstraintValidator extends ConstraintValidator {
   /**
    * Normalizes a phone number to E.164 format.
    *
+   * Accepts common Kenyan inputs (07XXXXXXXX, 7XXXXXXXX, 2547XXXXXXXX)
+   * and converts them to +254XXXXXXXXX before E.164 validation.
+   *
    * @param string $phone
    *   The phone number to normalize.
    *
@@ -69,15 +72,28 @@ class PhoneNumberConstraintValidator extends ConstraintValidator {
    *   The normalized phone number.
    */
   protected function normalizePhoneNumber(string $phone): string {
-    // Remove all non-digit characters.
-    $phone = preg_replace('/\D/', '', $phone) ?? '';
+    $digits = preg_replace('/\D/', '', $phone) ?? '';
 
-    // Add + prefix if not present.
-    if (!str_starts_with($phone, '+')) {
-      $phone = '+' . $phone;
+    if ($digits === '') {
+      return $phone;
     }
 
-    return $phone;
+    // Kenyan local with leading 0: 07XXXXXXXX / 01XXXXXXXX -> +254…
+    if (str_starts_with($digits, '0') && \strlen($digits) === 10) {
+      return '+254' . substr($digits, 1);
+    }
+
+    // Already has Kenya country code.
+    if (str_starts_with($digits, '254') && \strlen($digits) === 12) {
+      return '+' . $digits;
+    }
+
+    // 9-digit Kenyan mobile without prefix (7XXXXXXXX / 1XXXXXXXX).
+    if (\strlen($digits) === 9 && preg_match('/^[17]/', $digits)) {
+      return '+254' . $digits;
+    }
+
+    return '+' . ltrim($digits, '+');
   }
 
 }

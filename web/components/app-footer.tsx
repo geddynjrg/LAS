@@ -11,6 +11,22 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Children, FC, ReactNode } from 'react';
 
+const UWEZO_APP_DOWNLOAD_URL =
+  'https://loans.uwezo.go.ke/uwezo-app/UwezoFund.apk';
+
+const PlayStoreIcon: FC = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width={18}
+    height={18}
+    fill="currentColor"
+    aria-hidden="true"
+    className="shrink-0 text-primary-foreground"
+  >
+    <path d="M3.18 2.5c-.12.2-.18.44-.18.7v17.6c0 .26.06.5.18.7l.06.1 9.64-9.65v-.2L3.24 2.4l-.06.1zm12.07 7.04-2.2 2.2 2.2 2.2 2.7-1.55c.9-.52.9-1.78 0-2.3l-2.7-1.55zM13.6 12.2 4.4 21.4c.3.12.64.1.96-.08l9.4-5.4-1.16-3.72zm0-.4 1.16-3.72-9.4-5.4c-.32-.18-.66-.2-.96-.08l9.2 9.2z" />
+  </svg>
+);
+
 export const AppFooter: FC = async () => {
   const t = await getTranslations('Footer');
 
@@ -36,12 +52,20 @@ export const AppFooter: FC = async () => {
             <FooterNavItem
               key={link.id || index}
               href={link.url}
-              hasBorder={index < data.useful_links.length - 1}
+              hasBorder
               isExternal={link.external}
             >
               {link.title}
             </FooterNavItem>
           ))}
+          <FooterNavItem
+            href={UWEZO_APP_DOWNLOAD_URL}
+            hasBorder={false}
+            isExternal
+          >
+            <PlayStoreIcon />
+            Uwezo App
+          </FooterNavItem>
         </FooterNavGroup>
         <FooterNavGroup title={t('quickContacts')}>
           <FooterNavItem>
@@ -146,20 +170,6 @@ const SubFooter: FC<SubFooterProps> = ({ siteName }) => {
             &copy; Copyright {currentYear} | {siteName}. | All Rights Reserved.
           </p>
         </div>
-        {/* <div className="flex flex-row gap-2">
-          <Link
-            href={"#"}
-            className="bg-twitter-background text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full"
-          >
-            <IconBrandTwitterFilled width={16} height={16} />
-          </Link>
-          <Link
-            href={"#"}
-            className="bg-facebook-background flex h-8 w-8 items-center justify-center rounded-full"
-          >
-            <IconFacebookInverted height={17} width={17} />
-          </Link>
-        </div> */}
       </Container>
     </div>
   );

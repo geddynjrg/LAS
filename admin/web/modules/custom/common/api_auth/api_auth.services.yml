@@ -12,7 +12,13 @@ services:
   # OTP authentication service
   api_auth.otp_service:
     class: Drupal\api_auth\Service\OtpAuthService
-    arguments: ['@config.factory', '@entity_type.manager', '@sms_providers.sms_service', '@api_auth.jwt_service', '@cache.default']
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@sms_providers.sms_service'
+      - '@api_auth.jwt_service'
+      - '@cache.default'
+      - '@plugin.manager.mail'
 
   cache.api_auth:
     class: Drupal\Core\Cache\CacheBackendInterface

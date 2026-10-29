@@ -4,6 +4,7 @@ import {
   type OcrCaptureResult,
   OcrDocumentCapture,
 } from '@/components/ocr-document-capture';
+import { QrLoginPanel } from '@/components/qr-login-panel';
 import {
   type ChatMessage,
   answerAssistiveChat,
@@ -34,7 +35,9 @@ type Phase =
   | 'await_username'
   | 'await_password'
   | 'await_phone'
+  | 'await_otp_email'
   | 'await_otp'
+  | 'await_qr'
   | 'menu'
   | 'apply_choice'
   | 'status_wait'
@@ -54,6 +57,7 @@ type FieldContext = {
   field: string;
   label: string;
   uploadCategory?: string;
+  memberId?: string;
 };
 
 const MAIN_MENU: QuickReply[] = [
@@ -63,6 +67,7 @@ const MAIN_MENU: QuickReply[] = [
     label: '2. Check status of loan application',
     value: 'status',
   },
+  { id: 'new_app', label: '3. New application', value: 'new_app' },
 ];
 
 const APPLY_TYPE: QuickReply[] = [
@@ -78,6 +83,7 @@ const AUTH_METHOD_REPLIES: QuickReply[] = [
   { id: 'auth-email', label: 'Email / password', value: 'auth:email' },
   { id: 'auth-phone', label: 'Mobile phone (OTP)', value: 'auth:phone' },
   { id: 'auth-ecitizen', label: 'eCitizen', value: 'auth:ecitizen' },
+  { id: 'auth-qr', label: 'App QR login', value: 'auth:qr' },
 ];
 
 const WHATSAPP_ENV =
@@ -127,6 +133,7 @@ export const AssistiveChatbot: FC<{
   const [phase, setPhase] = useState<Phase>('boot');
   const [username, setUsername] = useState('');
   const [otpRequestId, setOtpRequestId] = useState('');
+  const [otpPhone, setOtpPhone] = useState('');
   const [allowPdfOnly, setAllowPdfOnly] = useState(false);
   const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
   const [docType, setDocType] = useState<
@@ -161,6 +168,7 @@ export const AssistiveChatbot: FC<{
     setPhase('await_auth_method');
     setUsername('');
     setOtpRequestId('');
+    setOtpPhone('');
     setQuickReplies(AUTH_METHOD_REPLIES);
     setFieldContext(null);
     setAllowPdfOnly(false);
@@ -226,6 +234,9 @@ export const AssistiveChatbot: FC<{
       message?: string;
       requestId?: string;
       redirect?: string;
+      needEmail?: boolean;
+      channel?: string;
+      maskedEmail?: string | null;
     };
   }, []);
 
@@ -331,6 +342,22 @@ export const AssistiveChatbot: FC<{
             setBusy(false);
             return;
           }
+          if (trimmed === 'auth:qr') {
+            setPhase('await_qr');
+            setQuickReplies([
+              {
+                id: 'back-auth',
+                label: 'Back to sign-in options',
+                value: 'auth:back',
+              },
+            ]);
+            pushAssistant(
+              setMessages,
+              'Scan this QR with the Uwezo Fund app. Verify phone OTP or email in the app, then confirm — this chat will sign you in.',
+            );
+            setBusy(false);
+            return;
+          }
           if (trimmed === 'auth:ecitizen') {
             const result = await loginWithMethod({
               method: 'ecitizen',
@@ -358,7 +385,7 @@ export const AssistiveChatbot: FC<{
           if (phase === 'await_auth_method') {
             pushAssistant(
               setMessages,
-              'Choose Email / password, Mobile phone (OTP), or eCitizen.',
+              'Choose Email / password, Mobile phone (OTP), App QR, or eCitizen.',
             );
             setQuickReplies(AUTH_METHOD_REPLIES);
             setBusy(false);
@@ -395,15 +422,32 @@ export const AssistiveChatbot: FC<{
         }
 
         if (phase === 'await_phone') {
+          setOtpPhone(trimmed);
           const result = await loginWithMethod({
             method: 'phone_send',
             phone: trimmed,
           });
-          if (!result.ok || !result.requestId) {
+          if (result.needEmail) {
+            setPhase('await_otp_email');
+            setQuickReplies([
+              {
+                id: 'back-auth',
+                label: 'Back to sign-in options',
+                value: 'auth:back',
+              },
+            ]);
             pushAssistant(
               setMessages,
               result.error ||
-                'Could not send OTP. Check the number and try again.',
+                'SMS unavailable. Enter the email linked to this phone, open the Uwezo Fund app if signed in, or use eCitizen / password.',
+            );
+            setBusy(false);
+            return;
+          }
+          if (!result.ok || !result.requestId) {
+            pushAssistant(
+              setMessages,
+              `${result.error || 'Could not send OTP. Check the number and try again.'}\nIf the Uwezo Fund app is signed in, check Notifications there; otherwise try eCitizen or email/password.`,
             );
             setBusy(false);
             return;
@@ -420,7 +464,39 @@ export const AssistiveChatbot: FC<{
           pushAssistant(
             setMessages,
             result.message ||
-              'OTP sent by SMS. Enter the 6-digit code (it stays masked).',
+              'OTP sent by SMS and to the Uwezo Fund app if you stayed signed in. Enter the 6-digit code (it stays masked).',
+          );
+          setBusy(false);
+          return;
+        }
+
+        if (phase === 'await_otp_email') {
+          const result = await loginWithMethod({
+            method: 'phone_send',
+            phone: otpPhone,
+            email: trimmed,
+          });
+          if (!result.ok || !result.requestId) {
+            pushAssistant(
+              setMessages,
+              `${result.error || 'Could not send the code by email.'}\nIf signed into the Uwezo Fund app, check Notifications there; otherwise try eCitizen / password login.`,
+            );
+            setBusy(false);
+            return;
+          }
+          setOtpRequestId(result.requestId);
+          setPhase('await_otp');
+          setQuickReplies([
+            {
+              id: 'back-auth',
+              label: 'Back to sign-in options',
+              value: 'auth:back',
+            },
+          ]);
+          pushAssistant(
+            setMessages,
+            result.message ||
+              'Code sent by email. Enter the 6-digit code (it stays masked).',
           );
           setBusy(false);
           return;
@@ -454,7 +530,8 @@ export const AssistiveChatbot: FC<{
           if (
             trimmed.startsWith('stage:') ||
             trimmed.startsWith('select_app:') ||
-            trimmed.startsWith('field:')
+            trimmed.startsWith('field:') ||
+            trimmed.startsWith('member:')
           ) {
             applyServerPayload(
               await postChat({ action: trimmed, message: trimmed }),
@@ -470,6 +547,9 @@ export const AssistiveChatbot: FC<{
               appId: fieldContext.appId,
               stage: fieldContext.stage,
               field: fieldContext.field,
+              ...(fieldContext.memberId
+                ? { memberId: fieldContext.memberId }
+                : {}),
             }),
           );
           setBusy(false);
@@ -524,19 +604,16 @@ export const AssistiveChatbot: FC<{
         }
 
         if (phase === 'apply_choice' && /^(new_app|2)/i.test(trimmed)) {
-          setPhase('apply_docs');
-          setAllowPdfOnly(false);
-          setQuickReplies([
-            {
-              id: 'create',
-              label: 'Open /apply/create',
-              value: 'open:/apply/create',
-            },
-            { id: 'menu', label: 'Back to menu', value: 'menu' },
-          ]);
-          pushAssistant(
-            setMessages,
-            'Start a new application at /apply/create. Scan ID/KRA with OCR below for an assistive authenticity check.',
+          applyServerPayload(
+            await postChat({ action: 'new_app', message: 'new_app' }),
+          );
+          setBusy(false);
+          return;
+        }
+
+        if (/^new_app$/i.test(trimmed)) {
+          applyServerPayload(
+            await postChat({ action: 'new_app', message: 'new_app' }),
           );
           setBusy(false);
           return;
@@ -553,6 +630,7 @@ export const AssistiveChatbot: FC<{
             trimmed.startsWith('select_app:') ||
             trimmed.startsWith('stage:') ||
             trimmed.startsWith('field:') ||
+            trimmed.startsWith('member:') ||
             trimmed.startsWith('status_ref:')
           ) {
             applyServerPayload(
@@ -602,6 +680,8 @@ export const AssistiveChatbot: FC<{
         else if (/^select_app:/i.test(trimmed)) action = trimmed;
         else if (/^stage:/i.test(trimmed)) action = trimmed;
         else if (/^field:/i.test(trimmed)) action = trimmed;
+        else if (/^member:/i.test(trimmed)) action = trimmed;
+        else if (/^new_app$/i.test(trimmed)) action = 'new_app';
 
         const data = await postChat({
           action,
@@ -622,6 +702,7 @@ export const AssistiveChatbot: FC<{
       phase,
       username,
       otpRequestId,
+      otpPhone,
       docType,
       fieldContext,
       pathname,
@@ -762,6 +843,15 @@ export const AssistiveChatbot: FC<{
                 {m.content}
               </div>
             ))}
+            {phase === 'await_qr' ? (
+              <div className="mr-2 pt-1">
+                <QrLoginPanel
+                  source="chat"
+                  redirectTo={pathname || '/'}
+                  onReady={() => showSignedInMenu()}
+                />
+              </div>
+            ) : null}
             {quickReplies.length > 0 && !sensitiveMode ? (
               <div className="mr-2 flex flex-wrap gap-1.5 pt-1">
                 {quickReplies.map((qr) => (
@@ -872,17 +962,19 @@ export const AssistiveChatbot: FC<{
                   ? 'Password'
                   : otpMode
                     ? 'OTP code'
-                    : phase === 'await_phone'
-                      ? 'Mobile number…'
-                      : phase === 'await_username'
-                        ? 'Email / username'
-                        : phase === 'await_auth_method'
-                          ? 'Or tap a sign-in option…'
-                          : phase === 'status_wait'
-                            ? 'Application ID…'
-                            : phase === 'await_field'
-                              ? `Enter ${fieldContext?.label || 'value'}…`
-                              : 'Type a message…'
+                    : phase === 'await_otp_email'
+                      ? 'Account email for OTP…'
+                      : phase === 'await_phone'
+                        ? 'Mobile number…'
+                        : phase === 'await_username'
+                          ? 'Email / username'
+                          : phase === 'await_auth_method'
+                            ? 'Or tap a sign-in option…'
+                            : phase === 'status_wait'
+                              ? 'Application ID…'
+                              : phase === 'await_field'
+                                ? `Enter ${fieldContext?.label || 'value'}…`
+                                : 'Type a message…'
               }
               type={sensitiveMode ? 'password' : 'text'}
               autoComplete={
