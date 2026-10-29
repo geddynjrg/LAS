@@ -894,6 +894,8 @@ if ($is_docker_env) {
     \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT |
     \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO;
   $settings['trusted_host_patterns'] = [
+    '^loans\.uwezo\.go\.ke$',
+    '^loans-staging\.uwezo\.go\.ke$',
     '^loans-staging-admin\.uwezo\.go\.ke$',
     '^loans-admin\.uwezo\.go\.ke$',
     '^admin$',

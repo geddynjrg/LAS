@@ -123,6 +123,46 @@ function suggestionFromResult(result: GeocodeSuggestion): GeocodeSuggestion {
   };
 }
 
+
+type GeocodeApiResponse = {
+  results?: GeocodeSuggestion[];
+  error?: string;
+  degraded?: boolean;
+};
+
+const GEOCODE_TIMEOUT_MSG =
+  "Location search timed out. Try again or type the landmark manually.";
+const GEOCODE_UNAVAILABLE_MSG =
+  "Location search is temporarily unavailable. Try again or type the landmark manually.";
+
+async function parseGeocodeResponse(response: Response): Promise<GeocodeApiResponse> {
+  const text = await response.text();
+  const contentType = response.headers.get("content-type") || "";
+  const trimmed = text.trimStart();
+  const looksHtml =
+    trimmed.startsWith("<") || !contentType.toLowerCase().includes("application/json");
+
+  if (looksHtml) {
+    if (response.status === 504 || response.status === 502 || response.status === 408) {
+      throw new Error(GEOCODE_TIMEOUT_MSG);
+    }
+    throw new Error(GEOCODE_UNAVAILABLE_MSG);
+  }
+
+  let data: GeocodeApiResponse;
+  try {
+    data = JSON.parse(text) as GeocodeApiResponse;
+  } catch {
+    throw new Error(GEOCODE_TIMEOUT_MSG);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || GEOCODE_UNAVAILABLE_MSG);
+  }
+
+  return data;
+}
+
 function usableBounds(bounds?: GeocodeBoundingBox) {
   if (!bounds) {
     return undefined;
@@ -252,14 +292,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       const response = await fetch(`/api/geocode?${params.toString()}`, {
         signal: controller.signal,
       });
-      const data = (await response.json()) as {
-        results?: GeocodeSuggestion[];
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(data.error || "Location search failed");
-      }
+      const data = await parseGeocodeResponse(response);
 
       const results = (data.results || []).map(suggestionFromResult);
       suggestionCacheRef.current.set(cacheKey, results);
@@ -317,9 +350,7 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       const response = await fetch(`/api/geocode?${params.toString()}`, {
         signal: controller.signal,
       });
-      const data = (await response.json()) as {
-        results?: GeocodeSuggestion[];
-      };
+      const data = await parseGeocodeResponse(response);
 
       const match = data.results?.[0];
       if (!match) {

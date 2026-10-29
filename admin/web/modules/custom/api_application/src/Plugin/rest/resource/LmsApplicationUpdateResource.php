@@ -193,7 +193,7 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
         ], 400);
       }
 
-      // 6. Handle rejection-specific fields
+      // 6. Handle rejection / return-to-draft comment fields
       $rejection_reason = $data['rejection_reason'] ?? NULL;
       $rejection_message = $data['rejection_message'] ?? $data['failure_message'] ?? NULL;
       if ($new_status === 'rejected') {
@@ -205,6 +205,13 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
         }
         $rejection_reason = ApplicationRejectionReasons::normalize($rejection_reason);
         $entity->set('rejection_reason', $rejection_reason);
+        $entity->set('rejection_message', $rejection_message);
+      }
+      elseif ($new_status === 'draft' && !empty($rejection_message)) {
+        // Constituency returned application to the group for correction.
+        $entity->set('rejection_reason', ApplicationRejectionReasons::normalize(
+          $rejection_reason ?: 'incomplete_information'
+        ));
         $entity->set('rejection_message', $rejection_message);
       }
       elseif ($new_status === 'disbursement_failed' && !empty($rejection_message)) {
@@ -437,6 +444,16 @@ class LmsApplicationUpdateResource extends RestFrameworkResourceBase {
 
     if ($new_status === ApplicationStatusConstants::REJECTED) {
       return ($ranks[$current_status] ?? 0) < ($ranks[ApplicationStatusConstants::DISBURSED] ?? 11);
+    }
+
+    // Allow constituency officers (via LMS) to return an application to draft
+    // so the group can upload documents or correct details before re-submission.
+    if ($new_status === ApplicationStatusConstants::DRAFT) {
+      return in_array($current_status, [
+        ApplicationStatusConstants::SUBMITTED,
+        ApplicationStatusConstants::CONSTITUENCY_REVIEW,
+        ApplicationStatusConstants::GROUP_MEMBER_CONFIRMATION,
+      ], TRUE);
     }
 
     if ($new_status === ApplicationStatusConstants::DISBURSEMENT_FAILED) {

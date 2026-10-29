@@ -57,5 +57,7 @@ echo "Running database migrations..."
 prisma migrate deploy --schema=./prisma/schema.prisma
 
 echo "Starting application..."
+mkdir -p /app/web/uploads 2>/dev/null || true
 cd /app
+echo "Running as $(id)"
 exec node web/server.js

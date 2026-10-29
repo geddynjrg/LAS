@@ -1464,8 +1464,8 @@ class Application extends ContentEntityBase implements ApplicationInterface {
     return [
       'draft' => ['group_member_confirmation'],
       'group_member_confirmation' => ['submitted'],
-      'submitted' => ['constituency_review', 'rejected'],
-      'constituency_review' => ['approved_by_constituency', 'rejected'],
+      'submitted' => ['constituency_review', 'rejected', 'draft'],
+      'constituency_review' => ['approved_by_constituency', 'rejected', 'draft'],
       'approved_by_constituency' => ['under_review'],
       'under_review' => ['approved', 'rejected'],
       'approved' => ['pending_secretariat_review', 'training'],
