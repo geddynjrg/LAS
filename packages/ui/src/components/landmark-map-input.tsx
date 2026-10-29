@@ -255,7 +255,33 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       const data = (await response.json()) as {
         results?: GeocodeSuggestion[];
         error?: string;
+        degraded?: boolean;
       };
+
+      // #region agent log
+      fetch("https://loans.uwezo.go.ke/uwezo-app/__dbg", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Debug-Session-Id": "9becc5",
+        },
+        body: JSON.stringify({
+          sessionId: "9becc5",
+          runId: "geocode-fix",
+          hypothesisId: "G1",
+          location: "landmark-map-input.tsx:fetchSuggestions",
+          message: "geocode client response",
+          data: {
+            ok: response.ok,
+            status: response.status,
+            count: data.results?.length ?? 0,
+            degraded: Boolean(data.degraded),
+            hasError: Boolean(data.error),
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
 
       if (!response.ok) {
         throw new Error(data.error || "Location search failed");
@@ -266,6 +292,8 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
       setSuggestions(results);
       setPreview(results[0] ?? null);
       setIsOpen(results.length > 0);
+      // Soft-fail from geocode sidecar: HTTP 200 + error (avoids browser "Failed to fetch").
+      setSearchError(data.degraded && data.error ? data.error : null);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
         return;
@@ -273,8 +301,12 @@ export const LandmarkMapInput: FC<LandmarkMapInputProps> = ({
 
       // Keep any existing pin/selection visible; only surface the error.
       setSuggestions([]);
+      const raw =
+        error instanceof Error ? error.message : "Location search failed";
       setSearchError(
-        error instanceof Error ? error.message : "Location search failed",
+        /failed to fetch|networkerror|load failed/i.test(raw)
+          ? "Could not reach location search. Check your connection and try again."
+          : raw,
       );
     } finally {
       if (!controller.signal.aborted) {
